@@ -44,6 +44,8 @@ import javax.ejb.*;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Context;
 import javax.naming.NamingException;
+import java.net.*;
+import java.io.*;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
@@ -58,10 +60,18 @@ public class Client {
         appName = s[0];
         stat.addDescription(appName);
         Client t = new Client();
-        try {
-            t.test(s);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (s.length == 2 && s[1].equals("servlet")) {
+            try {
+                t.testServlet(s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                t.test(s);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         stat.printSummary(appName + "ID");
     }
@@ -105,4 +115,51 @@ public class Client {
         stat.addStatus("EJB embedded with JPA", (pass)? stat.PASS : stat.FAIL);
         System.out.println("..........FINISHED Embedded test");
     }
+
+    private void testServlet(String[] args) {
+
+        boolean pass = true;
+        EJBContainer c = null;
+        try {
+            Map p = new HashMap();
+            p.put("org.glassfish.ejb.embedded.glassfish.web.http.port", "8080");
+            System.setProperty("org.glassfish.ejb.embedded.keep-temporary-files", "true");
+            c = EJBContainer.createEJBContainer(p);
+            String url = "http://localhost:8080/" + appName + "-web/mytest";
+
+            System.out.println("invoking webclient servlet at " + url);
+
+            URL u = new URL(url);
+
+            HttpURLConnection c1 = (HttpURLConnection)u.openConnection();
+            int code = c1.getResponseCode();
+            InputStream is = c1.getInputStream();
+            BufferedReader input = new BufferedReader (new InputStreamReader(is));
+            String line = null;
+            while((line = input.readLine()) != null)
+                System.out.println(line);
+            if(code != 200) {
+                throw new RuntimeException("Incorrect return code: " + code);
+            }
+
+            System.out.println("Testing EJB via Servlet...");
+        } catch (Exception e) {
+            pass = false;
+            System.out.println("ERROR calling EJB:");
+            e.printStackTrace();
+        } finally {
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (Exception e) {
+                    pass = false;
+                    System.out.println("ERROR Closing container:");
+                    e.printStackTrace();
+                }
+            }
+        }
+        stat.addStatus("EJB embedded " + appName + " EJB", (pass)? stat.PASS : stat.FAIL);
+        System.out.println("..........FINISHED test");
+    }
+
 }
