@@ -43,7 +43,6 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import org.glassfish.hk2.api.DescriptorFilter;
-import org.glassfish.hk2.api.Scope;
 
 /**
  * This is an object that uses the Builder pattern
@@ -94,7 +93,7 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given scope
 	 * @throws IllegalArgumentException If in is called more than once
 	 */
-	public DescriptorBuilder in(Class<? extends Scope> scope) throws IllegalArgumentException;
+	public DescriptorBuilder in(Class<? extends Annotation> scope) throws IllegalArgumentException;
 	
 	/**
    * A scope to be associated with this descriptor object. Note that at the current time a
@@ -114,7 +113,7 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given annotation
 	 * @throws IllegalArgumentException on failures
 	 */
-	public DescriptorBuilder annotatedBy(Class<? extends Annotation> annotation) throws IllegalArgumentException;
+	public DescriptorBuilder qualifiedBy(Annotation annotation) throws IllegalArgumentException;
 	
 	/**
 	 * A qualifier to be associated with this descriptor object
@@ -124,7 +123,7 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given annotation
 	 * @throws IllegalArgumentException on failures
 	 */
-	public DescriptorBuilder annotatedBy(String annotation) throws IllegalArgumentException;
+	public DescriptorBuilder qualifiedBy(String annotation) throws IllegalArgumentException;
 	
 	/**
 	 * An instance of data to be associated with this descriptor
@@ -145,6 +144,15 @@ public interface DescriptorBuilder {
 	 * @throws IllegalArgumentException
 	 */
 	public DescriptorBuilder has(String key, List<String> values) throws IllegalArgumentException;
+	
+	/**
+	 * The rank to be associated with this descriptor.  The last rank
+	 * bound wins
+	 * 
+	 * @param rank The rank to be associated with this descriptor.
+	 * @return A DescriptorBuilder with the given rank
+	 */
+	public DescriptorBuilder ofRank(int rank);
 	
 	/**
 	 * The id to be associated with this descriptor

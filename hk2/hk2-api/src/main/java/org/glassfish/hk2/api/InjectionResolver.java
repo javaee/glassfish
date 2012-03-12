@@ -39,66 +39,51 @@
  */
 package org.glassfish.hk2.api;
 
-import java.lang.annotation.Annotation;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.glassfish.hk2.TypeLiteral;
-import org.glassfish.hk2.scopes.Singleton;
-import org.jvnet.hk2.annotations.Scoped;
-
 /**
- * Binding InjectionTarget consisting of an injection type and optional annotations. Matches the type
- * and annotations at a point of injection.
+ * This class allows users to provide a custom injection target.
+ * This allows fields or parameters of constructor or initializer
+ * methods to be injected in a customized manner.
  * <p>
- * For example, InjectionTarget.get(Service.class, Transactional.class) will match:
- * <code>
- * @Inject
- * public void setService(@Transactional Service service) {
- *   ...
- * }
- * </code>
+ * This extension is a feature of the default InjectionTarget
+ * provided to the user in the ProcessInjectionTarget system
+ * event.  If the default InjectionTarget is replaced by a
+ * portable extension then the CustomInjectionResolver will not
+ * be fired
  * <p>
- * InjectionTarget supports generic types via subclassing just like TypeLiteral.
+ * To be activated an implementation of this interface must
+ * be given to the WebBean as an AnnotatedType (or 
+ * LazyLoadedType).  The implementation must be annotated with
+ * the Qualifier &#64;CustomInjectionTarget, where the value
+ * associated with the &#64;CustomInjectionTarget is the
+ * annotation that should indicate injection.
  * <p>
- * InjectionTargets do not differentiate between primitive types (int, char, etc.) and their
- * correpsonding wrapper types (Integer, Character, etc.). Primitive types will be replaced with their
- * wrapper types when injection targets are created.
+ * Here is an example:
+ * <pre>
+ * public class Foo {
+ *   &#64;Bob &#64;MyQualifier("myValue")
+ *   public String aValue;
+ * </pre>
+ * The default InjectionTarget implementation would notice the &64;Bob, and 
+ * since that had been registered as an Inject annotation it would attempt
+ * to inject it.  It would do so by finding the current contextual
+ * instance of an implementation of this interface with the matching
+ * &#64;CustomInjection qualifier.  It would then invoke the getReference method, giving the
+ * InjectionPoint to the call and the CreationalContext that should be used should this
+ * instance need to create any underlying objects.
  * 
  * @author jwells
  */
-@Scoped(Singleton.class)
-public class InjectionTarget<T> {
-  private TypeLiteral<T> type = new TypeLiteral<T>() {} ;
-  
-  private final List<Annotation> annotations =
-      new LinkedList<Annotation>();
-  
-  public static <T> InjectionTarget<T> getInjectionTarget(Class<T> myType,
-      Annotation... annotations) {
-    return new InjectionTarget<T>(annotations);
-  }
-  
-  public static <T> InjectionTarget<T> getInjectionTarget(Class<T> myType) {
-    return new InjectionTarget<T>();
-  }
-  
-  protected InjectionTarget() {
-  }
-  
-  protected InjectionTarget(Annotation... annos) {
-    if (annos == null) return;
-    
-    for (Annotation anno : annos) {
-      annotations.add(anno);
-    }
-  }
-  
-  public TypeLiteral<T> getTypeLiteral() {
-    return type;
-  }
-  
-  public List<Annotation> getAnnotations() {
-    return new LinkedList<Annotation>(annotations);
-  }
+public interface InjectionResolver {
+    /**
+     * This method will return the object that should be injected into the given
+     * injection point.  It is the responsiblity of the implementation to ensure that
+     * the object returned can be safely injected into the injection point.
+     * <p>
+     * This method should not do the injection themselves
+     * 
+     * @param injectionPoint The injection point this value is being injected into
+     * @return A possibly null value to be injected into the given injection point
+     */
+    public Object resolve(Injectee injectee);
+
 }

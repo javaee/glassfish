@@ -41,6 +41,7 @@ package org.glassfish.hk2.api;
 
 import org.jvnet.hk2.annotations.Contract;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 /**
@@ -50,14 +51,66 @@ import java.util.List;
  */
 @Contract
 public interface ServiceLocator {
+    /**
+     * Gets the list of descriptors that match the given filter
+     * 
+     * @param filter The filter to use to retrieve the set of descriptors
+     * @return A list of descriptors in ranked order that match the given
+     * filter
+     */
+    public List<Descriptor> getDescriptors(Filter<Descriptor> filter);
+    
+    /**
+     * Converts a descriptor to an ActiveDescriptor.  Will use the registered
+     * HK2Loaders to perform this action
+     * 
+     * @param descriptor The descriptor to convert, may not be null
+     * @return The active descriptor as loaded with the first valid {@link HK2Loader}
+     */
+    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor);
+    
+    /**
+     * This method will first find a descriptor for this injectee, and then
+     * reify that descriptor.  If multiple descriptors are found, they will
+     * be reified in ranking order until an ActiveDescriptor matching the Injectee is
+     * found.  
+     * 
+     * @param injectee The injectee to find the ActiveDescriptor for
+     * @return The active descriptor for this injection point
+     */
+    public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee);
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     */
+    public <T> ServiceHandle<T> getServiceHandle(ActiveDescriptor<T> activeDescriptor);
+    
+    /**
+     * This method should be called by code getting injectee's on behalf of some
+     * root object.  In this way the objects associated with the root object can
+     * be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The descriptor to create
+     * @param root
+     */
+    public <T> T getService(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root);
+    
 	/**
 	 * Gets the best service from this locator that implements
 	 * this contract or has this implementation
 	 * <p>
-	 * best is some measure of the most appropriate service where
-	 * there may be multiple providers of the contract.  If the
-	 * best is not what was intended use getAllServices and choose
-	 * amongst the returned types
+	 * Use this method only if destroying the service is not important
 	 * 
 	 * @param contractOrImpl May not be null, and is the contract
 	 * or concrete implementation to get the best instance of
@@ -65,11 +118,13 @@ public interface ServiceLocator {
 	 * null if there is no provider that provides the given
 	 * implementation or contract
 	 */
-  public <T> T getService(Class<T> contractOrImpl);
+    public <T> T getService(Type contractOrImpl);
     
-  /**
+    /**
 	 * Gets the all the services from this locator that implements
 	 * this contract or has this implementation
+	 * <p>
+     * Use this method only if destroying the service is not important
 	 * 
 	 * @param contractOrImpl May not be null, and is the contract
 	 * or concrete implementation to get the best instance of
@@ -77,17 +132,14 @@ public interface ServiceLocator {
 	 * or concrete implementation.  May not return null, but
 	 * may return an empty list
 	 */
-  public <T> List<T> getAllServices(Class<T> contractOrImpl);
+    public <T> List<T> getAllServices(Type contractOrImpl);
     
-  /**
+    /**
 	 * Gets the best service from this locator that implements
 	 * this contract or has this implementation and has the given
 	 * name
 	 * <p>
-	 * best is some measure of the most appropriate service where
-	 * there may be multiple providers of the contract.  If the
-	 * best is not what was intended use getAllServices and choose
-	 * amongst the returned types
+     * Use this method only if destroying the service is not important
 	 * 
 	 * @param contractOrImpl May not be null, and is the contract
 	 * or concrete implementation to get the best instance of
@@ -97,87 +149,16 @@ public interface ServiceLocator {
 	 * null if there is no provider that provides the given
 	 * implementation or contract
 	 */
-  public <T> T getService(Class<T> contractOrImpl, String name);
+    public <T> T getService(Type contractOrImpl, String name);
     
-  /**
-	 * Gets the best service from this locator that implements
-	 * this contract or has this implementation and has the given
-	 * name
-	 * <p>
-	 * best is some measure of the most appropriate service where
-	 * there may be multiple providers of the contract.  If the
-	 * best is not what was intended use getAllServices and choose
-	 * amongst the returned types
-	 * <p>
-	 * Will use the CCL for loading any classes
-	 * 
-	 * @param contractOrImpl May not be null, and is the fully
-	 * qualified class name of the contract or concrete implementation to
-	 * get the best instance of
-	 * @return An instance of the contract or impl.  May return
-	 * null if there is no provider that provides the given
-	 * implementation or contract
-	 */
-  <T> T getService(String contractOrImpl);
-    
-  /**
+    /**
 	 * Gets the all the services from this locator that implements
 	 * this contract or has this implementation
 	 * <p>
-	 * Will use the CCL for loading any classes
-	 * 
-	 * @param contractOrImpl May not be null, and is the fully
-	 * qualified class name of the contract or concrete implementation to
-	 * get the best instance of
-	 * @return A list of services implementing this contract
-	 * or concrete implementation.  May not return null, but
-	 * may return an empty list
-	 */
-  <T> List<T> getAllServices(String contractOrImpl);
-    
-  /**
-	 * Gets the best service from this locator that implements
-	 * this contract or has this implementation and has the given
-	 * name
-	 * <p>
-	 * best is some measure of the most appropriate service where
-	 * there may be multiple providers of the contract.  If the
-	 * best is not what was intended use getAllServices and choose
-	 * amongst the returned types
-	 * <p>
-	 * Will use the CCL for loading any classes
-	 * 
-	 * @param contractOrImpl May not be null, and is the fully
-	 * qualified class name of the contract or concrete implementation to
-	 * get the best instance of
-	 * @param name May not be null, and is the name of the
-	 * implementation to be returned
-	 * @return An instance of the contract or impl.  May return
-	 * null if there is no provider that provides the given
-	 * implementation or contract
-	 */
-  <T> T getService(String contractOrImpl, String name);
-    
-  /**
-	 * Gets the best service from this locator that matches
-	 * the given filter
-	 * <p>
-	 * best is some measure of the most appropriate service where
-	 * there may be multiple providers of the contract.  If the
-	 * best is not what was intended use getAllServices and choose
-	 * amongst the returned types
-	 * 
-	 * @param searchCriteria The returned service will match the Filter
-	 * (in other words, searchCriteria.matches returns true).  May not
-	 * be null
-	 * @return An instance of a service that matches the filter.  May
-	 * return null if there is no provider that matches the filter
-	 */
-  <T> T getService(Filter<Descriptor> searchCriteria);
-    
-  /**
-	 * Gets the all the services from this locator that implements
-	 * this contract or has this implementation
+     * Use this method only if destroying the service is not important
+     * <p>
+     * This method should also be used with care to avoid classloading
+     * a large number of services
 	 * 
 	 * @param searchCriteria The returned service will match the Filter
 	 * (in other words, searchCriteria.matches returns true).  May not
@@ -185,84 +166,53 @@ public interface ServiceLocator {
 	 * @return A list of services matching this filter.  May not return null,
 	 * but may return an empty list
 	 */
-  <T> List<T> getAllServices(Filter<Descriptor> searchCriteria);
-    
-  /**
-   * This method returns the best provider that matches the search criteria.  Note
-   * that this does not return an instance of the service itself, but rather a provider
-   * for the service.  This is useful when the service should be instantiated at a later
-   * time
-   * <p>
-	 * best is some measure of the most appropriate service where
-	 * there may be multiple providers of the contract.  If the
-	 * best is not what was intended use getAllServices and choose
-	 * amongst the returned types
-	 * 
-   * @param searchCriteria The returned service will match the Filter
-	 * (in other words, searchCriteria.matches returns true). May not be null
-	 * @return An instance of a service that matches the filter.  May
-	 * return null if there is no provider that matches the filter
-   */
-  <T> ExtendedProvider<T> getServiceProvider(Filter<Descriptor> searchCriteria);
-    
-  /**
-	 * Gets the all the service providers from this locator that
-	 * matches this filter
-	 *
-	 * @param searchCriteria The returned service will match the Filter
-	 * (in other words, searchCriteria.matches returns true).  May not
-	 * be null
-	 * @return A list of service providers matching this filter.  May not return null,
-	 * but may return an empty list
-	 */
-  <T> List<ExtendedProvider<T>> getAllServiceProviders(Filter<Descriptor> searchCriteria);
-    
-  /**
-   * Allow dynamic additions to this service registry.
-   *
-   * @return a {@link DynamicBinderFactory} instance to add services after
-   * this services has been initialized.
-   *
-  DynamicBinderFactory bindDynamically();
-   */
-    
-  /**
-   * Retrieve the collection of all registered bindings in this, and only this,
-   * Services instance.
-   * 
-   * @return a non-null collection of service bindings
-   *
-   * JRW removed since I think this is just getAllServiceProviders with a true filter
-  List<Descriptor> getDeclaredBindings();
-   */
-    
-  /**
-   * Retrieve the collection of registered bindings in this, and only this, Services
-   * instance that match the {@link Descriptor} argument.
-   * 
-   * <p/>
-   * A {@link Descriptor} matches if it's attributes are equal, or specified as null.
-   * A Descriptor with all null attributes will therefore match all services in this
-   * services registry.
-   * 
-   * @param descriptor the descriptor used for matching, or null for all
-   * @return a non-null collection of service bindings matching the argument
-   *
-   * JRW removed since I think this is just getAllServiceProviders
-  List<Descriptor> getDeclaredBindings(Filter descriptor);
-   */
+    public <T> List<T> getAllServices(Filter<Descriptor> searchCriteria);
   
-  /**
-   * Returns the name of this ServiceLocator
-   * @return The name of this ServiceLocator, will not return null
-   */
-  public String getName();
+    /**
+     * Returns the name of this ServiceLocator
+     * @return The name of this ServiceLocator, will not return null
+     */
+    public String getName();
   
-  /**
-   * This method will shutdown every service associated with this ServiceLocator.
-   * Those services that have a preDestroy shall have their preDestroy called
-   */
-  public void shutdown();
+    /**
+     * This method will shutdown every service associated with this ServiceLocator.
+     * Those services that have a preDestroy shall have their preDestroy called
+     */
+    public void shutdown();
+    
+    /**
+     * This method will analyze the given class, and create it if can.  The object
+     * created in this way will not be managed by HK2.  It is the responsibility of
+     * the caller to ensure that any lifecycle this object has is honored
+     * 
+     * @param createMe The class to create, may not be null
+     * @return An instance of the object
+     */
+    public Object create(Class<?> createMe);
+    
+    /**
+     * This will analyze the given object and inject into its fields and methods.
+     * The object injected in this way will not be managed by HK2
+     * 
+     * @param injectMe The object to be analyzed and injected into
+     */
+    public void inject(Object injectMe);
+    
+    /**
+     * This will analyze the given object and call the postConstruct method.
+     * The object given will not be managed by HK2
+     * 
+     * @param postConstructMe The object to postConstruct
+     */
+    public void postConstruct(Object postConstructMe);
+    
+    /**
+     * This will analyze the given object and call the preDestroy method.
+     * The object given will not be managed by HK2
+     * 
+     * @param preDestroyMe The object to preDestroy
+     */
+    public void preDestroy(Object preDestroyMe);
 
 }
 

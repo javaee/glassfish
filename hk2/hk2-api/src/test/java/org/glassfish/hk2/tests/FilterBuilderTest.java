@@ -45,17 +45,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.inject.Provider;
-
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.ExtendedProvider;
 import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.InjectionTarget;
-import org.glassfish.hk2.api.Scope;
+import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.hk2.tests.contracts.AnotherContract;
 import org.glassfish.hk2.tests.contracts.Red;
 import org.glassfish.hk2.tests.contracts.SomeContract;
-import org.glassfish.hk2.tests.contracts.Top;
 import org.glassfish.hk2.tests.services.AnotherService;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
@@ -85,9 +80,8 @@ public class FilterBuilderTest {
 		
 		Assert.assertNotNull(predicate);
 		
-		Assert.assertNotNull(predicate.getImplementations());
-		Assert.assertTrue(predicate.getImplementations().size() == 1);
-		Assert.assertEquals(getOneThingFromSet(predicate.getImplementations()), FilterBuilderTest.class.getName());
+		Assert.assertNotNull(predicate.getImplementation());
+		Assert.assertEquals(predicate.getImplementation(), FilterBuilderTest.class.getName());
 		
 		Assert.assertNotNull(predicate.getContracts());
 		Assert.assertTrue(predicate.getContracts().size() == 1);
@@ -102,8 +96,7 @@ public class FilterBuilderTest {
 		Assert.assertNotNull(predicate.getNames());
 		Assert.assertTrue(predicate.getNames().size() == 0);
 		
-		Assert.assertNotNull(predicate.getScopes());
-		Assert.assertTrue(predicate.getScopes().size() == 0);
+		Assert.assertNull(predicate.getScope());
 	}
 	
 	private final static String KEY_A = "keya";
@@ -122,32 +115,21 @@ public class FilterBuilderTest {
 		multiValue.add(VALUE_B1);
 		multiValue.add(VALUE_B2);
 		
-		Scope localScope = new Scope() {
-
-      @Override
-      public <T> Provider<T> scope(InjectionTarget<T> target,
-          ExtendedProvider<T> unscopedProvider) {
-        // TODO Auto-generated method stub
-        return null;
-      }
-		};
 		
 		Descriptor predicate = BuilderHelper.link(AnotherService.class.getName()).
 				withContract(SomeContract.class).
 				withContract(AnotherContract.class.getName()).
-				in(localScope.getClass().getName()).
+				in(Singleton.class.getName()).
 				named(NAME).
 				has(KEY_A, VALUE_A).
 				has(KEY_B, multiValue).
-				annotatedBy(Top.class).
-				annotatedBy(Red.class.getName()).
+				qualifiedBy(Red.class.getName()).
 				build();
 		
 		Assert.assertNotNull(predicate);
 		
-		Assert.assertNotNull(predicate.getImplementations());
-		Assert.assertTrue(predicate.getImplementations().size() == 1);
-		Assert.assertEquals(getOneThingFromSet(predicate.getImplementations()), AnotherService.class.getName());
+		Assert.assertNotNull(predicate.getImplementation());
+		Assert.assertEquals(predicate.getImplementation(), AnotherService.class.getName());
 		
 		HashSet<String> correctSet = new HashSet<String>();
 		correctSet.add(SomeContract.class.getName());
@@ -159,19 +141,17 @@ public class FilterBuilderTest {
 		
 		correctSet.clear();
 		correctSet.add(Red.class.getName());
-		correctSet.add(Top.class.getName());
 		
 		Assert.assertNotNull(predicate.getQualifiers());
-		Assert.assertTrue(predicate.getQualifiers().size() == 2);
+		Assert.assertTrue(predicate.getQualifiers().size() == 1);
 		Assert.assertTrue(correctSet.containsAll(predicate.getQualifiers()));
 		
 		Assert.assertNotNull(predicate.getNames());
 		Assert.assertTrue(predicate.getNames().size() == 1);
 		Assert.assertEquals(NAME, getOneThingFromSet(predicate.getNames()));
 		
-		Assert.assertNotNull(predicate.getScopes());
-		Assert.assertTrue(predicate.getScopes().size() == 1);
-		Assert.assertEquals(localScope.getClass().getName(), getOneThingFromSet(predicate.getScopes()));
+		Assert.assertNotNull(predicate.getScope());
+		Assert.assertEquals(Singleton.class.getName(), predicate.getScope());
 		
 		Assert.assertNotNull(predicate.getMetadata());
 		Assert.assertTrue(predicate.getMetadata().size() == 2);
@@ -203,8 +183,7 @@ public class FilterBuilderTest {
 		
 		Assert.assertNotNull(predicate);
 		
-		Assert.assertNotNull(predicate.getImplementations());
-		Assert.assertTrue(predicate.getImplementations().size() == 0);
+		Assert.assertNull(predicate.getImplementation());
 		
 		Assert.assertNotNull(predicate.getContracts());
 		Assert.assertTrue(predicate.getContracts().size() == 0);
@@ -218,8 +197,7 @@ public class FilterBuilderTest {
 		Assert.assertNotNull(predicate.getNames());
 		Assert.assertTrue(predicate.getNames().size() == 0);
 		
-		Assert.assertNotNull(predicate.getScopes());
-		Assert.assertTrue(predicate.getScopes().size() == 0);
+		Assert.assertNull(predicate.getScope());
 	}
 	
 	@Test

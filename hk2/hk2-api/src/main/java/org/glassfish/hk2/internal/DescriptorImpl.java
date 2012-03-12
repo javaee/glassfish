@@ -66,11 +66,12 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	
 	private final Set<String> contractsAndImplementations = new HashSet<String>();
 	private Set<String> contracts;
-	private Set<String> implementations;
+	private String implementation;
 	private Set<String> names;
-	private Set<String> scopes;
+	private String scope;
 	private Map<String, List<String>> metadatas;
 	private Set<String> qualifiers;
+	private int rank;
 	private Long id;
 	
 	/**
@@ -82,10 +83,11 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	public DescriptorImpl(Descriptor copyMe) {
 		contracts = copyMe.getContracts();
 		names = copyMe.getNames();
-		scopes = copyMe.getScopes();
-		implementations = copyMe.getImplementations();
+		scope = copyMe.getScope();
+		implementation = copyMe.getImplementation();
 		qualifiers = copyMe.getQualifiers();
 		metadatas = copyMe.getMetadata();
+		rank = copyMe.getRanking();
 		id = copyMe.getServiceId();
 	}
 	
@@ -103,22 +105,24 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	 */
 	public DescriptorImpl(Set<String> contracts,
 			Set<String> names,
-			Set<String> scopes,
-			Set<String> implementations,
+			String scope,
+			String implementation,
 			Map<String, List<String>> metadatas,
 			Set<String> qualifiers,
+			int rank,
 			Long id) {
 		this.contracts = new HashSet<String>(contracts);
 		contractsAndImplementations.addAll(contracts);
 		
-		this.implementations = new HashSet<String>(implementations);
-		contractsAndImplementations.addAll(implementations);
+		this.implementation = implementation;
+		contractsAndImplementations.add(implementation);
 		
 		this.names = new HashSet<String>(names);
-		this.scopes = new HashSet<String>(scopes);
+		this.scope = scope;
 		this.metadatas = new HashMap<String, List<String>>(metadatas);
 		this.qualifiers = new HashSet<String>(qualifiers);
 		this.id = id;
+		this.rank = rank;
 	}
 
 	@Override
@@ -127,13 +131,13 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	}
 
 	@Override
-	public Set<String> getImplementations() {
-		return new HashSet<String>(implementations);
+	public String getImplementation() {
+		return implementation;
 	}
 
 	@Override
-	public Set<String> getScopes() {
-		return new HashSet<String>(scopes);
+	public String getScope() {
+		return scope;
 	}
 
 	@Override
@@ -150,6 +154,11 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	public Map<String, List<String>> getMetadata() {
 		return new HashMap<String, List<String>>(metadatas);
 	}
+
+    @Override
+    public int getRanking() {
+        return rank;
+    }
 	
 	@Override
 	public Long getServiceId() {
@@ -159,7 +168,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	@Override
 	public boolean matches(Descriptor d) {
 	  HashSet<String> dCandI = new HashSet<String>();
-	  dCandI.addAll(d.getImplementations());
+	  dCandI.add(d.getImplementation());
 	  dCandI.addAll(d.getContracts());
 	  
 	  if (!dCandI.containsAll(contractsAndImplementations)) return false;
@@ -242,14 +251,12 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	public String toString() {
 		StringBuffer sb = new StringBuffer("DescriptorImpl(");
 		
-		sb.append("\n\timplementations=");
-		sb.append(writeSet(implementations));
+		sb.append("\n\timplementation=" + implementation);
 		
 		sb.append("\n\tcontracts=");
 		sb.append(writeSet(contracts));
 		
-		sb.append("\n\tscopes=");
-		sb.append(writeSet(scopes));
+		sb.append("\n\tscope=" + scope);
 		
 		sb.append("\n\tqualifiers=");
 		sb.append(writeSet(qualifiers));
@@ -263,4 +270,6 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 		
 		return sb.toString();
 	}
+
+    
 }

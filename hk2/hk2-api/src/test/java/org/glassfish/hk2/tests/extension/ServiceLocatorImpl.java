@@ -39,11 +39,14 @@
  */
 package org.glassfish.hk2.tests.extension;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.ExtendedProvider;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 
 /**
@@ -51,123 +54,154 @@ import org.glassfish.hk2.api.ServiceLocator;
  *
  */
 public class ServiceLocatorImpl implements ServiceLocator {
-  private boolean shutdownCalled = false;
-  private final String name;
+    private boolean shutdownCalled = false;
+    private final String name;
   
-  public ServiceLocatorImpl(String name) {
-    this.name = name;
-  }
+    public ServiceLocatorImpl(String name) {
+        this.name = name;
+    }
 
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.Class)
-   */
-  @Override
-  public <T> T getService(Class<T> contractOrImpl) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.Class)
-   */
-  @Override
-  public <T> List<T> getAllServices(Class<T> contractOrImpl) {
-    // TODO Auto-generated method stub
-    return null;
-  }
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        shutdownCalled = true;
 
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.Class, java.lang.String)
-   */
-  @Override
-  public <T> T getService(Class<T> contractOrImpl, String name) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.String)
-   */
-  @Override
-  public <T> T getService(String contractOrImpl) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.String)
-   */
-  @Override
-  public <T> List<T> getAllServices(String contractOrImpl) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.String, java.lang.String)
-   */
-  @Override
-  public <T> T getService(String contractOrImpl, String name) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getService(org.glassfish.hk2.api.Filter)
-   */
-  @Override
-  public <T> T getService(Filter<Descriptor> searchCriteria) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(org.glassfish.hk2.api.Filter)
-   */
-  @Override
-  public <T> List<T> getAllServices(Filter<Descriptor> searchCriteria) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getServiceProvider(org.glassfish.hk2.api.Filter)
-   */
-  @Override
-  public <T> ExtendedProvider<T> getServiceProvider(Filter<Descriptor> searchCriteria) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceProviders(org.glassfish.hk2.api.Filter)
-   */
-  @Override
-  public <T> List<ExtendedProvider<T>> getAllServiceProviders(
-      Filter<Descriptor> searchCriteria) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#getName()
-   */
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ServiceLocator#shutdown()
-   */
-  @Override
-  public void shutdown() {
-    shutdownCalled = true;
-
-  }
+    }
   
-  public boolean isShutdown() {
-    return shutdownCalled;
-  }
+    public boolean isShutdown() {
+        return shutdownCalled;
+    }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public List<Descriptor> getDescriptors(Filter<Descriptor> filter) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#reifyDescriptor(org.glassfish.hk2.api.Descriptor)
+     */
+    @Override
+    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getInjecteeDescriptor(org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(
+            ActiveDescriptor<T> activeDescriptor) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public <T> T getService(ActiveDescriptor<T> activeDescriptor,
+            ServiceHandle<?> root) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type)
+     */
+    @Override
+    public <T> T getService(Type contractOrImpl) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.reflect.Type)
+     */
+    @Override
+    public <T> List<T> getAllServices(Type contractOrImpl) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String)
+     */
+    @Override
+    public <T> T getService(Type contractOrImpl, String name) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public <T> List<T> getAllServices(Filter<Descriptor> searchCriteria) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#create(java.lang.Class)
+     */
+    @Override
+    public Object create(Class<?> createMe) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#inject(java.lang.Object)
+     */
+    @Override
+    public void inject(Object injectMe) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#postConstruct(java.lang.Object)
+     */
+    @Override
+    public void postConstruct(Object postConstructMe) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#preDestroy(java.lang.Object)
+     */
+    @Override
+    public void preDestroy(Object preDestroyMe) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    
+
+    
 }

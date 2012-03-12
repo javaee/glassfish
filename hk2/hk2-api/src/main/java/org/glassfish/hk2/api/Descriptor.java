@@ -57,8 +57,9 @@ import java.util.Set;
 public interface Descriptor {
 
 	/**
-	 * Returns all of the contracts that this
-	 * service describes
+	 * Returns the base class name of the contracts that
+	 * this service describes.  If the contract is a
+	 * paramterized type this will return the raw class
 	 *   
 	 * @return Will never return null, but
 	 * may return an empty set.  The returned
@@ -69,44 +70,35 @@ public interface Descriptor {
 	public Set<String> getContracts();
 	
 	/**
-	 * Returns all of the implementation
-	 * classes that this object can
-	 * be looked up or registered as
-	 * <p>
-	 * Note that at the current time an object
-	 * in the registry may only have one concrete
-	 * implementation, so the returned set must
-	 * only have size zero or one
-	 * 
-	 * @return May not return null, but
-	 * may return an empty set.  Returns
-	 * the fully qualified class names of
-	 * the object described
+	 * Returns the fully qualified class
+	 * name of the implementation
+	 * class.  If this is a factory descriptor
+	 * then this will return the fully
+	 * qualified name of the class implementing
+	 * the factory interface.
+	 *
+	 * @return Might return null in some cases,
+	 * but will usually return the fully qualified
+	 * class name of the implementation class or
+	 * of the factory class for this descriptor
 	 */
-	public Set<String> getImplementations();
+	public String getImplementation();
 	
 	/**
-	 * Returns all of the scopes that this
-	 * object should be registered with
-	 * or looked up by
-	 * <p>
-	 * Note that at the current time an object
-	 * in the registry may only have one scope,
-	 * so the returned set must only have size
-	 * zero or one
+	 * Returns the fully qualified class name of
+	 * the scope annotation that should be
+	 * associated with this descriptor.
 	 * 
-	 * @return Never returns null but may return
-	 * an empty set.  The set of fully qualified
-	 * class names which implement Scope that
-	 * this object should be registered with
-	 * or looked up by
+	 * @return If this returns null then this
+	 * descriptor is assumed to be in the
+	 * default scope, which is PerLookup
 	 */
-	public Set<String> getScopes();
+	public String getScope();
 	
 	/**
-	 * Returns all of the names that this
-	 * objects should be registered with or
-	 * looked up by
+	 * Returns the fully qualified class name of
+	 * the scope annotation that is associated
+	 * with 
 	 * <p>
 	 * Note that at the current time an object
 	 * in the registry may only have one name,
@@ -144,6 +136,19 @@ public interface Descriptor {
 	 * will always have at least one member
 	 */
 	public Map<String, List<String>> getMetadata();
+	
+	/**
+	 * Returns the ranking of this descriptor.  Rankings
+	 * with higher value will be considered "better" than
+	 * rankings of lower value.  Descriptors with the same
+	 * ranking will be returned in the reverse ServiceID order
+	 * (in other words, the least service ID is considered
+	 * "better" than any higher service ID).
+	 * 
+	 * @return the ranking that should be associated with this
+	 * descriptor
+	 */
+	public int getRanking();
 	
 	/**
 	 * This returns the unique identifier for this descriptor.
