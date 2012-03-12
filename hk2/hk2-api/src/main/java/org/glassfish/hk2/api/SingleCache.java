@@ -37,27 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.api;
 
 /**
- * Use this class to generate unique ids for the system
+ * This cache can be used in some circumstances when there can be only one
+ * of a service.  This is useful and can avoid an expensive lookup in certain
+ * context implementations
  * 
  * @author jwells
+ *
  */
-public class SystemIDs {
-private final static SystemIDs INSTANCE = new SystemIDs();
-  
-  private final Object lock = new Object();
-  private long nextId = 0L;
-  
-  public static SystemIDs getSystemIds() { return INSTANCE; }
-  
-  public SystemIDs() {}
-  
-  public long getNextId() {
-    synchronized (lock) {
-      return nextId++;
-    }
-  }
+public interface SingleCache<T> {
+    /**
+     * This can be used for scopes that will only every be created once.
+     * The returned value must have been set previously with setCache.
+     * If this is called when isCacheSet is false will result in a
+     * RuntimeException
+     * 
+     * @return A value cached with this ActiveDescriptor
+     */
+    public T getCache();
+    
+    /**
+     * Returns true if this cache has been set
+     * 
+     * @return true if there is a currently cached value, false
+     * otherwise
+     */
+    public boolean isCacheSet();
+    
+    /**
+     * Sets the value into the cache
+     * 
+     * @param cacheMe A single value that can be cached in this
+     * active descriptor
+     */
+    public void setCache(T cacheMe);
+    
+    /**
+     * Removes the cached value and makes it such
+     * that this cache has not been set
+     */
+    public void releaseCache();
 
 }

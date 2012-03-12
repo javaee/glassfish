@@ -37,48 +37,67 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api.scopes;
+package org.glassfish.hk2.api;
 
-import java.util.HashMap;
-
-import javax.inject.Provider;
-
-import org.glassfish.hk2.api.ExtendedProvider;
-import org.glassfish.hk2.api.InjectionTarget;
-import org.glassfish.hk2.api.Scope;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Member;
+import java.lang.reflect.Type;
+import java.util.Set;
 
 /**
- * An implementation of the Singleton scope
- * 
  * @author jwells
+ *
  */
-public class Singleton implements Scope {
-  private final HashMap<InjectionTarget<?>, Provider<?>> instanceMap = new HashMap<InjectionTarget<?>, Provider<?>>();
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.Scope#scope(org.glassfish.hk2.api.InjectionTarget, org.glassfish.hk2.api.ExtendedProvider)
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public <T> Provider<T> scope(InjectionTarget<T> target,
-      ExtendedProvider<T> unscopedProvider) {
-    synchronized (instanceMap) {
-      Provider<T> retVal = (Provider<T>) instanceMap.get(target);
-      if (retVal != null) return retVal;
-      
-      final T instance = unscopedProvider.get();
-      retVal = new Provider<T>() {
-
-        @Override
-        public T get() {
-          return instance;
-        }
-        
-      };
-      
-      instanceMap.put(target, retVal);
-      return retVal;
-    }
-  }
+public interface Injectee {
+    /**
+     * This is the required type of the injectee.  The object
+     * that is injected into this point must be type-safe
+     * with regards to this type
+     * 
+     * @return The type that this injectee is expecting.  Any object
+     * injected into this injection point must be type-safe with
+     * regards to this type
+     */
+    public Type getRequiredType();
+    
+    /**
+     * This is the set of required qualifiers for this injectee.  All
+     * of these qualifiers must be present on the implementation class
+     * of the object that is injected into this injectee.  Note that the
+     * fields of the annotation must also match
+     * 
+     * @return Will not return null, but may return an empty set.  The
+     * set of all qualifiers that must match.
+     */
+    public Set<Annotation> getRequiredQualifiers();
+    
+    /**
+     * Returns the java member that this injectee will be injected into
+     * 
+     * @return The java member that this injectee will be injected into
+     */
+    public Member getMember();
+    
+    /**
+     * If this Injectee is a constructor or method parameter, this will
+     * return the index of the parameter.  If this Injectee is a field,
+     * this will return -1
+     * 
+     * @return the position of the parameter, or -1 if this is a field
+     */
+    public int getPosition();
+    
+    /**
+     * If this Injectee represents a constructor this will return the 
+     * construtor being injected into.  If this Injectee represents a
+     * method this will return the method being injected into.  If this
+     * injectee represents a field, this will return the class being
+     * injected into
+     * 
+     * @return The parent of the injectee
+     */
+    public Member getParent();
+    
+    
 
 }

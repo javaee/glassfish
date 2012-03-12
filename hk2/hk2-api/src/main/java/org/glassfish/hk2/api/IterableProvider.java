@@ -37,61 +37,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.api;
 
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.ExtendedProvider;
-import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.Inhabitant;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+
+import javax.inject.Provider;
 
 /**
+ * This object can be injected rather than Provider or ExtendedProvider when
+ * it is desired to iterate over more than one returned instance of the type.
+ * <p>
+ * The iterator returned will be in ranked order (with DescriptorRank as
+ * primary key, largest rank first and ServiceID as secondary key, smallest
+ * id first)
+ * 
  * @author jwells
- *
  */
-public class UnscopedProviderImpl<T> implements ExtendedProvider<T> {
-    private final Descriptor descriptor;
-    private final Inhabitant<T> onBehalfOf;
-    private final Creator<T> creator;
+public interface IterableProvider<T> extends Provider<T>, Iterable<T> {
+    /**
+     * Returns the size of the iterator that would be returned
+     * 
+     * @return the size of the iterator that would be chosen
+     */
+    public int getSize();
     
-    public UnscopedProviderImpl(Descriptor descriptor, Inhabitant<T> inhabitant, Creator<T> creator) {
-        this.descriptor = descriptor;
-        this.onBehalfOf = inhabitant;
-        this.creator = creator;
-    }
-
-    /* (non-Javadoc)
-     * @see javax.inject.Provider#get()
+    /**
+     * Returns an IterableProvider that is further qualified
+     * with the given name
+     * 
+     * @param name The value field of the Named annotation parameter.  Must
+     * not be null
+     * @return An iterable provider further qualified with the given name
      */
-    @Override
-    public T get() {
-        T retVal = creator.create(onBehalfOf);
-        creator.initialize(retVal, onBehalfOf);
-        
-        return retVal;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ExtendedProvider#getDescriptor()
+    public IterableProvider<T> named(String name);
+    
+    /**
+     * Returns an IterableProvider that is of the given type.  This type
+     * must be one of the type safe contracts of the original iterator
+     * 
+     * @param type The type to restrict the returned iterator to
+     * @return An iterator restricted to only providing the given type
      */
-    @Override
-    public Descriptor getDescriptor() {
-        return descriptor;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ExtendedProvider#getByType(java.lang.Class)
+    public <U> IterableProvider<U> ofType(Type type);
+    
+    /**
+     * A set of qualifiers to further restrict this iterator to.
+     * 
+     * @param qualifiers The qualifiers to further restrict this iterator to
+     * @return An iterator restricted with the given qualifiers
      */
-    @Override
-    public <U> U getByType(Class<U> type) {
-        throw new AssertionError("getByType in UnscopedProviderImpl is not implemented");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ExtendedProvider#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        throw new AssertionError("isActive in UnscopedProviderImpl is not implemented");
-    }
+    public IterableProvider<T> qualifiedWith(Annotation... qualifiers);
 
 }

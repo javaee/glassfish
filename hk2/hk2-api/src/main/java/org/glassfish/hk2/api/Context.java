@@ -37,12 +37,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator.extensions;
+package org.glassfish.hk2.api;
+
+import java.lang.annotation.Annotation;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This service is scoped
+ * An implementation of this must be put into the system in order to
+ * create contextual instances of services.  The implementation must
+ * be annotated with the scope that it provides.  If there is more than
+ * one active implementation available for the same scope on the same
+ * thread a runtime exception will be thrown when the scope is accessed.
+ * 
  * @author jwells
+ *
  */
-public class ServiceA {
-
+@Contract
+public interface Context {
+    /**
+     * The scope for which this is the context
+     * 
+     * @return may not return null, must return the
+     * scope for which this is a context
+     */
+    public Class<? extends Annotation> getScope();
+    
+    /**
+     * Creates a contextual instance of this ActiveDescriptor by calling its
+     * create method if there is no other matching contextual instance.  If there
+     * is already a contextual instance it is returned.  If parent is null then this
+     * must work like the find call
+     * 
+     * @param activeDescriptor The descriptor to use when creating instances
+     * @param root The extended provider for the outermost parent being created
+     * 
+     * @return A context instance (which may be null)
+     */
+    public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root);
+    
+    /**
+     * Finds an existing contextual instance, without creating or loading any objects
+     * 
+     * @param descriptor The descriptor to look for in this context
+     * @return Either null or the instance 
+     */
+    public <T> T find(Descriptor descriptor);
+    
+    /**
+     * True if this context is active, false otherwise
+     * 
+     * @return true if this context is active, false otherwise
+     */
+    public boolean isActive();
 }

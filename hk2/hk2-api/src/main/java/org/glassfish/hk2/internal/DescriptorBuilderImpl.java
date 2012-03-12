@@ -45,7 +45,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 
-import org.glassfish.hk2.api.Scope;
 import org.glassfish.hk2.api.DescriptorFilter;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 
@@ -57,17 +56,18 @@ import org.glassfish.hk2.utilities.DescriptorBuilder;
 public class DescriptorBuilderImpl implements DescriptorBuilder {
 	private final HashSet<String> names = new HashSet<String>();
 	private final HashSet<String> contracts = new HashSet<String>();
-	private final HashSet<String> scopes = new HashSet<String>();
+	private String scope;
 	private final HashSet<String> qualifiers = new HashSet<String>();
 	private final HashMap<String, List<String>> metadatas = new HashMap<String, List<String>>();
-	private final HashSet<String> implementations = new HashSet<String>();
+	private String implementation;
+	private int rank = 0;
 	private Long id;
 	
 	public DescriptorBuilderImpl() {
 	}
 	
 	public DescriptorBuilderImpl(String implementation) {
-		implementations.add(implementation);
+	    this.implementation = implementation;
 	}
 
 	/* (non-Javadoc)
@@ -112,8 +112,8 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#in(org.glassfish.hk2.Scope)
 	 */
 	@Override
-	public DescriptorBuilder in(Class<? extends Scope> scope) throws IllegalArgumentException {
-		if (scope == null || scopes.size() >= 1) {
+	public DescriptorBuilder in(Class<? extends Annotation> scope) throws IllegalArgumentException {
+		if (scope == null) {
 			throw new IllegalArgumentException();
 		}
 		
@@ -125,11 +125,11 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
    */
   @Override
   public DescriptorBuilder in(String scope) throws IllegalArgumentException {
-    if (scope == null || scopes.size() >= 1) {
+    if (scope == null) {
       throw new IllegalArgumentException();
     }
     
-    scopes.add(scope);
+    this.scope = scope;
     return this;
   }
 
@@ -137,18 +137,18 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#annotatedBy(java.lang.Class)
 	 */
 	@Override
-	public DescriptorBuilder annotatedBy(Class<? extends Annotation> annotation)
+	public DescriptorBuilder qualifiedBy(Annotation annotation)
 			throws IllegalArgumentException {
 		if (annotation == null) throw new IllegalArgumentException();
 		
-		return annotatedBy(annotation.getName());
+		return qualifiedBy(annotation.annotationType().getName());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#annotatedBy(java.lang.String)
 	 */
 	@Override
-	public DescriptorBuilder annotatedBy(String annotation)
+	public DescriptorBuilder qualifiedBy(String annotation)
 			throws IllegalArgumentException {
 		if (annotation == null) throw new IllegalArgumentException();
 		
@@ -188,6 +188,15 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	}
 	
 	/* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.DescriptorBuilder#ofRank(int)
+     */
+    @Override
+    public DescriptorBuilder ofRank(int rank) {
+        this.rank = rank;
+        return this;
+    }
+	
+	/* (non-Javadoc)
    * @see org.glassfish.hk2.utilities.DescriptorBuilder#id(java.lang.Long)
    */
 	@Override
@@ -206,10 +215,13 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 		return new DescriptorImpl(
 				contracts,
 				names,
-				scopes,
-				implementations,
+				scope,
+				implementation,
 				metadatas,
 				qualifiers,
+				rank,
 				id);
 	}
+
+    
 }

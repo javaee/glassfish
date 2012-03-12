@@ -39,25 +39,16 @@
  */
 package org.glassfish.hk2.api;
 
-import org.glassfish.hk2.TypeLiteral;
-
 /**
- * Listens for Hk2 to encounter injectable types. If a given type has its constructor
- * injected in one situation but only its methods and fields injected in another, Hk2 will notify
- * this listener once.
- * 
  * @author jwells
+ *
  */
-public interface TypeListener {
+public interface ServiceHandle<T> {
+    public T getService();
     
-    /**
-     * Invoked when Hk2 encounters a new type eligible for constructor or members injection. Called
-     * during injector creation (or afterwords if Hk2 encounters a type at run time and creates
-     * a JIT binding).
-     * 
-     * @param type The type Hk2 has encountered
-     * @param encounter The encounter for that particular type
-     */
-    <I> void hear(TypeLiteral<I> type, TypeEncounter<I> encounter);
-
+    public ActiveDescriptor<T> getActiveDescriptor();
+    
+    public boolean isActive();
+    
+    public void destroy();
 }

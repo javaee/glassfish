@@ -37,77 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.api;
 
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.ExtendedProvider;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * An implementation of {@link ExtendedProvider}.  In this
- * implementation over the Services API this delegates to the
- * Provider from the old API
- * 
  * @author jwells
+ *
  */
-public class ExtendedProviderImpl<T> implements ExtendedProvider<T> {
-    private final Descriptor descriptor;
-    private final Object singleton;
-  
-    private org.glassfish.hk2.Provider<?> delegate;
-  
-    /* package */ ExtendedProviderImpl(Descriptor d, Object singleton) {
-        descriptor = d;
-        this.singleton = singleton;
-    }
+@Contract
+public interface Factory<T> {
+    
+    public T provide();
+    
+    public void dispose(T instance);
 
-  /* (non-Javadoc)
-   * @see javax.inject.Provider#get()
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public T get() {
-    if (delegate == null) return null;
-    
-    return (T) delegate.get();
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ExtendedProvider#getDescriptor()
-   */
-  @Override
-  public Descriptor getDescriptor() {
-    return descriptor;
-  }
-
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ExtendedProvider#getByType(java.lang.Class)
-   */
-  @Override
-  public <U> U getByType(Class<U> type) {
-    if (delegate == null) return null;
-    
-    return delegate.getByType(type);
-  }
-  
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.api.ExtendedProvider#isActive()
-   */
-  @Override
-  public boolean isActive() {
-    if (delegate == null) return false;
-    
-    return delegate.isActive();
-  }
-  
-  /* package */ void setServicesProvider(org.glassfish.hk2.Provider<?> hk2Provider) {
-    delegate = hk2Provider;
-    
-  }
-  
-  /**
-   * @return the singleton
-   */
-  /* package */ Object getSingleton() {
-    return singleton;
-  }
 }

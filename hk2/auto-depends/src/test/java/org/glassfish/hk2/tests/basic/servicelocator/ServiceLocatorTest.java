@@ -49,6 +49,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -85,13 +86,13 @@ public class ServiceLocatorTest {
     locator = null;
   }
   
-  @Test
+  @Test @Ignore
   public void testServiceWithImplOnly() {
     ServiceA a = locator.getService(ServiceA.class);
     Assert.assertNotNull(a);
   }
   
-  @Test
+  @Test @Ignore
   public void testServiceWithImplAndContract() {
     ServiceB b = locator.getService(ServiceB.class);
     Assert.assertNotNull(b);
@@ -100,7 +101,7 @@ public class ServiceLocatorTest {
     Assert.assertNotNull(cb);
   }
   
-  @Test
+  @Test @Ignore
   public void testMultipleServicesWithSameContract() {
     List<ContractC> allC = locator.getAllServices(ContractC.class);
     Assert.assertNotNull(allC);
@@ -125,7 +126,7 @@ public class ServiceLocatorTest {
     Assert.assertTrue(foundC2);
   }
   
-  @Test
+  @Test @Ignore
   public void testServiceWithMultipleContracts() {
     ContractD1 d1 = locator.getService(ContractD1.class);
     Assert.assertNotNull(d1);
@@ -134,7 +135,7 @@ public class ServiceLocatorTest {
     Assert.assertNotNull(d2);
   }
   
-  @Test
+  @Test @Ignore
   public void testServiceInjectedWithContractAndService() {
     ServiceE e = locator.getService(ServiceE.class);
     Assert.assertNotNull(e);

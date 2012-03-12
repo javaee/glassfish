@@ -37,46 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
-
-import org.glassfish.hk2.api.Descriptor;
+package org.glassfish.hk2.api;
 
 /**
- * This is a class representing the data found in the
- * ServiceLocator registry
+ * This class is responsible for turning Descriptors into ActiveDescriptors
+ * doing whatever classloading is necessary.  There is always a system provided
+ * loader that will use the context class loader in order to load the class
+ * and analyze it for the values in the ActiveDescriptor.  The system provider
+ * loader will always be consulted last
  * 
  * @author jwells
+ *
  */
-public class LocatorData {
-  private Descriptor descriptor;
-  private ExtendedProviderImpl<?> provider;
-
-  /**
-   * @return the provider
-   */
-  public ExtendedProviderImpl<?> getProvider() {
-    return provider;
-  }
-
-  /**
-   * @param provider the provider to set
-   */
-  public void setProvider(ExtendedProviderImpl<?> provider) {
-    this.provider = provider;
-  }
-
-  /**
-   * @return the descriptor
-   */
-  public Descriptor getDescriptor() {
-    return descriptor;
-  }
-
-  /**
-   * @param descriptor the descriptor to set
-   */
-  public void setDescriptor(Descriptor descriptor) {
-    this.descriptor = descriptor;
-  }
+public interface HK2Loader {
+    /**
+     * Creates an active descriptor from the given descriptor.  If this
+     * loader does not handle this descriptor class type, then it should
+     * return null.  If this loader does handle this descriptor class type
+     * but there is a problem loading the class then this method should throw
+     * a RuntimeException
+     * 
+     * @param descriptor The descriptor to convert into an ActiveDescriptor
+     * @return Null if this loader does not handle this descriptor implementation
+     * type, or the active descriptor (which must return the same values for its
+     * implementation as the passed in descriptor) to be used for this descriptor
+     */
+    public <T> ActiveDescriptor<T> loadDescriptor(Descriptor descriptor);
 
 }

@@ -42,8 +42,6 @@ package org.glassfish.hk2.api;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import org.glassfish.hk2.TypeLiteral;
-
 /**
  * An instance of this class is given to the {@link Module} configure
  * method and can be used to establish progromatic bindings of services
@@ -74,22 +72,22 @@ public interface Configurator {
 	public Descriptor bind(Descriptor keys, Provider<?> provider);
 	 */
   
-  /**
-   * This method will bind the particular instance to the given
-   * descriptor.  The given descriptor must either have no scope
-   * or have Singleton scope.  If it has no scope the then the
-   * Singleton scope will be automatically filled in.
-   * 
-   * @param keys The keys describing this service entry.  This
-   * descriptor must have no scope or a scope of Singleton
-   * @param instance The non-null instance that is to always
-   * be used with this key
-   * @return A descriptor with fields filled in by the system
-   * as appropriate
-   * @throws IllegalArgumentException if keys has any scope other
-   * than Singleton
-   */
-  public Descriptor bind(Descriptor keys, Object instance);
+    /**
+     * This method will bind the particular instance to the given
+     * descriptor.  The given descriptor must either have no scope
+     * or have Singleton scope.  If it has no scope the then the
+     * Singleton scope will be automatically filled in.
+     * 
+     * @param keys The keys describing this service entry.  This
+     * descriptor must have no scope or a scope of Singleton
+     * @param instance The non-null instance that is to always
+     * be used with this key
+     * @return A descriptor with fields filled in by the system
+     * as appropriate
+     * @throws IllegalArgumentException if keys has any scope other
+     * than Singleton
+     */
+    public Descriptor bind(Descriptor keys, Object instance);
 	
 	/**
 	 * This method will bind the given descriptor to this Module
@@ -122,13 +120,44 @@ public interface Configurator {
 	 * @param scope A scope instance that can be used to scope
 	 * instances returned from this {@link Module}
 	 */
-	public void bindScope(Class<? extends Annotation> scopeAnno, Scope scope);
+	public void addScope(Class<? extends Annotation> scopeAnno);
 	
 	/**
-	 * Binds a listener to be used for custom injection points
+	 * This adds a custom class loader to the system.  Custom class
+	 * loaders will be searched in a random order, so users should not
+	 * rely on the order of invocation of loaders.  The first loader to
+	 * not return null shall be the one that is used, and no further loaders
+	 * will be consulted.  There is a system loader that will be consulted
+	 * last which uses the context class loader in order to load the classes.
 	 * 
-	 * @param matcher A filter that matches types to be passed to the listener
-	 * @param listener a listener that can be used to do custom injection points
+	 * @param loader The custom loader to consult when loading classes
 	 */
-	public void bindListener(Filter<? super TypeLiteral<?>> matcher, TypeListener listener);
+	public void addLoader(HK2Loader loader);
+	
+	/**
+	 * Returns the system loader, which performs the default behavior.  Useful
+	 * if users want to wrap the system loader with their own loader
+	 */
+	public HK2Loader getSystemLoader();
+	
+	/**
+	 * This will add an injection resolver to the system. The system will
+	 * provide a default implementation that handles Inject.  However, if the
+	 * user provides a resolver for Inject then that one will be used in
+	 * preference to the default system implementation
+	 * 
+	 * @param indicator The annotation that indicates an injection point.  Must
+	 * be valid for constructors, methods and fields
+	 * @param resolver The resolver to use when finding instances
+	 */
+	public void addInjectionResolver(Class<? extends Annotation> indicator, InjectionResolver resolver);
+	
+	/**
+	 * This returns the default resolver for Inject that is used by the system.  Useful
+	 * if implementations want to wrap the system injection resolver with their own
+	 * resolver
+	 * 
+	 * @return
+	 */
+	public InjectionResolver getInjectResolver();
 }
