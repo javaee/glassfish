@@ -37,13 +37,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.jvnet.hk2.internal;
+
+import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 
 /**
- * This is one of many services that implement ContractC
- * 
  * @author jwells
+ *
  */
-public class ServiceC1 implements ContractC {
+public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
+    private ServiceLocatorImpl initialize(String name) {
+        ServiceLocatorImpl sli = new ServiceLocatorImpl(name);
+        
+        // TODO:  Here we would add the system services that need to go into every habitat
+        // 1.  The system loader
+        // 2.  The context for PerLookup
+        // 3.  The context for Singelton
+        // 4.  The ServiceLocator itself
+        // 5.  The DynamicConfigurationService
+        
+        return sli;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
+     */
+    @Override
+    public ServiceLocator create(String name, Module module) {
+        ServiceLocatorImpl retVal = initialize(name);
+        
+        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
+        
+        module.configure(dci);
+        
+        dci.commit();
+        
+        return retVal;
+    }
 
 }

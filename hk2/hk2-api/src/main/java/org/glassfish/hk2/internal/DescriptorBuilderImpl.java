@@ -68,6 +68,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	
 	public DescriptorBuilderImpl(String implementation) {
 	    this.implementation = implementation;
+	    contracts.add(implementation);
 	}
 
 	/* (non-Javadoc)

@@ -37,38 +37,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.jvnet.hk2.internal;
+
+import java.util.Comparator;
+
+import org.glassfish.hk2.api.Descriptor;
 
 /**
- * This class is responsible for turning Descriptors into ActiveDescriptors
- * doing whatever classloading is necessary.  There is always a system provided
- * loader that will use the context class loader in order to load the class
- * and analyze it for the values in the ActiveDescriptor.  The system provider
- * loader will always be consulted last
- * 
  * @author jwells
  *
  */
-public interface HK2Loader {
-    /**
-     * A unique identifier for this HK2Loader
-     * 
-     * @return The name of this loader
+public class DescriptorComparator implements Comparator<Descriptor> {
+
+    /* (non-Javadoc)
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
-    public String getLoaderName();
-    
-    /**
-     * Creates an active descriptor from the given descriptor.  If this
-     * loader does not handle this descriptor class type, then it should
-     * return null.  If this loader does handle this descriptor class type
-     * but there is a problem loading the class then this method should throw
-     * a RuntimeException
-     * 
-     * @param descriptor The descriptor to convert into an ActiveDescriptor
-     * @return Null if this loader does not handle this descriptor implementation
-     * type, or the active descriptor (which must return the same values for its
-     * implementation as the passed in descriptor) to be used for this descriptor
-     */
-    public <T> ActiveDescriptor<T> loadDescriptor(Descriptor descriptor);
+    @Override
+    public int compare(Descriptor o1, Descriptor o2) {
+        if (o1.getRanking() < o2.getRanking()) return 1;
+        if (o1.getRanking() > o2.getRanking()) return -1;
+        
+        if (o1.getServiceId().longValue() > o2.getServiceId().longValue()) return 1;
+        if (o1.getServiceId().longValue() < o2.getServiceId().longValue()) return -1;
+        
+        return 0;
+    }
 
 }

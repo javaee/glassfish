@@ -37,16 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.glassfish.hk2.api;
 
-import org.jvnet.hk2.annotations.Contract;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
- * This is one of several contracts ServiceD will implement
+ * This qualifier must be placed on implementation of Context and have
+ * as a value the scope annotation for which it is the associated
+ * Context
+ * 
  * @author jwells
  *
  */
-@Contract
-public interface ContractD1 {
+@Retention(RUNTIME)
+@Qualifier
+@Target( { TYPE })
+public @interface ForScope {
+    /**
+     * The scope annotation for which this is the context implementation
+     * @return
+     */
+    public Class<? extends Annotation> value();
 
 }

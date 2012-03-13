@@ -37,12 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.glassfish.hk2.tests.locator.initialization;
+
+import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class ServiceA {
+public class InitializationModule implements Module {
+    private final static String NOCLASS = "not.there.just.using.the.Name";
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     */
+    @Override
+    public void configure(Configuration configurator) {
+        configurator.bind(BuilderHelper.link().build());  // A weird empty one
+        
+        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());
+        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());  // Yes, putting it in twice
+        
+        configurator.bind(BuilderHelper.link(NOCLASS).named(InitializationTest.SIMPLE_NAME).build());  // Yes, putting it in twice
+        
+        configurator.addContext(new ContextImpl());
+        configurator.addContext(new ContextImpl());
+        
+        configurator.addLoader(new InitializationLoader());
+        
+        configurator.addInjectionResolver(DummyScope.class, new InitializationResolver());
+    }
 
 }

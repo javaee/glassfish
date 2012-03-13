@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests;
 
 import junit.framework.Assert;
 
-import org.glassfish.hk2.api.Configurator;
+import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -101,7 +101,7 @@ public class ServiceLocatorFactoryTest {
      * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configurator)
      */
     @Override
-    public void configure(Configurator configurator) {
+    public void configure(Configuration configurator) {
       // Do nothing, not testing the bindings or anything
       
     }

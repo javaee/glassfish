@@ -37,15 +37,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.glassfish.hk2.tests.locator.initialization;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.lang.annotation.Annotation;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
- * ServiceD will implement a few interfaces
  * @author jwells
+ *
  */
-@Contract
-public interface ContractD2 {
+public class ContextImpl implements Context {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#getScope()
+     */
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return DummyScope.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
+            ServiceHandle<?> root) {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.Descriptor)
+     */
+    @Override
+    public <T> T find(Descriptor descriptor) {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        throw new AssertionError("not called");
+    }
 
 }

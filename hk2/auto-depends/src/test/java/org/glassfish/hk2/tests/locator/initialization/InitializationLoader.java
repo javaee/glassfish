@@ -37,14 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.glassfish.hk2.tests.locator.initialization;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.HK2Loader;
 
 /**
- * This service implements a contract and should
- * be locatable via this contract
  * @author jwells
  *
  */
-public class ServiceB implements ContractB {
+public class InitializationLoader implements HK2Loader {
+    private final static String NAME = "name";
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
+     */
+    @Override
+    public String getLoaderName() {
+        return NAME;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
+     */
+    @Override
+    public <T> ActiveDescriptor<T> loadDescriptor(Descriptor descriptor) {
+        throw new AssertionError("not called");
+    }
 
 }

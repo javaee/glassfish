@@ -37,12 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.glassfish.hk2.api;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This is one of several that implement ContractC
  * @author jwells
+ *
  */
-public class ServiceC2 implements ContractC {
+@Contract
+public interface DynamicConfigurationService {
+    /**
+     * Creates a dynamic configuration that can be used to add values
+     * to the system
+     * 
+     * @return
+     */
+    public DynamicConfiguration createDynamicConfiguration();
 
 }

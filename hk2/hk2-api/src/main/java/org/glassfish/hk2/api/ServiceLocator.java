@@ -42,7 +42,7 @@ package org.glassfish.hk2.api;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.SortedSet;
 
 /**
  * ServiceLocator is the registry for HK2 services
@@ -58,7 +58,17 @@ public interface ServiceLocator {
      * @return A list of descriptors in ranked order that match the given
      * filter
      */
-    public List<Descriptor> getDescriptors(Filter<Descriptor> filter);
+    public SortedSet<Descriptor> getDescriptors(Filter<Descriptor> filter);
+    
+    /**
+     * Gets the descriptor that best matches this filter, taking ranking
+     * and service id into account
+     * 
+     * @param filter The filter to use to retrieve the set of descriptors
+     * @return The best descriptor matching the filter, or null if there
+     * is no descriptor that matches the filter
+     */
+    public Descriptor getBestDescriptor(Filter<Descriptor> filter);
     
     /**
      * Converts a descriptor to an ActiveDescriptor.  Will use the registered
@@ -66,8 +76,9 @@ public interface ServiceLocator {
      * 
      * @param descriptor The descriptor to convert, may not be null
      * @return The active descriptor as loaded with the first valid {@link HK2Loader}
+     * @throws MultiException if there were errors when loading or analyzing the class
      */
-    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor);
+    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor) throws MultiException;
     
     /**
      * This method will first find a descriptor for this injectee, and then
@@ -77,8 +88,9 @@ public interface ServiceLocator {
      * 
      * @param injectee The injectee to find the ActiveDescriptor for
      * @return The active descriptor for this injection point
+     * @throws MultiException if there were errors when loading or analyzing the class
      */
-    public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee);
+    public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee) throws MultiException;
     
     /**
      * Gets a service handle that can be used to get and destroy the returned
@@ -93,8 +105,9 @@ public interface ServiceLocator {
      * @param activeDescriptor The service handle that can be used to get and destroy
      * this service 
      * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
      */
-    public <T> ServiceHandle<T> getServiceHandle(ActiveDescriptor<T> activeDescriptor);
+    public <T> ServiceHandle<T> getServiceHandle(ActiveDescriptor<T> activeDescriptor) throws MultiException;
     
     /**
      * This method should be called by code getting injectee's on behalf of some
@@ -102,9 +115,11 @@ public interface ServiceLocator {
      * be destroyed in the proper sequence
      * 
      * @param activeDescriptor The descriptor to create
-     * @param root
+     * @param root The ultimate parent of this service creation.  May not be null.  If this
+     *   is a root creation, use getServiceHandle(ActiveDescriptor)
+     * @throws MultiException if there was an error during service creation
      */
-    public <T> T getService(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root);
+    public <T> T getService(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root) throws MultiException;
     
 	/**
 	 * Gets the best service from this locator that implements
@@ -117,8 +132,9 @@ public interface ServiceLocator {
 	 * @return An instance of the contract or impl.  May return
 	 * null if there is no provider that provides the given
 	 * implementation or contract
+	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> T getService(Type contractOrImpl);
+    public <T> T getService(Type contractOrImpl) throws MultiException;
     
     /**
 	 * Gets the all the services from this locator that implements
@@ -131,8 +147,9 @@ public interface ServiceLocator {
 	 * @return A list of services implementing this contract
 	 * or concrete implementation.  May not return null, but
 	 * may return an empty list
+	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> List<T> getAllServices(Type contractOrImpl);
+    public <T> SortedSet<T> getAllServices(Type contractOrImpl) throws MultiException;
     
     /**
 	 * Gets the best service from this locator that implements
@@ -148,8 +165,9 @@ public interface ServiceLocator {
 	 * @return An instance of the contract or impl.  May return
 	 * null if there is no provider that provides the given
 	 * implementation or contract
+	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> T getService(Type contractOrImpl, String name);
+    public <T> T getService(Type contractOrImpl, String name) throws MultiException;
     
     /**
 	 * Gets the all the services from this locator that implements
@@ -165,8 +183,9 @@ public interface ServiceLocator {
 	 * be null
 	 * @return A list of services matching this filter.  May not return null,
 	 * but may return an empty list
+	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> List<T> getAllServices(Filter<Descriptor> searchCriteria);
+    public <T> SortedSet<T> getAllServices(Filter<Descriptor> searchCriteria) throws MultiException;
   
     /**
      * Returns the name of this ServiceLocator
