@@ -37,15 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.glassfish.hk2.tests.locator.initialization;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface ContractB {
+public class InitializationResolver implements InjectionResolver {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public Object resolve(Injectee injectee) {
+        throw new AssertionError("not called");
+    }
 
 }

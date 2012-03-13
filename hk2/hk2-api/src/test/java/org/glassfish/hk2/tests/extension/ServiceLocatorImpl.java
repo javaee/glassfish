@@ -40,7 +40,7 @@
 package org.glassfish.hk2.tests.extension;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.SortedSet;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
@@ -86,7 +86,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public List<Descriptor> getDescriptors(Filter<Descriptor> filter) {
+    public SortedSet<Descriptor> getDescriptors(Filter<Descriptor> filter) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -142,7 +142,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.reflect.Type)
      */
     @Override
-    public <T> List<T> getAllServices(Type contractOrImpl) {
+    public <T> SortedSet<T> getAllServices(Type contractOrImpl) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -160,7 +160,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public <T> List<T> getAllServices(Filter<Descriptor> searchCriteria) {
+    public <T> SortedSet<T> getAllServices(Filter<Descriptor> searchCriteria) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -199,6 +199,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public void preDestroy(Object preDestroyMe) {
         // TODO Auto-generated method stub
         
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getBestDescriptor(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public Descriptor getBestDescriptor(Filter<Descriptor> filter) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     

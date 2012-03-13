@@ -40,35 +40,17 @@
 package org.glassfish.hk2.api;
 
 /**
- * This class is responsible for turning Descriptors into ActiveDescriptors
- * doing whatever classloading is necessary.  There is always a system provided
- * loader that will use the context class loader in order to load the class
- * and analyze it for the values in the ActiveDescriptor.  The system provider
- * loader will always be consulted last
- * 
  * @author jwells
  *
  */
-public interface HK2Loader {
+public interface DynamicConfiguration extends Configuration {
     /**
-     * A unique identifier for this HK2Loader
+     * This causes the configuration to get committed.  This
+     * method may only be called once
      * 
-     * @return The name of this loader
+     * @throws MultiException If errors were found in the commit process
+     * @throws IllegalStateException if this method was called more than once
      */
-    public String getLoaderName();
-    
-    /**
-     * Creates an active descriptor from the given descriptor.  If this
-     * loader does not handle this descriptor class type, then it should
-     * return null.  If this loader does handle this descriptor class type
-     * but there is a problem loading the class then this method should throw
-     * a RuntimeException
-     * 
-     * @param descriptor The descriptor to convert into an ActiveDescriptor
-     * @return Null if this loader does not handle this descriptor implementation
-     * type, or the active descriptor (which must return the same values for its
-     * implementation as the passed in descriptor) to be used for this descriptor
-     */
-    public <T> ActiveDescriptor<T> loadDescriptor(Descriptor descriptor);
+    public void commit() throws MultiException;
 
 }

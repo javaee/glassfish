@@ -63,11 +63,11 @@ import org.jvnet.hk2.annotations.Contract;
 public interface Module {
 
   /**
-   * Main configuration hook for modules. Modules should use the {@link Configurator} methods
-   * like {@link Configurator#bind(String)} or {@link Configurator#bind(Class, Class[])} to
+   * Main configuration hook for modules. Modules should use the {@link Configuration} methods
+   * like {@link Configuration#bind(String)} or {@link Configuration#bind(Class, Class[])} to
    * add services through the programmatic DSL.
    *
    * @param configurator An object used to configure this module
    */
-  public void configure(Configurator configurator);
+  public void configure(Configuration configurator);
 }

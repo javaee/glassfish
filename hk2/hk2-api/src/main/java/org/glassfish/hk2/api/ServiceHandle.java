@@ -40,15 +40,37 @@
 package org.glassfish.hk2.api;
 
 /**
+ * This service handle can be used to get a specific instance
+ * of a service, and can be used to destroy that service as well
+ * 
  * @author jwells
  *
  */
 public interface ServiceHandle<T> {
+    /**
+     * Gets the underlying service object
+     * @return May return null (if the backing ActiveDescriptor returned null)
+     */
     public T getService();
     
+    /**
+     * Returns the ActiveDescriptor associated with this service handle
+     * 
+     * @return The ActiveDescriptor associated with this handle
+     */
     public ActiveDescriptor<T> getActiveDescriptor();
     
+    /**
+     * This returns true if the underlying service has already been
+     * created
+     * 
+     * @return true if the underlying service has been created
+     */
     public boolean isActive();
     
+    /**
+     * Will destroy this object and all PerLookup instances created
+     * because of this service
+     */
     public void destroy();
 }

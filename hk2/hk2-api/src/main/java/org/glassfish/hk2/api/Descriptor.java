@@ -55,11 +55,28 @@ import java.util.Set;
  * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
 public interface Descriptor {
+    /**
+     * Returns the fully qualified class
+     * name of the implementation
+     * class.  If this is a factory descriptor
+     * then this will return the fully
+     * qualified name of the class implementing
+     * the factory interface.
+     *
+     * @return Might return null in some cases,
+     * but will usually return the fully qualified
+     * class name of the implementation class or
+     * of the factory class for this descriptor
+     */
+    public String getImplementation();
 
 	/**
 	 * Returns the base class name of the contracts that
 	 * this service describes.  If the contract is a
-	 * paramterized type this will return the raw class
+	 * paramterized type this will return the raw class.
+	 * If this service can be looked up by its implementation
+	 * class then the name of the implementation class
+	 * must also be found in this list
 	 *   
 	 * @return Will never return null, but
 	 * may return an empty set.  The returned
@@ -67,22 +84,9 @@ public interface Descriptor {
 	 * names of contracts the predicate
 	 * describes 
 	 */
-	public Set<String> getContracts();
+	public Set<String> getAdvertisedContracts();
 	
-	/**
-	 * Returns the fully qualified class
-	 * name of the implementation
-	 * class.  If this is a factory descriptor
-	 * then this will return the fully
-	 * qualified name of the class implementing
-	 * the factory interface.
-	 *
-	 * @return Might return null in some cases,
-	 * but will usually return the fully qualified
-	 * class name of the implementation class or
-	 * of the factory class for this descriptor
-	 */
-	public String getImplementation();
+	
 	
 	/**
 	 * Returns the fully qualified class name of

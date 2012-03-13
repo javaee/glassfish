@@ -83,9 +83,8 @@ public class FilterBuilderTest {
 		Assert.assertNotNull(predicate.getImplementation());
 		Assert.assertEquals(predicate.getImplementation(), FilterBuilderTest.class.getName());
 		
-		Assert.assertNotNull(predicate.getContracts());
-		Assert.assertTrue(predicate.getContracts().size() == 1);
-		Assert.assertEquals(getOneThingFromSet(predicate.getContracts()), SomeContract.class.getName());
+		Assert.assertNotNull(predicate.getAdvertisedContracts());
+		Assert.assertTrue(predicate.getAdvertisedContracts().size() == 2);
 		
 		Assert.assertNotNull(predicate.getMetadata());
 		Assert.assertTrue(predicate.getMetadata().size() == 0);
@@ -134,10 +133,11 @@ public class FilterBuilderTest {
 		HashSet<String> correctSet = new HashSet<String>();
 		correctSet.add(SomeContract.class.getName());
 		correctSet.add(AnotherContract.class.getName());
+		correctSet.add(AnotherService.class.getName());
 		
-		Assert.assertNotNull(predicate.getContracts());
-		Assert.assertTrue(predicate.getContracts().size() == 2);
-		Assert.assertTrue(correctSet.containsAll(predicate.getContracts()));
+		Assert.assertNotNull(predicate.getAdvertisedContracts());
+		Assert.assertTrue(predicate.getAdvertisedContracts().size() == 3);
+		Assert.assertTrue(correctSet.containsAll(predicate.getAdvertisedContracts()));
 		
 		correctSet.clear();
 		correctSet.add(Red.class.getName());
@@ -185,8 +185,8 @@ public class FilterBuilderTest {
 		
 		Assert.assertNull(predicate.getImplementation());
 		
-		Assert.assertNotNull(predicate.getContracts());
-		Assert.assertTrue(predicate.getContracts().size() == 0);
+		Assert.assertNotNull(predicate.getAdvertisedContracts());
+		Assert.assertTrue(predicate.getAdvertisedContracts().size() == 0);
 		
 		Assert.assertNotNull(predicate.getMetadata());
 		Assert.assertTrue(predicate.getMetadata().size() == 0);

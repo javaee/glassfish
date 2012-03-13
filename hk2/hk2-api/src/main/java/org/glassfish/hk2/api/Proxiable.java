@@ -37,11 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.glassfish.hk2.api;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
+ * Scope annotations that are also marked with this
+ * annotation are proxiable.  All objects that are
+ * produced by this scope must be able to be proxied,
+ * and will be proxied by the system
+ * 
  * @author jwells
+ *
  */
-public class ServiceD implements ContractD1, ContractD2 {
+@Retention(RUNTIME)
+@Target( { ANNOTATION_TYPE })
+public @interface Proxiable {
 
 }

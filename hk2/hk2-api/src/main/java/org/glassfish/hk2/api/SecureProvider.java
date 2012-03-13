@@ -37,19 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.basic.servicelocator;
+package org.glassfish.hk2.api;
 
-import javax.inject.Inject;
+import javax.inject.Provider;
 
 /**
- * This class has an injected contract B and an injected service D
+ * This version of Provider will surround the call to
+ * the underlying Provider with an
+ * AccessController.doPriveleged block
+ * 
  * @author jwells
+ *
  */
-public class ServiceE {
-  private @Inject ContractB b;
-  private @Inject ServiceD d;
-  
-  /* package */ ContractB getB() { return b; }
-  /* package */ ServiceD getD() { return d; }
+public interface SecureProvider<T> extends Provider<T> {
 
 }

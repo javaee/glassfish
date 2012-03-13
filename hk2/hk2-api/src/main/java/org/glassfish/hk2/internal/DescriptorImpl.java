@@ -40,6 +40,7 @@
 package org.glassfish.hk2.internal;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,7 +65,6 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	 */
 	private static final long serialVersionUID = 77937523212000548L;
 	
-	private final Set<String> contractsAndImplementations = new HashSet<String>();
 	private Set<String> contracts;
 	private String implementation;
 	private Set<String> names;
@@ -81,7 +81,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	}
 	
 	public DescriptorImpl(Descriptor copyMe) {
-		contracts = copyMe.getContracts();
+		contracts = copyMe.getAdvertisedContracts();
 		names = copyMe.getNames();
 		scope = copyMe.getScope();
 		implementation = copyMe.getImplementation();
@@ -112,10 +112,8 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 			int rank,
 			Long id) {
 		this.contracts = new HashSet<String>(contracts);
-		contractsAndImplementations.addAll(contracts);
 		
 		this.implementation = implementation;
-		contractsAndImplementations.add(implementation);
 		
 		this.names = new HashSet<String>(names);
 		this.scope = scope;
@@ -126,8 +124,8 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	}
 
 	@Override
-	public Set<String> getContracts() {
-		return new HashSet<String>(contracts);
+	public Set<String> getAdvertisedContracts() {
+		return Collections.unmodifiableSet(contracts);
 	}
 
 	@Override
@@ -167,11 +165,10 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	
 	@Override
 	public boolean matches(Descriptor d) {
-	  HashSet<String> dCandI = new HashSet<String>();
-	  dCandI.add(d.getImplementation());
-	  dCandI.addAll(d.getContracts());
+	    HashSet<String> dCandI = new HashSet<String>();
+	    dCandI.addAll(d.getAdvertisedContracts());
 	  
-	  if (!dCandI.containsAll(contractsAndImplementations)) return false;
+	    if (!dCandI.containsAll(contracts)) return false;
 		
 		if (!d.getNames().containsAll(names)) return false;
 		

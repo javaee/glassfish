@@ -37,38 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.jvnet.hk2.internal;
+
+import java.lang.annotation.Annotation;
+
+import javax.inject.Scope;
 
 /**
- * This class is responsible for turning Descriptors into ActiveDescriptors
- * doing whatever classloading is necessary.  There is always a system provided
- * loader that will use the context class loader in order to load the class
- * and analyze it for the values in the ActiveDescriptor.  The system provider
- * loader will always be consulted last
+ * This class contains a set of static utilities useful
+ * for implementing HK2
  * 
  * @author jwells
  *
  */
-public interface HK2Loader {
+public class Utilities {
     /**
-     * A unique identifier for this HK2Loader
+     * Checks to be sure a scope annotation is propertly annotated with Scope
      * 
-     * @return The name of this loader
+     * @param annotation the annotation to check
      */
-    public String getLoaderName();
-    
-    /**
-     * Creates an active descriptor from the given descriptor.  If this
-     * loader does not handle this descriptor class type, then it should
-     * return null.  If this loader does handle this descriptor class type
-     * but there is a problem loading the class then this method should throw
-     * a RuntimeException
-     * 
-     * @param descriptor The descriptor to convert into an ActiveDescriptor
-     * @return Null if this loader does not handle this descriptor implementation
-     * type, or the active descriptor (which must return the same values for its
-     * implementation as the passed in descriptor) to be used for this descriptor
-     */
-    public <T> ActiveDescriptor<T> loadDescriptor(Descriptor descriptor);
+    public static void checkScopeAnnotation(Class<? extends Annotation> annotation) {
+        if (annotation == null) throw new IllegalArgumentException();
+        
+        if (!annotation.isAnnotationPresent(Scope.class)) {
+            throw new IllegalArgumentException();
+        }
+    }
 
 }
