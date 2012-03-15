@@ -1,3 +1,3 @@
 call ant clean
 call ant -Dteststorun=monitoring
-start d:/gf/v2/appserv-tests/test_results.html
+start d:/gf/trunk/v2/appserv-tests/test_results.html

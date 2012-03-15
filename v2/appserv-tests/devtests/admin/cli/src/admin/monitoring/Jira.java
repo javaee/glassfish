@@ -46,6 +46,7 @@ import static admin.monitoring.Constants.*;
 
 /**
  * Test fixed issues from JIRA
+ *
  * @author Byron Nevins
  */
 public class Jira extends MonTest {
@@ -140,10 +141,32 @@ public class Jira extends MonTest {
     private void test14389() {
         String prepend = "14389::";
         AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
+
+        // this test started failing intermittenly in early March 2012.  I've now
+        // added some diagnostic code...
+        boolean b1 = checkForString(ar, "server.applications");
+        boolean b2 = checkForString(ar, "server.web.session");
+        boolean b3 = checkForString(ar, "server.web.request");
+        boolean b4 = checkForString(ar, "server.web.servlet");
+
+        //if( ! (b1 && b2 && b3 && b4) ) {
+        if( true  ) {
+            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+            System.out.println("Monitoring Test for 14389 FAILED!!");
+            System.out.println("Here is the output of 'asadmin list -m *':");
+            System.out.println(ar.toString());
+            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+        }
+
         report(checkForString(ar, "server.applications"), prepend + "check-listm-server-applications");
         report(checkForString(ar, "server.web.session"), prepend + "check-listm-server-web-session");
         report(checkForString(ar, "server.web.request"), prepend + "check-listm-server-web-request");
         report(checkForString(ar, "server.web.servlet"), prepend + "check-listm-server-web-servlet");
+
         AsadminReturn ar2 = asadminWithOutput("get", "-m", STAR);
         report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
         report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
@@ -165,17 +188,17 @@ public class Jira extends MonTest {
     private static final File monapp2 = new File(RESOURCES_DIR, "MonApp2.war");
 
     /**
-     * This method is here in case you are looking through these methods and comparing
-     * against a query of issue numbers.  This issue is VERY HEAVILY tested in the
-     * Enabler class.  This method does nothing.  It's here so you don't waste time
-     * investigating whether it needs tests.  It doesn't!!
+     * This method is here in case you are looking through these methods and
+     * comparing against a query of issue numbers. This issue is VERY HEAVILY
+     * tested in the Enabler class. This method does nothing. It's here so you
+     * don't waste time investigating whether it needs tests. It doesn't!!
      */
     private void test15895() {
         report(true, "Issue 15895 already tested in Enabler");
     }
 
     /*
-     * Bug:  running "get i1.*" produced different results than "get -m i1.*"
+     * Bug: running "get i1.*" produced different results than "get -m i1.*"
      * Namely an extra ".server" appeared in the latter's output
      */
     private void test14461() {
@@ -211,8 +234,8 @@ public class Jira extends MonTest {
     }
 
     /*
-     * Nothing should be logged at the INFO level when the monitoring level is changed.
-     * At the FINE level we should see it.
+     * Nothing should be logged at the INFO level when the monitoring level is
+     * changed. At the FINE level we should see it.
      */
     private void test13905() {
         LogListener listener = null;
@@ -270,11 +293,10 @@ public class Jira extends MonTest {
         }
     }
     /*
-     * Byron Nevins
-     * Big Bug in monitoring -- it could not find sub-nodes properly when they contained
-     * a literal "."
-     * Issue fixed June 25, 2011
+     * Byron Nevins Big Bug in monitoring -- it could not find sub-nodes
+     * properly when they contained a literal "." Issue fixed June 25, 2011
      */
+
     private void test15964() {
         final String prepend = "test15964::";
         deploy("server", monapp1, "zzzzz");
@@ -284,8 +306,8 @@ public class Jira extends MonTest {
         String get2 = "server.applications.xxx.yyy.server.ProbeServlet.errorcount-count";
         String get3 = "server.applications.zzzzz.server.ProbeServlet.errorcount-count";
 
-		// YES! This should work too!!
-        String get4 = "server.applications.xxx___MONDOT___yyy.server.ProbeServlet.errorcount-count";  
+        // YES! This should work too!!
+        String get4 = "server.applications.xxx___MONDOT___yyy.server.ProbeServlet.errorcount-count";
 
         AsadminReturn ar1 = asadminWithOutput("get", "-m", get1);
         AsadminReturn ar2 = asadminWithOutput("get", "-m", get2);
@@ -300,9 +322,9 @@ public class Jira extends MonTest {
     }
 
     /*
-     * this test is in Setup.java
-     * This fake version is here just so you will find it when cross-checking
-     * against issues so you know that there *is* a regression test somewhere...
+     * this test is in Setup.java This fake version is here just so you will
+     * find it when cross-checking against issues so you know that there *is* a
+     * regression test somewhere...
      */
     private void test13723() {
         report(true, "this test had to run earlier");
