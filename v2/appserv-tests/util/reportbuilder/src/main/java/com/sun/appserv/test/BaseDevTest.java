@@ -63,7 +63,6 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public abstract class BaseDevTest {
-
     public final SimpleReporterAdapter stat;
 
     @SuppressWarnings({"IOResourceOpenedButNotSafelyClosed"})
@@ -101,8 +100,8 @@ public abstract class BaseDevTest {
     }
 
     /**
-     * Runs the command with the args given
-     * Returns the precious output strings for further processing.
+     * Runs the command with the args given Returns the precious output strings
+     * for further processing.
      *
      * @param args
      *
@@ -111,6 +110,7 @@ public abstract class BaseDevTest {
     public AsadminReturn asadminWithOutput(final String... args) {
         return asadminWithOutput(DEFAULT_TIMEOUT_MSEC, args);
     }
+
     public AsadminReturn asadminWithOutput(final int timeout, final String... args) {
         AsadminReturn ret = new AsadminReturn();
         String cmd = isWindows() ? "/bin/asadmin.bat" : "/bin/asadmin";
@@ -225,12 +225,14 @@ public abstract class BaseDevTest {
      *
      * @param expr The expression to evaluate
      * @param f The file to parse
-     * @param ret The return type of the expression  can be
+     * @param ret The return type of the expression can be
      *
-     * XPathConstants.NODESET XPathConstants.BOOLEAN XPathConstants.NUMBER XPathConstants.STRING XPathConstants.NODE
+     * XPathConstants.NODESET XPathConstants.BOOLEAN XPathConstants.NUMBER
+     * XPathConstants.STRING XPathConstants.NODE
      *
-     * @return the object after evaluation can be of type number maps to a java.lang.Double string maps to a
-     *         java.lang.String boolean maps to a java.lang.Boolean node-set maps to an org.w3c.dom.NodeList
+     * @return the object after evaluation can be of type number maps to a
+     * java.lang.Double string maps to a java.lang.String boolean maps to a
+     * java.lang.Boolean node-set maps to an org.w3c.dom.NodeList
      *
      * @throws XPathExpressionException
      * @throws IOException
@@ -264,8 +266,9 @@ public abstract class BaseDevTest {
      *
      * @param expr The Xpath expression to evaluate
      *
-     * @return the object after evaluation can be of type number maps to a java.lang.Double string maps to a
-     *         java.lang.String boolean maps to a java.lang.Boolean node-set maps to an org.w3c.dom.NodeList
+     * @return the object after evaluation can be of type number maps to a
+     * java.lang.Double string maps to a java.lang.String boolean maps to a
+     * java.lang.Boolean node-set maps to an org.w3c.dom.NodeList
      *
      * @throws XPathExpressionException
      * @throws IOException
@@ -320,7 +323,8 @@ public abstract class BaseDevTest {
     }
 
     /**
-     * Implementations can override this method to do the cleanup for eg deleting instances, deleting clusters etc
+     * Implementations can override this method to do the cleanup for eg
+     * deleting instances, deleting clusters etc
      */
     public void cleanup() {
     }
@@ -339,11 +343,21 @@ public abstract class BaseDevTest {
 
     // simple C-struct -- DIY
     public static class AsadminReturn {
-
         public boolean returnValue;
         public String out;
         public String err;
         public String outAndErr;
+
+        @Override
+        public final String toString() {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("AsadminReturn Object contains:").append('\n');
+            sb.append("returnValue = ").append(returnValue).append('\n');
+            sb.append("output stream = ").append(out).append('\n');
+            sb.append("error stream = ").append(err).append('\n');
+            return sb.toString();
+        }
     }
     private static final int DEFAULT_TIMEOUT_MSEC = 480000; // 8 minutes
     private boolean verbose = true;
