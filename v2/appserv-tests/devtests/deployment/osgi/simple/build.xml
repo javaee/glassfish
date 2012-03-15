@@ -115,9 +115,10 @@
         
         <antcall target="deploy.osgi.asadmin"/>
 
-        <!-- put in a 5s sleep time to see if this will help solve the intermittent issue with the first deploy test that we are seeing -->
+        <!-- put in a 15s sleep time to make sure the asynchronous osgi 
+             deployment finishes before accessing the application -->
 
-        <sleep seconds="5"/>
+        <sleep seconds="15"/>
 
         <antcall target="run.positive">
             <param name="log.id" value="1"/>
