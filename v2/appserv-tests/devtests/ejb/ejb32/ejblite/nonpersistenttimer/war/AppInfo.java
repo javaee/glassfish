@@ -1,4 +1,4 @@
-package com.sun.s1asdev.ejb31.ejblite.timer;
+package com.sun.s1asdev.ejb32.ejblite.timer;
 
 import java.io.Serializable;
 

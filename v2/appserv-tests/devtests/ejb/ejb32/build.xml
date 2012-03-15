@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
+
+<project name="ejb32" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="ejblite"/>
+    </target>
+
+    <target name="ejblite">
+        <record name="ejblite.output" action="start" />
+            <ant dir="ejblite" target="all"/>
+        <record name="ejblite.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb32 tests)
+	</echo>
+    </target>
+</project>

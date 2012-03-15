@@ -6,7 +6,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="ejb-ejb31-ejblite-timer-App" default="usage" basedir=".">
+<project name="ejb-ejb32-ejblite-timer-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;

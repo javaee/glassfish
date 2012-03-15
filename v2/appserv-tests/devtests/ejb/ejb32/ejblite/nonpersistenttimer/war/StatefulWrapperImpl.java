@@ -1,4 +1,4 @@
-package com.sun.s1asdev.ejb31.ejblite.timer;
+package com.sun.s1asdev.ejb32.ejblite.timer;
 
 import java.io.Serializable;
 import java.rmi.NoSuchObjectException;
@@ -20,9 +20,9 @@ public class StatefulWrapperImpl implements StatefulWrapper {
         boolean result = false;
         try {
             if (bmt) {
-                foo = (Foo) context.lookup("java:global/ejb-ejb31-ejblite-timer-web/FooBMT");
+                foo = (Foo) context.lookup("java:global/ejb-ejb32-ejblite-timer-web/FooBMT");
             } else {
-                foo = (Foo) context.lookup("java:global/ejb-ejb31-ejblite-timer-web/FooCMT");
+                foo = (Foo) context.lookup("java:global/ejb-ejb32-ejblite-timer-web/FooCMT");
             }
             doTest(foo);
             result = true;
