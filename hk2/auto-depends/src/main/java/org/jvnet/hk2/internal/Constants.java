@@ -37,33 +37,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+package org.jvnet.hk2.internal;
 
 /**
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
-     */
-    @Override
-    public String getLoaderName() {
-        return NAME;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
-     */
-    @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
-    }
+public class Constants {
+    /** The name of the system class loader */
+    public final static String SYSTEM_LOADER_NAME = "SystemLoader";
 
 }

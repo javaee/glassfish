@@ -58,17 +58,13 @@ public interface HK2Loader {
     public String getLoaderName();
     
     /**
-     * Creates an active descriptor from the given descriptor.  If this
-     * loader does not handle this descriptor class type, then it should
-     * return null.  If this loader does handle this descriptor class type
-     * but there is a problem loading the class then this method should throw
-     * a RuntimeException
+     * Creates a class given the class name to instantiate
      * 
-     * @param descriptor The descriptor to convert into an ActiveDescriptor
-     * @return Null if this loader does not handle this descriptor implementation
-     * type, or the active descriptor (which must return the same values for its
-     * implementation as the passed in descriptor) to be used for this descriptor
+     * @param className The descriptor to convert into an ActiveDescriptor
+     * @return Null if this loader does not handle this class, or the active descriptor (which
+     * must return the same values for its implementation as the passed in descriptor) to be used for
+     * this descriptor
      */
-    public <T> ActiveDescriptor<T> loadDescriptor(Descriptor descriptor);
+    public Class<?> loadClass(String className) throws MultiException;
 
 }

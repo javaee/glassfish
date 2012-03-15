@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -57,7 +58,7 @@ import org.glassfish.hk2.api.MultiException;
  */
 public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final ServiceLocatorImpl locator;
-    private final LinkedList<SystemDescriptor> allDescriptors = new LinkedList<SystemDescriptor>();
+    private final LinkedList<SystemDescriptor<?>> allDescriptors = new LinkedList<SystemDescriptor<?>>();
     private final HashMap<String, HK2Loader> allLoaders = new HashMap<String, HK2Loader>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver>();
@@ -73,11 +74,11 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
      * @see org.glassfish.hk2.api.Configuration#bind(org.glassfish.hk2.api.Descriptor)
      */
     @Override
-    public Descriptor bind(Descriptor key) {
+    public ActiveDescriptor<?> bind(Descriptor key) {
         checkState();
-        if (key == null) throw new IllegalArgumentException();
+        if ((key == null) || (key.getImplementation() == null)) throw new IllegalArgumentException();
         
-        SystemDescriptor sd = new SystemDescriptor(key);
+        SystemDescriptor<?> sd = new SystemDescriptor<Object>(key);
         
         allDescriptors.add(sd);
         
@@ -148,7 +149,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     /**
      * @return the allDescriptors
      */
-    LinkedList<SystemDescriptor> getAllDescriptors() {
+    LinkedList<SystemDescriptor<?>> getAllDescriptors() {
         return allDescriptors;
     }
 

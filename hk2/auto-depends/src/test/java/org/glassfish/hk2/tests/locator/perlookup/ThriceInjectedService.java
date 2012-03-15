@@ -37,33 +37,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.glassfish.hk2.tests.locator.perlookup;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
-     */
-    @Override
-    public String getLoaderName() {
-        return NAME;
+@PerLookup
+public class ThriceInjectedService {
+    @Inject
+    private SimpleService byField;
+    
+    private final SimpleService byConstructor;
+    
+    private SimpleService byMethod;
+    
+    @Inject
+    public ThriceInjectedService(SimpleService byConstructor) {
+        this.byConstructor = byConstructor;
+    }
+    
+    @Inject
+    public void injectMe(SimpleService injectMe) {
+        byMethod = injectMe;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
+    /**
+     * @return the byField
      */
-    @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
+    SimpleService getByField() {
+        return byField;
     }
 
+    /**
+     * @return the byConstructor
+     */
+    SimpleService getByConstructor() {
+        return byConstructor;
+    }
+
+    /**
+     * @return the byMethod
+     */
+    SimpleService getByMethod() {
+        return byMethod;
+    }
+
+    
 }

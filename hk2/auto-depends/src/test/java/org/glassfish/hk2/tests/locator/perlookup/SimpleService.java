@@ -37,33 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.glassfish.hk2.tests.locator.perlookup;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
-     */
-    @Override
-    public String getLoaderName() {
-        return NAME;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
-     */
-    @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
-    }
+@PerLookup
+public class SimpleService {
 
 }

@@ -47,9 +47,20 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface Factory<T> {
-    
+    /**
+     * This method will create instances of the type of this factory.  The provide
+     * method must be annotated with the desired scope and qualifiers.
+     * 
+     * @return The produces object
+     */
     public T provide();
     
+    /**
+     * This method will dispose of objects created with this scope.  This method should
+     * not be annotated, as it is naturally paired with the provide method
+     * 
+     * @param instance The instance to dispose of
+     */
     public void dispose(T instance);
 
 }

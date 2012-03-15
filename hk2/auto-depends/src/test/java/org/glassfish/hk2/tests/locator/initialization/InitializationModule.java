@@ -55,8 +55,6 @@ public class InitializationModule implements Module {
      */
     @Override
     public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link().build());  // A weird empty one
-        
         configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());
         configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());  // Yes, putting it in twice
         

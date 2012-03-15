@@ -37,33 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.jvnet.hk2.internal;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import java.util.Comparator;
+
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
+public class ServiceHandleComparator implements Comparator<ServiceHandle<?>> {
+    private final DescriptorComparator baseComparator = new DescriptorComparator();
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
+     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
      */
     @Override
-    public String getLoaderName() {
-        return NAME;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
-     */
-    @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
+    public int compare(ServiceHandle<?> o1, ServiceHandle<?> o2) {
+        return baseComparator.compare(o1.getActiveDescriptor(), o2.getActiveDescriptor());
     }
 
 }

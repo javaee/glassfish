@@ -37,33 +37,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.jvnet.hk2.internal;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Set;
+
+import org.glassfish.hk2.api.Injectee;
 
 /**
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
-     */
-    @Override
-    public String getLoaderName() {
-        return NAME;
+public class InjecteeImpl implements Injectee {
+    private final Type requiredType;
+    private final Set<Annotation> qualifiers;
+    private final int position;
+    private final AnnotatedElement parent;
+    
+    /* package */ InjecteeImpl(
+            Type requiredType,
+            Set<Annotation> qualifiers,
+            int position,
+            AnnotatedElement parent) {
+        this.requiredType = requiredType;
+        this.position = position;
+        this.parent = parent;
+        this.qualifiers = Collections.unmodifiableSet(qualifiers);
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
+     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
      */
     @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
+    public Type getRequiredType() {
+        return requiredType;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
+     */
+    @Override
+    public Set<Annotation> getRequiredQualifiers() {
+        return qualifiers;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Injectee#getPosition()
+     */
+    @Override
+    public int getPosition() {
+        return position;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Injectee#getParent()
+     */
+    @Override
+    public AnnotatedElement getParent() {
+        return parent;
+    }
 }

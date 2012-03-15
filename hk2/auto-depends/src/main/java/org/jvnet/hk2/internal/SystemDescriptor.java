@@ -39,27 +39,67 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  */
-public class SystemDescriptor implements Descriptor {
+public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final static Object sLock = new Object();
     private static long currentId = 1L;
     
     private final Descriptor baseDescriptor;
     private final Long id;
+    private final ActiveDescriptor<T> activeDescriptor;
+    private boolean reified;
     
-    /* package */ SystemDescriptor(Descriptor baseDescriptor) {
+    private final Object cacheLock = new Object();
+    private boolean cacheSet = false;
+    private T cachedValue;
+    
+    // These are used when we are doing the reifying ourselves
+    private Class<?> implClass;
+    private Class<? extends Annotation> scope;
+    private Set<Type> contracts;
+    private Set<Annotation> qualifiers;
+    private Creator<T> creator;
+    
+    /* package */ @SuppressWarnings("unchecked")
+    SystemDescriptor(Descriptor baseDescriptor) {
         this.baseDescriptor = baseDescriptor;
         
         synchronized (sLock) {
             id = new Long(currentId++);
+        }
+        
+        if (baseDescriptor instanceof ActiveDescriptor) {
+            ActiveDescriptor<T> active = (ActiveDescriptor<T>) baseDescriptor;
+            if (active.isReified()) {
+                activeDescriptor = active;
+                reified = true;
+            }
+            else {
+                activeDescriptor = null;
+                reified = false;
+            }
+        }
+        else {
+            activeDescriptor = null;
+            reified = false;
         }
     }
 
@@ -126,7 +166,190 @@ public class SystemDescriptor implements Descriptor {
     public Long getServiceId() {
         return id;
     }
+    
+    
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#getCache()
+     */
+    @Override
+    public T getCache() {
+        return cachedValue;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#isCacheSet()
+     */
+    @Override
+    public boolean isCacheSet() {
+        return cacheSet;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#setCache(java.lang.Object)
+     */
+    @Override
+    public void setCache(T cacheMe) {
+        synchronized (cacheLock) {
+            cachedValue = cacheMe;
+            cacheSet = true;
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#releaseCache()
+     */
+    @Override
+    public void releaseCache() {
+        synchronized (cacheLock) {
+            cacheSet = false;
+            cachedValue = null;
+        }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
+     */
+    @Override
+    public boolean isReified() {
+        return reified;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     */
+    @Override
+    public Class<?> getImplementationClass() {
+        checkState();
+        
+        if (activeDescriptor != null) {
+            return activeDescriptor.getImplementationClass();
+        }
+        
+        return implClass;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getContractTypes()
+     */
+    @Override
+    public Set<Type> getContractTypes() {
+        checkState();
+        
+        if (activeDescriptor != null) {
+            return activeDescriptor.getContractTypes();
+        }
+        
+        return contracts;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getScopeAnnotation()
+     */
+    @Override
+    public Class<? extends Annotation> getScopeAnnotation() {
+        checkState();
+        
+        if (activeDescriptor != null) {
+            return activeDescriptor.getScopeAnnotation();
+        }
+        
+        return scope;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getQualifierAnnotations()
+     */
+    @Override
+    public Set<Annotation> getQualifierAnnotations() {
+        checkState();
+        
+        if (activeDescriptor != null) {
+            return activeDescriptor.getQualifierAnnotations();
+        }
+        
+        return qualifiers;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getInjectees()
+     */
+    @Override
+    public List<Injectee> getInjectees() {
+        checkState();
+        
+        if (activeDescriptor != null) {
+            return activeDescriptor.getInjectees();
+        }
+        
+        return creator.getInjectees();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public T create(ServiceHandle<?> root) {
+        checkState();
+        
+        if (activeDescriptor != null) {
+            return activeDescriptor.create(root);
+        }
+        
+        return creator.create(root);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public void dispose(T instance, ServiceHandle<?> root) {
+        checkState();
+        
+        if (activeDescriptor != null) {
+            activeDescriptor.dispose(instance, root);
+            return;
+        }
+        
+        creator.dispose(instance, root);
+    }
+    
+    private void checkState() {
+        if (!reified) throw new IllegalStateException();
+    }
+    
+    /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, MultiException collector) {
+        this.implClass = implClass;
+        
+        if (!Factory.class.isAssignableFrom(implClass)) {
+            creator = new ClazzCreator<T>(locator, implClass, collector);
+            
+            scope = Utilities.getScopeAnnotationType(implClass, collector);
+            contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(implClass, baseDescriptor.getAdvertisedContracts()));
+            qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(implClass, baseDescriptor.getQualifiers()));
+        }
+        else {
+            Method provideMethod = Utilities.getFactoryProvideMethod(implClass);
+            
+            scope = Utilities.getScopeAnnotationType(provideMethod, collector);
+            
+            Type factoryProvidedType = provideMethod.getGenericReturnType();
+            contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(factoryProvidedType, baseDescriptor.getAdvertisedContracts()));
+            qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(provideMethod, baseDescriptor.getQualifiers()));
+        }
+        
+        // Check the scope
+        String baseDescriptorScope = (baseDescriptor.getScope() == null) ? PerLookup.class.getName() : baseDescriptor.getScope() ;
+        if (!baseDescriptorScope.equals(scope.getName())) {
+            collector.addThrowable(new IllegalArgumentException("The scope name given in the descriptor (" +
+               baseDescriptorScope + ") did not match the scope annotation on the class (" + scope.getName() + ")"));
+        }
+        
+        reified = true;
+    }
+    
     @Override
     public int hashCode() {
         int low32 = id.intValue();
@@ -135,6 +358,8 @@ public class SystemDescriptor implements Descriptor {
         return baseDescriptor.hashCode() ^ low32 ^ high32;
     }
     
+    @SuppressWarnings({ "rawtypes" })
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof SystemDescriptor)) return false;

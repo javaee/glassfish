@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -60,19 +61,24 @@ import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
 public class ServiceLocatorImpl implements ServiceLocator {
+    private final static HK2Loader SYSTEM_LOADER = new SystemLoader();
+    private final static DescriptorComparator COMPARATOR = new DescriptorComparator();
+    private final static ServiceHandleComparator HANDLE_COMPARATOR = new ServiceHandleComparator();
+    
     private final Object lock = new Object();
     private final String name;
-    private final DescriptorComparator comparator = new DescriptorComparator();
     
-    private final LinkedList<Descriptor> allDescriptors = new LinkedList<Descriptor>();
-    private final HashMap<String, LinkedList<Descriptor>> descriptorsByImplementation =
-            new HashMap<String, LinkedList<Descriptor>>();
+    
+    private final LinkedList<ActiveDescriptor<?>> allDescriptors = new LinkedList<ActiveDescriptor<?>>();
+    private final HashMap<String, LinkedList<ActiveDescriptor<?>>> descriptorsByAdvertisedContract =
+            new HashMap<String, LinkedList<ActiveDescriptor<?>>>();
     private final HashMap<String, HK2Loader> allLoaders = new HashMap<String, HK2Loader>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver>();
@@ -87,17 +93,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public SortedSet<Descriptor> getDescriptors(Filter<Descriptor> filter) {
+    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter<Descriptor> filter) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
-            List<Descriptor> sortMeOut;
+            List<ActiveDescriptor<?>> sortMeOut;
             if (filter instanceof DescriptorFilter) {
                 DescriptorFilter df = (DescriptorFilter) filter;
                 
                 String implementationName = df.getImplementation();
                 if (implementationName != null) {
-                    sortMeOut = descriptorsByImplementation.get(implementationName);
+                    sortMeOut = descriptorsByAdvertisedContract.get(implementationName);
                     if (sortMeOut == null) {
                         sortMeOut = Collections.emptyList();
                     }
@@ -110,9 +116,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 sortMeOut = allDescriptors;
             }
             
-            TreeSet<Descriptor> sorter = new TreeSet<Descriptor>(comparator);
+            TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(COMPARATOR);
             
-            for (Descriptor candidate : sortMeOut) {
+            for (ActiveDescriptor<?> candidate : sortMeOut) {
                 if (filter.matches(candidate)) {
                     sorter.add(candidate);
                 }
@@ -122,16 +128,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
-    public Descriptor getBestDescriptor(Filter<Descriptor> filter) {
+    public ActiveDescriptor<?> getBestDescriptor(Filter<Descriptor> filter) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
-        SortedSet<Descriptor> sorted = getDescriptors(filter);
+        SortedSet<ActiveDescriptor<?>> sorted = getDescriptors(filter);
         
-        for (Descriptor returnMe : sorted) {
-            return returnMe;
-        }
-        
-        return null;
+        return Utilities.getFirstThingInSet(sorted);
     }
 
     /* (non-Javadoc)
@@ -140,8 +142,37 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor)
             throws MultiException {
-        // TODO Auto-generated method stub
-        return null;
+        Class<?> implClass = loadClass(descriptor.getImplementation());
+        
+        if (!(descriptor instanceof ActiveDescriptor)) {
+            SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor);
+            
+            MultiException collector = new MultiException();
+            sd.reify(implClass, this, collector);
+            
+            if (collector.hasErrors()) throw collector;
+            
+            return sd;
+        }
+        
+        // Descriptor is an active descriptor
+        ActiveDescriptor<?> active = (ActiveDescriptor<?>) descriptor;
+        if (active.isReified()) return active;
+        
+        SystemDescriptor<?> sd;
+        if (active instanceof SystemDescriptor) {
+            sd = (SystemDescriptor<?>) active;
+        }
+        else {
+            sd = new SystemDescriptor<Object>(descriptor);
+        }
+        
+        MultiException collector = new MultiException();
+        sd.reify(implClass, this, collector);
+        
+        if (collector.hasErrors()) throw collector;
+        
+        return sd;
     }
 
     /* (non-Javadoc)
@@ -150,8 +181,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee)
             throws MultiException {
-        // TODO Auto-generated method stub
-        return null;
+        Type requiredType = injectee.getRequiredType();
+        Set<Annotation> qualifiersAsSet = injectee.getRequiredQualifiers();
+        
+        Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
+        
+        ServiceHandle<?> handle = getServiceHandle(requiredType, qualifiers);
+        if (handle == null) return null;
+        
+        return handle.getActiveDescriptor();
     }
 
     /* (non-Javadoc)
@@ -160,8 +198,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor) throws MultiException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new AssertionError("not implemented yet");
     }
 
     /* (non-Javadoc)
@@ -170,37 +207,43 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> T getService(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) throws MultiException {
-        // TODO Auto-generated method stub
-        return null;
+        Context context = resolveContext(activeDescriptor.getScopeAnnotation());
+        if (context == null) return null;
+        
+        T service = context.findOrCreate(activeDescriptor, root);
+        
+        // TODO:  This is where we would proxy
+        
+        return service;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type)
      */
     @Override
-    public <T> T getService(Type contractOrImpl) throws MultiException {
-        // TODO Auto-generated method stub
-        return null;
+    public <T> T getService(Type contractOrImpl, Annotation... qualifiers) throws MultiException {
+        ServiceHandle<T> serviceHandle = getServiceHandle(contractOrImpl, qualifiers);
+        if (serviceHandle == null) return null;
+        
+        return serviceHandle.getService();
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.reflect.Type)
      */
     @Override
-    public <T> SortedSet<T> getAllServices(Type contractOrImpl)
+    public <T> SortedSet<T> getAllServices(Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new AssertionError("not implemented yet");
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String)
      */
     @Override
-    public <T> T getService(Type contractOrImpl, String name)
+    public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers)
             throws MultiException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new AssertionError("not implemented yet");
     }
 
     /* (non-Javadoc)
@@ -209,8 +252,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> SortedSet<T> getAllServices(Filter<Descriptor> searchCriteria)
             throws MultiException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new AssertionError("not implemented yet");
     }
 
     /* (non-Javadoc)
@@ -226,7 +268,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void shutdown() {
-        // TODO Auto-generated method stub
+        throw new AssertionError("not implemented yet");
 
     }
 
@@ -235,8 +277,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public Object create(Class<?> createMe) {
-        // TODO Auto-generated method stub
-        return null;
+        throw new AssertionError("not implemented yet");
     }
 
     /* (non-Javadoc)
@@ -244,7 +285,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void inject(Object injectMe) {
-        // TODO Auto-generated method stub
+        throw new AssertionError("not implemented yet");
 
     }
 
@@ -253,7 +294,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void postConstruct(Object postConstructMe) {
-        // TODO Auto-generated method stub
+        throw new AssertionError("not implemented yet");
 
     }
 
@@ -262,24 +303,94 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void preDestroy(Object preDestroyMe) {
-        // TODO Auto-generated method stub
+        throw new AssertionError("not implemented yet");
 
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
+        if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
+        
+        DescriptorFilter filter = BuilderHelper.link(rawClass).build();
+        SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
+        candidates = narrow(candidates, contractOrImpl, false, qualifiers);
+        
+        ActiveDescriptor<?> topDog = Utilities.getFirstThingInSet(candidates);
+        if (topDog == null) return null;
+        
+        return new ServiceHandleImpl<T>(this, (ActiveDescriptor<T>) topDog);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public SortedSet<ServiceHandle<?>> getAllServiceHandles(
+            Type contractOrImpl, Annotation... qualifiers)
+            throws MultiException {
+        Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
+        if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
+        
+        DescriptorFilter filter = BuilderHelper.link(rawClass).build();
+        SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
+        candidates = narrow(candidates, contractOrImpl, false, qualifiers);
+        
+        SortedSet<ServiceHandle<?>> retVal = new TreeSet<ServiceHandle<?>>(HANDLE_COMPARATOR);
+        for (ActiveDescriptor<?> candidate : candidates) {
+            retVal.add(new ServiceHandleImpl(this, candidate));
+        }
+        
+        return retVal;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Filter<Descriptor> filter)
+            throws MultiException {
+        throw new AssertionError("not implemented");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.String, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
+            String name, Annotation... qualifiers) throws MultiException {
+        throw new AssertionError("not implemented yet");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public <T> SortedSet<ServiceHandle<T>> getAllServiceHandles(
+            Filter<Descriptor> searchCriteria) throws MultiException {
+        throw new AssertionError("not implemented yet");
+    }
+    
     private void addConfigurationInternal(DynamicConfigurationImpl dci) {
-        for (SystemDescriptor sd : dci.getAllDescriptors()) {
+        for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
             allDescriptors.add(sd);
             
-            String implementationName = sd.getImplementation();
-            if (implementationName != null) {
-                LinkedList<Descriptor> byImpl = descriptorsByImplementation.get(implementationName);
+            for (String advertisedContract : sd.getAdvertisedContracts()) {
+                LinkedList<ActiveDescriptor<?>> byImpl = descriptorsByAdvertisedContract.get(advertisedContract);
                 if (byImpl == null) {
-                    byImpl = new LinkedList<Descriptor>();
-                    descriptorsByImplementation.put(implementationName, byImpl);
+                    byImpl = new LinkedList<ActiveDescriptor<?>>();
+                    descriptorsByAdvertisedContract.put(advertisedContract, byImpl);
                 }
                 
                 byImpl.add(sd);
-            } 
+                
+            }
         }
         
         for (Map.Entry<String, HK2Loader> entry : dci.getAllLoaders().entrySet()) {
@@ -311,6 +422,97 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         
+    }
+    
+    /* package */ boolean isInjectAnnotation(Annotation annotation) {
+        synchronized (lock) {
+            return allResolvers.containsKey(annotation.annotationType());
+        }
+    }
+    
+    /* package */ InjectionResolver getInjectionResolver(Class<? extends Annotation> annoType) {
+        synchronized (lock) {
+            return allResolvers.get(annoType);
+        }
+    }
+    
+    /* package */ Context resolveContext(Class<? extends Annotation> scope) throws IllegalStateException {
+        synchronized (lock) {
+            LinkedList<Context> matches = allContexts.get(scope);
+            
+            Context retVal = null;
+            for (Context match : matches) {
+                if (match.isActive()) {
+                    if (retVal != null) {
+                        throw new IllegalStateException("There are multiple active contexts for scope " +
+                           Pretty.clazz(scope));
+                    }
+                    
+                    retVal = match;
+                }
+            }
+            
+            if (retVal == null) {
+                throw new IllegalStateException("There is no active context for scope " +
+                        Pretty.clazz(scope));
+            }
+            
+            return retVal;
+        }
+    }
+    
+    private Class<?> loadClass(String className) {
+        for (HK2Loader loader : allLoaders.values()) {
+            Class<?> found = loader.loadClass(className);
+            if (found != null) return found;
+        }
+        
+        return SYSTEM_LOADER.loadClass(className);
+    }
+
+    private SortedSet<ActiveDescriptor<?>> narrow(SortedSet<ActiveDescriptor<?>> candidates,
+            Type requiredType, boolean getAll, Annotation... qualifiers) {
+        SortedSet<ActiveDescriptor<?>> retVal = new TreeSet<ActiveDescriptor<?>>(COMPARATOR);
+        
+        for (ActiveDescriptor<?> candidate : candidates) {
+            // We will not reify them all, we will only reify until we match
+            if (!candidate.isReified()) {
+                candidate = reifyDescriptor(candidate);
+            }
+            
+            // Now match it
+            boolean safe = false;
+            for (Type candidateType : candidate.getContractTypes()) {
+                if (TypeChecker.isTypeSafe(requiredType, candidateType)) {
+                    safe = true;
+                    break;
+                }
+            }
+            
+            if (!safe) {
+                // Sorry, not type safe
+                continue;
+            }
+            
+            // Now match the qualifiers
+            Set<Annotation> candidateAnnotations = candidate.getQualifierAnnotations();
+            Set<Annotation> requiredAnnotations = Utilities.getQualifiers(qualifiers);
+            
+            if (!candidateAnnotations.containsAll(requiredAnnotations)) {
+                // The qualifiers do not match
+                continue;
+            }
+            
+            // If we are here, then this one matches
+            retVal.add(candidate);
+            
+            if (!getAll) {
+                // We found one, we don't want to reify any more than we have to
+                break;
+            }
+        }
+        
+        return retVal;
     }
 
 }

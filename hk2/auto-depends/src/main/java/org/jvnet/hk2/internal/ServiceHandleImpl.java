@@ -37,33 +37,79 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.jvnet.hk2.internal;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
+ * This handle does the underlying work of getting the service.  Only
+ * at the time that the getService call is made is the service gotten
+ * from the context.  Once a service has been gotten, it is not looked
+ * up again.
+ * 
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
-     */
-    @Override
-    public String getLoaderName() {
-        return NAME;
+public class ServiceHandleImpl<T> implements ServiceHandle<T> {
+    private final ActiveDescriptor<T> root;
+    private final ServiceLocatorImpl locator;
+    private boolean serviceSet = false;
+    private T service;
+    
+    /* package */ ServiceHandleImpl(ServiceLocatorImpl locator, ActiveDescriptor<T> root) {
+        this.root = root;
+        this.locator = locator;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
+     * @see org.glassfish.hk2.api.ServiceHandle#getService()
      */
     @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
+    public T getService() {
+        if (serviceSet) return service;
+        
+        Context context = locator.resolveContext(root.getScopeAnnotation());
+        service = context.findOrCreate(root, this);
+        
+        // TODO:  If this scope were proxiable, this is where we would create the proxy
+        serviceSet = true;
+        
+        return service;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceHandle#getActiveDescriptor()
+     */
+    @Override
+    public ActiveDescriptor<T> getActiveDescriptor() {
+        return root;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceHandle#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        if (serviceSet) return true;
+        
+        try {
+            Context context = locator.resolveContext(root.getScopeAnnotation());
+            return (context.find(root) != null);
+        }
+        catch (IllegalStateException ise) {
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceHandle#destroy()
+     */
+    @Override
+    public void destroy() {
+        // TODO: Work on the destruction path
+        
     }
 
 }

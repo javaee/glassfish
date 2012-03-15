@@ -86,8 +86,6 @@ public interface Descriptor {
 	 */
 	public Set<String> getAdvertisedContracts();
 	
-	
-	
 	/**
 	 * Returns the fully qualified class name of
 	 * the scope annotation that should be
