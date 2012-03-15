@@ -37,26 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.locator;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
- * The custom resolver for this injection point
- * will surround the get call with
- * AccessController.doPriveledged
- * 
  * @author jwells
  *
  */
-@Retention(RUNTIME)
-@Target( { METHOD, FIELD, CONSTRUCTOR })
-public @interface SecureInject {
+@Singleton @Named
+public class BootCommand implements AdminCommand {
 
 }

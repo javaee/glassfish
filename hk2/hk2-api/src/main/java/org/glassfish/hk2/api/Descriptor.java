@@ -98,21 +98,16 @@ public interface Descriptor {
 	public String getScope();
 	
 	/**
-	 * Returns the fully qualified class name of
-	 * the scope annotation that is associated
-	 * with 
+	 * The name of this descriptor.  Note that
+	 * if this returns not null then there must
+	 * also be the Named qualifier in the set of
+	 * qualifiers with the same value
 	 * <p>
-	 * Note that at the current time an object
-	 * in the registry may only have one name,
-	 * so the returned set must only have size
-	 * zero or one
 	 * 
-	 * @return Never returns null but may return
-	 * an empty set.  The set of names that this
-	 * object should be registered with or looked
-	 * up by
+	 * @return The name of this descriptor, or null
+	 * if there is no name associated with this qualifier
 	 */
-	public Set<String> getNames();
+	public String getName();
 	
 	/**
 	 * Returns all of the annotation classes

@@ -43,6 +43,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Collection;
 
 /**
  * @author jwells
@@ -122,6 +123,26 @@ public class Pretty {
         }
         
         return "field(" + baseString + " " + field.getName() + ")";
+    }
+    
+    public static String prettyCollection(Collection<?> collection) {
+        StringBuffer sb = new StringBuffer("Collection(" + System.identityHashCode(collection) + ",{");
+        
+        boolean first = true;
+        for (Object item : collection) {
+            if (first) {
+                first = false;
+                
+                sb.append((item == null) ? "null" : item.toString());
+            }
+            else {
+                sb.append("," + ((item == null) ? "null" : item.toString()));
+            }
+        }
+        
+        sb.append("})");
+        
+        return sb.toString();
     }
     
     

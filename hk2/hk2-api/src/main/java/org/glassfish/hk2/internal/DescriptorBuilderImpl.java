@@ -45,6 +45,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
 
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.DescriptorFilter;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 
@@ -54,7 +56,7 @@ import org.glassfish.hk2.utilities.DescriptorBuilder;
  * @author jwells
  */
 public class DescriptorBuilderImpl implements DescriptorBuilder {
-	private final HashSet<String> names = new HashSet<String>();
+	private String name;
 	private final HashSet<String> contracts = new HashSet<String>();
 	private String scope;
 	private final HashSet<String> qualifiers = new HashSet<String>();
@@ -76,11 +78,12 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	 */
 	@Override
 	public DescriptorBuilder named(String name) throws IllegalArgumentException {
-		if (name == null || names.size() >= 1) {
+		if (this.name != null) {
 			throw new IllegalArgumentException();
 		}
 		
-		names.add(name);
+		this.name = name;
+		qualifiers.add(Named.class.getName());
 		
 		return this;
 	}
@@ -89,18 +92,18 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#withContract(java.lang.Class)
 	 */
 	@Override
-	public DescriptorBuilder withContract(Class<?> contract)
+	public DescriptorBuilder to(Class<?> contract)
 			throws IllegalArgumentException {
 		if (contract == null) throw new IllegalArgumentException();
 		
-		return withContract(contract.getName());
+		return to(contract.getName());
 	}
 
 	/* (non-Javadoc)
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#withContract(java.lang.String)
 	 */
 	@Override
-	public DescriptorBuilder withContract(String contract)
+	public DescriptorBuilder to(String contract)
 			throws IllegalArgumentException {
 		if (contract == null) throw new IllegalArgumentException();
 		
@@ -201,7 +204,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
    * @see org.glassfish.hk2.utilities.DescriptorBuilder#id(java.lang.Long)
    */
 	@Override
-	public DescriptorBuilder id(Long id) throws IllegalArgumentException {
+	public DescriptorBuilder withId(Long id) throws IllegalArgumentException {
 		if (this.id != null) throw new IllegalArgumentException();
 		
 		this.id = id;
@@ -215,7 +218,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	public DescriptorFilter build() throws IllegalArgumentException {
 		return new DescriptorImpl(
 				contracts,
-				names,
+				name,
 				scope,
 				implementation,
 				metadatas,

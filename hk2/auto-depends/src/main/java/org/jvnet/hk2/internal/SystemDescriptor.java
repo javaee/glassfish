@@ -131,8 +131,8 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
      * @see org.glassfish.hk2.api.Descriptor#getNames()
      */
     @Override
-    public Set<String> getNames() {
-        return baseDescriptor.getNames();
+    public String getName() {
+        return baseDescriptor.getName();
     }
 
     /* (non-Javadoc)
@@ -328,7 +328,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             
             scope = Utilities.getScopeAnnotationType(implClass, collector);
             contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(implClass, baseDescriptor.getAdvertisedContracts()));
-            qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(implClass, baseDescriptor.getQualifiers()));
+            qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(implClass, baseDescriptor.getName(), collector));
         }
         else {
             Method provideMethod = Utilities.getFactoryProvideMethod(implClass);
@@ -337,14 +337,23 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             
             Type factoryProvidedType = provideMethod.getGenericReturnType();
             contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(factoryProvidedType, baseDescriptor.getAdvertisedContracts()));
-            qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(provideMethod, baseDescriptor.getQualifiers()));
+            qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(provideMethod, baseDescriptor.getName(), collector));
         }
         
         // Check the scope
-        String baseDescriptorScope = (baseDescriptor.getScope() == null) ? PerLookup.class.getName() : baseDescriptor.getScope() ;
-        if (!baseDescriptorScope.equals(scope.getName())) {
-            collector.addThrowable(new IllegalArgumentException("The scope name given in the descriptor (" +
-               baseDescriptorScope + ") did not match the scope annotation on the class (" + scope.getName() + ")"));
+        if ((baseDescriptor.getScope() == null) && (scope == null)) {
+            scope = PerLookup.class;
+        }
+        
+        if (baseDescriptor.getScope() != null && scope != null) {
+            String scopeName = scope.getName();
+            
+            if (!scopeName.equals(baseDescriptor.getScope())) {
+                collector.addThrowable(new IllegalArgumentException("The scope name given in the descriptor (" +
+                        baseDescriptor.getScope() + ") did not match the scope annotation on the class (" + scope.getName() + ")"));
+                
+            }
+            
         }
         
         reified = true;

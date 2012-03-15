@@ -141,26 +141,14 @@ public class InitializationTest {
         Assert.assertNotNull(descriptors);
         Assert.assertTrue("Expecting 1 descriptor, found " + descriptors.size(), descriptors.size() == 1);
         
-        boolean foundTheName = false;
         for (Descriptor d : descriptors) {
-            for (String name : d.getNames()) {
-              Assert.assertEquals(SIMPLE_NAME, name);
-              foundTheName = true;
-            }
+            Assert.assertEquals(SIMPLE_NAME, d.getName());
         }
-        
-        Assert.assertTrue(foundTheName);
         
         Descriptor d = locator.getBestDescriptor(namedFilter);
         Assert.assertNotNull(d);
         
-        foundTheName = false;
-        for (String name : d.getNames()) {
-            Assert.assertEquals(SIMPLE_NAME, name);
-            foundTheName = true;
-        }
-        
-        Assert.assertTrue(foundTheName);
+        Assert.assertEquals(SIMPLE_NAME, d.getName());
     }
     
     @Test(expected=IllegalArgumentException.class)

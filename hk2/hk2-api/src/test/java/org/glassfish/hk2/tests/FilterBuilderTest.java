@@ -45,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.scopes.Singleton;
@@ -63,20 +65,12 @@ import org.junit.Test;
 public class FilterBuilderTest {
 	private final static String NAME = "hello";
 	
-	private static Object getOneThingFromSet(Set<?> set) {
-		for (Object thing : set) {
-			return thing;
-		}
-		
-		return null;
-	}
-	
 	/**
 	 * This predicate will only have an implementation and a contract
 	 */
 	@Test
 	public void testSimpleFilter() {
-		Descriptor predicate = BuilderHelper.link(FilterBuilderTest.class).withContract(SomeContract.class).build();
+		Descriptor predicate = BuilderHelper.link(FilterBuilderTest.class).to(SomeContract.class).build();
 		
 		Assert.assertNotNull(predicate);
 		
@@ -92,8 +86,7 @@ public class FilterBuilderTest {
 		Assert.assertNotNull(predicate.getQualifiers());
 		Assert.assertTrue(predicate.getQualifiers().size() == 0);
 		
-		Assert.assertNotNull(predicate.getNames());
-		Assert.assertTrue(predicate.getNames().size() == 0);
+		Assert.assertNull(predicate.getName());
 		
 		Assert.assertNull(predicate.getScope());
 	}
@@ -116,8 +109,8 @@ public class FilterBuilderTest {
 		
 		
 		Descriptor predicate = BuilderHelper.link(AnotherService.class.getName()).
-				withContract(SomeContract.class).
-				withContract(AnotherContract.class.getName()).
+				to(SomeContract.class).
+				to(AnotherContract.class.getName()).
 				in(Singleton.class.getName()).
 				named(NAME).
 				has(KEY_A, VALUE_A).
@@ -141,14 +134,13 @@ public class FilterBuilderTest {
 		
 		correctSet.clear();
 		correctSet.add(Red.class.getName());
+		correctSet.add(Named.class.getName());
 		
 		Assert.assertNotNull(predicate.getQualifiers());
-		Assert.assertTrue(predicate.getQualifiers().size() == 1);
+		Assert.assertTrue(predicate.getQualifiers().size() == 2);  // One for @Named
 		Assert.assertTrue(correctSet.containsAll(predicate.getQualifiers()));
 		
-		Assert.assertNotNull(predicate.getNames());
-		Assert.assertTrue(predicate.getNames().size() == 1);
-		Assert.assertEquals(NAME, getOneThingFromSet(predicate.getNames()));
+		Assert.assertEquals(NAME, predicate.getName());
 		
 		Assert.assertNotNull(predicate.getScope());
 		Assert.assertEquals(Singleton.class.getName(), predicate.getScope());
@@ -194,8 +186,7 @@ public class FilterBuilderTest {
 		Assert.assertNotNull(predicate.getQualifiers());
 		Assert.assertTrue(predicate.getQualifiers().size() == 0);
 		
-		Assert.assertNotNull(predicate.getNames());
-		Assert.assertTrue(predicate.getNames().size() == 0);
+		Assert.assertNull(predicate.getName());
 		
 		Assert.assertNull(predicate.getScope());
 	}
@@ -210,12 +201,11 @@ public class FilterBuilderTest {
   }
 	
 	@Test
-  public void testAllFilter() {
-    String bob = "bob";
+    public void testAllFilter() {
+        String bob = "bob";
     
-    Filter<String> allFilter = BuilderHelper.allFilter(String.class);
+        Filter<String> allFilter = BuilderHelper.allFilter(String.class);
     
-    Assert.assertTrue(allFilter.matches(bob));
-  }
-
+        Assert.assertTrue(allFilter.matches(bob));
+	}
 }

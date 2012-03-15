@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.inject.Singleton;
@@ -534,6 +535,19 @@ public class Utilities {
         return annoType.isAnnotationPresent(Qualifier.class);
     }
     
+    private static String calculateNamedValue(AnnotatedElement ae) {
+        Class<?> myClass;
+        if (ae instanceof Class) {
+            myClass = (Class<?>) ae;
+        }
+        else {
+            Method m = (Method) ae;
+            myClass = m.getDeclaringClass();
+        }
+        
+        return Pretty.clazz(myClass);
+    }
+    
     /**
      * Returns the full set of qualifier annotations on this class
      * 
@@ -542,15 +556,46 @@ public class Utilities {
      */
     public static Set<Annotation> getAllQualifiers(
             AnnotatedElement annotatedGuy,
-            Set<String> restrictedTo) {
+            String name,
+            MultiException collector) {
         
+        Named namedQualifier = null;
         HashSet<Annotation> retVal = new HashSet<Annotation>();
         for (Annotation annotation : annotatedGuy.getAnnotations()) {
             if (isAnnotationAQualifier(annotation)) {
-                if (restrictedTo == null || restrictedTo.contains(annotation.annotationType().getName())) {
-                  retVal.add(annotation);
+                retVal.add(annotation);
+                if (annotation instanceof Named) {
+                    namedQualifier = (Named) annotation;
                 }
             }
+        }
+        
+        if (name == null) {
+            if (namedQualifier != null && namedQualifier.value().equals("") ) {
+                retVal.remove(namedQualifier);
+                
+                namedQualifier = new NamedImpl(calculateNamedValue(annotatedGuy));
+                
+                retVal.add(namedQualifier);
+            }
+            
+            return retVal;
+        }
+        
+        if (namedQualifier == null || namedQualifier.value().equals("") ) {
+            if (namedQualifier != null) {
+                retVal.remove(namedQualifier);
+            }
+            
+            namedQualifier = new NamedImpl(name);
+            
+            retVal.add(namedQualifier);
+        }
+        
+        if (!name.equals(namedQualifier.value())) {
+            collector.addThrowable(new IllegalArgumentException("The class had an @Named qualifier that was inconsistent." +
+                "  The expected name is " + name +
+                " but the annotation has name " + namedQualifier.value()));
         }
         
         return retVal;
@@ -715,11 +760,39 @@ public class Utilities {
      * may be zero length
      * @return The set containing all the qualifiers
      */
-    public static Set<Annotation> getQualifiers(Annotation qualifiers[]) {
+    public static Set<Annotation> fixAndCheckQualifiers(Annotation qualifiers[], String name) {
         Set<Annotation> retVal = new HashSet<Annotation>();
         
+        Set<String> dupChecker = new HashSet<String>();
+        Named named = null;
         for (Annotation qualifier : qualifiers) {
+            if (!isAnnotationAQualifier(qualifier)) {
+                throw new IllegalArgumentException(Pretty.clazz(qualifier.annotationType()) + " is not a qualifier");
+            }
+            
+            String annotationType = qualifier.annotationType().getName();
+            if (dupChecker.contains(annotationType)) {
+                throw new IllegalArgumentException(annotationType + " appears more than once in the qualifier list");
+            }
+            dupChecker.add(annotationType);
+            
             retVal.add(qualifier);
+            if (qualifier instanceof Named) {
+                named = (Named) qualifier;
+                
+                if (named.value().equals("")) {
+                    throw new IllegalArgumentException("The @Named qualifier must have a value");
+                }
+                
+                if (name != null && !name.equals(named.value())) {
+                    throw new IllegalArgumentException("The name passed to the method (" +
+                       name + ") does not match the value of the @Named qualifier (" + named.value() + ")"); 
+                }
+            }
+        }
+        
+        if (named == null && name != null) {
+            retVal.add(new NamedImpl(name));
         }
         
         return retVal;

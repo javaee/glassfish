@@ -39,6 +39,9 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -57,6 +60,8 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     private final ServiceLocatorImpl locator;
     private boolean serviceSet = false;
     private T service;
+    
+    private final List<ServiceHandleImpl<?>> subHandles = new LinkedList<ServiceHandleImpl<?>>();
     
     /* package */ ServiceHandleImpl(ServiceLocatorImpl locator, ActiveDescriptor<T> root) {
         this.root = root;
@@ -110,6 +115,10 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     public void destroy() {
         // TODO: Work on the destruction path
         
+    }
+    
+    public void addSubHandle(ServiceHandleImpl<?> subHandle) {
+        subHandles.add(subHandle);
     }
 
 }
