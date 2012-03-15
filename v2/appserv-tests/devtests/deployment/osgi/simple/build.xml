@@ -114,6 +114,11 @@
         <antcall target="assemble"/>
         
         <antcall target="deploy.osgi.asadmin"/>
+
+        <!-- put in a 5s sleep time to see if this will help solve the intermittent issue with the first deploy test that we are seeing -->
+
+        <sleep seconds="5"/>
+
         <antcall target="run.positive">
             <param name="log.id" value="1"/>
             <param name="desc" value="osgi/simple Test asadmin deploy"/>
