@@ -67,7 +67,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	
 	private Set<String> contracts;
 	private String implementation;
-	private Set<String> names;
+	private String name;
 	private String scope;
 	private Map<String, List<String>> metadatas;
 	private Set<String> qualifiers;
@@ -82,7 +82,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	
 	public DescriptorImpl(Descriptor copyMe) {
 		contracts = copyMe.getAdvertisedContracts();
-		names = copyMe.getNames();
+		name = copyMe.getName();
 		scope = copyMe.getScope();
 		implementation = copyMe.getImplementation();
 		qualifiers = copyMe.getQualifiers();
@@ -104,7 +104,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	 * @param id
 	 */
 	public DescriptorImpl(Set<String> contracts,
-			Set<String> names,
+			String name,
 			String scope,
 			String implementation,
 			Map<String, List<String>> metadatas,
@@ -115,7 +115,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 		
 		this.implementation = implementation;
 		
-		this.names = new HashSet<String>(names);
+		this.name = name;
 		this.scope = scope;
 		this.metadatas = new HashMap<String, List<String>>(metadatas);
 		this.qualifiers = new HashSet<String>(qualifiers);
@@ -139,8 +139,8 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	}
 
 	@Override
-	public Set<String> getNames() {
-		return new HashSet<String>(names);
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -163,6 +163,14 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 		return id;
 	}
 	
+	private static boolean safeEquals(Object a, Object b) {
+	    if (a == b) return true;
+	    if (a == null) return false;
+	    if (b == null) return false;
+	    
+	    return a.equals(b);
+	}
+	
 	@Override
 	public boolean matches(Descriptor d) {
 	    HashSet<String> dCandI = new HashSet<String>();
@@ -170,7 +178,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	  
 	    if (!dCandI.containsAll(contracts)) return false;
 		
-		if (!d.getNames().containsAll(names)) return false;
+	    if (!safeEquals(d.getName(), name)) return false;
 		
 		if (!d.getQualifiers().containsAll(qualifiers)) return false;
 		
@@ -249,6 +257,10 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 		StringBuffer sb = new StringBuffer("DescriptorImpl(");
 		
 		sb.append("\n\timplementation=" + implementation);
+		
+		if (name != null) {
+		    sb.append("\n\tname=" + name);
+		}
 		
 		sb.append("\n\tcontracts=");
 		sb.append(writeSet(contracts));

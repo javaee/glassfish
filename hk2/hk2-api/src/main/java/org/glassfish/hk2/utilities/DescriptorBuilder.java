@@ -73,7 +73,7 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given name
 	 * @throws IllegalArgumentException on failures
 	 */
-	public DescriptorBuilder withContract(Class<?> contract) throws IllegalArgumentException;
+	public DescriptorBuilder to(Class<?> contract) throws IllegalArgumentException;
 	
 	/**
 	 * A contract to be associated with this descriptor object.
@@ -82,7 +82,7 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given name
 	 * @throws IllegalArgumentException on failures
 	 */
-	public DescriptorBuilder withContract(String contract) throws IllegalArgumentException;
+	public DescriptorBuilder to(String contract) throws IllegalArgumentException;
 	
 	/**
 	 * A scope to be associated with this descriptor object. Note that at the current time a
@@ -161,7 +161,7 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given metadata
 	 * @throws IllegalArgumentException if the id is set non-null more than once
 	 */
-	public DescriptorBuilder id(Long id) throws IllegalArgumentException;
+	public DescriptorBuilder withId(Long id) throws IllegalArgumentException;
 	
 	/**
 	 * Generates a descriptor that can be used in binding operations, or

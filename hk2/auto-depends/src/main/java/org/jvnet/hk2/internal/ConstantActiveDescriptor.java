@@ -60,7 +60,7 @@ public class ConstantActiveDescriptor<T> implements ActiveDescriptor<T> {
     private final Set<Type> advertisedContracts;
     private final Set<String> contractsAsStrings = new HashSet<String>();
     private final Class<? extends Annotation> scope;
-    private final Set<String> names = new HashSet<String>();
+    private final String name;
     private final Set<Annotation> qualifiers;
     private final Set<String> qualifiersAsStrings = new HashSet<String>();
     private final int ranking;
@@ -75,10 +75,10 @@ public class ConstantActiveDescriptor<T> implements ActiveDescriptor<T> {
         
         this.theOne = theOne;
         this.scope = scope;
-        if (name != null) names.add(name);
         this.advertisedContracts = Collections.unmodifiableSet(advertisedContracts);
         this.qualifiers = Collections.unmodifiableSet(qualifiers);
         this.ranking = ranking;
+        this.name = name;
         
         for (Type t : advertisedContracts) {
             Class<?> raw = Utilities.getRawClass(t);
@@ -120,8 +120,8 @@ public class ConstantActiveDescriptor<T> implements ActiveDescriptor<T> {
      * @see org.glassfish.hk2.api.Descriptor#getNames()
      */
     @Override
-    public Set<String> getNames() {
-        return Collections.unmodifiableSet(names);
+    public String getName() {
+        return name;
     }
 
     /* (non-Javadoc)

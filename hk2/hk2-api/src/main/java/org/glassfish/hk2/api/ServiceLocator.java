@@ -43,6 +43,7 @@ import org.jvnet.hk2.annotations.Contract;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.SortedSet;
 
 /**
@@ -167,7 +168,7 @@ public interface ServiceLocator {
 	 * may return an empty list
 	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> SortedSet<T> getAllServices(Type contractOrImpl,
+    public <T> List<T> getAllServices(Type contractOrImpl,
             Annotation... qualifiers) throws MultiException;
     
     /**
@@ -225,23 +226,6 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
-     * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
-     */
-    public <T> ServiceHandle<T> getServiceHandle(Filter<Descriptor> filter) throws MultiException;
-    
-    /**
 	 * Gets the all the services from this locator that implements
 	 * this contract or has this implementation
 	 * <p>
@@ -257,7 +241,7 @@ public interface ServiceLocator {
 	 * but may return an empty list
 	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> SortedSet<T> getAllServices(Filter<Descriptor> searchCriteria) throws MultiException;
+    public List<?> getAllServices(Filter<Descriptor> searchCriteria) throws MultiException;
     
     /**
      * Gets a service handle that can be used to get and destroy the returned
@@ -274,7 +258,7 @@ public interface ServiceLocator {
      * @return Will return root as a convenience
      * @throws MultiException if there was an error during service creation
      */
-    public <T> SortedSet<ServiceHandle<T>> getAllServiceHandles(Filter<Descriptor> searchCriteria) throws MultiException;
+    public SortedSet<ServiceHandle<?>> getAllServiceHandles(Filter<Descriptor> searchCriteria) throws MultiException;
   
     /**
      * Returns the name of this ServiceLocator

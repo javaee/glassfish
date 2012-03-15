@@ -37,18 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
-
-import javax.inject.Provider;
+package org.glassfish.hk2.tests.locator.locator;
 
 /**
- * This version of Provider will surround the call to
- * the underlying Provider with an
- * AccessController.doPriveleged block
- * 
  * @author jwells
  *
  */
-public interface SecureProvider<T> extends Provider<T> {
+public interface AdminCommand {
 
 }
