@@ -37,33 +37,58 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.jvnet.hk2.internal;
+
+import java.lang.annotation.Annotation;
+
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
+public class SingletonContext implements Context {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
+     * @see org.glassfish.hk2.api.Context#getScope()
      */
     @Override
-    public String getLoaderName() {
-        return NAME;
+    public Class<? extends Annotation> getScope() {
+        return Singleton.class;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
+    public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
+            ServiceHandle<?> root) {
+        if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
+        
+        T t = activeDescriptor.create(root);
+        activeDescriptor.setCache(t);
+        
+        return t;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.Descriptor)
+     */
+    @Override
+    public <T> T find(ActiveDescriptor<T> descriptor) {
+        return descriptor.getCache();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return true;
     }
 
 }

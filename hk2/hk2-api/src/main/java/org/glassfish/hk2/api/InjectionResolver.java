@@ -84,6 +84,6 @@ public interface InjectionResolver {
      * @param injectionPoint The injection point this value is being injected into
      * @return A possibly null value to be injected into the given injection point
      */
-    public Object resolve(Injectee injectee);
+    public Object resolve(Injectee injectee, ServiceHandle<?> root);
 
 }

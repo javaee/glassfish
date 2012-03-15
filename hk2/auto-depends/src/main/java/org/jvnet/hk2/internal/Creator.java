@@ -37,33 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.jvnet.hk2.internal;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import java.util.List;
+
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
+ * An internal interface that allows us to have the
+ * factory and class implementations
+ * 
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
+public interface Creator<T> {
+    /**
+     * Returns all the injectees needed prior
+     * to creating this object
+     * 
+     * @return
      */
-    @Override
-    public String getLoaderName() {
-        return NAME;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
+    public List<Injectee> getInjectees();
+    
+    /**
+     * Creates an instance of the given type
+     * 
+     * @return an instance of the given type
      */
-    @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
-    }
-
+    public T create(ServiceHandle<?> root) throws MultiException;
+    
+    /**
+     * Disposes the given instance
+     * 
+     * @param instance removes the given instance
+     */
+    public void dispose(T instance, ServiceHandle<?> root);
 }

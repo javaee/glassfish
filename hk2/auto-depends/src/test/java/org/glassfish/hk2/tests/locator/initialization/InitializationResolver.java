@@ -41,6 +41,7 @@ package org.glassfish.hk2.tests.locator.initialization;
 
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
@@ -52,7 +53,7 @@ public class InitializationResolver implements InjectionResolver {
      * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee)
      */
     @Override
-    public Object resolve(Injectee injectee) {
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
         throw new AssertionError("not called");
     }
 

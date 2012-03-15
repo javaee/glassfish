@@ -37,33 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.glassfish.hk2.tests.locator.perlookup;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import junit.framework.Assert;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
-     */
-    @Override
-    public String getLoaderName() {
-        return NAME;
+public class PerLookupTest {
+    public final static String TEST_NAME = "PerLookupTest";
+    private ServiceLocator locator;
+    
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new PerLookupModule());
+        if (locator == null) {
+            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
+        }
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
-     */
-    @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
+    
+    @Test
+    public void testThreeDifferentValues() {
+        ThriceInjectedService tis = locator.getService(ThriceInjectedService.class);
+        Assert.assertNotNull(tis);
+        
+        SimpleService byConstructor = tis.getByConstructor();
+        SimpleService byField = tis.getByField();
+        SimpleService byMethod = tis.getByMethod();
+        
+        Assert.assertNotNull(byConstructor);
+        Assert.assertNotNull(byField);
+        Assert.assertNotNull(byMethod);
+        
+        Assert.assertNotSame("The constructor " + byConstructor + " and field " + byField + " are the same", byConstructor, byField);
+        Assert.assertNotSame(byConstructor, byMethod);
+        Assert.assertNotSame(byField, byMethod);
     }
 
 }

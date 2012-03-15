@@ -41,6 +41,7 @@ package org.glassfish.hk2.api;
 
 import org.jvnet.hk2.annotations.Contract;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.SortedSet;
 
@@ -58,7 +59,7 @@ public interface ServiceLocator {
      * @return A list of descriptors in ranked order that match the given
      * filter
      */
-    public SortedSet<Descriptor> getDescriptors(Filter<Descriptor> filter);
+    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter<Descriptor> filter);
     
     /**
      * Gets the descriptor that best matches this filter, taking ranking
@@ -68,7 +69,7 @@ public interface ServiceLocator {
      * @return The best descriptor matching the filter, or null if there
      * is no descriptor that matches the filter
      */
-    public Descriptor getBestDescriptor(Filter<Descriptor> filter);
+    public ActiveDescriptor<?> getBestDescriptor(Filter<Descriptor> filter);
     
     /**
      * Converts a descriptor to an ActiveDescriptor.  Will use the registered
@@ -134,7 +135,24 @@ public interface ServiceLocator {
 	 * implementation or contract
 	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> T getService(Type contractOrImpl) throws MultiException;
+    public <T> T getService(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
     
     /**
 	 * Gets the all the services from this locator that implements
@@ -149,7 +167,26 @@ public interface ServiceLocator {
 	 * may return an empty list
 	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> SortedSet<T> getAllServices(Type contractOrImpl) throws MultiException;
+    public <T> SortedSet<T> getAllServices(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public SortedSet<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException;
     
     /**
 	 * Gets the best service from this locator that implements
@@ -167,7 +204,42 @@ public interface ServiceLocator {
 	 * implementation or contract
 	 * @throws MultiException if there was an error during service creation
 	 */
-    public <T> T getService(Type contractOrImpl, String name) throws MultiException;
+    public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> ServiceHandle<T> getServiceHandle(Filter<Descriptor> filter) throws MultiException;
     
     /**
 	 * Gets the all the services from this locator that implements
@@ -186,6 +258,23 @@ public interface ServiceLocator {
 	 * @throws MultiException if there was an error during service creation
 	 */
     public <T> SortedSet<T> getAllServices(Filter<Descriptor> searchCriteria) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> SortedSet<ServiceHandle<T>> getAllServiceHandles(Filter<Descriptor> searchCriteria) throws MultiException;
   
     /**
      * Returns the name of this ServiceLocator

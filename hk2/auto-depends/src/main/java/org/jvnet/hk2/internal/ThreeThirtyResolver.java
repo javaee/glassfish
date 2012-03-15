@@ -37,33 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.jvnet.hk2.internal;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-public class InitializationLoader implements HK2Loader {
-    private final static String NAME = "name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
-     */
-    @Override
-    public String getLoaderName() {
-        return NAME;
+public class ThreeThirtyResolver implements InjectionResolver {
+    private final ServiceLocatorImpl locator;
+    
+    /* package */ ThreeThirtyResolver(ServiceLocatorImpl locator) {
+        this.locator = locator;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
+     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public Class<?> loadClass(String className) {
-        throw new AssertionError("not called");
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
+        
+        return locator.getService(ad, root);
     }
 
 }

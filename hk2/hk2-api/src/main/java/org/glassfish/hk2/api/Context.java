@@ -82,7 +82,7 @@ public interface Context {
      * @param descriptor The descriptor to look for in this context
      * @return Either null or the instance 
      */
-    public <T> T find(Descriptor descriptor);
+    public <T> T find(ActiveDescriptor<T> descriptor);
     
     /**
      * True if this context is active, false otherwise

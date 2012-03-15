@@ -40,7 +40,6 @@
 package org.glassfish.hk2.api;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
 
 /**
  * An instance of this class is given to the {@link Module} configure
@@ -54,7 +53,13 @@ import java.util.List;
 public interface Configuration {
 	
 	/**
-	 * This method will bind the given descriptor to this Module
+	 * This method will bind the given descriptor to this Module.
+	 * If the descriptor given is not an ActiveDescriptor then a
+	 * non-reified ActiveDescriptor will be returned with the system
+	 * provided fields set.  If the descriptor given is a reified
+	 * ActiveDescriptor then the descriptor returned will be a
+	 * reified ActiveDescriptor that takes all values except for the
+	 * id from the given descriptor
 	 * 
 	 * @param keys May not be null.  Will be used to derive the various
 	 * key fields associated with the given provider
@@ -62,7 +67,7 @@ public interface Configuration {
 	 * of the Descriptor filled in by the system as appropriate
 	 * @throws IllegalArgumentException if there is an error in the key
 	 */
-	public Descriptor bind(Descriptor key);
+	public ActiveDescriptor<?> bind(Descriptor key);
 	
 	/**
 	 * Adds a context implementation to the system

@@ -43,7 +43,6 @@ import java.lang.annotation.Annotation;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.ServiceHandle;
 
 /**
@@ -73,7 +72,7 @@ public class ContextImpl implements Context {
      * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.Descriptor)
      */
     @Override
-    public <T> T find(Descriptor descriptor) {
+    public <T> T find(ActiveDescriptor<T> descriptor) {
         throw new AssertionError("not called");
     }
 

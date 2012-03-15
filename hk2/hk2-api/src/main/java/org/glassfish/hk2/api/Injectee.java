@@ -40,7 +40,7 @@
 package org.glassfish.hk2.api;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Member;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.util.Set;
 
@@ -72,13 +72,6 @@ public interface Injectee {
     public Set<Annotation> getRequiredQualifiers();
     
     /**
-     * Returns the java member that this injectee will be injected into
-     * 
-     * @return The java member that this injectee will be injected into
-     */
-    public Member getMember();
-    
-    /**
      * If this Injectee is a constructor or method parameter, this will
      * return the index of the parameter.  If this Injectee is a field,
      * this will return -1
@@ -88,16 +81,13 @@ public interface Injectee {
     public int getPosition();
     
     /**
-     * If this Injectee represents a constructor this will return the 
-     * construtor being injected into.  If this Injectee represents a
+     * If this Injectee is in a constructor this will return the 
+     * constructor being injected into.  If this Injectee is in a
      * method this will return the method being injected into.  If this
-     * injectee represents a field, this will return the class being
+     * injectee represents a field, this will return the field being
      * injected into
      * 
      * @return The parent of the injectee
      */
-    public Member getParent();
-    
-    
-
+    public AnnotatedElement getParent();
 }

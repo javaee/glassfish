@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.extension;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.SortedSet;
 
@@ -46,6 +47,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 
@@ -86,7 +88,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public SortedSet<Descriptor> getDescriptors(Filter<Descriptor> filter) {
+    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter<Descriptor> filter) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -133,7 +135,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type)
      */
     @Override
-    public <T> T getService(Type contractOrImpl) {
+    public <T> T getService(Type contractOrImpl, Annotation... qualifiers) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -142,7 +144,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.reflect.Type)
      */
     @Override
-    public <T> SortedSet<T> getAllServices(Type contractOrImpl) {
+    public <T> SortedSet<T> getAllServices(Type contractOrImpl, Annotation... qualifiers) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -151,7 +153,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String)
      */
     @Override
-    public <T> T getService(Type contractOrImpl, String name) {
+    public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -205,7 +207,58 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getBestDescriptor(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public Descriptor getBestDescriptor(Filter<Descriptor> filter) {
+    public ActiveDescriptor<?> getBestDescriptor(Filter<Descriptor> filter) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public SortedSet<ServiceHandle<?>> getAllServiceHandles(
+            Type contractOrImpl, Annotation... qualifiers)
+            throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.String, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
+            String name, Annotation... qualifiers) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public <T> SortedSet<ServiceHandle<T>> getAllServiceHandles(
+            Filter<Descriptor> searchCriteria) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Filter<Descriptor> filter)
+            throws MultiException {
         // TODO Auto-generated method stub
         return null;
     }

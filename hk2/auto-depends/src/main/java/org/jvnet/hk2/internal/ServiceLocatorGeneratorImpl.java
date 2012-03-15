@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.internal;
 
+import javax.inject.Inject;
+
 import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
@@ -51,12 +53,17 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
     private ServiceLocatorImpl initialize(String name) {
         ServiceLocatorImpl sli = new ServiceLocatorImpl(name);
         
+        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
+        
+        dci.bind(Utilities.getLocatorDescriptor(sli));
+        dci.addInjectionResolver(Inject.class, new ThreeThirtyResolver(sli));
+        dci.addContext(new SingletonContext());
+        dci.addContext(new PerLookupContext());
+        
         // TODO:  Here we would add the system services that need to go into every habitat
-        // 1.  The system loader
-        // 2.  The context for PerLookup
-        // 3.  The context for Singelton
-        // 4.  The ServiceLocator itself
         // 5.  The DynamicConfigurationService
+        
+        dci.commit();
         
         return sli;
     }

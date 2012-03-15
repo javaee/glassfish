@@ -40,8 +40,34 @@
 package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Qualifier;
 import javax.inject.Scope;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * This class contains a set of static utilities useful
@@ -52,6 +78,76 @@ import javax.inject.Scope;
  */
 public class Utilities {
     /**
+     * Returns the first thing found in the set
+     * 
+     * @param set The set from which to get the first element
+     * @return the first thing found in the set
+     */
+    public static <T> T getFirstThingInSet(Set<T> set) {
+        for (T t : set) {
+            return t;
+        }
+        
+        return null;
+    }
+    /**
+     * Get all fields on this class and all subclasses
+     * 
+     * @param clazz The class to inspect
+     * @return A set of all the fields on this class
+     */
+    private static Set<Field> getAllFields(Class<?> clazz) {
+        HashSet<Field> retVal = new HashSet<Field>();
+        
+        HashSet<MemberKey> keys = new HashSet<MemberKey>();
+        
+        getAllFieldKeys(clazz, keys);
+        
+        for (MemberKey key : keys) {
+            retVal.add((Field) key.getBackingMember());
+        }
+        
+        return retVal;
+    }
+    
+    private static void getAllFieldKeys(Class<?> clazz, Set<MemberKey> currentFields) {
+        if (clazz == null) return;
+        
+        // Do superclasses first, so that inherited methods are
+        // overriden in the set
+        getAllFieldKeys(clazz.getSuperclass(), currentFields);
+        
+        for (Field field : clazz.getDeclaredFields()) {
+            currentFields.add(new MemberKey(field));
+        }
+        
+    }
+    
+    /**
+     * Returns a constant ActiveDescriptor for the basic ServiceLocator
+     * 
+     * @param locator
+     * @return
+     */
+    public static ActiveDescriptor<ServiceLocator> getLocatorDescriptor(ServiceLocator locator) {
+        HashSet<Type> contracts = new HashSet<Type>();
+        contracts.add(ServiceLocator.class);
+        
+        Set<Annotation> qualifiers = Collections.emptySet();
+        
+        ActiveDescriptor<ServiceLocator> retVal =
+                new ConstantActiveDescriptor<ServiceLocator>(
+                locator,
+                contracts,
+                PerLookup.class,
+                null,
+                qualifiers,
+                Integer.MAX_VALUE);
+        
+        return retVal;
+    }
+    
+    /**
      * Checks to be sure a scope annotation is propertly annotated with Scope
      * 
      * @param annotation the annotation to check
@@ -60,7 +156,663 @@ public class Utilities {
         if (annotation == null) throw new IllegalArgumentException();
         
         if (!annotation.isAnnotationPresent(Scope.class)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("The annotation " + annotation + " is not a scope");
+        }
+    }
+    
+    public static ActiveDescriptor<?> createActiveDescriptor(Descriptor parent, Class<?> locatedClass, MultiException collector) {
+        return null;
+        
+        
+        
+    }
+    
+    /**
+     * Validates the constructors of the annotated type and returns the
+     * producer for the annotatedType (if there is no valid producer
+     * constructor then this method returns null)
+     * 
+     * @param annotatedType The type to find the producer constructor
+     * @return The producer constructor or null if the type has no valid
+     * producer constructor
+     * @throws DefinitionException This method checks the definitional
+     * integrity of the constructors, and throws an exception if one is
+     * found
+     */
+    public static Constructor<?> findProducerConstructor(Class<?> annotatedType, ServiceLocatorImpl locator, MultiException collector) {
+        Constructor<?> zeroArgConstructor = null;
+        Constructor<?> aConstructorWithInjectAnnotation = null;
+        
+        Set<Constructor<?>> allConstructors = getAllConstructors(annotatedType);
+        for (Constructor<?> constructor : allConstructors) {
+            
+            Type rawParameters[] = constructor.getGenericParameterTypes();
+            if (rawParameters.length <= 0) {
+                zeroArgConstructor = constructor;
+            }
+            
+            if (getInjectAnnotation(locator, constructor) != null) {
+                if (aConstructorWithInjectAnnotation != null) {
+                    collector.addThrowable(new IllegalArgumentException("There is more than one constructor on class " +
+                      Pretty.clazz(annotatedType)));
+                    return null;
+                }
+                
+                aConstructorWithInjectAnnotation = constructor;
+            }
+            
+        }
+        
+        if (aConstructorWithInjectAnnotation != null) {
+            return aConstructorWithInjectAnnotation;
+        }
+        
+        return zeroArgConstructor;
+    }
+    
+    /**
+     * Given the type parameter gets the raw type represented
+     * by the type, or null if this has no associated raw class
+     * @param type The type to find the raw class on
+     * @return The raw class associated with this type
+     */
+    public static Class<?> getRawClass(Type type) {
+        if (type == null) return null;
+        
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        }
+        
+        if (type instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) type).getRawType();
+            if (rawType instanceof Class) {
+                return (Class<?>) rawType;
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Gets all the constructors for a given class
+     * 
+     * @param clazz The class to find the constructors of
+     * @return A set of Constructors for the given class
+     */
+    public static Set<Constructor<?>> getAllConstructors(Class<?> clazz) {
+        HashSet<Constructor<?>> retVal = new HashSet<Constructor<?>>();
+        
+        HashSet<MemberKey> keys = new HashSet<MemberKey>();
+        
+        getAllConstructorKeys(clazz, keys);
+        
+        for (MemberKey key : keys) {
+            retVal.add((Constructor<?>) key.getBackingMember());
+        }
+        
+        return retVal;
+    }
+    
+    private static void getAllConstructorKeys(Class<?> clazz, Set<MemberKey> currentConstructors) {
+        if (clazz == null) return;
+        
+        // Constructors for the superclass do not equal constructors for this class
+        
+        for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+            currentConstructors.add(new MemberKey(constructor));
+        }
+        
+    }
+    
+    /**
+     * Geta ll the initializer methods of the annotatedType.  If there are definitional
+     * errors they will be put into the errorCollector (so as to get all the errors
+     * at one shot)
+     * 
+     * @param annotatedType The type to find the errors in
+     * @param errorCollector The collector to add errors to
+     * @return A possibly empty but never null set of initializer methods
+     */
+    public static Set<Method> findInitializerMethods(
+            Class<?> annotatedType,
+            ServiceLocatorImpl locator,
+            MultiException errorCollector) {
+        HashSet<Method> retVal = new HashSet<Method>();
+        
+        for (Method method : annotatedType.getMethods()) {
+            if (getInjectAnnotation(locator, method) == null) {
+                // Not an initializer method
+                continue;
+            }
+            
+            if (!hasCorrectInitializerMethodModifiers(method)) {
+                errorCollector.addThrowable(new IllegalArgumentException(
+                        "An initializer method " + Pretty.method(method) + 
+                        " is static or abstract"));
+                continue;
+            }
+            
+            retVal.add(method);
+        }
+        
+        return retVal;
+    }
+    
+    public static Set<Field> findInitializerFields(Class<?> annotatedType,
+            ServiceLocatorImpl locator,
+            MultiException errorCollector) {
+        HashSet<Field> retVal = new HashSet<Field>();
+        
+        for (Field field : getAllFields(annotatedType)) {
+            if (getInjectAnnotation(locator, field) == null) {
+                // Not an initializer field
+                continue;
+            }
+            
+            if (!hasCorrectInitializerFieldModifiers(field)) {
+                errorCollector.addThrowable(new IllegalArgumentException("The field " +
+                  Pretty.field(field) + " may not be static or final"));
+                continue;
+            }
+            
+            retVal.add(field);
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Gets the annotation that was used for the injection
+     * 
+     * @param beanManager The bean manager to use (as it will get all
+     * the annotations that were added on as well as the normal Inject)
+     * @param member The member to check for
+     * @return The annotation that is the inject annotation, or null
+     * if no inject annotation was found
+     */
+    private static Annotation getInjectAnnotation(ServiceLocatorImpl locator, AnnotatedElement annotated) {
+        for (Annotation anno : annotated.getAnnotations()) {
+            if (locator.isInjectAnnotation(anno)) return anno;
+        }
+        
+        return null;
+    }
+    
+    private static boolean hasCorrectInitializerMethodModifiers(Method member) {
+        if (isStatic(member)) return false;
+        if (isAbstract(member)) return false;
+        
+        return true;
+    }
+    
+    private static boolean hasCorrectInitializerFieldModifiers(Field field) {
+        if (isStatic(field)) return false;
+        if (isFinal(field)) return false;
+        
+        return true;
+    }
+    
+    /**
+     * Returns true if the underlying member is static
+     * 
+     * @param member The non-null member to test
+     * @return true if the member is static
+     */
+    public static boolean isStatic(Member member) {
+        int modifiers = member.getModifiers();
+        
+        return ((modifiers & Modifier.STATIC) != 0);
+    }
+    
+    /**
+     * Returns true if the underlying member is abstract
+     * 
+     * @param member The non-null member to test
+     * @return true if the member is abstract
+     */
+    public static boolean isAbstract(Member member) {
+        int modifiers = member.getModifiers();
+        
+        return ((modifiers & Modifier.ABSTRACT) != 0);
+    }
+    
+    /**
+     * Returns true if the underlying member is abstract
+     * 
+     * @param member The non-null member to test
+     * @return true if the member is abstract
+     */
+    public static boolean isFinal(Member member) {
+        int modifiers = member.getModifiers();
+        
+        return ((modifiers & Modifier.FINAL) != 0);
+    }
+    
+    /**
+     * Returns the scope of this thing
+     * 
+     * @param manager The bean manager (so we pick up add-on scopes)
+     * @param annotatedGuy The annotated class or producer method
+     * @return The scope of this class or producer method.  If no scope is
+     * found will return the dependent scope
+     */
+    public static Class<? extends Annotation> getScopeAnnotationType(
+            AnnotatedElement annotatedGuy,
+            MultiException collector) {
+        boolean epicFail = false;
+        Class<? extends Annotation> retVal = null;
+        for (Annotation annotation : annotatedGuy.getAnnotations()) {
+            if (annotation.annotationType().isAnnotationPresent(Scope.class)) {
+                if (retVal != null) {
+                    collector.addThrowable(new IllegalArgumentException("The type " + annotatedGuy +
+                            " may not have more than one scope.  It has at least " + Pretty.clazz(retVal) +
+                            " and " + Pretty.clazz(annotation.annotationType())));
+                    epicFail = true;
+                    continue;
+                }
+                
+                retVal = annotation.annotationType();
+            }
+        }
+        
+        if (epicFail) return null;
+        
+        if (retVal != null) return retVal;
+        
+        return (annotatedGuy.isAnnotationPresent(Service.class)) ? Singleton.class : PerLookup.class; 
+    }
+    
+    /**
+     * Returns the scope of this thing
+     * 
+     * @param manager The bean manager (so we pick up add-on scopes)
+     * @param annotatedGuy The annotated class or producer method
+     * @return The scope of this class or producer method.  If no scope is
+     * found will return the dependent scope
+     */
+    public static InjectionResolver getInjectionResolver(
+            ServiceLocatorImpl locator,
+            AnnotatedElement annotatedGuy,
+            MultiException collector) {
+        Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy);
+        
+        Class<? extends Annotation> injectType = (injectAnnotation == null) ?
+                Inject.class : injectAnnotation.annotationType() ;
+        
+        return locator.getInjectionResolver(injectType);
+    }
+    
+    private final static String PROVIDE_METHOD = "provide";
+    
+    /**
+     * This method will retrieve the provide method from a Factory
+     * 
+     * @param clazz This class must implement factory
+     * @return The provide method from this class
+     */
+    public static Method getFactoryProvideMethod(Class<?> clazz) {
+        try {
+            return clazz.getMethod(PROVIDE_METHOD);
+        }
+        catch (NoSuchMethodException e) {
+            return null;
+        }
+    }
+    
+    /**
+     * Gets all the interfaces on this particular class (but not any
+     * superclasses of this class).
+     * 
+     * @param clazz
+     * @return
+     */
+    private static void addAllGenericInterfaces(Type types[], Set<Type> closures) {
+        
+        for (Type type : types) {
+            closures.add(type);
+            
+            Class<?> rawClass = getRawClass(type);
+            if (rawClass != null) {
+                addAllGenericInterfaces(rawClass.getGenericInterfaces(), closures);
+            }
+        }
+    }
+    
+    /**
+     * Returns the type closure of the given class
+     * 
+     * @param ofClass The full type closure of the given class
+     * with nothing omitted (normal case).  May not be null
+     * @return The non-null (and never empty) set of classes
+     * that this class can be assigned to
+     */
+    private static Set<Type> getTypeClosure(Type ofType) {
+        HashSet<Type> retVal = new HashSet<Type>();
+        
+        Type currentType = ofType;
+        while (currentType != null) {
+            Class<?> rawClass = getRawClass(currentType);
+            if (rawClass == null) {
+                break;
+            }
+            retVal.add(currentType);
+            
+            addAllGenericInterfaces(rawClass.getGenericInterfaces(), retVal);
+            
+            currentType = rawClass.getGenericSuperclass();
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Returns the type closure, as restricted by the classes listed in the
+     * set of contracts implemented
+     * 
+     * @param ofType The type to check
+     * @param contracts The contracts this type is allowed to handle
+     * @return The type closure restricted to the contracts
+     */
+    public static Set<Type> getTypeClosure(Type ofType, Set<String> contracts) {
+        Set<Type> closure = getTypeClosure(ofType);
+        
+        HashSet<Type> retVal = new HashSet<Type>();
+        for (Type t : closure) {
+            Class<?> rawClass = getRawClass(t);
+            if (rawClass == null) continue;
+            
+            if (contracts.contains(rawClass.getName())) {
+                retVal.add(t);
+            }
+        }
+        
+        return retVal;
+    }
+    
+    private static boolean isAnnotationAQualifier(Annotation anno) {
+        Class<? extends Annotation> annoType = anno.annotationType();
+        return annoType.isAnnotationPresent(Qualifier.class);
+    }
+    
+    /**
+     * Returns the full set of qualifier annotations on this class
+     * 
+     * @param annotatedGuy
+     * @return
+     */
+    public static Set<Annotation> getAllQualifiers(
+            AnnotatedElement annotatedGuy,
+            Set<String> restrictedTo) {
+        
+        HashSet<Annotation> retVal = new HashSet<Annotation>();
+        for (Annotation annotation : annotatedGuy.getAnnotations()) {
+            if (isAnnotationAQualifier(annotation)) {
+                if (restrictedTo == null || restrictedTo.contains(annotation.annotationType().getName())) {
+                  retVal.add(annotation);
+                }
+            }
+        }
+        
+        return retVal;
+    }
+    
+    private static Set<Annotation> getAllQualifiers(
+            AnnotatedElement annotatedGuy) {
+        
+        HashSet<Annotation> retVal = new HashSet<Annotation>();
+        for (Annotation annotation : annotatedGuy.getAnnotations()) {
+            if (isAnnotationAQualifier(annotation)) {
+                retVal.add(annotation);
+            }
+        }
+        
+        return retVal;
+    }
+    
+    private static Set<Annotation> getAllQualifiers(
+            Annotation memberAnnotations[]) {
+        
+        HashSet<Annotation> retVal = new HashSet<Annotation>();
+        for (Annotation annotation : memberAnnotations) {
+            if (isAnnotationAQualifier(annotation)) {
+                retVal.add(annotation);
+            }
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Returns all the injectees for a constructor
+     * @param c The constructor to analyze
+     * @return the list (in order) of parameters to the constructor
+     */
+    public static List<Injectee> getConstructorInjectees(Constructor<?> c) {
+        Type genericTypeParams[] = c.getGenericParameterTypes();
+        Annotation paramAnnotations[][] = c.getParameterAnnotations();
+        
+        List<Injectee> retVal = new LinkedList<Injectee>();
+        
+        for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
+            retVal.add(new InjecteeImpl(genericTypeParams[lcv], getAllQualifiers(paramAnnotations[lcv]), lcv, c));
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Returns all the injectees for a constructor
+     * @param c The constructor to analyze
+     * @return the list (in order) of parameters to the constructor
+     */
+    public static List<Injectee> getMethodInjectees(Method c) {
+        Type genericTypeParams[] = c.getGenericParameterTypes();
+        Annotation paramAnnotations[][] = c.getParameterAnnotations();
+        
+        List<Injectee> retVal = new LinkedList<Injectee>();
+        
+        for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
+            retVal.add(new InjecteeImpl(genericTypeParams[lcv], getAllQualifiers(paramAnnotations[lcv]), lcv, c));
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Returns all the injectees for a constructor
+     * @param c The constructor to analyze
+     * @return the list (in order) of parameters to the constructor
+     */
+    public static List<Injectee> getFieldInjectees(Field f) {
+        List<Injectee> retVal = new LinkedList<Injectee>();
+        
+        retVal.add(new InjecteeImpl(f.getGenericType(), getAllQualifiers(f), -1, f));
+        
+        return retVal;
+    }
+    
+    /**
+     * Invokes the postConstruct method on this object
+     * @param o
+     */
+    public static void invokePostConstruct(Object o) {
+        if (o == null) return;
+        
+        // TODO: Implement this
+    }
+    
+    /**
+     * Invokes the postConstruct method on this object
+     * @param o
+     */
+    public static void invokePreDestroy(Object o) {
+        if (o == null) return;
+        
+        // TODO: Implement this
+    }
+    
+    /**
+     * This version of invoke is CCL neutral (it will return with the
+     * same CCL as what it went in with)
+     * 
+     * @param m the method to invoke
+     * @param o the object on which to invoke it
+     * @param args The arguments to invoke (may not be null)
+     * @return The return from the invocation
+     * @throws Throwable The unwrapped throwable thrown by the method
+     */
+    public static Object makeMe(Constructor<?> c, Object args[])
+            throws Throwable {
+        ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
+        
+        try {
+            return c.newInstance(args);
+        }
+        catch (InvocationTargetException ite) {
+            throw ite.getTargetException();
+        }
+        finally {
+            Thread.currentThread().setContextClassLoader(currentCCL);
+        }
+    }
+    
+    /**
+     * This version of invoke is CCL neutral (it will return with the
+     * same CCL as what it went in with)
+     * 
+     * @param m the method to invoke
+     * @param o the object on which to invoke it
+     * @param args The arguments to invoke (may not be null)
+     * @return The return from the invocation
+     * @throws Throwable The unwrapped throwable thrown by the method
+     */
+    public static Object invoke(Object o, Method m, Object args[])
+            throws Throwable {
+        if (isStatic(m)) {
+            o = null;
+        }
+        
+        ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
+        
+        try {
+            return m.invoke(o, args);
+        }
+        catch (InvocationTargetException ite) {
+            throw ite.getTargetException();
+        }
+        finally {
+            Thread.currentThread().setContextClassLoader(currentCCL);
+        }
+    }
+    
+    /**
+     * This method returns a set of qualifiers from an array of qualifiers.
+     * 
+     * TODO  It can also do some sanity checking here (i.e., multiple
+     * qualifiers of the same type, that sort of thing)
+     * 
+     * @param qualifiers The qualifiers to convert.  May not be null, but
+     * may be zero length
+     * @return The set containing all the qualifiers
+     */
+    public static Set<Annotation> getQualifiers(Annotation qualifiers[]) {
+        Set<Annotation> retVal = new HashSet<Annotation>();
+        
+        for (Annotation qualifier : qualifiers) {
+            retVal.add(qualifier);
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Casts this thing to the given type
+     * @param o The thing to cast
+     * @return A casted version of o
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T cast(Object o) {
+        return (T) o;
+    }
+    
+    private static class MemberKey {
+        private final Member backingMember;
+        
+        private MemberKey(Member method) {
+            backingMember = method;
+        }
+        
+        private Member getBackingMember() {
+            return backingMember;
+        }
+        
+        public int hashCode() {
+            int startCode = 0;
+            if (backingMember instanceof Method) {
+                startCode = 1;
+            }
+            else if (backingMember instanceof Constructor) {
+                startCode = 2;
+            }
+            
+            startCode ^= backingMember.getName().hashCode();
+            
+            Class<?> parameters[];
+            if (backingMember instanceof Method) {
+                parameters = ((Method) backingMember).getParameterTypes();
+            }
+            else if (backingMember instanceof Constructor) {
+                parameters = ((Constructor<?>) backingMember).getParameterTypes();
+            }
+            else {
+                parameters = new Class<?>[0];
+            }
+            
+            for (Class<?> param : parameters) {
+                startCode ^= param.hashCode();
+            }
+            
+            return startCode;
+        }
+        
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof MemberKey)) return false;
+            
+            MemberKey omk = (MemberKey) o;
+            
+            Member oMember = omk.backingMember;
+            
+            if ((backingMember instanceof Method) && !(oMember instanceof Method)) {
+                return false;
+            }
+            if ((backingMember instanceof Constructor) && !(oMember instanceof Constructor)) {
+                return false;
+            }
+            
+            if (!oMember.getName().equals(backingMember.getName())) return false;
+            
+            Class<?> oParams[];
+            Class<?> bParams[];
+            if (backingMember instanceof Method) {
+                oParams = ((Method) oMember).getParameterTypes();
+                bParams = ((Method) backingMember).getParameterTypes();
+            }
+            else if (backingMember instanceof Constructor) {
+                oParams = ((Constructor<?>) oMember).getParameterTypes();
+                bParams = ((Constructor<?>) backingMember).getParameterTypes();
+            }
+            else {
+                oParams = new Class<?>[0];
+                bParams = new Class<?>[0];
+            }
+            
+            if (oParams.length != bParams.length) return false;
+            for (int i = 0; i < oParams.length; i++) {
+                if (oParams[i] != bParams[i]) return false;
+            }
+            
+            return true;
         }
     }
 

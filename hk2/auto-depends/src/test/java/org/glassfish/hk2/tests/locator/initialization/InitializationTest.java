@@ -43,6 +43,7 @@ import java.util.SortedSet;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorFilter;
 import org.glassfish.hk2.api.Filter;
@@ -59,7 +60,7 @@ import org.junit.Test;
 public class InitializationTest {
     public final static String TEST_CLASS_A = "this.thing.isnt.actually.There";
     public final static String TEST_CLASS_B = "this.thing.isnt.added.in.the.Module";
-    public final static String SIMPLE_NAME = "simple";
+    public final static String SIMPLE_NAME = "InitializationTest";
     
     private final static DescriptorFilter aFilter = BuilderHelper.link(InitializationTest.TEST_CLASS_A).build();
     private final static DescriptorFilter bFilter = BuilderHelper.link(InitializationTest.TEST_CLASS_B).build();
@@ -82,7 +83,7 @@ public class InitializationTest {
     
     @Test
     public void testFindDescriptors() {
-        SortedSet<Descriptor> descriptors = locator.getDescriptors(aFilter);
+        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(aFilter);
         Assert.assertNotNull(descriptors);
         Assert.assertTrue(descriptors.size() == 2);
         
@@ -109,7 +110,7 @@ public class InitializationTest {
     
     @Test
     public void testDidNotFindDescriptors() {
-        SortedSet<Descriptor> descriptors = locator.getDescriptors(bFilter);
+        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(bFilter);
         Assert.assertNotNull(descriptors);
         Assert.assertTrue(descriptors.size() == 0);
         
@@ -118,7 +119,7 @@ public class InitializationTest {
     
     @Test
     public void testNoMatchFilter() {
-        SortedSet<Descriptor> descriptors = locator.getDescriptors(new Filter<Descriptor>() {
+        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(new Filter<Descriptor>() {
 
             @Override
             public boolean matches(Descriptor d) {
@@ -135,7 +136,7 @@ public class InitializationTest {
     
     @Test
     public void testLookupByName() {
-        SortedSet<Descriptor> descriptors = locator.getDescriptors(namedFilter);
+        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(namedFilter);
         
         Assert.assertNotNull(descriptors);
         Assert.assertTrue("Expecting 1 descriptor, found " + descriptors.size(), descriptors.size() == 1);

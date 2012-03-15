@@ -41,6 +41,7 @@ package org.glassfish.hk2.api;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -48,6 +49,16 @@ import java.util.Set;
  *
  */
 public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
+    /**
+     * This method returns true if this descriptor has been reified
+     * (class loaded).  If this method returns false then the other methods
+     * in this interface will throw an IllegalStateException.  Once this
+     * method returns true it may be
+     * 
+     * @return true if this descriptor has been reified, false otherwise
+     */
+    public boolean isReified();
+    
     /**
      * The implementation class that should be used
      * to generate new instances of this descriptor.
@@ -90,18 +101,18 @@ public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
     public Set<Annotation> getQualifierAnnotations();
     
     /**
-     * Returns the full set of Injectees this class has.  These
+     * Returns the full list of Injectees this class has.  These
      * references will be resolved prior to the class being constructed,
      * even if these injectees are field or method injectees.
      * <p>
      * If this descriptor is describing a factory created type then
-     * this set must have zero length
+     * this list must have zero length
      * 
-     * @return Will not return null, but may return an empty set.  The set
+     * @return Will not return null, but may return an empty list.  The set
      * of Injectees that must be resolved before this ActiveDescriptor can
      * be constructed
      */
-    public Set<Injectee> getInjectees();
+    public List<Injectee> getInjectees();
     
     /**
      * Creates an instance of the ActiveDescriptor.  All of the
@@ -114,7 +125,7 @@ public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
      * 
      * @return An instance of this ActiveDescriptor
      */
-    public T create(ServiceHandle<T> root);
+    public T create(ServiceHandle<?> root);
     
     /**
      * Disposes this instance.  All the PerLookup objects that
@@ -124,7 +135,7 @@ public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
      * @param instance The instance to destroy
      * @param root the extended provider created when this was found
      */
-    public void dispose(T instance, ServiceHandle<T> root);
+    public void dispose(T instance, ServiceHandle<?> root);
     
     
 }
