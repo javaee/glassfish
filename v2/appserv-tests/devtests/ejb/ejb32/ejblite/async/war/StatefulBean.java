@@ -3,8 +3,6 @@ package com.acme;
 import javax.ejb.*;
 import javax.annotation.*;
 
-import javax.inject.Inject;
-
 @Stateful
 @StatefulTimeout(0)
 public class StatefulBean {

@@ -13,12 +13,19 @@
 
     <target name="all">
         <antcall target="nonpersistenttimer"/>
+        <antcall target="async"/>
     </target>
 
     <target name="nonpersistenttimer">
         <record name="nonpersistenttimer.output" action="start" />
             <ant dir="nonpersistenttimer" target="all"/>
         <record name="nonpersistenttimer.output" action="stop" />
+    </target>
+
+    <target name="async">
+        <record name="async.output" action="start" />
+            <ant dir="async" target="all"/>
+        <record name="async.output" action="stop" />
     </target>
 
     <target name="usage">
