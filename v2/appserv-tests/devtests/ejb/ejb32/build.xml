@@ -15,6 +15,10 @@
         <antcall target="ejblite"/>
     </target>
 
+    <target name="lite">
+        <antcall target="ejblite"/>
+    </target>
+
     <target name="ejblite">
         <record name="ejblite.output" action="start" />
             <ant dir="ejblite" target="all"/>

@@ -11,6 +11,10 @@
     &commonBuild;
     &reporting;
 
+    <target name="lite">
+        <antcall target="ejblite"/>
+    </target>
+
     <target name="all">
         <antcall target="ejblite"/>
         <antcall target="full"/>
