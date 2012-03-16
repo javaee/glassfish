@@ -54,6 +54,8 @@
         <ant dir="sfsb" target="all"/>
         <ant dir="allowedmethods" target="all"/> 
         <ant dir="ejb31" target="all"/>
+<!--
+        <ant dir="ejb32" target="all"/>
 
 
 <!-- gradually reenable the existing tests as features come on line
@@ -134,6 +136,13 @@
         <record name="ejb31.output" action="start" />
             <ant dir="ejb31" target="all"/>
         <record name="ejb31.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="ejb32">
+        <record name="ejb32.output" action="start" />
+            <ant dir="ejb32" target="all"/>
+        <record name="ejb32.output" action="stop" />
         <antcall target="report"/>
     </target>
 
