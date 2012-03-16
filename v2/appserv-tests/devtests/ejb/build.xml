@@ -18,7 +18,14 @@
     <target name="all">
 
 	<antcall target="setup"/>
-	<antcall target="test"/>
+	<antcall target="test-all"/>
+	<antcall target="unsetup"/>
+    </target>
+
+    <target name="lite">
+
+	<antcall target="setup"/>
+	<antcall target="test-lite"/>
 	<antcall target="unsetup"/>
     </target>
 
@@ -42,7 +49,12 @@
 
     </target>
 
-    <target name="test">
+    <target name="test-lite">
+        <ant dir="ejb31" target="lite"/>
+        <ant dir="ejb32" target="lite"/>
+    </target>
+
+    <target name="test-all">
 
         <ant dir="stubs" target="all"/>
         <ant dir="txprop" target="all"/>
@@ -56,6 +68,7 @@
         <ant dir="ejb31" target="all"/>
 <!--
         <ant dir="ejb32" target="all"/>
+-->
 
 
 <!-- gradually reenable the existing tests as features come on line
