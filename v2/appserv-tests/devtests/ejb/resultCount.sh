@@ -4,6 +4,12 @@ FILE=$APS_HOME/test_resultsValid.xml
 echo "input file=$FILE"
 
 TOTAL=224
+TOTAL_LITE=7
+
+if [ $# -eq 1 ] && [ $1 == "lite" ]
+then TOTAL=$TOTAL_LITE
+echo "EJB Lite Test"
+fi
 
 PASSED=`grep "status value" $FILE | grep "pass" | wc -l`
 FAILED=`grep "status value" $FILE | grep "fail" | wc -l`

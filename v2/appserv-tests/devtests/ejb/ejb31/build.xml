@@ -13,6 +13,7 @@
 
     <target name="lite">
         <antcall target="ejblite"/>
+        <antcall target="embedded-lite"/>
     </target>
 
     <target name="all">
@@ -64,6 +65,12 @@
     <target name="embedded">
         <record name="embedded.output" action="start" />
             <ant dir="embedded" target="all"/>
+        <record name="embedded.output" action="stop" />
+    </target>
+
+    <target name="embedded-lite">
+        <record name="embedded.output" action="start" />
+            <ant dir="embedded" target="lite"/>
         <record name="embedded.output" action="stop" />
     </target>
 

@@ -20,6 +20,7 @@
 	<antcall target="setup"/>
 	<antcall target="test-all"/>
 	<antcall target="unsetup"/>
+        <antcall target="report"/>
     </target>
 
     <target name="lite">
@@ -27,6 +28,7 @@
 	<antcall target="setup"/>
 	<antcall target="test-lite"/>
 	<antcall target="unsetup"/>
+        <antcall target="report-lite"/>
     </target>
 
     <target name="setup">
@@ -89,7 +91,6 @@
 
 
         <record name="ejb.output" action="stop" />
-        <antcall target="report"/>
 
     </target>
 

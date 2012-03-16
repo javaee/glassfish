@@ -19,29 +19,56 @@
         <antcall target="dev-report"/>
     </target>
 
+    <target name="lite-report">
+        <antcall target="clean-result"/>
+        <antcall target="lite"/>
+        <antcall target="dev-report"/>
+    </target>
+
     <target name="all">
+        <antcall target="startdb"/>
+        <antcall target="run-lite"/>
+        <antcall target="run-full"/>
+        <antcall target="stopdb"/>
+    </target>
+
+    <target name="lite">
+        <antcall target="startdb"/>
+        <antcall target="run-lite"/>
+        <antcall target="stopdb"/>
+    </target>
+
+    <target name="startdb">
         <!-- disallow individual tests from starting and stopping database -->
         <property name="skip.start.database" value="true"/>
         <property name="skip.stop.database" value="true"/>
         <antcall target="start-derby"/>
+    </target>
+
+    <target name="stopdb">
+        <antcall target="stop-derby"/>
+    </target>
+
+    <target name="run-lite">
         <antcall target="basic"/>
         <antcall target="testclose"/>
-        <antcall target="twomodules"/>
         <antcall target="timertest"/>
         <antcall target="modulewithlibs"/>
         <antcall target="modulewithappname"/>
         <antcall target="twomoduleswithlibs"/> 
         <antcall target="ejbinwar"/>
-        <antcall target="ejbandwar"/>
         <antcall target="skipjar"/>
         <antcall target="twocontainers"/>
         <antcall target="embedasync"/>
 
+    </target>
+
+    <target name="run-full">
+        <antcall target="twomodules"/>
+        <antcall target="ejbandwar"/>
         <!-- These 2 tests will stop domain to run -->
         <antcall target="mdb"/>
         <antcall target="remote"/>
-
-        <antcall target="stop-derby"/>
     </target>
 
     <target name="basic">
