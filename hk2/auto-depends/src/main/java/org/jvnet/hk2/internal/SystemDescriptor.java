@@ -323,7 +323,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, MultiException collector) {
         this.implClass = implClass;
         
-        if (!Factory.class.isAssignableFrom(implClass)) {
+        if (!Factory.class.isAssignableFrom(implClass) || getAdvertisedContracts().contains(Factory.class.getName())) {
             creator = new ClazzCreator<T>(locator, implClass, collector);
             
             scope = Utilities.getScopeAnnotationType(implClass, collector);
@@ -331,6 +331,8 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(implClass, baseDescriptor.getName(), collector));
         }
         else {
+            creator = new FactoryCreator<T>(locator, implClass);
+            
             Method provideMethod = Utilities.getFactoryProvideMethod(implClass);
             
             scope = Utilities.getScopeAnnotationType(provideMethod, collector);
@@ -378,5 +380,10 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         if (!sd.getServiceId().equals(id)) return false;
         
         return sd.baseDescriptor.equals(baseDescriptor);
+    }
+    
+    public String toString() {
+        return "SystemDescriptor(" + getImplementation() + "," + Pretty.collection(getAdvertisedContracts()) + "," +
+          Pretty.collection(getQualifiers()) + "," + System.identityHashCode(this) + ")";
     }
 }

@@ -37,44 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.factory;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.util.Date;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
 /**
- * This interface should be implemented in order to provide
- * a factory for another type.  This is useful when the other type
- * has some reason that it cannot be a normal service.
- * <p>
- * In order to use a factory, the factory must be bound into the
- * system as a service itself, as well as binding a service that
- * represents what this factory creates.  For example:
- * <pre>
- * configurator.bind(BuilderHelper.linkFactory(DateFactory.class).to(Date.class).build());
- * configurator.bind(BuilderHelper.link(DateFactory.class).build());
- * </pre>
- * <p>
- * The above code would link a producer of Date into the system.
- * 
  * @author jwells
  *
  */
-@Contract
-public interface Factory<T> {
-    /**
-     * This method will create instances of the type of this factory.  The provide
-     * method must be annotated with the desired scope and qualifiers.
-     * 
-     * @return The produces object
-     */
-    public T provide();
+@Singleton
+public class DateInjectee {
+    @Inject private Date rawInject;
+    @Inject private Provider<Date> providedInject;
     
-    /**
-     * This method will dispose of objects created with this scope.  This method should
-     * not be annotated, as it is naturally paired with the provide method
-     * 
-     * @param instance The instance to dispose of
-     */
-    public void dispose(T instance);
-
+    public Date getRawInject() { return rawInject; }
+    public Date getProvidedInject() { return providedInject.get(); }
 }

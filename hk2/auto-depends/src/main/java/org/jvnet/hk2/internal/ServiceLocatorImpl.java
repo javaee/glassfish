@@ -41,6 +41,7 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,6 +66,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorBuilder;
 
 /**
  * @author jwells
@@ -81,6 +83,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     private final LinkedList<ActiveDescriptor<?>> allDescriptors = new LinkedList<ActiveDescriptor<?>>();
     private final HashMap<String, LinkedList<ActiveDescriptor<?>>> descriptorsByAdvertisedContract =
+            new HashMap<String, LinkedList<ActiveDescriptor<?>>>();
+    private final HashMap<String, LinkedList<ActiveDescriptor<?>>> descriptorsByName =
             new HashMap<String, LinkedList<ActiveDescriptor<?>>>();
     private final HashMap<String, HK2Loader> allLoaders = new HashMap<String, HK2Loader>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
@@ -104,20 +108,29 @@ public class ServiceLocatorImpl implements ServiceLocator {
             if (filter instanceof DescriptorFilter) {
                 DescriptorFilter df = (DescriptorFilter) filter;
                 
-                Set<String> advertisedContracts = df.getAdvertisedContracts();
-                if (!advertisedContracts.isEmpty()) {
-                    sortMeOut = new LinkedList<ActiveDescriptor<?>>();
+                if (df.getName() != null) {
+                    String name = df.getName();
                     
-                    for (String advertisedContract : advertisedContracts) {
-                        LinkedList<ActiveDescriptor<?>> candidates = descriptorsByAdvertisedContract.get(advertisedContract);
-                        if (candidates != null) {
-                            sortMeOut.addAll(candidates);
-                        }
-                        
-                    }
+                    sortMeOut = descriptorsByName.get(name);
+                    if (sortMeOut == null) sortMeOut = Collections.emptyList();
                 }
                 else {
-                    sortMeOut = allDescriptors;
+                
+                    Set<String> advertisedContracts = df.getAdvertisedContracts();
+                    if (!advertisedContracts.isEmpty()) {
+                        sortMeOut = new LinkedList<ActiveDescriptor<?>>();
+                    
+                        for (String advertisedContract : advertisedContracts) {
+                            LinkedList<ActiveDescriptor<?>> candidates = descriptorsByAdvertisedContract.get(advertisedContract);
+                            if (candidates != null) {
+                                sortMeOut.addAll(candidates);
+                            }
+                        
+                        }
+                    }
+                    else {
+                        sortMeOut = allDescriptors;
+                    }
                 }
             }
             else {
@@ -394,7 +407,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
-        DescriptorFilter filter = BuilderHelper.link(rawClass).build();
+        DescriptorBuilder builder = BuilderHelper.link(rawClass, false, false);
+        if (name != null) {
+            builder = builder.named(name);
+        }
+        
+        Filter<Descriptor> filter = builder.build();
+        
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
         candidates = narrow(candidates, contractOrImpl, name, true, qualifiers);
         
@@ -434,6 +453,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 
                 byImpl.add(sd);
                 
+            }
+            
+            if (sd.getName() != null) {
+                String name = sd.getName();
+                LinkedList<ActiveDescriptor<?>> byName = descriptorsByName.get(name);
+                if (byName == null) {
+                    byName = new LinkedList<ActiveDescriptor<?>>();
+                    
+                    descriptorsByName.put(name, byName);
+                }
+                
+                byName.add(sd);
             }
         }
         

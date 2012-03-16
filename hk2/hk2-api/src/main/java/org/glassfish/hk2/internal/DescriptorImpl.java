@@ -178,7 +178,9 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 	  
 	    if (!dCandI.containsAll(contracts)) return false;
 		
-	    if (!safeEquals(d.getName(), name)) return false;
+	    if (name != null) {
+	        if (!safeEquals(name, d.getName())) return false;
+	    }
 		
 		if (!d.getQualifiers().containsAll(qualifiers)) return false;
 		
