@@ -48,6 +48,8 @@ import java.util.Set;
 import javax.inject.Named;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorFilter;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.hk2.tests.contracts.AnotherContract;
@@ -208,4 +210,44 @@ public class FilterBuilderTest {
     
         Assert.assertTrue(allFilter.matches(bob));
 	}
+	
+	@Test
+	public void testFactoryFilter() {
+	    DescriptorFilter df = BuilderHelper.link(GoodFactory.class, false).to(Factory.class).build();
+	    
+	    Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
+	    Assert.assertTrue(df.getAdvertisedContracts().contains(Factory.class.getName()));
+	    
+	    Assert.assertEquals(String.class.getName(), df.getName());
+	}
+	
+	@Test
+    public void testFactoryWithName() {
+        DescriptorFilter df = BuilderHelper.link(AnotherGoodFactory.class).build();
+        
+        Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
+        Assert.assertTrue(df.getAdvertisedContracts().contains(Factory.class.getName()));
+        
+        Assert.assertEquals(List.class.getName(), df.getName());
+    }
+	
+	@Test
+    public void testLinkFactory() {
+        DescriptorFilter df = BuilderHelper.linkFactory(GoodFactory.class).to(String.class).build();
+        
+        Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
+        Assert.assertTrue(df.getAdvertisedContracts().contains(String.class.getName()));
+        
+        Assert.assertNull("Did not expect a name, but got " + df.getName(), df.getName());
+    }
+	
+	@Test
+    public void testAutoGenName() {
+        DescriptorFilter df = BuilderHelper.link(NamedService.class).build();
+        
+        Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
+        Assert.assertTrue(df.getAdvertisedContracts().contains(NamedService.class.getName()));
+        
+        Assert.assertEquals("NamedService", df.getName());
+    }
 }

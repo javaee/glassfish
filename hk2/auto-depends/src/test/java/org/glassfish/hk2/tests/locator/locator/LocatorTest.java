@@ -80,6 +80,10 @@ public class LocatorTest {
         GetStatisticsCommand statsCommand = (GetStatisticsCommand) locator.getService(AdminCommand.class, "GetStatisticsCommand");
         ShutdownCommand shutdownCommand = (ShutdownCommand) locator.getService(AdminCommand.class, "ShutdownCommand");
         
+        Assert.assertNotNull(bootCommand);
+        Assert.assertNotNull(statsCommand);
+        Assert.assertNotNull(shutdownCommand);
+        
         Assert.assertTrue("Returned services did not contain BootCommand " + Pretty.collection(handles), handles.contains(bootCommand));
         Assert.assertTrue("Returned services did not contain StatsCommand " + Pretty.collection(handles), handles.contains(statsCommand));
         Assert.assertTrue("Returned services did not contain ShtudownCommand " + Pretty.collection(handles), handles.contains(shutdownCommand));

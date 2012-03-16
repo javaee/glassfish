@@ -68,9 +68,11 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	public DescriptorBuilderImpl() {
 	}
 	
-	public DescriptorBuilderImpl(String implementation) {
+	public DescriptorBuilderImpl(String implementation, boolean addToContracts) {
 	    this.implementation = implementation;
-	    contracts.add(implementation);
+	    if (addToContracts) {
+	      contracts.add(implementation);
+	    }
 	}
 
 	/* (non-Javadoc)

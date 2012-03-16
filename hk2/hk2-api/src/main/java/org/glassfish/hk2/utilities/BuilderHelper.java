@@ -39,10 +39,13 @@
  */
 package org.glassfish.hk2.utilities;
 
-import javax.inject.Provider;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.OrFilter;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
@@ -66,8 +69,28 @@ public class BuilderHelper {
 	}
 	
 	/**
+     * This method links an implementation class with a {@link DescriptorBuilder}, to
+     * be used to further build the {@link Descriptor}.
+     * 
+     * @param implementationClass The fully qualified name of the implementation
+     * class to be associated with the PredicateBuilder.
+     * @param addToContracts if true, this implementation class will be added to the
+     * list of contracts
+     * 
+     * @return A {@link DescriptorBuilder} that can be used to further build up the
+     * {@link Descriptor}
+     * @throws IllegalArgumentException if implementationClass is null
+     */
+    public static DescriptorBuilder link(String implementationClass, boolean addToContracts) throws IllegalArgumentException {
+        if (implementationClass == null) throw new IllegalArgumentException();
+        
+        return new DescriptorBuilderImpl(implementationClass, addToContracts);
+    }
+	
+	/**
 	 * This method links an implementation class with a {@link DescriptorBuilder}, to
-	 * be used to further build the {@link Descriptor}.
+	 * be used to further build the {@link Descriptor}.  This method will automatically
+	 * put the implementationClass into the list of advertised contracts.
 	 * 
 	 * @param implementationClass The fully qualified name of the implementation
 	 * class to be associated with the PredicateBuilder.
@@ -77,14 +100,151 @@ public class BuilderHelper {
 	 * @throws IllegalArgumentException if implementationClass is null
 	 */
 	public static DescriptorBuilder link(String implementationClass) throws IllegalArgumentException {
-		if (implementationClass == null) throw new IllegalArgumentException();
-		
-		return new DescriptorBuilderImpl(implementationClass);
+	    return link(implementationClass, true);
+	}
+	
+	private static Class<?> getRawClass(Type type) {
+        if (type == null) return null;
+        
+        if (type instanceof Class) {
+            return (Class<?>) type;
+        }
+        
+        if (type instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) type).getRawType();
+            if (rawType instanceof Class) {
+                return (Class<?>) rawType;
+            }
+        }
+        
+        return null;
+	}
+	
+	private static String getFactoryName(Type type) {
+	    if (type instanceof Class) return Object.class.getName();
+	    if (!(type instanceof ParameterizedType)) {
+	        throw new AssertionError("Unknown Factory type " + type);
+	    }
+	    
+	    ParameterizedType pt = (ParameterizedType) type;
+	    Class<?> clazz = getRawClass(pt.getActualTypeArguments()[0]);
+	    if (clazz == null) {
+	        throw new IllegalArgumentException("A factory implmentation may not have a wildcard type or type variable as its actual type");
+	    }
+	    
+	    return clazz.getName();
+	}
+	
+	private static String getFactoryName(Class<?> implClass) {
+	    Type types[] = implClass.getGenericInterfaces();
+	    
+	    for (Type type : types) {    
+	        Class<?> clazz = getRawClass(type);
+	        if (clazz == null || !Factory.class.equals(clazz)) continue;
+	        
+	        // Found the factory!
+	        return getFactoryName(type);
+	    }
+	    
+	    throw new AssertionError("getFactoryName was given a non-factory " + implClass);
+	}
+	
+	private static String getNamedName(Named named, Class<?> implClass) {
+	    String name = named.value();
+	    if (name != null && !name.equals("")) return name;
+	    
+        String cn = implClass.getName();
+            
+        int index = cn.lastIndexOf(".");
+        if (index < 0) return cn;
+        
+        return cn.substring(index + 1);
+	}
+	
+	private static String getName(Class<?> implClass) {
+	    boolean isFactory = (Factory.class.isAssignableFrom(implClass));
+	    Named named = implClass.getAnnotation(Named.class);
+	    
+	    String factoryName = (isFactory) ? getFactoryName(implClass) : null ;
+	    String namedName = (named != null) ? getNamedName(named, implClass) : null ;
+	    
+	    if ((factoryName != null) && (namedName != null)) {
+	        if (!namedName.equals(factoryName)) {
+	            throw new IllegalArgumentException("The name of a factory class must be the fully qualified class name " + 
+	                " of the raw type of the factory actual type argument (" + factoryName + ")." +
+	                "  However, this factory had an @Named annotation with value " + namedName);
+	        }
+	    }
+	    
+	    if (factoryName != null) return factoryName;
+	    if (namedName != null) return namedName;
+	    
+	    return null;
 	}
 	
 	/**
+     * This method links an implementation class with a {@link DescriptorBuilder}, to
+     * be used to further build the {@link Descriptor}.
+     * If the class is annotated with &#86;Named, it will also automatically fill in
+     * the name field of the descriptor.  If the class implements {@link Factory} then
+     * the name will automatically be filled in with the fully qualified class name
+     * of the actual type that the factory produces.  If the class has both
+     * &#86;Named and is a Factory and the value of the &;Named annotation does not match
+     * the value in &#86;Named then this method will throw an IllegalArgumentException
+     * 
+     * @param implementationClass The implementation class to be associated
+     * with the {@link DescriptorBuilder}.
+     * @param addToContracts true if this impl class should be automatically added to
+     * the list of contracts
+     * @param getName true if the name should be automatically added (if it is there)
+     * @return A {@link DescriptorBuilder} that can be used to further build up the
+     * {@link Descriptor}
+     * @throws IllegalArgumentException if implementationClass is null
+     */
+    public static DescriptorBuilder link(Class<?> implementationClass, boolean addToContracts, boolean getName) throws IllegalArgumentException {
+        if (implementationClass == null) throw new IllegalArgumentException();
+        
+        DescriptorBuilder builder = link(implementationClass.getName(), addToContracts);
+        
+        if (getName) {
+            String name = getName(implementationClass);
+            if (name != null) {
+                builder = builder.named(name);
+            }
+        }
+        
+        return builder;
+    }
+	
+	/**
+     * This method links an implementation class with a {@link DescriptorBuilder}, to
+     * be used to further build the {@link Descriptor}.
+     * If the class is annotated with &#86;Named, it will also automatically fill in
+     * the name field of the descriptor.  If the class implements {@link Factory} then
+     * the name will automatically be filled in with the fully qualified class name
+     * of the actual type that the factory produces.  If the class has both
+     * &#86;Named and is a Factory and the value of the &;Named annotation does not match
+     * the value in &#86;Named then this method will throw an IllegalArgumentException
+     * 
+     * @param implementationClass The implementation class to be associated
+     * with the {@link DescriptorBuilder}.
+     * @param addToContracts true if this impl class should be automatically added to
+     * the list of contracts
+     * @return A {@link DescriptorBuilder} that can be used to further build up the
+     * {@link Descriptor}
+     * @throws IllegalArgumentException if implementationClass is null
+     */
+    public static DescriptorBuilder link(Class<?> implementationClass, boolean addToContracts) throws IllegalArgumentException {
+        return link(implementationClass, addToContracts, true);
+    }
+	
+	/**
 	 * This method links an implementation class with a {@link DescriptorBuilder}, to
-	 * be used to further build the {@link Descriptor}.
+	 * be used to further build the {@link Descriptor}.  If this class is not a factory
+	 * this method will put the name of the implementation class into the list of advertised
+	 * contracts.  If the class is annotated with &#86;Named, it will also automatically fill
+	 * in the name field of the descriptor.  If this class is a factory it will automatically
+	 * put {@link Factory} into the list of advertised contracts.
 	 * 
 	 * @param implementationClass The implementation class to be associated
 	 * with the {@link DescriptorBuilder}.
@@ -93,10 +253,37 @@ public class BuilderHelper {
 	 * @throws IllegalArgumentException if implementationClass is null
 	 */
 	public static DescriptorBuilder link(Class<?> implementationClass) throws IllegalArgumentException {
-		if (implementationClass == null) throw new IllegalArgumentException();
-		
-		return link(implementationClass.getName());
+	    if (implementationClass == null) throw new IllegalArgumentException();
+	    
+	    boolean isFactory = (Factory.class.isAssignableFrom(implementationClass));
+	    
+	    DescriptorBuilder db = link(implementationClass, !isFactory);
+	    
+	    if (isFactory) {
+	        db = db.to(Factory.class);
+	    }
+	    
+	    return db;
 	}
+	
+	/**
+     * This method links an a factory with a {@link DescriptorBuilder}, to
+     * be used to further build the {@link Descriptor}.  This method will
+     * NOT put this implementation class into the list of advertised contracts.
+     * The {@link Descriptor} that is produced from this should describe what
+     * the factory creates, not the factory itself.  Remember that the factory
+     * itself must also be bound into the {@link Module}.
+     * 
+     * @param implementationClass The fully qualified name of the implementation
+     * class to be associated with the PredicateBuilder.
+     * 
+     * @return A {@link DescriptorBuilder} that can be used to further build up the
+     * {@link Descriptor}
+     * @throws IllegalArgumentException if implementationClass is null
+     */
+    public static DescriptorBuilder linkFactory(Class<?> factoryClass) throws IllegalArgumentException {
+        return link(factoryClass, false, false);
+    }
 	
 	/**
 	 * This method returns a filter that allows for doing a logical OR of descriptors.  If any of the

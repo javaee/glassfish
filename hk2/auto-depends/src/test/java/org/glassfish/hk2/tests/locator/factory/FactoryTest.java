@@ -37,44 +37,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.factory;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.util.Date;
+
+import junit.framework.Assert;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * This interface should be implemented in order to provide
- * a factory for another type.  This is useful when the other type
- * has some reason that it cannot be a normal service.
- * <p>
- * In order to use a factory, the factory must be bound into the
- * system as a service itself, as well as binding a service that
- * represents what this factory creates.  For example:
- * <pre>
- * configurator.bind(BuilderHelper.linkFactory(DateFactory.class).to(Date.class).build());
- * configurator.bind(BuilderHelper.link(DateFactory.class).build());
- * </pre>
- * <p>
- * The above code would link a producer of Date into the system.
- * 
  * @author jwells
  *
  */
-@Contract
-public interface Factory<T> {
-    /**
-     * This method will create instances of the type of this factory.  The provide
-     * method must be annotated with the desired scope and qualifiers.
-     * 
-     * @return The produces object
-     */
-    public T provide();
+public class FactoryTest {
+    public final static String TEST_NAME = "FactoryTest";
+    private ServiceLocator locator;
     
-    /**
-     * This method will dispose of objects created with this scope.  This method should
-     * not be annotated, as it is naturally paired with the provide method
-     * 
-     * @param instance The instance to dispose of
-     */
-    public void dispose(T instance);
-
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new FactoryModule());
+        if (locator == null) {
+            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
+        }
+    }
+    
+    @Test
+    public void testSimpleFactory() {
+        Date date = locator.getService(Date.class);
+        Assert.assertNotNull(date);
+    }
+    
+    @Test
+    public void testFactoryProvided() throws InterruptedException {
+        DateInjectee dateInjectee = locator.getService(DateInjectee.class);
+        Assert.assertNotNull(dateInjectee);
+        
+        Date rawDate = dateInjectee.getRawInject();
+        Assert.assertNotNull(rawDate);
+        
+        Date providedDate1 = dateInjectee.getProvidedInject();
+        Assert.assertNotNull(providedDate1);
+        
+        Date providedDate2 = dateInjectee.getProvidedInject();
+        Assert.assertNotNull(providedDate2);
+        
+        Assert.assertNotSame(rawDate, providedDate1);
+        Assert.assertNotSame(rawDate, providedDate2);
+        Assert.assertNotSame(providedDate1, providedDate2);
+    }
 }
