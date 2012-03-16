@@ -62,6 +62,10 @@ public class ThreeThirtyResolver implements InjectionResolver {
     public Object resolve(Injectee injectee, ServiceHandle<?> root) {
         ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
         
+        if (ad == null) {
+            throw new IllegalStateException("There was no object available for injection at " + injectee);
+        }
+        
         return locator.getService(ad, root);
     }
 

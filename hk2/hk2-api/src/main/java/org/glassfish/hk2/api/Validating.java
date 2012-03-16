@@ -37,25 +37,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.perlookup;
+package org.glassfish.hk2.api;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * @author jwells
  *
  */
-public class PerLookupModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(SimpleService.class).build());
-        configurator.bind(BuilderHelper.link(ThriceInjectedService.class).build());
-    }
+@Retention(RUNTIME)
+@Target( { ANNOTATION_TYPE })
+public @interface Validating {
 
 }

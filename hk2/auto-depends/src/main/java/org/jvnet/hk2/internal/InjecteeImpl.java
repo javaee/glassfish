@@ -99,4 +99,9 @@ public class InjecteeImpl implements Injectee {
     public AnnotatedElement getParent() {
         return parent;
     }
+    
+    public String toString() {
+        return "Injectee(" + Pretty.type(requiredType) + "," + Pretty.collection(qualifiers) + "," +
+                position + "," + parent + "," + System.identityHashCode(this) + ")";
+    }
 }

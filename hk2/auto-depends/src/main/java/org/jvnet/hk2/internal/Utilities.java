@@ -235,6 +235,27 @@ public class Utilities {
     }
     
     /**
+     * Gets the first type argument if this is a parameterized
+     * type, otherwise it returns Object.class
+     * 
+     * @param type
+     * @return
+     */
+    public static Type getFirstTypeArgument(Type type) {
+        if (type instanceof Class) {
+            return Object.class;
+        }
+        
+        if (!(type instanceof ParameterizedType)) return Object.class;
+        
+        ParameterizedType pt = (ParameterizedType) type;
+        Type arguments[] = pt.getActualTypeArguments();
+        if (arguments.length <= 0) return Object.class;
+        
+        return arguments[0];
+    }
+    
+    /**
      * Gets all the constructors for a given class
      * 
      * @param clazz The class to find the constructors of

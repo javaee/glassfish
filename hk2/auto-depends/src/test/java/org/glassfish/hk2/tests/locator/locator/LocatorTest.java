@@ -80,9 +80,9 @@ public class LocatorTest {
         GetStatisticsCommand statsCommand = (GetStatisticsCommand) locator.getService(AdminCommand.class, "GetStatisticsCommand");
         ShutdownCommand shutdownCommand = (ShutdownCommand) locator.getService(AdminCommand.class, "ShutdownCommand");
         
-        Assert.assertTrue("Returned services did not contain BootCommand " + Pretty.prettyCollection(handles), handles.contains(bootCommand));
-        Assert.assertTrue("Returned services did not contain StatsCommand " + Pretty.prettyCollection(handles), handles.contains(statsCommand));
-        Assert.assertTrue("Returned services did not contain ShtudownCommand " + Pretty.prettyCollection(handles), handles.contains(shutdownCommand));
+        Assert.assertTrue("Returned services did not contain BootCommand " + Pretty.collection(handles), handles.contains(bootCommand));
+        Assert.assertTrue("Returned services did not contain StatsCommand " + Pretty.collection(handles), handles.contains(statsCommand));
+        Assert.assertTrue("Returned services did not contain ShtudownCommand " + Pretty.collection(handles), handles.contains(shutdownCommand));
     }
     
     @Test
@@ -106,10 +106,10 @@ public class LocatorTest {
         ShutdownCommand shutdownCommand = (ShutdownCommand) locator.getService(AdminCommand.class, "ShutdownCommand");
         ServiceLocator locatorItself = (ServiceLocator) locator.getService(ServiceLocator.class);
         
-        Assert.assertTrue("Returned services did not contain BootCommand " + Pretty.prettyCollection(handles), handles.contains(bootCommand));
-        Assert.assertTrue("Returned services did not contain StatsCommand " + Pretty.prettyCollection(handles), handles.contains(statsCommand));
-        Assert.assertTrue("Returned services did not contain ShtudownCommand " + Pretty.prettyCollection(handles), handles.contains(shutdownCommand));
-        Assert.assertTrue("Returned services did not contain ServiceLocator " + Pretty.prettyCollection(handles), handles.contains(locatorItself));
+        Assert.assertTrue("Returned services did not contain BootCommand " + Pretty.collection(handles), handles.contains(bootCommand));
+        Assert.assertTrue("Returned services did not contain StatsCommand " + Pretty.collection(handles), handles.contains(statsCommand));
+        Assert.assertTrue("Returned services did not contain ShtudownCommand " + Pretty.collection(handles), handles.contains(shutdownCommand));
+        Assert.assertTrue("Returned services did not contain ServiceLocator " + Pretty.collection(handles), handles.contains(locatorItself));
     }
 
 }
