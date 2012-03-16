@@ -89,6 +89,8 @@ public interface ServiceLocator {
      * found.  
      * 
      * @param injectee The injectee to find the ActiveDescriptor for
+     * @param root The ultimate parent of this service creation.  May not be null.  If this
+     *   is a root creation, use getServiceHandle(ActiveDescriptor)
      * @return The active descriptor for this injection point
      * @throws MultiException if there were errors when loading or analyzing the class
      */

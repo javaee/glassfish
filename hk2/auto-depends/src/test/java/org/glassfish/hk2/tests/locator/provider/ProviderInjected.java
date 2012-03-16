@@ -37,25 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.perlookup;
+package org.glassfish.hk2.tests.locator.provider;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
 /**
  * @author jwells
  *
  */
-public class PerLookupModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(SimpleService.class).build());
-        configurator.bind(BuilderHelper.link(ThriceInjectedService.class).build());
+public class ProviderInjected {
+    @Inject
+    private Provider<InstantiationChecker> checkerProvider;
+    
+    public void doTheGet() {
+        checkerProvider.get();
     }
 
 }

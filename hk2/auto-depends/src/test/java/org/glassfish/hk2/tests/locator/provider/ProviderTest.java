@@ -37,25 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.perlookup;
+package org.glassfish.hk2.tests.locator.provider;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import junit.framework.Assert;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class PerLookupModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(SimpleService.class).build());
-        configurator.bind(BuilderHelper.link(ThriceInjectedService.class).build());
+public class ProviderTest {
+    public final static String TEST_NAME = "ProviderTest";
+    private ServiceLocator locator;
+    
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new ProviderModule());
+        if (locator == null) {
+            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
+        }
     }
 
+    @Test
+    public void testSimpleProvider() {
+        ProviderInjected pi = locator.getService(ProviderInjected.class);
+        Assert.assertNotNull(pi);
+        
+        Assert.assertFalse(InstantiationChecker.getIsInstantiated());
+        
+        pi.doTheGet();
+        
+        Assert.assertTrue(InstantiationChecker.getIsInstantiated());
+    }
 }

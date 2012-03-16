@@ -37,25 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.perlookup;
-
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
+package org.glassfish.hk2.api;
 
 /**
+ * This method is called when it determined that a type that is
+ * annotated with a Validating annotation is to be injected into
+ * any other class.
+ * 
  * @author jwells
  *
  */
-public class PerLookupModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+public interface InjectionPointValidator {
+    /**
+     * This method is called whenever it has been determined that a validating
+     * class is to be injected into an injection point.
+     * 
+     * @param injectedInto The class that could be injected into
+     * @param injectee The injection point of that class to validate
      */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(SimpleService.class).build());
-        configurator.bind(BuilderHelper.link(ThriceInjectedService.class).build());
-    }
+    public void validateInjectionPoint(Class<?> injectedInto, Injectee injectee);
 
 }

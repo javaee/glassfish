@@ -49,6 +49,8 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.inject.Provider;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
@@ -57,6 +59,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -187,6 +190,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee)
             throws MultiException {
         Type requiredType = injectee.getRequiredType();
+        Class<?> rawType = Utilities.getRawClass(requiredType);
+        if (rawType == null) return null;
+        
+        if (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType) ) {
+            IterableProviderImpl<?> value = new IterableProviderImpl<Object>(this,
+                    Utilities.getFirstTypeArgument(requiredType),
+                    injectee.getRequiredQualifiers());
+            
+            return new ConstantActiveDescriptor<Object>(value);
+        }
+        
         Set<Annotation> qualifiersAsSet = injectee.getRequiredQualifiers();
         
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);

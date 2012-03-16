@@ -42,6 +42,7 @@ package org.jvnet.hk2.internal;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
@@ -71,11 +72,37 @@ public class Pretty {
         return cn.substring(index + 1);
     }
     
+    public static String pType(ParameterizedType pType) {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append(clazz(Utilities.getRawClass(pType)) + "<");
+        
+        boolean first = true;
+        for (Type t : pType.getActualTypeArguments()) {
+            if (first) {
+                first = false;
+                
+                sb.append(type(t));
+            }
+            else {
+                sb.append("," + type(t));
+            }
+        }
+        
+        sb.append(">");
+        
+        return sb.toString();
+    }
+    
     public static String type(Type t) {
         if (t == null) return NULL_STRING;
         
         if (t instanceof Class) {
-            return "class " + clazz((Class<?>) t);
+            return clazz((Class<?>) t);
+        }
+        
+        if (t instanceof ParameterizedType) {
+            return pType((ParameterizedType) t);
         }
         
         return t.toString();
@@ -125,7 +152,7 @@ public class Pretty {
         return "field(" + baseString + " " + field.getName() + ")";
     }
     
-    public static String prettyCollection(Collection<?> collection) {
+    public static String collection(Collection<?> collection) {
         StringBuffer sb = new StringBuffer("Collection(" + System.identityHashCode(collection) + ",{");
         
         boolean first = true;
