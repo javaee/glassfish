@@ -13,6 +13,8 @@ public class TimerStuffImpl implements TimerStuff {
     
     private EJBContext context_;
     protected boolean isBMT = false;
+
+    protected boolean cancelAutomaticTimer = false;
     
     public TimerStuffImpl() {}
 
@@ -167,7 +169,12 @@ public class TimerStuffImpl implements TimerStuff {
             context_.getUserTransaction().begin();
         }
         try {
-            timer.cancel();
+            if (timer == null) {
+                cancelAutomaticTimer = true;
+                // and let it expire and cancel itself
+            } else {
+                timer.cancel();
+            }
         } catch(Exception e) {
             if( throwError ) {
                 throw new RemoteException("", e);
@@ -588,6 +595,12 @@ public class TimerStuffImpl implements TimerStuff {
                 throw new Exception(ite.getCause());
             } catch(Exception e) {
                 throw e;
+            }
+        } else if( infoString.startsWith("Automatic") ) {
+            System.out.println("Got automatic timeout for " + infoString);
+            if (cancelAutomaticTimer) {
+                cancelTimerNoError(t);
+                System.out.println("... Canceled " + infoString);
             }
         } else if( infoString.startsWith("RuntimeException") ) {
             System.out.println("Causing runtime exception from Timeout");

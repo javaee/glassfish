@@ -140,6 +140,8 @@ public class StatefulWrapperImpl implements StatefulWrapper {
             e.printStackTrace();
         }
 
+        timerStuff.cancelTimerNoError(null);
+        try { Thread.sleep(3000); } catch(Exception e) {};
         timerStuff.assertNoTimers();
     }
 

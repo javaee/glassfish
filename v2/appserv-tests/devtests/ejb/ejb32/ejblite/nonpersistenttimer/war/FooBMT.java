@@ -10,6 +10,7 @@ public class FooBMT extends TimerStuffImpl implements Foo {
     @Resource private SessionContext sc;
 
     @Timeout
+    @Schedule(second="*/2", minute="*", hour="*", info="Automatic BMT", persistent=false)
     public void timeout(Timer t) {
         try {
             System.out.println("In FooBMT::Timeout --> " + t.getInfo());
