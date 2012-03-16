@@ -52,8 +52,8 @@
     </target>
 
     <target name="test-lite">
-        <ant dir="ejb31" target="lite"/>
         <ant dir="ejb32" target="lite"/>
+        <ant dir="ejb31" target="lite"/>
     </target>
 
     <target name="test-all">

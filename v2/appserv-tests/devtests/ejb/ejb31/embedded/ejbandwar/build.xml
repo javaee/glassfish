@@ -7,7 +7,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="ejb-ejb31-embedded-modulewithlibs-App" default="usage" basedir=".">
+<project name="ejb-ejb31-embedded-ejbandwar-App" default="usage" basedir=".">
 
     &embeddedCommon;
     &commonSetup;
@@ -92,7 +92,7 @@
               classname="${se.client}">
            <arg line="${jndiroot}"/>
 <!--
-           <sysproperty key="org.glassfish.ejb.embedded.keep-temporary-files" value="true"/>
+           <jvmarg value="-Dorg.glassfish.ejb.embedded.keep-temporary-files=true"/>
 -->
         </java>
     </target>

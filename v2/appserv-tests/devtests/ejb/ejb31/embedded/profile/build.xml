@@ -51,6 +51,7 @@
               classpath="${assemble.dir}/${appname}-ejb.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="${jndiroot}"/>
+<jvmarg value="-Dxuse.hash.for.appid=true"/>
         </java>
     </target>
 

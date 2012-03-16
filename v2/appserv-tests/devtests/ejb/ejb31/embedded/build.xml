@@ -26,16 +26,22 @@
     </target>
 
     <target name="all">
-        <antcall target="startdb"/>
+        <!-- disallow individual tests from starting and stopping database -->
+        <property name="skip.start.database" value="true"/>
+        <property name="skip.stop.database" value="true"/>
+        <antcall target="start-derby"/>
         <antcall target="run-lite"/>
         <antcall target="run-full"/>
-        <antcall target="stopdb"/>
+        <antcall target="stop-derby"/>
     </target>
 
     <target name="lite">
+        <!-- disallow individual tests from starting and stopping database -->
+        <property name="skip.start.database" value="true"/>
+        <property name="skip.stop.database" value="true"/>
         <antcall target="startdb"/>
         <antcall target="run-lite"/>
-        <antcall target="stopdb"/>
+        <antcall target="stop-derby"/>
     </target>
 
     <target name="startdb">
@@ -54,8 +60,6 @@
         <antcall target="testclose"/>
         <antcall target="timertest"/>
         <antcall target="modulewithlibs"/>
-        <antcall target="modulewithappname"/>
-        <antcall target="twomoduleswithlibs"/> 
         <antcall target="ejbinwar"/>
         <antcall target="skipjar"/>
         <antcall target="twocontainers"/>
@@ -64,7 +68,9 @@
     </target>
 
     <target name="run-full">
+        <antcall target="modulewithappname"/>
         <antcall target="twomodules"/>
+        <antcall target="twomoduleswithlibs"/> 
         <antcall target="ejbandwar"/>
         <!-- These 2 tests will stop domain to run -->
         <antcall target="mdb"/>

@@ -7,7 +7,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="ejb-ejb31-embedded-modulewithlibs-App" default="usage" basedir=".">
+<project name="ejb-ejb31-embedded-skipjar-App" default="usage" basedir=".">
 
     &embeddedCommon;
     &commonSetup;
