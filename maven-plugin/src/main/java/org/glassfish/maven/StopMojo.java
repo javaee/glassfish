@@ -64,10 +64,4 @@ public class StopMojo extends AbstractServerMojo {
         }
     }
 
-    public void stopGlassFish(String serverId, ClassLoader cl) throws Exception {
-        Class clazz = cl.loadClass(PluginUtil.class.getName());
-        Method m = clazz.getMethod("stopGlassFish", new Class[]{String.class});
-        m.invoke(null, new Object[]{serverId});
-    }
-
 }

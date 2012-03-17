@@ -198,6 +198,22 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
         return deployParams.toArray(new String[0]);
     }
 
+    protected String[] getDeploymentParameters(Properties goalConfiguration) {
+        List<String> deployParams = new ArrayList();
+        set(deployParams, "--name", goalConfiguration.getProperty("name"));
+        set(deployParams, "--force", "true");
+        set(deployParams, "--contextroot", goalConfiguration.getProperty("contextRoot"));
+        set(deployParams, "--precompilejsp", goalConfiguration.getProperty("precompileJsp"));
+        set(deployParams, "--dbvendorname", goalConfiguration.getProperty("dbVendorName"));
+        set(deployParams, "--createtables", goalConfiguration.getProperty("createTables"));
+        set(deployParams, "--libraries", goalConfiguration.getProperty("libraries"));
+        List<String> deploymentParams = (List<String>) goalConfiguration.get("deploymentParams");
+        for (String p : deploymentParams) {
+            deployParams.add(p);
+        }
+        return deployParams.toArray(new String[0]);
+    }
+
     protected String[] getUndeploymentParameters() {
         List<String> undeployParams = new ArrayList();
         if (undeploymentParams != null) {
@@ -223,13 +239,17 @@ public abstract class AbstractDeployMojo extends AbstractServerMojo {
     }
 
     protected String getApp() {
+        return getApp(app);
+    }
+
+    protected String getApp(String app) {
         if (app != null) {
             return new File(app).isAbsolute() ? app : baseDirectory + File.separator + app;
         } else {
-            return buildDirectory + File.separator + fileName + ".war";
+            return buildDirectory + File.separator + fileName + ".war"; // TODO :: use pom.xml's packaging type.
         }
     }
-
+    
     protected void doDeploy(String serverId, ClassLoader cl, Properties bootstrapProps,
                             Properties glassfishProperties,
                             File archive, String[] deploymentParams) throws Exception {

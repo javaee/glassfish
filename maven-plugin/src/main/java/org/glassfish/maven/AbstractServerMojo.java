@@ -58,6 +58,7 @@ import org.apache.maven.project.MavenProjectBuilder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringReader;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -574,5 +575,19 @@ public abstract class AbstractServerMojo extends AbstractMojo {
 //        String fs = File.separator;
 //        return new File(installRoot, "domains" + fs + "domain1").getAbsolutePath();
 //    }
+
+    public void startGlassFish(String serverId, ClassLoader cl, Properties bootstrapProperties,
+                               Properties glassfishProperties) throws Exception {
+        Class clazz = cl.loadClass(PluginUtil.class.getName());
+        Method m = clazz.getMethod("startGlassFish", new Class[]{String.class,
+                ClassLoader.class, Properties.class, Properties.class});
+        m.invoke(null, new Object[]{serverId, cl, bootstrapProperties, glassfishProperties});
+    }
+
+    public void stopGlassFish(String serverId, ClassLoader cl) throws Exception {
+        Class clazz = cl.loadClass(PluginUtil.class.getName());
+        Method m = clazz.getMethod("stopGlassFish", new Class[]{String.class});
+        m.invoke(null, new Object[]{serverId});
+    }
 
 }

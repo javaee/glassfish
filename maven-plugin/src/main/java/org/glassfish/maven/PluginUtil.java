@@ -43,6 +43,7 @@ package org.glassfish.maven;
 import org.glassfish.embeddable.*;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -102,7 +103,8 @@ public class PluginUtil {
         // Lookup the deployer.
         Deployer deployer = gf.getService(Deployer.class);
         logger.logp(Level.FINE, "PluginUtil", "doDeploy", "Deployer = {0}", deployer);
-
+        logger.info("Deploying [" + archive + "] with parameters " +
+                (deploymentParameters!= null ? Arrays.asList(deploymentParameters).toString() : "[]"));
         String name = deployer.deploy(archive.toURI(), deploymentParameters);
         logger.logp(Level.INFO, "PluginUtil", "doDeploy", "Deployed {0}", name);
     }
