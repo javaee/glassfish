@@ -62,15 +62,22 @@ public class Client {
         try {
             t.test(appName);
         } catch (Exception e) {
+            stat.addStatus("EJB embedded with timertest", stat.FAIL);
             e.printStackTrace();
         }
-/** Run the 2nd time **
-        try {
-            t.test(appName);
-        } catch (Exception e) {
-            e.printStackTrace();
+        System.err.println("------------------------");
+        if (s.length == 2 && s[1].equals("false")) {
+            System.err.println("-------This part of the test will fail if ran against Full Profile ------------");
+            try {
+                t.test(appName);
+            } catch (Exception e) {
+                stat.addStatus("EJB embedded with timertest", stat.FAIL);
+                e.printStackTrace();
+            }
+            System.err.println("------------------------");
+        } else {
+            System.err.println("-------Do not run 2nd time until timer app reload is fixed ------------");
         }
-** Run the 2nd time **/
         stat.printSummary(appName + "ID");
         System.exit(0);
     }

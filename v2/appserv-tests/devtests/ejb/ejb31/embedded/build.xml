@@ -29,6 +29,7 @@
         <!-- disallow individual tests from starting and stopping database -->
         <property name="skip.start.database" value="true"/>
         <property name="skip.stop.database" value="true"/>
+        <property name="timer.test.type" value="all"/>
         <antcall target="start-derby"/>
         <antcall target="run-lite"/>
         <antcall target="run-full"/>
@@ -39,6 +40,7 @@
         <!-- disallow individual tests from starting and stopping database -->
         <property name="skip.start.database" value="true"/>
         <property name="skip.stop.database" value="true"/>
+        <property name="timer.test.type" value="lite"/>
         <antcall target="startdb"/>
         <antcall target="run-lite"/>
         <antcall target="stop-derby"/>
@@ -58,7 +60,8 @@
     <target name="run-lite">
         <antcall target="basic"/>
         <antcall target="testclose"/>
-        <antcall target="timertest"/>
+        <antcall target="timertest">
+        </antcall>
         <antcall target="modulewithlibs"/>
         <antcall target="ejbinwar"/>
         <antcall target="skipjar"/>
@@ -97,7 +100,8 @@
 
     <target name="timertest">
         <record name="timertest.output" action="start" />
-            <ant dir="timertest" target="all"/>
+	<echo>Running timertest target ${timer.test.type} </echo>
+            <ant dir="timertest" target="${timer.test.type}"/>
         <record name="timertest.output" action="stop" />
     </target>
 
