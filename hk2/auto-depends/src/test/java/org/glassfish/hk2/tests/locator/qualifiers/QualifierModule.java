@@ -37,71 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.qualifiers;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Set;
-
-import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee {
-    private final Type requiredType;
-    private final Set<Annotation> qualifiers;
-    private final int position;
-    private final AnnotatedElement parent;
-    
-    /* package */ InjecteeImpl(
-            Type requiredType,
-            Set<Annotation> qualifiers,
-            int position,
-            AnnotatedElement parent) {
-        this.requiredType = requiredType;
-        this.position = position;
-        this.parent = parent;
-        this.qualifiers = Collections.unmodifiableSet(qualifiers);
-    }
+public class QualifierModule implements Module {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
+     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public Type getRequiredType() {
-        return requiredType;
+    public void configure(Configuration configurator) {
+        configurator.bind(BuilderHelper.link(RedImpl.class).to(Color.class).qualifiedBy(Red.class.getName()).build());
+        configurator.bind(BuilderHelper.link(BlueImpl.class).to(Color.class).qualifiedBy(Blue.class.getName()).build());
+        configurator.bind(BuilderHelper.link(YellowImpl.class).to(Color.class).qualifiedBy(Yellow.class.getName()).build());
+        
+        // Now the factory pairs
+        configurator.bind(BuilderHelper.linkFactory(GreenFactory.class).to(Color.class).qualifiedBy(Green.class.getName()).build());
+        configurator.bind(BuilderHelper.link(GreenFactory.class).to(Factory.class).build());
+        
+        configurator.bind(BuilderHelper.linkFactory(OrangeFactory.class).to(Color.class).qualifiedBy(Orange.class.getName()).build());
+        configurator.bind(BuilderHelper.link(OrangeFactory.class).to(Factory.class).build());
+        
+        configurator.bind(BuilderHelper.linkFactory(PurpleFactory.class).to(Color.class).qualifiedBy(Purple.class.getName()).build());
+        configurator.bind(BuilderHelper.link(PurpleFactory.class).to(Factory.class).build());
+        
+        // And the color wheel
+        configurator.bind(BuilderHelper.link(ColorWheel.class).build());
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
-     */
-    @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        return qualifiers;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
-     */
-    @Override
-    public int getPosition() {
-        return position;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
-     */
-    @Override
-    public AnnotatedElement getParent() {
-        return parent;
-    }
-    
-    public String toString() {
-        return "Injectee(requiredType=" + Pretty.type(requiredType) + ",qualifiers=" + Pretty.collection(qualifiers) +
-                ",position=" + position + "," + System.identityHashCode(this) + ")";
-    }
 }

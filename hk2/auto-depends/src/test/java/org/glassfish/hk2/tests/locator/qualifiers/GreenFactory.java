@@ -37,71 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.qualifiers;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Set;
+import javax.inject.Inject;
 
-import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Factory;
 
 /**
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee {
-    private final Type requiredType;
-    private final Set<Annotation> qualifiers;
-    private final int position;
-    private final AnnotatedElement parent;
+@Green
+public class GreenFactory implements Factory<Color> {
+    @Inject @Yellow
+    private Color yellow;
     
-    /* package */ InjecteeImpl(
-            Type requiredType,
-            Set<Annotation> qualifiers,
-            int position,
-            AnnotatedElement parent) {
-        this.requiredType = requiredType;
-        this.position = position;
-        this.parent = parent;
-        this.qualifiers = Collections.unmodifiableSet(qualifiers);
+    @Inject @Blue
+    private Color blue;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#provide()
+     */
+    @Override
+    public Color provide() {
+        if (!yellow.getColorName().equals(QualifierTest.YELLOW)) throw new AssertionError("Yellow is not yellow: " + yellow);
+        if (!blue.getColorName().equals(QualifierTest.BLUE)) throw new AssertionError("Blue is not blue: " + blue);
+        
+        return new DerivedColor(QualifierTest.GREEN);
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
     @Override
-    public Type getRequiredType() {
-        return requiredType;
+    public void dispose(Color instance) {
+        // TODO Auto-generated method stub
+
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
-     */
-    @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        return qualifiers;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
-     */
-    @Override
-    public int getPosition() {
-        return position;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
-     */
-    @Override
-    public AnnotatedElement getParent() {
-        return parent;
-    }
-    
-    public String toString() {
-        return "Injectee(requiredType=" + Pretty.type(requiredType) + ",qualifiers=" + Pretty.collection(qualifiers) +
-                ",position=" + position + "," + System.identityHashCode(this) + ")";
-    }
 }
