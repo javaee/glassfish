@@ -15,7 +15,7 @@ public class SimpleEjb {
     public void createTimer() throws Exception {
         System.err.println("In SimpleEjb:createTimer()");
         TimerService timerSvc = (TimerService) new InitialContext().lookup("java:comp/TimerService");
-        Timer t = timerSvc.createTimer(2, "timer01");
+        Timer t = timerSvc.createSingleActionTimer(2, new TimerConfig("timer01", false));
     }
 
     public boolean verifyTimer() {
@@ -29,7 +29,7 @@ public class SimpleEjb {
         timeoutWasCalled = true;
     }
 
-    @Schedule(second="*", minute="*", hour="*")
+    @Schedule(second="*", minute="*", hour="*", persistent=false)
     public void autotest() {
         System.err.println("IN AUTO-TIMEOUT!!!");
         autotimeoutWasCalled = true;
