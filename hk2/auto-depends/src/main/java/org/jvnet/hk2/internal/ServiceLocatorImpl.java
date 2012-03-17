@@ -365,7 +365,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
-        DescriptorFilter filter = BuilderHelper.link(rawClass).build();
+        DescriptorFilter filter = BuilderHelper.link(rawClass, false, false).build();
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
         candidates = narrow(candidates, contractOrImpl, null, false, qualifiers);
         
@@ -385,7 +385,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
-        DescriptorFilter filter = BuilderHelper.link(rawClass).build();
+        DescriptorFilter filter = BuilderHelper.link(rawClass, false, false).build();
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
         candidates = narrow(candidates, contractOrImpl, null, true, qualifiers);
         

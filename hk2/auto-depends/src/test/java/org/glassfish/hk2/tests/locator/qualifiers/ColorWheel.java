@@ -37,71 +37,82 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.qualifiers;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Set;
-
-import org.glassfish.hk2.api.Injectee;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee {
-    private final Type requiredType;
-    private final Set<Annotation> qualifiers;
-    private final int position;
-    private final AnnotatedElement parent;
+@Singleton
+public class ColorWheel {
+    private final Color red;
+    private final Color purple;
+    private final Color blue;
+    private final Color green;
+    private final Color yellow;
+    private final Color orange;
     
-    /* package */ InjecteeImpl(
-            Type requiredType,
-            Set<Annotation> qualifiers,
-            int position,
-            AnnotatedElement parent) {
-        this.requiredType = requiredType;
-        this.position = position;
-        this.parent = parent;
-        this.qualifiers = Collections.unmodifiableSet(qualifiers);
+    @Inject
+    private ColorWheel(
+            @Red Color red,
+            @Purple Color purple,
+            @Blue Color blue,
+            @Green Color green,
+            @Yellow Color yellow,
+            @Orange Color orange) {
+        this.red = red;
+        this.purple = purple;
+        this.blue = blue;
+        this.green = green;
+        this.yellow = yellow;
+        this.orange = orange;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
+    /**
+     * @return the red
      */
-    @Override
-    public Type getRequiredType() {
-        return requiredType;
+    Color getRed() {
+        return red;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
+    /**
+     * @return the purple
      */
-    @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        return qualifiers;
+    Color getPurple() {
+        return purple;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
+    /**
+     * @return the blue
      */
-    @Override
-    public int getPosition() {
-        return position;
+    Color getBlue() {
+        return blue;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
+    /**
+     * @return the green
      */
-    @Override
-    public AnnotatedElement getParent() {
-        return parent;
+    Color getGreen() {
+        return green;
+    }
+
+    /**
+     * @return the yellow
+     */
+    Color getYellow() {
+        return yellow;
+    }
+
+    /**
+     * @return the orange
+     */
+    Color getOrange() {
+        return orange;
     }
     
-    public String toString() {
-        return "Injectee(requiredType=" + Pretty.type(requiredType) + ",qualifiers=" + Pretty.collection(qualifiers) +
-                ",position=" + position + "," + System.identityHashCode(this) + ")";
-    }
+    
+
 }

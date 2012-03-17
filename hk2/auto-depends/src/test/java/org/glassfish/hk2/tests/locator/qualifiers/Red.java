@@ -37,71 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.qualifiers;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Set;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.Injectee;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
  * @author jwells
- *
  */
-public class InjecteeImpl implements Injectee {
-    private final Type requiredType;
-    private final Set<Annotation> qualifiers;
-    private final int position;
-    private final AnnotatedElement parent;
-    
-    /* package */ InjecteeImpl(
-            Type requiredType,
-            Set<Annotation> qualifiers,
-            int position,
-            AnnotatedElement parent) {
-        this.requiredType = requiredType;
-        this.position = position;
-        this.parent = parent;
-        this.qualifiers = Collections.unmodifiableSet(qualifiers);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
-     */
-    @Override
-    public Type getRequiredType() {
-        return requiredType;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
-     */
-    @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        return qualifiers;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
-     */
-    @Override
-    public int getPosition() {
-        return position;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
-     */
-    @Override
-    public AnnotatedElement getParent() {
-        return parent;
-    }
-    
-    public String toString() {
-        return "Injectee(requiredType=" + Pretty.type(requiredType) + ",qualifiers=" + Pretty.collection(qualifiers) +
-                ",position=" + position + "," + System.identityHashCode(this) + ")";
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface Red {
 }

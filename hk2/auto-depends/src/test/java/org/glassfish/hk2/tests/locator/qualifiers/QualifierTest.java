@@ -37,71 +37,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.qualifiers;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Set;
+import junit.framework.Assert;
 
-import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee {
-    private final Type requiredType;
-    private final Set<Annotation> qualifiers;
-    private final int position;
-    private final AnnotatedElement parent;
+public class QualifierTest {
+    public final static String TEST_NAME = "QualifierTest";
+    private ServiceLocator locator;
     
-    /* package */ InjecteeImpl(
-            Type requiredType,
-            Set<Annotation> qualifiers,
-            int position,
-            AnnotatedElement parent) {
-        this.requiredType = requiredType;
-        this.position = position;
-        this.parent = parent;
-        this.qualifiers = Collections.unmodifiableSet(qualifiers);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
-     */
-    @Override
-    public Type getRequiredType() {
-        return requiredType;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
-     */
-    @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        return qualifiers;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
-     */
-    @Override
-    public int getPosition() {
-        return position;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
-     */
-    @Override
-    public AnnotatedElement getParent() {
-        return parent;
-    }
+    public final static String RED = "Red";
+    public final static String YELLOW = "Yellow";
+    public final static String BLUE = "Blue";
+    public final static String ORANGE = "Orange";
+    public final static String PURPLE = "Purple";
+    public final static String GREEN = "Green";
     
-    public String toString() {
-        return "Injectee(requiredType=" + Pretty.type(requiredType) + ",qualifiers=" + Pretty.collection(qualifiers) +
-                ",position=" + position + "," + System.identityHashCode(this) + ")";
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new QualifierModule());
+        if (locator == null) {
+            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
+        }
     }
+
+    @Test
+    public void testAllColors() {
+        ColorWheel wheel = locator.getService(ColorWheel.class);
+        Assert.assertNotNull("ColorWheel is null", wheel);
+        
+        Assert.assertEquals(RED, wheel.getRed().getColorName());
+        Assert.assertEquals(GREEN, wheel.getGreen().getColorName());
+        Assert.assertEquals(BLUE, wheel.getBlue().getColorName());
+        Assert.assertEquals(YELLOW, wheel.getYellow().getColorName());
+        Assert.assertEquals(ORANGE, wheel.getOrange().getColorName());
+        Assert.assertEquals(PURPLE, wheel.getPurple().getColorName());
+        
+    }
+
 }

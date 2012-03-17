@@ -323,23 +323,21 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, MultiException collector) {
         this.implClass = implClass;
         
+        qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(implClass, baseDescriptor.getName(), collector));
         if (!Factory.class.isAssignableFrom(implClass) || getAdvertisedContracts().contains(Factory.class.getName())) {
             creator = new ClazzCreator<T>(locator, implClass, collector);
             
             scope = Utilities.getScopeAnnotationType(implClass, collector);
             contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(implClass, baseDescriptor.getAdvertisedContracts()));
-            qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(implClass, baseDescriptor.getName(), collector));
         }
         else {
-            creator = new FactoryCreator<T>(locator, implClass);
+            creator = new FactoryCreator<T>(locator, implClass, qualifiers);
             
             Method provideMethod = Utilities.getFactoryProvideMethod(implClass);
-            
             scope = Utilities.getScopeAnnotationType(provideMethod, collector);
             
             Type factoryProvidedType = provideMethod.getGenericReturnType();
             contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(factoryProvidedType, baseDescriptor.getAdvertisedContracts()));
-            qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(provideMethod, baseDescriptor.getName(), collector));
         }
         
         // Check the scope

@@ -39,9 +39,11 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
@@ -56,10 +58,12 @@ import org.glassfish.hk2.api.ServiceLocator;
 public class FactoryCreator<T> implements Creator<T> {
     private final ServiceLocator locator;
     private final Class<?> factoryClass;
+    private final Annotation qualifiers[];
     
-    /* package */ FactoryCreator(ServiceLocator locator, Class<?> factoryClass) {
+    /* package */ FactoryCreator(ServiceLocator locator, Class<?> factoryClass, Set<Annotation> qualifiers) {
         this.locator = locator;
         this.factoryClass = factoryClass;
+        this.qualifiers = qualifiers.toArray(new Annotation[qualifiers.size()]);
     }
 
     /* (non-Javadoc)
@@ -79,7 +83,8 @@ public class FactoryCreator<T> implements Creator<T> {
             Type actualArgs[] = new Type[1];
             actualArgs[0] = factoryType;
             
-            ServiceHandle<Factory<T>> handle = locator.getServiceHandle(new ParameterizedTypeImpl(Factory.class, actualArgs), factoryName);
+            ServiceHandle<Factory<T>> handle = locator.getServiceHandle(new ParameterizedTypeImpl(Factory.class, actualArgs),
+                    factoryName, qualifiers);
             if (handle == null) {
                 throw new IllegalStateException("Could not find a factory for " + factoryName);
             }

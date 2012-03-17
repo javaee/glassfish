@@ -152,11 +152,16 @@ public class Pretty {
         return "field(" + baseString + " " + field.getName() + ")";
     }
     
-    public static String collection(Collection<?> collection) {
-        StringBuffer sb = new StringBuffer("Collection(" + System.identityHashCode(collection) + ",{");
+    public static String array(Object[] array) {
+        if (array == null) return NULL_STRING;
+        StringBuffer sb = new StringBuffer("{");
         
         boolean first = true;
-        for (Object item : collection) {
+        for (Object item : array) {
+            if (item != null && (item instanceof Class)) {
+                item = Pretty.clazz((Class<?>) item);
+            }
+            
             if (first) {
                 first = false;
                 
@@ -170,6 +175,11 @@ public class Pretty {
         sb.append("})");
         
         return sb.toString();
+    }
+    
+    public static String collection(Collection<?> collection) {
+        if (collection == null) return NULL_STRING;
+        return array(collection.toArray(new Object[collection.size()]));
     }
     
     
