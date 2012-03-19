@@ -52,6 +52,15 @@ public class ServletTest extends HttpServlet {
         response.setContentType("text/html");
     }
 
+    protected void doGet(int x) {
+        // no op
+    }
+
+    /*
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) {
+        // no op
+    }
+    */
 }
 
 

@@ -86,7 +86,7 @@ public class WebTest{
             } else {
                 String allowHeader = conn.getHeaderField("Allow");
                 System.out.println("Allow response header: " + allowHeader);
-                if (allowHeader != null) {
+                if (allowHeader != null && !allowHeader.toUpperCase().contains("GET")) {
                     stat.addStatus("traceEnabled", stat.PASS);
                 } else {
                     stat.addStatus("traceEnabled", stat.FAIL);
