@@ -4,11 +4,13 @@ import javax.annotation.*;
 
 import javax.ejb.EJB;
 import javax.annotation.Resource;
+import javax.interceptor.Interceptors;
 import org.omg.CORBA.ORB;
 import javax.persistence.PersistenceContext;
 import javax.persistence.EntityManager;
 
 @ManagedBean("somemanagedbean")
+@Interceptors(InterceptorA.class)
 public class FooManagedBean extends ManagedSuper implements Foo {
 
     @EJB HelloRemote s;

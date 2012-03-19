@@ -5,7 +5,6 @@ import javax.annotation.*;
 import javax.ejb.EJB;
 import javax.annotation.Resource;
 import javax.transaction.UserTransaction;
-import org.omg.CORBA.ORB;
 import javax.persistence.PersistenceContext;
 import javax.persistence.EntityManager;
 
