@@ -6,7 +6,8 @@ echo "input file=$FILE"
 TOTAL=224
 TOTAL_LITE=26
 
-if [ $# -eq 1 ] && [ $1 == "lite" ]
+# if [ $# -eq 1 ] && [ $1 == "lite" ]
+if [ $# -eq 1 ] && [ $1 -eq "lite" ]
 then TOTAL=$TOTAL_LITE
 echo "EJB Lite Test"
 fi
