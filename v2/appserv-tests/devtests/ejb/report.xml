@@ -4,7 +4,9 @@
 
 <target name="report">
     <antcall target="transfer"/>
-    <antcall target="report-sh"/>
+    <antcall target="report-sh">
+       <param name="type" value="all"/>
+    </antcall>
     <!--
     <ant dir="${env.APS_HOME}/util/filediff" target="modifyReport"/>
     -->
