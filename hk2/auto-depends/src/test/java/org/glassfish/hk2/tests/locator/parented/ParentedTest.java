@@ -37,33 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.parented;
 
-import java.util.Comparator;
+import java.util.List;
 
-import org.glassfish.hk2.api.Descriptor;
+import junit.framework.Assert;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class DescriptorComparator implements Comparator<Descriptor> {
-
-    /* (non-Javadoc)
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
-    @Override
-    public int compare(Descriptor o1, Descriptor o2) {
-        if (o1.getRanking() < o2.getRanking()) return 1;
-        if (o1.getRanking() > o2.getRanking()) return -1;
+public class ParentedTest {
+    private final ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+    
+    private final static String GRANDPA = "Grandpa";
+    private final static String DAD = "Dad";
+    private final static String ME = "Me";
+    
+    @Test
+    public void testBasicParenting() {
+        ServiceLocator grandpa = factory.create(GRANDPA, new ParentedModule());
+        ServiceLocator dad = factory.create(DAD, new ParentedModule(), grandpa);
+        ServiceLocator me = factory.create(ME, new ParentedModule(), dad);
         
-        if (o1.getLocatorId().longValue() < o2.getLocatorId().longValue()) return 1;
-        if (o1.getLocatorId().longValue() > o2.getLocatorId().longValue()) return -1;
+        List<ServiceLocator> grandpaLocators = grandpa.getAllServices(ServiceLocator.class);
+        List<ServiceLocator> dadLocators = dad.getAllServices(ServiceLocator.class);
+        List<ServiceLocator> meLocators = me.getAllServices(ServiceLocator.class);
         
-        if (o1.getServiceId().longValue() > o2.getServiceId().longValue()) return 1;
-        if (o1.getServiceId().longValue() < o2.getServiceId().longValue()) return -1;
+        Assert.assertNotNull(grandpaLocators);
+        Assert.assertEquals(1, grandpaLocators.size());
+        Assert.assertEquals(grandpa, grandpaLocators.get(0));
         
-        return 0;
+        Assert.assertNotNull(dadLocators);
+        Assert.assertEquals(2, dadLocators.size());
+        Assert.assertEquals(dad, dadLocators.get(0));
+        Assert.assertEquals(grandpa, dadLocators.get(1));
+        
+        Assert.assertNotNull(meLocators);
+        Assert.assertEquals(3, meLocators.size());
+        Assert.assertEquals(me, meLocators.get(0));
+        Assert.assertEquals(dad, meLocators.get(1));
+        Assert.assertEquals(grandpa, meLocators.get(2));
+        
+        // Make sure the most normal case returns the right guy
+        Assert.assertEquals(me, me.getService(ServiceLocator.class));
     }
 
 }

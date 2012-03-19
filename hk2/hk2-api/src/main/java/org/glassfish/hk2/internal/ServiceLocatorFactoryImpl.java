@@ -105,17 +105,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
    */
   @Override
   public ServiceLocator create(String name, Module createFromThis) {
-    synchronized (lock) {
-      if (serviceLocators.containsKey(name)) return null;
-      
-      ServiceLocatorGenerator generator = getGenerator();
-      
-      ServiceLocator sl = generator.create(name, createFromThis);
-      
-      serviceLocators.put(name, sl);
-      
-      return sl;
-    }
+      return create(name, createFromThis, null);
   }
 
   /* (non-Javadoc)
@@ -145,5 +135,24 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
     
     return killMe;
   }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocatorFactory#create(java.lang.String, org.glassfish.hk2.api.Module, org.glassfish.hk2.api.ServiceLocator)
+     */
+    @Override
+    public ServiceLocator create(String name, Module createFromThis,
+            ServiceLocator parent) {
+        synchronized (lock) {
+            if (serviceLocators.containsKey(name)) return null;
+            
+            ServiceLocatorGenerator generator = getGenerator();
+            
+            ServiceLocator sl = generator.create(name, createFromThis, parent);
+            
+            serviceLocators.put(name, sl);
+            
+            return sl;
+        }
+    }
 
 }

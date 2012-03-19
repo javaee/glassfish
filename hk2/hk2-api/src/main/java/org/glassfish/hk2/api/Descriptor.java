@@ -161,4 +161,14 @@ public interface Descriptor {
 	 * return value will be ignored
 	 */
 	public Long getServiceId();
+	
+	/**
+     * This returns the id of the ServiceLocator which this descriptor
+     * is registered with.  Returns null if this descriptor
+     * is not yet registered with a ServiceLocator
+     * 
+     * @return The id of the ServiceLocator this Descriptor is registered
+     * with, or null if this Descriptor is not registered with a ServiceLocator
+     */
+    public Long getLocatorId();
 }

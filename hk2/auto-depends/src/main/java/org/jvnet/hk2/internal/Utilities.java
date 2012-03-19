@@ -243,7 +243,8 @@ public class Utilities {
                 PerLookup.class,
                 null,
                 qualifiers,
-                Integer.MAX_VALUE);
+                Integer.MAX_VALUE,
+                locator.getLocatorId());
         
         return retVal;
     }

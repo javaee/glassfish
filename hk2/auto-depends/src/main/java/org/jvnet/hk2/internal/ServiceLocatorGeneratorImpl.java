@@ -53,8 +53,8 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  *
  */
 public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
-    private ServiceLocatorImpl initialize(String name) {
-        ServiceLocatorImpl sli = new ServiceLocatorImpl(name);
+    private ServiceLocatorImpl initialize(String name, ServiceLocator parent) {
+        ServiceLocatorImpl sli = new ServiceLocatorImpl(name, parent);
         
         DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
         
@@ -77,8 +77,8 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
      * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
      */
     @Override
-    public ServiceLocator create(String name, Module module) {
-        ServiceLocatorImpl retVal = initialize(name);
+    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
+        ServiceLocatorImpl retVal = initialize(name, parent);
         
         DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
         dci.setCommitable(false);  // Don't let those tricky guys commit this

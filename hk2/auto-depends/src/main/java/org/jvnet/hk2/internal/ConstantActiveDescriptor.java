@@ -54,8 +54,8 @@ import org.glassfish.hk2.api.ServiceHandle;
 public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     private final T theOne;
     
-    /* package */ ConstantActiveDescriptor(T theOne) {
-        super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(), 0);
+    /* package */ ConstantActiveDescriptor(T theOne, long locatorId) {
+        super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(), 0, locatorId);
         
         this.theOne = theOne;
     }
@@ -65,8 +65,9 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers,
-            int ranking) {
-        super(advertisedContracts, scope, name, qualifiers, ranking);
+            int ranking,
+            long locatorId) {
+        super(advertisedContracts, scope, name, qualifiers, ranking, locatorId);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;

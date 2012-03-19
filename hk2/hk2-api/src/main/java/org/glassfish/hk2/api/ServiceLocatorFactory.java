@@ -69,6 +69,25 @@ public abstract class ServiceLocatorFactory {
    * @param name The name of this service locator.  May not be null
    * @param createFromThis The module that can be used to
    * configure this service locator
+   * @param parent The parent of this ServiceLocator.  Services can
+   * be found in the parent (and all grand-parents).
+   * @return The newly created named ServiceLocator or null
+   * if there was already a ServiceLocator with this name.
+   */
+  public abstract ServiceLocator create(String name,
+          Module createFromThis,
+          ServiceLocator parent);
+  
+  /**
+   * Creates a ServiceLocator based on the users Module
+   * which contains specific bindings and SPI implementations.
+   * <p>
+   * If there is already a ServiceLocator with the given
+   * name then this method will return null.
+   * 
+   * @param name The name of this service locator.  May not be null
+   * @param createFromThis The module that can be used to
+   * configure this service locator
    * @return The newly created named ServiceLocator or null
    * if there was already a ServiceLocator with this name.
    */

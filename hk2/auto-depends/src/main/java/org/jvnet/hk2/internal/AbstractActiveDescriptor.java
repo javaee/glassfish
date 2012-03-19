@@ -62,18 +62,21 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     private final Set<Annotation> qualifiers;
     private final Set<String> qualifiersAsStrings = new HashSet<String>();
     private final int ranking;
+    private final Long locatorId;
     
     protected AbstractActiveDescriptor(
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers,
-            int ranking) {
+            int ranking,
+            long locatorId) {
         this.scope = scope;
         this.advertisedContracts = Collections.unmodifiableSet(advertisedContracts);
         this.qualifiers = Collections.unmodifiableSet(qualifiers);
         this.ranking = ranking;
         this.name = name;
+        this.locatorId = new Long(locatorId);
         
         for (Type t : advertisedContracts) {
             Class<?> raw = Utilities.getRawClass(t);
@@ -109,6 +112,11 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     @Override
     public String getName() {
         return name;
+    }
+    
+    @Override
+    public Long getLocatorId() {
+        return locatorId;
     }
 
     /* (non-Javadoc)
