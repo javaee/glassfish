@@ -115,6 +115,16 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     }
     
     /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Configuration#getInstalledInjectionResolver(java.lang.Class)
+     */
+    @Override
+    public InjectionResolver getInstalledInjectionResolver(
+            Class<? extends Annotation> indicator) {
+        if (indicator == null) return null;
+        return locator.getInjectionResolver(indicator);
+    }
+    
+    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Configuration#addContext(org.glassfish.hk2.api.Context)
      */
     @Override
@@ -201,4 +211,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         this.commitable = commitable;
         
     }
+
+    
 }

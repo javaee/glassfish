@@ -37,55 +37,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.customresolver;
 
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.api.PerLookup;
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.extension.ServiceLocatorGenerator;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
-    private ServiceLocatorImpl initialize(String name, ServiceLocator parent) {
-        ServiceLocatorImpl sli = new ServiceLocatorImpl(name, parent);
+public class ServiceWithCustomInjections {
+    private final static String FIELD = "Field";
+    private final static String CONSTRUCTOR = "Constructor";
+    private final static String METHOD = "Method";
+    
+    @Inject @Path(FIELD)
+    private String byField;
+    
+    private final String byConstructor;
+    
+    private String byMethod;
+    
+    private boolean isValid = false;
+    
+    @Inject
+    private ServiceWithCustomInjections(
+            ServiceLocator locator,
+            @Path(CONSTRUCTOR) String byConstructor) {
+        Assert.assertNotNull(locator);
+        this.byConstructor = byConstructor; 
+    }
+    
+    @SuppressWarnings("unused")
+    @Inject
+    private void viaMethod(@Path(METHOD) String byMethod) {
+        this.byMethod = byMethod;
+    }
+    
+    @SuppressWarnings("unused")
+    private void postConstruct() {
+        Assert.assertEquals(FIELD, byField);
+        Assert.assertEquals(CONSTRUCTOR, byConstructor);
+        Assert.assertEquals(METHOD, byMethod);
         
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
-        
-        dci.bind(Utilities.getLocatorDescriptor(sli));
-        dci.addContext(new SingletonContext());
-        dci.addContext(new PerLookupContext());
-        
-        dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
-                to(DynamicConfigurationService.class).
-                in(PerLookup.class.getName()).
-                build());
-        
-        dci.commit();
-        
-        return sli;
+        isValid = true;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
-     */
-    @Override
-    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
-        ServiceLocatorImpl retVal = initialize(name, parent);
-        
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
-        dci.setCommitable(false);  // Don't let those tricky guys commit this
-        
-        module.configure(dci);
-        
-        dci.setCommitable(true);
-        dci.commit();
-        
-        return retVal;
+    public boolean isValid() {
+        return isValid;
     }
-
 }

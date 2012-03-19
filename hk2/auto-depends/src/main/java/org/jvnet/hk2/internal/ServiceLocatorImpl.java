@@ -50,6 +50,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -101,6 +102,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         synchronized (sLock) {
             id = currentId++;
         }
+        
+        // This default must be there to allow the initial Configuration to
+        // get it and change it
+        allResolvers.put(Inject.class, new ThreeThirtyResolver(this));
     }
 
     /* (non-Javadoc)
