@@ -86,8 +86,7 @@ cat derby.properties
 pushd $APS_HOME/devtests/ejb
 rm count.txt || true
 
-# ant all report-result -Ddb.port=${DB_PORT} -Ddb.port.2=${DB_PORT_2} |tee log.txt
-ant report report-result -Ddb.port=${DB_PORT} -Ddb.port.2=${DB_PORT_2} |tee log.txt
+ant all report-result -Ddb.port=${DB_PORT} -Ddb.port.2=${DB_PORT_2} |tee log.txt
 cat $S1AS_HOME/databases/derby.log
 
 egrep 'FAILED= *0' count.txt
