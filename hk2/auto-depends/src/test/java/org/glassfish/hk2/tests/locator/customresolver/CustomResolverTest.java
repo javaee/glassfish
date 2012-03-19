@@ -37,55 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.customresolver;
 
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.api.PerLookup;
+import junit.framework.Assert;
+
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.extension.ServiceLocatorGenerator;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
-    private ServiceLocatorImpl initialize(String name, ServiceLocator parent) {
-        ServiceLocatorImpl sli = new ServiceLocatorImpl(name, parent);
-        
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
-        
-        dci.bind(Utilities.getLocatorDescriptor(sli));
-        dci.addContext(new SingletonContext());
-        dci.addContext(new PerLookupContext());
-        
-        dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
-                to(DynamicConfigurationService.class).
-                in(PerLookup.class.getName()).
-                build());
-        
-        dci.commit();
-        
-        return sli;
+public class CustomResolverTest {
+    public final static String TEST_NAME = "CustomResolverTest";
+    private ServiceLocator locator;
+    
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new CustomResolverModule());
+        if (locator == null) {
+            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
+        }
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
-     */
-    @Override
-    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
-        ServiceLocatorImpl retVal = initialize(name, parent);
+    
+    @Test
+    public void testCustomInjectResolver() {
+        ServiceWithCustomInjections cwci = locator.getService(ServiceWithCustomInjections.class);
+        Assert.assertNotNull(cwci);
         
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
-        dci.setCommitable(false);  // Don't let those tricky guys commit this
-        
-        module.configure(dci);
-        
-        dci.setCommitable(true);
-        dci.commit();
-        
-        return retVal;
+        Assert.assertTrue(cwci.isValid());
     }
 
 }

@@ -37,55 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.customresolver;
 
-import org.glassfish.hk2.api.DynamicConfigurationService;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
-    private ServiceLocatorImpl initialize(String name, ServiceLocator parent) {
-        ServiceLocatorImpl sli = new ServiceLocatorImpl(name, parent);
-        
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
-        
-        dci.bind(Utilities.getLocatorDescriptor(sli));
-        dci.addContext(new SingletonContext());
-        dci.addContext(new PerLookupContext());
-        
-        dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
-                to(DynamicConfigurationService.class).
-                in(PerLookup.class.getName()).
-                build());
-        
-        dci.commit();
-        
-        return sli;
-    }
+public class CustomResolverModule implements Module {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
+     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
-        ServiceLocatorImpl retVal = initialize(name, parent);
+    public void configure(Configuration configurator) {
+        configurator.bind(BuilderHelper.link(ServiceWithCustomInjections.class).build());
         
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
-        dci.setCommitable(false);  // Don't let those tricky guys commit this
+        InjectionResolver systemResolver = configurator.getInstalledInjectionResolver(Inject.class);
+        CustomInjectResolver cir = new CustomInjectResolver(systemResolver);
         
-        module.configure(dci);
+        configurator.addInjectionResolver(Inject.class, cir);
         
-        dci.setCommitable(true);
-        dci.commit();
-        
-        return retVal;
     }
 
 }

@@ -37,55 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.customresolver;
 
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.extension.ServiceLocatorGenerator;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * @author jwells
  *
  */
-public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
-    private ServiceLocatorImpl initialize(String name, ServiceLocator parent) {
-        ServiceLocatorImpl sli = new ServiceLocatorImpl(name, parent);
-        
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
-        
-        dci.bind(Utilities.getLocatorDescriptor(sli));
-        dci.addContext(new SingletonContext());
-        dci.addContext(new PerLookupContext());
-        
-        dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
-                to(DynamicConfigurationService.class).
-                in(PerLookup.class.getName()).
-                build());
-        
-        dci.commit();
-        
-        return sli;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
-     */
-    @Override
-    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
-        ServiceLocatorImpl retVal = initialize(name, parent);
-        
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
-        dci.setCommitable(false);  // Don't let those tricky guys commit this
-        
-        module.configure(dci);
-        
-        dci.setCommitable(true);
-        dci.commit();
-        
-        return retVal;
-    }
-
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface Path {
+    public String value();
 }

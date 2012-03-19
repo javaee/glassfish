@@ -37,55 +37,62 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.customresolver;
 
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.extension.ServiceLocatorGenerator;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
-    private ServiceLocatorImpl initialize(String name, ServiceLocator parent) {
-        ServiceLocatorImpl sli = new ServiceLocatorImpl(name, parent);
-        
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
-        
-        dci.bind(Utilities.getLocatorDescriptor(sli));
-        dci.addContext(new SingletonContext());
-        dci.addContext(new PerLookupContext());
-        
-        dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
-                to(DynamicConfigurationService.class).
-                in(PerLookup.class.getName()).
-                build());
-        
-        dci.commit();
-        
-        return sli;
+public class CustomInjectResolver implements InjectionResolver {
+    private final InjectionResolver systemInjectResolver;
+    
+    CustomInjectResolver(InjectionResolver parent) {
+        systemInjectResolver = parent;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
+     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
-        ServiceLocatorImpl retVal = initialize(name, parent);
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        Path path = null;
+        if (injectee.getPosition() >= 0) {
+            Annotation candidates[];
+            if (injectee.getParent() instanceof Constructor) {
+                Constructor<?> c = (Constructor<?>) injectee.getParent();
+                
+                candidates = c.getParameterAnnotations()[injectee.getPosition()];
+            }
+            else {
+                Method m = (Method) injectee.getParent();
+                
+                candidates = m.getParameterAnnotations()[injectee.getPosition()];
+            }
+            
+            for (Annotation candidate : candidates) {
+                if (Path.class.equals(candidate.annotationType())) {
+                    path = (Path) candidate;
+                }
+            }
+        }
+        else {
+            // Is a field
+            path = injectee.getParent().getAnnotation(Path.class); 
+        }
         
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
-        dci.setCommitable(false);  // Don't let those tricky guys commit this
+        if (path != null) {
+            return path.value();
+        }
         
-        module.configure(dci);
-        
-        dci.setCommitable(true);
-        dci.commit();
-        
-        return retVal;
+        return systemInjectResolver.resolve(injectee, root);
     }
 
 }

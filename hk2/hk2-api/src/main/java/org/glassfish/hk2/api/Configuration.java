@@ -90,8 +90,8 @@ public interface Configuration {
 	
 	/**
 	 * This will add an injection resolver to the system. The system will
-	 * provide a default implementation that handles Inject.  However, if the
-	 * user provides a resolver for Inject then that one will be used in
+	 * provide a default implementation that handles &#86;Inject.  However, if the
+	 * user provides a resolver for &#86;Inject then that one will be used in
 	 * preference to the default system implementation
 	 * 
 	 * @param indicator The annotation that indicates an injection point.  Must
@@ -99,6 +99,20 @@ public interface Configuration {
 	 * @param resolver The resolver to use when finding instances
 	 */
 	public void addInjectionResolver(Class<? extends Annotation> indicator, InjectionResolver resolver);
+	
+	/**
+	 * This gets the InjectionResolver for the given indicator currently registered
+	 * with the system.  This method gets InjectionResolvers already registered with
+	 * the underlying ServiceLocator, not InjectionResolvers that will be added by
+	 * this Configuration object
+	 * 
+	 * @param indicator The annotation that indicates an injection point.  If null, null
+	 * will be returned
+	 * 
+	 * @return The currently registered injection resolver for this indicator, or null if none
+	 * are found for this indicator
+	 */
+	public InjectionResolver getInstalledInjectionResolver(Class<? extends Annotation> indicator);
 	
 	/**
 	 * This allows third party systems to add reified active descriptors to the system.
