@@ -267,6 +267,13 @@ public interface ServiceLocator {
      * @return The name of this ServiceLocator, will not return null
      */
     public String getName();
+    
+    /**
+     * This returns the unique locator ID for this locator.  The locator ID will
+     * be assigned at the time of creation and must be a monotonacally increasing
+     * number (starting at zero)
+     */
+    public long getLocatorId();
   
     /**
      * This method will shutdown every service associated with this ServiceLocator.

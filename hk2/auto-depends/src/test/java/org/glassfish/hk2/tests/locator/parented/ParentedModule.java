@@ -37,33 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.parented;
 
-import java.util.Comparator;
-
-import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.Module;
 
 /**
  * @author jwells
  *
  */
-public class DescriptorComparator implements Comparator<Descriptor> {
+public class ParentedModule implements Module {
 
     /* (non-Javadoc)
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public int compare(Descriptor o1, Descriptor o2) {
-        if (o1.getRanking() < o2.getRanking()) return 1;
-        if (o1.getRanking() > o2.getRanking()) return -1;
-        
-        if (o1.getLocatorId().longValue() < o2.getLocatorId().longValue()) return 1;
-        if (o1.getLocatorId().longValue() > o2.getLocatorId().longValue()) return -1;
-        
-        if (o1.getServiceId().longValue() > o2.getServiceId().longValue()) return 1;
-        if (o1.getServiceId().longValue() < o2.getServiceId().longValue()) return -1;
-        
-        return 0;
+    public void configure(Configuration configurator) {
     }
 
 }

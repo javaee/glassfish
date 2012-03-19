@@ -80,7 +80,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         checkState();
         if ((key == null) || (key.getImplementation() == null)) throw new IllegalArgumentException();
         
-        SystemDescriptor<?> sd = new SystemDescriptor<Object>(key);
+        SystemDescriptor<?> sd = new SystemDescriptor<Object>(key, new Long(locator.getLocatorId()));
         
         allDescriptors.add(sd);
         
@@ -140,7 +140,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
             throw new IllegalArgumentException();
         }
         
-        SystemDescriptor<?> retVal = new SystemDescriptor<Object>(activeDescriptor);
+        SystemDescriptor<?> retVal = new SystemDescriptor<Object>(activeDescriptor,
+                new Long(locator.getLocatorId()));
         
         allDescriptors.add(retVal);
         

@@ -72,6 +72,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private Set<String> qualifiers;
 	private int rank;
 	private Long id;
+	private Long locatorId;
 	
 	/**
 	 * For serialization
@@ -88,6 +89,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		metadatas = copyMe.getMetadata();
 		rank = copyMe.getRanking();
 		id = copyMe.getServiceId();
+		locatorId = copyMe.getLocatorId();
 	}
 	
 	/**
@@ -109,7 +111,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			Map<String, List<String>> metadatas,
 			Set<String> qualifiers,
 			int rank,
-			Long id) {
+			Long id,
+			Long locatorId) {
 		this.contracts = new HashSet<String>(contracts);
 		
 		this.implementation = implementation;
@@ -120,6 +123,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.qualifiers = new HashSet<String>(qualifiers);
 		this.id = id;
 		this.rank = rank;
+		this.locatorId = locatorId;
 	}
 
 	@Override
@@ -162,40 +166,10 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		return id;
 	}
 	
-	/*
-	private static boolean safeEquals(Object a, Object b) {
-	    if (a == b) return true;
-	    if (a == null) return false;
-	    if (b == null) return false;
-	    
-	    return a.equals(b);
-	}
-	
 	@Override
-	public boolean matches(Descriptor d) {
-	    HashSet<String> dCandI = new HashSet<String>();
-	    dCandI.addAll(d.getAdvertisedContracts());
-	  
-	    if (!dCandI.containsAll(contracts)) return false;
-		
-	    if (name != null) {
-	        if (!safeEquals(name, d.getName())) return false;
-	    }
-		
-		if (!d.getQualifiers().containsAll(qualifiers)) return false;
-		
-		Set<String> dKeys = d.getMetadata().keySet();
-		if (!dKeys.containsAll(metadatas.keySet())) return false;
-		
-		for (String dKey : dKeys) {
-			List<String> dValues = d.getMetadata().get(dKey);
-			
-			if (!dValues.containsAll(metadatas.get(dKey))) return false;
-		}
-		
-		return true;
+	public Long getLocatorId() {
+	    return locatorId;
 	}
-	*/
 	
 	private static String writeSet(Set<?> set) {
 		StringBuffer sb = new StringBuffer("{");
@@ -277,6 +251,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		sb.append(writeMetadata(metadatas));
 		
 		sb.append("\n\tid=" + id);
+		
+		sb.append("\n\tlocatorId=" + locatorId);
 		
 		sb.append(")");
 		

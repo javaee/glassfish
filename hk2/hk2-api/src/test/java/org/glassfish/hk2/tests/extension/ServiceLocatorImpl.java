@@ -253,4 +253,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // TODO Auto-generated method stub
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getLocatorId()
+     */
+    @Override
+    public long getLocatorId() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }

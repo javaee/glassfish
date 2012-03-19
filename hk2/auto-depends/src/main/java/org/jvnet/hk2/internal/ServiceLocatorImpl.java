@@ -72,13 +72,17 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  *
  */
 public class ServiceLocatorImpl implements ServiceLocator {
+    private final static Object sLock = new Object();
+    private static long currentId = 0L;
+    
     private final static HK2Loader SYSTEM_LOADER = new SystemLoader();
     private final static DescriptorComparator DESCRIPTOR_COMPARATOR = new DescriptorComparator();
     private final static ServiceHandleComparator HANDLE_COMPARATOR = new ServiceHandleComparator();
     
     private final Object lock = new Object();
     private final String locatorName;
-    
+    private final long id;
+    private final ServiceLocator parent;
     
     private final LinkedList<ActiveDescriptor<?>> allDescriptors = new LinkedList<ActiveDescriptor<?>>();
     private final HashMap<String, LinkedList<ActiveDescriptor<?>>> descriptorsByAdvertisedContract =
@@ -91,8 +95,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final HashMap<Class<? extends Annotation>, LinkedList<Context>> allContexts =
             new HashMap<Class<? extends Annotation>, LinkedList<Context>>();
     
-    /* package */ ServiceLocatorImpl(String name) {
+    /* package */ ServiceLocatorImpl(String name, ServiceLocator parent) {
         locatorName = name;
+        this.parent = parent;
+        synchronized (sLock) {
+            id = currentId++;
+        }
     }
 
     /* (non-Javadoc)
@@ -155,6 +163,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
             }
             
+            if (parent != null) {
+                sorter.addAll(parent.getDescriptors(filter));
+            }
+            
             return sorter;
         }
     }
@@ -176,7 +188,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> implClass = loadClass(descriptor.getImplementation());
         
         if (!(descriptor instanceof ActiveDescriptor)) {
-            SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor);
+            SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor, new Long(id));
             
             MultiException collector = new MultiException();
             sd.reify(implClass, this, collector);
@@ -195,7 +207,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             sd = (SystemDescriptor<?>) active;
         }
         else {
-            sd = new SystemDescriptor<Object>(descriptor);
+            sd = new SystemDescriptor<Object>(descriptor, new Long(id));
         }
         
         MultiException collector = new MultiException();
@@ -221,7 +233,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     Utilities.getFirstTypeArgument(requiredType),
                     injectee.getRequiredQualifiers());
             
-            return new ConstantActiveDescriptor<Object>(value);
+            return new ConstantActiveDescriptor<Object>(value, id);
         }
         
         Set<Annotation> qualifiersAsSet = injectee.getRequiredQualifiers();
@@ -600,6 +612,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         return retVal;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getLocatorId()
+     */
+    @Override
+    public long getLocatorId() {
+        return id;
+    }
+    
+    public String toString() {
+        return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";
     }
 
 }

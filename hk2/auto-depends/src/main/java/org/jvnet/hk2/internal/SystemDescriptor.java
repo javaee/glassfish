@@ -65,6 +65,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final Descriptor baseDescriptor;
     private final Long id;
     private final ActiveDescriptor<T> activeDescriptor;
+    private final Long locatorId;
     private boolean reified;
     
     private final Object cacheLock = new Object();
@@ -79,8 +80,9 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private Creator<T> creator;
     
     /* package */ @SuppressWarnings("unchecked")
-    SystemDescriptor(Descriptor baseDescriptor) {
+    SystemDescriptor(Descriptor baseDescriptor, Long locatorId) {
         this.baseDescriptor = baseDescriptor;
+        this.locatorId = locatorId;
         
         synchronized (sLock) {
             id = new Long(currentId++);
@@ -364,7 +366,10 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         int low32 = id.intValue();
         int high32 = (int) (id.longValue() >> 32);
         
-        return baseDescriptor.hashCode() ^ low32 ^ high32;
+        int locatorLow32 = locatorId.intValue();
+        int locatorHigh32 = (int) (locatorId.longValue() >> 32);
+        
+        return baseDescriptor.hashCode() ^ low32 ^ high32 ^ locatorLow32 ^ locatorHigh32;
     }
     
     @SuppressWarnings({ "rawtypes" })
@@ -377,11 +382,23 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         
         if (!sd.getServiceId().equals(id)) return false;
         
+        if (!sd.getLocatorId().equals(locatorId)) return false;
+        
         return sd.baseDescriptor.equals(baseDescriptor);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getLocatorId()
+     */
+    @Override
+    public Long getLocatorId() {
+        return locatorId;
     }
     
     public String toString() {
         return "SystemDescriptor(" + getImplementation() + "," + Pretty.collection(getAdvertisedContracts()) + "," +
           Pretty.collection(getQualifiers()) + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

@@ -69,13 +69,13 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
   }
   
 
-  /* (non-Javadoc)
-   * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
-   */
-  @Override
-  public ServiceLocator create(String name, Module module) {
-    if (delegate == null) return new ServiceLocatorImpl(name);  // For the local test suite
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
+     */
+    @Override
+    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
+        if (delegate == null) return new ServiceLocatorImpl(name);  // For the local test suite
     
-    return delegate.create(name, module);
-  }
+        return delegate.create(name, module, parent);
+    }
 }
