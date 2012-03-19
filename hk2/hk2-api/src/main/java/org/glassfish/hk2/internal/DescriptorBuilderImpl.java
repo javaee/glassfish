@@ -47,7 +47,7 @@ import java.util.LinkedList;
 
 import javax.inject.Named;
 
-import org.glassfish.hk2.api.DescriptorFilter;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 
 /**
@@ -217,7 +217,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#build()
 	 */
 	@Override
-	public DescriptorFilter build() throws IllegalArgumentException {
+	public Descriptor build() throws IllegalArgumentException {
 		return new DescriptorImpl(
 				contracts,
 				name,

@@ -37,15 +37,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.justintime;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import junit.framework.Assert;
 
 /**
- * This object is both a descriptor and a filter.  Optimizations
- * can be made when searching the service registry when using
- * a descriptor filter
- *
+ * This service is injected with SimpleService three times,
+ * but the JIT resolver should only be called once
+ * 
  * @author jwells
  */
-public interface DescriptorFilter extends Descriptor, Filter<Descriptor> {
+@Singleton
+public class InjectedThriceService {
+    @Inject
+    private SimpleService byField;
+    
+    private final SimpleService byConstructor;
+    
+    private SimpleService byMethod;
+    
+    private boolean isValid = false;
+    
+    @Inject
+    private InjectedThriceService(SimpleService byConstructor) {
+        this.byConstructor = byConstructor;
+    }
+    
+    @SuppressWarnings("unused")
+    @Inject
+    private void viaMethod(SimpleService byMethod) {
+        this.byMethod = byMethod;
+    }
+    
+    @SuppressWarnings("unused")
+    private void postConstruct() {
+        Assert.assertNotNull(byField);
+        Assert.assertNotNull(byConstructor);
+        Assert.assertNotNull(byMethod);
+        isValid = true;
+    }
+    
+    public boolean isValid() {
+        return isValid;
+    }
 
 }

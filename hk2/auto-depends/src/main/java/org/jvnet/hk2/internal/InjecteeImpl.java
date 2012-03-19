@@ -56,16 +56,19 @@ public class InjecteeImpl implements Injectee {
     private final Set<Annotation> qualifiers;
     private final int position;
     private final AnnotatedElement parent;
+    private final boolean isOptional;
     
     /* package */ InjecteeImpl(
             Type requiredType,
             Set<Annotation> qualifiers,
             int position,
-            AnnotatedElement parent) {
+            AnnotatedElement parent,
+            boolean isOptional) {
         this.requiredType = requiredType;
         this.position = position;
         this.parent = parent;
         this.qualifiers = Collections.unmodifiableSet(qualifiers);
+        this.isOptional = isOptional; 
     }
 
     /* (non-Javadoc)
@@ -100,8 +103,21 @@ public class InjecteeImpl implements Injectee {
         return parent;
     }
     
-    public String toString() {
-        return "Injectee(requiredType=" + Pretty.type(requiredType) + ",qualifiers=" + Pretty.collection(qualifiers) +
-                ",position=" + position + "," + System.identityHashCode(this) + ")";
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Injectee#isOptional()
+     */
+    @Override
+    public boolean isOptional() {
+        return isOptional;
     }
+    
+    public String toString() {
+        return "Injectee(requiredType=" + Pretty.type(requiredType) +
+                ",qualifiers=" + Pretty.collection(qualifiers) +
+                ",position=" + position +
+                ",optional=" + isOptional +
+                "," + System.identityHashCode(this) + ")";
+    }
+
+    
 }

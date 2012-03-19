@@ -54,13 +54,150 @@ import java.util.SortedSet;
 @Contract
 public interface ServiceLocator {
     /**
+     * Gets the best service from this locator that implements
+     * this contract or has this implementation
+     * <p>
+     * Use this method only if destroying the service is not important
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @return An instance of the contract or impl.  May return
+     * null if there is no provider that provides the given
+     * implementation or contract
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> T getService(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets the best service from this locator that implements
+     * this contract or has this implementation and has the given
+     * name
+     * <p>
+     * Use this method only if destroying the service is not important
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param name May not be null, and is the name of the
+     * implementation to be returned
+     * @return An instance of the contract or impl.  May return
+     * null if there is no provider that provides the given
+     * implementation or contract
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets the all the services from this locator that implements
+     * this contract or has this implementation
+     * <p>
+     * Use this method only if destroying the service is not important
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @return A list of services implementing this contract
+     * or concrete implementation.  May not return null, but
+     * may return an empty list
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> List<T> getAllServices(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets the all the services from this locator that implements
+     * this contract or has this implementation
+     * <p>
+     * Use this method only if destroying the service is not important
+     * <p>
+     * This method should also be used with care to avoid classloading
+     * a large number of services
+     * 
+     * @param searchCriteria The returned service will match the Filter
+     * (in other words, searchCriteria.matches returns true).  May not
+     * be null
+     * @return A list of services matching this filter.  May not return null,
+     * but may return an empty list
+     * @throws MultiException if there was an error during service creation
+     */
+    public List<?> getAllServices(Filter searchCriteria) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public SortedSet<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service 
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public SortedSet<ServiceHandle<?>> getAllServiceHandles(Filter searchCriteria) throws MultiException;
+    
+    /**
      * Gets the list of descriptors that match the given filter
      * 
      * @param filter The filter to use to retrieve the set of descriptors
      * @return A list of descriptors in ranked order that match the given
      * filter
      */
-    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter<Descriptor> filter);
+    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter);
     
     /**
      * Gets the descriptor that best matches this filter, taking ranking
@@ -70,7 +207,7 @@ public interface ServiceLocator {
      * @return The best descriptor matching the filter, or null if there
      * is no descriptor that matches the filter
      */
-    public ActiveDescriptor<?> getBestDescriptor(Filter<Descriptor> filter);
+    public ActiveDescriptor<?> getBestDescriptor(Filter filter);
     
     /**
      * Converts a descriptor to an ActiveDescriptor.  Will use the registered
@@ -124,143 +261,6 @@ public interface ServiceLocator {
      * @throws MultiException if there was an error during service creation
      */
     public <T> T getService(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root) throws MultiException;
-    
-	/**
-	 * Gets the best service from this locator that implements
-	 * this contract or has this implementation
-	 * <p>
-	 * Use this method only if destroying the service is not important
-	 * 
-	 * @param contractOrImpl May not be null, and is the contract
-	 * or concrete implementation to get the best instance of
-	 * @return An instance of the contract or impl.  May return
-	 * null if there is no provider that provides the given
-	 * implementation or contract
-	 * @throws MultiException if there was an error during service creation
-	 */
-    public <T> T getService(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
-    
-    /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
-     * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
-     */
-    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
-    
-    /**
-	 * Gets the all the services from this locator that implements
-	 * this contract or has this implementation
-	 * <p>
-     * Use this method only if destroying the service is not important
-	 * 
-	 * @param contractOrImpl May not be null, and is the contract
-	 * or concrete implementation to get the best instance of
-	 * @return A list of services implementing this contract
-	 * or concrete implementation.  May not return null, but
-	 * may return an empty list
-	 * @throws MultiException if there was an error during service creation
-	 */
-    public <T> List<T> getAllServices(Type contractOrImpl,
-            Annotation... qualifiers) throws MultiException;
-    
-    /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
-     * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
-     */
-    public SortedSet<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
-            Annotation... qualifiers) throws MultiException;
-    
-    /**
-	 * Gets the best service from this locator that implements
-	 * this contract or has this implementation and has the given
-	 * name
-	 * <p>
-     * Use this method only if destroying the service is not important
-	 * 
-	 * @param contractOrImpl May not be null, and is the contract
-	 * or concrete implementation to get the best instance of
-	 * @param name May not be null, and is the name of the
-	 * implementation to be returned
-	 * @return An instance of the contract or impl.  May return
-	 * null if there is no provider that provides the given
-	 * implementation or contract
-	 * @throws MultiException if there was an error during service creation
-	 */
-    public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
-    
-    /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
-     * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
-     */
-    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, String name,
-            Annotation... qualifiers) throws MultiException;
-    
-    /**
-	 * Gets the all the services from this locator that implements
-	 * this contract or has this implementation
-	 * <p>
-     * Use this method only if destroying the service is not important
-     * <p>
-     * This method should also be used with care to avoid classloading
-     * a large number of services
-	 * 
-	 * @param searchCriteria The returned service will match the Filter
-	 * (in other words, searchCriteria.matches returns true).  May not
-	 * be null
-	 * @return A list of services matching this filter.  May not return null,
-	 * but may return an empty list
-	 * @throws MultiException if there was an error during service creation
-	 */
-    public List<?> getAllServices(Filter<Descriptor> searchCriteria) throws MultiException;
-    
-    /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
-     * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
-     */
-    public SortedSet<ServiceHandle<?>> getAllServiceHandles(Filter<Descriptor> searchCriteria) throws MultiException;
   
     /**
      * Returns the name of this ServiceLocator

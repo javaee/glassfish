@@ -133,9 +133,8 @@ public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
      * object has been destroyed
      * 
      * @param instance The instance to destroy
-     * @param root the extended provider created when this was found
      */
-    public void dispose(T instance, ServiceHandle<?> root);
+    public void dispose(T instance);
     
     
 }

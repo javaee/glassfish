@@ -67,7 +67,7 @@ public class MultiException extends RuntimeException {
     }
     
     public MultiException(Throwable th) {
-        super(th);
+        super(th.getMessage(), th);
     }
     
     public void addThrowable(Throwable th) {

@@ -55,6 +55,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Qualifier;
@@ -68,7 +70,9 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -79,6 +83,34 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * Returns all the interfaces the proxy must implement
+     * @param contracts All of the advertised contracts
+     * @return The array of contracts to add to the proxy
+     */
+    public static Class<?>[] getInterfacesForProxy(Set<Type> contracts) {
+        LinkedList<Class<?>> retVal = new LinkedList<Class<?>>();
+        
+        for (Type type : contracts) {
+            Class<?> rawClass = getRawClass(type);
+            if (rawClass == null) continue;
+            if (!rawClass.isInterface()) continue;
+            
+            retVal.add(rawClass);
+        }
+        
+        return retVal.toArray(new Class<?>[retVal.size()]);
+    }
+    /**
+     * Returns true if this scope is proxiable
+     * 
+     * @param scope The scope annotation to test
+     * @return true if this must be proxied
+     */
+    public static boolean isProxiableScope(Class<? extends Annotation> scope) {
+        if (scope.isAnnotationPresent(Proxiable.class)) return true;
+        return false;
+    }
     /**
      * Returns the type that this is a factory for
      * 
@@ -329,7 +361,7 @@ public class Utilities {
      * @param clazz The class to find the constructors of
      * @return A set of Constructors for the given class
      */
-    public static Set<Constructor<?>> getAllConstructors(Class<?> clazz) {
+    private static Set<Constructor<?>> getAllConstructors(Class<?> clazz) {
         HashSet<Constructor<?>> retVal = new HashSet<Constructor<?>>();
         
         HashSet<MemberKey> keys = new HashSet<MemberKey>();
@@ -355,7 +387,41 @@ public class Utilities {
     }
     
     /**
-     * Geta ll the initializer methods of the annotatedType.  If there are definitional
+     * Gets all methods, public, private etc on this class and on all
+     * subclasses
+     * 
+     * @param clazz The class to check out
+     * @return A set of all methods on this class
+     */
+    private static Set<Method> getAllMethods(Class<?> clazz) {
+        HashSet<Method> retVal = new HashSet<Method>();
+        
+        HashSet<MemberKey> keys = new HashSet<MemberKey>();
+        
+        getAllMethodKeys(clazz, keys);
+        
+        for (MemberKey key : keys) {
+            retVal.add((Method) key.getBackingMember());
+        }
+        
+        return retVal;
+    }
+    
+    private static void getAllMethodKeys(Class<?> clazz, Set<MemberKey> currentMethods) {
+        if (clazz == null) return;
+        
+        // Do superclasses first, so that inherited methods are
+        // overriden in the set
+        getAllMethodKeys(clazz.getSuperclass(), currentMethods);
+        
+        for (Method method : clazz.getDeclaredMethods()) {
+            currentMethods.add(new MemberKey(method));
+        }
+        
+    }
+    
+    /**
+     * Get all the initializer methods of the annotatedType.  If there are definitional
      * errors they will be put into the errorCollector (so as to get all the errors
      * at one shot)
      * 
@@ -369,7 +435,7 @@ public class Utilities {
             MultiException errorCollector) {
         HashSet<Method> retVal = new HashSet<Method>();
         
-        for (Method method : annotatedType.getMethods()) {
+        for (Method method : getAllMethods(annotatedType)) {
             if (getInjectAnnotation(locator, method) == null) {
                 // Not an initializer method
                 continue;
@@ -716,6 +782,18 @@ public class Utilities {
         return retVal;
     }
     
+    private static boolean isOptional(
+            Annotation memberAnnotations[]) {
+        
+        for (Annotation annotation : memberAnnotations) {
+            if (annotation.annotationType().equals(Optional.class)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     /**
      * Returns all the injectees for a constructor
      * @param c The constructor to analyze
@@ -728,7 +806,11 @@ public class Utilities {
         List<Injectee> retVal = new LinkedList<Injectee>();
         
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
-            retVal.add(new InjecteeImpl(genericTypeParams[lcv], getAllQualifiers(paramAnnotations[lcv]), lcv, c));
+            retVal.add(new InjecteeImpl(genericTypeParams[lcv],
+                    getAllQualifiers(paramAnnotations[lcv]),
+                    lcv,
+                    c,
+                    isOptional(paramAnnotations[lcv])));
         }
         
         return retVal;
@@ -746,7 +828,11 @@ public class Utilities {
         List<Injectee> retVal = new LinkedList<Injectee>();
         
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
-            retVal.add(new InjecteeImpl(genericTypeParams[lcv], getAllQualifiers(paramAnnotations[lcv]), lcv, c));
+            retVal.add(new InjecteeImpl(genericTypeParams[lcv],
+                    getAllQualifiers(paramAnnotations[lcv]),
+                    lcv,
+                    c,
+                    isOptional(paramAnnotations[lcv])));
         }
         
         return retVal;
@@ -760,29 +846,78 @@ public class Utilities {
     public static List<Injectee> getFieldInjectees(Field f) {
         List<Injectee> retVal = new LinkedList<Injectee>();
         
-        retVal.add(new InjecteeImpl(f.getGenericType(), getAllQualifiers(f), -1, f));
+        retVal.add(new InjecteeImpl(f.getGenericType(),
+                getAllQualifiers(f),
+                -1,
+                f,
+                isOptional(f.getAnnotations())));
         
         return retVal;
     }
     
+    private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
+    private final static String CONVENTION_PRE_DESTROY = "preDestroy";
+    
     /**
-     * Invokes the postConstruct method on this object
-     * @param o
+     * Finds the post construct method on this class
+     * @param The post construct method, or null if this class is an hk2 postconstruct or there
+     *   was no post construct method on the class
      */
-    public static void invokePostConstruct(Object o) {
-        if (o == null) return;
+    public static Method findPostConstruct(Class<?> clazz, MultiException collector) {
+        if (org.glassfish.hk2.PostConstruct.class.isAssignableFrom(clazz)) {
+            // A little performance optimization
+            return null;  
+        }
         
-        // TODO: Implement this
+        for (Method method : getAllMethods(clazz)) {
+            if (method.isAnnotationPresent(PostConstruct.class)) {
+                if (method.getParameterTypes().length != 0) {
+                    collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(method) +
+                            " annotated with @PostConstruct must not have any arguments"));
+                    return null;
+                }
+                
+                return method;
+            }
+            
+            if (method.getParameterTypes().length != 0) continue;
+            if (!method.getName().equals(CONVENTION_POST_CONSTRUCT)) continue;
+            
+            return method;
+        }
+        
+        return null;
     }
     
     /**
-     * Invokes the postConstruct method on this object
-     * @param o
+     * Finds the post construct method on this class
+     * @param The post construct method, or null if this class is an hk2 postconstruct or there
+     *   was no post construct method on the class
      */
-    public static void invokePreDestroy(Object o) {
-        if (o == null) return;
+    public static Method findPreDestroy(Class<?> clazz, MultiException collector) {
+        if (org.glassfish.hk2.PreDestroy.class.isAssignableFrom(clazz)) {
+            // A little performance optimization
+            return null;  
+        }
         
-        // TODO: Implement this
+        for (Method method : getAllMethods(clazz)) {
+            if (method.isAnnotationPresent(PreDestroy.class)) {
+                if (method.getParameterTypes().length != 0) {
+                    collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(method) +
+                            " annotated with @PreDestroy must not have any arguments"));
+                    return null;
+                }
+                
+                return method;
+            }
+            
+            if (method.getParameterTypes().length != 0) continue;
+            if (!method.getName().equals(CONVENTION_PRE_DESTROY)) continue;
+            
+            return method;
+        }
+        
+        return null;
     }
     
     /**

@@ -90,4 +90,15 @@ public interface Injectee {
      * @return The parent of the injectee
      */
     public AnnotatedElement getParent();
+    
+    /**
+     * This method returns true if this injection point is annotated
+     * with &#86;Optional.  In this case if there is no definition for
+     * the injection point in the system it is allowable for the system
+     * to merely return null
+     * 
+     * @return true if the injection point is annotated with &#86;Optional,
+     * false otherwise
+     */
+    public boolean isOptional();
 }

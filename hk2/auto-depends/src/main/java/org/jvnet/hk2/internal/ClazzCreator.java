@@ -69,6 +69,9 @@ public class ClazzCreator<T> implements Creator<T> {
     private ResolutionInfo myConstructor;
     private List<Injectee> allInjectees;
     
+    private Method postConstructMethod;
+    private Method preDestroyMethod;
+    
     /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, MultiException collector) {
         List<Injectee> baseAllInjectees = new LinkedList<Injectee>();
         
@@ -116,6 +119,9 @@ public class ClazzCreator<T> implements Creator<T> {
             
             myFields.add(new ResolutionInfo(element, resolver, injectees));
         }
+        
+        postConstructMethod = Utilities.findPostConstruct(implClass, collector);
+        preDestroyMethod = Utilities.findPreDestroy(implClass, collector);
         
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
     }
@@ -194,25 +200,31 @@ public class ClazzCreator<T> implements Creator<T> {
     }
     
     private void postConstructMe(T t) throws Throwable {
+        if (t == null) return;
+        
         if (t instanceof PostConstruct) {
-            PostConstruct pc = (PostConstruct) t;
-            
-            pc.postConstruct();
+            ((PostConstruct) t).postConstruct();
             return;
         }
         
-        Utilities.invokePostConstruct(t);
+        if (postConstructMethod == null) return;
+        
+        postConstructMethod.setAccessible(true);
+        Utilities.invoke(t, postConstructMethod, new Object[0]);
     }
     
     private void preDestroyMe(T t) throws Throwable {
+        if (t == null) return;
+        
         if (t instanceof PreDestroy) {
-            PreDestroy pd = (PreDestroy) t;
-            
-            pd.preDestroy();
+            ((PreDestroy) t).preDestroy();
             return;
         }
         
-        Utilities.invokePostConstruct(t);
+        if (preDestroyMethod == null) return;
+        
+        preDestroyMethod.setAccessible(true);
+        Utilities.invoke(t, preDestroyMethod, new Object[0]);
     }
 
     /* (non-Javadoc)
@@ -247,7 +259,7 @@ public class ClazzCreator<T> implements Creator<T> {
      * @see org.jvnet.hk2.internal.Creator#dispose(java.lang.Object)
      */
     @Override
-    public void dispose(T instance, ServiceHandle<?> root) {
+    public void dispose(T instance) {
         try {
             preDestroyMe(instance);
         }

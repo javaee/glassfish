@@ -55,6 +55,19 @@ public class ProviderModule implements Module {
     public void configure(Configuration configurator) {
         configurator.bind(BuilderHelper.link(InstantiationChecker.class).build());
         configurator.bind(BuilderHelper.link(ProviderInjected.class).build());
+        
+        // These are for the iterable provider tests
+        configurator.bind(BuilderHelper.link(EliManning.class).to(Character.class).to(FootballCharacter.class).
+                qualifiedBy(Giants.class.getName()).build());
+        configurator.bind(BuilderHelper.link(ShadyMcCoy.class).to(Character.class).to(FootballCharacter.class).
+                qualifiedBy(Eagles.class.getName()).build());
+        configurator.bind(BuilderHelper.link(Ishmael.class).to(Character.class).to(BookCharacter.class).
+                build());
+        configurator.bind(BuilderHelper.link(QueeQueg.class).to(Character.class).to(BookCharacter.class).
+                build());
+        
+        configurator.bind(BuilderHelper.link(Menagerie.class).build());
+        
     }
 
 }

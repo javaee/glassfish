@@ -305,15 +305,15 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
      * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public void dispose(T instance, ServiceHandle<?> root) {
+    public void dispose(T instance) {
         checkState();
         
         if (activeDescriptor != null) {
-            activeDescriptor.dispose(instance, root);
+            activeDescriptor.dispose(instance);
             return;
         }
         
-        creator.dispose(instance, root);
+        creator.dispose(instance);
     }
     
     private void checkState() {

@@ -48,7 +48,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DescriptorFilter;
 
 /**
  * The implementation of the descriptor itself, with the
@@ -59,7 +58,7 @@ import org.glassfish.hk2.api.DescriptorFilter;
  * TODO:  Should this implementation class be put into a public package?
  * I (JRW) think yes, it should
  */
-public class DescriptorImpl implements DescriptorFilter, Serializable {
+public class DescriptorImpl implements Descriptor, Serializable {
 	/**
 	 * For Serialization
 	 */
@@ -163,6 +162,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 		return id;
 	}
 	
+	/*
 	private static boolean safeEquals(Object a, Object b) {
 	    if (a == b) return true;
 	    if (a == null) return false;
@@ -195,6 +195,7 @@ public class DescriptorImpl implements DescriptorFilter, Serializable {
 		
 		return true;
 	}
+	*/
 	
 	private static String writeSet(Set<?> set) {
 		StringBuffer sb = new StringBuffer("{");

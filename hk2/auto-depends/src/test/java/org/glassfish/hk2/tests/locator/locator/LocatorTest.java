@@ -92,7 +92,7 @@ public class LocatorTest {
     @Test
     public void testGetAllServicesWithFilter() {
         
-        List<?> handles = locator.getAllServices(new Filter<Descriptor>() {
+        List<?> handles = locator.getAllServices(new Filter() {
 
             @Override
             public boolean matches(Descriptor d) {

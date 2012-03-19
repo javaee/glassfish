@@ -46,10 +46,10 @@ import javax.inject.Named;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.OrFilter;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
-import org.glassfish.hk2.internal.DescriptorOrFilterImpl;
+import org.glassfish.hk2.internal.IndexedFilterImpl;
 import org.glassfish.hk2.internal.StarFilter;
 
 /**
@@ -57,6 +57,40 @@ import org.glassfish.hk2.internal.StarFilter;
  * as a simple mechanism to create a Filter or Descriptor.
  */
 public class BuilderHelper {
+    /**
+     * Returns an indexed filter that will return all descriptors that
+     * have contract as an advertised contract
+     * 
+     * @param contract The advertised contract to look for
+     * @return The indexed filter that can be used to calls to ServiceLocator methods
+     */
+    public static IndexedFilter createContractFilter(String contract) {
+        return new IndexedFilterImpl(contract, null);
+    }
+    
+    /**
+     * Returns an indexed filter that will return all descriptors that
+     * have the given name
+     * 
+     * @param name The name to look for
+     * @return The indexed filter that can be used to calls to ServiceLocator methods
+     */
+    public static IndexedFilter createNameFilter(String name) {
+        return new IndexedFilterImpl(null, name);
+    }
+    
+    /**
+     * Returns an indexed filter that will return all descriptors that
+     * have the given name and given contract
+     * 
+     * @param contract The advertised contract to look for
+     * @param name The name to look for
+     * @return The indexed filter that can be used to calls to ServiceLocator methods
+     */
+    public static IndexedFilter createNameAndContractFilter(String contract, String name) {
+        return new IndexedFilterImpl(contract, name);
+    }
+    
 	/**
 	 * This method generates a {@link DescriptorBuilder} without a specific
 	 * implementation class, useful in lookup operations
@@ -286,35 +320,12 @@ public class BuilderHelper {
     }
 	
 	/**
-	 * This method returns a filter that allows for doing a logical OR of descriptors.  If any of the
-	 * filters given in the input parameters matches the descriptor passed in then the matches method
-	 * will return true.  Otherwise, it will return false
-	 * 
-	 * @param d1 A descriptor that should be compared with the OR opererator
-	 * @return A filter that can be used in complex expressions
-	 * @throws IllegalArgumentException
-	 */
-	public static OrFilter<Descriptor> orFilter(Filter<Descriptor>... d1) throws IllegalArgumentException {
-		return new DescriptorOrFilterImpl(d1);
-	}
-	
-	/**
-	 * Returns a filter that matches all types of the given class
-	 * 
-	 * @param ofClass The type of class that this filter should be
-	 * @return A filter that matches all instances
-	 */
-	public static <T> Filter<T> allFilter(Class<T> ofClass) {
-	  return new StarFilter<T>();
-	}
-	
-	/**
 	 * Returns a filter of type Descriptor that matches
 	 * all descriptors
 	 * 
 	 * @return A filter that matches all descriptors
 	 */
-	public static Filter<Descriptor> allFilter() {
+	public static Filter allFilter() {
 	  return StarFilter.getDescriptorFilter();
 	}
 }

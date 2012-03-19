@@ -73,5 +73,5 @@ public interface Creator<T> {
      * 
      * @param instance removes the given instance
      */
-    public void dispose(T instance, ServiceHandle<?> root);
+    public void dispose(T instance);
 }

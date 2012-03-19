@@ -43,7 +43,7 @@ package org.glassfish.hk2.api;
  * This object is used to search for items
  * in the service registry
  */
-public interface Filter<T> {
+public interface Filter {
 	/**
 	 * Returns true if this filter matches the
 	 * given object
@@ -52,5 +52,5 @@ public interface Filter<T> {
 	 * this filter.  May not be null
 	 * @return true if this filter matches the object
 	 */
-	public boolean matches(T d);
+	public boolean matches(Descriptor d);
 }

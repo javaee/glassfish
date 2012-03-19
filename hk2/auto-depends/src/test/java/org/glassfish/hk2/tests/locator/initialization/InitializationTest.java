@@ -45,7 +45,6 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DescriptorFilter;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -62,9 +61,9 @@ public class InitializationTest {
     public final static String TEST_CLASS_B = "this.thing.isnt.added.in.the.Module";
     public final static String SIMPLE_NAME = "InitializationTest";
     
-    private final static DescriptorFilter aFilter = BuilderHelper.link(InitializationTest.TEST_CLASS_A).build();
-    private final static DescriptorFilter bFilter = BuilderHelper.link(InitializationTest.TEST_CLASS_B).build();
-    private final static DescriptorFilter namedFilter = BuilderHelper.link().named(SIMPLE_NAME).build();
+    private final static Filter aFilter = BuilderHelper.createContractFilter(InitializationTest.TEST_CLASS_A);
+    private final static Filter bFilter = BuilderHelper.createContractFilter(InitializationTest.TEST_CLASS_B);
+    private final static Filter namedFilter = BuilderHelper.createNameFilter(SIMPLE_NAME);
     
     private ServiceLocator locator;
     
@@ -119,7 +118,7 @@ public class InitializationTest {
     
     @Test
     public void testNoMatchFilter() {
-        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(new Filter<Descriptor>() {
+        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(new Filter() {
 
             @Override
             public boolean matches(Descriptor d) {

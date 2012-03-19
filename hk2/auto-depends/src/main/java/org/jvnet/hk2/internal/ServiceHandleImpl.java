@@ -42,8 +42,11 @@ package org.jvnet.hk2.internal;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.sf.cglib.proxy.Enhancer;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 
 /**
@@ -58,6 +61,9 @@ import org.glassfish.hk2.api.ServiceHandle;
 public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     private final ActiveDescriptor<T> root;
     private final ServiceLocatorImpl locator;
+    private final Object lock = new Object();
+    
+    private boolean serviceDestroyed = false;
     private boolean serviceSet = false;
     private T service;
     
@@ -73,15 +79,30 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
      */
     @Override
     public T getService() {
-        if (serviceSet) return service;
+        synchronized (lock) {
+            if (serviceDestroyed) throw new IllegalStateException("Service has been disposed");
+            
+            if (serviceSet) return service;
         
-        Context context = locator.resolveContext(root.getScopeAnnotation());
-        service = context.findOrCreate(root, this);
+            if (Utilities.isProxiableScope(root.getScopeAnnotation())) {
+                @SuppressWarnings("unchecked")
+                T proxy = (T) Enhancer.create(root.getImplementationClass(),
+                    Utilities.getInterfacesForProxy(root.getContractTypes()),
+                    new MethodInterceptorImpl(locator, root, this));
+            
+                serviceSet = true;
+                service = proxy;
+                
+                return proxy;
+            }
         
-        // TODO:  If this scope were proxiable, this is where we would create the proxy
-        serviceSet = true;
+            Context context = locator.resolveContext(root.getScopeAnnotation());
+            service = context.findOrCreate(root, this);
         
-        return service;
+            serviceSet = true;
+        
+            return service;
+        }
     }
 
     /* (non-Javadoc)
@@ -97,6 +118,8 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
      */
     @Override
     public boolean isActive() {
+        // No lock needed, nothing changes state
+        if (serviceDestroyed) return false;
         if (serviceSet) return true;
         
         try {
@@ -113,8 +136,21 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
      */
     @Override
     public void destroy() {
-        // TODO: Work on the destruction path
+        synchronized (lock) {
+            if (serviceDestroyed) return;
+            serviceDestroyed = true;
+            
+            if (!serviceSet) return;
+        }
         
+        if (root.getScopeAnnotation().equals(PerLookup.class)) {
+            // Otherwise it is the scope responsible for the lifecycle
+            root.dispose(service);
+        }
+        
+        for (ServiceHandleImpl<?> subHandle : subHandles) {
+            subHandle.destroy();
+        }
     }
     
     public void addSubHandle(ServiceHandleImpl<?> subHandle) {
