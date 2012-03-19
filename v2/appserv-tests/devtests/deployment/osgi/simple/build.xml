@@ -115,10 +115,10 @@
         
         <antcall target="deploy.osgi.asadmin"/>
 
-        <!-- put in a 15s sleep time to make sure the asynchronous osgi 
+        <!-- put in a 30s sleep time to make sure the asynchronous osgi 
              deployment finishes before accessing the application -->
 
-        <sleep seconds="15"/>
+        <sleep seconds="30"/>
 
         <antcall target="run.positive">
             <param name="log.id" value="1"/>
