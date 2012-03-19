@@ -99,4 +99,17 @@ public interface Configuration {
 	 * @param resolver The resolver to use when finding instances
 	 */
 	public void addInjectionResolver(Class<? extends Annotation> indicator, InjectionResolver resolver);
+	
+	/**
+	 * This allows third party systems to add reified active descriptors to the system.
+	 * The active descriptor given must be fully reified (isReified must return true) and
+	 * the create and destroy methods must be implemented.
+	 * 
+	 * @param activeDescriptor The reified active descriptor to be added to the system.  The
+	 * system will not attempt to reify this descriptor itself
+	 * @return The entry as added to the service registry, with fields
+     * of the Descriptor filled in by the system as appropriate
+	 * @throws IllegalArgumentException if the descriptor is not reified
+	 */
+	public ActiveDescriptor<?> addActiveDescriptor(ActiveDescriptor<?> activeDescriptor) throws IllegalArgumentException;
 }

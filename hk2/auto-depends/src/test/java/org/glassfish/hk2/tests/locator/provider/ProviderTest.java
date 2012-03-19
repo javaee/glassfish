@@ -51,6 +51,17 @@ import org.junit.Test;
  *
  */
 public class ProviderTest {
+    public final static String MOBY_DICK = "Moby Dick";  // Big Whale
+    public final static String ISHMAEL = "Ishmael";  // probably not his real name
+    public final static String QUEEQUEG = "QueeQueg"; // Escape on his coffin
+    
+    public final static String EAGLES = "Eagles";  // Epic team
+    public final static String SHADY = "LeShaun McCoy";  // Best back in NFL
+    
+    public final static String GIANTS = "Giants";  // Epic FAIL
+    public final static String ELI = "Eli Manning";  // Jerk
+    
+            
     public final static String TEST_NAME = "ProviderTest";
     private ServiceLocator locator;
     
@@ -72,5 +83,47 @@ public class ProviderTest {
         pi.doTheGet();
         
         Assert.assertTrue(InstantiationChecker.getIsInstantiated());
+    }
+    
+    @Test
+    public void testSingleShotIterable() {
+        Menagerie zoo = locator.getService(Menagerie.class);
+        Assert.assertNotNull(zoo);
+        
+        zoo.validateAllEagles();
+    }
+    
+    @Test
+    public void testIterableQualifiedBy() {
+        Menagerie zoo = locator.getService(Menagerie.class);
+        Assert.assertNotNull(zoo);
+        
+        zoo.validateAllGiants();
+    }
+    
+    @Test
+    public void testIterableOfIterableAndHandleIterable() {
+        Menagerie zoo = locator.getService(Menagerie.class);
+        Assert.assertNotNull(zoo);
+        
+        zoo.validateQueequeg();
+    }
+    
+    @Test
+    public void testIterableOfType() {
+        Menagerie zoo = locator.getService(Menagerie.class);
+        Assert.assertNotNull(zoo);
+        
+        zoo.validateBookCharacters();
+        
+    }
+    
+    @Test
+    public void testIterableNamed() {
+        Menagerie zoo = locator.getService(Menagerie.class);
+        Assert.assertNotNull(zoo);
+        
+        zoo.validateAllCharacters();
+        
     }
 }

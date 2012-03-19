@@ -37,45 +37,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.internal;
+package org.glassfish.hk2.tests.locator.justintime;
 
-import java.util.LinkedList;
-import java.util.List;
+import junit.framework.Assert;
 
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.OrFilter;
-import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.tests.locator.locator.LocatorModule;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * An implementation of the OrFilter
- * 
  * @author jwells
+ *
  */
-public class DescriptorOrFilterImpl implements OrFilter<Descriptor> {
-	private final LinkedList<Filter<Descriptor>> orMe = new LinkedList<Filter<Descriptor>>();
-	
-	public DescriptorOrFilterImpl(Filter<Descriptor>... d1) {
-		for (Filter<Descriptor> descriptor : d1) {
-			orMe.add(descriptor);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.glassfish.hk2.Filter#matches(org.glassfish.hk2.Descriptor)
-	 */
-	@Override
-	public boolean matches(Descriptor d) {
-		
-		for (Filter<Descriptor> filter : orMe) {
-			if (filter.matches(d)) return true;
-		}
-		
-		return false;
-	}
-
-	@Override
-	public List<Filter<Descriptor>> getFilters() {
-		return new LinkedList<Filter<Descriptor>>(orMe);
-	}
+public class JustInTimeTest {
+    public final static String TEST_NAME = "JustInTimeTest";
+    private ServiceLocator locator;
+    
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new JustInTimeModule());
+        if (locator == null) {
+            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
+        }
+    }
+    
+    @Test
+    public void testJustInTimeResolution() {
+        InjectedThriceService threeTimes = locator.getService(InjectedThriceService.class);
+        Assert.assertNotNull(threeTimes);
+        Assert.assertTrue(threeTimes.isValid());
+        
+        // Make sure the resolver was only called once
+        SimpleServiceJITResolver jitResolver = locator.getService(SimpleServiceJITResolver.class);
+        Assert.assertNotNull(jitResolver);
+        
+        Assert.assertEquals("Expected 1 JIT resolution, but got " + jitResolver.getNumTimesCalled(), 1, jitResolver.getNumTimesCalled());
+        
+    }
 
 }

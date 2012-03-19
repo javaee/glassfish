@@ -41,9 +41,12 @@ package org.jvnet.hk2.internal;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
@@ -60,8 +63,10 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
         dci.addContext(new SingletonContext());
         dci.addContext(new PerLookupContext());
         
-        // TODO:  Here we would add the system services that need to go into every habitat
-        // 5.  The DynamicConfigurationService
+        dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
+                to(DynamicConfigurationService.class).
+                in(PerLookup.class.getName()).
+                build());
         
         dci.commit();
         
@@ -76,9 +81,11 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
         ServiceLocatorImpl retVal = initialize(name);
         
         DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
+        dci.setCommitable(false);  // Don't let those tricky guys commit this
         
         module.configure(dci);
         
+        dci.setCommitable(true);
         dci.commit();
         
         return retVal;

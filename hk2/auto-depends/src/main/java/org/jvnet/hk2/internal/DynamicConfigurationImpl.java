@@ -63,8 +63,10 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver>();
     private final HashSet<Context> allContexts = new HashSet<Context>();
+    
     private final Object lock = new Object();
     private boolean committed = false;
+    private boolean commitable = true;
 
     /* package */ DynamicConfigurationImpl(ServiceLocatorImpl locator) {
         this.locator = locator;
@@ -126,6 +128,24 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         
         allContexts.add(context);
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Configuration#addActiveDescriptor(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public ActiveDescriptor<?> addActiveDescriptor(ActiveDescriptor<?> activeDescriptor)
+            throws IllegalArgumentException {
+        checkState();
+        if (activeDescriptor == null || !activeDescriptor.isReified()) {
+            throw new IllegalArgumentException();
+        }
+        
+        SystemDescriptor<?> retVal = new SystemDescriptor<Object>(activeDescriptor);
+        
+        allDescriptors.add(retVal);
+        
+        return retVal;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.DynamicConfiguration#commit()
@@ -134,6 +154,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     public void commit() throws MultiException {
         synchronized (lock) {
             checkState();
+            if (!commitable) throw new IllegalStateException();
+            
             committed = true;
         }
         
@@ -173,5 +195,9 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     HashSet<Context> getAllContexts() {
         return allContexts;
     }
-
+    
+    /* package */ void setCommitable(boolean commitable) {
+        this.commitable = commitable;
+        
+    }
 }

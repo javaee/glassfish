@@ -89,7 +89,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter<Descriptor> filter) {
+    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -163,7 +163,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public List<?> getAllServices(Filter<Descriptor> searchCriteria) {
+    public List<?> getAllServices(Filter searchCriteria) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -208,7 +208,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getBestDescriptor(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public ActiveDescriptor<?> getBestDescriptor(Filter<Descriptor> filter) {
+    public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -249,7 +249,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public SortedSet<ServiceHandle<?>> getAllServiceHandles(
-            Filter<Descriptor> searchCriteria) throws MultiException {
+            Filter searchCriteria) throws MultiException {
         // TODO Auto-generated method stub
         return null;
     }

@@ -39,9 +39,15 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.util.LinkedList;
+import java.util.SortedSet;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.ServiceHandle;
 
 /**
@@ -54,6 +60,69 @@ public class ThreeThirtyResolver implements InjectionResolver {
     /* package */ ThreeThirtyResolver(ServiceLocatorImpl locator) {
         this.locator = locator;
     }
+    
+    private Object secondChanceResolve(Injectee injectee, ServiceHandle<?> root) {
+        // OK, lets do the second chance protocol
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        if (dcs == null) {
+            // For whatever reason there is no dcs in this system
+            if (injectee.isOptional()) return null;
+            
+            throw new IllegalStateException("There was no object available for injection at " + injectee);
+        }
+        
+        SortedSet<ServiceHandle<JustInTimeInjectionResolver>> jitResolvers =
+                Utilities.<SortedSet<ServiceHandle<JustInTimeInjectionResolver>>>cast(
+                locator.getAllServiceHandles(JustInTimeInjectionResolver.class));
+        
+        try {
+            LinkedList<DynamicConfiguration> changedConfigurations =
+                    new LinkedList<DynamicConfiguration>();
+            for (ServiceHandle<JustInTimeInjectionResolver> handle : jitResolvers) {
+                JustInTimeInjectionResolver jitResolver = handle.getService();
+                
+                DynamicConfiguration dc = dcs.createDynamicConfiguration();
+                if (dc instanceof DynamicConfigurationImpl) {
+                    ((DynamicConfigurationImpl) dc).setCommitable(false);
+                }
+                
+                boolean modified = jitResolver.justInTimeResolution(dc, injectee);
+                if (modified) changedConfigurations.add(dc);
+            }
+            
+            boolean oneChanged = false;
+            for (DynamicConfiguration dc : changedConfigurations) {
+                oneChanged = true;
+                if (dc instanceof DynamicConfigurationImpl) {
+                    ((DynamicConfigurationImpl) dc).setCommitable(true);
+                }
+                    
+                dc.commit();
+            }
+            
+            if (oneChanged == false) {
+                if (injectee.isOptional()) return null;
+                
+                throw new IllegalStateException("There was no object available for injection at " + injectee);
+            }
+            
+            // Try again
+            ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
+            
+            if (ad == null) {
+                if (injectee.isOptional()) return null;
+                
+                throw new IllegalStateException("There was no object available for injection at " + injectee);
+            }
+            
+            return locator.getService(ad, root);  
+        }
+        finally {
+            for (ServiceHandle<JustInTimeInjectionResolver> jitResolver : jitResolvers) {
+                jitResolver.destroy();
+            }
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
@@ -63,7 +132,7 @@ public class ThreeThirtyResolver implements InjectionResolver {
         ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
         
         if (ad == null) {
-            throw new IllegalStateException("There was no object available for injection at " + injectee);
+            return secondChanceResolve(injectee, root);
         }
         
         return locator.getService(ad, root);

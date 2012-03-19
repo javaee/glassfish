@@ -37,28 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
-
-import java.util.List;
+package org.glassfish.hk2.tests.locator.optional;
 
 /**
- * This is a version of the filter that does a
- * logical or operation on the underlying objects.
- * 
- * If a filter implements OrFilter then it
- * may be possible to increase the search time in the
- * service database by using the underlying objects.
+ * @author jwells
+ *
  */
-public interface OrFilter<T> extends Filter<T> {
-	/**
-	 * Returns the list of filters that will be
-	 * used in the logical or operation.
-	 * 
-	 * @return May not return null, but may return an
-	 * empty List.  Returns a list of filters that
-	 * a logical OR will be run on in the service
-	 * database
-	 */
-	public List<Filter<T>> getFilters();
+public class OptionalService {
 
 }

@@ -114,7 +114,7 @@ public class FactoryCreator<T> implements Creator<T> {
      * @see org.jvnet.hk2.internal.Creator#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public void dispose(T instance, ServiceHandle<?> root) {
+    public void dispose(T instance) {
         try {
             ServiceHandle<Factory<T>> handle = getFactoryHandle();
             

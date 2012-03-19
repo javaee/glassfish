@@ -56,6 +56,16 @@ import javax.inject.Provider;
  */
 public interface IterableProvider<T> extends Provider<T>, Iterable<T> {
     /**
+     * Rather than getting the service directly with get (in which
+     * case the returned service cannot be disposed of) this method
+     * will instead return a service handle for the current best service.
+     * 
+     * @return A ServiceHandle for the service, or null if there is
+     * currently no service definition available
+     */
+    public ServiceHandle<T> getHandle();
+    
+    /**
      * Returns the size of the iterator that would be returned
      * 
      * @return the size of the iterator that would be chosen
@@ -88,5 +98,15 @@ public interface IterableProvider<T> extends Provider<T>, Iterable<T> {
      * @return An iterator restricted with the given qualifiers
      */
     public IterableProvider<T> qualifiedWith(Annotation... qualifiers);
+    
+    /**
+     * This version of iterator returns an iterator of ServiceHandles rather
+     * than returning the services (which then have no way to be properly
+     * destroyed)
+     * 
+     * @return An iterator of ServiceHandles for the set of services
+     * represtended by this IterableProvider
+     */
+    public Iterable<ServiceHandle<T>> handleIterator();
 
 }

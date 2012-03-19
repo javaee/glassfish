@@ -42,7 +42,7 @@ package org.glassfish.hk2.utilities;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import org.glassfish.hk2.api.DescriptorFilter;
+import org.glassfish.hk2.api.Descriptor;
 
 /**
  * This is an object that uses the Builder pattern
@@ -170,6 +170,6 @@ public interface DescriptorBuilder {
 	 * @return The descriptor that has been built up with this DescriptorBuilder
 	 * @throws IllegalArgumentException if the built descriptor is invalid
 	 */
-	public DescriptorFilter build() throws IllegalArgumentException;
+	public Descriptor build() throws IllegalArgumentException;
 
 }

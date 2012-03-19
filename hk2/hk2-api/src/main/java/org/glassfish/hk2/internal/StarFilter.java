@@ -47,16 +47,16 @@ import org.glassfish.hk2.api.Filter;
  * 
  * @author jwells
  */
-public class StarFilter<T> implements Filter<T> {
-  private static StarFilter<Descriptor> INSTANCE = new StarFilter<Descriptor>();
+public class StarFilter implements Filter {
+  private static StarFilter INSTANCE = new StarFilter();
   
-  public static StarFilter<Descriptor> getDescriptorFilter() { return INSTANCE; }
+  public static StarFilter getDescriptorFilter() { return INSTANCE; }
 
   /* (non-Javadoc)
    * @see org.glassfish.hk2.api.Filter#matches(java.lang.Object)
    */
   @Override
-  public boolean matches(T d) {
+  public boolean matches(Descriptor d) {
     return true;
   }
 

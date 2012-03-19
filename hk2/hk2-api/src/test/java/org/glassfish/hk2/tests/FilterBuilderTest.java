@@ -48,7 +48,6 @@ import java.util.Set;
 import javax.inject.Named;
 
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DescriptorFilter;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.scopes.Singleton;
@@ -194,26 +193,17 @@ public class FilterBuilderTest {
 	}
 	
 	@Test
-  public void testAllDescriptorFilter() {
-    Descriptor predicate = BuilderHelper.link().build();
+    public void testAllDescriptorFilter() {
+        Descriptor predicate = BuilderHelper.link().build();
     
-    Filter<Descriptor> allFilter = BuilderHelper.allFilter();
+        Filter allFilter = BuilderHelper.allFilter();
     
-    Assert.assertTrue(allFilter.matches(predicate));
-  }
-	
-	@Test
-    public void testAllFilter() {
-        String bob = "bob";
-    
-        Filter<String> allFilter = BuilderHelper.allFilter(String.class);
-    
-        Assert.assertTrue(allFilter.matches(bob));
-	}
+        Assert.assertTrue(allFilter.matches(predicate));
+    }
 	
 	@Test
 	public void testFactoryFilter() {
-	    DescriptorFilter df = BuilderHelper.link(GoodFactory.class, false).to(Factory.class).build();
+	    Descriptor df = BuilderHelper.link(GoodFactory.class, false).to(Factory.class).build();
 	    
 	    Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
 	    Assert.assertTrue(df.getAdvertisedContracts().contains(Factory.class.getName()));
@@ -223,7 +213,7 @@ public class FilterBuilderTest {
 	
 	@Test
     public void testFactoryWithName() {
-        DescriptorFilter df = BuilderHelper.link(AnotherGoodFactory.class).build();
+        Descriptor df = BuilderHelper.link(AnotherGoodFactory.class).build();
         
         Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
         Assert.assertTrue(df.getAdvertisedContracts().contains(Factory.class.getName()));
@@ -233,7 +223,7 @@ public class FilterBuilderTest {
 	
 	@Test
     public void testLinkFactory() {
-        DescriptorFilter df = BuilderHelper.linkFactory(GoodFactory.class).to(String.class).build();
+        Descriptor df = BuilderHelper.linkFactory(GoodFactory.class).to(String.class).build();
         
         Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
         Assert.assertTrue(df.getAdvertisedContracts().contains(String.class.getName()));
@@ -243,7 +233,7 @@ public class FilterBuilderTest {
 	
 	@Test
     public void testAutoGenName() {
-        DescriptorFilter df = BuilderHelper.link(NamedService.class).build();
+        Descriptor df = BuilderHelper.link(NamedService.class).build();
         
         Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
         Assert.assertTrue(df.getAdvertisedContracts().contains(NamedService.class.getName()));

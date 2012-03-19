@@ -116,7 +116,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public void dispose(T instance, ServiceHandle<?> root) {
+    public void dispose(T instance) {
         // Do nothing
         
     }

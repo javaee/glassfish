@@ -55,9 +55,9 @@ import javax.inject.Provider;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DescriptorFilter;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.IterableProvider;
@@ -66,7 +66,6 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.DescriptorBuilder;
 
 /**
  * @author jwells
@@ -100,37 +99,48 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter<Descriptor> filter) {
+    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
             List<ActiveDescriptor<?>> sortMeOut;
-            if (filter instanceof DescriptorFilter) {
-                DescriptorFilter df = (DescriptorFilter) filter;
+            if (filter instanceof IndexedFilter) {
+                IndexedFilter df = (IndexedFilter) filter;
                 
                 if (df.getName() != null) {
+                    List<ActiveDescriptor<?>> scopedByName;
+                    
                     String name = df.getName();
                     
-                    sortMeOut = descriptorsByName.get(name);
-                    if (sortMeOut == null) sortMeOut = Collections.emptyList();
-                }
-                else {
-                
-                    Set<String> advertisedContracts = df.getAdvertisedContracts();
-                    if (!advertisedContracts.isEmpty()) {
-                        sortMeOut = new LinkedList<ActiveDescriptor<?>>();
+                    scopedByName = descriptorsByName.get(name);
+                    if (scopedByName == null) {
+                        scopedByName = Collections.emptyList();
+                    }
                     
-                        for (String advertisedContract : advertisedContracts) {
-                            LinkedList<ActiveDescriptor<?>> candidates = descriptorsByAdvertisedContract.get(advertisedContract);
-                            if (candidates != null) {
-                                sortMeOut.addAll(candidates);
-                            }
+                    if (df.getAdvertisedContract() != null) {
+                        sortMeOut = new LinkedList<ActiveDescriptor<?>>();
                         
+                        for (ActiveDescriptor<?> candidate : scopedByName) {
+                            if (candidate.getAdvertisedContracts().contains(df.getAdvertisedContract())) {
+                                sortMeOut.add(candidate);
+                            }
                         }
                     }
                     else {
-                        sortMeOut = allDescriptors;
+                        sortMeOut = scopedByName;
                     }
+                }
+                else if (df.getAdvertisedContract() != null) {
+                    String advertisedContract = df.getAdvertisedContract();
+                    
+                    sortMeOut = descriptorsByAdvertisedContract.get(advertisedContract);
+                    if (sortMeOut == null) {
+                        sortMeOut = Collections.emptyList();
+                        
+                    }
+                }
+                else {
+                    sortMeOut = allDescriptors;
                 }
             }
             else {
@@ -149,7 +159,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
-    public ActiveDescriptor<?> getBestDescriptor(Filter<Descriptor> filter) {
+    public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         SortedSet<ActiveDescriptor<?>> sorted = getDescriptors(filter);
@@ -291,7 +301,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public List<?> getAllServices(Filter<Descriptor> searchCriteria)
+    public List<?> getAllServices(Filter searchCriteria)
             throws MultiException {
         SortedSet<ServiceHandle<?>> handleSet = getAllServiceHandles(searchCriteria);
         
@@ -365,7 +375,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
-        DescriptorFilter filter = BuilderHelper.link(rawClass, false, false).build();
+        Filter filter = BuilderHelper.createContractFilter(rawClass.getName());
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
         candidates = narrow(candidates, contractOrImpl, null, false, qualifiers);
         
@@ -385,7 +395,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
-        DescriptorFilter filter = BuilderHelper.link(rawClass, false, false).build();
+        Filter filter = BuilderHelper.createContractFilter(rawClass.getName());
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
         candidates = narrow(candidates, contractOrImpl, null, true, qualifiers);
         
@@ -407,12 +417,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
-        DescriptorBuilder builder = BuilderHelper.link(rawClass, false, false);
-        if (name != null) {
-            builder = builder.named(name);
-        }
-        
-        Filter<Descriptor> filter = builder.build();
+        Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
         
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
         candidates = narrow(candidates, contractOrImpl, name, true, qualifiers);
@@ -428,7 +433,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public SortedSet<ServiceHandle<?>> getAllServiceHandles(
-            Filter<Descriptor> searchCriteria) throws MultiException {
+            Filter searchCriteria) throws MultiException {
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(searchCriteria);
         candidates = narrow(candidates, null, null, true);
         
@@ -514,6 +519,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
     /* package */ Context resolveContext(Class<? extends Annotation> scope) throws IllegalStateException {
         synchronized (lock) {
             LinkedList<Context> matches = allContexts.get(scope);
+            if (matches == null) {
+                throw new IllegalStateException("There is no active context for scope " +
+                        Pretty.clazz(scope));
+            }
             
             Context retVal = null;
             for (Context match : matches) {

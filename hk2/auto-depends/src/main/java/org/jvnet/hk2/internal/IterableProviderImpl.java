@@ -79,6 +79,17 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
         return (T) locator.getService(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.IterableProvider#getHandle()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public ServiceHandle<T> getHandle() {
+        return (ServiceHandle<T>) locator.getServiceHandle(requiredType,
+                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
+    }
+    
 
     /* (non-Javadoc)
      * @see java.lang.Iterable#iterator()
@@ -129,11 +140,22 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
         return new IterableProviderImpl<T>(locator, requiredType, moreAnnotations);
     }
     
-    private static class MyIterator<T> implements Iterator<T> {
-        private LinkedList<ServiceHandle<T>> handles;
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.IterableProvider#handleIterator()
+     */
+    @Override
+    public Iterable<ServiceHandle<T>> handleIterator() {
+        Set<ServiceHandle<T>> handles = Utilities.<Set<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
+                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
         
-        private MyIterator(Set<ServiceHandle<T>> handles) {
-            this.handles = new LinkedList<ServiceHandle<T>>(handles);
+        return new HandleIterable<T>(handles);
+    }
+    
+    private static class MyIterator<U> implements Iterator<U> {
+        private final LinkedList<ServiceHandle<U>> handles;
+        
+        private MyIterator(Set<ServiceHandle<U>> handles) {
+            this.handles = new LinkedList<ServiceHandle<U>>(handles);
         }
 
         /* (non-Javadoc)
@@ -148,8 +170,8 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
          * @see java.util.Iterator#next()
          */
         @Override
-        public T next() {
-            ServiceHandle<T> nextHandle = handles.removeFirst();
+        public U next() {
+            ServiceHandle<U> nextHandle = handles.removeFirst();
             
             return nextHandle.getService();
         }
@@ -164,5 +186,63 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
         }
         
     }
+    
+    private static class HandleIterable<U> implements Iterable<ServiceHandle<U>> {
+        private final Set<ServiceHandle<U>> handles;
+        
+        private HandleIterable(Set<ServiceHandle<U>> handles) {
+            this.handles = new HashSet<ServiceHandle<U>>(handles);
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Iterable#iterator()
+         */
+        @Override
+        public Iterator<ServiceHandle<U>> iterator() {
+            return new MyHandleIterator<U>(handles);
+        }
+        
+    }
+    
+    private static class MyHandleIterator<U> implements Iterator<ServiceHandle<U>> {
+        private final LinkedList<ServiceHandle<U>> handles;
+        
+        private MyHandleIterator(Set<ServiceHandle<U>> handles) {
+            this.handles = new LinkedList<ServiceHandle<U>>(handles);
+        }
+
+        /* (non-Javadoc)
+         * @see java.util.Iterator#hasNext()
+         */
+        @Override
+        public boolean hasNext() {
+            return !handles.isEmpty();
+        }
+
+        /* (non-Javadoc)
+         * @see java.util.Iterator#next()
+         */
+        @Override
+        public ServiceHandle<U> next() {
+            return handles.removeFirst();
+        }
+
+        /* (non-Javadoc)
+         * @see java.util.Iterator#remove()
+         */
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+            
+        }
+        
+    }
+
+    public String toString() {
+        return "IterableProviderImpl(" + Pretty.type(requiredType) + "," + Pretty.collection(requiredQualifiers) + "," +
+            System.identityHashCode(this) + ")";
+    }
+
+    
 
 }
