@@ -39,6 +39,7 @@
  */
 package org.glassfish.examples.ctm;
 
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.Configured;
 
 /**
@@ -47,6 +48,7 @@ import org.jvnet.hk2.config.Configured;
  * @author jwells
  */
 @Configured
+@Contract
 public interface Environment {
     public String getName();
     

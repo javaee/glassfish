@@ -46,6 +46,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
 /**
  * @author jwells
@@ -53,24 +54,27 @@ import org.glassfish.hk2.api.ServiceHandle;
  */
 public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     private final T theOne;
+    private final Long locatorId;
     
-    /* package */ ConstantActiveDescriptor(T theOne, long locatorId) {
-        super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(), 0, locatorId);
+    public ConstantActiveDescriptor(T theOne, long locatorId) {
+        super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(), 0);
         
         this.theOne = theOne;
+        this.locatorId = new Long(locatorId);
     }
     
-    /* package */ ConstantActiveDescriptor(T theOne,
+    public ConstantActiveDescriptor(T theOne,
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers,
             int ranking,
             long locatorId) {
-        super(advertisedContracts, scope, name, qualifiers, ranking, locatorId);
+        super(advertisedContracts, scope, name, qualifiers, ranking);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;
+        this.locatorId = new Long(locatorId);
     }
 
     /* (non-Javadoc)
@@ -79,6 +83,10 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     @Override
     public String getImplementation() {
         return theOne.getClass().getName();
+    }
+    
+    public Long getLocatorId() {
+        return locatorId;
     }
 
     /* (non-Javadoc)

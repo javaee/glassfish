@@ -43,6 +43,6 @@ package org.glassfish.hk2.tests.locator.factory;
  * @author jwells
  *
  */
-public class Apple {
+public interface Apple {
 
 }

@@ -58,6 +58,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 public class TenantManager {
     private final HashMap<String, ServiceLocator> backingLocators = new HashMap<String, ServiceLocator>();
     private final HashMap<String, HashMap<ActiveDescriptor<?>, Object>> contexts = new HashMap<String, HashMap<ActiveDescriptor<?>, Object>>();
+    private final TenantLocatorGenerator generator = new TenantLocatorGenerator();
     
     private String currentTenant;
     
@@ -100,6 +101,6 @@ public class TenantManager {
     }
     
     private ServiceLocator createNewLocator() {
-        return null;
+        return generator.generateLocatorPerTenant(currentTenant);
     }
 }

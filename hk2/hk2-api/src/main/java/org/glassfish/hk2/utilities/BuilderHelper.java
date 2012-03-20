@@ -39,17 +39,15 @@
  */
 package org.glassfish.hk2.utilities;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-
-import javax.inject.Named;
-
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
+import org.glassfish.hk2.internal.ReflectionHelper;
 import org.glassfish.hk2.internal.StarFilter;
 
 /**
@@ -137,85 +135,6 @@ public class BuilderHelper {
 	    return link(implementationClass, true);
 	}
 	
-	private static Class<?> getRawClass(Type type) {
-        if (type == null) return null;
-        
-        if (type instanceof Class) {
-            return (Class<?>) type;
-        }
-        
-        if (type instanceof ParameterizedType) {
-            Type rawType = ((ParameterizedType) type).getRawType();
-            if (rawType instanceof Class) {
-                return (Class<?>) rawType;
-            }
-        }
-        
-        return null;
-	}
-	
-	private static String getFactoryName(Type type) {
-	    if (type instanceof Class) return Object.class.getName();
-	    if (!(type instanceof ParameterizedType)) {
-	        throw new AssertionError("Unknown Factory type " + type);
-	    }
-	    
-	    ParameterizedType pt = (ParameterizedType) type;
-	    Class<?> clazz = getRawClass(pt.getActualTypeArguments()[0]);
-	    if (clazz == null) {
-	        throw new IllegalArgumentException("A factory implmentation may not have a wildcard type or type variable as its actual type");
-	    }
-	    
-	    return clazz.getName();
-	}
-	
-	private static String getFactoryName(Class<?> implClass) {
-	    Type types[] = implClass.getGenericInterfaces();
-	    
-	    for (Type type : types) {    
-	        Class<?> clazz = getRawClass(type);
-	        if (clazz == null || !Factory.class.equals(clazz)) continue;
-	        
-	        // Found the factory!
-	        return getFactoryName(type);
-	    }
-	    
-	    throw new AssertionError("getFactoryName was given a non-factory " + implClass);
-	}
-	
-	private static String getNamedName(Named named, Class<?> implClass) {
-	    String name = named.value();
-	    if (name != null && !name.equals("")) return name;
-	    
-        String cn = implClass.getName();
-            
-        int index = cn.lastIndexOf(".");
-        if (index < 0) return cn;
-        
-        return cn.substring(index + 1);
-	}
-	
-	private static String getName(Class<?> implClass) {
-	    boolean isFactory = (Factory.class.isAssignableFrom(implClass));
-	    Named named = implClass.getAnnotation(Named.class);
-	    
-	    String factoryName = (isFactory) ? getFactoryName(implClass) : null ;
-	    String namedName = (named != null) ? getNamedName(named, implClass) : null ;
-	    
-	    if ((factoryName != null) && (namedName != null)) {
-	        if (!namedName.equals(factoryName)) {
-	            throw new IllegalArgumentException("The name of a factory class must be the fully qualified class name " + 
-	                " of the raw type of the factory actual type argument (" + factoryName + ")." +
-	                "  However, this factory had an @Named annotation with value " + namedName);
-	        }
-	    }
-	    
-	    if (factoryName != null) return factoryName;
-	    if (namedName != null) return namedName;
-	    
-	    return null;
-	}
-	
 	/**
      * This method links an implementation class with a {@link DescriptorBuilder}, to
      * be used to further build the {@link Descriptor}.
@@ -241,7 +160,7 @@ public class BuilderHelper {
         DescriptorBuilder builder = link(implementationClass.getName(), addToContracts);
         
         if (getName) {
-            String name = getName(implementationClass);
+            String name = ReflectionHelper.getName(implementationClass);
             if (name != null) {
                 builder = builder.named(name);
             }
@@ -317,6 +236,27 @@ public class BuilderHelper {
      */
     public static DescriptorBuilder linkFactory(Class<?> factoryClass) throws IllegalArgumentException {
         return link(factoryClass, false, false);
+    }
+    
+    /**
+     * This creates a descriptor that will always return the given object.  The
+     * set of types in the advertised contracts will contain the class of the
+     * constant and all interfaces implemented by the constant (including those
+     * not marked with &86;Contract).
+     * 
+     * @param constant The non-null constant that should always be returned from
+     * the create method of this ActiveDescriptor.  
+     * @return The descriptor can be used in calls to Configuration.addActiveDescriptor
+     */
+    public static ActiveDescriptor<?> createConstantDescriptor(Object constant) {
+        if (constant == null) throw new IllegalArgumentException();
+        
+        return new ConstantActiveDescriptor<Object>(
+                constant,
+                ReflectionHelper.getAdvertisedTypesFromObject(constant),
+                ReflectionHelper.getScopeFromObject(constant),
+                ReflectionHelper.getName(constant.getClass()),
+                ReflectionHelper.getQualifiersFromObject(constant));
     }
 	
 	/**

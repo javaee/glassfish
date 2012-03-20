@@ -58,7 +58,7 @@ public class FruitFactory implements Factory<Apple> {
      */
     @FruitScope
     public Apple provide() {
-        return new Apple();
+        return new AppleImpl();
     }
     
     public void dispose(Apple instance) {
