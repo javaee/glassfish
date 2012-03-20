@@ -42,6 +42,8 @@ package org.glassfish.hk2.tests.locator.proxiable;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -50,7 +52,8 @@ import org.glassfish.hk2.api.ServiceHandle;
  * @author jwells
  *
  */
-public class SeasonContext implements Context {
+@Singleton
+public class SeasonContext implements Context<SeasonScope> {
     private HashMap<ActiveDescriptor<?>, Object> backingStore = new HashMap<ActiveDescriptor<?>, Object>();
 
     /* (non-Javadoc)

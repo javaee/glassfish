@@ -41,11 +41,9 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.HK2Loader;
@@ -62,7 +60,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final HashMap<String, HK2Loader> allLoaders = new HashMap<String, HK2Loader>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver>();
-    private final HashSet<Context> allContexts = new HashSet<Context>();
     
     private final Object lock = new Object();
     private boolean committed = false;
@@ -125,21 +122,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     }
     
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Configuration#addContext(org.glassfish.hk2.api.Context)
-     */
-    @Override
-    public void addContext(Context context) {
-        checkState();
-        if (context == null) {
-            throw new IllegalArgumentException();
-        }
-        
-        Utilities.checkScopeAnnotation(context.getScope());
-        
-        allContexts.add(context);
-    }
-    
-    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Configuration#addActiveDescriptor(org.glassfish.hk2.api.ActiveDescriptor)
      */
     @Override
@@ -198,13 +180,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
      */
     HashMap<Class<? extends Annotation>, InjectionResolver> getAllResolvers() {
         return allResolvers;
-    }
-
-    /**
-     * @return the allContexts
-     */
-    HashSet<Context> getAllContexts() {
-        return allContexts;
     }
     
     /* package */ void setCommitable(boolean commitable) {

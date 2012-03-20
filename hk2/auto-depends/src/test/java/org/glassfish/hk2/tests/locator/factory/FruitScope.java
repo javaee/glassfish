@@ -37,37 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable;
+package org.glassfish.hk2.tests.locator.factory;
 
-import javax.inject.Singleton;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Scope;
 
 /**
  * @author jwells
  *
  */
-public class ProxiableModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(
-                BuilderHelper.link(SeasonContext.class).to(Context.class).in(Singleton.class.getName()).build());
-        
-        configurator.bind(
-                BuilderHelper.link(Spring.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Summer.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Fall.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Winter.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-    }
+@Scope
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD })
+public @interface FruitScope {
 
 }

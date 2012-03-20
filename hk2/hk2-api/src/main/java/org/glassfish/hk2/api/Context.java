@@ -54,7 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @Contract
-public interface Context {
+public interface Context<T> {
     /**
      * The scope for which this is the context
      * 
@@ -74,7 +74,7 @@ public interface Context {
      * 
      * @return A context instance (which may be null)
      */
-    public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root);
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor, ServiceHandle<?> root);
     
     /**
      * Finds an existing contextual instance, without creating or loading any objects
@@ -82,7 +82,7 @@ public interface Context {
      * @param descriptor The descriptor to look for in this context
      * @return Either null or the instance 
      */
-    public <T> T find(ActiveDescriptor<T> descriptor);
+    public <U> U find(ActiveDescriptor<U> descriptor);
     
     /**
      * True if this context is active, false otherwise

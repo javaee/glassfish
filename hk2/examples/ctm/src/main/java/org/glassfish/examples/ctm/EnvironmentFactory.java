@@ -37,51 +37,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.glassfish.examples.ctm;
 
-import java.lang.annotation.Annotation;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * @author jwells
  *
  */
-public class ContextImpl implements Context {
+@Singleton
+public class EnvironmentFactory implements Factory<Environment> {
+    @Inject
+    private TenantManager manager;
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#getScope()
+    /**
+     * This method creates environments based on the current tenant.
+     * Each tenant will have a backing ServiceLocator.  It is not the
+     * job of the factory to keep track of the items it produces, that
+     * will be done by the scoped context
      */
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return DummyScope.class;
+    @TenantScoped
+    public Environment provide() {
+        ServiceLocator locator = manager.getCurrentLocator();
+        
+        return locator.getService(Environment.class);
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
     @Override
-    public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
-            ServiceHandle<?> root) {
-        throw new AssertionError("not called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.Descriptor)
-     */
-    @Override
-    public <T> T find(ActiveDescriptor<T> descriptor) {
-        throw new AssertionError("not called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        throw new AssertionError("not called");
+    public void dispose(Environment instance) {
+        // No disposal in this case
+        
     }
 
 }

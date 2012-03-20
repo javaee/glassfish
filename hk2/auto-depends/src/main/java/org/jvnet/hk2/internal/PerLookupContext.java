@@ -50,7 +50,7 @@ import org.glassfish.hk2.api.ServiceHandle;
  * @author jwells
  *
  */
-public class PerLookupContext implements Context {
+public class PerLookupContext implements Context<PerLookup> {
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#getScope()

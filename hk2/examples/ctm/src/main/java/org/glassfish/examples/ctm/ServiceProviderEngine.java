@@ -37,37 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable;
+package org.glassfish.examples.ctm;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
-
 /**
+ * In the example, this code uses the Environment object, which sometimes
+ * will be from Tenant1, and other times from Tenant2.  However, since this
+ * class is in the Singleton scope, the Environment object cannot be re-injected.
+ * Not to fear, because the Environment object is produced as part of a Proxiable
+ * scope the injected entity is actually a proxy.  Hence, when this service
+ * uses the Environment object when Tenant1 is in effect it will get the values
+ * for Tenant1, and when Tenant2 is in effect it will get the values for Tenant2.
+ * 
  * @author jwells
  *
  */
-public class ProxiableModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(
-                BuilderHelper.link(SeasonContext.class).to(Context.class).in(Singleton.class.getName()).build());
-        
-        configurator.bind(
-                BuilderHelper.link(Spring.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Summer.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Fall.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Winter.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-    }
-
+@Singleton
+public class ServiceProviderEngine {
+    @Inject
+    private Environment environment;
 }

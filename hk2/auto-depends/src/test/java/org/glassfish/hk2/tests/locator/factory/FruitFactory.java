@@ -37,37 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable;
+package org.glassfish.hk2.tests.locator.factory;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.Factory;
 
 /**
+ * This factory produces apples in the fruit context.  This
+ * is testing that factories can produce things in different
+ * contexts
+ * 
  * @author jwells
  *
  */
-public class ProxiableModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+@Singleton
+public class FruitFactory implements Factory<Apple> {
+    /**
+     * Produces things in the FruitScope
      */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(
-                BuilderHelper.link(SeasonContext.class).to(Context.class).in(Singleton.class.getName()).build());
-        
-        configurator.bind(
-                BuilderHelper.link(Spring.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Summer.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Fall.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Winter.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
+    @FruitScope
+    public Apple provide() {
+        return new Apple();
     }
-
+    
+    public void dispose(Apple instance) {
+        // do nothing
+    }
 }

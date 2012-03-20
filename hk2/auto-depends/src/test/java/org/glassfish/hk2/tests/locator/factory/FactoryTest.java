@@ -71,7 +71,7 @@ public class FactoryTest {
     }
     
     @Test
-    public void testFactoryProvided() throws InterruptedException {
+    public void testFactoryProvided() {
         DateInjectee dateInjectee = locator.getService(DateInjectee.class);
         Assert.assertNotNull(dateInjectee);
         
@@ -87,5 +87,29 @@ public class FactoryTest {
         Assert.assertNotSame(rawDate, providedDate1);
         Assert.assertNotSame(rawDate, providedDate2);
         Assert.assertNotSame(providedDate1, providedDate2);
+    }
+    
+    @Test
+    public void testFactoryProducingIntoCustomScope() {
+        FruitContext fruitContext = locator.getService(FruitContext.class);
+        Assert.assertNotNull(fruitContext);
+        
+        // Nothing here yet, haven't asked for an apple
+        Assert.assertTrue(fruitContext.getContextStoredFruits().isEmpty());
+        
+        Apple apple = locator.getService(Apple.class);
+        Assert.assertNotNull(apple);
+        
+        Assert.assertEquals("Expected 1 apple but got " + fruitContext.getContextStoredFruits().size(),
+                1, fruitContext.getContextStoredFruits().size());
+        
+        Assert.assertTrue(fruitContext.getContextStoredFruits().values().contains(apple));
+        
+        // Ask again, expect the same result back
+        Apple apple2 = locator.getService(Apple.class);
+        Assert.assertEquals(apple, apple2);
+        
+        Assert.assertEquals("Expected 1 apple but got " + fruitContext.getContextStoredFruits().size(),
+                1, fruitContext.getContextStoredFruits().size());
     }
 }
