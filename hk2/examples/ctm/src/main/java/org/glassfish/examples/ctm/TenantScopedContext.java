@@ -37,37 +37,71 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable;
+package org.glassfish.examples.ctm;
 
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-public class ProxiableModule implements Module {
+@Singleton
+public class TenantScopedContext implements Context<TenantScoped> {
+    @Inject
+    private TenantManager manager;
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.Context#getScope()
      */
     @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(
-                BuilderHelper.link(SeasonContext.class).to(Context.class).in(Singleton.class.getName()).build());
+    public Class<? extends Annotation> getScope() {
+        return TenantScoped.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
+            ServiceHandle<?> root) {
+        HashMap<ActiveDescriptor<?>, Object> mappings = manager.getCurrentContext();
         
-        configurator.bind(
-                BuilderHelper.link(Spring.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Summer.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Fall.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Winter.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
+        Object retVal = mappings.get(activeDescriptor);
+        if (retVal == null) {
+            retVal = activeDescriptor.create(root);
+            
+            mappings.put(activeDescriptor, retVal);
+        }
+        
+        return (T) retVal;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T find(ActiveDescriptor<T> descriptor) {
+        HashMap<ActiveDescriptor<?>, Object> mappings = manager.getCurrentContext();
+        
+        return (T) mappings.get(descriptor);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return manager.getCurrentTenant() != null;
     }
 
 }

@@ -40,6 +40,7 @@
 package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,6 +53,7 @@ import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
@@ -93,8 +95,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final HashMap<String, HK2Loader> allLoaders = new HashMap<String, HK2Loader>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver>();
-    private final HashMap<Class<? extends Annotation>, LinkedList<Context>> allContexts =
-            new HashMap<Class<? extends Annotation>, LinkedList<Context>>();
+    private final Context<Singleton> singletonContext = new SingletonContext();
+    private final Context<PerLookup> perLookupContext = new PerLookupContext();
     
     /* package */ ServiceLocatorImpl(String name, ServiceLocator parent) {
         locatorName = name;
@@ -498,19 +500,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
             allResolvers.put(entry.getKey(), entry.getValue());
         }
         
-        for (Context context : dci.getAllContexts()) {
-            Class<? extends Annotation> scope = context.getScope();
-            if (scope == null) continue;
-            
-            LinkedList<Context> contexts = allContexts.get(scope);
-            if (contexts == null) {
-                contexts = new LinkedList<Context>();
-                allContexts.put(scope, contexts);
-            }
-            
-            contexts.add(context);
-        }
-        
     }
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
@@ -533,32 +522,37 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
-    /* package */ Context resolveContext(Class<? extends Annotation> scope) throws IllegalStateException {
-        synchronized (lock) {
-            LinkedList<Context> matches = allContexts.get(scope);
-            if (matches == null) {
-                throw new IllegalStateException("There is no active context for scope " +
-                        Pretty.clazz(scope));
-            }
-            
-            Context retVal = null;
-            for (Context match : matches) {
-                if (match.isActive()) {
-                    if (retVal != null) {
-                        throw new IllegalStateException("There are multiple active contexts for scope " +
-                           Pretty.clazz(scope));
-                    }
-                    
-                    retVal = match;
+    /* package */ Context<?> resolveContext(Class<? extends Annotation> scope) throws IllegalStateException {
+        if (scope.equals(Singleton.class)) return singletonContext;
+        if (scope.equals(PerLookup.class)) return perLookupContext;
+        
+        Type actuals[] = new Type[1];
+        actuals[0] = scope;
+        ParameterizedType findContext = new ParameterizedTypeImpl(Context.class, actuals);
+        
+        SortedSet<ServiceHandle<Context<?>>> contextHandles = Utilities.<SortedSet<ServiceHandle<Context<?>>>>cast(
+                getAllServiceHandles(findContext));
+        
+        try {
+            Context<?> retVal = null;
+            for (ServiceHandle<Context<?>> contextHandle : contextHandles) {
+                Context<?> context = contextHandle.getService();
+                
+                if (!context.isActive()) continue;
+                
+                if (retVal != null) {
+                    throw new IllegalStateException("There is more than one active context for " + scope.getName());
                 }
-            }
-            
-            if (retVal == null) {
-                throw new IllegalStateException("There is no active context for scope " +
-                        Pretty.clazz(scope));
+                
+                retVal = context;
             }
             
             return retVal;
+        }
+        finally {
+            for (ServiceHandle<Context<?>> contextHandle : contextHandles) {
+                contextHandle.destroy();
+            }
         }
     }
     

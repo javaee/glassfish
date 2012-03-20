@@ -37,37 +37,69 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable;
+package org.glassfish.examples.ctm;
+
+import java.util.HashMap;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Module;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
+ * This class manages all information about all tenants, and also keeps
+ * track of the currently active tenant.  The currently active tenant can
+ * be changed with this class
+ * 
  * @author jwells
  *
  */
-public class ProxiableModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+@Singleton
+public class TenantManager {
+    private final HashMap<String, ServiceLocator> backingLocators = new HashMap<String, ServiceLocator>();
+    private final HashMap<String, HashMap<ActiveDescriptor<?>, Object>> contexts = new HashMap<String, HashMap<ActiveDescriptor<?>, Object>>();
+    
+    private String currentTenant;
+    
+    /**
+     * Sets the current tenant to this tenant
+     * 
+     * @param currentTenant
      */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(
-                BuilderHelper.link(SeasonContext.class).to(Context.class).in(Singleton.class.getName()).build());
-        
-        configurator.bind(
-                BuilderHelper.link(Spring.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Summer.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Fall.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Winter.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
+    public void setCurrentTenant(String currentTenant) {
+        this.currentTenant = currentTenant;
     }
-
+    
+    public String getCurrentTenant() {
+        return currentTenant;
+    }
+    
+    public ServiceLocator getCurrentLocator() {
+        if (currentTenant == null) throw new IllegalStateException("There is no current tenant");
+        
+        ServiceLocator locator = backingLocators.get(currentTenant);
+        if (locator == null) {
+            locator = createNewLocator();
+            backingLocators.put(currentTenant, locator);
+        }
+        
+        return locator;
+    }
+    
+    public HashMap<ActiveDescriptor<?>, Object> getCurrentContext() {
+        if (currentTenant == null) throw new IllegalStateException("There is no current tenant");
+        
+        HashMap<ActiveDescriptor<?>, Object> retVal = contexts.get(currentTenant);
+        if (retVal == null) {
+            retVal = new HashMap<ActiveDescriptor<?>, Object>();
+            
+            contexts.put(currentTenant, retVal);
+        }
+        
+        return retVal;
+    }
+    
+    private ServiceLocator createNewLocator() {
+        return null;
+    }
 }

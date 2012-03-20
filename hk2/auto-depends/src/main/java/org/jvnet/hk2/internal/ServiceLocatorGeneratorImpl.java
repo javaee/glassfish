@@ -57,9 +57,6 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
         DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
         
         dci.bind(Utilities.getLocatorDescriptor(sli));
-        dci.addContext(new SingletonContext());
-        dci.addContext(new PerLookupContext());
-        
         dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
                 to(DynamicConfigurationService.class).
                 in(PerLookup.class.getName()).

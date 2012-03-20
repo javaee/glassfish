@@ -51,7 +51,7 @@ import org.glassfish.hk2.api.ServiceHandle;
  * @author jwells
  *
  */
-public class SingletonContext implements Context {
+public class SingletonContext implements Context<Singleton> {
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#getScope()

@@ -44,6 +44,7 @@ import java.util.Date;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -62,6 +63,16 @@ public class FactoryModule implements Module {
         configurator.bind(BuilderHelper.linkFactory(DateFactory.class).to(Date.class).build());
         configurator.bind(BuilderHelper.link(DateFactory.class).to(Factory.class).build());
         configurator.bind(BuilderHelper.link(DateInjectee.class).in(Singleton.class).build());
+        
+        configurator.bind(BuilderHelper.linkFactory(
+                FruitFactory.class).to(Apple.class).in(FruitScope.class.getName()).build());
+        configurator.bind(
+                BuilderHelper.link(FruitFactory.class).to(Factory.class).in(Singleton.class.getName()).build());
+        // Apple is not in the list, but its factory is
+        
+        // Also bind the custom scope
+        configurator.bind(
+                BuilderHelper.link(FruitContext.class).to(Context.class).in(Singleton.class.getName()).build());
 
     }
 

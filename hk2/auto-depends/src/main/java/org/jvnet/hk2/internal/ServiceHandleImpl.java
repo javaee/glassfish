@@ -96,7 +96,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
                 return proxy;
             }
         
-            Context context = locator.resolveContext(root.getScopeAnnotation());
+            Context<?> context = locator.resolveContext(root.getScopeAnnotation());
             service = context.findOrCreate(root, this);
         
             serviceSet = true;

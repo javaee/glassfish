@@ -70,13 +70,6 @@ public interface Configuration {
 	public ActiveDescriptor<?> bind(Descriptor key);
 	
 	/**
-	 * Adds a context implementation to the system
-	 * 
-	 * @param context The context to add
-	 */
-	public void addContext(Context context);
-	
-	/**
 	 * This adds a custom class loader to the system.  Custom class
 	 * loaders will be searched in a random order, so users should not
 	 * rely on the order of invocation of loaders.  The first loader to

@@ -60,9 +60,6 @@ public class InitializationModule implements Module {
         
         configurator.bind(BuilderHelper.link(NOCLASS).named(InitializationTest.SIMPLE_NAME).build());  // Yes, putting it in twice
         
-        configurator.addContext(new ContextImpl());
-        configurator.addContext(new ContextImpl());
-        
         configurator.addLoader(new InitializationLoader());
         
         configurator.addInjectionResolver(DummyScope.class, new InitializationResolver());
