@@ -37,43 +37,80 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.ctm;
+package org.glassfish.hk2.internal;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
+
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
 /**
- * In the example, this code uses the Environment object, which sometimes
- * will be from Tenant1, and other times from Tenant2.  However, since this
- * class is in the Singleton scope, the Environment object cannot be re-injected.
- * Not to fear, because the Environment object is produced as part of a Proxiable
- * scope the injected entity is actually a proxy.  Hence, when this service
- * uses the Environment object when Tenant1 is in effect it will get the values
- * for Tenant1, and when Tenant2 is in effect it will get the values for Tenant2.
- * 
  * @author jwells
  *
  */
-@Singleton
-public class ServiceProviderEngine {
-    // This is done with a final class to demonstrate that
-    // the object here is never modified
-    private final Environment environment;
+public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
+    private final T theOne;
     
-    @Inject
-    private ServiceProviderEngine(Environment environment) {
-        this.environment = environment;
+    public ConstantActiveDescriptor(T theOne,
+            Set<Type> advertisedContracts,
+            Class<? extends Annotation> scope,
+            String name,
+            Set<Annotation> qualifiers) {
+        super(advertisedContracts, scope, name, qualifiers, 0);
+        if (theOne == null) throw new IllegalArgumentException();
+        
+        this.theOne = theOne;
     }
-    
-    public String getTenantName() {
-        return environment.getName();
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getImplementation()
+     */
+    @Override
+    public String getImplementation() {
+        return theOne.getClass().getName();
     }
-    
-    public int getTenantMin() {
-        return environment.getMinSize();
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#getCache()
+     */
+    @Override
+    public T getCache() {
+        return theOne;
     }
-    
-    public int getTenantMax() {
-        return environment.getMaxSize();
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#isCacheSet()
+     */
+    @Override
+    public boolean isCacheSet() {
+        return true;
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     */
+    @Override
+    public Class<?> getImplementationClass() {
+        return theOne.getClass();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return theOne;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public void dispose(T instance) {
+        // Do nothing
+        
+    }
+
 }

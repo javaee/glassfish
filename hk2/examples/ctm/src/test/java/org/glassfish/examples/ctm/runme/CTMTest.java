@@ -37,43 +37,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.ctm;
+package org.glassfish.examples.ctm.runme;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import junit.framework.Assert;
+
+import org.glassfish.examples.ctm.ServiceProviderEngine;
+import org.glassfish.examples.ctm.TenantLocatorGenerator;
+import org.glassfish.examples.ctm.TenantManager;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
- * In the example, this code uses the Environment object, which sometimes
- * will be from Tenant1, and other times from Tenant2.  However, since this
- * class is in the Singleton scope, the Environment object cannot be re-injected.
- * Not to fear, because the Environment object is produced as part of a Proxiable
- * scope the injected entity is actually a proxy.  Hence, when this service
- * uses the Environment object when Tenant1 is in effect it will get the values
- * for Tenant1, and when Tenant2 is in effect it will get the values for Tenant2.
+ * This runs a simple test to be sure that the ServiceProviderEngine
+ * properly reflects the current tenant on the thread
  * 
  * @author jwells
- *
  */
-@Singleton
-public class ServiceProviderEngine {
-    // This is done with a final class to demonstrate that
-    // the object here is never modified
-    private final Environment environment;
+public class CTMTest {
+    public final static String TEST_NAME = "CTMTest";
+    private ServiceLocator locator;
     
-    @Inject
-    private ServiceProviderEngine(Environment environment) {
-        this.environment = environment;
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new CTMModule());
+        if (locator == null) {
+            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
+        }
     }
     
-    public String getTenantName() {
-        return environment.getName();
-    }
-    
-    public int getTenantMin() {
-        return environment.getMinSize();
-    }
-    
-    public int getTenantMax() {
-        return environment.getMaxSize();
+    @Test
+    public void testProviderEngineUsesCorrectTenant() {
+        TenantManager tenantManager = locator.getService(TenantManager.class);
+        ServiceProviderEngine engine = locator.getService(ServiceProviderEngine.class);
+        
+        // TODO:  Eventually these hard-coded names would go away...
+        tenantManager.setCurrentTenant(TenantLocatorGenerator.ALICE);
+        
+        Assert.assertEquals(TenantLocatorGenerator.ALICE, engine.getTenantName());
+        Assert.assertEquals(TenantLocatorGenerator.ALICE_MAX, engine.getTenantMax());
+        Assert.assertEquals(TenantLocatorGenerator.ALICE_MIN, engine.getTenantMin());
+        
+        tenantManager.setCurrentTenant(TenantLocatorGenerator.BOB);
+        
+        Assert.assertEquals(TenantLocatorGenerator.BOB, engine.getTenantName());
+        Assert.assertEquals(TenantLocatorGenerator.BOB_MAX, engine.getTenantMax());
+        Assert.assertEquals(TenantLocatorGenerator.BOB_MIN, engine.getTenantMin());
     }
 }

@@ -275,6 +275,7 @@
         <module>osgiversion-maven-plugin</module>
         <module>consolidatedbundle-maven-plugin</module>
         <module>hk2-api</module>
+        <module>examples</module>
   </modules>
 
     <dependencies>

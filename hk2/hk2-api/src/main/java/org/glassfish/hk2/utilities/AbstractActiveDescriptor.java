@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.utilities;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -49,9 +49,13 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.internal.ReflectionHelper;
 
 /**
+ * This class can be used as a starting point for those writing their own
+ * ActiveDescriptor.  Most of the methods are implemented, except the create
+ * and destroy
+ * 
  * @author jwells
  */
 public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
@@ -62,24 +66,35 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     private final Set<Annotation> qualifiers;
     private final Set<String> qualifiersAsStrings = new HashSet<String>();
     private final int ranking;
-    private final Long locatorId;
     
+    /**
+     * This constructor must be called with the information about
+     * this descriptor
+     * 
+     * @param advertisedContracts The contracts that should be
+     * advertised by this descriptor (may not be null, but may be
+     * empty)
+     * @param scope The scope of this descriptor (may not be null)
+     * @param name The name of this descriptor (may be null)
+     * @param qualifiers The qualifiers of this descriptor (may not
+     * be null, but may be empty)
+     * @param ranking The ranking for this descriptor
+     * @param locatorId The id of the locator for this descriptor
+     */
     protected AbstractActiveDescriptor(
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers,
-            int ranking,
-            long locatorId) {
+            int ranking) {
         this.scope = scope;
         this.advertisedContracts = Collections.unmodifiableSet(advertisedContracts);
         this.qualifiers = Collections.unmodifiableSet(qualifiers);
         this.ranking = ranking;
         this.name = name;
-        this.locatorId = new Long(locatorId);
         
         for (Type t : advertisedContracts) {
-            Class<?> raw = Utilities.getRawClass(t);
+            Class<?> raw = ReflectionHelper.getRawClass(t);
             if (raw == null) continue;
             
             contractsAsStrings.add(raw.getName());
@@ -116,7 +131,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     
     @Override
     public Long getLocatorId() {
-        return locatorId;
+        return null;
     }
 
     /* (non-Javadoc)
@@ -227,26 +242,13 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     }
     
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
-     */
-    @Override
-    public Class<?> getImplementationClass() {
-        return null;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Descriptor#getImplementation()
-     */
-    @Override
-    public String getImplementation() {
-        return null;
-    }
-    
-    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
     public void dispose(T instance) {
 
     }
+    
+    
 }
+
