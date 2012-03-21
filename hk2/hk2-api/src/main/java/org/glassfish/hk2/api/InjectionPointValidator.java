@@ -54,7 +54,9 @@ public interface InjectionPointValidator {
      * 
      * @param injectedInto The class that could be injected into
      * @param injectee The injection point of that class to validate
+     * @param resolution The actual class of the object that will be injected into this
+     * injection point
      */
-    public void validateInjectionPoint(Class<?> injectedInto, Injectee injectee);
+    public void validateInjectionPoint(Class<?> injectedInto, Injectee injectee, Class<?> resolution);
 
 }

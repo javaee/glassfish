@@ -39,6 +39,8 @@
  */
 package org.glassfish.examples.ctm;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -51,6 +53,9 @@ import org.glassfish.hk2.api.ServiceLocator;
  */
 @Singleton
 public class EnvironmentFactory implements Factory<Environment> {
+    private final HashMap<String, ServiceLocator> backingLocators = new HashMap<String, ServiceLocator>();
+    private final TenantLocatorGenerator generator = new TenantLocatorGenerator();
+    
     @Inject
     private TenantManager manager;
 
@@ -62,7 +67,7 @@ public class EnvironmentFactory implements Factory<Environment> {
      */
     @TenantScoped
     public Environment provide() {
-        ServiceLocator locator = manager.getCurrentLocator();
+        ServiceLocator locator = getCurrentLocator();
         
         return locator.getService(Environment.class);
     }
@@ -74,6 +79,22 @@ public class EnvironmentFactory implements Factory<Environment> {
     public void dispose(Environment instance) {
         // No disposal in this case
         
+    }
+    
+    private ServiceLocator getCurrentLocator() {
+        if (manager.getCurrentTenant() == null) throw new IllegalStateException("There is no current tenant");
+        
+        ServiceLocator locator = backingLocators.get(manager.getCurrentTenant());
+        if (locator == null) {
+            locator = createNewLocator();
+            backingLocators.put(manager.getCurrentTenant(), locator);
+        }
+        
+        return locator;
+    }
+    
+    private ServiceLocator createNewLocator() {
+        return generator.generateLocatorPerTenant(manager.getCurrentTenant());
     }
 
 }

@@ -43,7 +43,6 @@ import java.util.HashMap;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 
 /**
@@ -56,10 +55,6 @@ import org.glassfish.hk2.api.ServiceLocator;
  */
 @Singleton
 public class TenantManager {
-    private final HashMap<String, ServiceLocator> backingLocators = new HashMap<String, ServiceLocator>();
-    private final HashMap<String, HashMap<ActiveDescriptor<?>, Object>> contexts = new HashMap<String, HashMap<ActiveDescriptor<?>, Object>>();
-    private final TenantLocatorGenerator generator = new TenantLocatorGenerator();
-    
     private String currentTenant;
     
     /**
@@ -75,32 +70,5 @@ public class TenantManager {
         return currentTenant;
     }
     
-    public ServiceLocator getCurrentLocator() {
-        if (currentTenant == null) throw new IllegalStateException("There is no current tenant");
-        
-        ServiceLocator locator = backingLocators.get(currentTenant);
-        if (locator == null) {
-            locator = createNewLocator();
-            backingLocators.put(currentTenant, locator);
-        }
-        
-        return locator;
-    }
     
-    public HashMap<ActiveDescriptor<?>, Object> getCurrentContext() {
-        if (currentTenant == null) throw new IllegalStateException("There is no current tenant");
-        
-        HashMap<ActiveDescriptor<?>, Object> retVal = contexts.get(currentTenant);
-        if (retVal == null) {
-            retVal = new HashMap<ActiveDescriptor<?>, Object>();
-            
-            contexts.put(currentTenant, retVal);
-        }
-        
-        return retVal;
-    }
-    
-    private ServiceLocator createNewLocator() {
-        return generator.generateLocatorPerTenant(currentTenant);
-    }
 }

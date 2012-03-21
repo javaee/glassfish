@@ -47,7 +47,7 @@ import javax.inject.Singleton;
  * will be from Tenant1, and other times from Tenant2.  However, since this
  * class is in the Singleton scope, the Environment object cannot be re-injected.
  * Not to fear, because the Environment object is produced as part of a Proxiable
- * scope the injected entity is actually a proxy.  Hence, when this service
+ * scope so the injected entity is actually a proxy.  Hence, when this service
  * uses the Environment object when Tenant1 is in effect it will get the values
  * for Tenant1, and when Tenant2 is in effect it will get the values for Tenant2.
  * 
@@ -56,7 +56,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class ServiceProviderEngine {
-    // This is done with a final class to demonstrate that
+    // This is done with a final field to demonstrate that
     // the object here is never modified
     private final Environment environment;
     
