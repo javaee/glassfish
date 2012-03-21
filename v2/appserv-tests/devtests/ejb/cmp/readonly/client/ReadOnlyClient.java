@@ -65,8 +65,6 @@ public class ReadOnlyClient {
 
             test01();                                  
             test05();
-            test06();          
-            test08();        
 
             test12();
             stat.printSummary("CMPReadOnlyClient");
@@ -164,42 +162,6 @@ public class ReadOnlyClient {
             ex.printStackTrace();
         }
     }
-
-    private void test06() {
-        try {
-            com.sun.ejb.ReadOnlyBeanNotifier
-                notifier = com.sun.ejb.containers.ReadOnlyBeanHelper.
-                getReadOnlyBeanNotifier("java:comp/env/ejb/SimpleStudent");
-            if (notifier != null) {
-                stat.addStatus("CMPReadOnlyClient ClientNotifier ", stat.PASS);
-            } else {
-                stat.addStatus("CMPReadOnlyClient ClientNotifier ", stat.FAIL);
-            }
-        } catch (Exception ex) {
-            stat.addStatus("CMPReadOnlyClient ClientNotifier ", stat.FAIL);
-            System.err.println("Caught an unexpected exception!");
-            ex.printStackTrace();
-        }
-    }
-
-    private void test08() {
-        try {
-            com.sun.ejb.ReadOnlyBeanNotifier
-                notifier = com.sun.ejb.containers.ReadOnlyBeanHelper.
-                getReadOnlyBeanNotifier("java:comp/env/ejb/SimpleStudent");
-            if (notifier != null) {
-                notifier.refresh("student0");
-                stat.addStatus("CMPReadOnlyClient ClientRefresh  ", stat.PASS);
-            } else {
-                stat.addStatus("CMPReadOnlyClient ClientRefresh  ", stat.FAIL);
-            }
-        } catch (Exception ex) {
-            stat.addStatus("CMPReadOnlyClient ClientRefresh  ", stat.FAIL);
-            System.err.println("Caught an unexpected exception!");
-            ex.printStackTrace();
-        }
-    }
-
 
     private void test11() {
         try {
