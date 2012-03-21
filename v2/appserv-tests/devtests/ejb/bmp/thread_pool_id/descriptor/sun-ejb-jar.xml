@@ -11,6 +11,7 @@
         <res-ref-name>DataSource</res-ref-name>
         <jndi-name>jdbc/__default</jndi-name>
       </resource-ref>
+      <use-thread-pool-id>express-service-thread-pool</use-thread-pool-id>
     </ejb>
   </enterprise-beans>
 </sun-ejb-jar>

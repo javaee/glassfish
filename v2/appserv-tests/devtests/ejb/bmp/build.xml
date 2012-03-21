@@ -13,12 +13,15 @@
 
     <target name="all">
         <antcall target="finder"/>      
-        <antcall target="handle"/>       
         <antcall target="readonly"/>
         <antcall target="simple"/>      
         <antcall target="simple_nopackage"/>       
         <antcall target="twolevel"/>
         <antcall target="txtests"/>       
+<!-- These tests need to be fixed
+        <antcall target="handle"/>       
+        <antcall target="thread_pool_id"/>      
+-->
     </target>
 
 

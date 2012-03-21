@@ -25,15 +25,13 @@ public class SimpleBMPClient {
                 javax.rmi.PortableRemoteObject.narrow(objRef, SimpleBMPHome.class);
             
             int id= (int) System.currentTimeMillis();
-	    System.out.println("Starting test for id: " + id);
-	    SimpleBMP simpleBMP = simpleBMPHome.create(id);
-	    simpleBMP.foo();
-            
-            SimpleBMP bean = simpleBMPHome.findByPrimaryKey(new Integer(id));
-	    simpleBMP.foo();
-	    System.out.println("Done for id: " + id);
-            stat.addStatus("bmp simple", stat.PASS);
+ 	    System.out.println("Starting test for id: " + id);
+ 	    SimpleBMP simpleBMP = simpleBMPHome.create(id);
 
+	    boolean threadPoolIDTestStatus =
+		simpleBMP.isServicedBy("express-service-thread-pool");
+            stat.addStatus("bmp ThreadPoolTest",
+		((threadPoolIDTestStatus == true) ?  stat.PASS : stat.FAIL));
         } catch(Exception e) {
             e.printStackTrace();
             stat.addStatus("bmp simple", stat.FAIL);

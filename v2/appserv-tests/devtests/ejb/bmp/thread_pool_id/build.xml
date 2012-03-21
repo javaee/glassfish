@@ -39,6 +39,19 @@
     </target> 
     
     <target name="deploy" depends="init-common">
+	<echo message="asadmin create-threadpool ${as.props} express-service-thread-pool"/>
+	<exec executable="${ASADMIN}" >
+	    <arg line="create-threadpool "/>
+	    <arg line="${as.props}"/>
+	    <arg line="express-service-thread-pool"/>
+	</exec>
+	<antcall target="restart-server-instance-common"/>
+	<!--<exec executable="${ASADMIN}" >
+	    <arg line="stop-domain"/>
+	</exec>
+	<exec executable="${ASADMIN}" >
+	    <arg line="start-domain"/>
+	</exec>-->
       <antcall target="execute-ejb-sql-common">
         <param name="sql.file" value="sql/create_pointbase.sql"/>
       </antcall>
@@ -57,6 +70,20 @@
         <param name="sql.file" value="sql/drop_pointbase.sql"/>
       </antcall>
 
+	<echo message="asadmin delete-threadpool ${as.props} express-service-thread-pool"/>
+	<exec executable="${ASADMIN}" >
+	    <arg line="delete-threadpool "/>
+	    <arg line="${as.props}"/>
+	    <arg line="express-service-thread-pool"/>
+	</exec>
+	<antcall target="restart-server-instance-common"/>
+
+      <!--
+      <antcall target="undeploy-jdbc-common">
+        <param name="jdbc.conpool.name" value="bmpHandlePool"/>
+        <param name="jdbc.resource.name" value="jdbc/bmp-handle-mixDB"/>
+      </antcall>
+      -->
       <antcall target="undeploy-common"/>
     </target>   
 
