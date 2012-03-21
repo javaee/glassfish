@@ -64,18 +64,21 @@
         <ant dir="ejb30" target="all"/>
         <ant dir="mdb" target="all"/> 
         <ant dir="timer" target="all"/>
+        <ant dir="bmp" target="all"/>  
         <ant dir="cmp" target="all"/>  
         <ant dir="sfsb" target="all"/>
         <ant dir="allowedmethods" target="all"/> 
-        <ant dir="ejb31" target="all"/>
 <!--
         <ant dir="ejb32" target="all"/>
+-->
+
+<!-- ejb31 must be the last set of tests because embedded might stop database
+        <ant dir="ejb31" target="all"/>
 -->
 
 
 <!-- gradually reenable the existing tests as features come on line
 
-        <ant dir="bmp" target="all"/>  
         <ant dir="jms" target="all"/>  
 
         <ant dir="util" target="all"/>

@@ -3,7 +3,7 @@
 FILE=$APS_HOME/test_resultsValid.xml
 echo "input file=$FILE"
 
-TOTAL=222
+TOTAL=240
 TOTAL_LITE=26
 
 echo $# args $1
