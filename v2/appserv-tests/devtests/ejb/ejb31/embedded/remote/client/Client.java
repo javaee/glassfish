@@ -53,6 +53,7 @@ public class Client {
         new SimpleReporterAdapter("appserv-tests");
 
     private static String appName;
+    private static int run = 0;
 
     public static void main(String[] s) {
         appName = s[0];
@@ -62,11 +63,11 @@ public class Client {
         try {
             t.test(appName);
             System.err.println("---------------------");
-            t.test(appName);
+            //t.test(appName);
             System.err.println("---------------------");
         } catch (Exception e) {
             e.printStackTrace();
-            stat.addStatus("EJB embedded with remote", stat.FAIL);
+            stat.addStatus("EJB embedded with remote " + run, stat.FAIL);
         }
         stat.printSummary(appName + "ID");
         System.exit(0);
@@ -75,6 +76,7 @@ public class Client {
 
     private void test(String module) {
 
+        run++;
         EJBContainer c = EJBContainer.createEJBContainer();
         // ok now let's look up the EJB...
         Context ic = c.getContext();
@@ -86,9 +88,9 @@ public class Client {
             System.out.println("EJB said: " + result);
 
             c.close();
-            stat.addStatus("EJB embedded with remote", stat.PASS);
+            stat.addStatus("EJB embedded with remote " + run, stat.PASS);
         } catch (Exception e) {
-            stat.addStatus("EJB embedded with remote", stat.FAIL);
+            stat.addStatus("EJB embedded with remote " + run, stat.FAIL);
             System.out.println("ERROR calling EJB:");
             e.printStackTrace();
         }
