@@ -55,6 +55,8 @@ import org.glassfish.hk2.api.ServiceHandle;
  */
 @Singleton
 public class TenantScopedContext implements Context<TenantScoped> {
+    private final HashMap<String, HashMap<ActiveDescriptor<?>, Object>> contexts = new HashMap<String, HashMap<ActiveDescriptor<?>, Object>>();
+    
     @Inject
     private TenantManager manager;
 
@@ -73,7 +75,7 @@ public class TenantScopedContext implements Context<TenantScoped> {
     @Override
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) {
-        HashMap<ActiveDescriptor<?>, Object> mappings = manager.getCurrentContext();
+        HashMap<ActiveDescriptor<?>, Object> mappings = getCurrentContext();
         
         Object retVal = mappings.get(activeDescriptor);
         if (retVal == null) {
@@ -91,7 +93,7 @@ public class TenantScopedContext implements Context<TenantScoped> {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T find(ActiveDescriptor<T> descriptor) {
-        HashMap<ActiveDescriptor<?>, Object> mappings = manager.getCurrentContext();
+        HashMap<ActiveDescriptor<?>, Object> mappings = getCurrentContext();
         
         return (T) mappings.get(descriptor);
     }
@@ -102,6 +104,19 @@ public class TenantScopedContext implements Context<TenantScoped> {
     @Override
     public boolean isActive() {
         return manager.getCurrentTenant() != null;
+    }
+    
+    private HashMap<ActiveDescriptor<?>, Object> getCurrentContext() {
+        if (manager.getCurrentTenant() == null) throw new IllegalStateException("There is no current tenant");
+        
+        HashMap<ActiveDescriptor<?>, Object> retVal = contexts.get(manager.getCurrentTenant());
+        if (retVal == null) {
+            retVal = new HashMap<ActiveDescriptor<?>, Object>();
+            
+            contexts.put(manager.getCurrentTenant(), retVal);
+        }
+        
+        return retVal;
     }
 
 }

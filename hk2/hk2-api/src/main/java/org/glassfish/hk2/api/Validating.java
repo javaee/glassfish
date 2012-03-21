@@ -46,6 +46,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
+ * This annotation is put onto an annotation (that is not
+ * a qualifier).  If that anntation is found on any injection
+ * point then the set of InjectionPointValidators will be called
+ * whenever that injection point is called
+ * 
  * @author jwells
  *
  */

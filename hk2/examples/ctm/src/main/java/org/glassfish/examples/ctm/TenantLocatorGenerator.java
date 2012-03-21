@@ -53,7 +53,6 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  * their configured instances, not what I'm doing here
  * 
  * @author jwells
- *
  */
 public class TenantLocatorGenerator {
     public final static String ALICE = "Alice";
