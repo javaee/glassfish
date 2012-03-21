@@ -258,11 +258,7 @@ public class EnrollerBean implements SessionBean {
 
             status = (notifier != null);
         } else {
-            com.sun.ejb.ReadOnlyBeanNotifier
-             notifier = com.sun.ejb.containers.ReadOnlyBeanHelper.
-                  getReadOnlyBeanNotifier("java:comp/env/ejb/Student");
-
-            status = (notifier != null);
+            status = false; // should not be called
         }
         return status;
     }
@@ -277,11 +273,7 @@ public class EnrollerBean implements SessionBean {
 
             status = (notifier != null);
         } else {
-            com.sun.ejb.ReadOnlyBeanLocalNotifier
-             notifier = com.sun.ejb.containers.ReadOnlyBeanHelper.
-                  getReadOnlyBeanLocalNotifier("java:comp/env/ejb/StudentLocal");
-
-            status = (notifier != null);
+            status = false; // should not be called
         }
         return status;
     }
@@ -322,12 +314,7 @@ public class EnrollerBean implements SessionBean {
                 notifier.refresh(studentId);
                 status = true;
             } else {
-                com.sun.ejb.ReadOnlyBeanNotifier
-                notifier = com.sun.ejb.containers.ReadOnlyBeanHelper.
-                    getReadOnlyBeanNotifier("java:comp/env/ejb/Student");
-    
-                notifier.refresh(studentId);
-                status = true;
+                status = false; // should not be called
             }
         } catch (Exception ex) {
             System.err.println("******* testReadOnlyBeanStudentRefresh ****");
@@ -352,12 +339,7 @@ public class EnrollerBean implements SessionBean {
                 notifier.refresh(studentId);
                 status = true;
             } else {
-                com.sun.ejb.ReadOnlyBeanLocalNotifier
-                notifier = com.sun.ejb.containers.ReadOnlyBeanHelper.
-                    getReadOnlyBeanLocalNotifier("java:comp/env/ejb/StudentLocal");
-    
-                notifier.refresh(studentId);
-                status = true;
+                status = false; // should not be called
             }
         } catch (Exception ex) {
             System.err.println("******* testReadOnlyBeanLocalStudentRefresh ****");

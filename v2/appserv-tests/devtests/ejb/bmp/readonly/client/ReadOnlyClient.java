@@ -64,9 +64,7 @@ public class ReadOnlyClient {
             test03();
             test04();
             test05();
-            test06();
             test07();
-            test08();
             test09();
             test10();
             test11();
@@ -186,14 +184,7 @@ public class ReadOnlyClient {
                                                            EnrollerHome.class);
 
             Enroller enroller = eHome.create();
-            boolean status = enroller.canGetReadOnlyBeanNotifier(false);
-            if (status == true) {
-                stat.addStatus("Bmp-ReadOnly SFSB-OldNotifier ", stat.PASS);
-            } else {
-                stat.addStatus("Bmp-ReadOnly SFSB-OldNotifier ", stat.FAIL);
-            }
-
-            status = enroller.canGetReadOnlyBeanNotifier(true);
+            boolean status = enroller.canGetReadOnlyBeanNotifier(true);
             if (status == true) {
                 stat.addStatus("Bmp-ReadOnly SFSB-NewNotifier ", stat.PASS);
             } else {
@@ -223,23 +214,6 @@ public class ReadOnlyClient {
         }
     }
 
-    private void test06() {
-        try {
-            com.sun.ejb.ReadOnlyBeanNotifier
-                notifier = com.sun.ejb.containers.ReadOnlyBeanHelper.
-                getReadOnlyBeanNotifier("java:comp/env/ejb/SimpleStudent");
-            if (notifier != null) {
-                stat.addStatus("Bmp-ReadOnly ClientNotifier ", stat.PASS);
-            } else {
-                stat.addStatus("Bmp-ReadOnly ClientNotifier ", stat.FAIL);
-            }
-        } catch (Exception ex) {
-            stat.addStatus("Bmp-ReadOnly ClientNotifier ", stat.FAIL);
-            System.err.println("Caught an unexpected exception!");
-            ex.printStackTrace();
-        }
-    }
-
     private void test07() {
         try {
             Context initial = new InitialContext();
@@ -250,14 +224,7 @@ public class ReadOnlyClient {
                                                            EnrollerHome.class);
 
             Enroller enroller = eHome.create();
-            boolean status = enroller.testReadOnlyBeanStudentRefresh("student0", false);
-            if (status == true) {
-                stat.addStatus("Bmp-ReadOnly SFSB-OldStudentRefresh ", stat.PASS);
-            } else {
-                stat.addStatus("Bmp-ReadOnly SFSB-OldStudentRefresh ", stat.FAIL);
-            }
-
-            status = enroller.testReadOnlyBeanStudentRefresh("student0", true);
+            boolean status = enroller.testReadOnlyBeanStudentRefresh("student0", true);
             if (status == true) {
                 stat.addStatus("Bmp-ReadOnly SFSB-NewStudentRefresh ", stat.PASS);
             } else {
@@ -265,24 +232,6 @@ public class ReadOnlyClient {
             }
         } catch (Exception ex) {
             stat.addStatus("Bmp-ReadOnly SFSBNotifierRefresh ", stat.FAIL);
-            System.err.println("Caught an unexpected exception!");
-            ex.printStackTrace();
-        }
-    }
-
-    private void test08() {
-        try {
-            com.sun.ejb.ReadOnlyBeanNotifier
-                notifier = com.sun.ejb.containers.ReadOnlyBeanHelper.
-                getReadOnlyBeanNotifier("java:comp/env/ejb/SimpleStudent");
-            if (notifier != null) {
-                notifier.refresh("student0");
-                stat.addStatus("Bmp-ReadOnly ClientRefresh  ", stat.PASS);
-            } else {
-                stat.addStatus("Bmp-ReadOnly ClientRefresh  ", stat.FAIL);
-            }
-        } catch (Exception ex) {
-            stat.addStatus("Bmp-ReadOnly ClientRefresh  ", stat.FAIL);
             System.err.println("Caught an unexpected exception!");
             ex.printStackTrace();
         }
@@ -298,16 +247,7 @@ public class ReadOnlyClient {
                                                            EnrollerHome.class);
 
             Enroller enroller = eHome.create();
-            boolean status = enroller.canGetReadOnlyBeanLocalNotifier(false);
-            if (status == true) {
-                stat.addStatus("Bmp-ReadOnly SFSBLocal-OldNotifier ", 
-                               stat.PASS);
-            } else {
-                stat.addStatus("Bmp-ReadOnly SFSBLocal-OldNotifier ", 
-                               stat.FAIL);
-            }
-
-            status = enroller.canGetReadOnlyBeanLocalNotifier(true);
+            boolean status = enroller.canGetReadOnlyBeanLocalNotifier(true);
             if (status == true) {
                 stat.addStatus("Bmp-ReadOnly SFSBLocal-NewNotifier ", 
                                stat.PASS);
@@ -332,17 +272,7 @@ public class ReadOnlyClient {
                                                            EnrollerHome.class);
 
             Enroller enroller = eHome.create();
-            boolean status = enroller.testReadOnlyBeanLocalStudentRefresh
-                ("student0", false);
-            if (status == true) {
-                stat.addStatus("Bmp-ReadOnly SFSBLocal-OldStudentRefresh ", 
-                               stat.PASS);
-            } else {
-                stat.addStatus("Bmp-ReadOnly SFSBLocal-OldStudentRefresh ", 
-                               stat.FAIL);
-            }
-
-            status = enroller.testReadOnlyBeanLocalStudentRefresh("student0", 
+            boolean status = enroller.testReadOnlyBeanLocalStudentRefresh("student0", 
                                                                   true);
             if (status == true) {
                 stat.addStatus("Bmp-ReadOnly SFSBLocal-NewStudentRefresh ", 
