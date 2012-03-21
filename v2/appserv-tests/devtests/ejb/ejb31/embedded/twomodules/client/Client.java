@@ -59,7 +59,8 @@ public class Client {
         stat.addDescription(appName);
         Client t = new Client();
         try {
-            t.test();
+            t.test(true);
+            t.test(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,36 +69,40 @@ public class Client {
 
     }
 
-    private void test() {
+    private void test(boolean use_app_name) {
 
         EJBContainer c = null;
         try {
-            Map<String, Object> p = new HashMap<String, Object>();
-            p.put(EJBContainer.APP_NAME, "foo");
-            c = EJBContainer.createEJBContainer(p);
+            if (use_app_name) {
+                Map<String, Object> p = new HashMap<String, Object>();
+                p.put(EJBContainer.APP_NAME, "foo");
+                c = EJBContainer.createEJBContainer(p);
+            } else {
+                c = EJBContainer.createEJBContainer();
+            }
             if (c == null) {
-                stat.addStatus("EJB embedded module 1", stat.FAIL);
+                stat.addStatus("EJB embedded 2 modules", stat.FAIL);
                 return;
             }
             // ok now let's look up the EJB...
             Context ic = c.getContext();
             System.out.println("Looking up EJB...");
-            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/foo/sample/SimpleEjb");
+            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + ((use_app_name)? "foo" : "ejb-app") + "/sample/SimpleEjb");
             System.out.println("Invoking EJB from module 1...");
             System.out.println("EJB said: " + ejb.saySomething());
             System.out.println("JPA call returned: " + ejb.testJPA());
 
             System.out.println("Done calling EJB from module 1");
+            stat.addStatus("EJB embedded 2 modules", stat.PASS);
 
         } catch (Exception e) {
-            System.out.println("ERROR calling EJB:");
+            System.out.println("ERROR in the test:");
             e.printStackTrace();
             stat.addStatus("EJB embedded module 1", stat.FAIL);
         } finally {
             if (c != null) 
                 c.close();
         }
-        stat.addStatus("EJB embedded module 1", stat.PASS);
         System.out.println("..........FINISHED 2 modules Embedded test");
     }
 }
