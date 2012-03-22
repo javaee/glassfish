@@ -27,11 +27,70 @@ Extensibility of HK2
  
 * {Adding a Scope and Context to the system}
 
- Here I would point to the example for the Tenant Scope
+ In this example, we will add a scope and context to the system that is based on the current running Tenant.  See the
+ following example: {{{../examples/ctm/index.html}Tenant Managed Scope Example}}
  
 * {Dealing with ClassLoading issues}
 
- Here I would put an example of custom classloading
+ Classloading is an interesting challenge in any Java environment.  HK2 defers classloading as long as possible, but at some
+ point, it must get access to the true class in order to create and inject it.  At that moment, HK2 will attempt
+ to reify the descriptor, using the {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} reify method.
+ 
+ The {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} reify method will consult a list of
+ {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loaders}} in order to load any class.  There is also a system
+ provided {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} that consults the context class loader in order
+ to load classes.  This system provided {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} will always get
+ called after all the other registered {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loaders}} have been called
+ unsuccessfully.
+ 
+ An {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} is registered with the system using the standard
+ {{{./apidocs/org/glassfish/hk2/api/Configuration.html}Configuration}} object either during initial startup or in
+ a dynamic modification to the system (see {{{./apidocs/org/glassfish/hk2/api/Module.html}Module}} and
+ {{{./apidocs/org/glassfish/hk2/api/DynamicConfigurationService.html}DynamicConfigurationService}} respectively).
+ Here is an example (assume you have a {{{./apidocs/org/glassfish/hk2/api/Configuration.html}Configuration}} object
+ named config):
+ 
++----------------+
+    config.addLoader(new MyHK2Loader());
++----------------+
+
+ The loader MyHK2Loader() will now be consulted whenever any descriptor is reified by the system.
+ 
+ Lets make this a little more interesting, by writing an HK2Loader for an OSGi bundle.  In OSGi you can get a Bundle, which has a
+ method on it called loadClass which will load classes which that bundle can see.  Lets assume we can get this Bundle object.  Then we
+ could write our HK2Loader like this:
+
++----------------+
+public class BundleLoader implements HK2Loader {
+    private String prefix;
+    private Bundle bundle;
+    
+    public BundleLoader(String prefix, Bundle bundle) {
+        this.prefix = prefix;
+        this.bundle = bundle;
+    }
+
+    public String getLoaderName() {
+        return "BundleLoader for " + bundle.getBundleId() ;
+    }
+
+    public Class<?> loadClass(String className) throws MultiException {
+        if (!className.startsWith(prefix)) return null;
+        
+        return bundle.loadClass(className);
+    }
++----------------+
+
+ In this example the BundleLoader will handle all the classes that begin with the given prefix, and will use the Bundle's
+ ClassLoader to load the class.  Note that if a loader is not intended to load some class it should return null, at which point the
+ next {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} in line will attempt to load the class.  If all the registered
+ loaders return null then the system provided {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} would try to load the class.
+ 
+ The BundleLoader would be registered with the system like this:
+ 
++----------------+
+    config.addLoader(new MyBundleLoader("com.acme", bundle));
++----------------+
  
 * {Custom Injection Resolvers}
 
