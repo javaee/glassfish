@@ -1,0 +1,47 @@
+            ------
+            Extensibility with HK2
+            ------
+
+
+Compatibility
+
+    This page describes modularity with the HK2 2.0 API, which is based on the
+    JSR-330 standard annotations.  Also, Habitat has been replaced with a new
+    interface called {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}.
+    More information can be found {{{./index.html}here}}.
+    
+Extensibility of HK2
+
+ HK2 is extensible along many directions.  This page is intended to give an overview and example of each dimension along which
+ users can customize thier HK2 environment.  Among the set of things which can be extended are these:
+ 
+ * {{Adding a Scope and Context to the system}}
+ 
+ * {{Dealing with ClassLoading issues}}
+ 
+ * {{Custom Injection Resolvers}}
+ 
+ * {{Foreign Active Descriptor implementations}}
+ 
+ * {{Validation}}
+ 
+* {Adding a Scope and Context to the system}
+
+ Here I would point to the example for the Tenant Scope
+ 
+* {Dealing with ClassLoading issues}
+
+ Here I would put an example of custom classloading
+ 
+* {Custom Injection Resolvers}
+
+ Here an example of custom resolution
+ 
+* {Foreign Active Descriptor implementations}
+
+ Here an example of Foreign Active Descriptors
+ 
+* {Validation}
+
+ Here an example of a validating injection point
+ 

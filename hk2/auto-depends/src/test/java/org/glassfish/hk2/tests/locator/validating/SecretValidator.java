@@ -55,7 +55,7 @@ import org.glassfish.hk2.api.InjectionPointValidator;
 public class SecretValidator implements InjectionPointValidator {
     /**
      * Brilliant security.  Any class that has the word
-     * System in it is a system class.  No way to spoof that on, eh?
+     * System in it is a system class.  No way to spoof that one, eh?
      * 
      * @param injectedInto
      * @return

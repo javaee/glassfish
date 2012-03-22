@@ -5,7 +5,7 @@
 
 Compatibility
 
-    This page is describes modularity with the HK2 2.0 API, which is based on the
+    This page describes modularity with the HK2 2.0 API, which is based on the
     JSR-330 standard annotations.  Also, Habitat has been replaced with a new
     interface called {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}.
     More information can be found {{{./index.html}here}}.
