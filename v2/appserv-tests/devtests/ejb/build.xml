@@ -72,9 +72,8 @@
         <ant dir="ejb32" target="all"/>
 -->
 
-<!-- ejb31 must be the last set of tests because embedded might stop database
+<!-- ejb31 must be the last set of tests because embedded might stop database -->
         <ant dir="ejb31" target="all"/>
--->
 
 
 <!-- gradually reenable the existing tests as features come on line
