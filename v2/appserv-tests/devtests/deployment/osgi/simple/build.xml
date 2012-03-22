@@ -125,10 +125,11 @@
             <param name="desc" value="osgi/simple Test asadmin deploy"/>
         </antcall>
 
+        <antcall target="redeploy.osgi.asadmin"/>
+
         <!-- add the sleep time for redeploy also -->
         <sleep seconds="30"/>
 
-        <antcall target="redeploy.osgi.asadmin"/>
         <antcall target="run.positive">
             <param name="log.id" value="2"/>
             <param name="desc" value="osgi/simple Test asadmin redeploy"/>
