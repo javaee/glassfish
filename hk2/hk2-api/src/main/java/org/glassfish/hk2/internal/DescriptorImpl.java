@@ -70,6 +70,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private String scope;
 	private Map<String, List<String>> metadatas;
 	private Set<String> qualifiers;
+	private boolean validating;
 	private int rank;
 	private Long id;
 	private Long locatorId;
@@ -86,6 +87,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		scope = copyMe.getScope();
 		implementation = copyMe.getImplementation();
 		qualifiers = copyMe.getQualifiers();
+		validating = copyMe.isValidating();
 		metadatas = copyMe.getMetadata();
 		rank = copyMe.getRanking();
 		id = copyMe.getServiceId();
@@ -110,6 +112,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			String implementation,
 			Map<String, List<String>> metadatas,
 			Set<String> qualifiers,
+			boolean validating,
 			int rank,
 			Long id,
 			Long locatorId) {
@@ -121,6 +124,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.scope = scope;
 		this.metadatas = new HashMap<String, List<String>>(metadatas);
 		this.qualifiers = new HashSet<String>(qualifiers);
+		this.validating = validating;
 		this.id = id;
 		this.rank = rank;
 		this.locatorId = locatorId;
@@ -150,6 +154,12 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	public Set<String> getQualifiers() {
 		return new HashSet<String>(qualifiers);
 	}
+	
+    @Override
+    public boolean isValidating() {
+        // TODO Auto-generated method stub
+        return validating;
+    }
 
 	@Override
 	public Map<String, List<String>> getMetadata() {
@@ -159,6 +169,16 @@ public class DescriptorImpl implements Descriptor, Serializable {
     @Override
     public int getRanking() {
         return rank;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#setRanking(int)
+     */
+    @Override
+    public int setRanking(int ranking) {
+        int retVal = rank;
+        rank = ranking;
+        return retVal;
     }
 	
 	@Override
@@ -259,5 +279,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		return sb.toString();
 	}
 
+    
     
 }

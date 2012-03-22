@@ -164,6 +164,15 @@ public interface DescriptorBuilder {
 	public DescriptorBuilder withId(Long id) throws IllegalArgumentException;
 	
 	/**
+     * Call this if this descriptor must be validated
+     * 
+     * @param id May be null.  Will be ignored on binding operations
+     * @return A DescriptorBuilder with the given metadata
+     * @throws IllegalArgumentException if the id is set non-null more than once
+     */
+    public DescriptorBuilder isValidating() throws IllegalArgumentException;
+	
+	/**
 	 * Generates a descriptor that can be used in binding operations, or
 	 * a filter that can be used for search operations
 	 * 

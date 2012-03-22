@@ -41,12 +41,14 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.InjectionPointValidator;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
 
@@ -60,6 +62,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final HashMap<String, HK2Loader> allLoaders = new HashMap<String, HK2Loader>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver>();
+    private final HashSet<InjectionPointValidator> allValidators = new HashSet<InjectionPointValidator>();
     
     private final Object lock = new Object();
     private boolean committed = false;
@@ -139,6 +142,17 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         
         return retVal;
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Configuration#addValidator(org.glassfish.hk2.api.InjectionPointValidator)
+     */
+    @Override
+    public void addValidator(InjectionPointValidator validator)
+            throws IllegalArgumentException {
+        if (validator == null) throw new IllegalArgumentException();
+        
+        allValidators.add(validator);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.DynamicConfiguration#commit()
@@ -182,10 +196,15 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         return allResolvers;
     }
     
+    /**
+     * @return the allResolvers
+     */
+    HashSet<InjectionPointValidator> getAllValidators() {
+        return allValidators;
+    }
+    
     /* package */ void setCommitable(boolean commitable) {
         this.commitable = commitable;
         
     }
-
-    
 }

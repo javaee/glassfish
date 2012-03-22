@@ -37,75 +37,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.validating;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionPointValidator;
 
 /**
- * This exception can contain multiple other exceptions.
- * However, it will also have the causal chain of the
- * first exception added to the list of exceptions
- * 
  * @author jwells
  *
  */
-public class MultiException extends RuntimeException {
+public class SecretValidator implements InjectionPointValidator {
     /**
-     * For serialization
+     * Brilliant security.  Any class that has the word
+     * System in it is a system class.  No way to spoof that on, eh?
+     * 
+     * @param injectedInto
+     * @return
      */
-    private static final long serialVersionUID = 2112432697858621044L;
+    private boolean isSystemClass(Class<?> injectedInto) {
+        if (injectedInto.getName().contains("System")) return true;
+        
+        return false;
+    }
     
-    private final List<Throwable> throwables = new LinkedList<Throwable>();
-    
-    /**
-     * Creates an empty MultiException
+    private static Class<?> getDeclaringClass(Injectee injectee) {
+        AnnotatedElement element = injectee.getParent();
+        if (element instanceof Constructor) {
+            return ((Constructor<?>) element).getDeclaringClass();
+        }
+        if (element instanceof Method) {
+            return ((Method) element).getDeclaringClass();
+        }
+        
+        return ((Field) element).getDeclaringClass();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionPointValidator#validateInjectionPoint(java.lang.Class, org.glassfish.hk2.api.Injectee, java.lang.Class)
      */
-    public MultiException() {
-        super();
-    }
-    
-    public MultiException(Throwable th) {
-        super(th.getMessage(), th);
+    @Override
+    public boolean validateInjectionPoint(Injectee injectee, ActiveDescriptor<?> resolution) {
+        if (injectee == null) return false;  // No direct lookups!
         
-        throwables.add(th);
-    }
-    
-    public void addThrowable(Throwable th) {
-        if (th == null) throw new IllegalArgumentException();
-        
-        if (throwables.isEmpty()) {
-            initCause(th);
-        }
-        
-        throwables.add(th);
-    }
-    
-    public boolean hasErrors() {
-        return !throwables.isEmpty();
-    }
-    
-    public List<Throwable> getErrors() {
-        return Collections.unmodifiableList(throwables);
-    }
-    
-    public String toString() {
-        StringBuffer sb = new StringBuffer("MultiException(");
-        
-        int lcv = 1;
-        for (Throwable th : throwables) {
-            sb.append("\n" + lcv++ + ". " + th.getMessage());
-        }
-        
-        if (throwables.isEmpty()) {
-            sb.append(System.identityHashCode(this) + ")");
-        }
-        else {
-            sb.append("\n" + System.identityHashCode(this) + ")");
-        }
-        
-        return sb.toString();
+        return isSystemClass(getDeclaringClass(injectee));
     }
 
 }

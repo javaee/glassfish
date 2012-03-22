@@ -65,7 +65,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     private final String name;
     private final Set<Annotation> qualifiers;
     private final Set<String> qualifiersAsStrings = new HashSet<String>();
-    private final int ranking;
+    private int ranking;
     
     /**
      * This constructor must be called with the information about
@@ -156,6 +156,23 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     @Override
     public int getRanking() {
         return ranking;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#setRanking(int)
+     */
+    @Override
+    public int setRanking(int ranking) {
+        int retVal = this.ranking;
+        this.ranking = ranking;
+        return retVal;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#isValidating()
+     */
+    public boolean isValidating() {
+        return false;
     }
 
     /* (non-Javadoc)

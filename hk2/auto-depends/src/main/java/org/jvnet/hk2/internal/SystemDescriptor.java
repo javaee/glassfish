@@ -54,6 +54,7 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.Validating;
 
 /**
  * @author jwells
@@ -146,6 +147,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     }
 
     /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#isValidating()
+     */
+    @Override
+    public boolean isValidating() {
+        return baseDescriptor.isValidating();
+    }
+    
+    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getMetadata()
      */
     @Override
@@ -159,6 +168,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     @Override
     public int getRanking() {
         return baseDescriptor.getRanking();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#setRanking(int)
+     */
+    @Override
+    public int setRanking(int ranking) {
+        return baseDescriptor.setRanking(ranking);
     }
 
     /* (non-Javadoc)
@@ -355,7 +372,21 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                         baseDescriptor.getScope() + ") did not match the scope annotation on the class (" + scope.getName() + ")"));
                 
             }
+        }
+        
+        if (!isValidating()) {
+            // If there is a validating annotation on this class that is not ok, we will just completely
+            // kill this descriptor
+            for (Annotation annotation : implClass.getAnnotations()) {
+                Class<? extends Annotation> annotationType = annotation.annotationType();
             
+                if (annotationType.isAnnotationPresent(Validating.class)) {
+                    collector.addThrowable(new IllegalArgumentException("The descriptor (" +
+                            baseDescriptor + " is set to not validating, but it has a validating annotation " +
+                            Pretty.clazz(annotationType)));
+                    break;
+                }
+            }
         }
         
         reified = true;
@@ -399,6 +430,10 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return "SystemDescriptor(" + getImplementation() + "," + Pretty.collection(getAdvertisedContracts()) + "," +
           Pretty.collection(getQualifiers()) + "," + System.identityHashCode(this) + ")";
     }
+
+    
+
+    
 
     
 }

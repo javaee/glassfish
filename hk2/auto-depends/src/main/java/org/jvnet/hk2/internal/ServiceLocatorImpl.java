@@ -62,6 +62,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionPointValidator;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
@@ -97,6 +98,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new HashMap<Class<? extends Annotation>, InjectionResolver>();
     private final Context<Singleton> singletonContext = new SingletonContext();
     private final Context<PerLookup> perLookupContext = new PerLookupContext();
+    private final LinkedList<InjectionPointValidator> allValidators = new LinkedList<InjectionPointValidator>();
     
     /* package */ ServiceLocatorImpl(String name, ServiceLocator parent) {
         locatorName = name;
@@ -109,12 +111,31 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // get it and change it
         allResolvers.put(Inject.class, new ThreeThirtyResolver(this));
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
+    
+    /**
+     * Must be called under lock
+     * 
+     * @param descriptor The descriptor to validate
+     * @param onBehalfOf The fella who is being validated (or null)
+     * @return true if every validator returned true
      */
-    @Override
-    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter) {
+    private boolean validate(ActiveDescriptor<?> descriptor, Injectee onBehalfOf) {
+        for (InjectionPointValidator validator : allValidators) {
+            try {
+                if (!validator.validateInjectionPoint(onBehalfOf, descriptor)) {
+                    return false;
+                    
+                }
+            }
+            catch (Throwable th) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    private SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
@@ -165,6 +186,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
             
             for (ActiveDescriptor<?> candidate : sortMeOut) {
+                if (candidate.isValidating()) {
+                    if (!validate(candidate, onBehalfOf)) continue;
+                }
+                
                 if (filter.matches(candidate)) {
                     sorter.add(candidate);
                 }
@@ -176,6 +201,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
             return sorter;
         }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter) {
+        return getDescriptors(filter, null);
     }
     
     public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
@@ -247,7 +281,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
         
-        ServiceHandle<?> handle = getServiceHandle(requiredType, qualifiers);
+        ServiceHandle<?> handle = internalGetServiceHandle(injectee, requiredType, qualifiers);
         if (handle == null) return null;
         
         return handle.getActiveDescriptor();
@@ -384,24 +418,29 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     }
     
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.annotation.Annotation[])
-     */
     @SuppressWarnings("unchecked")
-    @Override
-    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
+    private <T> ServiceHandle<T> internalGetServiceHandle(Injectee onBehalfOf, Type contractOrImpl,
             Annotation... qualifiers) throws MultiException {
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
         Filter filter = BuilderHelper.createContractFilter(rawClass.getName());
-        SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
+        SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf);
         candidates = narrow(candidates, contractOrImpl, null, false, qualifiers);
         
         ActiveDescriptor<?> topDog = Utilities.getFirstThingInSet(candidates);
         if (topDog == null) return null;
         
         return getServiceHandle((ActiveDescriptor<T>) topDog);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        return internalGetServiceHandle(null, contractOrImpl, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -498,6 +537,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         for (Map.Entry<Class<? extends Annotation>, InjectionResolver> entry : dci.getAllResolvers().entrySet()) {
             allResolvers.put(entry.getKey(), entry.getValue());
+        }
+        
+        for (InjectionPointValidator validator : dci.getAllValidators()) {
+            allValidators.add(validator);
+            
         }
         
     }

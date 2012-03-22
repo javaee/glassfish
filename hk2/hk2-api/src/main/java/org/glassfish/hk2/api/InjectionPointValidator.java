@@ -50,13 +50,27 @@ package org.glassfish.hk2.api;
 public interface InjectionPointValidator {
     /**
      * This method is called whenever it has been determined that a validating
-     * class is to be injected into an injection point.
+     * class is to be injected into an injection point, or when a descriptor
+     * is being looked up explicitly with the API.
+     * <p>
+     * The candidate descriptor being passed in may not have yet been reified.  If
+     * possible, this method should do its work without reifying the descriptor.
+     * However, if it is necessary to reify the descriptor, it should be done with
+     * the ServiceLocator.reifyDescriptor method.
+     * <p>
      * 
-     * @param injectedInto The class that could be injected into
-     * @param injectee The injection point of that class to validate
-     * @param resolution The actual class of the object that will be injected into this
-     * injection point
+     * @param injectee The injection point to validate.  If this is null
+     * then this lookup is being done directly from the API, in which case the caller
+     * of the API will be on the call stack
+     * @param resolution The candidate descriptor that will be responsible for creating
+     * the object to be put into the injection point (or returned to the API).  This
+     * descriptor may not have been reified
+     * @return true if this injection should succeed, false if this candidate should not
+     * be returned
+     * @throws RuntimeException Any exception from this method will also cause the candidate
+     * to not be available.  However, the preferred method of indicating an validation failure
+     * is to return null
      */
-    public void validateInjectionPoint(Class<?> injectedInto, Injectee injectee, Class<?> resolution);
+    public boolean validateInjectionPoint(Injectee injectee, ActiveDescriptor<?> candidate);
 
 }
