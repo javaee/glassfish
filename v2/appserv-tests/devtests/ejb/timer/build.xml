@@ -16,11 +16,7 @@
         <antcall target="sessiontimer"/>
         <antcall target="timerserialization"/>
         <antcall target="timertests"/>
-
-	<!-- 
         <antcall target="mdbtimer"/>
-	-->
-
     </target>
 
     <target name="sessiontimer">
