@@ -37,75 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.validating;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import javax.inject.Inject;
 
 /**
- * This exception can contain multiple other exceptions.
- * However, it will also have the causal chain of the
- * first exception added to the list of exceptions
- * 
  * @author jwells
  *
  */
-public class MultiException extends RuntimeException {
-    /**
-     * For serialization
-     */
-    private static final long serialVersionUID = 2112432697858621044L;
-    
-    private final List<Throwable> throwables = new LinkedList<Throwable>();
-    
-    /**
-     * Creates an empty MultiException
-     */
-    public MultiException() {
-        super();
-    }
-    
-    public MultiException(Throwable th) {
-        super(th.getMessage(), th);
-        
-        throwables.add(th);
-    }
-    
-    public void addThrowable(Throwable th) {
-        if (th == null) throw new IllegalArgumentException();
-        
-        if (throwables.isEmpty()) {
-            initCause(th);
-        }
-        
-        throwables.add(th);
-    }
-    
-    public boolean hasErrors() {
-        return !throwables.isEmpty();
-    }
-    
-    public List<Throwable> getErrors() {
-        return Collections.unmodifiableList(throwables);
-    }
-    
-    public String toString() {
-        StringBuffer sb = new StringBuffer("MultiException(");
-        
-        int lcv = 1;
-        for (Throwable th : throwables) {
-            sb.append("\n" + lcv++ + ". " + th.getMessage());
-        }
-        
-        if (throwables.isEmpty()) {
-            sb.append(System.identityHashCode(this) + ")");
-        }
-        else {
-            sb.append("\n" + System.identityHashCode(this) + ")");
-        }
-        
-        return sb.toString();
-    }
-
+public class SystemService { 
+    @SuppressWarnings("unused")
+    @Inject
+    private SuperSecretService secretSauce;
 }

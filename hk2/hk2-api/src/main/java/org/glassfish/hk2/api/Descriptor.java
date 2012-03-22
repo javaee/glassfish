@@ -122,6 +122,15 @@ public interface Descriptor {
 	public Set<String> getQualifiers();
 	
 	/**
+     * This returns true if the class or factory has a validating
+     * annotation on it
+     * 
+     * @return true if this class should be validated when it is
+     * looked up via the API or injected into an injectee
+     */
+    public boolean isValidating();
+	
+	/**
 	 * Returns all of the metadata associated
 	 * that this object should be registered
 	 * with or looked up by
@@ -146,6 +155,22 @@ public interface Descriptor {
 	 * descriptor
 	 */
 	public int getRanking();
+	
+	/**
+     * Returns the ranking of this descriptor.  Rankings
+     * with higher value will be considered "better" than
+     * rankings of lower value.  Descriptors with the same
+     * ranking will be returned in the reverse ServiceID order
+     * (in other words, the least service ID is considered
+     * "better" than any higher service ID).
+     * <p>
+     * The ranking of a service may change at any time during
+     * the life of the descriptor
+     * 
+     * @param ranking The new ranking this descriptor should have
+     * @return the previous ranking that this descriptor had
+     */
+    public int setRanking(int ranking);
 	
 	/**
 	 * This returns the unique identifier for this descriptor.

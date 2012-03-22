@@ -59,7 +59,7 @@ import org.glassfish.hk2.api.ServiceHandle;
  *
  */
 public class ServiceHandleImpl<T> implements ServiceHandle<T> {
-    private final ActiveDescriptor<T> root;
+    private ActiveDescriptor<T> root;
     private final ServiceLocatorImpl locator;
     private final Object lock = new Object();
     
@@ -77,15 +77,19 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceHandle#getService()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T getService() {
         synchronized (lock) {
             if (serviceDestroyed) throw new IllegalStateException("Service has been disposed");
             
             if (serviceSet) return service;
+            
+            if (!root.isReified()) {
+                root = (ActiveDescriptor<T>) locator.reifyDescriptor(root);
+            }
         
             if (Utilities.isProxiableScope(root.getScopeAnnotation())) {
-                @SuppressWarnings("unchecked")
                 T proxy = (T) Enhancer.create(root.getImplementationClass(),
                     Utilities.getInterfacesForProxy(root.getContractTypes()),
                     new MethodInterceptorImpl(locator, root, this));
@@ -123,7 +127,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         if (serviceSet) return true;
         
         try {
-            Context context = locator.resolveContext(root.getScopeAnnotation());
+            Context<?> context = locator.resolveContext(root.getScopeAnnotation());
             return (context.find(root) != null);
         }
         catch (IllegalStateException ise) {

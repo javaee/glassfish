@@ -37,75 +37,68 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.validating;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
+import junit.framework.Assert;
+
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Before;
+import org.junit.Test;
+
 /**
- * This exception can contain multiple other exceptions.
- * However, it will also have the causal chain of the
- * first exception added to the list of exceptions
- * 
  * @author jwells
  *
  */
-public class MultiException extends RuntimeException {
+public class ValidatingTest {
+    private final String EXCEPTION_STRING = "There was no object available for injection at";
+    
+    public final static String TEST_NAME = "ValidatingTest";
+    private ServiceLocator locator;
+    
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new ValidatingModule());
+        if (locator == null) {
+            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
+        }
+    }
+
+    @Test
+    public void testSystemServiceIsOK() {
+        SystemService systemService = locator.getService(SystemService.class);
+        Assert.assertNotNull(systemService);  // If I got it, it worked!
+    }
+    
+    @Test
+    public void testUserServiceIsNotOK() {
+        try {
+            locator.getService(UserService.class);
+            Assert.fail("This should have failed due to the validator");
+        }
+        catch (MultiException me) {
+            List<Throwable> errors = me.getErrors();
+            
+            Assert.assertEquals(me.toString(), 1, errors.size());
+            
+            Throwable underlyingCause = errors.get(0);
+            
+            Assert.assertTrue(underlyingCause instanceof IllegalStateException);
+            Assert.assertTrue(underlyingCause.getMessage().contains(EXCEPTION_STRING));
+        }
+    }
+    
     /**
-     * For serialization
+     * The validator does not allow direct lookup of this service
      */
-    private static final long serialVersionUID = 2112432697858621044L;
-    
-    private final List<Throwable> throwables = new LinkedList<Throwable>();
-    
-    /**
-     * Creates an empty MultiException
-     */
-    public MultiException() {
-        super();
+    @Test
+    public void testEvilLookup() {
+        Assert.assertNull(locator.getService(SuperSecretService.class));
     }
     
-    public MultiException(Throwable th) {
-        super(th.getMessage(), th);
-        
-        throwables.add(th);
-    }
     
-    public void addThrowable(Throwable th) {
-        if (th == null) throw new IllegalArgumentException();
-        
-        if (throwables.isEmpty()) {
-            initCause(th);
-        }
-        
-        throwables.add(th);
-    }
-    
-    public boolean hasErrors() {
-        return !throwables.isEmpty();
-    }
-    
-    public List<Throwable> getErrors() {
-        return Collections.unmodifiableList(throwables);
-    }
-    
-    public String toString() {
-        StringBuffer sb = new StringBuffer("MultiException(");
-        
-        int lcv = 1;
-        for (Throwable th : throwables) {
-            sb.append("\n" + lcv++ + ". " + th.getMessage());
-        }
-        
-        if (throwables.isEmpty()) {
-            sb.append(System.identityHashCode(this) + ")");
-        }
-        else {
-            sb.append("\n" + System.identityHashCode(this) + ")");
-        }
-        
-        return sb.toString();
-    }
 
 }

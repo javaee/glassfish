@@ -63,6 +63,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	private final HashMap<String, List<String>> metadatas = new HashMap<String, List<String>>();
 	private String implementation;
 	private int rank = 0;
+	private boolean validating = false;
 	private Long id;
 	
 	public DescriptorBuilderImpl() {
@@ -212,6 +213,16 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 		this.id = id;
 		return this;
 	}
+	
+	/* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.DescriptorBuilder#isValidating()
+     */
+    @Override
+    public DescriptorBuilder isValidating() throws IllegalArgumentException {
+        validating = true;
+        
+        return this;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#build()
@@ -225,10 +236,13 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 				implementation,
 				metadatas,
 				qualifiers,
+				validating,
 				rank,
 				id,
 				null);
 	}
+
+    
 
     
 }

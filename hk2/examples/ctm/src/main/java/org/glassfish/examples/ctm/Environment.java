@@ -49,6 +49,7 @@ import org.jvnet.hk2.config.Configured;
  */
 @Configured
 @Contract
+@TenantScoped
 public interface Environment {
     public String getName();
     
