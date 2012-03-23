@@ -64,11 +64,9 @@ import javax.inject.Scope;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -227,8 +225,8 @@ public class Utilities {
     /**
      * Returns a constant ActiveDescriptor for the basic ServiceLocator
      * 
-     * @param locator
-     * @return
+     * @param locator The service locator to get the ActiveDescriptor for
+     * @return An active descriptor specifically for the ServiceLocator
      */
     public static ActiveDescriptor<ServiceLocator> getLocatorDescriptor(ServiceLocator locator) {
         HashSet<Type> contracts = new HashSet<Type>();
@@ -262,26 +260,18 @@ public class Utilities {
         }
     }
     
-    public static ActiveDescriptor<?> createActiveDescriptor(Descriptor parent, Class<?> locatedClass, MultiException collector) {
-        return null;
-        
-        
-        
-    }
-    
     /**
      * Validates the constructors of the annotated type and returns the
      * producer for the annotatedType (if there is no valid producer
      * constructor then this method returns null)
      * 
      * @param annotatedType The type to find the producer constructor
+     * @param locator The service locator to use when analyzing constructors
+     * @param collector The error collector
      * @return The producer constructor or null if the type has no valid
      * producer constructor
-     * @throws DefinitionException This method checks the definitional
-     * integrity of the constructors, and throws an exception if one is
-     * found
      */
-    public static Constructor<?> findProducerConstructor(Class<?> annotatedType, ServiceLocatorImpl locator, MultiException collector) {
+    public static Constructor<?> findProducerConstructor(Class<?> annotatedType, ServiceLocatorImpl locator, Collector collector) {
         Constructor<?> zeroArgConstructor = null;
         Constructor<?> aConstructorWithInjectAnnotation = null;
         
@@ -339,8 +329,9 @@ public class Utilities {
      * Gets the first type argument if this is a parameterized
      * type, otherwise it returns Object.class
      * 
-     * @param type
-     * @return
+     * @param type The type to find the first type argument on
+     * @return If this is a class, Object.class. If this is a parameterized
+     * type, the type of the first actual argument
      */
     public static Type getFirstTypeArgument(Type type) {
         if (type instanceof Class) {
@@ -427,13 +418,14 @@ public class Utilities {
      * at one shot)
      * 
      * @param annotatedType The type to find the errors in
+     * @param locator The locator to use when analyzing methods
      * @param errorCollector The collector to add errors to
      * @return A possibly empty but never null set of initializer methods
      */
     public static Set<Method> findInitializerMethods(
             Class<?> annotatedType,
             ServiceLocatorImpl locator,
-            MultiException errorCollector) {
+            Collector errorCollector) {
         HashSet<Method> retVal = new HashSet<Method>();
         
         for (Method method : getAllMethods(annotatedType)) {
@@ -455,9 +447,17 @@ public class Utilities {
         return retVal;
     }
     
+    /**
+     * Will find all the initialize fields in the class
+     * 
+     * @param annotatedType The class to search for fields
+     * @param locator The locator to use when analyzing the class
+     * @param errorCollector The error collector
+     * @return A non-null but possibly empty set of initializer fields
+     */
     public static Set<Field> findInitializerFields(Class<?> annotatedType,
             ServiceLocatorImpl locator,
-            MultiException errorCollector) {
+            Collector errorCollector) {
         HashSet<Field> retVal = new HashSet<Field>();
         
         for (Field field : getAllFields(annotatedType)) {
@@ -548,14 +548,14 @@ public class Utilities {
     /**
      * Returns the scope of this thing
      * 
-     * @param manager The bean manager (so we pick up add-on scopes)
      * @param annotatedGuy The annotated class or producer method
+     * @param collector The error collector
      * @return The scope of this class or producer method.  If no scope is
      * found will return the dependent scope
      */
     public static Class<? extends Annotation> getScopeAnnotationType(
             AnnotatedElement annotatedGuy,
-            MultiException collector) {
+            Collector collector) {
         boolean epicFail = false;
         Class<? extends Annotation> retVal = null;
         for (Annotation annotation : annotatedGuy.getAnnotations()) {
@@ -580,17 +580,16 @@ public class Utilities {
     }
     
     /**
-     * Returns the scope of this thing
+     * Returns an injection resolver for this AnnotatedElement
      * 
-     * @param manager The bean manager (so we pick up add-on scopes)
+     * @param locator The locator to use when finding the resolver
      * @param annotatedGuy The annotated class or producer method
      * @return The scope of this class or producer method.  If no scope is
      * found will return the dependent scope
      */
     public static InjectionResolver getInjectionResolver(
             ServiceLocatorImpl locator,
-            AnnotatedElement annotatedGuy,
-            MultiException collector) {
+            AnnotatedElement annotatedGuy) {
         Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy);
         
         Class<? extends Annotation> injectType = (injectAnnotation == null) ?
@@ -619,9 +618,6 @@ public class Utilities {
     /**
      * Gets all the interfaces on this particular class (but not any
      * superclasses of this class).
-     * 
-     * @param clazz
-     * @return
      */
     private static void addAllGenericInterfaces(Type types[], Set<Type> closures) {
         
@@ -707,13 +703,15 @@ public class Utilities {
     /**
      * Returns the full set of qualifier annotations on this class
      * 
-     * @param annotatedGuy
-     * @return
+     * @param annotatedGuy The element we are searching for qualifiers
+     * @param name The name this element must have
+     * @param collector The error collector
+     * @return A non-null but possibly empty set of qualifiers
      */
     public static Set<Annotation> getAllQualifiers(
             AnnotatedElement annotatedGuy,
             String name,
-            MultiException collector) {
+            Collector collector) {
         
         Named namedQualifier = null;
         HashSet<Annotation> retVal = new HashSet<Annotation>();
@@ -840,8 +838,8 @@ public class Utilities {
     }
     
     /**
-     * Returns all the injectees for a constructor
-     * @param c The constructor to analyze
+     * Returns the injectees for a field
+     * @param f The field to analyze
      * @return the list (in order) of parameters to the constructor
      */
     public static List<Injectee> getFieldInjectees(Field f) {
@@ -861,10 +859,11 @@ public class Utilities {
     
     /**
      * Finds the post construct method on this class
-     * @param The post construct method, or null if this class is an hk2 postconstruct or there
-     *   was no post construct method on the class
+     * @param clazz The class to search for the post construct
+     * @param collector An error collector
+     * @return The post construct method or null
      */
-    public static Method findPostConstruct(Class<?> clazz, MultiException collector) {
+    public static Method findPostConstruct(Class<?> clazz, Collector collector) {
         if (org.glassfish.hk2.PostConstruct.class.isAssignableFrom(clazz)) {
             // A little performance optimization
             return null;  
@@ -891,11 +890,12 @@ public class Utilities {
     }
     
     /**
-     * Finds the post construct method on this class
-     * @param The post construct method, or null if this class is an hk2 postconstruct or there
-     *   was no post construct method on the class
+     * Finds the pre destroy method on this class
+     * @param clazz The class to search for the pre destroy method
+     * @param collector An error collector
+     * @return The pre destroy method or null
      */
-    public static Method findPreDestroy(Class<?> clazz, MultiException collector) {
+    public static Method findPreDestroy(Class<?> clazz, Collector collector) {
         if (org.glassfish.hk2.PreDestroy.class.isAssignableFrom(clazz)) {
             // A little performance optimization
             return null;  
@@ -925,8 +925,7 @@ public class Utilities {
      * This version of invoke is CCL neutral (it will return with the
      * same CCL as what it went in with)
      * 
-     * @param m the method to invoke
-     * @param o the object on which to invoke it
+     * @param c the constructor to call
      * @param args The arguments to invoke (may not be null)
      * @return The return from the invocation
      * @throws Throwable The unwrapped throwable thrown by the method
@@ -983,6 +982,7 @@ public class Utilities {
      * 
      * @param qualifiers The qualifiers to convert.  May not be null, but
      * may be zero length
+     * @param name The name this set of qualifiers must have
      * @return The set containing all the qualifiers
      */
     public static Set<Annotation> fixAndCheckQualifiers(Annotation qualifiers[], String name) {

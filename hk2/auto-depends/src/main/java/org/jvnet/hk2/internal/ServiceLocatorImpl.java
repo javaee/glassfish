@@ -231,10 +231,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (!(descriptor instanceof ActiveDescriptor)) {
             SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor, new Long(id));
             
-            MultiException collector = new MultiException();
+            Collector collector = new Collector();
             sd.reify(implClass, this, collector);
             
-            if (collector.hasErrors()) throw collector;
+            collector.throwIfErrors();
             
             return sd;
         }
@@ -251,10 +251,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             sd = new SystemDescriptor<Object>(descriptor, new Long(id));
         }
         
-        MultiException collector = new MultiException();
+        Collector collector = new Collector();
         sd.reify(implClass, this, collector);
         
-        if (collector.hasErrors()) throw collector;
+        collector.throwIfErrors();
         
         return sd;
     }

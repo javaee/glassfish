@@ -37,87 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.jvnet.hk2.internal;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.glassfish.hk2.api.MultiException;
+
 /**
- * This exception can contain multiple other exceptions.
- * However, it will also have the causal chain of the
- * first exception added to the list of exceptions
+ * This class collects errors, and can then also produce a MultiException
+ * from those errors if necessary
  * 
  * @author jwells
- *
  */
-public class MultiException extends RuntimeException {
-    /**
-     * For serialization
-     */
-    private static final long serialVersionUID = 2112432697858621044L;
-    
+public class Collector {
     private final List<Throwable> throwables = new LinkedList<Throwable>();
     
     /**
-     * Creates an empty MultiException
+     * Adds a throwable to the list of throwables in this collector
+     * @param th The throwable to add to the list
      */
-    public MultiException() {
-        super();
-    }
-    
-    /**
-     * This list must have at least one element in it.
-     * The first element of the list will become the
-     * cause of this exception, and its message will become
-     * the message of this exception
-     * 
-     * @param th A non-null, non-empty list of exceptions
-     */
-    public MultiException(List<Throwable> th) {
-        super(th.get(0).getMessage(), th.get(0));
-        
-        throwables.addAll(th);
-    }
-    
-    /**
-     * This allows for construction of a MultiException
-     * with one element in its list
-     * 
-     * @param th May not be null
-     */
-    public MultiException(Throwable th) {
-        super(th.getMessage(), th);
-        
+    public void addThrowable(Throwable th) {
+        if (th == null) return;
         throwables.add(th);
     }
     
     /**
-     * Gets all the errors associated with this MultiException
+     * This method will throw if the list of throwables associated with this
+     * collector is not empty
      * 
-     * @return All the errors associated with this MultiException. Will
-     * not return null, but may return an empty object
+     * @throws MultiException An exception with all the throwables found in this collector
      */
-    public List<Throwable> getErrors() {
-        return Collections.unmodifiableList(throwables);
-    }
-    
-    public String toString() {
-        StringBuffer sb = new StringBuffer("MultiException(");
+    public void throwIfErrors() throws MultiException {
+        if (throwables.isEmpty()) return;
         
-        int lcv = 1;
-        for (Throwable th : throwables) {
-            sb.append("\n" + lcv++ + ". " + th.getMessage());
-        }
-        
-        if (throwables.isEmpty()) {
-            sb.append(System.identityHashCode(this) + ")");
-        }
-        else {
-            sb.append("\n" + System.identityHashCode(this) + ")");
-        }
-        
-        return sb.toString();
+        throw new MultiException(throwables);
     }
 
 }

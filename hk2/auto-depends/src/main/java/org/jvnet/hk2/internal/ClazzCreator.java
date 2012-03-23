@@ -60,6 +60,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
+ * @param <T> The type of object this creator creates
  *
  */
 public class ClazzCreator<T> implements Creator<T> {
@@ -72,7 +73,7 @@ public class ClazzCreator<T> implements Creator<T> {
     private Method postConstructMethod;
     private Method preDestroyMethod;
     
-    /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, MultiException collector) {
+    /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, Collector collector) {
         List<Injectee> baseAllInjectees = new LinkedList<Injectee>();
         
         AnnotatedElement element;
@@ -82,7 +83,7 @@ public class ClazzCreator<T> implements Creator<T> {
         element = Utilities.findProducerConstructor(implClass, locator, collector);
         if (element == null) return;
         
-        resolver = Utilities.getInjectionResolver(locator, element, collector);
+        resolver = Utilities.getInjectionResolver(locator, element);
         if (resolver == null) return;
         
         injectees = Utilities.getConstructorInjectees((Constructor<?>) element);
@@ -95,7 +96,7 @@ public class ClazzCreator<T> implements Creator<T> {
         Set<Method> initMethods = Utilities.findInitializerMethods(implClass, locator, collector);
         for (Method initMethod : initMethods) {
             element = initMethod;
-            resolver = Utilities.getInjectionResolver(locator, element, collector);
+            resolver = Utilities.getInjectionResolver(locator, element);
             if (resolver == null) return;
             
             injectees = Utilities.getMethodInjectees(initMethod);
@@ -109,7 +110,7 @@ public class ClazzCreator<T> implements Creator<T> {
         Set<Field> fields = Utilities.findInitializerFields(implClass, locator, collector);
         for (Field field : fields) {
             element = field;
-            resolver = Utilities.getInjectionResolver(locator, element, collector);
+            resolver = Utilities.getInjectionResolver(locator, element);
             if (resolver == null) return;
             
             injectees = Utilities.getFieldInjectees(field);

@@ -339,7 +339,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         if (!reified) throw new IllegalStateException();
     }
     
-    /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, MultiException collector) {
+    /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, Collector collector) {
         this.implClass = implClass;
         
         qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(implClass, baseDescriptor.getName(), collector));
