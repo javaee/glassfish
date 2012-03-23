@@ -278,10 +278,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         Set<Annotation> qualifiersAsSet = injectee.getRequiredQualifiers();
+        String name = Utilities.getNameFromAllQualifiers(qualifiersAsSet, injectee.getParent());
         
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
         
-        ServiceHandle<?> handle = internalGetServiceHandle(injectee, requiredType, qualifiers);
+        ServiceHandle<?> handle = internalGetServiceHandle(injectee, requiredType, name, qualifiers);
         if (handle == null) return null;
         
         return handle.getActiveDescriptor();
@@ -420,11 +421,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     @SuppressWarnings("unchecked")
     private <T> ServiceHandle<T> internalGetServiceHandle(Injectee onBehalfOf, Type contractOrImpl,
+            String name,
             Annotation... qualifiers) throws MultiException {
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
-        Filter filter = BuilderHelper.createContractFilter(rawClass.getName());
+        Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf);
         candidates = narrow(candidates, contractOrImpl, null, false, qualifiers);
         
@@ -440,7 +442,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
             Annotation... qualifiers) throws MultiException {
-        return internalGetServiceHandle(null, contractOrImpl, qualifiers);
+        return internalGetServiceHandle(null, contractOrImpl, null, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -468,22 +470,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.String, java.lang.annotation.Annotation[])
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
             String name, Annotation... qualifiers) throws MultiException {
-        Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
-        if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
-        
-        Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
-        
-        SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
-        candidates = narrow(candidates, contractOrImpl, name, true, qualifiers);
-        
-        ActiveDescriptor<?> firstThingInSet = Utilities.getFirstThingInSet(candidates);
-        if (firstThingInSet == null) return null;
-        
-        return getServiceHandle((ActiveDescriptor<T>) firstThingInSet);
+        return internalGetServiceHandle(null, contractOrImpl, name, qualifiers);
     }
 
     /* (non-Javadoc)

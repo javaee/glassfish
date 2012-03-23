@@ -692,12 +692,45 @@ public class Utilities {
         if (ae instanceof Class) {
             myClass = (Class<?>) ae;
         }
-        else {
+        else if (ae instanceof Method) {
             Method m = (Method) ae;
             myClass = m.getDeclaringClass();
         }
+        else if (ae instanceof Constructor) {
+            Constructor<?> c = (Constructor<?>) ae;
+            myClass = c.getDeclaringClass();
+        }
+        else if (ae instanceof Field) {
+            Field f = (Field) ae;
+            myClass = f.getType();
+        }
+        else {
+            throw new IllegalArgumentException("@Named may not have no value for element " + ae);
+        }
         
         return Pretty.clazz(myClass);
+    }
+    
+    /**
+     * Gets the name from the &46;Named qualifier in this set of qualifiers
+     * 
+     * @param qualifiers The set of qualifiers that may or may not have Named in it
+     * @param parent The parent element for which we are searching
+     * @return null if no Named was found, or the appropriate name otherwise
+     */
+    public static String getNameFromAllQualifiers(Set<Annotation> qualifiers, AnnotatedElement parent) {
+        for (Annotation qualifier : qualifiers) {
+            if (!Named.class.equals(qualifier.annotationType())) continue;
+            
+            Named named = (Named) qualifier;
+            if ((named.value() == null) || named.value().equals("")) {
+                return calculateNamedValue(parent);
+            }
+            
+            return named.value();
+        }
+        
+        return null;
     }
     
     /**

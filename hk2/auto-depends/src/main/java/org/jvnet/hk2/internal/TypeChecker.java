@@ -76,44 +76,8 @@ public class TypeChecker {
         
         if (!requiredClass.isAssignableFrom(beanClass)) return false;
         
-        if ((requiredType instanceof Class) && (beanType instanceof Class)) {
+        if (requiredType instanceof Class) {
             // Both types are raw, and already passed assignability check above
-            return true;
-        }
-        
-        if ((requiredType instanceof Class) && (beanType instanceof ParameterizedType)) {
-            ParameterizedType beanPT = (ParameterizedType) beanType;
-            
-            // So we have a raw required type and a parameterized bean type
-            for (Type paramType : beanPT.getActualTypeArguments()) {
-                if (paramType instanceof TypeVariable) {
-                    TypeVariable<?> tv = (TypeVariable<?>) paramType;
-                    
-                    for (Type upperBound : tv.getBounds()) {
-                        if (!(upperBound instanceof Class)) {
-                            return false;
-                        }
-                        
-                        Class<?> classBound = (Class<?>) upperBound;
-                        if (!Object.class.equals(classBound)) {
-                            return false;
-                        }
-                    }
-                }
-                else if (paramType instanceof Class) {
-                    Class<?> classType = (Class<?>) paramType;
-                    
-                    if (!Object.class.equals(classType)) {
-                        return false;
-                    }
-                }
-                else {
-                    // Should never be wildcard, but might be a ParameterizedType, in which case this is a fail
-                    return false;
-                }
-                
-            }
-            
             return true;
         }
         
@@ -163,7 +127,6 @@ public class TypeChecker {
                 TypeVariable<?> rtv = getTypeVariable(requiredTypeVariable);
                 TypeVariable<?> btv = getTypeVariable(beanTypeVariable);
                 
-                // Not yet implemented
                 if (!isTypeVariableTypeVariableSafe(rtv, btv)) return false;
             }
             else {
