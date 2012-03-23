@@ -44,6 +44,7 @@ package org.glassfish.hk2.api;
  * of a service, and can be used to destroy that service as well
  * 
  * @author jwells
+ * @param <T> The type of the service that can be returned
  *
  */
 public interface ServiceHandle<T> {

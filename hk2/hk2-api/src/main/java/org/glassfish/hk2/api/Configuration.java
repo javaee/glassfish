@@ -61,7 +61,7 @@ public interface Configuration {
 	 * reified ActiveDescriptor that takes all values except for the
 	 * id from the given descriptor
 	 * 
-	 * @param keys May not be null.  Will be used to derive the various
+	 * @param key May not be null.  Will be used to derive the various
 	 * key fields associated with the given provider
 	 * @return The entry as added to the service registry, with fields
 	 * of the Descriptor filled in by the system as appropriate

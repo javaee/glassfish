@@ -64,6 +64,8 @@ public interface HK2Loader {
      * @return Null if this loader does not handle this class, or the active descriptor (which
      * must return the same values for its implementation as the passed in descriptor) to be used for
      * this descriptor
+     * @throws MultiException If this loader SHOULD load this class but cannot then this method should
+     * throw a MultiException
      */
     public Class<?> loadClass(String className) throws MultiException;
 
