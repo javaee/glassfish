@@ -46,7 +46,8 @@ import java.util.Set;
 
 /**
  * @author jwells
- *
+ * 
+ * @param <T> This is the type produced by the cache and consumed by the cache
  */
 public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
     /**

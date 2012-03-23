@@ -51,7 +51,7 @@ public interface DynamicConfigurationService {
      * Creates a dynamic configuration that can be used to add values
      * to the system
      * 
-     * @return
+     * @return A dynamic configuration to be used to add values to the system
      */
     public DynamicConfiguration createDynamicConfiguration();
 

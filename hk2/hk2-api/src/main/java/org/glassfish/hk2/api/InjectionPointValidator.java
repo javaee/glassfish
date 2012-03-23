@@ -62,7 +62,7 @@ public interface InjectionPointValidator {
      * @param injectee The injection point to validate.  If this is null
      * then this lookup is being done directly from the API, in which case the caller
      * of the API will be on the call stack
-     * @param resolution The candidate descriptor that will be responsible for creating
+     * @param candidate The candidate descriptor that will be responsible for creating
      * the object to be put into the injection point (or returned to the API).  This
      * descriptor may not have been reified
      * @return true if this injection should succeed, false if this candidate should not

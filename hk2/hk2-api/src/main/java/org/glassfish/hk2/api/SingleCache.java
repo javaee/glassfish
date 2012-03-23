@@ -45,6 +45,7 @@ package org.glassfish.hk2.api;
  * context implementations
  * 
  * @author jwells
+ * @param <T> The type of service stored and returned from this cache
  *
  */
 public interface SingleCache<T> {

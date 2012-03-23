@@ -51,6 +51,8 @@ import org.jvnet.hk2.annotations.Contract;
  * thread a runtime exception will be thrown when the scope is accessed.
  * 
  * @author jwells
+ * @param <T> This must be the type for which this is a context.  For example,
+ * if your scope is SecureScope, then your context must implement Context&lt;SecureScope&gt;
  *
  */
 @Contract

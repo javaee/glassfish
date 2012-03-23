@@ -53,6 +53,7 @@ import javax.inject.Provider;
  * id first)
  * 
  * @author jwells
+ * @param <T> The type of this IterableProvider
  */
 public interface IterableProvider<T> extends Provider<T>, Iterable<T> {
     /**

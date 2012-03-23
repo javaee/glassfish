@@ -43,19 +43,7 @@ package org.glassfish.hk2.api;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * A module defines the binding for a {@link Services} instance. The instance will
- * be registered under the name provided by the implementations of this contract
- * by using the annotation value as described in {@link org.jvnet.hk2.annotations.Service#name}
- *
- * <p/>
- * Each module is isolated from each other, so modules that need to access services
- * offered by other modules must inject these {@link Module} instances in order
- * to lookup their services. Using injection ensures that modules dependencies are
- * managed.
- *
- * </p>
- * Each {@link Module} must implement the {@link Module#configure(BinderFactory)} method
- * to configure its services.
+ * A module defines the initial set of bindings in the {@link ServiceLocator} instance.
  * 
  * @author Jerome Dochez, Jeff Trent
  */
@@ -64,8 +52,7 @@ public interface Module {
 
   /**
    * Main configuration hook for modules. Modules should use the {@link Configuration} methods
-   * like {@link Configuration#bind(String)} or {@link Configuration#bind(Class, Class[])} to
-   * add services through the programmatic DSL.
+   * to add services bindings.
    *
    * @param configurator An object used to configure this module
    */

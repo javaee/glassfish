@@ -57,6 +57,9 @@ import org.jvnet.hk2.annotations.Contract;
  * The above code would link a producer of Date into the system.
  * 
  * @author jwells
+ * @param <T> This must be the type of entity for which this is a factory.
+ * For example, if this were a factory for Foo, then your factory
+ * must implement Factory&lt;Foo&gt;
  *
  */
 @Contract

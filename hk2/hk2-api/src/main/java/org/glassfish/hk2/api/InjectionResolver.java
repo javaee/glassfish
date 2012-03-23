@@ -40,36 +40,11 @@
 package org.glassfish.hk2.api;
 
 /**
- * This class allows users to provide a custom injection target.
- * This allows fields or parameters of constructor or initializer
- * methods to be injected in a customized manner.
- * <p>
- * This extension is a feature of the default InjectionTarget
- * provided to the user in the ProcessInjectionTarget system
- * event.  If the default InjectionTarget is replaced by a
- * portable extension then the CustomInjectionResolver will not
- * be fired
- * <p>
- * To be activated an implementation of this interface must
- * be given to the WebBean as an AnnotatedType (or 
- * LazyLoadedType).  The implementation must be annotated with
- * the Qualifier &#64;CustomInjectionTarget, where the value
- * associated with the &#64;CustomInjectionTarget is the
- * annotation that should indicate injection.
- * <p>
- * Here is an example:
- * <pre>
- * public class Foo {
- *   &#64;Bob &#64;MyQualifier("myValue")
- *   public String aValue;
- * </pre>
- * The default InjectionTarget implementation would notice the &64;Bob, and 
- * since that had been registered as an Inject annotation it would attempt
- * to inject it.  It would do so by finding the current contextual
- * instance of an implementation of this interface with the matching
- * &#64;CustomInjection qualifier.  It would then invoke the getReference method, giving the
- * InjectionPoint to the call and the CreationalContext that should be used should this
- * instance need to create any underlying objects.
+ * This class allows users to provide a custom injection target for
+ * any annotation (including &#64;Inject).  The user would usually
+ * only provide a resolver for &#64;Inject if it were specializing
+ * the system provided resolver for &#64;Inject.  Otherwise, this
+ * resolver can be used to provide injection points for any annotation.
  * 
  * @author jwells
  */
@@ -81,7 +56,10 @@ public interface InjectionResolver {
      * <p>
      * This method should not do the injection themselves
      * 
-     * @param injectionPoint The injection point this value is being injected into
+     * @param injectee The injection point this value is being injected into
+     * @param root The service handle of the root class being created, which should
+     * be used in order to ensure proper destruction of associated &64;PerLookup
+     * scoped objects
      * @return A possibly null value to be injected into the given injection point
      */
     public Object resolve(Injectee injectee, ServiceHandle<?> root);

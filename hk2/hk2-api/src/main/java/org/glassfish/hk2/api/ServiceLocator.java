@@ -61,6 +61,8 @@ public interface ServiceLocator {
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
      * @return An instance of the contract or impl.  May return
      * null if there is no provider that provides the given
      * implementation or contract
@@ -79,6 +81,8 @@ public interface ServiceLocator {
      * or concrete implementation to get the best instance of
      * @param name May not be null, and is the name of the
      * implementation to be returned
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
      * @return An instance of the contract or impl.  May return
      * null if there is no provider that provides the given
      * implementation or contract
@@ -94,6 +98,8 @@ public interface ServiceLocator {
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
      * @return A list of services implementing this contract
      * or concrete implementation.  May not return null, but
      * may return an empty list
@@ -130,8 +136,10 @@ public interface ServiceLocator {
      * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
      * method to retrieve objects, so that they can be destroyed in the proper sequence
      * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
      * @return Will return root as a convenience
      * @throws MultiException if there was an error during service creation
      */
@@ -147,8 +155,11 @@ public interface ServiceLocator {
      * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
      * method to retrieve objects, so that they can be destroyed in the proper sequence
      * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param name The name to use to further qualify the search (may be null)
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
      * @return Will return root as a convenience
      * @throws MultiException if there was an error during service creation
      */
@@ -165,8 +176,10 @@ public interface ServiceLocator {
      * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
      * method to retrieve objects, so that they can be destroyed in the proper sequence
      * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
      * @return Will return root as a convenience
      * @throws MultiException if there was an error during service creation
      */
@@ -183,8 +196,7 @@ public interface ServiceLocator {
      * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
      * method to retrieve objects, so that they can be destroyed in the proper sequence
      * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
+     * @param searchCriteria A filter to use when determining which services should apply 
      * @return Will return root as a convenience
      * @throws MultiException if there was an error during service creation
      */
@@ -193,7 +205,7 @@ public interface ServiceLocator {
     /**
      * Gets the list of descriptors that match the given filter
      * 
-     * @param filter The filter to use to retrieve the set of descriptors
+     * @param filter A filter to use when determining which services should apply
      * @return A list of descriptors in ranked order that match the given
      * filter
      */
@@ -225,9 +237,7 @@ public interface ServiceLocator {
      * be reified in ranking order until an ActiveDescriptor matching the Injectee is
      * found.  
      * 
-     * @param injectee The injectee to find the ActiveDescriptor for
-     * @param root The ultimate parent of this service creation.  May not be null.  If this
-     *   is a root creation, use getServiceHandle(ActiveDescriptor)
+     * @param injectee the injection point for whom to find the ActiveDescriptor
      * @return The active descriptor for this injection point
      * @throws MultiException if there were errors when loading or analyzing the class
      */
@@ -255,9 +265,10 @@ public interface ServiceLocator {
      * root object.  In this way the objects associated with the root object can
      * be destroyed in the proper sequence
      * 
-     * @param activeDescriptor The descriptor to create
+     * @param activeDescriptor The descriptor whose service to create
      * @param root The ultimate parent of this service creation.  May not be null.  If this
      *   is a root creation, use getServiceHandle(ActiveDescriptor)
+     * @return The service matching this descriptor
      * @throws MultiException if there was an error during service creation
      */
     public <T> T getService(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root) throws MultiException;
@@ -272,6 +283,7 @@ public interface ServiceLocator {
      * This returns the unique locator ID for this locator.  The locator ID will
      * be assigned at the time of creation and must be a monotonacally increasing
      * number (starting at zero)
+     * @return The identifier for this service locator
      */
     public long getLocatorId();
   
