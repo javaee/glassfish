@@ -67,6 +67,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -81,6 +82,146 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * Pre Destroys the given object
+     * 
+     * @param preMe pre destroys the thing
+     */
+    public static void justPreDestroy(Object preMe) {
+        if (preMe == null) throw new IllegalArgumentException();
+        
+        Class<?> baseClass = preMe.getClass();
+        
+        Collector collector = new Collector();
+        Method preDestroy = findPreDestroy(baseClass, collector);
+        
+        collector.throwIfErrors();
+        
+        preDestroy.setAccessible(true);
+        
+        try {
+            invoke(preMe, preDestroy, new Object[0]);
+        }
+        catch (Throwable e) {
+            throw new MultiException(e);
+        }
+    }
+    
+    /**
+     * Post constructs the given object
+     * 
+     * @param postMe post constructs the thing
+     */
+    public static void justPostConstruct(Object postMe) {
+        if (postMe == null) throw new IllegalArgumentException();
+        
+        Class<?> baseClass = postMe.getClass();
+        
+        Collector collector = new Collector();
+        Method postConstruct = findPostConstruct(baseClass, collector);
+        
+        collector.throwIfErrors();
+        
+        postConstruct.setAccessible(true);
+        
+        try {
+            invoke(postMe, postConstruct, new Object[0]);
+        }
+        catch (Throwable e) {
+            throw new MultiException(e);
+        }
+    }
+    
+    /**
+     * Just creates the thing, doesn't try to do anything else
+     * @param injectMe The object to inject into
+     * @param locator The locator to find the injection points with
+     */
+    public static void justInject(Object injectMe, ServiceLocatorImpl locator) {
+        if (injectMe == null) throw new IllegalArgumentException();
+        
+        Class<?> baseClass = injectMe.getClass();
+        
+        Collector collector = new Collector();
+        
+        Set<Field> fields = findInitializerFields(baseClass, locator, collector);
+        Set<Method> methods = findInitializerMethods(baseClass, locator, collector);
+        
+        collector.throwIfErrors();
+        
+        for (Field field : fields) {
+            InjectionResolver resolver = getInjectionResolver(locator, field);
+            
+            Injectee injectee = Utilities.getFieldInjectees(field).get(0);
+            
+            Object fieldValue = resolver.resolve(injectee, null);
+            
+            field.setAccessible(true);
+            
+            try {
+                field.set(injectMe, fieldValue);
+            }
+            catch (IllegalAccessException e) {
+                throw new MultiException(e);
+            }
+        }
+        
+        for (Method method : methods) {
+            InjectionResolver resolver = getInjectionResolver(locator, method);
+            
+            List<Injectee> injectees = Utilities.getMethodInjectees(method);
+            
+            Object args[] = new Object[injectees.size()];
+            
+            for (Injectee injectee : injectees) {
+                args[injectee.getPosition()] = resolver.resolve(injectee, null);
+            }
+            
+            method.setAccessible(true);
+            
+            try {
+                invoke(injectMe, method, args);
+            }
+            catch (Throwable e) {
+                throw new MultiException(e);
+            }
+        }
+        
+    }
+    /**
+     * Just creates the thing, doesn't try to do anything else
+     * @param createMe The thing to create
+     * @param locator The locator to find the injection points with
+     * @return The constructed thing, no further injection is performed
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T justCreate(Class<T> createMe, ServiceLocatorImpl locator) {
+        Collector collector = new Collector();
+        
+        Constructor<?> c = findProducerConstructor(createMe, locator, collector);
+        
+        collector.throwIfErrors();
+        
+        InjectionResolver resolver = getInjectionResolver(locator, c);
+        
+        List<Injectee> injectees = getConstructorInjectees(c);
+        
+        Object args[] = new Object[injectees.size()];
+        
+        for (Injectee injectee : injectees) {
+            args[injectee.getPosition()] = resolver.resolve(injectee, null);
+        }
+        
+        c.setAccessible(true);
+        try {
+          return (T) makeMe(c, args);
+        }
+        catch (Throwable th) {
+            throw new MultiException(th);
+        }
+        
+    }
+    
     /**
      * Returns all the interfaces the proxy must implement
      * @param contracts All of the advertised contracts

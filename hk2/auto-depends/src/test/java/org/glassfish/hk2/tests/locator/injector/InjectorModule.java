@@ -37,33 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.injector;
+
+import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
- * This class allows users to provide a custom injection target for
- * any annotation (including &#64;Inject).  The user would usually
- * only provide a resolver for &#64;Inject if it were specializing
- * the system provided resolver for &#64;Inject.  Otherwise, this
- * resolver can be used to provide injection points for any annotation.
- * 
  * @author jwells
+ *
  */
-public interface InjectionResolver {
-    /**
-     * This method will return the object that should be injected into the given
-     * injection point.  It is the responsiblity of the implementation to ensure that
-     * the object returned can be safely injected into the injection point.
-     * <p>
-     * This method should not do the injection themselves
-     * 
-     * @param injectee The injection point this value is being injected into
-     * @param root The service handle of the root class being created, which should
-     * be used in order to ensure proper destruction of associated &64;PerLookup
-     * scoped objects.  This can be null in the case that this is being used
-     * for an object not managed by HK2.  This will only happen if this
-     * object is being created with the create method of ServiceLocator.
-     * @return A possibly null value to be injected into the given injection point
+public class InjectorModule implements Module {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
-    public Object resolve(Injectee injectee, ServiceHandle<?> root);
+    @Override
+    public void configure(Configuration configurator) {
+        configurator.bind(BuilderHelper.link(SimpleService.class).build());
+
+    }
 
 }
