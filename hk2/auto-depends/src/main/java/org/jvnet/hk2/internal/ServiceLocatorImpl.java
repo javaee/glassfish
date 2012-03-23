@@ -305,7 +305,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ServiceHandle<?> root) throws MultiException {
         ServiceHandle<T> subHandle = getServiceHandle(activeDescriptor);
         
-        if (PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
+        if (root != null && PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
             ((ServiceHandleImpl<?>) root).addSubHandle((ServiceHandleImpl<T>) subHandle);
         }
         
@@ -388,8 +388,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#create(java.lang.Class)
      */
     @Override
-    public Object create(Class<?> createMe) {
-        throw new AssertionError("not implemented yet");
+    public <T> T create(Class<T> createMe) {
+        return Utilities.justCreate(createMe, this);
     }
 
     /* (non-Javadoc)
@@ -397,8 +397,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void inject(Object injectMe) {
-        throw new AssertionError("not implemented yet");
-
+        Utilities.justInject(injectMe, this);
     }
 
     /* (non-Javadoc)
@@ -406,7 +405,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void postConstruct(Object postConstructMe) {
-        throw new AssertionError("not implemented yet");
+        Utilities.justPostConstruct(postConstructMe);
 
     }
 
@@ -415,7 +414,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void preDestroy(Object preDestroyMe) {
-        throw new AssertionError("not implemented yet");
+        Utilities.justPreDestroy(preDestroyMe);
 
     }
     

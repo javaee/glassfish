@@ -301,7 +301,7 @@ public interface ServiceLocator {
      * @param createMe The class to create, may not be null
      * @return An instance of the object
      */
-    public Object create(Class<?> createMe);
+    public <T> T create(Class<T> createMe);
     
     /**
      * This will analyze the given object and inject into its fields and methods.

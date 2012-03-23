@@ -172,7 +172,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#create(java.lang.Class)
      */
     @Override
-    public Object create(Class<?> createMe) {
+    public <T> T create(Class<T> createMe) {
         // TODO Auto-generated method stub
         return null;
     }
