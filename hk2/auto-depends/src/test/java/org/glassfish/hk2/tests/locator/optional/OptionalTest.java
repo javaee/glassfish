@@ -42,8 +42,7 @@ package org.glassfish.hk2.tests.locator.optional;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -51,16 +50,8 @@ import org.junit.Test;
  *
  */
 public class OptionalTest {
-    public final static String TEST_NAME = "OptionalTest";
-    private ServiceLocator locator;
-    
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new OptionalModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
+    private final static String TEST_NAME = "OptionalTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new OptionalModule());
     
     /**
      * All the true validation is done in the

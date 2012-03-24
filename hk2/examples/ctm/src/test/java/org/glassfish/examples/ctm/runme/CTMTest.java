@@ -44,6 +44,8 @@ import junit.framework.Assert;
 import org.glassfish.examples.ctm.ServiceProviderEngine;
 import org.glassfish.examples.ctm.TenantLocatorGenerator;
 import org.glassfish.examples.ctm.TenantManager;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.junit.Before;
@@ -56,15 +58,17 @@ import org.junit.Test;
  * @author jwells
  */
 public class CTMTest {
-    public final static String TEST_NAME = "CTMTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "CTMTest";
+    private final static ServiceLocator locator = ServiceLocatorFactory.getInstance().create(TEST_NAME);
     
     @Before
     public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new CTMModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        new CTMModule().configure(config);
+        
+        config.commit();
     }
     
     @Test

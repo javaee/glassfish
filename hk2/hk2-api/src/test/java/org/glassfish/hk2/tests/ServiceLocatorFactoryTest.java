@@ -41,8 +41,6 @@ package org.glassfish.hk2.tests;
 
 import junit.framework.Assert;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.tests.extension.ServiceLocatorImpl;
@@ -55,19 +53,25 @@ import org.junit.Test;
 public class ServiceLocatorFactoryTest {
   private final static String LOCATOR_NAME = "Locator1";
   
+  /**
+   * Tests you can add a locator to the system
+   */
   @Test
   public void testAddToServiceLocatorFactory() {
     ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
     Assert.assertNotNull(slf);
     
-    ServiceLocator sl = slf.create(LOCATOR_NAME, new TestModule());
+    ServiceLocator sl = slf.create(LOCATOR_NAME);
     Assert.assertNotNull(sl);
   }
   
+  /**
+   * Tests that a locator is not removed after a find... uh, duh...
+   */
   @Test
   public void testFindFromServiceLocatorFactory() {
     ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
-    slf.create(LOCATOR_NAME, new TestModule());
+    slf.create(LOCATOR_NAME);
     
     ServiceLocator sl = slf.find(LOCATOR_NAME);
     Assert.assertNotNull(sl);
@@ -77,35 +81,23 @@ public class ServiceLocatorFactoryTest {
     Assert.assertNotNull(sl);
   }
   
+  /**
+   * Tests that our dummy service locator is properly removed on shutdown
+   */
   @Test
   public void testDeleteFromServiceLocatorFactory() {
     ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
-    ServiceLocatorImpl sl = (ServiceLocatorImpl) slf.create(LOCATOR_NAME, new TestModule());
-    if (sl == null) {
-      sl = (ServiceLocatorImpl) slf.find(LOCATOR_NAME);
-    }
-    
+    ServiceLocatorImpl sl = (ServiceLocatorImpl) slf.create(LOCATOR_NAME);
     Assert.assertNotNull(sl);
     Assert.assertFalse(sl.isShutdown());
     
-    sl = (ServiceLocatorImpl) slf.destroy(LOCATOR_NAME);
+    slf.destroy(LOCATOR_NAME);
     Assert.assertTrue(sl.isShutdown());
     
-    Assert.assertNull(slf.destroy(LOCATOR_NAME));
+    // Make sure it is really gone
     Assert.assertNull(slf.find(LOCATOR_NAME));
-  }
-  
-  private static class TestModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configurator)
-     */
-    @Override
-    public void configure(Configuration configurator) {
-      // Do nothing, not testing the bindings or anything
-      
-    }
     
+    // And that destroying it again does no damage
+    slf.destroy(LOCATOR_NAME); 
   }
-
 }

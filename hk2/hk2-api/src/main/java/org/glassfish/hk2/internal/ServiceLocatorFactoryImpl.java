@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
@@ -58,54 +57,40 @@ import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
  * @author jwells
  */
 public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
-  private final static String DEFAULT_SERVICE_LOCATOR_GENERATOR_CLASS = "org.jvnet.hk2.internal.ServiceLocatorGeneratorImpl";
-  
-  private ServiceLocatorGenerator generator = null;
+  private final ServiceLocatorGenerator defaultGenerator;
   private final Object lock = new Object();
   private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
   
-  private ServiceLocatorGenerator getGenerator() {
-    if (generator != null) return generator;
-    
-    Iterable<? extends ServiceLocatorGenerator> loaders = ServiceLoader.lookupProviderInstances(ServiceLocatorGenerator.class);
-    if (loaders !=null) {
-      for (ServiceLocatorGenerator loader : loaders) {
-        if (loader != null) {
-          generator = loader;
-          return loader;
+  /**
+   * This will create a new set of name to locator mappings
+   */
+  public ServiceLocatorFactoryImpl() {
+      defaultGenerator = getGenerator();
+  }
+  
+  private static ServiceLocatorGenerator getGenerator() {
+      Iterable<? extends ServiceLocatorGenerator> generators = ServiceLoader.lookupProviderInstances(ServiceLocatorGenerator.class);
+      if (generators !=null) {
+          for (ServiceLocatorGenerator generator : generators) {
+              if (generator != null) return generator;
         }
       }
-    }
         
-    Iterator<ServiceLocatorGenerator> providers = java.util.ServiceLoader.load(ServiceLocatorGenerator.class).iterator();
-    if (providers.hasNext()) {
-      generator = providers.next();
-      return generator;
-    }
-        
-    // OK, now go ahead and use the default
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        
-    Class<?> defaultClass;
-    try {
-      defaultClass = cl.loadClass(DEFAULT_SERVICE_LOCATOR_GENERATOR_CLASS);
-          
-      generator = (ServiceLocatorGenerator) defaultClass.newInstance();
-          
-      return generator;
-    }
-    catch (Throwable th) {
-      Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).severe("Cannot find an implementation of the HK2 public API.");
-      throw new IllegalStateException(th);
-    }
+      Iterator<ServiceLocatorGenerator> providers = java.util.ServiceLoader.load(ServiceLocatorGenerator.class).iterator();
+      if (providers.hasNext()) {
+          return providers.next();
+      }
+    
+      Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).severe("Cannot find an implementation of the HK2 ServiceLocatorGenerator");
+      throw new IllegalStateException("Cannot find an implementation of the HK2 ServiceLocatorGenerator");
   }
 
   /* (non-Javadoc)
    * @see org.glassfish.hk2.api.ServiceLocatorFactory#create(java.lang.String, org.glassfish.hk2.api.Module)
    */
   @Override
-  public ServiceLocator create(String name, Module createFromThis) {
-      return create(name, createFromThis, null);
+  public ServiceLocator create(String name) {
+      return create(name, null, null);
   }
 
   /* (non-Javadoc)
@@ -122,36 +107,50 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
    * @see org.glassfish.hk2.api.ServiceLocatorFactory#destroy(java.lang.String)
    */
   @Override
-  public ServiceLocator destroy(String name) {
-    ServiceLocator killMe = null;
+  public void destroy(String name) {
+      ServiceLocator killMe = null;
     
-    synchronized (lock) {
-      killMe = serviceLocators.remove(name);
-    }
+      synchronized (lock) {
+          killMe = serviceLocators.remove(name);
+      }
     
-    if (killMe != null) {
-      killMe.shutdown();
-    }
-    
-    return killMe;
+      if (killMe != null) {
+          killMe.shutdown();
+      }
   }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocatorFactory#create(java.lang.String, org.glassfish.hk2.api.Module, org.glassfish.hk2.api.ServiceLocator)
      */
     @Override
-    public ServiceLocator create(String name, Module createFromThis,
+    public ServiceLocator create(String name,
             ServiceLocator parent) {
+        return create(name, parent, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocatorFactory#create(java.lang.String, org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.extension.ServiceLocatorGenerator)
+     */
+    @Override
+    public ServiceLocator create(String name, ServiceLocator parent,
+            ServiceLocatorGenerator generator) {
+        if (generator == null) {
+            if (defaultGenerator == null) {
+                throw new IllegalStateException("No generator was provided and there is no default generator registered");
+            }
+            
+            generator = defaultGenerator;
+        }
+        
         synchronized (lock) {
-            if (serviceLocators.containsKey(name)) return null;
+            ServiceLocator retVal = serviceLocators.get(name);
+            if (retVal != null) return retVal;
             
-            ServiceLocatorGenerator generator = getGenerator();
+            retVal = generator.create(name, parent);
             
-            ServiceLocator sl = generator.create(name, createFromThis, parent);
+            serviceLocators.put(name, retVal);
             
-            serviceLocators.put(name, sl);
-            
-            return sl;
+            return retVal;
         }
     }
 

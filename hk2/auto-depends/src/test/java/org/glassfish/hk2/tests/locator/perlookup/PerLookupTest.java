@@ -42,8 +42,7 @@ package org.glassfish.hk2.tests.locator.perlookup;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -51,17 +50,12 @@ import org.junit.Test;
  *
  */
 public class PerLookupTest {
-    public final static String TEST_NAME = "PerLookupTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "PerLookupTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new PerLookupModule());
     
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new PerLookupModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
-    
+    /**
+     * All PerLookups should be different
+     */
     @Test
     public void testThreeDifferentValues() {
         ThriceInjectedService tis = locator.getService(ThriceInjectedService.class);

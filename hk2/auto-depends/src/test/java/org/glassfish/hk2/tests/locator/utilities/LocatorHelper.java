@@ -37,57 +37,62 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.parented;
-
-import java.util.List;
+package org.glassfish.hk2.tests.locator.utilities;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class ParentedTest {
-    private final ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
-    
-    private final static String GRANDPA = "Grandpa";
-    private final static String DAD = "Dad";
-    private final static String ME = "Me";
+public class LocatorHelper {
+    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
     
     /**
-     * Tests three generations of locators
+     * Will create a ServiceLocator after doing test-specific bindings from the TestModule
+     * 
+     * @param name The name of the service locator to create.  Should be unique per test, otherwise
+     * this method will fail.
+     * @param module The test module, that will do test specific bindings.  May be null
+     * @return A service locator with all the test specific bindings bound
      */
-    @Test
-    public void testBasicParenting() {
-        ServiceLocator grandpa = factory.create(GRANDPA);
-        ServiceLocator dad = factory.create(DAD, grandpa);
-        ServiceLocator me = factory.create(ME, dad);
+    public static ServiceLocator create(String name, TestModule module) {
+        return create(name, null, module);
+    }
+    
+    /**
+     * Will create a ServiceLocator after doing test-specific bindings from the TestModule
+     * 
+     * @param name The name of the service locator to create.  Should be unique per test, otherwise
+     * this method will fail.
+     * @param parent The parent locator this one should have.  May be null
+     * @param module The test module, that will do test specific bindings.  May be null
+     * @return A service locator with all the test specific bindings bound
+     */
+    public static ServiceLocator create(String name, ServiceLocator parent, TestModule module) {
+        ServiceLocator retVal = factory.find(name);
+        Assert.assertNull("There is already a service locator of this name, change names to ensure a clean test: " + name, retVal);
         
-        List<ServiceLocator> grandpaLocators = grandpa.getAllServices(ServiceLocator.class);
-        List<ServiceLocator> dadLocators = dad.getAllServices(ServiceLocator.class);
-        List<ServiceLocator> meLocators = me.getAllServices(ServiceLocator.class);
+        retVal = factory.create(name);
         
-        Assert.assertNotNull(grandpaLocators);
-        Assert.assertEquals(1, grandpaLocators.size());
-        Assert.assertEquals(grandpa, grandpaLocators.get(0));
+        if (module == null) return retVal;
         
-        Assert.assertNotNull(dadLocators);
-        Assert.assertEquals(2, dadLocators.size());
-        Assert.assertEquals(dad, dadLocators.get(0));
-        Assert.assertEquals(grandpa, dadLocators.get(1));
+        DynamicConfigurationService dcs = retVal.getService(DynamicConfigurationService.class);
+        Assert.assertNotNull("Their is no DynamicConfigurationService.  Epic fail", dcs);
         
-        Assert.assertNotNull(meLocators);
-        Assert.assertEquals(3, meLocators.size());
-        Assert.assertEquals(me, meLocators.get(0));
-        Assert.assertEquals(dad, meLocators.get(1));
-        Assert.assertEquals(grandpa, meLocators.get(2));
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        Assert.assertNotNull("DynamicConfiguration creation failure", dc);
         
-        // Make sure the most normal case returns the right guy
-        Assert.assertEquals(me, me.getService(ServiceLocator.class));
+        module.configure(dc);
+        
+        dc.commit();
+        
+        return retVal;
     }
 
 }

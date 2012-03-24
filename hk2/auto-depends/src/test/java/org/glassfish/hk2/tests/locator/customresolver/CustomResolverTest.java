@@ -42,8 +42,7 @@ package org.glassfish.hk2.tests.locator.customresolver;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -51,17 +50,12 @@ import org.junit.Test;
  *
  */
 public class CustomResolverTest {
-    public final static String TEST_NAME = "CustomResolverTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "CustomResolverTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new CustomResolverModule());
     
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new CustomResolverModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
-    
+    /**
+     * Tests custom resolution
+     */
     @Test
     public void testCustomInjectResolver() {
         ServiceWithCustomInjections cwci = locator.getService(ServiceWithCustomInjections.class);

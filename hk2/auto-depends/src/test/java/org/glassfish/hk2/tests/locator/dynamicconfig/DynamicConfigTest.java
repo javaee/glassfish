@@ -44,9 +44,8 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -54,17 +53,12 @@ import org.junit.Test;
  *
  */
 public class DynamicConfigTest {
-    public final static String TEST_NAME = "DynamicConfigTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "DynamicConfigTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, null);
     
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new DynamicConfigModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
-    
+    /**
+     * Tests that things can be dynamically added to the system
+     */
     @Test
     public void testDynamicallyAddService() {
         LateService ls = locator.getService(LateService.class);

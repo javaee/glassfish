@@ -40,14 +40,14 @@
 package org.glassfish.hk2.tests.locator.initialization;
 
 import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class InitializationModule implements Module {
+public class InitializationModule implements TestModule {
     private final static String NOCLASS = "not.there.just.using.the.Name";
 
     /* (non-Javadoc)

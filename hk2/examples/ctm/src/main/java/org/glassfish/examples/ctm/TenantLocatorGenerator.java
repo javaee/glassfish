@@ -39,8 +39,8 @@
  */
 package org.glassfish.examples.ctm;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -55,6 +55,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  * @author jwells
  */
 public class TenantLocatorGenerator {
+    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
     public final static String ALICE = "Alice";
     public final static int ALICE_MIN = 1;
     public final static int ALICE_MAX = 2;
@@ -77,27 +78,18 @@ public class TenantLocatorGenerator {
             env = new EnvironmentImpl(tenantName, 0, 100);
         }
         
-        ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
         
-        return factory.create(tenantName, new ModuleImpl(env));
-    }
-    
-    private static class ModuleImpl implements Module {
-        private final Environment bindMe;
         
-        private ModuleImpl(Environment bindMe) {
-            this.bindMe = bindMe;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-         */
-        @Override
-        public void configure(Configuration configurator) {
-            configurator.addActiveDescriptor(
-                    BuilderHelper.createConstantDescriptor(bindMe));
-        }
+        ServiceLocator retVal = factory.create(tenantName);
+        DynamicConfigurationService dcs = retVal.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
         
+        config.addActiveDescriptor(
+                BuilderHelper.createConstantDescriptor(env));
+        
+        config.commit();
+        
+        return retVal;
     }
     
     private static class EnvironmentImpl implements Environment {

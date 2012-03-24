@@ -40,14 +40,14 @@
 package org.glassfish.hk2.tests.locator.perlookup;
 
 import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class PerLookupModule implements Module {
+public class PerLookupModule implements TestModule {
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)

@@ -42,9 +42,7 @@ package org.glassfish.hk2.tests.locator.proxiable;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
-import org.junit.Ignore;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -52,21 +50,17 @@ import org.junit.Test;
  *
  */
 public class ProxiableTest {
-    public final static String TEST_NAME = "ProxiableTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "ProxiableTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new ProxiableModule());
     
+    /** Many flowers */
     public final static String SPRING = "Spring";
+    /** Beach time! */
     public final static String SUMMER = "Summer";
+    /** Colorful leaves */
     public final static String FALL = "Fall";
+    /** Snowstorms! */
     public final static String WINTER = "Winter";
-    
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new ProxiableModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
 
     /**
      * This test proves that the underlying services are proxied because

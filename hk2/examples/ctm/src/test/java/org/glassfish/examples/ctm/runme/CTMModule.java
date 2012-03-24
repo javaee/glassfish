@@ -50,7 +50,6 @@ import org.glassfish.examples.ctm.TenantScopedContext;
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
@@ -61,12 +60,8 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  * @author jwells
  *
  */
-public class CTMModule implements Module {
+public class CTMModule {
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
     public void configure(Configuration configurator) {
         // Bind our custom scope
         configurator.bind(

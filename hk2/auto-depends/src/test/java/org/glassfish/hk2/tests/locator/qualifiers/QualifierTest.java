@@ -42,8 +42,7 @@ package org.glassfish.hk2.tests.locator.qualifiers;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -51,24 +50,25 @@ import org.junit.Test;
  *
  */
 public class QualifierTest {
-    public final static String TEST_NAME = "QualifierTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "QualifierTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new QualifierModule());
     
+    /** 49ers */
     public final static String RED = "Red";
+    /** Packers */
     public final static String YELLOW = "Yellow";
+    /** Giants */
     public final static String BLUE = "Blue";
+    /** Broncos */
     public final static String ORANGE = "Orange";
+    /** Vikings */
     public final static String PURPLE = "Purple";
+    /** Eagles */
     public final static String GREEN = "Green";
-    
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new QualifierModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
 
+    /**
+     * Checks the qualifiers
+     */
     @Test
     public void testAllColors() {
         ColorWheel wheel = locator.getService(ColorWheel.class);

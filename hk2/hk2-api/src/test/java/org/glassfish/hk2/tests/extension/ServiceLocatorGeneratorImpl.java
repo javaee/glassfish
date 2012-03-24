@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.tests.extension;
 
-import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 
@@ -48,34 +47,12 @@ import org.glassfish.hk2.extension.ServiceLocatorGenerator;
  *
  */
 public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
-  private final static String DEFAULT_SERVICE_LOCATOR_GENERATOR_CLASS = "org.jvnet.hk2.internal.ServiceLocatorGeneratorImpl";
-  
-  private final ServiceLocatorGenerator delegate;
-  
-  public ServiceLocatorGeneratorImpl() {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    
-    ServiceLocatorGenerator preDelegate;
-    try {
-      Class<?> delegateClass = loader.loadClass(DEFAULT_SERVICE_LOCATOR_GENERATOR_CLASS);
-      
-      preDelegate = (ServiceLocatorGenerator) delegateClass.newInstance();
-    }
-    catch (Throwable th) {
-      preDelegate = null;
-    }
-    
-    delegate = preDelegate;
-  }
-  
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
      */
     @Override
-    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
-        if (delegate == null) return new ServiceLocatorImpl(name);  // For the local test suite
-    
-        return delegate.create(name, module, parent);
+    public ServiceLocator create(String name, ServiceLocator parent) {
+        return new ServiceLocatorImpl(name);  // For the local test suite
     }
 }

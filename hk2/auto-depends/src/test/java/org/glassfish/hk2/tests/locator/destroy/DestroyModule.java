@@ -42,15 +42,15 @@ package org.glassfish.hk2.tests.locator.destroy;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class DestroyModule implements Module {
+public class DestroyModule implements TestModule {
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.Module#configure(org.glassfish.hk2.BinderFactory)
