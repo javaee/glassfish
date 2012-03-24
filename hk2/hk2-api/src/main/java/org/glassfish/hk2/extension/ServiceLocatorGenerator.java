@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.extension;
 
-import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.ServiceLocator;
 
 /**
@@ -55,11 +54,9 @@ public interface ServiceLocatorGenerator {
    * generate the ServiceLocators
    * 
    * @param name The name of the ServiceLocator to create
-   * @param module The module that should be used to create this
-   * ServiceLocator
    * @param parent The parent of the ServiceLocator (can be null)
    * @return The created ServiceLocator
    */
-  public ServiceLocator create(String name, Module module, ServiceLocator parent);
+  public ServiceLocator create(String name, ServiceLocator parent);
 
 }

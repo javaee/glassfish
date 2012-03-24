@@ -45,8 +45,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -56,23 +55,21 @@ import org.junit.Test;
 public class ValidatingTest {
     private final String EXCEPTION_STRING = "There was no object available for injection at";
     
-    public final static String TEST_NAME = "ValidatingTest";
-    private ServiceLocator locator;
-    
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new ValidatingModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
+    private final static String TEST_NAME = "ValidatingTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new ValidatingModule());
 
+    /**
+     * I can get the system service, who gets a secret service
+     */
     @Test
     public void testSystemServiceIsOK() {
         SystemService systemService = locator.getService(SystemService.class);
         Assert.assertNotNull(systemService);  // If I got it, it worked!
     }
     
+    /**
+     * The user service should NOT be able to see the secret service
+     */
     @Test
     public void testUserServiceIsNotOK() {
         try {

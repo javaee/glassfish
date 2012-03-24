@@ -124,6 +124,11 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>auto-depends</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>tiger-types</artifactId>
             <version>1.4</version>
@@ -162,11 +167,7 @@
             <artifactId>auto-depends</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>auto-depends</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>config</artifactId>

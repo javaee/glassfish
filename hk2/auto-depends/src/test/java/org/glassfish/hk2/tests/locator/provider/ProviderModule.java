@@ -40,13 +40,13 @@
 package org.glassfish.hk2.tests.locator.provider;
 
 import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
+import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  */
-public class ProviderModule implements Module {
+public class ProviderModule implements TestModule {
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)

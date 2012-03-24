@@ -42,8 +42,7 @@ package org.glassfish.hk2.tests.locator.typesafety;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -52,7 +51,7 @@ import org.junit.Test;
  */
 public class TypeSafetyTest {
     private final static String TEST_NAME = "TypeSafetyTest";
-    private ServiceLocator locator;
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new TypeSafetyModule());
     
     /** Returned by the String version of the parameterized type */
     public static final String CHECK_STRING = "Go Eagles!";
@@ -60,17 +59,6 @@ public class TypeSafetyTest {
     public static final int CHECK_INTEGER = 13;
     /** Returned by the Double version of the parameterized type */
     public static final double CHECK_DOUBLE = 0.131313;
-    
-    /**
-     * For junit
-     */
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new TypeSafetyModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
 
     /**
      * RequiredType: Class

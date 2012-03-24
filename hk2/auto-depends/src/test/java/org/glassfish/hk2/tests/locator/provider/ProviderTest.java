@@ -42,8 +42,7 @@ package org.glassfish.hk2.tests.locator.provider;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -51,28 +50,30 @@ import org.junit.Test;
  *
  */
 public class ProviderTest {
-    public final static String MOBY_DICK = "Moby Dick";  // Big Whale
-    public final static String ISHMAEL = "Ishmael";  // probably not his real name
-    public final static String QUEEQUEG = "QueeQueg"; // Escape on his coffin
+    /** Big Whale */
+    public final static String MOBY_DICK = "Moby Dick";
+    /** probably not his real name */
+    public final static String ISHMAEL = "Ishmael";
+    /** Escape on his coffin */
+    public final static String QUEEQUEG = "QueeQueg";
     
-    public final static String EAGLES = "Eagles";  // Epic team
-    public final static String SHADY = "LeShaun McCoy";  // Best back in NFL
+    /** Epic team */
+    public final static String EAGLES = "Eagles";
+    /** Best back in the NFL */
+    public final static String SHADY = "LeShaun McCoy";
     
-    public final static String GIANTS = "Giants";  // Epic FAIL
-    public final static String ELI = "Eli Manning";  // Jerk
+    /** Epic FAIL */
+    public final static String GIANTS = "Giants";
+    /** Jerk */
+    public final static String ELI = "Eli Manning";
     
             
-    public final static String TEST_NAME = "ProviderTest";
-    private ServiceLocator locator;
-    
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new ProviderModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
+    private final static String TEST_NAME = "ProviderTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new ProviderModule());
 
+    /**
+     * Tests a simple provider works properly
+     */
     @Test
     public void testSimpleProvider() {
         ProviderInjected pi = locator.getService(ProviderInjected.class);
@@ -85,6 +86,9 @@ public class ProviderTest {
         Assert.assertTrue(InstantiationChecker.getIsInstantiated());
     }
     
+    /**
+     * Tests an iterable with one backing item
+     */
     @Test
     public void testSingleShotIterable() {
         Menagerie zoo = locator.getService(Menagerie.class);
@@ -93,6 +97,9 @@ public class ProviderTest {
         zoo.validateAllEagles();
     }
     
+    /**
+     * Tests a qualified iterable
+     */
     @Test
     public void testIterableQualifiedBy() {
         Menagerie zoo = locator.getService(Menagerie.class);
@@ -101,6 +108,9 @@ public class ProviderTest {
         zoo.validateAllGiants();
     }
     
+    /**
+     * Tests handle iterable as an iterable
+     */
     @Test
     public void testIterableOfIterableAndHandleIterable() {
         Menagerie zoo = locator.getService(Menagerie.class);
@@ -109,6 +119,9 @@ public class ProviderTest {
         zoo.validateQueequeg();
     }
     
+    /**
+     * Test scoped by type
+     */
     @Test
     public void testIterableOfType() {
         Menagerie zoo = locator.getService(Menagerie.class);
@@ -118,6 +131,9 @@ public class ProviderTest {
         
     }
     
+    /**
+     * Test scoped by name
+     */
     @Test
     public void testIterableNamed() {
         Menagerie zoo = locator.getService(Menagerie.class);

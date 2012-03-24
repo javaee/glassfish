@@ -42,9 +42,7 @@ package org.glassfish.hk2.tests.locator.justintime;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.tests.locator.locator.LocatorModule;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -52,17 +50,12 @@ import org.junit.Test;
  *
  */
 public class JustInTimeTest {
-    public final static String TEST_NAME = "JustInTimeTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "JustInTimeTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new JustInTimeModule());
     
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new JustInTimeModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
-    
+    /**
+     * Tests that if I forgot to add a service, I can add it just in time
+     */
     @Test
     public void testJustInTimeResolution() {
         InjectedThriceService threeTimes = locator.getService(InjectedThriceService.class);

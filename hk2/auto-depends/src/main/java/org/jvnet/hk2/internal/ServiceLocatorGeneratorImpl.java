@@ -40,7 +40,6 @@
 package org.jvnet.hk2.internal;
 
 import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.Module;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
@@ -71,16 +70,8 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
      * @see org.glassfish.hk2.extension.ServiceLocatorGenerator#create(java.lang.String, org.glassfish.hk2.api.Module)
      */
     @Override
-    public ServiceLocator create(String name, Module module, ServiceLocator parent) {
+    public ServiceLocator create(String name, ServiceLocator parent) {
         ServiceLocatorImpl retVal = initialize(name, parent);
-        
-        DynamicConfigurationImpl dci = new DynamicConfigurationImpl(retVal);
-        dci.setCommitable(false);  // Don't let those tricky guys commit this
-        
-        module.configure(dci);
-        
-        dci.setCommitable(true);
-        dci.commit();
         
         return retVal;
     }

@@ -45,8 +45,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 import org.jvnet.hk2.internal.Pretty;
 
@@ -55,17 +54,12 @@ import org.jvnet.hk2.internal.Pretty;
  *
  */
 public class DestroyTest {
-    public final static String TEST_NAME = "DestroyTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "DestroyTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new DestroyModule());
     
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new DestroyModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
-    
+    /**
+     * Tests that things are destroyed in opposite order from where they began
+     */
     @Test
     public void testDestructionOrder() {
         ServiceHandle<Foo> fooHandle = locator.getServiceHandle(Foo.class);

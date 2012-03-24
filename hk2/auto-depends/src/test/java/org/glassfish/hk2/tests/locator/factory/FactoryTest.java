@@ -44,8 +44,7 @@ import java.util.Date;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -53,23 +52,21 @@ import org.junit.Test;
  *
  */
 public class FactoryTest {
-    public final static String TEST_NAME = "FactoryTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "FactoryTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new FactoryModule());
     
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new FactoryModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
-    
+    /**
+     * A very simple factory test
+     */
     @Test
     public void testSimpleFactory() {
         Date date = locator.getService(Date.class);
         Assert.assertNotNull(date);
     }
     
+    /**
+     * Factory injected with Provider
+     */
     @Test
     public void testFactoryProvided() {
         DateInjectee dateInjectee = locator.getService(DateInjectee.class);
@@ -89,6 +86,9 @@ public class FactoryTest {
         Assert.assertNotSame(providedDate1, providedDate2);
     }
     
+    /**
+     * Factory into a custom scope
+     */
     @Test
     public void testFactoryProducingIntoCustomScope() {
         FruitContext fruitContext = locator.getService(FruitContext.class);

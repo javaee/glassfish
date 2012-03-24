@@ -37,22 +37,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.parented;
+package org.glassfish.hk2.tests.locator.utilities;
 
 import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Module;
 
 /**
  * @author jwells
  *
  */
-public class ParentedModule implements Module {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+public interface TestModule {
+    /**
+     * Allows the test to easily configure their test
+     * 
+     * @param config
      */
-    @Override
-    public void configure(Configuration configurator) {
-    }
+    public void configure(Configuration config);
 
 }

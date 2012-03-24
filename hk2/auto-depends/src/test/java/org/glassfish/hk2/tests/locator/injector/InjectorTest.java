@@ -42,9 +42,7 @@ package org.glassfish.hk2.tests.locator.injector;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.tests.locator.justintime.JustInTimeModule;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
 /**
@@ -53,18 +51,7 @@ import org.junit.Test;
  */
 public class InjectorTest {
     private final static String TEST_NAME = "InjectorTest";
-    private ServiceLocator locator;
-    
-    /**
-     * For junit
-     */
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new InjectorModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new InjectorModule());
     
     /**
      * This only creates the object, it does not inject it further, and does not post construct it

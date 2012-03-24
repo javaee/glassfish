@@ -46,8 +46,7 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 import org.jvnet.hk2.internal.Pretty;
 
@@ -56,17 +55,12 @@ import org.jvnet.hk2.internal.Pretty;
  *
  */
 public class LocatorTest {
-    public final static String TEST_NAME = "LocatorTest";
-    private ServiceLocator locator;
+    private final static String TEST_NAME = "LocatorTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new LocatorModule());
     
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(TEST_NAME, new LocatorModule());
-        if (locator == null) {
-            locator = ServiceLocatorFactory.getInstance().find(TEST_NAME);   
-        }
-    }
-    
+    /**
+     * Gets all the services in the registry
+     */
     @Test
     public void testGetAllServices() {
         
@@ -89,6 +83,9 @@ public class LocatorTest {
         Assert.assertTrue("Returned services did not contain ShtudownCommand " + Pretty.collection(handles), handles.contains(shutdownCommand));
     }
     
+    /**
+     * Gets all the services with a filter
+     */
     @Test
     public void testGetAllServicesWithFilter() {
         

@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.api;
 
+import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.internal.ServiceLocatorFactoryImpl;
 
 /**
@@ -50,8 +51,8 @@ public abstract class ServiceLocatorFactory {
   private static ServiceLocatorFactory INSTANCE = new ServiceLocatorFactoryImpl();
   
   /**
-   * This will return a factory that can be used
-   * to create ServiceLocators.
+   * This will return a factory where the ServiceLocatorGenerator
+   * is discovered from the META-INF/services of the process
    * 
    * @return The factory to use to create service locators
    */
@@ -60,38 +61,53 @@ public abstract class ServiceLocatorFactory {
   }
   
   /**
-   * Creates a ServiceLocator based on the users Module
-   * which contains specific bindings and SPI implementations.
+   * Creates (or finds) a ServiceLocator.
    * <p>
    * If there is already a ServiceLocator with the given
    * name then this method will return null.
    * 
    * @param name The name of this service locator.  May not be null
-   * @param createFromThis The module that can be used to
-   * configure this service locator
-   * @param parent The parent of this ServiceLocator.  Services can
-   * be found in the parent (and all grand-parents).
    * @return The newly created named ServiceLocator or null
    * if there was already a ServiceLocator with this name.
    */
+  public abstract ServiceLocator create(String name);
+  
+  /**
+   * Creates or finds a ServiceLocator.
+   * <p>
+   * If there is already a ServiceLocator with the given
+   * name then this method will that ServiceLocator.  The
+   * parent argument will be ignored in that case
+   * 
+   * @param name The name of this service locator.  May not be null
+   * @param parent The parent of this ServiceLocator.  Services can
+   * be found in the parent (and all grand-parents).  May be null
+   * if the returned ServiceLocator should not be parented
+   * @return The created or found named ServiceLocator
+   */
   public abstract ServiceLocator create(String name,
-          Module createFromThis,
           ServiceLocator parent);
   
   /**
-   * Creates a ServiceLocator based on the users Module
-   * which contains specific bindings and SPI implementations.
+   * Creates or finds a ServiceLocator.
    * <p>
    * If there is already a ServiceLocator with the given
-   * name then this method will return null.
+   * name then this method will that ServiceLocator.  The
+   * parent argument will be ignored in that case
    * 
    * @param name The name of this service locator.  May not be null
-   * @param createFromThis The module that can be used to
-   * configure this service locator
-   * @return The newly created named ServiceLocator or null
-   * if there was already a ServiceLocator with this name.
+   * @param parent The parent of this ServiceLocator.  Services can
+   * be found in the parent (and all grand-parents).  May be null
+   * if the returned ServiceLocator should not be parented
+   * @param generator An implementation of the generator interface that
+   * can be used to provide an implementation of ServiceLocator.  If
+   * null then the generator used will be discovered from the OSGi
+   * service registry or from META-INF/services
+   * @return The created or found named ServiceLocator
    */
-  public abstract ServiceLocator create(String name, Module createFromThis);
+  public abstract ServiceLocator create(String name,
+          ServiceLocator parent,
+          ServiceLocatorGenerator generator);
   
   /**
    * Finds the ServiceLocator with this name
@@ -107,10 +123,8 @@ public abstract class ServiceLocatorFactory {
    * <p>
    * All services associated with this ServiceLocator will be shutdown
    * 
-   * @param name The name of the ServiceLocator to find
-   * @return The ServiceLocator that was removed, or null if
-   * the ServiceLocator with that name was not found
+   * @param name The name of the ServiceLocator to destroy
    */
-  public abstract ServiceLocator destroy(String name);
+  public abstract void destroy(String name);
 
 }
