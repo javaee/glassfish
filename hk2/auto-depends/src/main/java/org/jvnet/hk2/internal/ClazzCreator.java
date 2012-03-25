@@ -64,6 +64,7 @@ import org.glassfish.hk2.api.ServiceHandle;
  *
  */
 public class ClazzCreator<T> implements Creator<T> {
+    private final ServiceLocatorImpl locator;
     private final Set<ResolutionInfo> myInitializers = new HashSet<ResolutionInfo>();
     private final Set<ResolutionInfo> myFields = new HashSet<ResolutionInfo>();
     
@@ -74,51 +75,44 @@ public class ClazzCreator<T> implements Creator<T> {
     private Method preDestroyMethod;
     
     /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, Collector collector) {
+        this.locator = locator;
         List<Injectee> baseAllInjectees = new LinkedList<Injectee>();
         
         AnnotatedElement element;
-        InjectionResolver resolver;
         List<Injectee> injectees;
         
         element = Utilities.findProducerConstructor(implClass, locator, collector);
         if (element == null) return;
-        
-        resolver = Utilities.getInjectionResolver(locator, element);
-        if (resolver == null) return;
         
         injectees = Utilities.getConstructorInjectees((Constructor<?>) element);
         if (injectees == null) return;
         
         baseAllInjectees.addAll(injectees);
         
-        myConstructor = new ResolutionInfo(element, resolver, injectees);
+        myConstructor = new ResolutionInfo(element, injectees);
         
         Set<Method> initMethods = Utilities.findInitializerMethods(implClass, locator, collector);
         for (Method initMethod : initMethods) {
             element = initMethod;
-            resolver = Utilities.getInjectionResolver(locator, element);
-            if (resolver == null) return;
             
             injectees = Utilities.getMethodInjectees(initMethod);
             if (injectees == null) return;
             
             baseAllInjectees.addAll(injectees);
             
-            myInitializers.add(new ResolutionInfo(element, resolver, injectees));
+            myInitializers.add(new ResolutionInfo(element, injectees));
         }
         
         Set<Field> fields = Utilities.findInitializerFields(implClass, locator, collector);
         for (Field field : fields) {
             element = field;
-            resolver = Utilities.getInjectionResolver(locator, element);
-            if (resolver == null) return;
             
             injectees = Utilities.getFieldInjectees(field);
             if (injectees == null) return;
             
             baseAllInjectees.addAll(injectees);
             
-            myFields.add(new ResolutionInfo(element, resolver, injectees));
+            myFields.add(new ResolutionInfo(element, injectees));
         }
         
         postConstructMethod = Utilities.findPostConstruct(implClass, collector);
@@ -127,23 +121,23 @@ public class ClazzCreator<T> implements Creator<T> {
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
     }
     
-    private Map<Injectee, Object> resolveAllDependencies(ServiceHandle<?> root) {
+    private Map<Injectee, Object> resolveAllDependencies(ServiceHandle<?> root) throws IllegalStateException {
         Map<Injectee, Object> retVal = new HashMap<Injectee, Object>();
         
-        InjectionResolver resolver = myConstructor.resolver;
+        InjectionResolver resolver = Utilities.getInjectionResolver(locator, myConstructor.baseElement);
         for (Injectee injectee : myConstructor.injectees) {
             retVal.put(injectee, resolver.resolve(injectee, root));
         }
         
         for (ResolutionInfo fieldRI : myFields) {
-            resolver = fieldRI.resolver;
+            resolver = Utilities.getInjectionResolver(locator, fieldRI.baseElement);
             for (Injectee injectee : fieldRI.injectees) {
                 retVal.put(injectee, resolver.resolve(injectee, root));
             }
         }
         
         for (ResolutionInfo methodRI : myInitializers) {
-            resolver = methodRI.resolver;
+            resolver = Utilities.getInjectionResolver(locator, methodRI.baseElement);
             for (Injectee injectee : methodRI.injectees) {
                 retVal.put(injectee, resolver.resolve(injectee, root));
             }
@@ -280,12 +274,10 @@ public class ClazzCreator<T> implements Creator<T> {
     
     private static class ResolutionInfo {
         private final AnnotatedElement baseElement;
-        private final InjectionResolver resolver;
         private final List<Injectee> injectees = new LinkedList<Injectee>();
         
-        private ResolutionInfo(AnnotatedElement baseElement, InjectionResolver resolver, List<Injectee> injectees) {
+        private ResolutionInfo(AnnotatedElement baseElement, List<Injectee> injectees) {
             this.baseElement = baseElement;
-            this.resolver = resolver;
             this.injectees.addAll(injectees);
         }
     }

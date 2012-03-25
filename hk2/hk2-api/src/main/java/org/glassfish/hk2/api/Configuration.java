@@ -115,7 +115,7 @@ public interface Configuration {
      * of the Descriptor filled in by the system as appropriate
 	 * @throws IllegalArgumentException if the descriptor is not reified
 	 */
-	public ActiveDescriptor<?> addActiveDescriptor(ActiveDescriptor<?> activeDescriptor)
+	public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor)
 	        throws IllegalArgumentException;
 	
 	/**
@@ -127,12 +127,11 @@ public interface Configuration {
 	 * @param rawClass The class to analyze, must not be null 
 	 * @return The active (reified) descriptor that has been added to the system, with
 	 * all fields filled in based on the rawClass
-	 * @throws IllegalArgumentException if rawClass is null or cannot be a service for
-	 * some reason (such as not having a proper constructor, or being an interface)
-     *
+	 * @throws MultiException If this class cannot be a service
+	 * @throws IllegalArgumentException if rawClass is null
      */
     public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
-            throws IllegalArgumentException;
+            throws MultiException, IllegalArgumentException;
 	
 	/**
 	 * Adds a validator to the system.  This validator will be called whenver a

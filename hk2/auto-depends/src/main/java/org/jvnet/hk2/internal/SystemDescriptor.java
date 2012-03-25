@@ -57,6 +57,7 @@ import org.glassfish.hk2.api.Validating;
 
 /**
  * @author jwells
+ * @param <T> The type from the cache
  */
 public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final static Object sLock = new Object();

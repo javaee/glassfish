@@ -44,7 +44,6 @@ import javax.inject.Inject;
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
@@ -57,7 +56,7 @@ public class CustomResolverModule implements TestModule {
      */
     @Override
     public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(ServiceWithCustomInjections.class).build());
+        configurator.addActiveDescriptor(ServiceWithCustomInjections.class);
         
         InjectionResolver systemResolver = configurator.getInstalledInjectionResolver(Inject.class);
         CustomInjectResolver cir = new CustomInjectResolver(systemResolver);

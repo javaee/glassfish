@@ -128,14 +128,14 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
      * @see org.glassfish.hk2.api.Configuration#addActiveDescriptor(org.glassfish.hk2.api.ActiveDescriptor)
      */
     @Override
-    public ActiveDescriptor<?> addActiveDescriptor(ActiveDescriptor<?> activeDescriptor)
+    public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor)
             throws IllegalArgumentException {
         checkState();
         if (activeDescriptor == null || !activeDescriptor.isReified()) {
             throw new IllegalArgumentException();
         }
         
-        SystemDescriptor<?> retVal = new SystemDescriptor<Object>(activeDescriptor,
+        SystemDescriptor<T> retVal = new SystemDescriptor<T>(activeDescriptor,
                 new Long(locator.getLocatorId()));
         
         allDescriptors.add(retVal);
@@ -160,7 +160,9 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     @Override
     public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
             throws IllegalArgumentException {
-        throw new AssertionError("not yet implemented");
+        ActiveDescriptor<T> ad = Utilities.createAutoDescriptor(rawClass, locator);
+        
+        return addActiveDescriptor(ad);
     }
 
     /* (non-Javadoc)

@@ -57,6 +57,7 @@ import org.glassfish.hk2.internal.ReflectionHelper;
  * and destroy
  * 
  * @author jwells
+ * @param <T> The type returned from the cache and other methods
  */
 public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
     private final Set<Type> advertisedContracts;

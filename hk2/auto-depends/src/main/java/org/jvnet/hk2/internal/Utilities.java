@@ -71,6 +71,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 
@@ -82,6 +83,66 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    private static Set<Type> getAutoAdvertisedTypes(Type t) {
+        HashSet<Type> retVal = new HashSet<Type>();
+        retVal.add(t);
+        
+        Class<?> rawClass = getRawClass(t);
+        if (rawClass == null) return retVal;
+        
+        for (Type iface : rawClass.getGenericInterfaces()) {
+            Class<?> ifaceClass = getRawClass(iface);
+            if (ifaceClass.isAnnotationPresent(Contract.class)) { 
+                retVal.add(iface);
+            }
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Creates a reified automatically generated descriptor
+     * 
+     * @param clazz The class to create the desciptor for
+     * @param locator The service locator for whom we are creating this
+     * @return A reified active descriptor
+     * 
+     * @throws MultiException if there was an error in the class
+     * @throws IllegalArgumentException If the class is null
+     */
+    public static <T> ActiveDescriptor<T> createAutoDescriptor(Class<T> clazz, ServiceLocatorImpl locator)
+            throws MultiException, IllegalArgumentException {
+        if (clazz == null) throw new IllegalArgumentException();
+        
+        Collector collector = new Collector();
+        
+        Creator<T> creator;
+        Set<Annotation> qualifiers;
+        Set<Type> contracts;
+        Class<? extends Annotation> scope;
+        String name;
+        
+        // Qualifiers naming dance
+        qualifiers = getAllQualifiers(clazz);
+        name = getNameFromAllQualifiers(qualifiers, clazz);
+        qualifiers = getAllQualifiers(clazz, name, collector);  // Fixes the @Named qualifier if it has no value
+        
+        contracts = getAutoAdvertisedTypes(clazz);
+        scope = getScopeAnnotationType(clazz, collector);
+            
+        creator = new ClazzCreator<T>(locator, clazz, collector);
+        
+        collector.throwIfErrors();
+        
+        return new AutoActiveDescriptor<T>(
+                clazz,
+                creator,
+                contracts,
+                scope,
+                name,
+                qualifiers,
+                0);
+    }
     /**
      * Pre Destroys the given object
      * 
@@ -727,16 +788,22 @@ public class Utilities {
      * @param annotatedGuy The annotated class or producer method
      * @return The scope of this class or producer method.  If no scope is
      * found will return the dependent scope
+     * @throws IllegalStateException If we could not find a valid resolver
      */
     public static InjectionResolver getInjectionResolver(
             ServiceLocatorImpl locator,
-            AnnotatedElement annotatedGuy) {
+            AnnotatedElement annotatedGuy) throws IllegalStateException {
         Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy);
         
         Class<? extends Annotation> injectType = (injectAnnotation == null) ?
                 Inject.class : injectAnnotation.annotationType() ;
         
-        return locator.getInjectionResolver(injectType);
+        InjectionResolver retVal = locator.getInjectionResolver(injectType);
+        if (retVal == null) {
+            throw new IllegalStateException("There is no installed injection resolver for " + Pretty.clazz(injectType));
+        }
+        
+        return retVal;
     }
     
     private final static String PROVIDE_METHOD = "provide";
@@ -841,6 +908,12 @@ public class Utilities {
             
             Named named = (Named) qualifier;
             if ((named.value() == null) || named.value().equals("")) {
+                if (parent instanceof Class) {
+                    Class<?> clazz = (Class<?>) parent;
+                    
+                    return Pretty.clazz(clazz);
+                }
+                
                 throw new MultiException(new IllegalStateException("@Named must have a value for " + parent));
             }
             
