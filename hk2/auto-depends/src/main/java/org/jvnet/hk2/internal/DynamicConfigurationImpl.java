@@ -153,6 +153,15 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         
         allValidators.add(validator);
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Configuration#addActiveDescriptor(java.lang.Class)
+     */
+    @Override
+    public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
+            throws IllegalArgumentException {
+        throw new AssertionError("not yet implemented");
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.DynamicConfiguration#commit()
@@ -207,4 +216,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         this.commitable = commitable;
         
     }
+
+    
 }

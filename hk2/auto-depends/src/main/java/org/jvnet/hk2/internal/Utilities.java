@@ -828,30 +828,6 @@ public class Utilities {
         return annoType.isAnnotationPresent(Qualifier.class);
     }
     
-    private static String calculateNamedValue(AnnotatedElement ae) {
-        Class<?> myClass;
-        if (ae instanceof Class) {
-            myClass = (Class<?>) ae;
-        }
-        else if (ae instanceof Method) {
-            Method m = (Method) ae;
-            myClass = m.getDeclaringClass();
-        }
-        else if (ae instanceof Constructor) {
-            Constructor<?> c = (Constructor<?>) ae;
-            myClass = c.getDeclaringClass();
-        }
-        else if (ae instanceof Field) {
-            Field f = (Field) ae;
-            myClass = f.getType();
-        }
-        else {
-            throw new IllegalArgumentException("@Named may not have no value for element " + ae);
-        }
-        
-        return Pretty.clazz(myClass);
-    }
-    
     /**
      * Gets the name from the &46;Named qualifier in this set of qualifiers
      * 
@@ -865,7 +841,7 @@ public class Utilities {
             
             Named named = (Named) qualifier;
             if ((named.value() == null) || named.value().equals("")) {
-                return calculateNamedValue(parent);
+                throw new MultiException(new IllegalStateException("@Named must have a value for " + parent));
             }
             
             return named.value();
@@ -899,12 +875,11 @@ public class Utilities {
         }
         
         if (name == null) {
-            if (namedQualifier != null && namedQualifier.value().equals("") ) {
+            if (namedQualifier != null) {
+                collector.addThrowable(new IllegalArgumentException("No name was in the descriptor, but this element(" +
+                    annotatedGuy + " has a Named annotation with value: " + namedQualifier.value()));
+                
                 retVal.remove(namedQualifier);
-                
-                namedQualifier = new NamedImpl(calculateNamedValue(annotatedGuy));
-                
-                retVal.add(namedQualifier);
             }
             
             return retVal;
