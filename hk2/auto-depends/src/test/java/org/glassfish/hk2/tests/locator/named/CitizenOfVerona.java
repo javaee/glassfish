@@ -39,10 +39,13 @@
  */
 package org.glassfish.hk2.tests.locator.named;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
+@Contract
 public interface CitizenOfVerona {
     /**
      * Gets the name of this character of Verona

@@ -86,6 +86,10 @@ public class ServiceWithCustomInjections {
         isValid = true;
     }
 
+    /**
+     * Called by the test
+     * @return true if valid
+     */
     public boolean isValid() {
         return isValid;
     }

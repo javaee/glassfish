@@ -41,7 +41,6 @@ package org.glassfish.hk2.tests.locator.named;
 
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
@@ -54,11 +53,11 @@ public class NamedModule implements TestModule {
      */
     @Override
     public void configure(Configuration config) {
-        config.bind(BuilderHelper.link(Romeo.class).to(CitizenOfVerona.class).build());
-        config.bind(BuilderHelper.link(Juliet.class).to(CitizenOfVerona.class).build());
-        config.bind(BuilderHelper.link(Mercutio.class).to(CitizenOfVerona.class).build());
+        config.addActiveDescriptor(Romeo.class);
+        config.addActiveDescriptor(Juliet.class);
+        config.addActiveDescriptor(Mercutio.class);
         
-        config.bind(BuilderHelper.link(Verona.class).to(CitizenOfVerona.class).build());
+        config.addActiveDescriptor(Verona.class);
     }
 
 }
