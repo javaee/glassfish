@@ -257,6 +257,8 @@ public class Utilities {
      */
     @SuppressWarnings("unchecked")
     public static <T> T justCreate(Class<T> createMe, ServiceLocatorImpl locator) {
+        if (createMe == null) throw new IllegalArgumentException();
+        
         Collector collector = new Collector();
         
         Constructor<?> c = findProducerConstructor(createMe, locator, collector);

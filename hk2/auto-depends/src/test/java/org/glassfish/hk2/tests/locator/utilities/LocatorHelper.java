@@ -51,6 +51,9 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
  *
  */
 public class LocatorHelper {
+    /** This should be thrown from negative tests */
+    public final static String EXPECTED = "Expected Exception";
+    
     private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
     
     /**
