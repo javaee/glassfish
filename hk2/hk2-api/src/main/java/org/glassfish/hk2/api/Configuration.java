@@ -42,11 +42,8 @@ package org.glassfish.hk2.api;
 import java.lang.annotation.Annotation;
 
 /**
- * An instance of this class is given to the {@link Module} configure
- * method and can be used to establish progromatic bindings of services
- * and contracts and other extensions to the hk2 environment.  The methods
- * on this class should not be used outside of the {@link Module} configure
- * method
+ * This class is used to add entities to a {@link ServiceLocator}
+ * instance.
  * 
  * @author jwells
  */
@@ -120,6 +117,22 @@ public interface Configuration {
 	 */
 	public ActiveDescriptor<?> addActiveDescriptor(ActiveDescriptor<?> activeDescriptor)
 	        throws IllegalArgumentException;
+	
+	/**
+     * This adds an active descriptor to the system based completely on the analysis
+     * of the given class.  The class itself and all interfaces marked contract will
+     * be in the list of advertised services.  The scope and qualifiers will be taken
+     * from the annotations on the class.
+     * 
+	 * @param rawClass The class to analyze, must not be null 
+	 * @return The active (reified) descriptor that has been added to the system, with
+	 * all fields filled in based on the rawClass
+	 * @throws IllegalArgumentException if rawClass is null or cannot be a service for
+	 * some reason (such as not having a proper constructor, or being an interface)
+     *
+     */
+    public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
+            throws IllegalArgumentException;
 	
 	/**
 	 * Adds a validator to the system.  This validator will be called whenver a
