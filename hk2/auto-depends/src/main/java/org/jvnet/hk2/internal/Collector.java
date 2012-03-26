@@ -73,5 +73,14 @@ public class Collector {
         
         throw new MultiException(throwables);
     }
+    
+    /**
+     * Returns true if this collector has errors
+     * 
+     * @return true if the collector has errors
+     */
+    public boolean hasErrors() {
+        return !throwables.isEmpty();
+    }
 
 }

@@ -363,6 +363,8 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                     baseDescriptor.getAdvertisedContracts()));
         }
         else {
+            Utilities.checkFactoryType(implClass, collector);
+            
             // For a factory base stuff off of the method, not the class
             Method provideMethod = Utilities.getFactoryProvideMethod(implClass);
             
@@ -413,7 +415,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             }
         }
         
-        reified = true;
+        if (!collector.hasErrors()) reified = true;
     }
     
     @Override
