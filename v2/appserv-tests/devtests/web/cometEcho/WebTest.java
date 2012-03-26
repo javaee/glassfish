@@ -117,6 +117,7 @@ public class WebTest {
                 System.out.println("Got message : " + returnedMessage);
                 valid = valid && (message.equals(returnedMessage));
             }
+            executorService.shutdown();
 
             stat.addStatus(TEST_NAME, ((valid)? stat.PASS : stat.FAIL));
         } catch (Exception ex) {
