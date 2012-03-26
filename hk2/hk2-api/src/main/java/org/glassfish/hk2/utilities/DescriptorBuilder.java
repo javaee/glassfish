@@ -43,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.FactoryDescriptors;
 
 /**
  * This is an object that uses the Builder pattern
@@ -166,19 +167,41 @@ public interface DescriptorBuilder {
 	/**
      * Call this if this descriptor must be validated
      * 
-     * @param id May be null.  Will be ignored on binding operations
      * @return A DescriptorBuilder with the given metadata
      * @throws IllegalArgumentException if the id is set non-null more than once
      */
     public DescriptorBuilder isValidating() throws IllegalArgumentException;
 	
 	/**
-	 * Generates a descriptor that can be used in binding operations, or
-	 * a filter that can be used for search operations
+	 * Generates a descriptor that can be used in binding operations
 	 * 
 	 * @return The descriptor that has been built up with this DescriptorBuilder
 	 * @throws IllegalArgumentException if the built descriptor is invalid
 	 */
 	public Descriptor build() throws IllegalArgumentException;
+	
+	/**
+     * Generates a factory descriptor that can be used in binding operations.
+     * The generated factory service will have no name, no qualifiers and the
+     * same metadata as given to this builder.  The factory will be put into
+     * PerLookup scope
+     * 
+     * @return The descriptor that has been built up with this DescriptorBuilder
+     * @throws IllegalArgumentException if the built descriptor is invalid
+     */
+    public FactoryDescriptors buildFactory() throws IllegalArgumentException;
+	
+	/**
+     * Generates a factory descriptor that can be used in binding operations.
+     * The generated factory service will have no name, no qualifiers and the
+     * same metadata as given to this builder.  The generated service will
+     * have had the implementation class removed from its set of advertised
+     * contracts
+     * 
+	 * @param factoryScope The scope the factory service itself is in.
+     * @return The descriptor that has been built up with this DescriptorBuilder
+     * @throws IllegalArgumentException if the built descriptor is invalid
+     */
+    public FactoryDescriptors buildFactory(String factoryScope) throws IllegalArgumentException;
 
 }

@@ -37,41 +37,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.qualifiers;
+package org.glassfish.hk2.internal;
 
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.FactoryDescriptors;
 
 /**
  * @author jwells
  *
  */
-public class PurpleFactory implements Factory<Color> {
-    @Inject @Red
-    private Color red;
+public class FactoryDescriptorsImpl implements FactoryDescriptors {
+    private final Descriptor asService;
+    private final Descriptor asFactory;
     
-    @Inject @Blue
-    private Color blue;
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
-     */
-    @Override @Purple
-    public Color provide() {
-        if (!red.getColorName().equals(QualifierTest.RED)) throw new AssertionError("Red is not red: " + red);
-        if (!blue.getColorName().equals(QualifierTest.BLUE)) throw new AssertionError("Blue is not blue: " + blue);
-        
-        return new DerivedColor(QualifierTest.PURPLE);
+    /* package */ FactoryDescriptorsImpl(Descriptor asService, Descriptor asFactory) {
+        this.asService = asService;
+        this.asFactory = asFactory;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
+     * @see org.glassfish.hk2.api.FactoryDescriptors#getFactoryAsService()
      */
     @Override
-    public void dispose(Color instance) {
-        // TODO Auto-generated method stub
+    public Descriptor getFactoryAsService() {
+        return asService;
+    }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.FactoryDescriptors#getFactoryAsAFactory()
+     */
+    @Override
+    public Descriptor getFactoryAsAFactory() {
+        return asFactory;
+    }
+    
+    public String toString() {
+        return "FactoryDescriptorsImpl(\n" +
+          asService + ",\n" + asFactory + ",\n\t" + System.identityHashCode(this) + ")";
     }
 
 }

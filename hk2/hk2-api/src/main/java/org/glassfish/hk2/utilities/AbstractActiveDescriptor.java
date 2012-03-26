@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.internal.ReflectionHelper;
 
@@ -66,6 +67,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     private final String name;
     private final Set<Annotation> qualifiers;
     private final Set<String> qualifiersAsStrings = new HashSet<String>();
+    private final DescriptorType descriptorType;
     private int ranking;
     
     /**
@@ -87,11 +89,13 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers,
+            DescriptorType descriptorType,
             int ranking) {
         this.scope = scope;
         this.advertisedContracts = Collections.unmodifiableSet(advertisedContracts);
         this.qualifiers = Collections.unmodifiableSet(qualifiers);
         this.ranking = ranking;
+        this.descriptorType = descriptorType;
         this.name = name;
         
         for (Type t : advertisedContracts) {
@@ -141,6 +145,13 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     @Override
     public Set<String> getQualifiers() {
         return Collections.unmodifiableSet(qualifiersAsStrings);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getDescriptorType()
+     */
+    public DescriptorType getDescriptorType() {
+        return descriptorType;
     }
 
     /* (non-Javadoc)

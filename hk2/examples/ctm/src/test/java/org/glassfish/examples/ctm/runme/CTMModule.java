@@ -49,7 +49,6 @@ import org.glassfish.examples.ctm.TenantScoped;
 import org.glassfish.examples.ctm.TenantScopedContext;
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
@@ -62,6 +61,11 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  */
 public class CTMModule {
 
+    /**
+     * Configures the HK2 instance
+     * 
+     * @param configurator
+     */
     public void configure(Configuration configurator) {
         // Bind our custom scope
         configurator.bind(
@@ -72,17 +76,10 @@ public class CTMModule {
         
         // Bind our factory
         configurator.bind(
-                BuilderHelper.linkFactory(EnvironmentFactory.class).
+                BuilderHelper.link(EnvironmentFactory.class).
                               to(Environment.class).
                               in(TenantScoped.class.getName()).
-                              build());
-        
-        // And the factory itself must be a service
-        configurator.bind(
-                BuilderHelper.link(EnvironmentFactory.class).
-                              to(Factory.class).
-                              in(Singleton.class.getName()).
-                              build());
+                              buildFactory(Singleton.class.getName()));
         
         // We implemented the TenantManager as a service (nice!)
         configurator.bind(

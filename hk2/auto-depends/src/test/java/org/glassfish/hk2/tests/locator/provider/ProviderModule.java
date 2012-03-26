@@ -57,13 +57,28 @@ public class ProviderModule implements TestModule {
         configurator.bind(BuilderHelper.link(ProviderInjected.class).build());
         
         // These are for the iterable provider tests
-        configurator.bind(BuilderHelper.link(EliManning.class).to(Character.class).to(FootballCharacter.class).
+        configurator.bind(BuilderHelper.link(EliManning.class).
+                to(Character.class).
+                to(FootballCharacter.class).
+                named(ProviderTest.ELI).
                 qualifiedBy(Giants.class.getName()).build());
-        configurator.bind(BuilderHelper.link(ShadyMcCoy.class).to(Character.class).to(FootballCharacter.class).
+        
+        configurator.bind(BuilderHelper.link(ShadyMcCoy.class).
+                to(Character.class).
+                to(FootballCharacter.class).
+                named(ProviderTest.SHADY).
                 qualifiedBy(Eagles.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Ishmael.class).to(Character.class).to(BookCharacter.class).
+        
+        configurator.bind(BuilderHelper.link(Ishmael.class).
+                to(Character.class).
+                to(BookCharacter.class).
+                named(ProviderTest.ISHMAEL).
                 build());
-        configurator.bind(BuilderHelper.link(QueeQueg.class).to(Character.class).to(BookCharacter.class).
+        
+        configurator.bind(BuilderHelper.link(QueeQueg.class).
+                to(Character.class).
+                to(BookCharacter.class).
+                named(ProviderTest.QUEEQUEG).
                 build());
         
         configurator.bind(BuilderHelper.link(Menagerie.class).build());

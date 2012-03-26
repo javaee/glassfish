@@ -37,41 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.qualifiers;
-
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.Factory;
+package org.glassfish.hk2.api;
 
 /**
+ * This describes the type of descriptor
+ * 
  * @author jwells
- *
  */
-public class PurpleFactory implements Factory<Color> {
-    @Inject @Red
-    private Color red;
+public enum DescriptorType {
+    /**
+     * This is a class based descriptor, and so the associated implementation class must have
+     * a proper constructor (either a no-argument constructor or one marked with Inject)
+     */
+    CLASS,
     
-    @Inject @Blue
-    private Color blue;
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
+    /**
+     * This is a factory based descriptor, and the associated implementation class is actually
+     * the class of the factory that should be found in the registry in order to create
+     * objects of this type
      */
-    @Override @Purple
-    public Color provide() {
-        if (!red.getColorName().equals(QualifierTest.RED)) throw new AssertionError("Red is not red: " + red);
-        if (!blue.getColorName().equals(QualifierTest.BLUE)) throw new AssertionError("Blue is not blue: " + blue);
-        
-        return new DerivedColor(QualifierTest.PURPLE);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(Color instance) {
-        // TODO Auto-generated method stub
-
-    }
-
+    FACTORY
 }

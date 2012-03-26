@@ -171,73 +171,11 @@ public class FilterBuilderTest {
 	}
 	
 	@Test
-	public void testEmptyFilter() {
-		Descriptor predicate = BuilderHelper.link().build();
-		
-		Assert.assertNotNull(predicate);
-		
-		Assert.assertNull(predicate.getImplementation());
-		
-		Assert.assertNotNull(predicate.getAdvertisedContracts());
-		Assert.assertTrue(predicate.getAdvertisedContracts().size() == 0);
-		
-		Assert.assertNotNull(predicate.getMetadata());
-		Assert.assertTrue(predicate.getMetadata().size() == 0);
-		
-		Assert.assertNotNull(predicate.getQualifiers());
-		Assert.assertTrue(predicate.getQualifiers().size() == 0);
-		
-		Assert.assertNull(predicate.getName());
-		
-		Assert.assertNull(predicate.getScope());
-	}
-	
-	@Test
     public void testAllDescriptorFilter() {
-        Descriptor predicate = BuilderHelper.link().build();
+        Descriptor predicate = BuilderHelper.link("empty").build();
     
         Filter allFilter = BuilderHelper.allFilter();
     
         Assert.assertTrue(allFilter.matches(predicate));
-    }
-	
-	@Test
-	public void testFactoryFilter() {
-	    Descriptor df = BuilderHelper.link(GoodFactory.class, false).to(Factory.class).build();
-	    
-	    Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
-	    Assert.assertTrue(df.getAdvertisedContracts().contains(Factory.class.getName()));
-	    
-	    Assert.assertEquals(String.class.getName(), df.getName());
-	}
-	
-	@Test
-    public void testFactoryWithName() {
-        Descriptor df = BuilderHelper.link(AnotherGoodFactory.class).build();
-        
-        Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
-        Assert.assertTrue(df.getAdvertisedContracts().contains(Factory.class.getName()));
-        
-        Assert.assertEquals(List.class.getName(), df.getName());
-    }
-	
-	@Test
-    public void testLinkFactory() {
-        Descriptor df = BuilderHelper.linkFactory(GoodFactory.class).to(String.class).build();
-        
-        Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
-        Assert.assertTrue(df.getAdvertisedContracts().contains(String.class.getName()));
-        
-        Assert.assertNull("Did not expect a name, but got " + df.getName(), df.getName());
-    }
-	
-	@Test
-    public void testAutoGenName() {
-        Descriptor df = BuilderHelper.link(NamedService.class).build();
-        
-        Assert.assertTrue(df.getAdvertisedContracts().size() == 1);
-        Assert.assertTrue(df.getAdvertisedContracts().contains(NamedService.class.getName()));
-        
-        Assert.assertEquals("NamedService", df.getName());
     }
 }

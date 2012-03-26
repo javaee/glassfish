@@ -122,6 +122,17 @@ public interface Descriptor {
 	public Set<String> getQualifiers();
 	
 	/**
+     * Returns CLASS if this is a class descriptor
+     * and FACTORY if this is a descriptor describing
+     * a factory for a type, in which case the
+     * implClass should point to the implementation
+     * class of the factory
+     * 
+     * @return Either CLASS or FACTORY
+     */
+    public DescriptorType getDescriptorType();
+	
+	/**
      * This returns true if the class or factory has a validating
      * annotation on it
      * 

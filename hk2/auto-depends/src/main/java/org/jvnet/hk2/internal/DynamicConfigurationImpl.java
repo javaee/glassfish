@@ -46,7 +46,9 @@ import java.util.LinkedList;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.InjectionPointValidator;
 import org.glassfish.hk2.api.InjectionResolver;
@@ -85,6 +87,54 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         allDescriptors.add(sd);
         
         return sd;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Configuration#bind(org.glassfish.hk2.api.FactoryDescriptors)
+     */
+    @Override
+    public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors) {
+        if (factoryDescriptors == null) throw new IllegalArgumentException("factoryDescriptors is null");
+        
+        // Now a bunch of validations
+        Descriptor asService = factoryDescriptors.getFactoryAsService();
+        Descriptor asFactory = factoryDescriptors.getFactoryAsAFactory();
+        
+        if (asService == null) throw new IllegalArgumentException("getFactoryAsService returned null");
+        if (asFactory == null) throw new IllegalArgumentException("getFactoryAsFactory returned null");
+        
+        String implClassService = asService.getImplementation();
+        String implClassFactory = asFactory.getImplementation();
+        
+        if (!Utilities.safeEquals(implClassService, implClassFactory)) {
+            throw new IllegalArgumentException("The implementation classes must match (" +
+                implClassService + "/" + implClassFactory + ")");
+        }
+        
+        if (!asService.getDescriptorType().equals(DescriptorType.CLASS)) {
+            throw new IllegalArgumentException("The getFactoryAsService descriptor must be of type CLASS");
+        }
+        if (!asFactory.getDescriptorType().equals(DescriptorType.FACTORY)) {
+            throw new IllegalArgumentException("The getFactoryAsFactory descriptor must be of type FACTORY");
+        }
+        
+        // Bind the factory first, so normally people get the factory, not the service
+        final ActiveDescriptor<?> boundAsFactory = bind(asFactory);
+        final ActiveDescriptor<?> boundAsService = bind(asService);
+        
+        return new FactoryDescriptors() {
+
+            @Override
+            public Descriptor getFactoryAsService() {
+                return boundAsService;
+            }
+
+            @Override
+            public Descriptor getFactoryAsAFactory() {
+                return boundAsFactory;
+            }
+            
+        };
     }
 
     /* (non-Javadoc)
@@ -218,6 +268,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         this.commitable = commitable;
         
     }
+
+    
 
     
 }

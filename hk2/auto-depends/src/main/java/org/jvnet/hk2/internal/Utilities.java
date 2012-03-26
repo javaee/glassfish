@@ -64,7 +64,6 @@ import javax.inject.Scope;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
@@ -83,6 +82,21 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * An equals when a or b might be null
+     * 
+     * @param a left hand parameter
+     * @param b right hand parameter
+     * @return true if both null or bot non null and equals
+     */
+    public static boolean safeEquals(Object a, Object b) {
+        if (a == b) return true;
+        if (a == null) return false;
+        if (b == null) return false;
+        
+        return a.equals(b);
+    }
+    
     private static Set<Type> getAutoAdvertisedTypes(Type t) {
         HashSet<Type> retVal = new HashSet<Type>();
         retVal.add(t);
@@ -312,72 +326,6 @@ public class Utilities {
     public static boolean isProxiableScope(Class<? extends Annotation> scope) {
         if (scope.isAnnotationPresent(Proxiable.class)) return true;
         return false;
-    }
-    /**
-     * Returns the type that this is a factory for
-     * 
-     * @param factory The factory for this type
-     * @return The type of this factory
-     */
-    private static Type getFactoryType(Type factory) {
-        if (factory instanceof Class) return Object.class;
-        if (!(factory instanceof ParameterizedType)) {
-            throw new AssertionError("Unknown Factory type " + factory);
-        }
-        
-        ParameterizedType pt = (ParameterizedType) factory;
-        return pt.getActualTypeArguments()[0];
-    }
-    
-    private static String getFactoryName(Type type) {
-        Type factoryType = getFactoryType(type);
-        
-        Class<?> clazz = getRawClass(factoryType);
-        if (clazz == null) {
-            throw new IllegalArgumentException("A factory implmentation may not have a wildcard type or type variable as its actual type");
-        }
-        
-        return clazz.getName();
-    }
-    
-    /**
-     * Gets the name of the factory from the implementation class
-     * 
-     * @param implClass This class must be an implementation of Factory
-     * @return The name of this factory
-     */
-    public static String getFactoryName(Class<?> implClass) {
-        Type types[] = implClass.getGenericInterfaces();
-        
-        for (Type type : types) {    
-            Class<?> clazz = getRawClass(type);
-            if (clazz == null || !Factory.class.equals(clazz)) continue;
-            
-            // Found the factory!
-            return getFactoryName(type);
-        }
-        
-        throw new AssertionError("getFactoryName was given a non-factory " + implClass);
-    }
-    
-    /**
-     * Gets the name of the factory from the implementation class
-     * 
-     * @param implClass This class must be an implementation of Factory
-     * @return The name of this factory
-     */
-    public static Type getFactoryType(Class<?> implClass) {
-        Type types[] = implClass.getGenericInterfaces();
-        
-        for (Type type : types) {    
-            Class<?> clazz = getRawClass(type);
-            if (clazz == null || !Factory.class.equals(clazz)) continue;
-            
-            // Found the factory!
-            return getFactoryType(type);
-        }
-        
-        throw new AssertionError("getFactoryType was given a non-factory " + implClass);
     }
     
     /**
@@ -911,9 +859,7 @@ public class Utilities {
             Named named = (Named) qualifier;
             if ((named.value() == null) || named.value().equals("")) {
                 if (parent instanceof Class) {
-                    Class<?> clazz = (Class<?>) parent;
-                    
-                    return Pretty.clazz(clazz);
+                    return Pretty.clazz((Class<?>) parent);
                 }
                 
                 throw new MultiException(new IllegalStateException("@Named must have a value for " + parent));
@@ -923,6 +869,30 @@ public class Utilities {
         }
         
         return null;
+    }
+    
+    /**
+     * Returns the default name if one can be found.  Will only work on
+     * classes and methods
+     * 
+     * @param parent The parent annotated element
+     * @return null if there is no default name (no Named)
+     */
+    public static String getDefaultName(AnnotatedElement parent) {
+        Named named = parent.getAnnotation(Named.class);
+        if (named == null) {
+            return null;
+        }
+        
+        if (named.value() == null || named.value().equals("")) {
+            if (parent instanceof Class) {
+                return Pretty.clazz((Class<?>) parent);
+            }
+            
+            throw new IllegalArgumentException("@Named in this context must have a value");
+        }
+        
+        return named.value();
     }
     
     /**

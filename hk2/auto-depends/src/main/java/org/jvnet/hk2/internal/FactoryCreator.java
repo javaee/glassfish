@@ -39,13 +39,14 @@
  */
 package org.jvnet.hk2.internal;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -53,17 +54,15 @@ import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * @author jwells
- *
+ * @param <T> The thing this factory is producing
  */
 public class FactoryCreator<T> implements Creator<T> {
     private final ServiceLocator locator;
     private final Class<?> factoryClass;
-    private final Annotation qualifiers[];
     
-    /* package */ FactoryCreator(ServiceLocator locator, Class<?> factoryClass, Set<Annotation> qualifiers) {
+    /* package */ FactoryCreator(ServiceLocator locator, Class<?> factoryClass) {
         this.locator = locator;
         this.factoryClass = factoryClass;
-        this.qualifiers = qualifiers.toArray(new Annotation[qualifiers.size()]);
     }
 
     /* (non-Javadoc)
@@ -74,22 +73,18 @@ public class FactoryCreator<T> implements Creator<T> {
         return Collections.emptyList();
     }
     
+    @SuppressWarnings("unchecked")
     private ServiceHandle<Factory<T>> getFactoryHandle() {
-        String factoryName;
         try {
-            factoryName = Utilities.getFactoryName(factoryClass);
-            Type factoryType = Utilities.getFactoryType(factoryClass);
+            ActiveDescriptor<?> factoryDescriptor = locator.getBestDescriptor(
+                    new FactoryFilter(factoryClass.getName()));
             
-            Type actualArgs[] = new Type[1];
-            actualArgs[0] = factoryType;
-            
-            ServiceHandle<Factory<T>> handle = locator.getServiceHandle(new ParameterizedTypeImpl(Factory.class, actualArgs),
-                    factoryName, qualifiers);
-            if (handle == null) {
-                throw new IllegalStateException("Could not find a factory for " + factoryName);
+            if (factoryDescriptor == null) {
+                throw new IllegalStateException("Could not find a factory for " +
+                    factoryClass.getName());
             }
             
-            return handle;
+            return (ServiceHandle<Factory<T>>) locator.getServiceHandle(factoryDescriptor);
         }
         catch (Throwable th) {
             throw new MultiException(th);
@@ -125,6 +120,43 @@ public class FactoryCreator<T> implements Creator<T> {
         catch (Throwable th) {
             // ignore
         }
+    }
+    
+    private static class FactoryFilter implements IndexedFilter {
+        private final String implClass;
+        
+        private FactoryFilter(String implClass) {
+            this.implClass = implClass;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
+         */
+        @Override
+        public boolean matches(Descriptor d) {
+            if (d.getDescriptorType().equals(DescriptorType.CLASS)) return true;
+            
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
+         */
+        @Override
+        public String getAdvertisedContract() {
+            // We are interested in the impl class that is a factory
+            return implClass;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getName()
+         */
+        @Override
+        public String getName() {
+            // Name is not our index
+            return null;
+        }
+        
     }
 
 }

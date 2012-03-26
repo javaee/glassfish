@@ -49,7 +49,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -144,6 +144,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     @Override
     public Set<String> getQualifiers() {
         return baseDescriptor.getQualifiers();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getDescriptorType()
+     */
+    @Override
+    public DescriptorType getDescriptorType() {
+        return baseDescriptor.getDescriptorType();
     }
 
     /* (non-Javadoc)
@@ -342,21 +350,35 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, Collector collector) {
         this.implClass = implClass;
         
-        qualifiers = Collections.unmodifiableSet(Utilities.getAllQualifiers(implClass, baseDescriptor.getName(), collector));
-        if (!Factory.class.isAssignableFrom(implClass) || getAdvertisedContracts().contains(Factory.class.getName())) {
+        if (getDescriptorType().equals(DescriptorType.CLASS)) {
+            qualifiers = Collections.unmodifiableSet(
+                    Utilities.getAllQualifiers(implClass,
+                            baseDescriptor.getName(),
+                            collector));
+            
             creator = new ClazzCreator<T>(locator, implClass, collector);
             
             scope = Utilities.getScopeAnnotationType(implClass, collector);
-            contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(implClass, baseDescriptor.getAdvertisedContracts()));
+            contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(implClass,
+                    baseDescriptor.getAdvertisedContracts()));
         }
         else {
-            creator = new FactoryCreator<T>(locator, implClass, qualifiers);
-            
+            // For a factory base stuff off of the method, not the class
             Method provideMethod = Utilities.getFactoryProvideMethod(implClass);
+            
+            qualifiers = Collections.unmodifiableSet(
+                    Utilities.getAllQualifiers(
+                            provideMethod,
+                            Utilities.getDefaultName(provideMethod),
+                            collector));
+            
+            creator = new FactoryCreator<T>(locator, implClass);
+            
             scope = Utilities.getScopeAnnotationType(provideMethod, collector);
             
             Type factoryProvidedType = provideMethod.getGenericReturnType();
-            contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(factoryProvidedType, baseDescriptor.getAdvertisedContracts()));
+            contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(factoryProvidedType,
+                    baseDescriptor.getAdvertisedContracts()));
         }
         
         // Check the scope
@@ -369,7 +391,9 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             
             if (!scopeName.equals(baseDescriptor.getScope())) {
                 collector.addThrowable(new IllegalArgumentException("The scope name given in the descriptor (" +
-                        baseDescriptor.getScope() + ") did not match the scope annotation on the class (" + scope.getName() + ")"));
+                        baseDescriptor.getScope() + 
+                        ") did not match the scope annotation on the class (" + scope.getName() +
+                        ") in class " + Pretty.clazz(implClass)));
                 
             }
         }
@@ -429,11 +453,5 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public String toString() {
         return "SystemDescriptor(" + getImplementation() + "," + Pretty.collection(getAdvertisedContracts()) + "," +
           Pretty.collection(getQualifiers()) + "," + System.identityHashCode(this) + ")";
-    }
-
-    
-
-    
-
-    
+    }    
 }

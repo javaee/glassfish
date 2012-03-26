@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
 
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -78,7 +79,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope, String name,
             Set<Annotation> qualifiers, int ranking) {
-        super(advertisedContracts, scope, name, qualifiers, ranking);
+        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, ranking);
         
         implClass = clazz;
         this.creator = creator;

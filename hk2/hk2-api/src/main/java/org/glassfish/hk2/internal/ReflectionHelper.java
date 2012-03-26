@@ -49,7 +49,6 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 
-import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -81,35 +80,6 @@ public class ReflectionHelper {
         return null;
     }
     
-    private static String getFactoryName(Type type) {
-        if (type instanceof Class) return Object.class.getName();
-        if (!(type instanceof ParameterizedType)) {
-            throw new AssertionError("Unknown Factory type " + type);
-        }
-        
-        ParameterizedType pt = (ParameterizedType) type;
-        Class<?> clazz = ReflectionHelper.getRawClass(pt.getActualTypeArguments()[0]);
-        if (clazz == null) {
-            throw new IllegalArgumentException("A factory implmentation may not have a wildcard type or type variable as its actual type");
-        }
-        
-        return clazz.getName();
-    }
-    
-    private static String getFactoryName(Class<?> implClass) {
-        Type types[] = implClass.getGenericInterfaces();
-        
-        for (Type type : types) {    
-            Class<?> clazz = ReflectionHelper.getRawClass(type);
-            if (clazz == null || !Factory.class.equals(clazz)) continue;
-            
-            // Found the factory!
-            return getFactoryName(type);
-        }
-        
-        throw new AssertionError("getFactoryName was given a non-factory " + implClass);
-    }
-    
     private static String getNamedName(Named named, Class<?> implClass) {
         String name = named.value();
         if (name != null && !name.equals("")) return name;
@@ -122,27 +92,27 @@ public class ReflectionHelper {
         return cn.substring(index + 1);
     }
     
+    /**
+     * Returns the name that should be associated with this class
+     * 
+     * @param implClass The class to evaluate
+     * @return The name this class should have
+     */
     public static String getName(Class<?> implClass) {
-        boolean isFactory = (Factory.class.isAssignableFrom(implClass));
         Named named = implClass.getAnnotation(Named.class);
         
-        String factoryName = (isFactory) ? getFactoryName(implClass) : null ;
         String namedName = (named != null) ? getNamedName(named, implClass) : null ;
         
-        if ((factoryName != null) && (namedName != null)) {
-            if (!namedName.equals(factoryName)) {
-                throw new IllegalArgumentException("The name of a factory class must be the fully qualified class name " + 
-                    " of the raw type of the factory actual type argument (" + factoryName + ")." +
-                    "  However, this factory had an @Named annotation with value " + namedName);
-            }
-        }
-        
-        if (factoryName != null) return factoryName;
         if (namedName != null) return namedName;
         
         return null;
     }
     
+    /**
+     * Returns the set of types this class advertises
+     * @param t the object we are analyzing
+     * @return The type itself and the contracts it implements
+     */
     public static Set<Type> getAdvertisedTypesFromObject(Object t) {
         Set<Type> retVal = new HashSet<Type>();
         if (t == null) return retVal;
@@ -162,6 +132,11 @@ public class ReflectionHelper {
         return retVal;
     }
     
+    /**
+     * Gets the scope annotation from the object
+     * @param t The object to analyze
+     * @return The class of the scope annotation
+     */
     public static Class<? extends Annotation> getScopeFromObject(Object t) {
         if (t == null) return PerLookup.class;
         
@@ -178,6 +153,12 @@ public class ReflectionHelper {
         return PerLookup.class;
     }
     
+    /**
+     * Gets all the qualifiers from the object
+     * 
+     * @param t The object to analyze
+     * @return The set of qualifiers.  Will not return null but may return an empty set
+     */
     public static Set<Annotation> getQualifiersFromObject(Object t) {
         Set<Annotation> retVal = new HashSet<Annotation>();
         if (t == null) return retVal;

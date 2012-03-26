@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 
 /**
  * The implementation of the descriptor itself, with the
@@ -70,6 +71,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private String scope;
 	private Map<String, List<String>> metadatas;
 	private Set<String> qualifiers;
+	private DescriptorType descriptorType;
 	private boolean validating;
 	private int rank;
 	private Long id;
@@ -81,12 +83,19 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	public DescriptorImpl() {	
 	}
 	
+	/**
+	 * Does a deep copy of the incoming descriptor
+	 * 
+	 * @param copyMe The descriptor to copy
+	 */
 	public DescriptorImpl(Descriptor copyMe) {
 		contracts = copyMe.getAdvertisedContracts();
 		name = copyMe.getName();
 		scope = copyMe.getScope();
 		implementation = copyMe.getImplementation();
 		qualifiers = copyMe.getQualifiers();
+		descriptorType = copyMe.getDescriptorType();
+		
 		validating = copyMe.isValidating();
 		metadatas = copyMe.getMetadata();
 		rank = copyMe.getRanking();
@@ -99,19 +108,25 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * this object
 	 * 
 	 * @param contracts
-	 * @param names
-	 * @param scopes
-	 * @param implementations
+	 * @param name 
+	 * @param scope 
+	 * @param implementation 
 	 * @param metadatas
 	 * @param qualifiers
+	 * @param descriptorType 
+	 * @param validating 
+	 * @param rank 
 	 * @param id
+	 * @param locatorId 
 	 */
-	public DescriptorImpl(Set<String> contracts,
+	public DescriptorImpl(
+	        Set<String> contracts,
 			String name,
 			String scope,
 			String implementation,
 			Map<String, List<String>> metadatas,
 			Set<String> qualifiers,
+			DescriptorType descriptorType,
 			boolean validating,
 			int rank,
 			Long id,
@@ -124,6 +139,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.scope = scope;
 		this.metadatas = new HashMap<String, List<String>>(metadatas);
 		this.qualifiers = new HashSet<String>(qualifiers);
+		this.descriptorType = descriptorType;
 		this.validating = validating;
 		this.id = id;
 		this.rank = rank;
@@ -154,6 +170,11 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	public Set<String> getQualifiers() {
 		return new HashSet<String>(qualifiers);
 	}
+
+    @Override
+    public DescriptorType getDescriptorType() {
+        return descriptorType;
+    }
 	
     @Override
     public boolean isValidating() {
@@ -267,6 +288,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		sb.append("\n\tqualifiers=");
 		sb.append(writeSet(qualifiers));
 		
+		sb.append("\n\tdescriptorType=" + descriptorType);
+		
 		sb.append("\n\tmetadata=");
 		sb.append(writeMetadata(metadatas));
 		
@@ -278,6 +301,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		
 		return sb.toString();
 	}
+
+    
 
     
     

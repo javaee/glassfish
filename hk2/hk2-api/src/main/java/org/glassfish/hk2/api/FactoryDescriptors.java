@@ -37,41 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.qualifiers;
-
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.Factory;
+package org.glassfish.hk2.api;
 
 /**
+ * This is a convenience class that links together the factory descriptor as a factory
+ * for another type and the factory as a service itself.  It is not required to use
+ * this helper to register a factory, as the individual descriptors can be registered
+ * with the system independently.
+ * 
  * @author jwells
  *
  */
-public class PurpleFactory implements Factory<Color> {
-    @Inject @Red
-    private Color red;
+public interface FactoryDescriptors {
+    /**
+     * This returns the factory as a service itself.  The advertised
+     * contracts must contain the implementation class of the factory and
+     * the {@link Factory}.  The descriptor type must be {@link DescriptorType.CLASS}
+     * since this descriptor is describing the factory itself.
+     * 
+     * @return The factory as a service itself
+     */
+    public Descriptor getFactoryAsService();
     
-    @Inject @Blue
-    private Color blue;
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
+    /**
+     * This returns the factory as a factory for some other type.  The
+     * implementation class should contain the implementation class
+     * of the factory service.  If the implementation class returned from
+     * this does not match the implementation class returned from getFactoryAsAService
+     * an error will occur.  The contracts, name and qualifiers should represent
+     * the type returned from the provide method of the factory.  The descriptor
+     * type must be {@link DescriptorType}.FACTORY since this descriptor is
+     * describing the factory as a factory, not as a service.
+     * 
+     * @return The factory descriptor as a factory
      */
-    @Override @Purple
-    public Color provide() {
-        if (!red.getColorName().equals(QualifierTest.RED)) throw new AssertionError("Red is not red: " + red);
-        if (!blue.getColorName().equals(QualifierTest.BLUE)) throw new AssertionError("Blue is not blue: " + blue);
-        
-        return new DerivedColor(QualifierTest.PURPLE);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(Color instance) {
-        // TODO Auto-generated method stub
-
-    }
+    public Descriptor getFactoryAsAFactory();
 
 }
