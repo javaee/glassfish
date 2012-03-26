@@ -39,13 +39,11 @@
  */
 package org.glassfish.hk2.tests.locator.negative.factory;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.Factory;
+import junit.framework.Assert;
+
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -56,17 +54,20 @@ public class NegativeFactoryTest {
     private final static String TEST_NAME = "NegativeFactoryTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeFactoryModule());
     
+    private final static String TV_EXPECTED = "has a TypeVariable as its type";
+    
     /**
      * Factories cannot have type variables
      */
-    @Test @Ignore
+    @Test
     public void testFactoryWithTypeVariableType() {
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration dc = dcs.createDynamicConfiguration();
-        
-        dc.bind(BuilderHelper.link(TypeVariableFactory.class).to(Factory.class).build());
-        
-        dc.commit();
+        try {
+            locator.getService(SimpleService.class);
+            Assert.fail("The SimpleService factory has a TypeVariable and so is invalid");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(TV_EXPECTED));
+        }
         
     }
 

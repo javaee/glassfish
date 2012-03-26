@@ -49,6 +49,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -64,6 +66,7 @@ import javax.inject.Scope;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
@@ -82,6 +85,34 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * Checks to be sure the Factory class is ok
+     * 
+     * @param factoryClass
+     * @param collector
+     */
+    public static void checkFactoryType(Class<?> factoryClass, Collector collector) {
+        for (Type type : factoryClass.getGenericInterfaces()) {
+            Class<?> rawClass = getRawClass(type);
+            if (rawClass == null) continue;
+            
+            if (!Factory.class.equals(rawClass)) continue;
+            
+            Type firstType = getFirstTypeArgument(type);
+            
+            if (firstType instanceof TypeVariable) {
+                collector.addThrowable(new IllegalArgumentException("The class " +
+                    Pretty.clazz(factoryClass) + " has a TypeVariable as its type"));
+            }
+            
+            if (firstType instanceof WildcardType) {
+                // This should not be possible
+                collector.addThrowable(new IllegalArgumentException("The class " +
+                    Pretty.clazz(factoryClass) + " has a Wildcard as its type"));
+            }
+        }
+        
+    }
     /**
      * An equals when a or b might be null
      * 
@@ -560,8 +591,7 @@ public class Utilities {
         
         for (Method method : clazz.getDeclaredMethods()) {
             currentMethods.add(new MemberKey(method));
-        }
-        
+        }  
     }
     
     /**
