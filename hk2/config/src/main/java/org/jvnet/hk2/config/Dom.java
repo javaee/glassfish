@@ -932,6 +932,9 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         return habitat;
     }
     
+    public BaseServiceLocator getBaseServiceLocator() {
+        return habitat;
+    }
 
     /**
      * Another version of the {@link #invoke(Object, Method, Object[])},

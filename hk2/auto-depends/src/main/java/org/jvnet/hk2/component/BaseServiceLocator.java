@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,40 +39,77 @@
  */
 package org.jvnet.hk2.component;
 
-import java.lang.reflect.Type;
 import java.util.Collection;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * Provide a simple abstraction for getting services by contract or type.
  *
- * @author Jerome Dochez, Jeff Trent
+ * @author Mason Taube
  */
-public interface SimpleServiceLocator extends BaseServiceLocator {
+public interface BaseServiceLocator {
 
     /**
-     * Gets an inhabitant from its type and optionally name
-     * @param type requested inhabitant type
-     * @param name optional name
+     * Loads a component that implements the given contract and has the given
+     * name.
+     * 
+     * @param name
+     *            can be null, in which case it'll only match to the unnamed
+     *            component.
+     * @return null if no such service exists.
      */
-    <T> Inhabitant<T> getProvider(Type type, String name);
-
-    <T> Inhabitant<T> getProvider(String fqcn, String name);
+    <T> T getComponent(Class<T> contract, String name) throws ComponentException;
 
     /**
-     * Gets all the inhabitants that has the given contract.
-     */
-    public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
-            Type contract) throws ComponentException;
+     * Analogous to the following:
+     * <pre>
+     * getComponent(contractClass.getName(), name);
+     * </pre>
 
-    public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
-            String contractName) throws ComponentException;
+     * @param fullQualifiedName the contract class name
+     * @param name
+     *            can be null, in which case it'll only match to the unnamed
+     *            component.
+     * @return null if no such service exists.
+     */
+    <T> T getComponent(String fullQualifiedName, String name);
+    
+    public <T> T getComponent(Class<T> clazz) throws ComponentException;
+    
+    /**
+     * Gets the object of the given type.
+     * 
+     * @return null if not found.
+     */
+    <T> T getByType(Class<T> implType);
 
     /**
-     * Gets all the inhabitants that has the given type.
+     * Gets the object of the given type.
+     * 
+     * @return null if not found.
      */
-    public <T> Collection<Inhabitant<T>> getInhabitantsByType(
-            Class<T> type) throws ComponentException;
+    <T> T getByType(String implType);
 
-    public <T> Collection<Inhabitant<T>> getInhabitantsByType(
-            String typeName) throws ComponentException;
+    /**
+     * Gets the object that has the given contract.
+     * <p/>
+     * <p/>
+     * If there are more than one of them, this method arbitrarily return one of
+     * them.
+     */
+    <T> T getByContract(Class<T> contractType);
+
+    <T> T getByContract(String contractType);
+    
+    /**
+     * Gets all the inhabitants registered under the given {@link Contract}.
+     * This is an example of heterogeneous type-safe container.
+     *
+     * @return can be empty but never null.
+     */
+    <T> Collection<T> getAllByContract(Class<T> contractType);
+
+    <T> Collection<T> getAllByContract(String contractType);
+    
 }

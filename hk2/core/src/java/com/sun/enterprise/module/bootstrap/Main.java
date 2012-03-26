@@ -339,10 +339,12 @@ public class Main {
      * @return
      * @throws BootException
      */
-    public ModuleStartup findStartupService(ModulesRegistry registry, Habitat habitat, String mainModuleName, StartupContext context) throws BootException {
+    public ModuleStartup findStartupService(ModulesRegistry registry, BaseServiceLocator serviceLocator, String mainModuleName, StartupContext context) throws BootException {
         ModuleStartup startupCode=null;
         final Module mainModule;
 
+        Habitat habitat = (Habitat) serviceLocator;
+        
         if(mainModuleName!=null) {
             // instantiate the main module, this is the entry point of the application
             // code. it is supposed to have 1 ModuleStartup implementation.
