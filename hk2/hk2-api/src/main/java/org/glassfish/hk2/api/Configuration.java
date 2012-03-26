@@ -67,6 +67,22 @@ public interface Configuration {
 	public ActiveDescriptor<?> bind(Descriptor key);
 	
 	/**
+     * This method will bind the descriptors found in the
+     * {@link FactoryDescriptors}.  This method will first
+     * validate the descriptors from the {@link FactoryDescriptors}
+     * and then simply bind them into this configuration as
+     * two independent descriptors. 
+     * 
+     * @param factoryDescriptors A description of a factory service
+     * and the type the factory service provides.  May not be null
+     * @return The descriptors returned from this object may be cast
+     * to ActiveDescriptor and will contain all the fields of the descriptors
+     * filled in by the system 
+     * @throws IllegalArgumentException if there is an error in the input parameter
+     */
+    public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors);
+	
+	/**
 	 * This adds a custom class loader to the system.  Custom class
 	 * loaders will be searched in a random order, so users should not
 	 * rely on the order of invocation of loaders.  The first loader to

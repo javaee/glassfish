@@ -40,14 +40,20 @@
 package org.glassfish.hk2.internal;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Set;
 
 import javax.inject.Named;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.FactoryDescriptors;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 
 /**
@@ -66,9 +72,18 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	private boolean validating = false;
 	private Long id;
 	
+	/**
+	 * The basid constructor
+	 */
 	public DescriptorBuilderImpl() {
 	}
 	
+	/**
+	 * A descriptor builder with the given implementation
+	 * 
+	 * @param implementation The implementation this should take
+	 * @param addToContracts Whether or not to add the implementation to the set of contracts
+	 */
 	public DescriptorBuilderImpl(String implementation, boolean addToContracts) {
 	    this.implementation = implementation;
 	    if (addToContracts) {
@@ -236,11 +251,63 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 				implementation,
 				metadatas,
 				qualifiers,
+				DescriptorType.CLASS,
 				validating,
 				rank,
 				id,
 				null);
 	}
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.DescriptorBuilder#buildFactory()
+     */
+    @Override
+    public FactoryDescriptors buildFactory(String factoryScope) throws IllegalArgumentException {
+        Set<String> factoryContracts = new HashSet<String>();
+        factoryContracts.add(implementation);
+        factoryContracts.add(Factory.class.getName());
+        Set<String> factoryQualifiers = Collections.emptySet();
+        
+        Descriptor asService = new DescriptorImpl(
+                factoryContracts,
+                null,
+                factoryScope,
+                implementation,
+                metadatas,
+                factoryQualifiers,
+                DescriptorType.CLASS,
+                validating,
+                rank,
+                id,
+                null);
+        
+        // We want to remove the impl class from the contracts in this case
+        Set<String> serviceContracts = new HashSet<String>(contracts);
+        if (implementation != null) serviceContracts.remove(implementation);
+        
+        Descriptor asFactory = new DescriptorImpl(
+                serviceContracts,
+                name,
+                scope,
+                implementation,
+                metadatas,
+                qualifiers,
+                DescriptorType.FACTORY,
+                validating,
+                rank,
+                id,
+                null);
+        
+        return new FactoryDescriptorsImpl(asService, asFactory);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.DescriptorBuilder#buildFactory()
+     */
+    @Override
+    public FactoryDescriptors buildFactory() throws IllegalArgumentException {
+        return buildFactory(PerLookup.class.getName());
+    }
 
     
 

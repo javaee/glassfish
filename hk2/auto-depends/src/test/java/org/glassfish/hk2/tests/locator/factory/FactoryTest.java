@@ -55,6 +55,16 @@ public class FactoryTest {
     private final static String TEST_NAME = "FactoryTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new FactoryModule());
     
+    /** Never told a lie.  If you believe him */
+    public final static String WASHINGTON_NAME = "Washington";
+    /** First president */
+    public final static int WASHINGTON_NUMBER = 1;
+    
+    /** Wrote many historic documents */
+    public final static String JEFFERSON_NAME = "Jefferson";
+    /** Second president */
+    public final static int JEFFERSON_NUMBER = 2;
+    
     /**
      * A very simple factory test
      */
@@ -111,5 +121,19 @@ public class FactoryTest {
         
         Assert.assertEquals("Expected 1 apple but got " + fruitContext.getContextStoredFruits().size(),
                 1, fruitContext.getContextStoredFruits().size());
+    }
+    
+    /**
+     * Factories of same type but different names
+     */
+    @Test
+    public void testGetNamedFactories() {
+        President washington = locator.getService(President.class, WASHINGTON_NAME);
+        Assert.assertNotNull(washington);
+        Assert.assertEquals(WASHINGTON_NUMBER, washington.getNumber());
+        
+        President jefferson = locator.getService(President.class, JEFFERSON_NAME);
+        Assert.assertNotNull(jefferson);
+        Assert.assertEquals(JEFFERSON_NUMBER, jefferson.getNumber());
     }
 }

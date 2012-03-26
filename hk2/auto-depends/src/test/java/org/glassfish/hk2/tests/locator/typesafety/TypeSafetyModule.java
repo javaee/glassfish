@@ -39,8 +39,9 @@
  */
 package org.glassfish.hk2.tests.locator.typesafety;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
@@ -55,16 +56,20 @@ public class TypeSafetyModule implements TestModule {
      */
     @Override
     public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.linkFactory(PSIntegerFactory.class).to(ParameterizedService.class).build());
-        configurator.bind(BuilderHelper.link(PSIntegerFactory.class).to(Factory.class).build());
+        configurator.bind(BuilderHelper.link(PSIntegerFactory.class).
+                to(ParameterizedService.class).
+                buildFactory());
         
         // The ranking here should make this one get chosen in ambiguous cases
-        configurator.bind(BuilderHelper.linkFactory(PSStringFactory.class).to(ParameterizedService.class).build());
-        configurator.bind(BuilderHelper.link(PSStringFactory.class).to(Factory.class).build());
+        configurator.bind(BuilderHelper.link(PSStringFactory.class).
+                to(ParameterizedService.class).
+                buildFactory(Singleton.class.getName()));
         
         // This guy is called by default
-        configurator.bind(BuilderHelper.linkFactory(PSDoubleFactory.class).to(ParameterizedService.class).ofRank(100).build());
-        configurator.bind(BuilderHelper.link(PSDoubleFactory.class).to(Factory.class).build());
+        configurator.bind(BuilderHelper.link(PSDoubleFactory.class).
+                to(ParameterizedService.class).
+                ofRank(100).
+                buildFactory());
         
         configurator.bind(BuilderHelper.link(TypeVariableService.class).build());
         

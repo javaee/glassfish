@@ -43,23 +43,26 @@ import org.jvnet.hk2.annotations.Contract;
 
 /**
  * This interface should be implemented in order to provide
- * a factory for another type.  This is useful when the other type
- * has some reason that it cannot be a normal service.
+ * a factory for another type.  This is useful when the type
+ * has some reason that it cannot be a created in the usual way.
  * <p>
- * In order to use a factory, the factory must be bound into the
- * system as a service itself, as well as binding a service that
- * represents what this factory creates.  For example:
- * <pre>
- * configurator.bind(BuilderHelper.linkFactory(DateFactory.class).to(Date.class).build());
- * configurator.bind(BuilderHelper.link(DateFactory.class).build());
- * </pre>
+ * A factory may not have a TypeVariable or a Wildcard as its
+ * actual type.  A factory may have any scope, and the scope
+ * of the factory is independent of the scope of the type it
+ * is providing.
  * <p>
- * The above code would link a producer of Date into the system.
+ * The scope and qualifiers of the objects this factory is producing
+ * must be placed on the provide method itself.  Objects created with
+ * this method will be put into the scope on the provide method, and
+ * will have the qualifiers of the provide method.
+ * <p>
+ * A factory is generally added with the {@link FactoryDescriptors} helper
+ * class, though factories can also be registered independently.
  * 
  * @author jwells
  * @param <T> This must be the type of entity for which this is a factory.
  * For example, if this were a factory for Foo, then your factory
- * must implement Factory&lt;Foo&gt;
+ * must implement Factory&lt;Foo&gt;.
  *
  */
 @Contract

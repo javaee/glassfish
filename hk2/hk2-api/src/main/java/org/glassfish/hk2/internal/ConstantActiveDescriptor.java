@@ -43,22 +43,33 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
 /**
  * @author jwells
+ * @param <T> The type of the constant
  *
  */
 public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     private final T theOne;
     
+    /**
+     * Creates the constant descriptor
+     * 
+     * @param theOne May not be null
+     * @param advertisedContracts
+     * @param scope
+     * @param name
+     * @param qualifiers
+     */
     public ConstantActiveDescriptor(T theOne,
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers) {
-        super(advertisedContracts, scope, name, qualifiers, 0);
+        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;

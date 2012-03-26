@@ -37,41 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.qualifiers;
+package org.glassfish.hk2.tests.locator.negative.factory;
 
-import javax.inject.Inject;
-
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class PurpleFactory implements Factory<Color> {
-    @Inject @Red
-    private Color red;
+public class NegativeFactoryTest {
+    private final static String TEST_NAME = "NegativeFactoryTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeFactoryModule());
     
-    @Inject @Blue
-    private Color blue;
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
+    /**
+     * Factories cannot have type variables
      */
-    @Override @Purple
-    public Color provide() {
-        if (!red.getColorName().equals(QualifierTest.RED)) throw new AssertionError("Red is not red: " + red);
-        if (!blue.getColorName().equals(QualifierTest.BLUE)) throw new AssertionError("Blue is not blue: " + blue);
+    @Test @Ignore
+    public void testFactoryWithTypeVariableType() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
         
-        return new DerivedColor(QualifierTest.PURPLE);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(Color instance) {
-        // TODO Auto-generated method stub
-
+        dc.bind(BuilderHelper.link(TypeVariableFactory.class).to(Factory.class).build());
+        
+        dc.commit();
+        
     }
 
 }

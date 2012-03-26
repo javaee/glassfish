@@ -44,25 +44,45 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
 /**
  * @author jwells
+ * @param <T> The type of the constant
  *
  */
 public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     private final T theOne;
     private final Long locatorId;
     
+    /**
+     * Creates a constant active descriptor with the given locator ID
+     * 
+     * @param theOne the object to create it from
+     * @param locatorId The id of the locator this is being created for
+     */
     public ConstantActiveDescriptor(T theOne, long locatorId) {
-        super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(), 0);
+        super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(),
+                DescriptorType.CLASS, 0);
         
         this.theOne = theOne;
         this.locatorId = new Long(locatorId);
     }
     
+    /**
+     * Constructor with more control over the fields of the descriptor
+     * 
+     * @param theOne
+     * @param advertisedContracts
+     * @param scope
+     * @param name
+     * @param qualifiers
+     * @param ranking
+     * @param locatorId
+     */
     public ConstantActiveDescriptor(T theOne,
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope,
@@ -70,7 +90,8 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Set<Annotation> qualifiers,
             int ranking,
             long locatorId) {
-        super(advertisedContracts, scope, name, qualifiers, ranking);
+        super(advertisedContracts, scope, name, qualifiers,
+                DescriptorType.CLASS, ranking);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;

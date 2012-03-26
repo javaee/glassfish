@@ -54,9 +54,20 @@ public class LocatorModule implements TestModule {
      */
     @Override
     public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(BootCommand.class).to(AdminCommand.class).build());
-        configurator.bind(BuilderHelper.link(GetStatisticsCommand.class).to(AdminCommand.class).build());
-        configurator.bind(BuilderHelper.link(ShutdownCommand.class).to(AdminCommand.class).build());
+        configurator.bind(BuilderHelper.link(BootCommand.class).
+                to(AdminCommand.class).
+                named("BootCommand").
+                build());
+        
+        configurator.bind(BuilderHelper.link(GetStatisticsCommand.class).
+                to(AdminCommand.class).
+                named("GetStatisticsCommand").
+                build());
+        
+        configurator.bind(BuilderHelper.link(ShutdownCommand.class).
+                to(AdminCommand.class).
+                named("ShutdownCommand").
+                build());
 
     }
 

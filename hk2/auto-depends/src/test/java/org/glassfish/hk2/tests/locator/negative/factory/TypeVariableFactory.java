@@ -37,41 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.qualifiers;
-
-import javax.inject.Inject;
+package org.glassfish.hk2.tests.locator.negative.factory;
 
 import org.glassfish.hk2.api.Factory;
 
 /**
  * @author jwells
+ * @param <T> Bad factory variable
  *
  */
-public class PurpleFactory implements Factory<Color> {
-    @Inject @Red
-    private Color red;
-    
-    @Inject @Blue
-    private Color blue;
+public class TypeVariableFactory<T> implements Factory<T> {
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#provide()
      */
-    @Override @Purple
-    public Color provide() {
-        if (!red.getColorName().equals(QualifierTest.RED)) throw new AssertionError("Red is not red: " + red);
-        if (!blue.getColorName().equals(QualifierTest.BLUE)) throw new AssertionError("Blue is not blue: " + blue);
-        
-        return new DerivedColor(QualifierTest.PURPLE);
+    @Override
+    public T provide() {
+        throw new AssertionError("not called");
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
     @Override
-    public void dispose(Color instance) {
-        // TODO Auto-generated method stub
-
+    public void dispose(T instance) {
+        throw new AssertionError("not called");
+        
     }
 
 }

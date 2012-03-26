@@ -37,9 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.qualifiers;
+package org.glassfish.hk2.tests.locator.factory;
 
-import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Factory;
 
@@ -47,31 +48,31 @@ import org.glassfish.hk2.api.Factory;
  * @author jwells
  *
  */
-public class PurpleFactory implements Factory<Color> {
-    @Inject @Red
-    private Color red;
-    
-    @Inject @Blue
-    private Color blue;
+@Singleton
+public class WashingtonFactory implements Factory<President> {
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#provide()
      */
-    @Override @Purple
-    public Color provide() {
-        if (!red.getColorName().equals(QualifierTest.RED)) throw new AssertionError("Red is not red: " + red);
-        if (!blue.getColorName().equals(QualifierTest.BLUE)) throw new AssertionError("Blue is not blue: " + blue);
-        
-        return new DerivedColor(QualifierTest.PURPLE);
+    @Override @Singleton @Named(FactoryTest.WASHINGTON_NAME)
+    public President provide() {
+        return new President() {
+
+            @Override
+            public int getNumber() {
+                return FactoryTest.WASHINGTON_NUMBER;
+            }
+            
+        };
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
     @Override
-    public void dispose(Color instance) {
-        // TODO Auto-generated method stub
-
+    public void dispose(President instance) {
+        throw new AssertionError("not called");
+        
     }
 
 }

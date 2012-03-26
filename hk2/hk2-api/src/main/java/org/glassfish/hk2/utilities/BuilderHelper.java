@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
@@ -89,23 +90,22 @@ public class BuilderHelper {
         return new IndexedFilterImpl(contract, name);
     }
     
-	/**
-	 * This method generates a {@link DescriptorBuilder} without a specific
-	 * implementation class, useful in lookup operations
-	 * 
-	 * @return A {@link DescriptorBuilder} that can be used to further
-	 * build up the {@link Descriptor}
-	 */
-	public static DescriptorBuilder link() {
-		return new DescriptorBuilderImpl();
-	}
+    /**
+     * Returns a filter of type Descriptor that matches
+     * all descriptors
+     * 
+     * @return A filter that matches all descriptors
+     */
+    public static Filter allFilter() {
+      return StarFilter.getDescriptorFilter();
+    }
 	
 	/**
      * This method links an implementation class with a {@link DescriptorBuilder}, to
      * be used to further build the {@link Descriptor}.
      * 
      * @param implementationClass The fully qualified name of the implementation
-     * class to be associated with the PredicateBuilder.
+     * class to be associated with the DescriptorBuilder.
      * @param addToContracts if true, this implementation class will be added to the
      * list of contracts
      * 
@@ -137,47 +137,7 @@ public class BuilderHelper {
 	
 	/**
      * This method links an implementation class with a {@link DescriptorBuilder}, to
-     * be used to further build the {@link Descriptor}.
-     * If the class is annotated with &#86;Named, it will also automatically fill in
-     * the name field of the descriptor.  If the class implements {@link Factory} then
-     * the name will automatically be filled in with the fully qualified class name
-     * of the actual type that the factory produces.  If the class has both
-     * &#86;Named and is a Factory and the value of the &;Named annotation does not match
-     * the value in &#86;Named then this method will throw an IllegalArgumentException
-     * 
-     * @param implementationClass The implementation class to be associated
-     * with the {@link DescriptorBuilder}.
-     * @param addToContracts true if this impl class should be automatically added to
-     * the list of contracts
-     * @param getName true if the name should be automatically added (if it is there)
-     * @return A {@link DescriptorBuilder} that can be used to further build up the
-     * {@link Descriptor}
-     * @throws IllegalArgumentException if implementationClass is null
-     */
-    public static DescriptorBuilder link(Class<?> implementationClass, boolean addToContracts, boolean getName) throws IllegalArgumentException {
-        if (implementationClass == null) throw new IllegalArgumentException();
-        
-        DescriptorBuilder builder = link(implementationClass.getName(), addToContracts);
-        
-        if (getName) {
-            String name = ReflectionHelper.getName(implementationClass);
-            if (name != null) {
-                builder = builder.named(name);
-            }
-        }
-        
-        return builder;
-    }
-	
-	/**
-     * This method links an implementation class with a {@link DescriptorBuilder}, to
-     * be used to further build the {@link Descriptor}.
-     * If the class is annotated with &#86;Named, it will also automatically fill in
-     * the name field of the descriptor.  If the class implements {@link Factory} then
-     * the name will automatically be filled in with the fully qualified class name
-     * of the actual type that the factory produces.  If the class has both
-     * &#86;Named and is a Factory and the value of the &;Named annotation does not match
-     * the value in &#86;Named then this method will throw an IllegalArgumentException
+     * be used to further build the {@link Descriptor}
      * 
      * @param implementationClass The implementation class to be associated
      * with the {@link DescriptorBuilder}.
@@ -188,16 +148,16 @@ public class BuilderHelper {
      * @throws IllegalArgumentException if implementationClass is null
      */
     public static DescriptorBuilder link(Class<?> implementationClass, boolean addToContracts) throws IllegalArgumentException {
-        return link(implementationClass, addToContracts, true);
+        if (implementationClass == null) throw new IllegalArgumentException();
+        
+        DescriptorBuilder builder = link(implementationClass.getName(), addToContracts);
+        
+        return builder;
     }
 	
 	/**
 	 * This method links an implementation class with a {@link DescriptorBuilder}, to
-	 * be used to further build the {@link Descriptor}.  If this class is not a factory
-	 * this method will put the name of the implementation class into the list of advertised
-	 * contracts.  If the class is annotated with &#86;Named, it will also automatically fill
-	 * in the name field of the descriptor.  If this class is a factory it will automatically
-	 * put {@link Factory} into the list of advertised contracts.
+	 * be used to further build the {@link Descriptor}.
 	 * 
 	 * @param implementationClass The implementation class to be associated
 	 * with the {@link DescriptorBuilder}.
@@ -218,25 +178,6 @@ public class BuilderHelper {
 	    
 	    return db;
 	}
-	
-	/**
-     * This method links an a factory with a {@link DescriptorBuilder}, to
-     * be used to further build the {@link Descriptor}.  This method will
-     * NOT put this implementation class into the list of advertised contracts.
-     * The {@link Descriptor} that is produced from this should describe what
-     * the factory creates, not the factory itself.  Remember that the factory
-     * itself must also be bound into the {@link Module}.
-     * 
-     * @param implementationClass The fully qualified name of the implementation
-     * class to be associated with the PredicateBuilder.
-     * 
-     * @return A {@link DescriptorBuilder} that can be used to further build up the
-     * {@link Descriptor}
-     * @throws IllegalArgumentException if implementationClass is null
-     */
-    public static DescriptorBuilder linkFactory(Class<?> factoryClass) throws IllegalArgumentException {
-        return link(factoryClass, false, false);
-    }
     
     /**
      * This creates a descriptor that will always return the given object.  The
@@ -246,7 +187,8 @@ public class BuilderHelper {
      * 
      * @param constant The non-null constant that should always be returned from
      * the create method of this ActiveDescriptor.  
-     * @return The descriptor can be used in calls to Configuration.addActiveDescriptor
+     * @return The descriptor returned can be used in calls to
+     * {@link Configuration}.addActiveDescriptor
      */
     public static ActiveDescriptor<?> createConstantDescriptor(Object constant) {
         if (constant == null) throw new IllegalArgumentException();
@@ -259,13 +201,5 @@ public class BuilderHelper {
                 ReflectionHelper.getQualifiersFromObject(constant));
     }
 	
-	/**
-	 * Returns a filter of type Descriptor that matches
-	 * all descriptors
-	 * 
-	 * @return A filter that matches all descriptors
-	 */
-	public static Filter allFilter() {
-	  return StarFilter.getDescriptorFilter();
-	}
+	
 }

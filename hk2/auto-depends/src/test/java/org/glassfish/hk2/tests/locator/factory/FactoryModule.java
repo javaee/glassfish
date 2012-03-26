@@ -45,7 +45,6 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
@@ -60,20 +59,41 @@ public class FactoryModule implements TestModule {
      */
     @Override
     public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.linkFactory(DateFactory.class).to(Date.class).build());
-        configurator.bind(BuilderHelper.link(DateFactory.class).to(Factory.class).build());
+        configurator.bind(BuilderHelper.link(DateFactory.class).to(Date.class).buildFactory());
         configurator.bind(BuilderHelper.link(DateInjectee.class).in(Singleton.class).build());
         
-        configurator.bind(BuilderHelper.linkFactory(
-                FruitFactory.class).to(Apple.class).in(FruitScope.class.getName()).build());
-        configurator.bind(
-                BuilderHelper.link(FruitFactory.class).to(Factory.class).in(Singleton.class.getName()).build());
+        configurator.bind(BuilderHelper.link(
+                FruitFactory.class).
+                to(Apple.class).
+                in(FruitScope.class.getName()).
+                buildFactory(Singleton.class.getName()));
         // Apple is not in the list, but its factory is
         
         // Also bind the custom scope
         configurator.bind(
-                BuilderHelper.link(FruitContext.class).to(Context.class).in(Singleton.class.getName()).build());
-
+                BuilderHelper.link(FruitContext.class).
+                to(Context.class).
+                in(Singleton.class.getName()).
+                build());
+        
+        // Now for our named factories.  They produce the same type (President)
+        // but they each do it with a different name
+        
+        // Washington
+        configurator.bind(BuilderHelper.link(
+                WashingtonFactory.class).
+                to(President.class).
+                in(Singleton.class.getName()).
+                named(FactoryTest.WASHINGTON_NAME).
+                buildFactory(Singleton.class.getName()));
+        
+        // Jefferson
+        configurator.bind(BuilderHelper.link(
+                JeffersonFactory.class).
+                to(President.class).
+                in(Singleton.class.getName()).
+                named(FactoryTest.JEFFERSON_NAME).
+                buildFactory());
     }
 
 }

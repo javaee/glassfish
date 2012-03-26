@@ -47,7 +47,6 @@ import org.glassfish.hk2.api.Factory;
  * @author jwells
  *
  */
-@Green
 public class GreenFactory implements Factory<Color> {
     @Inject @Yellow
     private Color yellow;
@@ -58,7 +57,7 @@ public class GreenFactory implements Factory<Color> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#provide()
      */
-    @Override
+    @Override @Green
     public Color provide() {
         if (!yellow.getColorName().equals(QualifierTest.YELLOW)) throw new AssertionError("Yellow is not yellow: " + yellow);
         if (!blue.getColorName().equals(QualifierTest.BLUE)) throw new AssertionError("Blue is not blue: " + blue);
