@@ -222,9 +222,12 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
 
         // make the habitat itself available
         Inhabitant<Habitat> habitatInh = new ExistingSingletonInhabitant<Habitat>(Habitat.class, this);
+       
         add(habitatInh);
         addIndex(habitatInh, Injector.class.getName(), null);
         addIndex(habitatInh, Services.class.getName(), null);
+        addIndex(habitatInh, BaseServiceLocator.class.getName(), null);
+        
         if (parent != null && name != null) {
             DynamicBinderFactory parentBinder = parent.bindDynamically();
             parentBinder.bind(Services.class).named(name).toInstance(this);
@@ -1426,6 +1429,16 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         }
     }
 
+    public <T> T getByContract(String contractType) {
+        List<NamedInhabitant> l = byContract.get(contractType);
+        if (l.isEmpty()) {
+            return null;
+        } else {
+            return (T) l.get(0).inhabitant.get();
+        }
+    }
+
+    
     private Object getBy(String implTypeName, MultiMap<String, Inhabitant> index) {
         List<Inhabitant> l = index.get(implTypeName);
         if (l.isEmpty()) {

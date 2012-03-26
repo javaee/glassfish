@@ -139,9 +139,9 @@
     </mailingLists>
 
     <scm>
-      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</connection>
-      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
-      <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
+      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/branches/hk2-pre-2.0</connection>
+      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/branches/hk2-pre-2.0</developerConnection>
+      <url>https://svn.java.net/svn/hk2~svn/branches/hk2-pre-2.0</url>
     </scm>
 
     <build>
@@ -392,6 +392,21 @@
             </plugin>
         </plugins>
     </reporting>
+
+    <pluginRepositories>
+        <!-- search SNAPSHOT plugin artifacts in maven.java.net -->
+        <pluginRepository>
+            <id>jvnet-nexus-snapshots</id>
+            <name>Java.net Nexus Snapshots Repository</name>
+            <url>https://maven.java.net/content/repositories/snapshots</url>
+            <releases>
+               <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
     <distributionManagement>
         <site>

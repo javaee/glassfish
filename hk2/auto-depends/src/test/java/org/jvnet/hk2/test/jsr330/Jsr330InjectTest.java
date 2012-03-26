@@ -49,6 +49,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Qualifier;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Contract;
@@ -119,7 +120,7 @@ public class Jsr330InjectTest {
 
         ITestService2 newTestService2 = iTestService2Provider.get();
 
-        assertNotNull(newTestService2);
+        assertNotNull(newTestService2);   // Fails here.
 
         assertTrue("Instances should be distinguished by name", testService1.getITestService2() != newTestService2);
 	}
