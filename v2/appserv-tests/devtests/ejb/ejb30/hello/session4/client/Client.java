@@ -23,8 +23,7 @@ public class Client {
     public Client (String[] args) {
     }
 
-    // can't use annotations from appclient that doesn't go through deployment in V3?
-    //    @EJB(name="ejb/sful")
+    @EJB(name="ejb/sful")
     private static Sful sful;
 
     // NOTE : Do not reference Sful2 within annotations
