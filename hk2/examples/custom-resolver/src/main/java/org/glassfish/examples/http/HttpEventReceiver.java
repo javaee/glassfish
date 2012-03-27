@@ -59,7 +59,6 @@ public class HttpEventReceiver {
     private int lastRank;
     private long lastId;
     private String lastAction;
-    private HttpRequest lastRequest;
     
     /**
      * This method will get called back with the
@@ -70,18 +69,19 @@ public class HttpEventReceiver {
      * @param rank the rank, parameter zero of the HttpRequest (from the alternate)
      * @param id the id, parameter one of the HttpRequest (from the alternate)
      * @param action the action, parameter two of the HttpRequest (from the alternate)
-     * @param baseRequest The request we are working with at this time (from the system resolver)
+     * @param logger a logger to send interesting messages to
      */
     @AlternateInject
-    public void recieveRequest(
+    public void receiveRequest(
             @HttpParameter int rank,
             @HttpParameter(1) long id,
             @HttpParameter(2) String action,
-            HttpRequest baseRequest) {
+            Logger logger) {
         lastRank = rank;
         lastId = id;
         lastAction = action;
-        lastRequest = new HttpRequest(baseRequest);
+        
+        logger.log("I got a message of rank " + lastRank + " and id " + lastId + " and action " + action);
     }
 
     /**
@@ -103,12 +103,5 @@ public class HttpEventReceiver {
      */
     public String getLastAction() {
         return lastAction;
-    }
-
-    /**
-     * @return the lastRequest
-     */
-    public HttpRequest getLastRequest() {
-        return lastRequest;
     }
 }

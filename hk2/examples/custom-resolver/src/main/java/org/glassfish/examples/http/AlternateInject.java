@@ -39,20 +39,18 @@
  */
 package org.glassfish.examples.http;
 
-import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
+ * Our custom injection annotation.  Only supported on methods.
+ * 
  * @author jwells
- *
  */
 @Retention(RUNTIME)
-@Target( { TYPE, METHOD, FIELD })
+@Target( { METHOD })
 public @interface AlternateInject {
-
 }

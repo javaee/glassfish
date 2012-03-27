@@ -1,0 +1,179 @@
+Custom Injection Resolver Example
+
+* Custom Injection Resolution
+
+ This directory contains an example that illustrates how to write a custom injection resolver.
+ 
+ A custom injector allow users to define their own injection annotation, or to customize in some way the system
+ injection resolver that does the JSR-330 standard resolution.  In this example, we will define our own
+ injection resolver which customizes the JSR-300 standard one, but supplies the ability to get more information
+ out of annotations on the parameter of a method.
+ 
+ In this use case, we want to have a method that can be injected, and which can annotate parameters of the method
+ to determines the value that parameter should take.  The real value will end up coming from an index
+ into the data of an HttpRequest.  Here is an example of a method that uses this custom injector, from the
+ HttpEventReceiver class:
+ 
++--------------------+
+    @AlternateInject
+    public void receiveRequest(
+            @HttpParameter int rank,
+            @HttpParameter(1) long id,
+            @HttpParameter(2) String action,
+            Logger logger) {
+       ...
+    }
++--------------------+
+
+ The method receiveRequest takes the parameters rank, id, action and logger.  But the determination of what value rank, id and
+ action should take will be determined by the index in the HttpParameter annotation.  Here is the definition of HttpParameter:
+ 
++--------------------+
+@Retention(RUNTIME)
+@Target( { PARAMETER })
+public @interface HttpParameter {
+    /** The index  number of the parameter to retrieve */
+    public int value() default 0;
+}
++--------------------+
+
+ The logger parameter of the receiveRequest method is just another service.  This service will come from the normal JSR-330
+ resolver, but the other parameters will be determined from the HttpParameter annotation.  The determination of
+ what the values should take comes from an object called the HttpRequest, which does nothing but store strings in certain indexes.
+ The HttpRequest object itself is in the RequestScope context, which means its values will change depending on what request
+ is currently active.  In order to do that, the RequestScope context is a Proxiable context.  We will see more about creating
+ the RequestScoped context later in this document.
+ 
+ For now, lets look at how we define the @AlternateInject annotation.  An injection annotation is valid on fields, methods and
+ constructors.  However, in this case the @AlternateInject is only supported for methods, so the definition of
+ @AlternateInject looks like this:
+ 
++--------------------+
+@Retention(RUNTIME)
+@Target( { METHOD })
+public @interface AlternateInject {
+}
++--------------------+
+
+ When providing a custom injection annotation, you must also provide an implementation of the
+ {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} interface.  It is this
+ implementation that will be called whenever HK2 wants to inject into a constructor or field or method
+ that is annotated with the custom injection annotation.  The actual type of the parameterized type of
+ the {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} implementation must be
+ the custom injection annotation.  Here is how the AlternateInjectionResolver is defined:
+ 
++--------------------+
+@Singleton
+public class AlternateInjectResolver implements InjectionResolver<AlternateInject> {...}
++--------------------+
+ 
+ Implementations of {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} are registered
+ with HK2 like any other service, and like any other service they may be injected with other services in the system.
+ The AlternateInjectResolver is in the @Singleton context, which is the usual context for implementations of
+ {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}}.  In general however implementations of
+ {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} may be in any context.  Implementations
+ of {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} may not use the custom injection
+ annotations that they themselves are defining to inject things into themselves.
+ 
+ Implementations of {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} that want
+ to customize the default JSR-330 system provided injector can do so by injecting the default JSR-330 system provided
+ injector.  The AlternateInjectionResolver does just that:
+ 
++--------------------+
+public class AlternateInjectResolver implements InjectionResolver<AlternateInject> {
+    @Inject @Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
+    private InjectionResolver<Inject> systemResolver;
+}
++--------------------+
+
+ The system JSR-330 injection resolver is put into the registry with a specific name so that other injection resolvers
+ can easily inject it using the @Named annotation.
+ 
+ Now we need to write the resolve method from {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}}.
+ We can get the current method we are injecting into from the passed in
+ {{{./apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}, and from that we can tell whether or not any particular
+ parameter of the method has the @HttpParameter annotation.  But what happens when a parameter does have the
+ @HttpParameter annotation?
+ 
+ In that case, the real data should come from the underlying HttpRequest object.  The HttpRequest object is a very simple
+ object that stores strings at certain indexes:
+ 
++--------------------+
+@RequestScope
+public class HttpRequest {
+    public String getPathElement(int index) {...}
+    
+    public void addElement(String element) {...}
+}
++--------------------+
+
+ Because this is a request scoped object, the underlying values will change whenever the request has changed.  So our
+ AlternateInjectResolver can inject an HttpRequest object and use it to get values whenever it detects an
+ @HttpParameter annotation on a parameter of the method.  This is a code snippet from AlternateInjectResolver:
+ 
++--------------------+
+    @Inject
+    private HttpRequest request;
+    
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        ...
+        
+        Annotation annotations[] = method.getParameterAnnotations()[injectee.getPosition()];
+        HttpParameter httpParam = getHttpParameter(annotations);
+        if (httpParam == null) {
+            return systemResolver.resolve(injectee, root);
+        }
+        
+        int index = httpParam.value();
+        String fromRequest = request.getPathElement(index);
+        
+        ...
+    }
++--------------------+
+
+ In the above code snippet the resolve method looks for an HttpParameter annotation on the particular parameter being
+ injected.  If it does not find such an annotation it simply lets the system injection resolver do the resolution.
+ Otherwise, it gets the value from the injected HttpRequest.
+ 
+ But that is not the end of the story.  The values that get injected into can be of type int, long or String.  The
+ resolve method can determine the type that is required to be returned, and ensure that it does the correct conversion
+ before returning the object.  Here is how that code works:
+ 
++--------------------+
+        Class<?> injecteeType = method.getParameterTypes()[injectee.getPosition()];
+        if (int.class.equals(injecteeType)) {
+            return Integer.parseInt(fromRequest);
+        }
+        if (long.class.equals(injecteeType)) {
+            return Long.parseLong(fromRequest);
+        }
+        if (String.class.equals(injecteeType)) {
+            return fromRequest;
+        }
++--------------------+
+
+ That is it for the implementation of our custom injection resolver!  Every time the HttpEventReceiver
+ class is instantiated its receiveRequest method will be called with the values from the current
+ HttpRequest.  The custom injection resolver was used to find the proper values in the HttpRequest and
+ to convert them to the proper types.  The logger would come from the default JSR-330 resolver, since
+ it is not annotated with the HttpParameter annotation.
+ 
+* The RequestScope Context
+ 
+ While the above is enough to demonstrate the custom injection resolver, it is instructive to also go through
+ how the RequestScope context works.
+ 
+ The RequestScope context is a Proxiable context that changes every time a new request has come in.  The HttpRequest
+ in the above example is in the RequestScope, and hence its underlying values will change whenever the Request
+ has been deemed to change.
+ 
+ In order to create such a scope/context, we first define the scope annotation, RequestScope:
+ 
++--------------------+
+@Scope
+@Proxiable
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD })
+public @interface RequestScope {
+}
++--------------------+
