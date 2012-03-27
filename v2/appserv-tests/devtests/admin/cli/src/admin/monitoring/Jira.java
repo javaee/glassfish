@@ -149,8 +149,7 @@ public class Jira extends MonTest {
         boolean b3 = checkForString(ar, "server.web.request");
         boolean b4 = checkForString(ar, "server.web.servlet");
 
-        //if( ! (b1 && b2 && b3 && b4) ) {
-        if( true  ) {
+        if( ! (b1 && b2 && b3 && b4) ) {
             System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
             System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
             System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
