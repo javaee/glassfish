@@ -163,8 +163,8 @@ public class HttpRequest {
  While the above is enough to demonstrate the custom injection resolver, it is instructive to also go through
  how the RequestScope context works.
  
- The RequestScope context is a Proxiable context that changes every time a new request has come in.  The HttpRequest
- in the above example is in the RequestScope, and hence its underlying values will change whenever the Request
+ The RequestScope context is a proxiable context that changes every time a new request has come in.  The HttpRequest
+ in the above example is in the RequestScope, and hence its underlying values will change whenever the request
  has been deemed to change.
  
  In order to create such a scope/context, we first define the scope annotation, RequestScope:
@@ -177,3 +177,211 @@ public class HttpRequest {
 public @interface RequestScope {
 }
 +--------------------+
+
+ The context that goes along with that request scope must implement the
+ {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} interface.  The actual type of the
+ {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} parameterized type must be the
+ annotation of the scope.  The {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} implementation
+ for our RequestScope is called RequestContext and is defined like this:
+ 
++--------------------+
+@Singleton
+public class RequestContext implements Context<RequestScope> {...}
++--------------------+
+
+ Most implementations of {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} are put into the Singleton
+ scope, though this is not required.  An implementation of {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}}
+ are just like regular HK2 services, and so can be injected with other HK2 services.
+ 
+ The job of an implementation of {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is to keep a mapping
+ of objects created for that particular context while that context is active.  The code that looks up and finds
+ objects for a particular request is straight-forward:
+
++--------------------+
+    private final HashMap<ActiveDescriptor<?>, Object> requestScopedEntities =
+        new HashMap<ActiveDescriptor<?>, Object>();
+        
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        U retVal = (U) requestScopedEntities.get(activeDescriptor);
+        if (retVal != null) {
+            return retVal;
+        }
+        
+        retVal = activeDescriptor.create(root);
+        requestScopedEntities.put(activeDescriptor, retVal);
+        
+        return retVal;
+    }
+
+    public <U> U find(ActiveDescriptor<U> descriptor) {
+        return (U) requestScopedEntities.get(descriptor);
+    }
++--------------------+
+
+ Since an implementation of {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is a service, it can be
+ looked up by other services.  RequestContext has methods on it that allow some controller to tell it when
+ a request has started, and when it ends.  When a request ends its objects are no longer needed and should
+ be destroyed.  Here are the methods on RequestContext that begin and end a request:
+ 
++--------------------+
+    private boolean inRequest = false;
+    
+    /**
+     * Starts a request
+     */
+    public void startRequest() {
+        inRequest = true;
+    }
+    
+    public void stopRequest() {
+        inRequest = false;
+        
+        for (Map.Entry<ActiveDescriptor<?>, Object> entry : requestScopedEntities.entrySet()) {
+            ActiveDescriptor<Object> ad = (ActiveDescriptor<Object>) entry.getKey();
+            Object value = entry.getValue();
+            
+            ad.dispose(value);
+        }
+        
+        requestScopedEntities.clear();
+    }
+    
+    public boolean isActive() {
+        return inRequest;
+    }
++--------------------+
+
+ The startRequest method above sets the flag saying that the Request has begun.  Any new requests to
+ find or create request scoped objects will be adding those objects to the requestScopedEntities map.  The
+ stopRequest method above will set the flag saying that the request is over and destroy any objects that were
+ created for this request.  It then also clears the requestScopedEntities map so that this RequestScoped context
+ is now clean and ready for the next request to come along.  The isActive method of
+ {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} will tell the system whether or not there is
+ a request that is active.
+ 
+ That is it for the implementation of our RequestScope scope/context pair.  In this example the HttpRequest object
+ is in the RequestScope, but this implementation does not preclude other services from also being in this scope.
+ The scope is Proxiable, so that it can be injected into other objects with a different lifecycle (like the
+ AlternateInjectResolver itself).  Further, it properly disposes all request scoped objects that were created
+ when the request has terminated.
+ 
+* Putting it all together
+
+ We now have a custom injection resolver and a custom scope.  Lets look at the other classes in the example, to see
+ how they tie everything together.
+ 
+ First we have a class called the HttpServer.  The HttpServer is a mock HttpServer that takes requests from the faux
+ network and does the following things:
+ 
+ * Tells the RequestScope that a Request has begun
+ 
+ * Fills in the HttpRequest with information from the wire
+ 
+ []
+ 
+ The request processing then continues from there, until the faux network decides that the request has finished.  The
+ HttpServer will then tell the RequestContext that the request has terminated.
+ 
+ Here is the implementation of our mocked HttpServer:
+
++--------------------+
+@Singleton
+public class HttpServer {
+    @Inject
+    private HttpRequest httpRequest;
+    
+    @Inject
+    private RequestContext requestContext;
+    
+    public void startRequest(String lastRank, String id, String action) {
+        requestContext.startRequest();
+        
+        httpRequest.addElement(lastRank);
+        httpRequest.addElement(id);
+        httpRequest.addElement(action);
+    }
+    
+    public void finishRequest() {
+        requestContext.stopRequest();
+    }
+}
++--------------------+
+
+ This mock HttpServer will be used by the test code to give the server requests from the network and to then end those requests.  The
+ injected HttpRequest will be created anew in the HttpServer.startRequest  method when the RequestContext.startRequest() method is called.
+ 
+ We then have another class called RequestProcessor which is in the PerLookup scope and which is responsible for further handling the
+ request.  In our example it doesn't have much to do other than injecting an instance of the HttpEventReceiver.  Since the
+ HttpEventReceiver is also in the PerLookup scope, it will be created whenever the instance of RequestProcessor is created.  Here is
+ the code for RequestProcessor:
+ 
++--------------------+
+@PerLookup
+public class RequestProcessor {
+    @Inject
+    private HttpEventReceiver eventReciever;
+    
+    public HttpEventReceiver processHttpRequest() {
+        return eventReciever;
+    }
+}
++--------------------+
+
+ We can now look at how the test code work.
+ 
+ The test has a helper method that does the following:
+ 
+ * Gets the HttpServer service
+ 
+ * starts a request by giving it passed in strings that came from the faux network
+ 
+ * Gets a RequestProcessor service
+ 
+ * Gets the HttpEventReceiver from the RequestProcessor
+ 
+ * ends the request with the HttpServer
+ 
+ * Checks that the values from the HttpEventReceiver were passed into it properly
+ 
+ []
+ 
+ Here is the test utility method:
+ 
++--------------------+
+    private void doRequest(int rank, long id, String event) {
+        HttpServer httpServer = locator.getService(HttpServer.class);
+        
+        httpServer.startRequest("" + rank, "" + id, event);
+        
+        RequestProcessor processor = locator.getService(RequestProcessor.class);
+        
+        HttpEventReceiver receiver = processor.processHttpRequest();
+        
+        httpServer.finishRequest();
+        
+        // And now test that we got what we should have
+        Assert.assertEquals(rank, receiver.getLastRank());
+        Assert.assertEquals(id, receiver.getLastId());
+        Assert.assertEquals(event, receiver.getLastAction());
+    }
++--------------------+
+
+ After having this utility method, the test itself is very simple, and just ensures that the whole thing fits together nicely:
+ 
++--------------------+
+    @Test
+    public void testSomeRequests() {
+        doRequest(50, 1, "FirstRequest");
+        doRequest(100, 2, "SecondRequest");
+        doRequest(1000, 3, "ThirdRequest");
+    }
++--------------------+
+
+* Conclusion
+
+ In this example we have learned how to create and use a custom injection resolver and a request scoped context.  We have done so
+ with a fake HttpServer example, that takes requests from a fake network and passes values to services based on fields in the
+ HttpRequest.  We have seen how the custom resolver can use data from annotations to further discover the values that should be
+ given to the parameter.  We have seen how the proxiable request context is used to ensure that the underlying request can
+ change from request to request.  We have shown how a custom resolver can customize the default JSR-330 provider.

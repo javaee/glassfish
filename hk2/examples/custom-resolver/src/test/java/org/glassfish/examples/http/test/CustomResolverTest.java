@@ -50,9 +50,17 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * The test that ensures that this example works properly
+ * 
+ * @author jwells
+ */
 public class CustomResolverTest {
     private ServiceLocator locator;
     
+    /**
+     * For Junit, does this before every test
+     */
     @Before
     public void doBefore() {
         locator = ServiceLocatorFactory.getInstance().create("CustomResolverTest");
