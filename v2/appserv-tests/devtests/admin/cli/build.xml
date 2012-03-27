@@ -51,7 +51,11 @@
     &reporting;
     &run;
 
-    <property name="gfurl" value="http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
+    <property name="trunkurl" value="http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
+    <property name="dasbranchurl" value="http://gf-hudson.us.oracle.com/hudson/view/GFv3%20Trunk/job/gf-ha-das-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
+    <!--
+    <property name="gfurl" value="${trunkurl}"/>
+    -->
     <property name="stylesheet" value="${env.APS_HOME}/config/j2eeReporter.xsl" />
     <property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
@@ -389,13 +393,23 @@
         <echo message="************   JavaDB Stopped **********"/>
     </target>
 
-    <target name="download">
+    <target name="download" depends="fetchurl">
+        <echo message="gfurl == ${gfurl}"/>
         <get verbose="${verbose}" src="${gfurl}" dest="${asinstall_dir}/glassfish.zip"/>
         <delete dir="${asinstall_dir}/glassfish3" includeemptydirs="true"/>
         <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
         <chmod perm="a+x" file="${asinstall_dir}/glassfish3/bin/asadmin"/>
         <chmod perm="a+x" file="${asinstall_dir}/glassfish3/glassfish/bin/asadmin"/>
         <chmod perm="a+x" file="${asinstall_dir}/glassfish3/glassfish/lib/nadmin"/>
+    </target>
+
+    <!--
+    Complicated in order to keep the old default for existing hudson jobs
+    -->
+    <target name="fetchurl">
+        <condition property="gfurl" value = "${env.BRANCH_URL}" else = "${trunkurl}">
+            <contains string="${env.BRANCH_URL}" substring="http"/>
+        </condition>
     </target>
 
     <target name="usage">
