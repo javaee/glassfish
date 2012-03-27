@@ -155,7 +155,7 @@ public class Jira extends MonTest {
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
             System.out.println("Monitoring Test for 14389 FAILED!!");
             System.out.printf("b1: %b, b2: %b, b3: %b, b4: %b\n", b1,b2,b3,b4);
-            System.out.println(ar.toString());
+            System.out.println("Here is outAndErr:\n" + ar.outAndErr);
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
