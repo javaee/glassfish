@@ -45,6 +45,7 @@ import org.glassfish.examples.http.AlternateInjectResolver;
 import org.glassfish.examples.http.HttpEventReceiver;
 import org.glassfish.examples.http.HttpRequest;
 import org.glassfish.examples.http.HttpServer;
+import org.glassfish.examples.http.Logger;
 import org.glassfish.examples.http.RequestContext;
 import org.glassfish.examples.http.RequestProcessor;
 import org.glassfish.examples.http.RequestScope;
@@ -104,6 +105,10 @@ public class Populator {
         config.bind(BuilderHelper.link(RequestProcessor.class).
                 build());
         
+        // The logger is just another service to be injected
+        config.bind(BuilderHelper.link(Logger.class).
+                in(Singleton.class.getName()).
+                build());
         
         // And commit
         config.commit();           

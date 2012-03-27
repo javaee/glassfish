@@ -44,6 +44,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Injectee;
@@ -56,6 +57,9 @@ import org.glassfish.hk2.api.ServiceHandle;
  */
 @Singleton
 public class AlternateInjectResolver implements InjectionResolver<AlternateInject> {
+    @Inject @Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
+    private InjectionResolver<Inject> systemResolver;
+    
     @Inject
     private HttpRequest request;
 
@@ -71,13 +75,10 @@ public class AlternateInjectResolver implements InjectionResolver<AlternateInjec
         
         Method method = (Method) parent;
         
-        Class<?> injecteeType = method.getParameterTypes()[injectee.getPosition()];
-        if (HttpRequest.class.isAssignableFrom(injecteeType)) return request;
-        
         Annotation annotations[] = method.getParameterAnnotations()[injectee.getPosition()];
         HttpParameter httpParam = getHttpParameter(annotations);
         if (httpParam == null) {
-            throw new AssertionError("There must be an HttpParameter on all non HttpRequest method parameters: " + injectee);
+            return systemResolver.resolve(injectee, root);
         }
         
         int index = httpParam.value();
@@ -86,6 +87,7 @@ public class AlternateInjectResolver implements InjectionResolver<AlternateInjec
             throw new AssertionError("There should have been a value at index " + index);
         }
         
+        Class<?> injecteeType = method.getParameterTypes()[injectee.getPosition()];
         if (int.class.equals(injecteeType)) {
             return Integer.parseInt(fromRequest);
         }
@@ -104,10 +106,7 @@ public class AlternateInjectResolver implements InjectionResolver<AlternateInjec
             if (HttpParameter.class.equals(anno.annotationType())) {
                 return (HttpParameter) anno;
             }
-            
-            System.out.println("JRW(10) This failed: " + anno);
         }
-        System.out.println("JRW(20) No param found");
         
         return null;
     }

@@ -39,40 +39,25 @@
  */
 package org.glassfish.examples.http;
 
-import java.util.ArrayList;
+import javax.inject.Singleton;
 
 /**
- * This is not a true HttpRequest, but is just here for illustration purposes.
- * It would get the individual items out of the real HttpRequest in a real system.
- * In this case, it just spits out whatever is put in
+ * This is just an example of another service a method might
+ * want to inject
  * 
  * @author jwells
  *
  */
-@RequestScope
-public class HttpRequest {
-    private final ArrayList<String> elements = new ArrayList<String>();
-    
+@Singleton
+public class Logger {
     /**
-     * Gets the path element from the given index
+     * This just prints the string to stdout.  It is merely to illustrate
+     * an example service that other services might want to inject
      * 
-     * @param index the element to get the index from
-     * @return The element at this index (as a string)
+     * @param logMe The string to log
      */
-    public String getPathElement(int index) {
-        if (elements.size() <= index) {
-            throw new AssertionError("There is no element at index " + index);
-        }
-        
-        return elements.get(index);
+    public void log(String logMe) {
+        System.out.println(logMe);
     }
-    
-    /**
-     * Sets the next element in the request
-     * 
-     * @param element The element to put next in the elements list
-     */
-    public void addElement(String element) {
-        elements.add(element);
-    }
+
 }
