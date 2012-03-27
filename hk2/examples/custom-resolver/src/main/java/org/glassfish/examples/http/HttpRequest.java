@@ -40,6 +40,10 @@
 package org.glassfish.examples.http;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.inject.Inject;
 
 /**
  * This is not a true HttpRequest, but is just here for illustration purposes.
@@ -49,8 +53,21 @@ import java.util.ArrayList;
  * @author jwells
  *
  */
+@RequestScope
 public class HttpRequest {
     private final ArrayList<String> elements = new ArrayList<String>();
+    
+    /**
+     * This Inject ensures that this is the constructor that will be called
+     * by HK2
+     */
+    @Inject
+    public HttpRequest() {
+    }
+    
+    /* package */ HttpRequest(HttpRequest copyMe) {
+        elements.addAll(copyMe.getAllElement());
+    }
     
     /**
      * Gets the path element from the given index
@@ -73,5 +90,14 @@ public class HttpRequest {
      */
     public void addElement(String element) {
         elements.add(element);
+    }
+    
+    /**
+     * Sets the next element in the request
+     * 
+     * @return A list of all elements in this request
+     */
+    public List<String> getAllElement() {
+        return Collections.unmodifiableList(elements);
     }
 }

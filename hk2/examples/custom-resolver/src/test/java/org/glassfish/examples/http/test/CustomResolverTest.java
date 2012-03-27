@@ -37,25 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.http;
+package org.glassfish.examples.http.test;
 
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import junit.framework.Assert;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.glassfish.examples.http.HttpEventReceiver;
+import org.glassfish.examples.http.HttpServer;
+import org.glassfish.examples.http.RequestProcessor;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 
-/**
- * This is a special annotation that can be used to pull
- * out the specific information from the HttpRequest
- * 
- * @author jwells
- *
- */
-@Retention(RUNTIME)
-@Target( { PARAMETER })
-public @interface HttpParameter {
-    /** The index  number of the parameter to retrieve */
-    public int value() default 0;
+import org.junit.Before;
+import org.junit.Test;
 
+public class CustomResolverTest {
+    private ServiceLocator locator;
+    
+    @Before
+    public void doBefore() {
+        locator = ServiceLocatorFactory.getInstance().create("CustomResolverTest");
+        
+        Populator.populate(locator);
+    }
+    
+    private void doRequest(int rank, long id, String event) {
+        HttpServer httpServer = locator.getService(HttpServer.class);
+        
+        httpServer.startRequest("" + rank, "" + id, event);
+        
+        RequestProcessor processor = locator.getService(RequestProcessor.class);
+        
+        HttpEventReceiver receiver = processor.processHttpRequest();
+        
+        httpServer.finishRequest();
+        
+        // And now test that we got what we should have
+        Assert.assertEquals(rank, receiver.getLastRank());
+        Assert.assertEquals(id, receiver.getLastId());
+        Assert.assertEquals(event, receiver.getLastAction());
+    }
+    
+    /**
+     * Runs some requests through our fake HttpServer
+     */
+    @Test
+    public void testSomeRequests() {
+        doRequest(50, 1, "FirstRequest");
+        doRequest(100, 2, "SecondRequest");
+        doRequest(1000, 3, "ThirdRequest");
+        
+    }
 }

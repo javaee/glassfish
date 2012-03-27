@@ -39,23 +39,25 @@
  */
 package org.glassfish.examples.http;
 
-import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import javax.inject.Scope;
+
+import org.glassfish.hk2.api.Proxiable;
+
 /**
- * This is a special annotation that can be used to pull
- * out the specific information from the HttpRequest
+ * The request scope is a proxiable scope, and changes from request to request
  * 
  * @author jwells
- *
  */
+@Scope
+@Proxiable
 @Retention(RUNTIME)
-@Target( { PARAMETER })
-public @interface HttpParameter {
-    /** The index  number of the parameter to retrieve */
-    public int value() default 0;
-
+@Target( { TYPE, METHOD })
+public @interface RequestScope {
 }

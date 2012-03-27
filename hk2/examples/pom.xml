@@ -55,5 +55,6 @@
     <name>Examples of various use cases</name>
     <modules>
             <module>ctm</module>
+            <module>custom-resolver</module>
     </modules>
 </project>

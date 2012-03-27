@@ -39,23 +39,41 @@
  */
 package org.glassfish.examples.http;
 
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
- * This is a special annotation that can be used to pull
- * out the specific information from the HttpRequest
- * 
  * @author jwells
  *
  */
-@Retention(RUNTIME)
-@Target( { PARAMETER })
-public @interface HttpParameter {
-    /** The index  number of the parameter to retrieve */
-    public int value() default 0;
+@Singleton
+public class HttpServer {
+    @Inject
+    private HttpRequest httpRequest;
+    
+    @Inject
+    private RequestContext requestContext;
+    
+    /**
+     * This method starts an httpRequest, with all the values from that request
+     * 
+     * @param lastRank The last rank as read in from the network
+     * @param id The last request id as read in from the network
+     * @param action The last action as read in from the network
+     */
+    public void startRequest(String lastRank, String id, String action) {
+        requestContext.startRequest();
+        
+        httpRequest.addElement(lastRank);
+        httpRequest.addElement(id);
+        httpRequest.addElement(action);
+    }
+    
+    /**
+     * Finishes the request
+     */
+    public void finishRequest() {
+        requestContext.stopRequest();
+    }
 
 }
