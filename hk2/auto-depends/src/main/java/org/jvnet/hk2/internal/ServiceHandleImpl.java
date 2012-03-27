@@ -169,5 +169,9 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     public void addSubHandle(ServiceHandleImpl<?> subHandle) {
         subHandles.add(subHandle);
     }
+    
+    public String toString() {
+        return "ServiceHandle(" + root + "," + System.identityHashCode(this) + ")"; 
+    }
 
 }

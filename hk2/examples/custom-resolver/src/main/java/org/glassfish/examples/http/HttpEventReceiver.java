@@ -39,6 +39,8 @@
  */
 package org.glassfish.examples.http;
 
+import org.glassfish.hk2.api.PerLookup;
+
 /**
  * This receiver will receive a specific kind of HttpRequest
  * where the elements of the request have these types:
@@ -52,7 +54,13 @@ package org.glassfish.examples.http;
  * @author jwells
  *
  */
+@PerLookup
 public class HttpEventReceiver {
+    private int lastRank;
+    private long lastId;
+    private String lastAction;
+    private HttpRequest lastRequest;
+    
     /**
      * This method will get called back with the
      * information filled in from the request, either
@@ -70,9 +78,37 @@ public class HttpEventReceiver {
             @HttpParameter(1) long id,
             @HttpParameter(2) String action,
             HttpRequest baseRequest) {
-        // Do some fun coding here
-        
+        lastRank = rank;
+        lastId = id;
+        lastAction = action;
+        lastRequest = new HttpRequest(baseRequest);
     }
-            
 
+    /**
+     * @return the lastRank
+     */
+    public int getLastRank() {
+        return lastRank;
+    }
+
+    /**
+     * @return the lastId
+     */
+    public long getLastId() {
+        return lastId;
+    }
+
+    /**
+     * @return the lastAction
+     */
+    public String getLastAction() {
+        return lastAction;
+    }
+
+    /**
+     * @return the lastRequest
+     */
+    public HttpRequest getLastRequest() {
+        return lastRequest;
+    }
 }

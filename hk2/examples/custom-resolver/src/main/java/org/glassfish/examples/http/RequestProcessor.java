@@ -39,23 +39,31 @@
  */
 package org.glassfish.examples.http;
 
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.inject.Inject;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
- * This is a special annotation that can be used to pull
- * out the specific information from the HttpRequest
+ * This is a class that processes an event as it comes.  In this implementation
+ * it just gets an HttpEventReceiver and would possibly do something with it.
+ * The HttpEventReciever of course has the information from the latest HttpRequest.
  * 
  * @author jwells
  *
  */
-@Retention(RUNTIME)
-@Target( { PARAMETER })
-public @interface HttpParameter {
-    /** The index  number of the parameter to retrieve */
-    public int value() default 0;
-
+@PerLookup
+public class RequestProcessor {
+    @Inject
+    private HttpEventReceiver eventReciever;
+    
+    /**
+     * This implementation processes the HttpRequest and returns
+     * its HttpEventReceiver (mainly so that it can be properly
+     * tested)
+     * 
+     * @return The HttpEventReceiver for this request
+     */
+    public HttpEventReceiver processHttpRequest() {
+        return eventReciever;
+    }
 }

@@ -69,7 +69,7 @@ public class MethodInterceptorImpl implements MethodInterceptor {
     @Override
     public Object intercept(Object arg0, Method arg1, Object[] arg2,
             MethodProxy arg3) throws Throwable {
-        Context context = locator.resolveContext(descriptor.getScopeAnnotation());
+        Context<?> context = locator.resolveContext(descriptor.getScopeAnnotation());
         Object service = context.findOrCreate(descriptor, root);
         
         return Utilities.invoke(service, arg1, arg2);
