@@ -150,17 +150,16 @@ public class Jira extends MonTest {
         boolean b4 = checkForString(ar, "server.web.servlet");
 
         if( ! (b1 && b2 && b3 && b4) ) {
-            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
-            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
-            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+            System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+            System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+            System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
             System.out.println("Monitoring Test for 14389 FAILED!!");
-            System.out.println("Here is the output of 'asadmin list -m *':");
+            System.out.printf("b1: %b, b2: %b, b3: %b, b4: %b\n", b1,b2,b3,b4);
             System.out.println(ar.toString());
-            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
-            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
-            System.out.println("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
+            System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+            System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+            System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
         }
-
         report(checkForString(ar, "server.applications"), prepend + "check-listm-server-applications");
         report(checkForString(ar, "server.web.session"), prepend + "check-listm-server-web-session");
         report(checkForString(ar, "server.web.request"), prepend + "check-listm-server-web-request");
