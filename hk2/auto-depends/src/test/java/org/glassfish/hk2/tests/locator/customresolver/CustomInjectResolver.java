@@ -43,6 +43,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -51,12 +55,10 @@ import org.glassfish.hk2.api.ServiceHandle;
  * @author jwells
  *
  */
-public class CustomInjectResolver implements InjectionResolver {
-    private final InjectionResolver systemInjectResolver;
-    
-    CustomInjectResolver(InjectionResolver parent) {
-        systemInjectResolver = parent;
-    }
+@Singleton
+public class CustomInjectResolver implements InjectionResolver<Inject> {
+    @Inject @Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
+    private InjectionResolver<Inject> systemResolver;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
@@ -92,7 +94,7 @@ public class CustomInjectResolver implements InjectionResolver {
             return path.value();
         }
         
-        return systemInjectResolver.resolve(injectee, root);
+        return systemResolver.resolve(injectee, root);
     }
 
 }

@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.api;
 
-import java.lang.annotation.Annotation;
-
 /**
  * This class is used to add entities to a {@link ServiceLocator}
  * instance.
@@ -81,44 +79,6 @@ public interface Configuration {
      * @throws IllegalArgumentException if there is an error in the input parameter
      */
     public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors);
-	
-	/**
-	 * This adds a custom class loader to the system.  Custom class
-	 * loaders will be searched in a random order, so users should not
-	 * rely on the order of invocation of loaders.  The first loader to
-	 * not return null shall be the one that is used, and no further loaders
-	 * will be consulted.  There is a system loader that will be consulted
-	 * last which uses the context class loader in order to load the classes.
-	 * 
-	 * @param loader The custom loader to consult when loading classes
-	 */
-	public void addLoader(HK2Loader loader);
-	
-	/**
-	 * This will add an injection resolver to the system. The system will
-	 * provide a default implementation that handles &#86;Inject.  However, if the
-	 * user provides a resolver for &#86;Inject then that one will be used in
-	 * preference to the default system implementation
-	 * 
-	 * @param indicator The annotation that indicates an injection point.  Must
-	 * be valid for constructors, methods and fields
-	 * @param resolver The resolver to use when finding instances
-	 */
-	public void addInjectionResolver(Class<? extends Annotation> indicator, InjectionResolver resolver);
-	
-	/**
-	 * This gets the InjectionResolver for the given indicator currently registered
-	 * with the system.  This method gets InjectionResolvers already registered with
-	 * the underlying ServiceLocator, not InjectionResolvers that will be added by
-	 * this Configuration object
-	 * 
-	 * @param indicator The annotation that indicates an injection point.  If null, null
-	 * will be returned
-	 * 
-	 * @return The currently registered injection resolver for this indicator, or null if none
-	 * are found for this indicator
-	 */
-	public InjectionResolver getInstalledInjectionResolver(Class<? extends Annotation> indicator);
 	
 	/**
 	 * This allows third party systems to add reified active descriptors to the system.

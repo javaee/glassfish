@@ -59,10 +59,6 @@ public class InitializationModule implements TestModule {
         configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());  // Yes, putting it in twice
         
         configurator.bind(BuilderHelper.link(NOCLASS).named(InitializationTest.SIMPLE_NAME).build());  // Yes, putting it in twice
-        
-        configurator.addLoader(new InitializationLoader());
-        
-        configurator.addInjectionResolver(DummyScope.class, new InitializationResolver());
     }
 
 }

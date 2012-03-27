@@ -46,12 +46,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -79,7 +77,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final static Object sLock = new Object();
     private static long currentId = 0L;
     
-    private final static HK2Loader SYSTEM_LOADER = new SystemLoader();
     private final static DescriptorComparator DESCRIPTOR_COMPARATOR = new DescriptorComparator();
     private final static ServiceHandleComparator HANDLE_COMPARATOR = new ServiceHandleComparator();
     
@@ -93,9 +90,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new HashMap<String, LinkedList<ActiveDescriptor<?>>>();
     private final HashMap<String, LinkedList<ActiveDescriptor<?>>> descriptorsByName =
             new HashMap<String, LinkedList<ActiveDescriptor<?>>>();
-    private final HashMap<String, HK2Loader> allLoaders = new HashMap<String, HK2Loader>();
-    private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
-            new HashMap<Class<? extends Annotation>, InjectionResolver>();
+    private final HashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
+            new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
     private final Context<Singleton> singletonContext = new SingletonContext();
     private final Context<PerLookup> perLookupContext = new PerLookupContext();
     private final LinkedList<InjectionPointValidator> allValidators = new LinkedList<InjectionPointValidator>();
@@ -106,10 +102,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         synchronized (sLock) {
             id = currentId++;
         }
-        
-        // This default must be there to allow the initial Configuration to
-        // get it and change it
-        allResolvers.put(Inject.class, new ThreeThirtyResolver(this));
     }
     
     /**
@@ -224,9 +216,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#reifyDescriptor(org.glassfish.hk2.api.Descriptor)
      */
     @Override
-    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor)
+    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor, Injectee injectee)
             throws MultiException {
-        Class<?> implClass = loadClass(descriptor.getImplementation());
+        Class<?> implClass = loadClass(descriptor, injectee);
         
         if (!(descriptor instanceof ActiveDescriptor)) {
             SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor, new Long(id));
@@ -258,6 +250,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         return sd;
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#reifyDescriptor(org.glassfish.hk2.api.Descriptor)
+     */
+    @Override
+    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor)
+            throws MultiException {
+        return reifyDescriptor(descriptor, null);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getInjecteeDescriptor(org.glassfish.hk2.api.Injectee)
@@ -287,6 +288,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         return handle.getActiveDescriptor();
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(
+            ActiveDescriptor<T> activeDescriptor,
+            Injectee injectee) throws MultiException {
+        return new ServiceHandleImpl<T>(this, activeDescriptor, injectee);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(org.glassfish.hk2.api.ActiveDescriptor)
@@ -294,7 +305,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor) throws MultiException {
-        return new ServiceHandleImpl<T>(this, activeDescriptor);
+        return getServiceHandle(activeDescriptor, null);
     }
 
     /* (non-Javadoc)
@@ -427,7 +438,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf);
-        candidates = narrow(candidates, contractOrImpl, null, false, qualifiers);
+        candidates = narrow(candidates, contractOrImpl, null, false, onBehalfOf, qualifiers);
         
         ActiveDescriptor<?> topDog = Utilities.getFirstThingInSet(candidates);
         if (topDog == null) return null;
@@ -456,7 +467,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         Filter filter = BuilderHelper.createContractFilter(rawClass.getName());
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
-        candidates = narrow(candidates, contractOrImpl, null, true, qualifiers);
+        candidates = narrow(candidates, contractOrImpl, null, true, null, qualifiers);
         
         SortedSet<ServiceHandle<?>> retVal = new TreeSet<ServiceHandle<?>>(HANDLE_COMPARATOR);
         for (ActiveDescriptor<?> candidate : candidates) {
@@ -482,7 +493,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public SortedSet<ServiceHandle<?>> getAllServiceHandles(
             Filter searchCriteria) throws MultiException {
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(searchCriteria);
-        candidates = narrow(candidates, null, null, true);
+        candidates = narrow(candidates, null, null, true, null);
         
         SortedSet<ServiceHandle<?>> retVal = new TreeSet<ServiceHandle<?>>(HANDLE_COMPARATOR);
         for (ActiveDescriptor<?> candidate : candidates) {
@@ -520,14 +531,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
         }
         
-        for (Map.Entry<String, HK2Loader> entry : dci.getAllLoaders().entrySet()) {
-            allLoaders.put(entry.getKey(), entry.getValue());
-        }
-        
-        for (Map.Entry<Class<? extends Annotation>, InjectionResolver> entry : dci.getAllResolvers().entrySet()) {
-            allResolvers.put(entry.getKey(), entry.getValue());
-        }
-        
         for (InjectionPointValidator validator : dci.getAllValidators()) {
             allValidators.add(validator);
             
@@ -535,12 +538,39 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
     }
     
+    private void reupInjectionResolvers() {
+        
+        HashMap<Class<? extends Annotation>, InjectionResolver<?>> newResolvers =
+                new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
+        
+        Filter injectionResolverFilter = BuilderHelper.createContractFilter(
+                InjectionResolver.class.getName());
+        
+        SortedSet<ActiveDescriptor<?>> resolverDescriptors = getDescriptors(injectionResolverFilter);
+        
+        for (ActiveDescriptor<?> resolverDescriptor : resolverDescriptors) {
+            resolverDescriptor = reifyDescriptor(resolverDescriptor, null);
+            
+            Class<? extends Annotation> iResolve = Utilities.getInjectionResolverType(resolverDescriptor);
+            
+            if (iResolve != null && !newResolvers.containsKey(iResolve)) {
+                InjectionResolver<?> resolver = (InjectionResolver<?>)
+                        getServiceHandle(resolverDescriptor).getService();
+                
+                newResolvers.put(iResolve, resolver);
+            }
+        }
+        
+        allResolvers.clear();
+        allResolvers.putAll(newResolvers);
+    }
+    
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
         synchronized (lock) {
             addConfigurationInternal(dci);
+            
+            reupInjectionResolvers();
         }
-        
-        
     }
     
     /* package */ boolean isInjectAnnotation(Annotation annotation) {
@@ -549,7 +579,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
-    /* package */ InjectionResolver getInjectionResolver(Class<? extends Annotation> annoType) {
+    /* package */ InjectionResolver<?> getInjectionResolver(Class<? extends Annotation> annoType) {
         synchronized (lock) {
             return allResolvers.get(annoType);
         }
@@ -589,17 +619,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
-    private Class<?> loadClass(String className) {
-        for (HK2Loader loader : allLoaders.values()) {
-            Class<?> found = loader.loadClass(className);
-            if (found != null) return found;
+    private Class<?> loadClass(Descriptor descriptor, Injectee injectee) {
+        HK2Loader loader = descriptor.getLoader();
+        if (loader == null) {
+            return Utilities.loadClass(descriptor.getImplementation(), injectee);
         }
         
-        return SYSTEM_LOADER.loadClass(className);
+        return loader.loadClass(descriptor.getImplementation());
     }
 
     private SortedSet<ActiveDescriptor<?>> narrow(SortedSet<ActiveDescriptor<?>> candidates,
-            Type requiredType, String name, boolean getAll, Annotation... qualifiers) {
+            Type requiredType, String name, boolean getAll, Injectee injectee, Annotation... qualifiers) {
         SortedSet<ActiveDescriptor<?>> retVal = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
         
         Set<Annotation> requiredAnnotations = Utilities.fixAndCheckQualifiers(qualifiers, name);
@@ -607,7 +637,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         for (ActiveDescriptor<?> candidate : candidates) {
             // We will not reify them all, we will only reify until we match
             if (!candidate.isReified()) {
-                candidate = reifyDescriptor(candidate);
+                candidate = reifyDescriptor(candidate, injectee);
             }
             
             // Now match it

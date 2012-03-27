@@ -155,6 +155,19 @@ public interface Descriptor {
 	public Map<String, List<String>> getMetadata();
 	
 	/**
+	 * This returns the loader that should be used when
+	 * classloading this descriptor.  If this returns
+	 * null then class will either be loaded with the
+	 * classloader of the Injectee if there is one, or
+	 * with the classloader that loaded HK2 itself.
+	 * 
+	 * @return An HK2Loader that can be used to load
+	 * this descriptor, or null if the default classloading
+	 * algorithm should be used
+	 */
+	public HK2Loader getLoader();
+	
+	/**
 	 * Returns the ranking of this descriptor.  Rankings
 	 * with higher value will be considered "better" than
 	 * rankings of lower value.  Descriptors with the same

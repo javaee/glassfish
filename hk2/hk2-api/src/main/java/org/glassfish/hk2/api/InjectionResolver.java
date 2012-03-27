@@ -47,8 +47,13 @@ package org.glassfish.hk2.api;
  * resolver can be used to provide injection points for any annotation.
  * 
  * @author jwells
+ * @param <T> This must be the class of the injection annotation that this resolver
+ * will handle
  */
-public interface InjectionResolver {
+public interface InjectionResolver<T> {
+    /** This is the name of the system provided resolver for 330 injections */
+    public final static String SYSTEM_RESOLVER_NAME = "SystemInjectResolver";
+    
     /**
      * This method will return the object that should be injected into the given
      * injection point.  It is the responsiblity of the implementation to ensure that

@@ -49,6 +49,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.internal.ReflectionHelper;
 
@@ -160,6 +161,14 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
     @Override
     public Map<String, List<String>> getMetadata() {
         return Collections.emptyMap();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getLoader()
+     */
+    @Override
+    public HK2Loader getLoader() {
+        return null;
     }
 
     /* (non-Javadoc)

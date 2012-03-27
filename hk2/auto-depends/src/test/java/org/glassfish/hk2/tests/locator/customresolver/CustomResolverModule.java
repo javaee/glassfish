@@ -39,11 +39,12 @@
  */
 package org.glassfish.hk2.tests.locator.customresolver;
 
-import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
@@ -58,11 +59,11 @@ public class CustomResolverModule implements TestModule {
     public void configure(Configuration configurator) {
         configurator.addActiveDescriptor(ServiceWithCustomInjections.class);
         
-        InjectionResolver systemResolver = configurator.getInstalledInjectionResolver(Inject.class);
-        CustomInjectResolver cir = new CustomInjectResolver(systemResolver);
-        
-        configurator.addInjectionResolver(Inject.class, cir);
-        
+        // Setting it to rank 1 makes it supercede the system injection resolver
+        configurator.bind(BuilderHelper.link(CustomInjectResolver.class).
+                to(InjectionResolver.class).
+                in(Singleton.class.getName()).
+                ofRank(1).build());
     }
 
 }

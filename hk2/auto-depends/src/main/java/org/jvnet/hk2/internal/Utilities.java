@@ -86,6 +86,74 @@ import org.jvnet.hk2.annotations.Service;
  */
 public class Utilities {
     /**
+     * @param implementation
+     * @param injectee
+     * @return The class represented by this implementation and injectee
+     */
+    public static Class<?> loadClass(String implementation, Injectee injectee) {
+        ClassLoader loader;
+        if (injectee != null) {
+            AnnotatedElement parent = injectee.getParent();
+            
+            if (parent instanceof Constructor) {
+                loader = ((Constructor<?>) parent).getDeclaringClass().getClassLoader();
+            }
+            else if (parent instanceof Method) {
+                loader = ((Method) parent).getDeclaringClass().getClassLoader();
+            }
+            else {
+                loader = ((Field) parent).getDeclaringClass().getClassLoader();
+            }
+        }
+        else {
+            loader = Utilities.class.getClassLoader();
+        }
+        
+        try {
+            return loader.loadClass(implementation);
+        }
+        catch (Throwable th) {
+            throw new MultiException(th);
+        }
+    }
+    
+    /**
+     * Will return the class of the injection resolver annotation type, or null if
+     * no injection resolver annotation can be found
+     * 
+     * @param desc The reified descriptor to find the injection resolution on
+     * @return The annotation type for this injection resolver
+     */
+    @SuppressWarnings("unchecked")
+    public static Class<? extends Annotation> getInjectionResolverType(ActiveDescriptor<?> desc) {
+        for (Type advertisedType : desc.getContractTypes()) {
+            Class<?> rawClass = getRawClass(advertisedType);
+            
+            if (!InjectionResolver.class.equals(rawClass)) continue;
+            
+            // Found the InjectionResolver
+            if (!(advertisedType instanceof ParameterizedType)) {
+                return null;
+            }
+            
+            Type firstType = getFirstTypeArgument(advertisedType);
+            if (!(firstType instanceof Class)) {
+                return null;
+            }
+            
+            Class<?> retVal = (Class<?>) firstType;
+            
+            if (!Annotation.class.isAssignableFrom(retVal)) {
+                return null;
+            }
+            
+            return (Class<? extends Annotation>) retVal;
+        }
+        
+        return null;
+    }
+    
+    /**
      * Checks to be sure the Factory class is ok
      * 
      * @param factoryClass
@@ -256,7 +324,7 @@ public class Utilities {
         collector.throwIfErrors();
         
         for (Field field : fields) {
-            InjectionResolver resolver = getInjectionResolver(locator, field);
+            InjectionResolver<?> resolver = getInjectionResolver(locator, field);
             
             Injectee injectee = Utilities.getFieldInjectees(field).get(0);
             
@@ -273,7 +341,7 @@ public class Utilities {
         }
         
         for (Method method : methods) {
-            InjectionResolver resolver = getInjectionResolver(locator, method);
+            InjectionResolver<?> resolver = getInjectionResolver(locator, method);
             
             List<Injectee> injectees = Utilities.getMethodInjectees(method);
             
@@ -310,7 +378,7 @@ public class Utilities {
         
         collector.throwIfErrors();
         
-        InjectionResolver resolver = getInjectionResolver(locator, c);
+        InjectionResolver<?> resolver = getInjectionResolver(locator, c);
         
         List<Injectee> injectees = getConstructorInjectees(c);
         
@@ -424,23 +492,43 @@ public class Utilities {
                 PerLookup.class,
                 null,
                 qualifiers,
-                Integer.MAX_VALUE,
+                0,
                 locator.getLocatorId());
         
         return retVal;
     }
     
     /**
-     * Checks to be sure a scope annotation is propertly annotated with Scope
+     * Creates a Three Thirty constant active descriptor
      * 
-     * @param annotation the annotation to check
+     * @param locator The service locator to get the ActiveDescriptor for
+     * @return An active descriptor specifically for the ServiceLocator
      */
-    public static void checkScopeAnnotation(Class<? extends Annotation> annotation) {
-        if (annotation == null) throw new IllegalArgumentException();
+    public static ActiveDescriptor<InjectionResolver<Inject>> getThreeThirtyDescriptor(
+            ServiceLocatorImpl locator) {
+        ThreeThirtyResolver threeThirtyResolver = new ThreeThirtyResolver(locator);
         
-        if (!annotation.isAnnotationPresent(Scope.class)) {
-            throw new IllegalArgumentException("The annotation " + annotation + " is not a scope");
-        }
+        HashSet<Type> contracts = new HashSet<Type>();
+        
+        Type actuals[] = new Type[1];
+        actuals[0] = Inject.class;
+        
+        contracts.add(new ParameterizedTypeImpl(InjectionResolver.class, actuals));
+        
+        Set<Annotation> qualifiers = new HashSet<Annotation>();
+        qualifiers.add(new NamedImpl(InjectionResolver.SYSTEM_RESOLVER_NAME));
+        
+        ActiveDescriptor<InjectionResolver<Inject>> retVal =
+                new ConstantActiveDescriptor<InjectionResolver<Inject>>(
+                        threeThirtyResolver,
+                        contracts,
+                        Singleton.class,
+                        InjectionResolver.SYSTEM_RESOLVER_NAME,
+                        qualifiers,
+                        0,
+                        locator.getLocatorId());
+        
+        return retVal;
     }
     
     /**
@@ -770,7 +858,7 @@ public class Utilities {
      * found will return the dependent scope
      * @throws IllegalStateException If we could not find a valid resolver
      */
-    public static InjectionResolver getInjectionResolver(
+    public static InjectionResolver<?> getInjectionResolver(
             ServiceLocatorImpl locator,
             AnnotatedElement annotatedGuy) throws IllegalStateException {
         Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy);
@@ -778,9 +866,10 @@ public class Utilities {
         Class<? extends Annotation> injectType = (injectAnnotation == null) ?
                 Inject.class : injectAnnotation.annotationType() ;
         
-        InjectionResolver retVal = locator.getInjectionResolver(injectType);
+        InjectionResolver<?> retVal = locator.getInjectionResolver(injectType);
         if (retVal == null) {
-            throw new IllegalStateException("There is no installed injection resolver for " + Pretty.clazz(injectType));
+            throw new IllegalStateException("There is no installed injection resolver for " +
+                Pretty.clazz(injectType) + " for type " + annotatedGuy);
         }
         
         return retVal;
@@ -1337,5 +1426,4 @@ public class Utilities {
             return true;
         }
     }
-
 }

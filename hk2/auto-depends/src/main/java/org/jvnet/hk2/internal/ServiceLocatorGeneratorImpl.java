@@ -39,7 +39,10 @@
  */
 package org.jvnet.hk2.internal;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
@@ -55,7 +58,13 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
         
         DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
         
+        // The service locator itself
         dci.bind(Utilities.getLocatorDescriptor(sli));
+        
+        // The injection resolver for three thirty
+        dci.addActiveDescriptor(Utilities.getThreeThirtyDescriptor(sli));
+        
+        // The dynamic configuration utility
         dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
                 to(DynamicConfigurationService.class).
                 in(PerLookup.class.getName()).

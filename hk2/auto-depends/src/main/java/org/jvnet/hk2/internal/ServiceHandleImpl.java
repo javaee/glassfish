@@ -46,6 +46,7 @@ import net.sf.cglib.proxy.Enhancer;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 
@@ -56,11 +57,13 @@ import org.glassfish.hk2.api.ServiceHandle;
  * up again.
  * 
  * @author jwells
+ * @param <T> The type of service to create
  *
  */
 public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     private ActiveDescriptor<T> root;
     private final ServiceLocatorImpl locator;
+    private final Injectee injectee;
     private final Object lock = new Object();
     
     private boolean serviceDestroyed = false;
@@ -69,9 +72,10 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     
     private final List<ServiceHandleImpl<?>> subHandles = new LinkedList<ServiceHandleImpl<?>>();
     
-    /* package */ ServiceHandleImpl(ServiceLocatorImpl locator, ActiveDescriptor<T> root) {
+    /* package */ ServiceHandleImpl(ServiceLocatorImpl locator, ActiveDescriptor<T> root, Injectee injectee) {
         this.root = root;
         this.locator = locator;
+        this.injectee = injectee;
     }
 
     /* (non-Javadoc)
@@ -86,7 +90,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             if (serviceSet) return service;
             
             if (!root.isReified()) {
-                root = (ActiveDescriptor<T>) locator.reifyDescriptor(root);
+                root = (ActiveDescriptor<T>) locator.reifyDescriptor(root, injectee);
             }
         
             if (Utilities.isProxiableScope(root.getScopeAnnotation())) {
@@ -157,6 +161,11 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         }
     }
     
+    /**
+     * Add a sub handle to this for proper destruction
+     * 
+     * @param subHandle A handle to add for proper destruction
+     */
     public void addSubHandle(ServiceHandleImpl<?> subHandle) {
         subHandles.add(subHandle);
     }
