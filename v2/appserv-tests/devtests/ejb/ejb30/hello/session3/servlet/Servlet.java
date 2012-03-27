@@ -118,6 +118,7 @@ public class Servlet extends HttpServlet {
             }
 
 
+            System.out.println("Current tx status: " + ut.getStatus());
             System.out.println("beginning tx");
             ut.begin();
 
@@ -189,7 +190,7 @@ public class Servlet extends HttpServlet {
 		helloStateful2.ping();
 		throw new EJBException("Did not get ConcurrentAccessException");
 	    } catch (javax.ejb.ConcurrentAccessException conEx) {
-		;   //Everything is fine
+		System.out.println("Got expected ConcurrentAccessException");   //Everything is fine
 	    } catch (Throwable th) {
 		throw new EJBException("Got some wierd exception: " + th);
 	    }

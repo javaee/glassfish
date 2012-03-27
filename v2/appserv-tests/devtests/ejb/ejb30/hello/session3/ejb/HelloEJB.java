@@ -21,8 +21,7 @@ import javax.naming.InitialContext;
     @PersistenceContext
         private EntityManager em1;
 
-    @PersistenceContext(name="myem", 
-                        unitName="foo", type=PersistenceContextType.EXTENDED)
+    @PersistenceContext(name="myem", unitName="foo") 
         private EntityManager em2;
 
     public void hello() {
