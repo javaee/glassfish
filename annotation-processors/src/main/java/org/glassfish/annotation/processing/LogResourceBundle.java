@@ -41,9 +41,9 @@
 package org.glassfish.annotation.processing;
 
 import java.io.*;
-import java.util.HashMap;
+import java.util.TreeMap;
 
-class LogResourceBundle extends HashMap<String, String> {
+class LogResourceBundle extends TreeMap<String, String> {
 
     private static final String COMMENT = ".MSG_COMMENT";
     

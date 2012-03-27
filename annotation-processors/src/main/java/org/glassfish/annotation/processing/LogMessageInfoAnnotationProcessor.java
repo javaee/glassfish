@@ -44,17 +44,21 @@ import org.glassfish.logging.LogMessageInfo;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -64,6 +68,7 @@ import javax.tools.Diagnostic.Kind.*;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+@SupportedOptions("resourceBundlePackage")
 @SupportedAnnotationTypes("org.glassfish.logging.LogMessageInfo")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
@@ -72,22 +77,36 @@ public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
     HashMap<String, String> pkgMap = null;
     protected boolean debugging = false;
 
+    private static final String VALIDATE_LEVELS[] = {
+      "EMERGENCY",
+      "ALERT",
+      "SEVERE",
+    };
+
     @Override
     public boolean process (Set<? extends TypeElement> annotations, 
             RoundEnvironment env) {
 
         debug("LogMessageInfoAnnotationProcessor Invoked.");
 
+        Map<String,String> options = processingEnv.getOptions();
+        String resourceBundlePackage = (options != null ? options.get("resourceBundlePackage") : null);
+        if (resourceBundlePackage == null) {
+            error("Required parameter 'resourceBundlePackage' is missing.");
+            return false;
+        }
+   
         if (!env.processingOver()) {
             Set<? extends Element> elements;
             String elementPackage = null;
-            String prevElementPackage = null;
-            LogResourceBundle lrb = null;
+            LogResourceBundle lrb = LoadRB(resourceBundlePackage);
 
             // XXX: The annotation processor should try to detect the
             //      reuse of an existing log message id.
             //      Degree 1: processed during same build pass.
             //      Degree 2: processed during different builds.
+
+            Set messageIds = new HashSet<String>();
 
             elements = env.getElementsAnnotatedWith(LogMessageInfo.class);
             Iterator<? extends Element> it = elements.iterator();
@@ -98,53 +117,49 @@ public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
                 elementPackage = processingEnv.getElementUtils().getPackageOf(element).
                                                 getQualifiedName().toString();
 
+                String msgId = (String)element.getConstantValue();
                 debug("Annotated pkg: " + elementPackage);
+                debug("Processing: " + msgId);
 
-                LogMessageInfo lmi = element.getAnnotation(LogMessageInfo.class);
+                // Message ids must be unique
+                if (!messageIds.contains(msgId)) {
+                    LogMessageInfo lmi = element.getAnnotation(LogMessageInfo.class);
+                    checkLogMessageInfo(msgId, lmi);
 
-                if (lmi.pkg() != null && !lmi.pkg().isEmpty()) {
-                    debug("LogMessageInfoAnnotationProcessor Invoked.");
-                    debug((String)element.getConstantValue() + 
-                            ": Package overidden by " + lmi.pkg());
-                    elementPackage = lmi.pkg();
-                }
-
-                // If the name of the package changed then we need to save
-                // the currently open RB and open the RB appropriate to
-                // this package.
-                if (prevElementPackage != null && 
-                        !prevElementPackage.equals(elementPackage)) {
-
-                    StoreRB(lrb, prevElementPackage);
-
-                    lrb = LoadRB(elementPackage);
-
-                } else if (prevElementPackage == null) {
-                    // Either we need to reuse the open RB or we need to 
-                    // open/create a new RB.
-                    lrb = LoadRB(elementPackage);
-                }
-                prevElementPackage = elementPackage;
-
-                // Save the log message...
-                lrb.put((String)element.getConstantValue(), lmi.message());
-                // Save the message's comment if it has one...
-                if (!lmi.comment().isEmpty()) {
-                    lrb.putComment((String)element.getConstantValue(),
-                            lmi.comment());
-                }
-
-                debug("Processing: " + (String)element.getConstantValue());
-
-                // We are finsished.   Write the message bundle if needed.
-                if (!it.hasNext()) {
-                    StoreRB(lrb, prevElementPackage);
+                    // Save the log message...
+                    lrb.put(msgId, lmi.message());
+                    // Save the message's comment if it has one...
+                    if (!lmi.comment().isEmpty()) {
+                        lrb.putComment(msgId, lmi.comment());
+                    }
+                    messageIds.add(msgId);
+                } else {
+                    error("Duplicate use of message-id " + msgId);
                 }
             }
+            StoreRB(lrb, resourceBundlePackage);
         }
 
         return true; // Claim the annotations
     }    
+
+    private void checkLogMessageInfo(String msgId, LogMessageInfo lmi) {
+      boolean needsCheck = false;
+      for (String checkLevel : VALIDATE_LEVELS) {
+        if (checkLevel.equals(lmi.level())) {
+          needsCheck = true;
+        }
+      }
+      debug("Message " + msgId + " needs checks: " + needsCheck);
+      if (needsCheck) {
+        if (lmi.cause().trim().length() == 0) {
+          error("Missing cause for message id '" + msgId + "' for levels SEVERE and above.");
+        }
+        if (lmi.action().trim().length() == 0) {
+          error("Missing action for message id '" + msgId + "' for levels SEVERE and above.");
+        }
+      }
+    }
 
     /**
      * This method, given a pkg name will determine the path to the resource,
@@ -216,8 +231,13 @@ public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
                     pkg, e);
         } 
 
-        // We are switching packages so we need to store the prior RB.
         try {
+            // Ensure that target RB directory exists
+            File rbFile = new File(targetRBPath);
+            File pkgDir = rbFile.getParentFile();
+            if (!pkgDir.exists()) {
+              pkgDir.mkdirs();
+            }
             bufferedWriter = new BufferedWriter(new FileWriter(targetRBPath));
 
             propsWritten = lrb.store(bufferedWriter);
@@ -271,30 +291,37 @@ public class LogMessageInfoAnnotationProcessor extends AbstractProcessor {
     }
 
     protected void debug(String msg, Throwable t) {
-        if (debugging)
+        if (debugging) {
             System.out.println(msg + "Exception: " + t.getMessage());
+            t.printStackTrace();
+        }
     }
 
     protected void info(String msg) {
         debug(msg);
-        processingEnv.getMessager().printMessage(Kind.NOTE, msg);
+        processingEnv.getMessager().printMessage(Kind.NOTE, 
+            "LogMessageInfoAnnotationProcessor: " + msg);
     }
 
     protected void warn(String msg) {
-        processingEnv.getMessager().printMessage(Kind.WARNING, msg);
+        processingEnv.getMessager().printMessage(Kind.WARNING, 
+            "LogMessageInfoAnnotationProcessor: " + msg);
     }
     protected void warn(String msg, Throwable t) {
         String errMsg = msg + ": " + t.getMessage();
 
-        processingEnv.getMessager().printMessage(Kind.WARNING, errMsg);
+        processingEnv.getMessager().printMessage(Kind.WARNING, 
+            "LogMessageInfoAnnotationProcessor: " + errMsg);
     }
 
     protected void error(String msg) {
-        processingEnv.getMessager().printMessage(Kind.ERROR, msg);
+        processingEnv.getMessager().printMessage(Kind.ERROR, 
+            "LogMessageInfoAnnotationProcessor: " + msg);
     }
     protected void error(String msg, Throwable t) {
         String errMsg = msg + ": " + t.getMessage();
 
-        processingEnv.getMessager().printMessage(Kind.ERROR, errMsg);
+        processingEnv.getMessager().printMessage(Kind.ERROR, 
+            "LogMessageInfoAnnotationProcessor: " + errMsg);
     }
 }

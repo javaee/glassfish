@@ -46,38 +46,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /*
- * LogMessageInfo annotation definition.
+ * LoggerInfo annotation definition to provide meta data for loggers.
  *
- * message: The message to log.
- * comment: A comment which appears above the message in the
- *          LogMessages.properties file.  Useful for localization.
- * level:   The log level.  (default: INFO)
- * cause:   Describes what caused this message to be generated.
- * action:  Describes what the user/admin can do to resolve the problem.
- * publish: Boolean value indicates whether this log message should be
- *          published in the Error Reference guide. (default: true)
+ * subsystem  : Name of the subsystem defining the logger
+ * description: Logger description
+ * publish: Boolean value indicates whether this logger should be documented and 
+            exposed in GUI's etc.
  *
  *  Example:
  *
- *     @LogMessageInfo(
- *              message = "This is the log message to be localized.",
- *              comment = "This is a comment about the above message.",
- *              level = "WARNING",
- *              cause = "This describes the cause of the problem...",
- *              action = "This describes the action to fix the problem...",
- *              publish = false)
- *     private static final String EJB005 = "AS-EJB-00005";
+ *      @LoggerInfo(subsystem="EJB", desription="Main EJB Logger", publish="true")
+ *      public static final String EJB_MAIN_LOGGER = "javax.enterprise.ejb";
+ *      private static final Logger ejbLogger =
+ *        Logger.getLogger(EJB_MAIN_LOGGER, "org.glassfish.ejb.LogMessages");
  *
  */
 
 
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.SOURCE)
-public @interface LogMessageInfo {
-    String message();
-    String comment() default "";
-    String level() default "INFO";
-    String cause() default ""; 
-    String action() default "";
+public @interface LoggerInfo {
+    String subsystem();
+    String description() default "";
     boolean publish() default true;
 }
