@@ -20,13 +20,8 @@
         <antcall target="mdb2"/>  
         <antcall target="session4"/>
         <antcall target="session5"/> 
-
-	<!-- gradually reenable as possible
-        <antcall target="session3"/> // depends on EMs working in ACC
-	-->
-
+        <antcall target="session3"/>
         <antcall target="session_standalone"/>
-
     </target>
 
     <target name="mdb">
