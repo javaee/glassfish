@@ -13,13 +13,9 @@
 
     <target name="all">
         <antcall target="bindings"/>
-        <antcall target="session"/> <!-- need to enable passivation tests-->
+        <antcall target="session"/> 
         <antcall target="inheritence"/>
-
-	<!-- 
         <antcall target="mdb"/>
-	-->
-
     </target>
 
     <target name="session">

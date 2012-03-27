@@ -44,8 +44,7 @@ public class Client {
 	doTest5();
 	doTest6();
 
-	// TODO enable when we have passivation
-	/**	doTest7_8();  **/
+	doTest7_8();
 
         doTest9();
         doTest10();
