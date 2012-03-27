@@ -44,6 +44,7 @@ import java.util.List;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.FactoryDescriptors;
+import org.glassfish.hk2.api.HK2Loader;
 
 /**
  * This is an object that uses the Builder pattern
@@ -171,6 +172,15 @@ public interface DescriptorBuilder {
      * @throws IllegalArgumentException if the id is set non-null more than once
      */
     public DescriptorBuilder isValidating() throws IllegalArgumentException;
+    
+    /**
+     * Call this if this descriptor should be loaded with the given HK2Loader
+     * 
+     * @param loader The loader to use with this descriptor
+     * @return A DescriptorBuilder with the given HK2Loader
+     * @throws IllegalArgumentException if the HK2Loader is set non-null more than once
+     */
+    public DescriptorBuilder andLoadWith(HK2Loader loader) throws IllegalArgumentException;
 	
 	/**
 	 * Generates a descriptor that can be used in binding operations

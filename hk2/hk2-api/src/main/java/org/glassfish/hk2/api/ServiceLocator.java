@@ -226,6 +226,18 @@ public interface ServiceLocator {
      * HK2Loaders to perform this action
      * 
      * @param descriptor The descriptor to convert, may not be null
+     * @param injectee The injectee on behalf of whom this descriptor is being injected.  May
+     * be null if the injectee is unknown
+     * @return The active descriptor as loaded with the first valid {@link HK2Loader}
+     * @throws MultiException if there were errors when loading or analyzing the class
+     */
+    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor, Injectee injectee) throws MultiException;
+    
+    /**
+     * Converts a descriptor to an ActiveDescriptor.  Will use the registered
+     * HK2Loaders to perform this action
+     * 
+     * @param descriptor The descriptor to convert, may not be null
      * @return The active descriptor as loaded with the first valid {@link HK2Loader}
      * @throws MultiException if there were errors when loading or analyzing the class
      */
@@ -254,7 +266,26 @@ public interface ServiceLocator {
      * method to retrieve objects, so that they can be destroyed in the proper sequence
      * 
      * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service 
+     * this service
+     * @param injectee The injectee on behalf of whom this descriptor is being injected.  May
+     * be null if the injectee is unknown
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> ServiceHandle<T> getServiceHandle(ActiveDescriptor<T> activeDescriptor, Injectee injectee) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  If a service, and all per lookup services must be destroyed then
+     * this method should be used to destroy the object
+     * <p>
+     * It is assumed that this method is called by the top level code.  All injection
+     * points created because of this invocation must use the
+     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
+     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The service handle that can be used to get and destroy
+     * this service
      * @return Will return root as a convenience
      * @throws MultiException if there was an error during service creation
      */

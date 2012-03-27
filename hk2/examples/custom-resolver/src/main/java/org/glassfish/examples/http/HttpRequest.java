@@ -37,24 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.glassfish.examples.http;
 
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.api.ServiceHandle;
+import java.util.ArrayList;
 
 /**
+ * This is not a true HttpRequest, but is just here for illustration purposes.
+ * It would get the individual items out of the real HttpRequest in a real system.
+ * In this case, it just spits out whatever is put in
+ * 
  * @author jwells
  *
  */
-public class InitializationResolver implements InjectionResolver {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee)
+public class HttpRequest {
+    private final ArrayList<String> elements = new ArrayList<String>();
+    
+    /**
+     * Gets the path element from the given index
+     * 
+     * @param index the element to get the index from
+     * @return The element at this index (as a string)
      */
-    @Override
-    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
-        throw new AssertionError("not called");
+    public String getPathElement(int index) {
+        if (elements.size() <= index) {
+            throw new AssertionError("There is no element at index " + index);
+        }
+        
+        return elements.get(index);
     }
-
+    
+    /**
+     * Sets the next element in the request
+     * 
+     * @param element The element to put next in the elements list
+     */
+    public void addElement(String element) {
+        elements.add(element);
+    }
 }

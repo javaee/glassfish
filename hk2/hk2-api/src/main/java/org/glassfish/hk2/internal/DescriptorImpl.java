@@ -49,6 +49,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.HK2Loader;
 
 /**
  * The implementation of the descriptor itself, with the
@@ -73,6 +74,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private Set<String> qualifiers;
 	private DescriptorType descriptorType;
 	private boolean validating;
+	private HK2Loader loader;
 	private int rank;
 	private Long id;
 	private Long locatorId;
@@ -95,6 +97,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		implementation = copyMe.getImplementation();
 		qualifiers = copyMe.getQualifiers();
 		descriptorType = copyMe.getDescriptorType();
+		loader = copyMe.getLoader();
 		
 		validating = copyMe.isValidating();
 		metadatas = copyMe.getMetadata();
@@ -114,6 +117,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param metadatas
 	 * @param qualifiers
 	 * @param descriptorType 
+	 * @param loader 
 	 * @param validating 
 	 * @param rank 
 	 * @param id
@@ -127,6 +131,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			Map<String, List<String>> metadatas,
 			Set<String> qualifiers,
 			DescriptorType descriptorType,
+			HK2Loader loader,
 			boolean validating,
 			int rank,
 			Long id,
@@ -144,6 +149,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.id = id;
 		this.rank = rank;
 		this.locatorId = locatorId;
+		this.loader = loader;
 	}
 
 	@Override
@@ -186,6 +192,14 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	public Map<String, List<String>> getMetadata() {
 		return new HashMap<String, List<String>>(metadatas);
 	}
+	
+	/* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getLoader()
+     */
+    @Override
+    public HK2Loader getLoader() {
+        return loader;
+    }
 
     @Override
     public int getRanking() {
@@ -293,6 +307,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		sb.append("\n\tmetadata=");
 		sb.append(writeMetadata(metadatas));
 		
+		sb.append("\n\tloader=" + loader);
+		
 		sb.append("\n\tid=" + id);
 		
 		sb.append("\n\tlocatorId=" + locatorId);
@@ -301,6 +317,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		
 		return sb.toString();
 	}
+
+    
 
     
 

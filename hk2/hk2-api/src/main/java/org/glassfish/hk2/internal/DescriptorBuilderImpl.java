@@ -53,6 +53,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 
@@ -68,6 +69,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	private final HashSet<String> qualifiers = new HashSet<String>();
 	private final HashMap<String, List<String>> metadatas = new HashMap<String, List<String>>();
 	private String implementation;
+	private HK2Loader loader = null;
 	private int rank = 0;
 	private boolean validating = false;
 	private Long id;
@@ -217,6 +219,18 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         this.rank = rank;
         return this;
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.DescriptorBuilder#andLoadWith(org.glassfish.hk2.api.HK2Loader)
+     */
+    @Override
+    public DescriptorBuilder andLoadWith(HK2Loader loader)
+            throws IllegalArgumentException {
+        if (loader != null && this.loader != null) throw new IllegalArgumentException();
+        
+        this.loader = loader;
+        return this;
+    }
 	
 	/* (non-Javadoc)
    * @see org.glassfish.hk2.utilities.DescriptorBuilder#id(java.lang.Long)
@@ -252,6 +266,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 				metadatas,
 				qualifiers,
 				DescriptorType.CLASS,
+				loader,
 				validating,
 				rank,
 				id,
@@ -276,6 +291,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 metadatas,
                 factoryQualifiers,
                 DescriptorType.CLASS,
+                loader,
                 validating,
                 rank,
                 id,
@@ -293,6 +309,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 metadatas,
                 qualifiers,
                 DescriptorType.FACTORY,
+                loader,
                 validating,
                 rank,
                 id,
@@ -308,6 +325,8 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
     public FactoryDescriptors buildFactory() throws IllegalArgumentException {
         return buildFactory(PerLookup.class.getName());
     }
+
+    
 
     
 

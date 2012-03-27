@@ -40,32 +40,19 @@
 package org.glassfish.hk2.api;
 
 /**
- * This class is responsible for turning Descriptors into ActiveDescriptors
- * doing whatever classloading is necessary.  There is always a system provided
- * loader that will use the context class loader in order to load the class
- * and analyze it for the values in the ActiveDescriptor.  The system provider
- * loader will always be consulted last
+ * This class is responsible for loading classes, and different
+ * implementations can be used for different descriptors.
  * 
  * @author jwells
  *
  */
 public interface HK2Loader {
     /**
-     * A unique identifier for this HK2Loader
-     * 
-     * @return The name of this loader
-     */
-    public String getLoaderName();
-    
-    /**
-     * Creates a class given the class name to instantiate
+     * Loads a class given the class name to instantiate
      * 
      * @param className The descriptor to convert into an ActiveDescriptor
-     * @return Null if this loader does not handle this class, or the active descriptor (which
-     * must return the same values for its implementation as the passed in descriptor) to be used for
-     * this descriptor
-     * @throws MultiException If this loader SHOULD load this class but cannot then this method should
-     * throw a MultiException
+     * @return The class to be loaded.  May not return null
+     * @throws MultiException If this loader had some problem loading the class
      */
     public Class<?> loadClass(String className) throws MultiException;
 

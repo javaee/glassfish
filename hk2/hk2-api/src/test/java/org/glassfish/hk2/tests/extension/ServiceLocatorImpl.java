@@ -262,4 +262,25 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // TODO Auto-generated method stub
         return 0;
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#reifyDescriptor(org.glassfish.hk2.api.Descriptor, org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor,
+            Injectee injectee) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(
+            ActiveDescriptor<T> activeDescriptor, Injectee injectee)
+            throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

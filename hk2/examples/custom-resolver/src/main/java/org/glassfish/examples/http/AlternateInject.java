@@ -37,42 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.examples.http;
 
-import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.MultiException;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * @author jwells
  *
  */
-public class SystemLoader implements HK2Loader {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#getLoaderName()
-     */
-    @Override
-    public String getLoaderName() {
-        return Constants.SYSTEM_LOADER_NAME;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadDescriptor(org.glassfish.hk2.api.Descriptor)
-     */
-    @Override
-    public Class<?> loadClass(String className) {
-        if (className == null) {
-            throw new IllegalArgumentException();
-        }
-        
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        
-        try {
-            return cl.loadClass(className);
-        }
-        catch (ClassNotFoundException cnfe) {
-            throw new MultiException(cnfe);
-        }
-    }
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD })
+public @interface AlternateInject {
 
 }

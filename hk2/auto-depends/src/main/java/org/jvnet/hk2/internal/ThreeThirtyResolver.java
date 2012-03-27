@@ -42,6 +42,10 @@ package org.jvnet.hk2.internal;
 import java.util.LinkedList;
 import java.util.SortedSet;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
@@ -54,7 +58,8 @@ import org.glassfish.hk2.api.ServiceHandle;
  * @author jwells
  *
  */
-public class ThreeThirtyResolver implements InjectionResolver {
+@Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
+public class ThreeThirtyResolver implements InjectionResolver<Inject> {
     private final ServiceLocatorImpl locator;
     
     /* package */ ThreeThirtyResolver(ServiceLocatorImpl locator) {

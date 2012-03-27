@@ -68,7 +68,7 @@ public class ClazzCreator<T> implements Creator<T> {
     private final Set<ResolutionInfo> myInitializers = new HashSet<ResolutionInfo>();
     private final Set<ResolutionInfo> myFields = new HashSet<ResolutionInfo>();
     
-    private ResolutionInfo myConstructor;
+    private final ResolutionInfo myConstructor;
     private List<Injectee> allInjectees;
     
     private Method postConstructMethod;
@@ -82,10 +82,18 @@ public class ClazzCreator<T> implements Creator<T> {
         List<Injectee> injectees;
         
         element = Utilities.findProducerConstructor(implClass, locator, collector);
-        if (element == null) return;
+        if (element == null) {
+            myConstructor = null;
+            System.out.println("JRW(10) CC myConstructor=" + myConstructor);
+            return;
+        }
         
         injectees = Utilities.getConstructorInjectees((Constructor<?>) element);
-        if (injectees == null) return;
+        if (injectees == null) {
+            myConstructor = null;
+            System.out.println("JRW(20) CC myConstructor=" + myConstructor);
+            return;
+        }
         
         baseAllInjectees.addAll(injectees);
         
@@ -124,7 +132,7 @@ public class ClazzCreator<T> implements Creator<T> {
     private Map<Injectee, Object> resolveAllDependencies(ServiceHandle<?> root) throws IllegalStateException {
         Map<Injectee, Object> retVal = new HashMap<Injectee, Object>();
         
-        InjectionResolver resolver = Utilities.getInjectionResolver(locator, myConstructor.baseElement);
+        InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, myConstructor.baseElement);
         for (Injectee injectee : myConstructor.injectees) {
             retVal.put(injectee, resolver.resolve(injectee, root));
         }

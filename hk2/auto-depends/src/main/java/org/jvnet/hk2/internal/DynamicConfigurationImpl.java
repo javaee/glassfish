@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.internal;
 
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -49,9 +47,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.FactoryDescriptors;
-import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.InjectionPointValidator;
-import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
 
 /**
@@ -61,9 +57,6 @@ import org.glassfish.hk2.api.MultiException;
 public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final ServiceLocatorImpl locator;
     private final LinkedList<SystemDescriptor<?>> allDescriptors = new LinkedList<SystemDescriptor<?>>();
-    private final HashMap<String, HK2Loader> allLoaders = new HashMap<String, HK2Loader>();
-    private final HashMap<Class<? extends Annotation>, InjectionResolver> allResolvers =
-            new HashMap<Class<? extends Annotation>, InjectionResolver>();
     private final HashSet<InjectionPointValidator> allValidators = new HashSet<InjectionPointValidator>();
     
     private final Object lock = new Object();
@@ -136,43 +129,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
             
         };
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Configuration#addLoader(java.lang.String, org.glassfish.hk2.api.HK2Loader)
-     */
-    @Override
-    public void addLoader(HK2Loader loader) {
-        checkState();
-        if (loader == null || loader.getLoaderName() == null) {
-            throw new IllegalArgumentException();
-        }
-        
-        allLoaders.put(loader.getLoaderName(), loader);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Configuration#addInjectionResolver(java.lang.Class, org.glassfish.hk2.api.InjectionResolver)
-     */
-    @Override
-    public void addInjectionResolver(Class<? extends Annotation> indicator,
-            InjectionResolver resolver) {
-        checkState();
-        if (indicator == null || resolver == null) {
-            throw new IllegalArgumentException();
-        }
-        
-        allResolvers.put(indicator, resolver);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Configuration#getInstalledInjectionResolver(java.lang.Class)
-     */
-    @Override
-    public InjectionResolver getInstalledInjectionResolver(
-            Class<? extends Annotation> indicator) {
-        if (indicator == null) return null;
-        return locator.getInjectionResolver(indicator);
-    }
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Configuration#addActiveDescriptor(org.glassfish.hk2.api.ActiveDescriptor)
@@ -241,20 +197,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
      */
     LinkedList<SystemDescriptor<?>> getAllDescriptors() {
         return allDescriptors;
-    }
-
-    /**
-     * @return the allLoaders
-     */
-    HashMap<String, HK2Loader> getAllLoaders() {
-        return allLoaders;
-    }
-
-    /**
-     * @return the allResolvers
-     */
-    HashMap<Class<? extends Annotation>, InjectionResolver> getAllResolvers() {
-        return allResolvers;
     }
     
     /**

@@ -50,6 +50,7 @@ import java.util.Set;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -169,6 +170,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public Map<String, List<String>> getMetadata() {
         return baseDescriptor.getMetadata();
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getLoader()
+     */
+    @Override
+    public HK2Loader getLoader() {
+        return baseDescriptor.getLoader();
+    }  
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getRanking()
@@ -455,5 +464,5 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public String toString() {
         return "SystemDescriptor(" + getImplementation() + "," + Pretty.collection(getAdvertisedContracts()) + "," +
           Pretty.collection(getQualifiers()) + "," + System.identityHashCode(this) + ")";
-    }    
+    }  
 }

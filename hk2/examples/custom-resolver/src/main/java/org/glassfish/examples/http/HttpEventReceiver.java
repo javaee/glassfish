@@ -37,22 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.inject.Scope;
+package org.glassfish.examples.http;
 
 /**
+ * This receiver will receive a specific kind of HttpRequest
+ * where the elements of the request have these types:
+ * <OL>
+ * <LI>The rank of the request is an integer</LI>
+ * <LI>The id of the request is a long</LI>
+ * <LI>The requested action is a String</LI>
+ * </OL>
+ * <p>
+ * The getHttpRequest method of this class is annotated with the
  * @author jwells
  *
  */
-@Retention(RUNTIME)
-@Scope
-@Target( { TYPE })
-public @interface DummyScope {
+public class HttpEventReceiver {
+    /**
+     * This method will get called back with the
+     * information filled in from the request, either
+     * from the Alternate injection resolver or from
+     * the system provided three-thirty resolver
+     * 
+     * @param rank the rank, parameter zero of the HttpRequest (from the alternate)
+     * @param id the id, parameter one of the HttpRequest (from the alternate)
+     * @param action the action, parameter two of the HttpRequest (from the alternate)
+     * @param baseRequest The request we are working with at this time (from the system resolver)
+     */
+    @AlternateInject
+    public void recieveRequest(
+            @HttpParameter int rank,
+            @HttpParameter(1) long id,
+            @HttpParameter(2) String action,
+            HttpRequest baseRequest) {
+        // Do some fun coding here
+        
+    }
+            
+
 }
