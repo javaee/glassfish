@@ -108,16 +108,4 @@ public interface Configuration {
      */
     public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
             throws MultiException, IllegalArgumentException;
-	
-	/**
-	 * Adds a validator to the system.  This validator will be called whenver a
-	 * validating class is about to be injected (or looked up).  All validators
-	 * registered with the system will be invoked.  If any of them fail, the operation
-	 * will fail.
-	 * 
-	 * @param validator The validator to add to the system.  May not be null
-	 * @throws IllegalArgumentException If validator is null
-	 */
-	public void addValidator(InjectionPointValidator validator)
-	        throws IllegalArgumentException;
 }

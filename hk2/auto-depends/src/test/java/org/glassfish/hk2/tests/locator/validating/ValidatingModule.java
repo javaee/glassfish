@@ -54,12 +54,10 @@ public class ValidatingModule implements TestModule {
      */
     @Override
     public void configure(Configuration configurator) {
-        // Add the validator
-        configurator.addValidator(new SecretValidator());
-
-        configurator.bind(BuilderHelper.link(SuperSecretService.class).isValidating().build());
+        configurator.bind(BuilderHelper.link(SuperSecretService.class).qualifiedBy(Secret.class.getName()).build());
         configurator.bind(BuilderHelper.link(SystemService.class).build());
         configurator.bind(BuilderHelper.link(UserService.class).build());
+        configurator.addActiveDescriptor(ValidationServiceImpl.class);
     }
 
 }

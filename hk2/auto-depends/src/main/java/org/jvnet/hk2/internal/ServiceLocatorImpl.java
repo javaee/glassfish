@@ -44,6 +44,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -60,13 +61,15 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InjectionPointValidator;
+import org.glassfish.hk2.api.Operation;
+import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
@@ -85,16 +88,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final long id;
     private final ServiceLocator parent;
     
-    private final LinkedList<ActiveDescriptor<?>> allDescriptors = new LinkedList<ActiveDescriptor<?>>();
-    private final HashMap<String, LinkedList<ActiveDescriptor<?>>> descriptorsByAdvertisedContract =
-            new HashMap<String, LinkedList<ActiveDescriptor<?>>>();
-    private final HashMap<String, LinkedList<ActiveDescriptor<?>>> descriptorsByName =
-            new HashMap<String, LinkedList<ActiveDescriptor<?>>>();
+    private final LinkedList<SystemDescriptor<?>> allDescriptors = new LinkedList<SystemDescriptor<?>>();
+    private final HashMap<String, LinkedList<SystemDescriptor<?>>> descriptorsByAdvertisedContract =
+            new HashMap<String, LinkedList<SystemDescriptor<?>>>();
+    private final HashMap<String, LinkedList<SystemDescriptor<?>>> descriptorsByName =
+            new HashMap<String, LinkedList<SystemDescriptor<?>>>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
     private final Context<Singleton> singletonContext = new SingletonContext();
     private final Context<PerLookup> perLookupContext = new PerLookupContext();
-    private final LinkedList<InjectionPointValidator> allValidators = new LinkedList<InjectionPointValidator>();
+    private final LinkedHashSet<ValidationService> allValidators = new LinkedHashSet<ValidationService>();
     
     /* package */ ServiceLocatorImpl(String name, ServiceLocator parent) {
         locatorName = name;
@@ -111,16 +114,19 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @param onBehalfOf The fella who is being validated (or null)
      * @return true if every validator returned true
      */
-    private boolean validate(ActiveDescriptor<?> descriptor, Injectee onBehalfOf) {
-        for (InjectionPointValidator validator : allValidators) {
-            try {
-                if (!validator.validateInjectionPoint(onBehalfOf, descriptor)) {
-                    return false;
-                    
+    private boolean validate(SystemDescriptor<?> descriptor, Injectee onBehalfOf) {
+        for (ValidationService vs : allValidators) {
+            if (!descriptor.isValidating(vs)) continue;
+            
+            for (Validator validator : vs.getValidators()) {
+                try {
+                    if (!validator.validate(Operation.LOOKUP, descriptor, onBehalfOf)) {
+                        return false;
+                    }
                 }
-            }
-            catch (Throwable th) {
-                return false;
+                catch (Throwable th) {
+                    return false;
+                }
             }
         }
         
@@ -131,12 +137,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
-            List<ActiveDescriptor<?>> sortMeOut;
+            List<SystemDescriptor<?>> sortMeOut;
             if (filter instanceof IndexedFilter) {
                 IndexedFilter df = (IndexedFilter) filter;
                 
                 if (df.getName() != null) {
-                    List<ActiveDescriptor<?>> scopedByName;
+                    List<SystemDescriptor<?>> scopedByName;
                     
                     String name = df.getName();
                     
@@ -146,9 +152,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     }
                     
                     if (df.getAdvertisedContract() != null) {
-                        sortMeOut = new LinkedList<ActiveDescriptor<?>>();
+                        sortMeOut = new LinkedList<SystemDescriptor<?>>();
                         
-                        for (ActiveDescriptor<?> candidate : scopedByName) {
+                        for (SystemDescriptor<?> candidate : scopedByName) {
                             if (candidate.getAdvertisedContracts().contains(df.getAdvertisedContract())) {
                                 sortMeOut.add(candidate);
                             }
@@ -177,10 +183,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
             TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
             
-            for (ActiveDescriptor<?> candidate : sortMeOut) {
-                if (candidate.isValidating()) {
-                    if (!validate(candidate, onBehalfOf)) continue;
-                }
+            for (SystemDescriptor<?> candidate : sortMeOut) {
+                if (!validate(candidate, onBehalfOf)) continue;
                 
                 if (filter.matches(candidate)) {
                     sorter.add(candidate);
@@ -503,43 +507,60 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return retVal;
     }
     
+    private void checkConfiguration(DynamicConfigurationImpl dci) {
+        for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
+            if (sd.getAdvertisedContracts().contains(ValidationService.class.getName()) ||
+                sd.getAdvertisedContracts().contains(InjectionResolver.class.getName())) {
+                // These guys get reified right away because they are needed by the system
+                reifyDescriptor(sd);
+            }
+            
+            for (ValidationService vs : allValidators) {
+                for (Validator v : vs.getValidators()) {
+                    if (!v.validate(Operation.BIND, sd, null)) {
+                        throw new MultiException(new IllegalArgumentException("Descriptor " + sd + " did not pass the BIND validation"));
+                    }
+                }
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
     private void addConfigurationInternal(DynamicConfigurationImpl dci) {
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
             allDescriptors.add(sd);
             
             for (String advertisedContract : sd.getAdvertisedContracts()) {
-                LinkedList<ActiveDescriptor<?>> byImpl = descriptorsByAdvertisedContract.get(advertisedContract);
+                LinkedList<SystemDescriptor<?>> byImpl = descriptorsByAdvertisedContract.get(advertisedContract);
                 if (byImpl == null) {
-                    byImpl = new LinkedList<ActiveDescriptor<?>>();
+                    byImpl = new LinkedList<SystemDescriptor<?>>();
                     descriptorsByAdvertisedContract.put(advertisedContract, byImpl);
                 }
                 
                 byImpl.add(sd);
-                
             }
             
             if (sd.getName() != null) {
                 String name = sd.getName();
-                LinkedList<ActiveDescriptor<?>> byName = descriptorsByName.get(name);
+                LinkedList<SystemDescriptor<?>> byName = descriptorsByName.get(name);
                 if (byName == null) {
-                    byName = new LinkedList<ActiveDescriptor<?>>();
+                    byName = new LinkedList<SystemDescriptor<?>>();
                     
                     descriptorsByName.put(name, byName);
                 }
                 
                 byName.add(sd);
             }
-        }
-        
-        for (InjectionPointValidator validator : dci.getAllValidators()) {
-            allValidators.add(validator);
             
+            if (sd.getAdvertisedContracts().contains(ValidationService.class.getName())) {
+                ServiceHandle<ValidationService> handle = getServiceHandle((ActiveDescriptor<ValidationService>) sd);
+                ValidationService vs = handle.getService();
+                allValidators.add(vs);
+            }
         }
-        
     }
     
     private void reupInjectionResolvers() {
-        
         HashMap<Class<? extends Annotation>, InjectionResolver<?>> newResolvers =
                 new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
         
@@ -549,8 +570,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         SortedSet<ActiveDescriptor<?>> resolverDescriptors = getDescriptors(injectionResolverFilter);
         
         for (ActiveDescriptor<?> resolverDescriptor : resolverDescriptors) {
-            resolverDescriptor = reifyDescriptor(resolverDescriptor, null);
-            
             Class<? extends Annotation> iResolve = Utilities.getInjectionResolverType(resolverDescriptor);
             
             if (iResolve != null && !newResolvers.containsKey(iResolve)) {
@@ -567,6 +586,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
         synchronized (lock) {
+            checkConfiguration(dci);  // Does as much preliminary checking as possible
+            
             addConfigurationInternal(dci);
             
             reupInjectionResolvers();

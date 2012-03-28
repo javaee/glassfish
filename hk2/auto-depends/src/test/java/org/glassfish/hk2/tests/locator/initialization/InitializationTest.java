@@ -174,5 +174,14 @@ public class InitializationTest {
     public void testBadBestFilter() {
         locator.getBestDescriptor(null);
     }
+    
+    /**
+     * Tests that a service can be reified due to method injection
+     */
+    @Test
+    public void testMethodReification() {
+        SimpleServiceMethodInjectee ssmi = locator.getService(SimpleServiceMethodInjectee.class);
+        Assert.assertNotNull(ssmi.getSimpleService());
+    }
 
 }

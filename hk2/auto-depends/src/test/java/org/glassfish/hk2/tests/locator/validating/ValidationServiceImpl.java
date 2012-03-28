@@ -37,31 +37,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.glassfish.hk2.tests.locator.validating;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
 
 /**
  * @author jwells
  *
  */
-public class InitializationModule implements TestModule {
-    private final static String NOCLASS = "not.there.just.using.the.Name";
+@Singleton
+public class ValidationServiceImpl implements ValidationService {
+    private static final Filter FILTER = new Filter() {
+        @Override
+        public boolean matches(Descriptor d) {
+            if (d.getQualifiers().contains(Secret.class.getName())) return true;
+            
+            return false;
+        }
+    };
+    
+    private final List<Validator> validators = new LinkedList<Validator>();
+    
+    /**
+     * Adds in the secret validator
+     */
+    public ValidationServiceImpl() {
+        validators.add(new SecretValidator());
+    }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
      */
     @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());
-        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());  // Yes, putting it in twice
-        
-        configurator.bind(BuilderHelper.link(NOCLASS).named(InitializationTest.SIMPLE_NAME).build());  // Yes, putting it in twice
-        
-        configurator.bind(BuilderHelper.link(SimpleService.class.getName()).build());  // Simple service, with String name
-        configurator.addActiveDescriptor(SimpleServiceMethodInjectee.class);  // Already reified, but not injected
+    public Filter getLookupFilter() {
+        return FILTER;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getValidators()
+     */
+    @Override
+    public List<Validator> getValidators() {
+        return validators;
     }
 
 }

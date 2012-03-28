@@ -164,14 +164,6 @@ public interface DescriptorBuilder {
 	 * @throws IllegalArgumentException if the id is set non-null more than once
 	 */
 	public DescriptorBuilder withId(Long id) throws IllegalArgumentException;
-	
-	/**
-     * Call this if this descriptor must be validated
-     * 
-     * @return A DescriptorBuilder with the given metadata
-     * @throws IllegalArgumentException if the id is set non-null more than once
-     */
-    public DescriptorBuilder isValidating() throws IllegalArgumentException;
     
     /**
      * Call this if this descriptor should be loaded with the given HK2Loader

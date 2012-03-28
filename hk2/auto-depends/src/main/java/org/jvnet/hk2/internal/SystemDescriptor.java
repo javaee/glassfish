@@ -43,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,7 +55,7 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.api.Validating;
+import org.glassfish.hk2.api.ValidationService;
 
 /**
  * @author jwells
@@ -80,6 +81,9 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private Set<Type> contracts;
     private Set<Annotation> qualifiers;
     private Creator<T> creator;
+    
+    private final HashMap<ValidationService, Boolean> validationServiceCache =
+            new HashMap<ValidationService, Boolean>();
     
     /* package */ @SuppressWarnings("unchecked")
     SystemDescriptor(Descriptor baseDescriptor, Long locatorId) {
@@ -153,14 +157,6 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     @Override
     public DescriptorType getDescriptorType() {
         return baseDescriptor.getDescriptorType();
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#isValidating()
-     */
-    @Override
-    public boolean isValidating() {
-        return baseDescriptor.isValidating();
     }
     
     /* (non-Javadoc)
@@ -409,21 +405,6 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             }
         }
         
-        if (!isValidating()) {
-            // If there is a validating annotation on this class that is not ok, we will just completely
-            // kill this descriptor
-            for (Annotation annotation : implClass.getAnnotations()) {
-                Class<? extends Annotation> annotationType = annotation.annotationType();
-            
-                if (annotationType.isAnnotationPresent(Validating.class)) {
-                    collector.addThrowable(new IllegalArgumentException("The descriptor (" +
-                            baseDescriptor + " is set to not validating, but it has a validating annotation " +
-                            Pretty.clazz(annotationType)));
-                    break;
-                }
-            }
-        }
-        
         if (!collector.hasErrors()) reified = true;
     }
     
@@ -459,6 +440,37 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     @Override
     public Long getLocatorId() {
         return locatorId;
+    }
+    
+    /**
+     * Gets the decision of the filter from this service.  May use
+     * a cache
+     * 
+     * @param service The service to get the isValidating decision from
+     * @return true if this validation service should validate this descriptor
+     */
+    /* package */ boolean isValidating(ValidationService service) {
+        Boolean cachedResult = validationServiceCache.get(service);
+        if (cachedResult != null) {
+            return cachedResult.booleanValue();
+        }
+        
+        boolean decision = true;
+        try {
+            decision = service.getLookupFilter().matches(this);
+        }
+        catch (Throwable th) {
+            // If the filter fails we assume the decision is true
+        }
+        
+        if (decision) {
+            validationServiceCache.put(service, Boolean.TRUE);
+        }
+        else {
+            validationServiceCache.put(service, Boolean.FALSE);
+        }
+        
+        return decision;
     }
     
     public String toString() {

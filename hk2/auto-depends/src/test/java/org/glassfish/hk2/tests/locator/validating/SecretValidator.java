@@ -44,15 +44,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InjectionPointValidator;
+import org.glassfish.hk2.api.Operation;
+import org.glassfish.hk2.api.Validator;
 
 /**
  * @author jwells
  *
  */
-public class SecretValidator implements InjectionPointValidator {
+public class SecretValidator implements Validator {
     /**
      * Brilliant security.  Any class that has the word
      * System in it is a system class.  No way to spoof that one, eh?
@@ -82,7 +85,13 @@ public class SecretValidator implements InjectionPointValidator {
      * @see org.glassfish.hk2.api.InjectionPointValidator#validateInjectionPoint(java.lang.Class, org.glassfish.hk2.api.Injectee, java.lang.Class)
      */
     @Override
-    public boolean validateInjectionPoint(Injectee injectee, ActiveDescriptor<?> resolution) {
+    public boolean validate(Operation operation, ActiveDescriptor<?> resolution, Injectee injectee) {
+        switch (operation) {
+        case BIND:
+        case UNBIND:
+            return true;
+        }
+        
         if (injectee == null) return false;  // No direct lookups!
         
         return isSystemClass(getDeclaringClass(injectee));
