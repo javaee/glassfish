@@ -47,18 +47,27 @@ package org.glassfish.hk2.api;
  * @author jwells
  *
  */
-public interface InjectionPointValidator {
+public interface Validator {
     /**
      * This method is called whenever it has been determined that a validating
      * class is to be injected into an injection point, or when a descriptor
-     * is being looked up explicitly with the API.
+     * is being looked up explicitly with the API, or a descriptor is being
+     * bound or unbound into the registry.
      * <p>
      * The candidate descriptor being passed in may not have yet been reified.  If
      * possible, this method should do its work without reifying the descriptor.
      * However, if it is necessary to reify the descriptor, it should be done with
      * the ServiceLocator.reifyDescriptor method.
      * <p>
+     * The operation will determine what operation is being performed.  In the
+     * BIND or UNBIND cases the Injectee will be null.  In the LOOKUP case
+     * the Injectee will be non-null if this is being done as part of an
+     * injection point.  In the LOOKUP case the Injectee will be null if this
+     * is being looked up directly from the {@link ServiceLocator} API, in which
+     * case the caller of the lookup method will be on the call frame.
      * 
+     * @param operation BIND if this is a BIND operation, UNBIND if this descriptor
+     * is being unbound from the system and LOOKUP if this is a lookup operation
      * @param injectee The injection point to validate.  If this is null
      * then this lookup is being done directly from the API, in which case the caller
      * of the API will be on the call stack
@@ -71,6 +80,6 @@ public interface InjectionPointValidator {
      * to not be available.  However, the preferred method of indicating an validation failure
      * is to return null
      */
-    public boolean validateInjectionPoint(Injectee injectee, ActiveDescriptor<?> candidate);
+    public boolean validate(Operation operation, ActiveDescriptor<?> candidate, Injectee injectee);
 
 }

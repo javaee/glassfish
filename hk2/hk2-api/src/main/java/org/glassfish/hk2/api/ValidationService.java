@@ -37,31 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
+package org.glassfish.hk2.api;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import java.util.List;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * This service can be used to add validation points to Descriptors.
+ *
  * @author jwells
  *
  */
-public class InitializationModule implements TestModule {
-    private final static String NOCLASS = "not.there.just.using.the.Name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+@Contract
+public interface ValidationService {
+    /**
+     * This filter will be run at least once per descriptor at the point that the descriptor
+     * is being looked up, either with the {@link ServiceLocator} API or due to
+     * an &#64;Inject resolution.  The decision made by this filter will be cached and
+     * used every time that Descriptor is subsequently looked up.  No validation checks
+     * should be done in the returned filter, it is purely meant to limit the
+     * {@link Descriptor}s that are passed into the validator.
+     * <p>
+     * Descriptors passed to this filter may or may not be reified.  The filter should try as
+     * much as possible to do its work without reifying the descriptor.  
+     * <p>
+     * The filter may be run more than once on a descriptor if some condition caused
+     * the cache of results per descriptor to become invalidated.
+     * 
+     * @return The filter to be used to determine if the validators associated with this
+     * service should be called when the passed in {@link Descriptor} is looked up
      */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());
-        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());  // Yes, putting it in twice
-        
-        configurator.bind(BuilderHelper.link(NOCLASS).named(InitializationTest.SIMPLE_NAME).build());  // Yes, putting it in twice
-        
-        configurator.bind(BuilderHelper.link(SimpleService.class.getName()).build());  // Simple service, with String name
-        configurator.addActiveDescriptor(SimpleServiceMethodInjectee.class);  // Already reified, but not injected
-    }
-
+    public Filter getLookupFilter();
+    
+    /**
+     * Returns a list of {@link Validator} that should be run whenever
+     * a {@link Descriptor} that passed the filter is to be looked up with the API
+     * or injected into an injection point.  If any validator in this list returns
+     * false then the service will appear to not exist in the registry.
+     * 
+     * @return A non-null but possibly empty list of {@link Validator}s
+     * that should be run when a {@link Descriptor} is looked up
+     */
+    public List<Validator> getValidators();
 }

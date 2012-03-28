@@ -37,25 +37,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
-
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+package org.glassfish.hk2.tests.locator.initialization;
 
 /**
- * This annotation is put onto an annotation (that is not
- * a qualifier).  If that anntation is found on any injection
- * point then the set of InjectionPointValidators will be called
- * whenever that injection point is called
- * 
  * @author jwells
  *
  */
-@Retention(RUNTIME)
-@Target( { ANNOTATION_TYPE })
-public @interface Validating {
-
+public class SimpleService {
 }

@@ -39,7 +39,6 @@
  */
 package org.jvnet.hk2.internal;
 
-import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -47,7 +46,6 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.FactoryDescriptors;
-import org.glassfish.hk2.api.InjectionPointValidator;
 import org.glassfish.hk2.api.MultiException;
 
 /**
@@ -57,7 +55,6 @@ import org.glassfish.hk2.api.MultiException;
 public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final ServiceLocatorImpl locator;
     private final LinkedList<SystemDescriptor<?>> allDescriptors = new LinkedList<SystemDescriptor<?>>();
-    private final HashSet<InjectionPointValidator> allValidators = new HashSet<InjectionPointValidator>();
     
     private final Object lock = new Object();
     private boolean committed = false;
@@ -150,17 +147,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     }
     
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Configuration#addValidator(org.glassfish.hk2.api.InjectionPointValidator)
-     */
-    @Override
-    public void addValidator(InjectionPointValidator validator)
-            throws IllegalArgumentException {
-        if (validator == null) throw new IllegalArgumentException();
-        
-        allValidators.add(validator);
-    }
-    
-    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Configuration#addActiveDescriptor(java.lang.Class)
      */
     @Override
@@ -197,13 +183,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
      */
     LinkedList<SystemDescriptor<?>> getAllDescriptors() {
         return allDescriptors;
-    }
-    
-    /**
-     * @return the allResolvers
-     */
-    HashSet<InjectionPointValidator> getAllValidators() {
-        return allValidators;
     }
     
     /* package */ void setCommitable(boolean commitable) {

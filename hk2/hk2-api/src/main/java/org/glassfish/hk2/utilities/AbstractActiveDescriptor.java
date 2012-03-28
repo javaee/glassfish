@@ -188,13 +188,6 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
         this.ranking = ranking;
         return retVal;
     }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Descriptor#isValidating()
-     */
-    public boolean isValidating() {
-        return false;
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getServiceId()

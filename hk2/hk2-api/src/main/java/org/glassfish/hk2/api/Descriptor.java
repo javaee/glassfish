@@ -133,15 +133,6 @@ public interface Descriptor {
     public DescriptorType getDescriptorType();
 	
 	/**
-     * This returns true if the class or factory has a validating
-     * annotation on it
-     * 
-     * @return true if this class should be validated when it is
-     * looked up via the API or injected into an injectee
-     */
-    public boolean isValidating();
-	
-	/**
 	 * Returns all of the metadata associated
 	 * that this object should be registered
 	 * with or looked up by

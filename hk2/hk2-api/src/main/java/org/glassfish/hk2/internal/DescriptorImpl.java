@@ -73,7 +73,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private Map<String, List<String>> metadatas;
 	private Set<String> qualifiers;
 	private DescriptorType descriptorType;
-	private boolean validating;
 	private HK2Loader loader;
 	private int rank;
 	private Long id;
@@ -99,7 +98,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		descriptorType = copyMe.getDescriptorType();
 		loader = copyMe.getLoader();
 		
-		validating = copyMe.isValidating();
 		metadatas = copyMe.getMetadata();
 		rank = copyMe.getRanking();
 		id = copyMe.getServiceId();
@@ -118,7 +116,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param qualifiers
 	 * @param descriptorType 
 	 * @param loader 
-	 * @param validating 
 	 * @param rank 
 	 * @param id
 	 * @param locatorId 
@@ -132,7 +129,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			Set<String> qualifiers,
 			DescriptorType descriptorType,
 			HK2Loader loader,
-			boolean validating,
 			int rank,
 			Long id,
 			Long locatorId) {
@@ -145,7 +141,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.metadatas = new HashMap<String, List<String>>(metadatas);
 		this.qualifiers = new HashSet<String>(qualifiers);
 		this.descriptorType = descriptorType;
-		this.validating = validating;
 		this.id = id;
 		this.rank = rank;
 		this.locatorId = locatorId;
@@ -180,12 +175,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
     @Override
     public DescriptorType getDescriptorType() {
         return descriptorType;
-    }
-	
-    @Override
-    public boolean isValidating() {
-        // TODO Auto-generated method stub
-        return validating;
     }
 
 	@Override

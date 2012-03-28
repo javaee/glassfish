@@ -71,7 +71,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	private String implementation;
 	private HK2Loader loader = null;
 	private int rank = 0;
-	private boolean validating = false;
 	private Long id;
 	
 	/**
@@ -242,16 +241,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 		this.id = id;
 		return this;
 	}
-	
-	/* (non-Javadoc)
-     * @see org.glassfish.hk2.utilities.DescriptorBuilder#isValidating()
-     */
-    @Override
-    public DescriptorBuilder isValidating() throws IllegalArgumentException {
-        validating = true;
-        
-        return this;
-    }
 
 	/* (non-Javadoc)
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#build()
@@ -267,7 +256,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 				qualifiers,
 				DescriptorType.CLASS,
 				loader,
-				validating,
 				rank,
 				id,
 				null);
@@ -292,7 +280,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 factoryQualifiers,
                 DescriptorType.CLASS,
                 loader,
-                validating,
                 rank,
                 id,
                 null);
@@ -310,7 +297,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 qualifiers,
                 DescriptorType.FACTORY,
                 loader,
-                validating,
                 rank,
                 id,
                 null);
@@ -325,10 +311,4 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
     public FactoryDescriptors buildFactory() throws IllegalArgumentException {
         return buildFactory(PerLookup.class.getName());
     }
-
-    
-
-    
-
-    
 }

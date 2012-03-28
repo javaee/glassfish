@@ -37,31 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.initialization;
-
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+package org.glassfish.hk2.api;
 
 /**
+ * This defines the operations that may be validated
+ * 
  * @author jwells
- *
  */
-public class InitializationModule implements TestModule {
-    private final static String NOCLASS = "not.there.just.using.the.Name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());
-        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());  // Yes, putting it in twice
-        
-        configurator.bind(BuilderHelper.link(NOCLASS).named(InitializationTest.SIMPLE_NAME).build());  // Yes, putting it in twice
-        
-        configurator.bind(BuilderHelper.link(SimpleService.class.getName()).build());  // Simple service, with String name
-        configurator.addActiveDescriptor(SimpleServiceMethodInjectee.class);  // Already reified, but not injected
-    }
+public enum Operation {
+    /** The descriptor is being looked up */
+    LOOKUP,
+    
+    /** The descriptor is being bound */
+    BIND,
+    
+    /** The descriptor is being unbound */
+    UNBIND
 
 }

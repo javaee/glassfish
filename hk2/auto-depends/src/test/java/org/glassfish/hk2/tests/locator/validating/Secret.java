@@ -46,14 +46,14 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.glassfish.hk2.api.Validating;
+import javax.inject.Qualifier;
 
 /**
  * @author jwells
  *
  */
 @Retention(RUNTIME)
-@Validating
+@Qualifier
 @Target( { TYPE, METHOD })
 public @interface Secret {
 

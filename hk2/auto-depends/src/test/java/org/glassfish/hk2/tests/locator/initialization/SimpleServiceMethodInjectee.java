@@ -39,29 +39,35 @@
  */
 package org.glassfish.hk2.tests.locator.initialization;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import javax.inject.Inject;
 
 /**
  * @author jwells
  *
  */
-public class InitializationModule implements TestModule {
-    private final static String NOCLASS = "not.there.just.using.the.Name";
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+public class SimpleServiceMethodInjectee {
+    private SimpleService simpleService;
+    
+    /**
+     * The point of this test is to have the simpleService reified
+     * with a method, not a constructor or field, which is
+     * covered elsewhere
+     * 
+     * @param simpleService The service that will be reified because
+     * of this method
      */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());
-        configurator.bind(BuilderHelper.link(InitializationTest.TEST_CLASS_A).build());  // Yes, putting it in twice
-        
-        configurator.bind(BuilderHelper.link(NOCLASS).named(InitializationTest.SIMPLE_NAME).build());  // Yes, putting it in twice
-        
-        configurator.bind(BuilderHelper.link(SimpleService.class.getName()).build());  // Simple service, with String name
-        configurator.addActiveDescriptor(SimpleServiceMethodInjectee.class);  // Already reified, but not injected
+    @Inject
+    public void injectSimpleService(SimpleService simpleService) {
+        this.simpleService = simpleService;
+    }
+    
+    /**
+     * For the test to ensure it was properly loaded
+     * 
+     * @return Loaded service
+     */
+    public SimpleService getSimpleService() {
+        return simpleService;
     }
 
 }
