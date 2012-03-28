@@ -37,30 +37,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.factory;
+package org.glassfish.hk2.tests.locator.negative.constructor;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
+ * This class has two constructors that are slated for injection
+ * 
  * @author jwells
- *
  */
-public class NegativeFactoryModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(Configuration config) {
-        config.bind(BuilderHelper.link(TypeVariableFactory.class).
-                to(SimpleService.class).
-                buildFactory());
-        
-        config.bind(BuilderHelper.link(BadlyNamedFactory.class).
-                to(SimpleService2.class).
-                buildFactory());
+public class BadC {
+    @Inject
+    private BadC(ServiceLocator locator) {
+        throw new AssertionError("not called");
     }
-
+    
+    @Inject
+    private BadC(DynamicConfigurationService dcs) {
+        throw new AssertionError("not called");
+    }
 }

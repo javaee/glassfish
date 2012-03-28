@@ -37,30 +37,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.factory;
+package org.glassfish.hk2.tests.locator.negative.scope;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class NegativeFactoryModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
+public class NegativeScopeTest {
+    private final static String TEST_NAME = "NegativeScopeTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeScopeModule());
+    
+    /**
+     * A class with two scopes
      */
-    @Override
-    public void configure(Configuration config) {
-        config.bind(BuilderHelper.link(TypeVariableFactory.class).
-                to(SimpleService.class).
-                buildFactory());
-        
-        config.bind(BuilderHelper.link(BadlyNamedFactory.class).
-                to(SimpleService2.class).
-                buildFactory());
+    @Test
+    public void testDoubleScope() {
+        try {
+            locator.getService(TwoScopeService.class);
+            Assert.fail("two scope service should cause failure");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(" may not have more than one scope.  It has at least "));
+        }
+    }
+    
+    /**
+     * A class with wrong bound scope
+     */
+    @Test
+    public void testWrongScope() {
+        try {
+            locator.getService(WrongScopeService.class);
+            Assert.fail("wrong scope service should cause failure");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains("The scope name given in the descriptor ("));
+        }
     }
 
 }

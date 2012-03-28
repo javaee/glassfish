@@ -39,28 +39,10 @@
  */
 package org.glassfish.hk2.tests.locator.negative.factory;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-
 /**
  * @author jwells
  *
  */
-public class NegativeFactoryModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(Configuration config) {
-        config.bind(BuilderHelper.link(TypeVariableFactory.class).
-                to(SimpleService.class).
-                buildFactory());
-        
-        config.bind(BuilderHelper.link(BadlyNamedFactory.class).
-                to(SimpleService2.class).
-                buildFactory());
-    }
+public class SimpleService2 {
 
 }
