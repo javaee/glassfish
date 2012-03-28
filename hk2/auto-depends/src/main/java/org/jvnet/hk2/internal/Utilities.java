@@ -868,6 +868,7 @@ public class Utilities {
         
         InjectionResolver<?> retVal = locator.getInjectionResolver(injectType);
         if (retVal == null) {
+            // Not possible to get here, we only are here if we already found a resolver
             throw new IllegalStateException("There is no installed injection resolver for " +
                 Pretty.clazz(injectType) + " for type " + annotatedGuy);
         }
@@ -995,20 +996,18 @@ public class Utilities {
      * classes and methods
      * 
      * @param parent The parent annotated element
+     * @param collector For errors
      * @return null if there is no default name (no Named)
      */
-    public static String getDefaultName(AnnotatedElement parent) {
+    public static String getDefaultNameFromMethod(Method parent, Collector collector) {
         Named named = parent.getAnnotation(Named.class);
         if (named == null) {
             return null;
         }
         
         if (named.value() == null || named.value().equals("")) {
-            if (parent instanceof Class) {
-                return Pretty.clazz((Class<?>) parent);
-            }
-            
-            throw new IllegalArgumentException("@Named in this context must have a value");
+            collector.addThrowable(new IllegalArgumentException(
+                    "@Named on the provide method of a factory must have an explicit value"));
         }
         
         return named.value();

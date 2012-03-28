@@ -39,28 +39,36 @@
  */
 package org.glassfish.hk2.tests.locator.negative.factory;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import java.util.List;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * @author jwells
  *
  */
-public class NegativeFactoryModule implements TestModule {
+@Singleton
+public class BadlyNamedFactory implements Factory<SimpleService2> {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.Factory#provide()
+     */
+    @Override @Singleton @Named
+    public SimpleService2 provide() {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
     @Override
-    public void configure(Configuration config) {
-        config.bind(BuilderHelper.link(TypeVariableFactory.class).
-                to(SimpleService.class).
-                buildFactory());
+    public void dispose(SimpleService2 instance) {
+        throw new AssertionError("not called");
         
-        config.bind(BuilderHelper.link(BadlyNamedFactory.class).
-                to(SimpleService2.class).
-                buildFactory());
     }
 
 }

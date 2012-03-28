@@ -37,30 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.factory;
+package org.glassfish.hk2.tests.locator.negative.constructor;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class NegativeFactoryModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
+public class NegativeConstructorTest {
+    private final static String TEST_NAME = "NegativeConstructorTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeConstructorModule());
+    
+    /**
+     * This constructor has two non-zero arg constructors marked &#64;Inject
      */
-    @Override
-    public void configure(Configuration config) {
-        config.bind(BuilderHelper.link(TypeVariableFactory.class).
-                to(SimpleService.class).
-                buildFactory());
+    @Test
+    public void testTwoBadNonZeroArgConstructor() {
+        try {
+            locator.getService(BadC.class);
+            Assert.fail("Should have failed, two @Inject constructors");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains("There is more than one constructor on class "));
+        }
         
-        config.bind(BuilderHelper.link(BadlyNamedFactory.class).
-                to(SimpleService2.class).
-                buildFactory());
     }
 
 }

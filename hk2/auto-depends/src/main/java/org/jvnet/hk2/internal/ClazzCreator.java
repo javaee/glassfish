@@ -84,14 +84,12 @@ public class ClazzCreator<T> implements Creator<T> {
         element = Utilities.findProducerConstructor(implClass, locator, collector);
         if (element == null) {
             myConstructor = null;
-            System.out.println("JRW(10) CC myConstructor=" + myConstructor);
             return;
         }
         
         injectees = Utilities.getConstructorInjectees((Constructor<?>) element);
         if (injectees == null) {
             myConstructor = null;
-            System.out.println("JRW(20) CC myConstructor=" + myConstructor);
             return;
         }
         

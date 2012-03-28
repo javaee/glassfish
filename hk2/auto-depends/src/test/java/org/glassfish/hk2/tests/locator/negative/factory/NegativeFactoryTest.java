@@ -70,5 +70,21 @@ public class NegativeFactoryTest {
         }
         
     }
+    
+    /**
+     * Factories cannot have type variables
+     */
+    @Test
+    public void testFactoryWithBadName() {
+        try {
+            locator.getService(SimpleService2.class);
+            Assert.fail("The SimpleService2 factory has a bad name and so is invalid");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(
+                    "@Named on the provide method of a factory must have an explicit value"));
+        }
+        
+    }
 
 }

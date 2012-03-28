@@ -376,7 +376,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             qualifiers = Collections.unmodifiableSet(
                     Utilities.getAllQualifiers(
                             provideMethod,
-                            Utilities.getDefaultName(provideMethod),
+                            Utilities.getDefaultNameFromMethod(provideMethod, collector),
                             collector));
             
             creator = new FactoryCreator<T>(locator, implClass);
