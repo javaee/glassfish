@@ -72,7 +72,7 @@ rm derby.properties
 sed "s/1528/${DB_PORT_2}/g" derby.properties.replaced > derby.properties
 cat derby.properties
 
-pushd $APS_HOME/devtests/transaction/ee
+pushd $APS_HOME/devtests/ejb/ee/timer
 
 ant all |tee log.txt
 antStatus=$?
