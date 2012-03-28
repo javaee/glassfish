@@ -143,6 +143,7 @@
     </target>
 
     <target name="unsetup" depends="init-common">
+        <antcall target="save-logs"/>
         <antcall target="unsetup-cluster">
             <param name="cname" value="c1"/>
         </antcall>

@@ -85,6 +85,7 @@
     </target>
 
     <target name="unsetup" depends="init-common">
+        <antcall target="save-logs"/>
         <antcall target="unsetup-cluster"/>
         <antcall target="unsetup-database"/>
         <antcall target="stop-database"/>
