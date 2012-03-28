@@ -62,7 +62,6 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.Operation;
-import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
@@ -118,15 +117,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         for (ValidationService vs : allValidators) {
             if (!descriptor.isValidating(vs)) continue;
             
-            for (Validator validator : vs.getValidators()) {
-                try {
-                    if (!validator.validate(Operation.LOOKUP, descriptor, onBehalfOf)) {
-                        return false;
-                    }
-                }
-                catch (Throwable th) {
-                    return false;
-                }
+            if (!vs.getValidator().validate(Operation.LOOKUP, descriptor, onBehalfOf)) {
+                return false;
             }
         }
         
@@ -515,11 +507,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 reifyDescriptor(sd);
             }
             
+            if (sd.getAdvertisedContracts().contains(InjectionResolver.class.getName())) {
+                if (Utilities.getInjectionResolverType(sd) == null) {
+                    throw new MultiException(new IllegalArgumentException(
+                            "An implementation of InjectionResolver must be a parameterized type and the actual type" +
+                            " must be an annotation"));
+                }
+            }
+            
             for (ValidationService vs : allValidators) {
-                for (Validator v : vs.getValidators()) {
-                    if (!v.validate(Operation.BIND, sd, null)) {
-                        throw new MultiException(new IllegalArgumentException("Descriptor " + sd + " did not pass the BIND validation"));
-                    }
+                if (!vs.getValidator().validate(Operation.BIND, sd, null)) {
+                    throw new MultiException(new IllegalArgumentException("Descriptor " + sd + " did not pass the BIND validation"));
                 }
             }
         }
