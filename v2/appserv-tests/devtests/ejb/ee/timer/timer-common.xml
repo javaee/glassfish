@@ -55,7 +55,7 @@
     <echo message="saving logs to ${basedir}"/>
     <zip destfile="${module}-logs.zip"
         basedir="${env.S1AS_HOME}"
-        includes="**/server*log"
+        includes="**/server.lo*"
     />
 
 </target>
