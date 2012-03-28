@@ -68,12 +68,12 @@ public interface Validator {
      * 
      * @param operation BIND if this is a BIND operation, UNBIND if this descriptor
      * is being unbound from the system and LOOKUP if this is a lookup operation
-     * @param injectee The injection point to validate.  If this is null
-     * then this lookup is being done directly from the API, in which case the caller
-     * of the API will be on the call stack
      * @param candidate The candidate descriptor that will be responsible for creating
      * the object to be put into the injection point (or returned to the API).  This
      * descriptor may not have been reified
+     * @param injectee The injection point to validate.  If this is null
+     * then this lookup is being done directly from the API, in which case the caller
+     * of the API will be on the call stack
      * @return true if this injection should succeed, false if this candidate should not
      * be returned
      * @throws RuntimeException Any exception from this method will also cause the candidate

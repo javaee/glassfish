@@ -41,6 +41,7 @@ package org.glassfish.hk2.tests.locator.negative.injector;
 
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
@@ -54,6 +55,8 @@ public class NegativeInjectorModule implements TestModule {
     @Override
     public void configure(Configuration config) {
         config.addActiveDescriptor(SimpleService.class);
+        
+        config.bind(BuilderHelper.link(NegativeInjectorTest.NO_CLASS).build());
 
     }
 

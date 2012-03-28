@@ -39,11 +39,19 @@
  */
 package org.glassfish.hk2.tests.locator.negative.injector;
 
+import java.util.List;
+
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
 
 /**
@@ -54,6 +62,11 @@ import org.junit.Test;
 public class NegativeInjectorTest {
     private final static String TEST_NAME = "NegativeInjectorTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeInjectorModule());
+    
+    /**
+     * No class, I tell ya, no class!
+     */
+    public final static String NO_CLASS = "this.class.is.not.Here";
     
     /**
      * null to create
@@ -164,6 +177,96 @@ public class NegativeInjectorTest {
         }
         catch (MultiException me) {
             Assert.assertEquals(LocatorHelper.EXPECTED, me.getMessage());
+        }
+    }
+    
+    /**
+     * tests a classloader failure (since there really is no class)
+     */
+    @Test
+    public void testNoClass() {
+        ActiveDescriptor<?> ad = locator.getBestDescriptor(BuilderHelper.createContractFilter(NO_CLASS));
+        Assert.assertNotNull(ad);
+        
+        ServiceHandle<?> handle = locator.getServiceHandle(ad);
+        Assert.assertNotNull(handle);
+        
+        try {
+            handle.getService();
+        }
+        catch (MultiException me) {
+            List<Throwable> thList = me.getErrors();
+            Assert.assertEquals(1, thList.size());
+            
+            Throwable th = thList.get(0);
+            
+            Assert.assertTrue(th instanceof ClassNotFoundException);
+        }
+    }
+    
+    /**
+     * Tests an injection resolver that does not have a parameterized type
+     */
+    @Test
+    public void testRawInjectionResolver() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.bind(BuilderHelper.link(RawInjectionResolver.class).
+                to(InjectionResolver.class).build());
+        
+        try {
+            config.commit();
+            Assert.fail("Bad injection resolver should have caused commit to fail");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(),
+                    me.getMessage().contains("An implementation of InjectionResolver must be a parameterized type and the actual type" +
+                            " must be an annotation"));
+        }
+    }
+    
+    /**
+     * Tests an injection resolver that has a type variable for its type
+     */
+    @Test
+    public void testTypeVariableInjectionResolver() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.bind(BuilderHelper.link(TypeVariableInjectionResolver.class).
+                to(InjectionResolver.class).build());
+        
+        try {
+            config.commit();
+            Assert.fail("Bad injection resolver should have caused commit to fail");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(),
+                    me.getMessage().contains("An implementation of InjectionResolver must be a parameterized type and the actual type" +
+                            " must be an annotation"));
+        }
+    }
+    
+    /**
+     * Tests an injection resolver that has a non annotation as its actual type
+     */
+    @Test
+    public void testNotAnnotationInjectionResolver() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.bind(BuilderHelper.link(NotAnnotationInjectionResolver.class).
+                to(InjectionResolver.class).build());
+        
+        try {
+            config.commit();
+            Assert.fail("Bad injection resolver should have caused commit to fail");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(),
+                    me.getMessage().contains("An implementation of InjectionResolver must be a parameterized type and the actual type" +
+                            " must be an annotation"));
         }
     }
 

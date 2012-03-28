@@ -39,9 +39,6 @@
  */
 package org.glassfish.hk2.tests.locator.validating;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Descriptor;
@@ -64,14 +61,7 @@ public class ValidationServiceImpl implements ValidationService {
         }
     };
     
-    private final List<Validator> validators = new LinkedList<Validator>();
-    
-    /**
-     * Adds in the secret validator
-     */
-    public ValidationServiceImpl() {
-        validators.add(new SecretValidator());
-    }
+    private final Validator validator = new SecretValidator();
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
@@ -85,8 +75,8 @@ public class ValidationServiceImpl implements ValidationService {
      * @see org.glassfish.hk2.api.ValidationService#getValidators()
      */
     @Override
-    public List<Validator> getValidators() {
-        return validators;
+    public Validator getValidator() {
+        return validator;
     }
 
 }
