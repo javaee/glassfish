@@ -22,14 +22,10 @@ echo "Total Expected=$TOTAL"
 echo "************************"
 echo ""
 
-echo "************************">>$APS_HOME/devtests/ejb/count.txt;
-date>>$APS_HOME/devtests/ejb/count.txt;
-echo "-----------------------">>$APS_HOME/devtests/ejb/count.txt;
-echo "PASSED=   $PASSED">>$APS_HOME/devtests/ejb/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/ejb/count.txt;
-echo "FAILED=   $FAILED">>$APS_HOME/devtests/ejb/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/ejb/count.txt;
-echo "DID NOT RUN=   $DNR">>$APS_HOME/devtests/ejb/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/ejb/count.txt;
-echo "Total Expected=$TOTAL">>$APS_HOME/devtests/ejb/count.txt;
-echo "************************">>$APS_HOME/devtests/ejb/count.txt;
+rm $APS_HOME/devtests/ejb/ee/timer/count.txt
+touch $APS_HOME/devtests/ejb/ee/timer/count.txt
+
+echo "PASSED=$PASSED">>$APS_HOME/devtests/ejb/ee/timer/count.txt
+echo "FAILED=$FAILED">>$APS_HOME/devtests/ejb/ee/timer/count.txt
+echo "DNR=$DNR">>$APS_HOME/devtests/ejb/ee/timer/count.txt
+echo "TOTAL=$TOTAL">>$APS_HOME/devtests/ejb/ee/timer/count.txt

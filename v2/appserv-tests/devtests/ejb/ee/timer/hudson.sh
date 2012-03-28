@@ -79,4 +79,14 @@ antStatus=$?
 
 ant dev-report
 
-exit $antStatus
+FAIL=`grep FAIL $APS_HOME/devtests/ejb/ee/timer/count.txt |cut -f2 -d=`
+DNR=`grep DNR $APS_HOME/devtests/ejb/ee/timer/count.txt |cut -f2 -d=`
+status=0
+if [ $FAIL -gt 0 ]; then
+   status=1
+fi
+if [ $DNR -gt 0 ]; then
+   status=1
+fi
+
+exit $status
