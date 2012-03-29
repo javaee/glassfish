@@ -330,7 +330,7 @@ abstract class MonTest {
 
         report(success, prepend + "deployed OK to " + target);
      }
- 
+
      /*
      * this implementaion sucks.  please improve it!
      */
@@ -374,7 +374,7 @@ abstract class MonTest {
         for (String s : ERROR) {
             System.out.print(s);
         }
-        for (int i = 1; i < 60; i++) {
+        for (int i = 1; i < 600; i++) {
             if (stopWaiting)
                 break;
             try {
