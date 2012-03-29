@@ -74,13 +74,8 @@
         <ant dir="ejb32" target="all"/>
 -->
 
-<!-- ejb31 must be the last set of tests because embedded might stop database -->
+<!-- ejb31 must be the last set of tests because embedded test might stop database -->
         <ant dir="ejb31" target="all"/>
-
-
-<!-- gradually reenable the existing tests as features come on line
-        <ant dir="util" target="all"/>
--->
 
     </target>
 
@@ -218,13 +213,6 @@
         <antcall target="report"/>
     </target>
 
-   <target name="util">
-        <record name="util.output" action="start" />
-            <ant dir="util" target="all"/>
-        <record name="util.output" action="stop" />
-        <antcall target="report"/>
-    </target>
-
     <target name="usage">
 	<echo>
 		Usage:
@@ -241,7 +229,6 @@
 			ant txprop (Executes the ejb txprop tests)
 			ant sfsb (Executes the ejb sfsb tests)
 			ant stress (Executes the ejb stress tests)
-			ant util (Executes the ejb util tests)
 			ant ejb30 (Executes the ejb30 tests)
 			ant ejb31 (Executes the ejb31 tests)
 	</echo>
