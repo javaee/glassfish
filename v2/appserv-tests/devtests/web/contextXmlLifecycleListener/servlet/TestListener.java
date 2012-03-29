@@ -49,6 +49,7 @@ public class TestListener implements LifecycleListener {
 
     private int debug;
     private String name;
+    private Context context;
 
     /**
      * Acknowledge the occurrence of the specified event.
@@ -57,7 +58,26 @@ public class TestListener implements LifecycleListener {
      */
     public void lifecycleEvent(LifecycleEvent event)
         throws LifecycleException {
-        System.out.println("lifecycleEvent "+event+" "+debug+" "+name);
+
+        // Identify the context we are associated with
+        try {
+            context = (Context) event.getLifecycle();
+        } catch (ClassCastException e) {
+            System.out.println(e);
+        }
+
+        System.out.println(event+" "+event.getType()+" debug="+debug+" name="+name);
+
+        context.getServletContext().setInitParameter("initParamName", "initParamValue");
+
+        // Process the event that has occurred
+        if (event.getType().equals(Lifecycle.START_EVENT)) {
+
+        } else if (event.getType().equals(Lifecycle.STOP_EVENT)) {
+
+        } else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
+            context.getServletContext().setInitParameter("initParamName", "initParamValue");
+        }
     }
 
     /**

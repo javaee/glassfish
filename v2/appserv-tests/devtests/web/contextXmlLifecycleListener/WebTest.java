@@ -71,6 +71,7 @@ public class WebTest {
 
         try {
             webTest.run();
+            stat.addStatus(TEST_NAME, stat.PASS);
         } catch( Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -82,40 +83,24 @@ public class WebTest {
 
     public void run() throws Exception {
 
-        if (checkWebappContextXml()) {
-            stat.addStatus(TEST_NAME, stat.PASS);
+        URL url = new URL("http://" + host  + ":" + port + contextRoot
+                          + "/ServletTest");
+        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new Exception("Wrong response code. Expected: 200"
+                                + ", received: " + responseCode);
         } else {
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        }
-
-    }
-
-    /*
-     * Check webapp context.xml
-     */
-    private boolean checkWebappContextXml() throws Exception {
-
-        Socket sock = new Socket(host, new Integer(port).intValue());
-        OutputStream os = sock.getOutputStream();
-        String get = "GET " + contextRoot + "/webapp-context-xml-test.jsp" + " HTTP/1.0\n";
-        System.out.println(get);
-        os.write(get.getBytes());
-        os.write("\n".getBytes());
-
-        InputStream is = sock.getInputStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-        String line = null;
-        boolean success = false;
-        while ((line = br.readLine()) != null) {
-            System.out.println(line);
-            if (line.startsWith("webapp-env-value")) {
-                success = true;
-                break;
+            BufferedReader bis = new BufferedReader(
+                new InputStreamReader(conn.getInputStream()));
+            String line = null;
+            while ((line = bis.readLine()) != null) {
+                System.out.println(line);
             }
         }
 
-        return success;
-
     }
+
 }

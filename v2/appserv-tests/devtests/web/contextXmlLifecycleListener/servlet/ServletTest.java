@@ -63,13 +63,16 @@ public class ServletTest extends HttpServlet implements HttpSessionListener {
         System.out.println("[Servlet.init]");
     }
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("[Servlet.doGet]");
-        doPost(request, response);
-    }
+    public void service(ServletRequest req, ServletResponse res)
+            throws IOException, ServletException {
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {        
-        System.out.println("[Servlet.doPost]");
+        System.out.println("[Servlet.service]");
+
+        if (!"initParamValue".equals(
+                getServletContext().getInitParameter("initParamName"))) {
+            throw new ServletException("Missing servlet init param");
+        }
+
     }
 
     public void sessionCreated(javax.servlet.http.HttpSessionEvent httpSessionEvent) {
