@@ -43,6 +43,8 @@ import admin.util.LogListener;
 import com.sun.appserv.test.BaseDevTest.AsadminReturn;
 import java.io.*;
 import static admin.monitoring.Constants.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Test fixed issues from JIRA
@@ -148,7 +150,16 @@ public class Jira extends MonTest {
         boolean b2 = checkForString(ar, "server.web.session");
         boolean b3 = checkForString(ar, "server.web.request");
         boolean b4 = checkForString(ar, "server.web.servlet");
+        try {
+            // 3/28/12 Add a sleep and see if it makes a difference.  The actual
+            // problem is that the above asadmin command waits EIGHT minutes and never
+            // gets any output. Still mysterious...
 
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException ex) {
+            //ignore
+        }
         if( ! (b1 && b2 && b3 && b4) ) {
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");

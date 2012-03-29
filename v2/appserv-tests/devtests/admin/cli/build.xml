@@ -367,7 +367,7 @@
     </target>
 
     <target name="clean">
-        <delete failonerror="false" includeemptydirs="true" dir="build"/>
+        <delete failonerror="false" includeemptydirs="true" dir="build">
             <fileset dir="${env.APS_HOME}" includes="test_results*"/>
             <fileset dir="${env.APS_HOME}" includes="count.txt"/>
             <fileset dir="." includes="*.output"/>
