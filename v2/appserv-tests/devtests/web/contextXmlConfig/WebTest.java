@@ -156,7 +156,6 @@ public class WebTest {
         while ((line = br.readLine()) != null) {
             System.out.println(line);
             if (line.startsWith("webapp-env-value")) {
-                stat.addStatus(TEST_NAME, stat.PASS);
                 success = true;
                 break;
             }

@@ -38,69 +38,51 @@
  * holder.
  */
 
+package test;
+
 import java.io.*;
 import java.net.*;
-import com.sun.ejte.ccl.reporter.*;
+import java.util.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
-/*
- *
- * This unit test checkes LifecycleListener in context.xml configuration at webapp level (META-INF/context.xml).
- */
-public class WebTest {
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-    private static final String TEST_NAME = "context-xml-lifecycle-listener";
+import javax.naming.*;
+import javax.sql.*;
+import java.sql.*;
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+public class ServletTest extends HttpServlet implements HttpSessionListener {
 
-    private String host;
-    private String port;
-    private String contextRoot;
-    private String run;
+    private ServletContext context;
+    
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        System.out.println("[Servlet.init]");
+    }
 
-    public WebTest(String[] args) {
-        host = args[0];
-        port = args[1];
-        contextRoot = args[2];
+    public void service(ServletRequest req, ServletResponse res)
+            throws IOException, ServletException {
+
+        System.out.println("[Servlet.service]");
+
+        if (!"initParamValue".equals(
+                getServletContext().getInitParameter("initParamName"))) {
+            throw new ServletException("Missing servlet init param");
+        }
+
+    }
+
+    public void sessionCreated(javax.servlet.http.HttpSessionEvent httpSessionEvent) {
+        System.out.println("[Servlet.sessionCreated]");
     }
     
-    public static void main(String[] args) {
-
-        stat.addDescription("Unit test for LifecycleListener in context.xml");
-        WebTest webTest = new WebTest(args);
-
-        try {
-            webTest.run();
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } catch( Exception ex) {
-            ex.printStackTrace();
-            stat.addStatus(TEST_NAME, stat.FAIL);
-        }
-
-	stat.printSummary();
-
+    public void sessionDestroyed(javax.servlet.http.HttpSessionEvent httpSessionEvent) {
+        System.out.println("[Servlet.sessionDestroyed]");
     }
-
-    public void run() throws Exception {
-
-        URL url = new URL("http://" + host  + ":" + port + contextRoot
-                          + "/ServletTest");
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            throw new Exception("Wrong response code. Expected: 200"
-                                + ", received: " + responseCode);
-        } else {
-            BufferedReader bis = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
-            String line = null;
-            while ((line = bis.readLine()) != null) {
-                System.out.println(line);
-            }
-        }
-
-    }
-
 }
+
+
+

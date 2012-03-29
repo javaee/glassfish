@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,11 +44,12 @@ import com.sun.ejte.ccl.reporter.*;
 
 /*
  *
- * This unit test checkes LifecycleListener in context.xml configuration at webapp level (META-INF/context.xml).
+ * This unit test checkes LifecycleListener in context.xml configuration. 
+ * The global context.xml should be shared across by all webapps.
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "context-xml-lifecycle-listener";
+    private static final String TEST_NAME = "context-xml-lifecycle-listener-global";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -66,7 +67,8 @@ public class WebTest {
     
     public static void main(String[] args) {
 
-        stat.addDescription("Unit test for LifecycleListener in context.xml");
+        stat.addDescription("Unit test for global LifecycleListener in context.xml");
+
         WebTest webTest = new WebTest(args);
 
         try {

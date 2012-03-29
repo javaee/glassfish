@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,69 +38,70 @@
  * holder.
  */
 
+package test;
+
 import java.io.*;
-import java.net.*;
-import com.sun.ejte.ccl.reporter.*;
+import java.util.*;
+import javax.servlet.*;
+import org.apache.catalina.*;
 
-/*
- *
- * This unit test checkes LifecycleListener in context.xml configuration at webapp level (META-INF/context.xml).
- */
-public class WebTest {
+public class TestListener implements LifecycleListener {
 
-    private static final String TEST_NAME = "context-xml-lifecycle-listener";
+    private int debug;
+    private String name;
+    private Context context;
 
-    private static SimpleReporterAdapter stat
-        = new SimpleReporterAdapter("appserv-tests");
+    /**
+     * Acknowledge the occurrence of the specified event.
+     *
+     * @param event LifecycleEvent that has occurred
+     */
+    public void lifecycleEvent(LifecycleEvent event)
+        throws LifecycleException {
 
-    private String host;
-    private String port;
-    private String contextRoot;
-    private String run;
-
-    public WebTest(String[] args) {
-        host = args[0];
-        port = args[1];
-        contextRoot = args[2];
-    }
-    
-    public static void main(String[] args) {
-
-        stat.addDescription("Unit test for LifecycleListener in context.xml");
-        WebTest webTest = new WebTest(args);
-
+        // Identify the context we are associated with
         try {
-            webTest.run();
-            stat.addStatus(TEST_NAME, stat.PASS);
-        } catch( Exception ex) {
-            ex.printStackTrace();
-            stat.addStatus(TEST_NAME, stat.FAIL);
+            context = (Context) event.getLifecycle();
+        } catch (ClassCastException e) {
+            System.out.println(e);
         }
 
-	stat.printSummary();
+        System.out.println(event+" "+event.getType()+" debug="+debug+" name="+name);
 
+        context.getServletContext().setInitParameter("initParamName", "initParamValue");
+
+        // Process the event that has occurred
+        if (event.getType().equals(Lifecycle.START_EVENT)) {
+
+        } else if (event.getType().equals(Lifecycle.STOP_EVENT)) {
+
+        } else if (event.getType().equals(Lifecycle.INIT_EVENT)) {
+            context.getServletContext().setInitParameter("initParamName", "initParamValue");
+        }
     }
 
-    public void run() throws Exception {
+    /**
+     * Return the debugging detail level for this component.
+     */
+    public int getDebug() {
+        return (this.debug);
+    }
 
-        URL url = new URL("http://" + host  + ":" + port + contextRoot
-                          + "/ServletTest");
-        System.out.println("Connecting to: " + url.toString());
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.connect();
-        int responseCode = conn.getResponseCode();
-        if (responseCode != 200) {
-            throw new Exception("Wrong response code. Expected: 200"
-                                + ", received: " + responseCode);
-        } else {
-            BufferedReader bis = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
-            String line = null;
-            while ((line = bis.readLine()) != null) {
-                System.out.println(line);
-            }
-        }
+    /**
+     * Set the debugging detail level for this component.
+     *
+     * @param debug The new debugging detail level
+     */
+    public void setDebug(int debug) {
+        this.debug = debug;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return (this.name);
     }
 
 }
