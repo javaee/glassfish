@@ -96,7 +96,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
     private final Context<Singleton> singletonContext = new SingletonContext();
     private final Context<PerLookup> perLookupContext = new PerLookupContext();
-    private final LinkedHashSet<ValidationService> allValidators = new LinkedHashSet<ValidationService>();
+    private final LinkedHashSet<ValidationService> allValidators =
+            new LinkedHashSet<ValidationService>();
     
     /* package */ ServiceLocatorImpl(String name, ServiceLocator parent) {
         locatorName = name;
@@ -125,7 +126,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return true;
     }
     
-    private SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf) {
+    private SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
@@ -183,7 +184,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
             }
             
-            if (parent != null) {
+            if (getParents && parent != null) {
                 sorter.addAll(parent.getDescriptors(filter));
             }
             
@@ -197,7 +198,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter) {
-        return getDescriptors(filter, null);
+        return getDescriptors(filter, null, true);
     }
     
     public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
@@ -433,7 +434,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
         Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
-        SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf);
+        SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true);
         candidates = narrow(candidates, contractOrImpl, null, false, onBehalfOf, qualifiers);
         
         ActiveDescriptor<?> topDog = Utilities.getFirstThingInSet(candidates);
@@ -499,15 +500,49 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return retVal;
     }
     
-    private void checkConfiguration(DynamicConfigurationImpl dci) {
+    private SortedSet<SystemDescriptor<?>> checkConfiguration(DynamicConfigurationImpl dci) {
+        TreeSet<SystemDescriptor<?>> retVal = new TreeSet<SystemDescriptor<?>>(DESCRIPTOR_COMPARATOR);
+        
+        for (Filter unbindFilter : dci.getUnbindFilters()) {
+            SortedSet<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false);
+            
+            for (ActiveDescriptor<?> result : results) {
+                SystemDescriptor<?> candidate = (SystemDescriptor<?>) result;
+                
+                if (retVal.contains(candidate)) continue;
+                
+                for (ValidationService vs : allValidators) {
+                    if (!vs.getValidator().validate(Operation.UNBIND, candidate, null)) {
+                        throw new MultiException(new IllegalArgumentException("Descriptor " +
+                            candidate + " did not pass the UNBIND validation"));
+                    }
+                }
+                
+                retVal.add(candidate);
+            }
+        }
+        
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
-            if (sd.getAdvertisedContracts().contains(ValidationService.class.getName()) ||
-                sd.getAdvertisedContracts().contains(InjectionResolver.class.getName())) {
-                // These guys get reified right away because they are needed by the system
+            if (sd.getLocatorId().longValue() != id) {
+                throw new MultiException(new IllegalArgumentException("A descriptor " + sd +
+                        " is targeted to a ServiceLocator with id " + sd.getLocatorId() +
+                        " but this ServiceLocator has id " + id));
+            }
+            
+            boolean checkScope = false;
+            if (sd.getAdvertisedContracts().contains(ValidationService.class.getName())) {
+                // This gets reified right away
                 reifyDescriptor(sd);
+                
+                checkScope = true;
             }
             
             if (sd.getAdvertisedContracts().contains(InjectionResolver.class.getName())) {
+                // This gets reified right away
+                reifyDescriptor(sd);
+                
+                checkScope = true;
+                
                 if (Utilities.getInjectionResolverType(sd) == null) {
                     throw new MultiException(new IllegalArgumentException(
                             "An implementation of InjectionResolver must be a parameterized type and the actual type" +
@@ -515,10 +550,61 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
             }
             
+            if (sd.getAdvertisedContracts().contains(Context.class.getName())) {
+                // This one need not be reified, it will get checked later
+                checkScope = true;
+            }
+            
+            if (checkScope) {
+                if (!sd.getScope().equals(Singleton.class.getName())) {
+                    throw new MultiException(new IllegalArgumentException(
+                            "An implementation of ValidationService, InjectionReslover or Context must be in the Singleton scope: " +
+                              sd));
+                }
+            }
+            
             for (ValidationService vs : allValidators) {
                 if (!vs.getValidator().validate(Operation.BIND, sd, null)) {
                     throw new MultiException(new IllegalArgumentException("Descriptor " + sd + " did not pass the BIND validation"));
                 }
+            }
+        }
+        
+        return retVal;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void removeConfigurationInternal(SortedSet<SystemDescriptor<?>> unbinds) {
+        for (SystemDescriptor<?> unbind : unbinds) {
+            allDescriptors.remove(unbind);
+            
+            for (String advertisedContract : unbind.getAdvertisedContracts()) {
+                LinkedList<SystemDescriptor<?>> byImpl = descriptorsByAdvertisedContract.get(advertisedContract);
+                if (byImpl != null) {
+                    byImpl.remove(unbind);
+                    
+                    if (byImpl.isEmpty()) {
+                        descriptorsByAdvertisedContract.remove(advertisedContract);
+                    }
+                }
+            }
+            
+            String unbindName = unbind.getName();
+            if (unbindName != null) {
+                LinkedList<SystemDescriptor<?>> byName = descriptorsByName.get(unbindName);
+                if (byName != null) {
+                    byName.remove(unbind);
+                    
+                    if (byName.isEmpty()) {
+                        descriptorsByName.remove(unbindName);
+                    }
+                }
+            }
+            
+            if (unbind.getAdvertisedContracts().contains(ValidationService.class.getName())) {
+                ServiceHandle<ValidationService> handle = (ServiceHandle<ValidationService>) getServiceHandle(unbind);
+                ValidationService vs = handle.getService();
+                allValidators.remove(vs);
             }
         }
     }
@@ -584,7 +670,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
         synchronized (lock) {
-            checkConfiguration(dci);  // Does as much preliminary checking as possible
+            SortedSet<SystemDescriptor<?>> unbinds =
+                    checkConfiguration(dci);  // Does as much preliminary checking as possible
+            
+            removeConfigurationInternal(unbinds);
             
             addConfigurationInternal(dci);
             

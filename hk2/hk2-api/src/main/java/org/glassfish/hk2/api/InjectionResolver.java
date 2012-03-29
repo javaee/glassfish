@@ -39,17 +39,22 @@
  */
 package org.glassfish.hk2.api;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * This class allows users to provide a custom injection target for
  * any annotation (including &#64;Inject).  The user would usually
  * only provide a resolver for &#64;Inject if it were specializing
  * the system provided resolver for &#64;Inject.  Otherwise, this
  * resolver can be used to provide injection points for any annotation.
+ * <p>
+ * An implementation of Context must be in the Singleton scope
  * 
  * @author jwells
  * @param <T> This must be the class of the injection annotation that this resolver
  * will handle
  */
+@Contract
 public interface InjectionResolver<T> {
     /** This is the name of the system provided resolver for 330 injections */
     public final static String SYSTEM_RESOLVER_NAME = "SystemInjectResolver";

@@ -37,60 +37,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.dynamicconfig;
 
-import java.lang.annotation.Annotation;
+import javax.inject.Singleton;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Operation;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
 
 /**
- * An implementation of this must be put into the system in order to
- * create contextual instances of services.  If there is more than
- * one active implementation available for the same scope on the same
- * thread a runtime exception will be thrown when the scope is accessed.
- * <p>
- * An implementation of Context must be in the Singleton scope
- * 
  * @author jwells
- * @param <T> This must be the type for which this is a context.  For example,
- * if your scope is SecureScope, then your context must implement Context&lt;SecureScope&gt;
  *
  */
-@Contract
-public interface Context<T> {
-    /**
-     * The scope for which this is the context
-     * 
-     * @return may not return null, must return the
-     * scope for which this is a context
-     */
-    public Class<? extends Annotation> getScope();
+@Singleton
+public class ValidationServiceImpl implements ValidationService {
+    private static final Filter FILTER = new Filter() {
+
+        @Override
+        public boolean matches(Descriptor d) {
+            return false;
+        }
+        
+    };
     
-    /**
-     * Creates a contextual instance of this ActiveDescriptor by calling its
-     * create method if there is no other matching contextual instance.  If there
-     * is already a contextual instance it is returned.  If parent is null then this
-     * must work like the find call
-     * 
-     * @param activeDescriptor The descriptor to use when creating instances
-     * @param root The extended provider for the outermost parent being created
-     * 
-     * @return A context instance (which may be null)
+    private static final Validator VALIDATOR = new Validator() {
+
+        @Override
+        public boolean validate(Operation operation,
+                ActiveDescriptor<?> candidate, Injectee injectee) {
+            return true;
+        }
+        
+    };
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
      */
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor, ServiceHandle<?> root);
-    
-    /**
-     * Finds an existing contextual instance, without creating or loading any objects
-     * 
-     * @param descriptor The descriptor to look for in this context
-     * @return Either null or the instance 
+    @Override
+    public Filter getLookupFilter() {
+        return FILTER;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getValidator()
      */
-    public <U> U find(ActiveDescriptor<U> descriptor);
-    
-    /**
-     * True if this context is active, false otherwise
-     * 
-     * @return true if this context is active, false otherwise
-     */
-    public boolean isActive();
+    @Override
+    public Validator getValidator() {
+        return VALIDATOR;
+    }
+
 }

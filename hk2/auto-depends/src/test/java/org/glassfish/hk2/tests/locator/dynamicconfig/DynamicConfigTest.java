@@ -39,11 +39,20 @@
  */
 package org.glassfish.hk2.tests.locator.dynamicconfig;
 
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+
+import javax.inject.Singleton;
+
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
@@ -55,6 +64,9 @@ import org.junit.Test;
 public class DynamicConfigTest {
     private final static String TEST_NAME = "DynamicConfigTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, null);
+    
+    /** The name of the named service */
+    public final static String SERVICE_NAME = "Fred";
     
     /**
      * Tests that things can be dynamically added to the system
@@ -80,6 +92,155 @@ public class DynamicConfigTest {
         
         ls = locator.getService(LateService.class);
         Assert.assertNotNull(ls);
+    }
+    
+    /**
+     * Tests that things can be dynamically added to the system
+     */
+    @Test
+    public void testUnbindAService() {
+        SimpleService ss = locator.getService(SimpleService.class);
+        Assert.assertNull(ss);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        dc.bind(BuilderHelper.link(SimpleService.class).build());
+        
+        dc.commit();
+        
+        ss = locator.getService(SimpleService.class);
+        Assert.assertNotNull(ss);
+        
+        dc = dcs.createDynamicConfiguration();
+        
+        dc.addUnbindFilter(BuilderHelper.createContractFilter(SimpleService.class.getName()));
+        
+        // Should still be there prior to update
+        ss = locator.getService(SimpleService.class);
+        Assert.assertNotNull(ss);
+        
+        dc.commit();
+        
+        ss = locator.getService(SimpleService.class);
+        Assert.assertNull(ss);
+    }
+    
+    private final static String KEY = "ID";
+    private final static String ONE = "One";
+    private final static String TWO = "Two";
+    
+    private static void checkDescriptor(ActiveDescriptor<?> checkMe, String expectedValue) {
+        Map<String, List<String>> metadata = checkMe.getMetadata();
+        
+        List<String> values = metadata.get(KEY);
+        Assert.assertNotNull(values);
+        
+        Assert.assertTrue("Expected " + expectedValue + " in the metadata, but did not get it", values.contains(expectedValue));
+        
+    }
+    
+    /**
+     * Tests that things can be dynamically added to the system
+     */
+    @Test
+    public void testRebindAService() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        dc.bind(BuilderHelper.link(SimpleService2.class).has(KEY, ONE).build());
+        
+        dc.commit();
+        
+        Filter filter = BuilderHelper.createContractFilter(SimpleService2.class.getName());
+        
+        SortedSet<ActiveDescriptor<?>> ss2Descriptors = locator.getDescriptors(filter);
+        Assert.assertEquals(1, ss2Descriptors.size());
+        
+        for (ActiveDescriptor<?> ss2Descriptor : ss2Descriptors) {
+            checkDescriptor(ss2Descriptor, ONE);
+        }
+        
+        dc = dcs.createDynamicConfiguration();
+        
+        dc.addUnbindFilter(filter);
+        dc.bind(BuilderHelper.link(SimpleService2.class).has(KEY, TWO).build());
+        
+        // Does both a bind and an unbind in the same commit
+        dc.commit();
+        
+        ss2Descriptors = locator.getDescriptors(filter);
+        Assert.assertEquals(1, ss2Descriptors.size());
+        
+        for (ActiveDescriptor<?> ss2Descriptor : ss2Descriptors) {
+            checkDescriptor(ss2Descriptor, TWO);
+        }
+    }
+    
+    /**
+     * Tests that things can be dynamically added to the system
+     */
+    @Test
+    public void testUnbindANamedService() {
+        NamedService ns = locator.getService(NamedService.class);
+        Assert.assertNull(ns);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        dc.bind(BuilderHelper.link(NamedService.class).named(SERVICE_NAME).build());
+        
+        dc.commit();
+        
+        ns = locator.getService(NamedService.class, SERVICE_NAME);
+        Assert.assertNotNull(ns);
+        
+        dc = dcs.createDynamicConfiguration();
+        
+        dc.addUnbindFilter(BuilderHelper.createNameFilter(SERVICE_NAME));
+        
+        // Should still be there prior to update
+        ns = locator.getService(NamedService.class, SERVICE_NAME);
+        Assert.assertNotNull(ns);
+        
+        dc.commit();
+        
+        ns = locator.getService(NamedService.class, SERVICE_NAME);
+        Assert.assertNull(ns);
+    }
+    
+    /**
+     * Tests that things can be dynamically added to the system
+     */
+    @Test
+    public void testUnbindAValidatorService() {
+        ValidationServiceImpl vsi = locator.getService(ValidationServiceImpl.class);
+        Assert.assertNull(vsi);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        dc.bind(BuilderHelper.link(ValidationServiceImpl.class).
+                to(ValidationService.class).
+                in(Singleton.class.getName()).build());
+        
+        dc.commit();
+        
+        vsi = locator.getService(ValidationServiceImpl.class);
+        Assert.assertNotNull(vsi);
+        
+        dc = dcs.createDynamicConfiguration();
+        
+        dc.addUnbindFilter(BuilderHelper.createContractFilter(ValidationServiceImpl.class.getName()));
+        
+        // Should still be there prior to update
+        vsi = locator.getService(ValidationServiceImpl.class);
+        Assert.assertNotNull(vsi);
+        
+        dc.commit();
+        
+        vsi = locator.getService(ValidationServiceImpl.class);
+        Assert.assertNull(vsi);
     }
 
 }
