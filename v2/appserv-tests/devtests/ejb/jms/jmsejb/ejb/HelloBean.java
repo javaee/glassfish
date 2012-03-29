@@ -68,15 +68,19 @@ public class HelloBean implements SessionBean {
             // results in the correct exception.
             try {
                 session.commit();
-                throw new JMSException
+                throw new java.lang.IllegalStateException
                     ("Didn't get session.commit exception");
             } catch(javax.jms.TransactionInProgressException tipe) {
                 System.out.println
                     ("Successfully got tx in progress excep " +
                      "after calling session.commit in a global tx");
             } catch(javax.jms.JMSException jmse) {
+                System.out.println
+                    ("Got JMSException - it's also ok - " +
+                     "after calling session.commit in a global tx");
+            } catch(java.lang.IllegalStateException e) {
                 throw new JMSException
-                    ("Should have gotten tx-in-progress exception");
+                    ("Should have gotten exception for tx-in-progress");
             }
 
             if( beanManagedTx ) {

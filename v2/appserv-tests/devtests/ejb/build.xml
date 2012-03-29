@@ -68,7 +68,9 @@
         <ant dir="cmp" target="all"/>  
         <ant dir="sfsb" target="all"/>
         <ant dir="allowedmethods" target="all"/> 
-<!--
+        <ant dir="jms" target="all"/>  
+
+<!--  Currently only esecuted in the lite suite
         <ant dir="ejb32" target="all"/>
 -->
 
@@ -77,9 +79,6 @@
 
 
 <!-- gradually reenable the existing tests as features come on line
-
-        <ant dir="jms" target="all"/>  
-
         <ant dir="util" target="all"/>
 -->
 
