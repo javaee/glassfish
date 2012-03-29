@@ -171,7 +171,7 @@
     </target>
 
     <target name="run-test" depends="init-common">
-      <sleep seconds="10"/>
+      <sleep seconds="30"/>
         <echo message="Verifying timeouts"/>
         <java  fork="on"
               failonerror="true"
@@ -197,7 +197,7 @@
         <sleep seconds="10"/>
         <echo message="Timer was running on instance ${instance}"/>
         <echo message="Killing instance ${instance}"/>
-        <exec executable="./kill_instance.sh" failonerror="true">
+        <exec executable="./kill_instance.sh" failonerror="false">
           <arg line="${instance}"/>
         </exec>
 
