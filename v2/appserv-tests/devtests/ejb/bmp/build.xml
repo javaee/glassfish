@@ -18,9 +18,9 @@
         <antcall target="simple_nopackage"/>       
         <antcall target="twolevel"/>
         <antcall target="txtests"/>       
+        <antcall target="thread_pool_id"/>      
 <!-- These tests need to be fixed
         <antcall target="handle"/>       
-        <antcall target="thread_pool_id"/>      
 -->
     </target>
 
@@ -67,6 +67,12 @@
         <record name="txtests.output" action="stop" />
     </target>
 
+    <target name="thread_pool_id">
+        <record name="thread_pool_id.output" action="start" />
+            <ant dir="thread_pool_id" target="all"/>
+        <record name="thread_pool_id.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:
@@ -79,6 +85,7 @@
                      ant simple_nopackage
                      ant twolevel 
                      ant txtests 
+                     ant thread_pool_id 
 			
 	</echo>
     </target>
