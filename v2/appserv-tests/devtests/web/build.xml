@@ -346,6 +346,7 @@
         <ant dir="contextRoot" target="all"/>
         <ant dir="contextValveSetRequestedSessionCookiePath" target="all"/>
         <ant dir="contextXmlConfig" target="all"/> 
+        <ant dir="contextXmlLifecycleListener" target="all"/>
         <ant dir="cookieValueWithEquals" target="all"/>
         <ant dir="cookieValueWithSpaces" target="all"/>
         <ant dir="crossContextDispatchLongestContextRootMatch" target="all"/> 
