@@ -9,10 +9,12 @@ import javax.ejb.Stateless;
 @Stateless
 public class SlessEJB implements Sless
 {
+
+    @javax.annotation.Resource javax.ejb.TimerService ts;
+
     public String hello() {
         System.out.println("In SlessEJB:hello()");
         return "hello";
     }
 
-    public com.sun.ejb.containers.TimerSchedule foo () {return null;}
 }
