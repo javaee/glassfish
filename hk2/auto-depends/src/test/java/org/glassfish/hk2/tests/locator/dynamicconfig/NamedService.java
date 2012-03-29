@@ -37,60 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.dynamicconfig;
 
-import java.lang.annotation.Annotation;
-
-import org.jvnet.hk2.annotations.Contract;
+import javax.inject.Named;
 
 /**
- * An implementation of this must be put into the system in order to
- * create contextual instances of services.  If there is more than
- * one active implementation available for the same scope on the same
- * thread a runtime exception will be thrown when the scope is accessed.
- * <p>
- * An implementation of Context must be in the Singleton scope
- * 
  * @author jwells
- * @param <T> This must be the type for which this is a context.  For example,
- * if your scope is SecureScope, then your context must implement Context&lt;SecureScope&gt;
  *
  */
-@Contract
-public interface Context<T> {
-    /**
-     * The scope for which this is the context
-     * 
-     * @return may not return null, must return the
-     * scope for which this is a context
-     */
-    public Class<? extends Annotation> getScope();
-    
-    /**
-     * Creates a contextual instance of this ActiveDescriptor by calling its
-     * create method if there is no other matching contextual instance.  If there
-     * is already a contextual instance it is returned.  If parent is null then this
-     * must work like the find call
-     * 
-     * @param activeDescriptor The descriptor to use when creating instances
-     * @param root The extended provider for the outermost parent being created
-     * 
-     * @return A context instance (which may be null)
-     */
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor, ServiceHandle<?> root);
-    
-    /**
-     * Finds an existing contextual instance, without creating or loading any objects
-     * 
-     * @param descriptor The descriptor to look for in this context
-     * @return Either null or the instance 
-     */
-    public <U> U find(ActiveDescriptor<U> descriptor);
-    
-    /**
-     * True if this context is active, false otherwise
-     * 
-     * @return true if this context is active, false otherwise
-     */
-    public boolean isActive();
+@Named(DynamicConfigTest.SERVICE_NAME)
+public class NamedService {
+
 }

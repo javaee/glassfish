@@ -108,4 +108,27 @@ public interface Configuration {
      */
     public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
             throws MultiException, IllegalArgumentException;
+    
+    /**
+     * This filter will added to the list of filters in this Configuration that will
+     * determine which Descriptors will be removed from the system.  Only services directly
+     * from this Configuration objects' associated ServiceLocator will be given to this Filter
+     * (it will not be given descriptors from the ServiceLocators parent).  The descriptors passed
+     * into this filter may be cast to {@link ActiveDescriptor}.  The descriptors passed into this
+     * filter may or may not have been reified.  This filter should not reify passed in descriptors.
+     * <p>
+     * And descriptor for which this filter returns true will be removed from the
+     * {@link ServiceLocator} prior to any additions that are performed with this
+     * Configuration object.  Hence a Configuration can remove and add a descriptor of the
+     * same type in one commit.
+     * <p>
+     * In order to unbind a filter the caller of commit must pass the LOOKUP validators and the
+     * UNBIND validators.
+     * 
+     * @param unbindFilter This filter will be added to the list of filters that this
+     * configuration object will use to determine which descriptors to unbind from the system.
+     * May not be null
+     * @throws IllegalArgumentException if unbindFilter is null
+     */
+    public void addUnbindFilter(Filter unbindFilter) throws IllegalArgumentException;
 }

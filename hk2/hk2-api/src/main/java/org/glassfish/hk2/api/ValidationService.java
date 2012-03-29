@@ -43,6 +43,8 @@ import org.jvnet.hk2.annotations.Contract;
 
 /**
  * This service can be used to add validation points to Descriptors.
+ * <p>
+ * An implementation of Context must be in the Singleton scope
  *
  * @author jwells
  *

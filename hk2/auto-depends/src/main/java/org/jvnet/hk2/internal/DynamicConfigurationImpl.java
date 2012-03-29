@@ -46,6 +46,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.FactoryDescriptors;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.MultiException;
 
 /**
@@ -55,6 +56,7 @@ import org.glassfish.hk2.api.MultiException;
 public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final ServiceLocatorImpl locator;
     private final LinkedList<SystemDescriptor<?>> allDescriptors = new LinkedList<SystemDescriptor<?>>();
+    private final LinkedList<Filter> allUnbindFilters = new LinkedList<Filter>();
     
     private final Object lock = new Object();
     private boolean committed = false;
@@ -156,6 +158,17 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         
         return addActiveDescriptor(ad);
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Configuration#addUnbindFilter(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public void addUnbindFilter(Filter unbindFilter)
+            throws IllegalArgumentException {
+        if (unbindFilter == null) throw new IllegalArgumentException();
+        
+        allUnbindFilters.add(unbindFilter);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.DynamicConfiguration#commit()
@@ -181,14 +194,20 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     /**
      * @return the allDescriptors
      */
-    LinkedList<SystemDescriptor<?>> getAllDescriptors() {
+    /* package */ LinkedList<SystemDescriptor<?>> getAllDescriptors() {
         return allDescriptors;
+    }
+    
+    /* package */ LinkedList<Filter> getUnbindFilters() {
+        return allUnbindFilters;
     }
     
     /* package */ void setCommitable(boolean commitable) {
         this.commitable = commitable;
         
     }
+
+    
 
     
 
