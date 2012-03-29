@@ -367,13 +367,12 @@
     </target>
 
     <target name="clean">
-        <delete>
+        <delete failonerror="false" includeemptydirs="true" dir="build"/>
             <fileset dir="${env.APS_HOME}" includes="test_results*"/>
             <fileset dir="${env.APS_HOME}" includes="count.txt"/>
             <fileset dir="." includes="*.output"/>
             <fileset dir="." includes="*.txt"/>
         </delete>
-        <delete failonerror="false" includeemptydirs="true" dir="build"/>
     </target>
 
     <target name="startdb">
