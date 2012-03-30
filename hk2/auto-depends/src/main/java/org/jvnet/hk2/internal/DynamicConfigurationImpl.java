@@ -72,7 +72,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     @Override
     public ActiveDescriptor<?> bind(Descriptor key) {
         checkState();
-        if ((key == null) || (key.getImplementation() == null)) throw new IllegalArgumentException();
+        checkDescriptor(key);
         
         SystemDescriptor<?> sd = new SystemDescriptor<Object>(key, new Long(locator.getLocatorId()));
         
@@ -92,13 +92,13 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         Descriptor asService = factoryDescriptors.getFactoryAsService();
         Descriptor asFactory = factoryDescriptors.getFactoryAsAFactory();
         
-        if (asService == null) throw new IllegalArgumentException("getFactoryAsService returned null");
-        if (asFactory == null) throw new IllegalArgumentException("getFactoryAsFactory returned null");
+        checkDescriptor(asService);
+        checkDescriptor(asFactory);
         
         String implClassService = asService.getImplementation();
         String implClassFactory = asFactory.getImplementation();
         
-        if (!Utilities.safeEquals(implClassService, implClassFactory)) {
+        if (!implClassService.equals(implClassFactory)) {
             throw new IllegalArgumentException("The implementation classes must match (" +
                 implClassService + "/" + implClassFactory + ")");
         }
@@ -136,7 +136,9 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor)
             throws IllegalArgumentException {
         checkState();
-        if (activeDescriptor == null || !activeDescriptor.isReified()) {
+        checkDescriptor(activeDescriptor);
+        
+        if (!activeDescriptor.isReified()) {
             throw new IllegalArgumentException();
         }
         
@@ -189,6 +191,15 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         synchronized (lock) {
             if (committed) throw new IllegalStateException();
         }
+    }
+    
+    private static void checkDescriptor(Descriptor d) {
+        if (d == null) throw new IllegalArgumentException();
+        if (d.getImplementation() == null) throw new IllegalArgumentException();
+        if (d.getAdvertisedContracts() == null) throw new IllegalArgumentException();
+        if (d.getDescriptorType() == null) throw new IllegalArgumentException();
+        if (d.getMetadata() == null) throw new IllegalArgumentException();
+        if (d.getQualifiers() == null) throw new IllegalArgumentException();
     }
 
     /**

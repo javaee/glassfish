@@ -147,41 +147,34 @@ public interface ServiceLocator {
     
     /**
      * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * service
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
      * @param name The name to use to further qualify the search (may be null)
      * @param qualifiers The set of qualifiers that must match this service
      * definition
-     * @return Will return root as a convenience
+     * @return Will the service handle for the best service matching the
+     * given criteria, or null if no matching service could be found
      * @throws MultiException if there was an error during service creation
+     * @throws IllegalArgumentException if contractOrImpl is null
      */
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, String name,
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
+     * Gets service handles that can be used to get and destroy the returned
+     * services
      * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
      * @param qualifiers The set of qualifiers that must match this service
      * definition
-     * @return Will return root as a convenience
+     * @return A non-null but possibly empty set of service handles matching
+     * the given criteria
      * @throws MultiException if there was an error during service creation
+     * @throws IllegalArgumentException if contractOrImpl is null
      */
     public SortedSet<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
             Annotation... qualifiers) throws MultiException;
@@ -297,8 +290,7 @@ public interface ServiceLocator {
      * be destroyed in the proper sequence
      * 
      * @param activeDescriptor The descriptor whose service to create
-     * @param root The ultimate parent of this service creation.  May not be null.  If this
-     *   is a root creation, use getServiceHandle(ActiveDescriptor)
+     * @param root The ultimate parent of this service creation.  May be null
      * @return The service matching this descriptor
      * @throws MultiException if there was an error during service creation
      */
