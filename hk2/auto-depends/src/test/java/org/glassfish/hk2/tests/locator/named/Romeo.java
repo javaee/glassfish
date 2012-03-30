@@ -45,7 +45,7 @@ import javax.inject.Named;
  * @author jwells
  *
  */
-@Named
+@Named @Montague
 public class Romeo implements CitizenOfVerona {
     public String getName() {
         return NamedTest.ROMEO;

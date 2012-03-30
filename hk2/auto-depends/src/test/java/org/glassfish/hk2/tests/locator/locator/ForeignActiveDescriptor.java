@@ -37,23 +37,81 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.named;
+package org.glassfish.hk2.tests.locator.locator;
 
-import javax.inject.Named;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
+
+import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
 /**
  * @author jwells
  *
  */
-@Named @Capulet
-public class Juliet implements CitizenOfVerona {
+public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
+    private final Class<?> implClass;
 
+    /**
+     * @param advertisedContracts
+     * @param scope
+     * @param name
+     * @param qualifiers
+     * @param descriptorType
+     * @param ranking
+     */
+    protected ForeignActiveDescriptor(Set<Type> advertisedContracts,
+            Class<? extends Annotation> scope, String name,
+            Set<Annotation> qualifiers, DescriptorType descriptorType,
+            int ranking,
+            Class<?> implClass) {
+        super(advertisedContracts, scope, name, qualifiers, descriptorType, ranking);
+        
+        this.implClass = implClass;
+    }
+    
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.named.CitizenOfVerona#getName()
+     * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
      */
     @Override
-    public String getName() {
-        return NamedTest.JULIET;
+    public boolean isReified() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     */
+    @Override
+    public Class<?> getImplementationClass() {
+        return implClass;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public T create(ServiceHandle<?> root) {
+        try {
+            return (T) implClass.newInstance();
+        }
+        catch (InstantiationException e) {
+            throw new MultiException(e);
+        }
+        catch (IllegalAccessException e) {
+            throw new MultiException(e);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getImplementation()
+     */
+    @Override
+    public String getImplementation() {
+        return implClass.getName();
     }
 
 }

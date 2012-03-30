@@ -39,21 +39,24 @@
  */
 package org.glassfish.hk2.tests.locator.named;
 
-import javax.inject.Named;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
  * @author jwells
  *
  */
-@Named @Capulet
-public class Juliet implements CitizenOfVerona {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.named.CitizenOfVerona#getName()
-     */
-    @Override
-    public String getName() {
-        return NamedTest.JULIET;
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface Capulet {
 
 }

@@ -39,12 +39,20 @@
  */
 package org.glassfish.hk2.tests.locator.locator;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
@@ -111,6 +119,57 @@ public class LocatorTest {
         Assert.assertTrue("Returned services did not contain StatsCommand " + Pretty.collection(handles), handles.contains(statsCommand));
         Assert.assertTrue("Returned services did not contain ShtudownCommand " + Pretty.collection(handles), handles.contains(shutdownCommand));
         Assert.assertTrue("Returned services did not contain ServiceLocator " + Pretty.collection(handles), handles.contains(locatorItself));
+    }
+    
+    /**
+     * Gets a service from a Foreign descriptor (a descriptor not created with BuilderHelper)
+     */
+    @Test
+    public void testForeignDescriptor() {
+        FrenchService fs = locator.getService(FrenchService.class);
+        Assert.assertNotNull(fs);
+    }
+    
+    /**
+     * Gets a service from a Foreign descriptor (a descriptor not created with BuilderHelper)
+     */
+    @Test
+    public void testReifyForeignDescriptorDirectly() {
+        ForeignDescriptor fd = new ForeignDescriptor();
+        fd.setImplementation(FrenchService.class.getName());
+        
+        Set<String> contracts = fd.getAdvertisedContracts();
+        contracts.add(FrenchService.class.getName());
+        
+        ActiveDescriptor<?> ad = locator.reifyDescriptor(fd);
+        Assert.assertEquals(FrenchService.class, ad.getImplementationClass());
+        
+        Assert.assertTrue(ad.getContractTypes().contains(FrenchService.class));
+    }
+    
+    /**
+     * Gets a service from a Foreign descriptor (a descriptor not created with BuilderHelper)
+     */
+    @Test
+    public void testReifyForeignActiveDescriptorDirectly() {
+        HashSet<Type> contracts = new HashSet<Type>();
+        contracts.add(GermanService.class);
+        
+        Set<Annotation> qualifiers = Collections.emptySet();
+        
+        ForeignActiveDescriptor<GermanService> fad = new ForeignActiveDescriptor<GermanService>(
+                contracts,
+                PerLookup.class,
+                null,
+                qualifiers,
+                DescriptorType.CLASS,
+                0,
+                GermanService.class);
+        
+        ActiveDescriptor<?> ad = locator.reifyDescriptor(fad);
+        Assert.assertEquals(GermanService.class, ad.getImplementationClass());
+        
+        Assert.assertTrue(ad.getContractTypes().contains(GermanService.class));
     }
 
 }

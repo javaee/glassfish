@@ -58,6 +58,10 @@ public class NamedModule implements TestModule {
         config.addActiveDescriptor(Mercutio.class);
         
         config.addActiveDescriptor(Verona.class);
+        
+        // Roses
+        config.addActiveDescriptor(Centifolia.class);
+        config.addActiveDescriptor(Damask.class);
     }
 
 }

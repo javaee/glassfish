@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.locator.locator;
 
+import java.util.Set;
+
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -68,7 +70,15 @@ public class LocatorModule implements TestModule {
                 to(AdminCommand.class).
                 named("ShutdownCommand").
                 build());
-
+        
+        // This is part of the test, to use a non-BuilderHelper descriptor
+        ForeignDescriptor fd = new ForeignDescriptor();
+        fd.setImplementation(FrenchService.class.getName());
+        
+        Set<String> contracts = fd.getAdvertisedContracts();
+        contracts.add(FrenchService.class.getName());
+        
+        configurator.bind(fd);
     }
 
 }
