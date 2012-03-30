@@ -219,7 +219,7 @@
     </target>
 
     <target name="verify" depends="init-common">
-      <sleep seconds="10"/>
+      <sleep seconds="20"/>
         <echo message="Verifying timeouts"/>
         <java  fork="on"
               failonerror="true"

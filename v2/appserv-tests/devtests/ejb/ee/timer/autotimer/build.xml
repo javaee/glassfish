@@ -160,7 +160,7 @@
     </target>
 
     <target name="run-test" depends="init-common">
-      <sleep seconds="10"/>
+      <sleep seconds="20"/>
         <echo message="Verifying timeouts"/>
         <java  fork="on"
               failonerror="true"
@@ -183,7 +183,7 @@
              <equals arg1="${port}" arg2="28081"/>
         </condition>
 
-      <sleep seconds="10"/>
+      <sleep seconds="20"/>
         <echo message="Timer was running on instance ${instance}"/>
         <echo message="Stopping instance ${instance}"/>
         <exec executable="${ASADMIN}" failonerror="false">
@@ -191,7 +191,7 @@
           <arg line="${instance}"/>
         </exec>
 
-        <sleep seconds="10"/>
+        <sleep seconds="20"/>
         <echo message="Starting instance ${instance}"/>
         <exec executable="${ASADMIN}" failonerror="false">
           <arg line="start-local-instance"/>
@@ -199,6 +199,7 @@
         </exec>
 
         <echo message="Verifying timeouts"/>
+        <sleep seconds="20"/>
         <loadfile property="port-fail" srcFile="error"/>
         <java  fork="on"
               failonerror="true"
