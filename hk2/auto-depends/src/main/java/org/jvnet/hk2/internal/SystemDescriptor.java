@@ -372,6 +372,12 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             
             // For a factory base stuff off of the method, not the class
             Method provideMethod = Utilities.getFactoryProvideMethod(implClass);
+            if (provideMethod == null) {
+                collector.addThrowable(new IllegalArgumentException("A non-factory descriptor returned type FACTORY"));
+                
+                // Do not continue, all is lost
+                return;
+            }
             
             qualifiers = Collections.unmodifiableSet(
                     Utilities.getAllQualifiers(

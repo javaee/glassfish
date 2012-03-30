@@ -39,10 +39,16 @@
  */
 package org.glassfish.hk2.tests.locator.named;
 
+import java.util.SortedSet;
+
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
 
 /**
@@ -59,6 +65,8 @@ public class NamedTest {
     public final static String JULIET = "Juliet";
     /** Queen Mab */
     public final static String MERCUTIO = "Mercutio";
+    /** A rose by any other name */
+    public final static String ROSE = "Rose";
     
     /**
      * Tests that I can differentiate between citizens
@@ -82,6 +90,148 @@ public class NamedTest {
         Assert.assertEquals(ROMEO, v.getRomeo().getName());
         Assert.assertEquals(JULIET, v.getJuliet().getName());
         Assert.assertEquals(MERCUTIO, v.getMercutio().getName());
+    }
+    
+    /**
+     * Tests that the same name of different types will both return
+     */
+    @Test
+    public void getMultiNamed() {
+        SortedSet<ActiveDescriptor<?>> roses = locator.getDescriptors(BuilderHelper.createNameFilter(ROSE));
+        Assert.assertEquals(2, roses.size());
+        
+        int lcv = 0;
+        for (ActiveDescriptor<?> rose : roses) {
+            switch (lcv) {
+            case 0:
+                Assert.assertTrue(rose.getImplementation().equals(Centifolia.class.getName()));
+                break;
+            case 1:
+                Assert.assertTrue(rose.getImplementation().equals(Damask.class.getName()));
+                break;
+            }
+            
+            lcv++;
+        }
+    }
+    
+    /**
+     * Tests that the same name of different types will both return
+     */
+    @Test
+    public void getMultiNamedQualifiedWithType() {
+        SortedSet<ActiveDescriptor<?>> roses = locator.getDescriptors(
+                BuilderHelper.createNameAndContractFilter(Centifolia.class.getName(), ROSE));
+        Assert.assertEquals(1, roses.size());
+        
+        int lcv = 0;
+        for (ActiveDescriptor<?> rose : roses) {
+            switch (lcv) {
+            case 0:
+                Assert.assertTrue(rose.getImplementation().equals(Centifolia.class.getName()));
+                break;
+            }
+            
+            lcv++;
+        }
+        
+        roses = locator.getDescriptors(
+                BuilderHelper.createNameAndContractFilter(Damask.class.getName(), ROSE));
+        Assert.assertEquals(1, roses.size());
+        
+        lcv = 0;
+        for (ActiveDescriptor<?> rose : roses) {
+            switch (lcv) {
+            case 0:
+                Assert.assertTrue(rose.getImplementation().equals(Damask.class.getName()));
+                break;
+            }
+            
+            lcv++;
+        }
+    }
+    
+    /**
+     * Tests that you can use an Index filter with both values returning null
+     */
+    @Test
+    public void getIndexedFilterWithBothIndexesNull() {
+        SortedSet<ActiveDescriptor<?>> capulets = locator.getDescriptors(new DoubleNullIndexFilter(true));
+        Assert.assertEquals(1, capulets.size());
+        
+        int lcv = 0;
+        for (ActiveDescriptor<?> capulet : capulets) {
+            switch (lcv) {
+            case 0:
+                Assert.assertTrue(capulet.getImplementation().equals(Juliet.class.getName()));
+                break;
+            }
+            
+            lcv++;
+        }
+        
+        SortedSet<ActiveDescriptor<?>> montagues = locator.getDescriptors(new DoubleNullIndexFilter(false));
+        Assert.assertEquals(2, montagues.size());
+        
+        lcv = 0;
+        for (ActiveDescriptor<?> montague : montagues) {
+            switch (lcv) {
+            case 0:
+                Assert.assertTrue(montague.getImplementation().equals(Romeo.class.getName()));
+                break;
+            case 1:
+                Assert.assertTrue(montague.getImplementation().equals(Mercutio.class.getName()));
+                break;
+            }
+            
+            lcv++;
+        }
+    }
+    
+    private static class DoubleNullIndexFilter implements IndexedFilter {
+        private final boolean capulet;
+        
+        private DoubleNullIndexFilter(boolean capulet) {
+            this.capulet = capulet;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
+         */
+        @Override
+        public boolean matches(Descriptor d) {
+            if (capulet) {
+                if (d.getQualifiers().contains(Capulet.class.getName())) {
+                    return true;
+                }
+            }
+            else {
+                if (d.getQualifiers().contains(Montague.class.getName())) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
+         */
+        @Override
+        public String getAdvertisedContract() {
+            // Both indexes return null
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getName()
+         */
+        @Override
+        public String getName() {
+            // Both indexes return null
+            return null;
+        }
+        
     }
 
 }

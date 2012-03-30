@@ -37,23 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.named;
-
-import javax.inject.Named;
+package org.glassfish.hk2.tests.locator.locator;
 
 /**
+ * This is described by a foreign descriptor, rather than the descriptor
+ * from BuilderHelper
+ * 
  * @author jwells
  *
  */
-@Named @Capulet
-public class Juliet implements CitizenOfVerona {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.named.CitizenOfVerona#getName()
-     */
-    @Override
-    public String getName() {
-        return NamedTest.JULIET;
-    }
+public class FrenchService {
 
 }

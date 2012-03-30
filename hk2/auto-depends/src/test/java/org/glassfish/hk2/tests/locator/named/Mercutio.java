@@ -45,7 +45,7 @@ import javax.inject.Named;
  * @author jwells
  *
  */
-@Named
+@Named @Montague
 public class Mercutio implements CitizenOfVerona {
 
     /* (non-Javadoc)

@@ -42,18 +42,11 @@ package org.glassfish.hk2.tests.locator.named;
 import javax.inject.Named;
 
 /**
+ * A rose
  * @author jwells
  *
  */
-@Named @Capulet
-public class Juliet implements CitizenOfVerona {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.named.CitizenOfVerona#getName()
-     */
-    @Override
-    public String getName() {
-        return NamedTest.JULIET;
-    }
+@Named(NamedTest.ROSE)
+public class Damask {
 
 }
