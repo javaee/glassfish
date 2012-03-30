@@ -51,7 +51,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.annotation.WebInitParam;
 
-@WebFilter(urlPatterns={"/mytest", "/mytest"}, initParams={ @WebInitParam(name="mesg", value="my filter") })
+@WebFilter(urlPatterns={"/mytest"}, initParams={ @WebInitParam(name="mesg", value="my filter") })
 public class TestFilter implements Filter {
     private String mesg = null;
 
@@ -65,10 +65,6 @@ public class TestFilter implements Filter {
 
         System.out.println(">>> filter.doFilter");
         req.setAttribute("filterMessage", mesg);
-        if (Boolean.TRUE.equals(req.getAttribute("called"))) {
-            throw new ServletException("Second call to the same filter");
-        }
-        req.setAttribute("called", Boolean.TRUE);
         chain.doFilter(req, res);
     }
 
