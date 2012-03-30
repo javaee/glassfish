@@ -1,0 +1,316 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+package org.glassfish.hk2.tests.locator.negative.api;
+
+import java.lang.reflect.Type;
+
+import junit.framework.Assert;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.junit.Test;
+
+/**
+ * Test various user input errors to the API, like nulls
+ * and badly formed stuff
+ * 
+ * @author jwells
+ *
+ */
+public class NegativeApiTest {
+    private final static String TEST_NAME = "NegativeApiTest";
+    private final static ServiceLocator locator = ServiceLocatorFactory.getInstance().create(TEST_NAME);
+    private final static DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+    
+    /**
+     * You cannot call getService with a null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetService() {
+        locator.getService(null);
+    }
+    
+    /**
+     * You cannot call getService with a name with a null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetServiceWithName() {
+        locator.getService(null, "");
+    }
+    
+    /**
+     * You cannot call getAllServices with a null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetAllServices() {
+        locator.getAllServices((Type) null);
+    }
+    
+    /**
+     * You cannot call getAllServices with a Filter with null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetAllServicesWithFilter() {
+        locator.getAllServices((Filter) null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with a null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetServiceHandle() {
+        locator.getServiceHandle((Type) null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with an ActiveDescriptor with a null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetServiceHandleActive() {
+        locator.getServiceHandle((ActiveDescriptor<?>) null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with a name with a null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetServiceHandleWithName() {
+        locator.getServiceHandle(null, "");
+    }
+    
+    /**
+     * You cannot call getAllServiceHandles with a null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetAllSerivceHandles() {
+        locator.getAllServiceHandles((Type) null);
+    }
+    
+    /**
+     * You cannot call getAllServiceHandles with a Filter with null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetAllSerivceHandlesWithFilter() {
+        locator.getAllServiceHandles((Filter) null);
+    }
+    
+    /**
+     * You cannot call getDescriptors with null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetDescriptors() {
+        locator.getDescriptors(null);
+    }
+    
+    /**
+     * You cannot call getDescriptors with null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetBestDescriptor() {
+        locator.getBestDescriptor(null);
+    }
+    
+    /**
+     * You cannot call getDescriptors with two arguments with null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullReifyTwoArgDescriptor() {
+        locator.reifyDescriptor(null, null);
+    }
+    
+    /**
+     * You cannot call getDescriptors with null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullReifyDescriptor() {
+        locator.reifyDescriptor(null);
+    }
+    
+    /**
+     * You cannot call getInjecteeDescriptor with null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetInjecteeDescriptor() {
+        locator.getInjecteeDescriptor(null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with ActiveDescriptor and Injectee null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullGetServiceHandleTwoArgs() {
+        locator.getServiceHandle((ActiveDescriptor<?>) null, (Injectee) null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with ActiveDescriptor and Injectee null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testServiceWithRoot() {
+        locator.getService((ActiveDescriptor<?>) null, (ServiceHandle<?>) null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with ActiveDescriptor and Injectee null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testCreate() {
+        locator.create(null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with ActiveDescriptor and Injectee null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testInject() {
+        locator.inject(null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with ActiveDescriptor and Injectee null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testPostConstruct() {
+        locator.postConstruct(null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with ActiveDescriptor and Injectee null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testPreDestroy() {
+        locator.preDestroy(null);
+    }
+    
+    /**
+     * You cannot call getServiceHandle with ActiveDescriptor and Injectee null
+     */
+    @Test
+    public void testBadType() {
+        try {
+            locator.getAllServiceHandles(new Type() {});
+            Assert.fail("service with bad type should fail");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(),
+                    me.getMessage().contains("Type must be a class or parameterized type, it was "));
+        }
+    }
+    
+    /**
+     * You cannot call bind with null descriptor
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        config.bind((Descriptor) null);
+    }
+    
+    /**
+     * You cannot call bind with descriptor with null impl
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullImplBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        config.bind(new NullDescriptorImpl());
+    }
+    
+    /**
+     * You cannot call bind with descriptor with null contracts
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullContractBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        NullDescriptorImpl ndi = new NullDescriptorImpl();
+        ndi.setImplementation("");
+        
+        config.bind(ndi);
+    }
+    
+    /**
+     * You cannot call bind with descriptor with null descriptor type
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullDescriptorTypeBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        NullDescriptorImpl ndi = new NullDescriptorImpl();
+        ndi.setImplementation("");
+        ndi.unNullContracts();
+        
+        config.bind(ndi);
+    }
+    
+    /**
+     * You cannot call bind with descriptor with null metadata type
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullMetadataBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        NullDescriptorImpl ndi = new NullDescriptorImpl();
+        ndi.setImplementation("");
+        ndi.unNullContracts();
+        ndi.unNullType();
+        
+        config.bind(ndi);
+    }
+    
+    /**
+     * You cannot call bind with descriptor with null qualifier
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullQualifierBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        NullDescriptorImpl ndi = new NullDescriptorImpl();
+        ndi.setImplementation("");
+        ndi.unNullContracts();
+        ndi.unNullType();
+        ndi.unNullMetadata();
+        
+        config.bind(ndi);
+    }
+}

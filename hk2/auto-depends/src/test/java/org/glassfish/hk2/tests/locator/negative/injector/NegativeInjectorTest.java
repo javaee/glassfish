@@ -269,5 +269,20 @@ public class NegativeInjectorTest {
                             " must be an annotation"));
         }
     }
+    
+    /**
+     * Tests an attempt to get a descriptor for a bad injectee
+     */
+    @Test
+    public void testInvalidInjectee() {
+        try {
+            locator.getInjecteeDescriptor(new InjecteeImpl());
+            Assert.fail("Bad injectee should have caused this to fail");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(),
+                    me.getMessage().contains("Invalid injectee with required type of "));
+        }
+    }
 
 }

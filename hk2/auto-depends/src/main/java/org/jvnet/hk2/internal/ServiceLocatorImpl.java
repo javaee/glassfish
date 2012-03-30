@@ -263,9 +263,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee)
             throws MultiException {
+        if (injectee == null) throw new IllegalArgumentException();
+        
         Type requiredType = injectee.getRequiredType();
         Class<?> rawType = Utilities.getRawClass(requiredType);
-        if (rawType == null) return null;
+        if (rawType == null) {
+            throw new MultiException(new IllegalArgumentException(
+                    "Invalid injectee with required type of " + injectee.getRequiredType() + " passed to getInjecteeDescriptor"));
+        }
         
         if (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType) ) {
             IterableProviderImpl<?> value = new IterableProviderImpl<Object>(this,
@@ -293,6 +298,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor,
             Injectee injectee) throws MultiException {
+        if (activeDescriptor == null) throw new IllegalArgumentException();
+        
         return new ServiceHandleImpl<T>(this, activeDescriptor, injectee);
     }
 
@@ -302,6 +309,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor) throws MultiException {
+        if (activeDescriptor == null) throw new IllegalArgumentException();
+        
         return getServiceHandle(activeDescriptor, null);
     }
 
@@ -430,6 +439,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private <T> ServiceHandle<T> internalGetServiceHandle(Injectee onBehalfOf, Type contractOrImpl,
             String name,
             Annotation... qualifiers) throws MultiException {
+        if (contractOrImpl == null) throw new IllegalArgumentException();
+        
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         
@@ -459,8 +470,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public SortedSet<ServiceHandle<?>> getAllServiceHandles(
             Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
+        if (contractOrImpl == null) throw new IllegalArgumentException();
+        
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
-        if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
+        if (rawClass == null) {
+            throw new MultiException(new IllegalArgumentException("Type must be a class or parameterized type, it was " + contractOrImpl));
+        }
         
         Filter filter = BuilderHelper.createContractFilter(rawClass.getName());
         SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
@@ -728,6 +743,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     private Class<?> loadClass(Descriptor descriptor, Injectee injectee) {
+        if (descriptor == null) throw new IllegalArgumentException();
+        
         HK2Loader loader = descriptor.getLoader();
         if (loader == null) {
             return Utilities.loadClass(descriptor.getImplementation(), injectee);
