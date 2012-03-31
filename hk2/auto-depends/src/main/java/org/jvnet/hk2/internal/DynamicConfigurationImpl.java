@@ -45,6 +45,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.MultiException;
@@ -89,7 +90,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         if (factoryDescriptors == null) throw new IllegalArgumentException("factoryDescriptors is null");
         
         // Now a bunch of validations
-        Descriptor asService = factoryDescriptors.getFactoryAsService();
+        Descriptor asService = factoryDescriptors.getFactoryAsAService();
         Descriptor asFactory = factoryDescriptors.getFactoryAsAFactory();
         
         checkDescriptor(asService);
@@ -117,7 +118,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         return new FactoryDescriptors() {
 
             @Override
-            public Descriptor getFactoryAsService() {
+            public Descriptor getFactoryAsAService() {
                 return boundAsService;
             }
 
@@ -200,6 +201,10 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         if (d.getDescriptorType() == null) throw new IllegalArgumentException();
         if (d.getMetadata() == null) throw new IllegalArgumentException();
         if (d.getQualifiers() == null) throw new IllegalArgumentException();
+        if (d.getDescriptorType().equals(DescriptorType.FACTORY) &&
+                !d.getAdvertisedContracts().contains(Factory.class.getName())) {
+            throw new IllegalArgumentException("A descriptor of type FACTORY does not have Factory in its set of advertised contracts"); 
+        }
     }
 
     /**
@@ -217,10 +222,11 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         this.commitable = commitable;
         
     }
-
     
-
-    
-
-    
+    public String toString() {
+        return "DynamicConfigurationImpl(" + locator + "," +
+            Pretty.collection(allDescriptors) + "," +
+            Pretty.collection(allUnbindFilters) + "," +
+            System.identityHashCode(this) + ")";
+    }
 }

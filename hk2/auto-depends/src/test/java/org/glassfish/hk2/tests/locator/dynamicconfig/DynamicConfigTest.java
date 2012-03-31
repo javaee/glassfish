@@ -48,8 +48,10 @@ import javax.inject.Singleton;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ValidationService;
@@ -242,5 +244,51 @@ public class DynamicConfigTest {
         vsi = locator.getService(ValidationServiceImpl.class);
         Assert.assertNull(vsi);
     }
+    
+    /**
+     * Tests that things can be dynamically added to the system
+     */
+    @Test
+    public void testCheckFactoryBindResults() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        FactoryDescriptors result = dc.bind(BuilderHelper.link(SimpleService3Factory.class).
+                to(SimpleService3.class).
+                in(Singleton.class.getName()).
+                buildFactory(Singleton.class.getName()));
+        Assert.assertNotNull(result);
+        
+        Descriptor asFactory = result.getFactoryAsAFactory();
+        Descriptor asService = result.getFactoryAsAService();
+        
+        Assert.assertNotNull(asFactory);
+        Assert.assertNotNull(asService);
+        
+        Assert.assertNotNull(asFactory.getServiceId());
+        Assert.assertNotNull(asService.getServiceId());
+        
+        Assert.assertNotSame(asService.getServiceId(), asFactory.getServiceId());
+        
+        Assert.assertEquals(locator.getLocatorId(), asFactory.getLocatorId().longValue());
+        Assert.assertEquals(locator.getLocatorId(), asService.getLocatorId().longValue());
+        
+        dc.commit();
+        
+        SimpleService3 ss3 = locator.getService(SimpleService3.class);
+        Assert.assertNotNull(ss3);
+    }
+    
+    /**
+     * helps code coverage by invoking the toString
+     */
+    @Test
+    public void testConfigToString() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        Assert.assertTrue(config.toString(), config.toString().contains("DynamicConfiguration"));
+    }
+    
 
 }

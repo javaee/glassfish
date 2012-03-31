@@ -59,7 +59,7 @@ public class FactoryDescriptorsImpl implements FactoryDescriptors {
      * @see org.glassfish.hk2.api.FactoryDescriptors#getFactoryAsService()
      */
     @Override
-    public Descriptor getFactoryAsService() {
+    public Descriptor getFactoryAsAService() {
         return asService;
     }
 

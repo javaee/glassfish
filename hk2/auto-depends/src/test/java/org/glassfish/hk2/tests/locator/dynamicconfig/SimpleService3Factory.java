@@ -37,40 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.dynamicconfig;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Factory;
 
 /**
- * This is a convenience class that links together the factory descriptor as a factory
- * for another type and the factory as a service itself.  It is not required to use
- * this helper to register a factory, as the individual descriptors can be registered
- * with the system independently.
- * 
  * @author jwells
  *
  */
-public interface FactoryDescriptors {
-    /**
-     * This returns the factory as a service itself.  The advertised
-     * contracts must contain the implementation class of the factory and
-     * the {@link Factory}.  The descriptor type must be {@link DescriptorType.CLASS}
-     * since this descriptor is describing the factory itself.
-     * 
-     * @return The factory as a service itself
+@Singleton
+public class SimpleService3Factory implements Factory<SimpleService3> {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#provide()
      */
-    public Descriptor getFactoryAsAService();
-    
-    /**
-     * This returns the factory as a factory for some other type.  The
-     * implementation class should contain the implementation class
-     * of the factory service.  If the implementation class returned from
-     * this does not match the implementation class returned from getFactoryAsAService
-     * an error will occur.  The contracts, name and qualifiers should represent
-     * the type returned from the provide method of the factory.  The descriptor
-     * type must be {@link DescriptorType}.FACTORY since this descriptor is
-     * describing the factory as a factory, not as a service.
-     * 
-     * @return The factory descriptor as a factory
+    @Override @Singleton
+    public SimpleService3 provide() {
+        return new SimpleService3();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
-    public Descriptor getFactoryAsAFactory();
+    @Override
+    public void dispose(SimpleService3 instance) {
+    }
 
 }
