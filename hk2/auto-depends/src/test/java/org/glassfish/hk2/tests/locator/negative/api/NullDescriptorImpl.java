@@ -58,6 +58,7 @@ public class NullDescriptorImpl implements Descriptor {
     private Set<String> contracts;
     private DescriptorType type;
     private Map<String, List<String>> metadata;
+    private Set<String> qualifiers;
     
     public void setImplementation(String implementation) {
         this.implementation = implementation;
@@ -98,17 +99,26 @@ public class NullDescriptorImpl implements Descriptor {
     public String getName() {
         return null;
     }
+    
+    public void unNullQualifiers() {
+        qualifiers = new HashSet<String>();
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getQualifiers()
      */
     @Override
     public Set<String> getQualifiers() {
-        return null;
+        return qualifiers;
     }
     
-    public void unNullType() {
-        type = DescriptorType.CLASS;
+    public void unNullType(boolean asFactory) {
+        if (asFactory) {
+            type = DescriptorType.FACTORY;
+        }
+        else {
+            type = DescriptorType.CLASS;
+        }
     }
 
     /* (non-Javadoc)

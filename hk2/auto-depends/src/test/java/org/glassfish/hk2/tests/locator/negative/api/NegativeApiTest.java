@@ -40,6 +40,7 @@
 package org.glassfish.hk2.tests.locator.negative.api;
 
 import java.lang.reflect.Type;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -47,12 +48,15 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
 
 /**
@@ -294,7 +298,7 @@ public class NegativeApiTest {
         NullDescriptorImpl ndi = new NullDescriptorImpl();
         ndi.setImplementation("");
         ndi.unNullContracts();
-        ndi.unNullType();
+        ndi.unNullType(true);
         
         config.bind(ndi);
     }
@@ -308,9 +312,149 @@ public class NegativeApiTest {
         NullDescriptorImpl ndi = new NullDescriptorImpl();
         ndi.setImplementation("");
         ndi.unNullContracts();
-        ndi.unNullType();
+        ndi.unNullType(true);
         ndi.unNullMetadata();
         
         config.bind(ndi);
+    }
+    
+    /**
+     * You cannot call bind with descriptor with null qualifier
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullFactoryBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        config.bind((FactoryDescriptors) null);
+    }
+    
+    private final static String A = "A";
+    private final static String B = "B";
+    
+    /**
+     * You cannot call bind mismatched factory descriptors
+     */
+    @Test
+    public void testMismatchedFactoryBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        FactoryDescriptorsImpl fdi = new FactoryDescriptorsImpl();
+        fdi.setAsFactory(BuilderHelper.link(A).build());
+        fdi.setAsService(BuilderHelper.link(B).build());
+        
+        try {
+            config.bind(fdi);
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage(),
+                    iae.getMessage().contains("The implementation classes must match ("));
+        }
+    }
+    
+    /**
+     * The factory descriptor is of type CLASS
+     */
+    @Test
+    public void testFactoryIsAServiceBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        FactoryDescriptorsImpl fdi = new FactoryDescriptorsImpl();
+        fdi.setAsFactory(BuilderHelper.link(A).build());
+        fdi.setAsService(BuilderHelper.link(A).build());
+        
+        try {
+            config.bind(fdi);
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage(),
+                    iae.getMessage().contains("The getFactoryAsFactory descriptor must be of type FACTORY"));
+        }
+    }
+    
+    /**
+     * The factory descriptor is of type CLASS
+     */
+    @Test
+    public void testServiceIsAFactoryBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        NullDescriptorImpl factoryNDI = new NullDescriptorImpl();
+        factoryNDI.setImplementation(A);
+        factoryNDI.unNullContracts();
+        factoryNDI.unNullType(true);
+        factoryNDI.unNullMetadata();
+        factoryNDI.unNullQualifiers();
+        Set<String> contracts = factoryNDI.getAdvertisedContracts();
+        contracts.add(Factory.class.getName());
+        
+        NullDescriptorImpl classNDI = new NullDescriptorImpl();
+        classNDI.setImplementation(A);
+        classNDI.unNullContracts();
+        classNDI.unNullType(true);  // This is the test, this is going in as a FACTORY
+        classNDI.unNullMetadata();
+        classNDI.unNullQualifiers();
+        contracts = classNDI.getAdvertisedContracts();
+        contracts.add(Factory.class.getName());
+        
+        FactoryDescriptorsImpl fdi = new FactoryDescriptorsImpl();
+        fdi.setAsFactory(factoryNDI);
+        fdi.setAsService(classNDI);
+        
+        try {
+            config.bind(fdi);
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage(),
+                    iae.getMessage().contains("The getFactoryAsService descriptor must be of type CLASS"));
+        }
+    }
+    
+    /**
+     * Given a factory that does not implement factory
+     */
+    @Test
+    public void testFactoryDoesNotImplementFactoryBind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        NullDescriptorImpl ndi = new NullDescriptorImpl();
+        ndi.setImplementation("");
+        ndi.unNullContracts();
+        ndi.unNullType(true);
+        ndi.unNullMetadata();
+        ndi.unNullQualifiers();
+        
+        try {
+            config.bind(ndi);
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage(),
+                    iae.getMessage().contains("A descriptor of type FACTORY does not have Factory in its set of advertised contracts"));
+        }
+    }
+    
+    /**
+     * You cannot call unbind with null
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullUnbind() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        config.addUnbindFilter(null);
+    }
+    
+    /**
+     * You cannot call unbind with null
+     */
+    @Test(expected=IllegalStateException.class)
+    public void testDoubleCommit() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        config.commit();  // Not committing anything, but still works!
+        config.commit();  // Whoops, don't do this twice
+    }
+    
+    /**
+     * Adds an unreified active descriptor
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testBindUnreifiedActiveDescriptor() {
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        config.addActiveDescriptor(new UnreifiedActiveDescriptor());
     }
 }

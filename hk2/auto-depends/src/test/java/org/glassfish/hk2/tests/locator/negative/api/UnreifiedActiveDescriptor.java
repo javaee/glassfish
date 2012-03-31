@@ -37,40 +37,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.negative.api;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashSet;
+
+import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
 /**
- * This is a convenience class that links together the factory descriptor as a factory
- * for another type and the factory as a service itself.  It is not required to use
- * this helper to register a factory, as the individual descriptors can be registered
- * with the system independently.
- * 
  * @author jwells
  *
  */
-public interface FactoryDescriptors {
+public class UnreifiedActiveDescriptor extends AbstractActiveDescriptor<Object> {
     /**
-     * This returns the factory as a service itself.  The advertised
-     * contracts must contain the implementation class of the factory and
-     * the {@link Factory}.  The descriptor type must be {@link DescriptorType.CLASS}
-     * since this descriptor is describing the factory itself.
-     * 
-     * @return The factory as a service itself
+     * This is blank, just used for testing
      */
-    public Descriptor getFactoryAsAService();
+    public UnreifiedActiveDescriptor() {
+        super(
+                new HashSet<Type>(),
+                PerLookup.class,
+                null,
+                new HashSet<Annotation>(),
+                DescriptorType.CLASS,
+                0);
+        
+    }
     
-    /**
-     * This returns the factory as a factory for some other type.  The
-     * implementation class should contain the implementation class
-     * of the factory service.  If the implementation class returned from
-     * this does not match the implementation class returned from getFactoryAsAService
-     * an error will occur.  The contracts, name and qualifiers should represent
-     * the type returned from the provide method of the factory.  The descriptor
-     * type must be {@link DescriptorType}.FACTORY since this descriptor is
-     * describing the factory as a factory, not as a service.
-     * 
-     * @return The factory descriptor as a factory
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
      */
-    public Descriptor getFactoryAsAFactory();
+    @Override
+    public boolean isReified() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     */
+    @Override
+    public Class<?> getImplementationClass() {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public Object create(ServiceHandle<?> root) {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getImplementation()
+     */
+    @Override
+    public String getImplementation() {
+        return this.getClass().getName();
+    }
 
 }
