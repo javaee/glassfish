@@ -37,51 +37,83 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.scope;
+package org.glassfish.hk2.tests.locator.negative.errorservice;
 
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class NegativeScopeTest {
-    private final static String TEST_NAME = "NegativeScopeTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeScopeModule());
+@Singleton
+public class ErrorServiceImpl implements ErrorService {
+    private ActiveDescriptor<?> descriptor;
+    private Injectee injectee;
+    private MultiException me;
     
-    /**
-     * A class with two scopes
+    private boolean doThrow = false;
+    private boolean reThrow = false;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)
      */
-    @Test
-    public void testDoubleScope() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    TwoScopeService.class.getName())));
-            Assert.fail("two scope service should cause failure");
-        }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage(), me.getMessage().contains(" may not have more than one scope.  It has at least "));
-        }
-    }
-    
-    /**
-     * A class with wrong bound scope
-     */
-    @Test
-    public void testWrongScope() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    WrongScopeService.class.getName())));
-            Assert.fail("wrong scope service should cause failure");
-        }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage(), me.getMessage().contains("The scope name given in the descriptor ("));
+    @Override
+    public void failureToReify(ActiveDescriptor<?> descriptor,
+            Injectee injectee, MultiException me) {
+        this.descriptor = descriptor;
+        this.injectee = injectee;
+        this.me = me;
+
+        if (doThrow) {
+            if (reThrow) {
+                throw me;
+            }
+            else {
+                throw new AssertionError(ErrorServiceTest.EXCEPTION_STRING_DUEX);
+            }
         }
     }
 
+    /**
+     * @return the descriptor
+     */
+    public ActiveDescriptor<?> getDescriptor() {
+        return descriptor;
+    }
+
+    /**
+     * @return the injectee
+     */
+    public Injectee getInjectee() {
+        return injectee;
+    }
+
+    /**
+     * @return the me
+     */
+    public MultiException getMe() {
+        return me;
+    }
+    
+    /**
+     * Used by the test to clear the stat of the error service impl
+     */
+    public void clear() {
+        descriptor = null;
+        injectee = null;
+        me = null;
+    }
+    
+    public void doThrow() {
+        doThrow = true;
+    }
+    
+    public void reThrow() {
+        reThrow = true;
+    }
 }

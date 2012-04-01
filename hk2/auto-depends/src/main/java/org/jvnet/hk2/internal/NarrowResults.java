@@ -37,51 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.scope;
+package org.jvnet.hk2.internal;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class NegativeScopeTest {
-    private final static String TEST_NAME = "NegativeScopeTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeScopeModule());
+public class NarrowResults {
+    private final SortedSet<ActiveDescriptor<?>> goodResults = new TreeSet<ActiveDescriptor<?>>(
+            ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
+    private final List<ErrorResults> errors = new LinkedList<ErrorResults>();
     
-    /**
-     * A class with two scopes
-     */
-    @Test
-    public void testDoubleScope() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    TwoScopeService.class.getName())));
-            Assert.fail("two scope service should cause failure");
-        }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage(), me.getMessage().contains(" may not have more than one scope.  It has at least "));
-        }
+    /* package */ void addGoodResult(ActiveDescriptor<?> result) {
+        goodResults.add(result);
     }
     
-    /**
-     * A class with wrong bound scope
-     */
-    @Test
-    public void testWrongScope() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    WrongScopeService.class.getName())));
-            Assert.fail("wrong scope service should cause failure");
-        }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage(), me.getMessage().contains("The scope name given in the descriptor ("));
-        }
+    /* package */ void addError(ActiveDescriptor<?> fail, Injectee injectee, MultiException me) {
+        errors.add(new ErrorResults(fail, injectee, me));
+    }
+    
+    /* package */ SortedSet<ActiveDescriptor<?>> getResults() {
+        return goodResults;
+    }
+    
+    /* package */ List<ErrorResults> getErrors() {
+        return errors;
     }
 
 }

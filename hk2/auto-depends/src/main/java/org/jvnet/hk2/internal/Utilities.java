@@ -66,6 +66,7 @@ import javax.inject.Scope;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
@@ -85,6 +86,35 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * Calls the list of error services for the list of errors
+     * 
+     * @param results
+     * @param callThese
+     */
+    public static void handleErrors(NarrowResults results, LinkedList<ErrorService> callThese) {
+        Collector collector = new Collector();
+        for (ErrorResults errorResult : results.getErrors()) {
+            for (ErrorService eService : callThese) {
+                try {
+                    eService.failureToReify(errorResult.getDescriptor(),
+                            errorResult.getInjectee(),
+                            errorResult.getMe());
+                }
+                catch (MultiException me) {
+                    for (Throwable th : me.getErrors()) {
+                        collector.addThrowable(th);
+                    }
+                }
+                catch (Throwable th) {
+                    collector.addThrowable(th);
+                }
+            }
+        }
+        
+        collector.throwIfErrors();
+    }
+    
     /**
      * @param implementation
      * @param injectee
@@ -180,20 +210,6 @@ public class Utilities {
             }
         }
         
-    }
-    /**
-     * An equals when a or b might be null
-     * 
-     * @param a left hand parameter
-     * @param b right hand parameter
-     * @return true if both null or bot non null and equals
-     */
-    public static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null) return false;
-        if (b == null) return false;
-        
-        return a.equals(b);
     }
     
     private static Set<Type> getAutoAdvertisedTypes(Type t) {
