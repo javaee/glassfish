@@ -82,5 +82,4 @@ public class Collector {
     public boolean hasErrors() {
         return !throwables.isEmpty();
     }
-
 }

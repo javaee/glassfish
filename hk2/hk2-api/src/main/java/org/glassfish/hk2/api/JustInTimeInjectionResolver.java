@@ -70,15 +70,13 @@ public interface JustInTimeInjectionResolver {
      * should return false.  The injection point that failed to be resolved is given
      * in failedInjectionPoint.
      * <p>
-     * If this method throws an exception that exception will be logged and it will be
-     * removed from the list of just in time resolvers that are called upon injection
-     * point failure
-     * 
-     * @param configuration An object that can be used to add things to the system
+     * If this method throws an exception that exception will be added to the set of
+     * exceptions in the MultiException that may be thrown from the injection resolver
+     *
      * @param failedInjectionPoint The injection point that failed to resolve
      * @return true if the system should commit this configuration and retry the injection
      * point
      */
-    public boolean justInTimeResolution(Configuration configuration, Injectee failedInjectionPoint);
+    public boolean justInTimeResolution(Injectee failedInjectionPoint);
 
 }
