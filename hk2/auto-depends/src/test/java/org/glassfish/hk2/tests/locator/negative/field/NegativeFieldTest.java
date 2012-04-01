@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.negative.field;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -59,7 +60,8 @@ public class NegativeFieldTest {
     @Test
     public void testStaticField() {
         try {
-            locator.getService(StaticFieldService.class);
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    StaticFieldService.class.getName())));
             Assert.fail("static field should cause failure");
         }
         catch (MultiException me) {
@@ -73,7 +75,8 @@ public class NegativeFieldTest {
     @Test
     public void testFinalField() {
         try {
-            locator.getService(FinalFieldService.class);
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    FinalFieldService.class.getName())));
             Assert.fail("final field should cause failure");
         }
         catch (MultiException me) {

@@ -44,6 +44,7 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
 
 /**
@@ -62,7 +63,8 @@ public class NegativeFactoryTest {
     @Test
     public void testFactoryWithTypeVariableType() {
         try {
-            locator.getService(SimpleService.class);
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    SimpleService.class.getName())));
             Assert.fail("The SimpleService factory has a TypeVariable and so is invalid");
         }
         catch (MultiException me) {
@@ -77,7 +79,8 @@ public class NegativeFactoryTest {
     @Test
     public void testFactoryWithBadName() {
         try {
-            locator.getService(SimpleService2.class);
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    SimpleService2.class.getName())));
             Assert.fail("The SimpleService2 factory has a bad name and so is invalid");
         }
         catch (MultiException me) {

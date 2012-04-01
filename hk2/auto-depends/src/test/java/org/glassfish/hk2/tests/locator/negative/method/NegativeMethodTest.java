@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.negative.method;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -59,7 +60,8 @@ public class NegativeMethodTest {
     @Test
     public void testStaticMethod() {
         try {
-            locator.getService(StaticMethodService.class);
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    StaticMethodService.class.getName())));
             Assert.fail("static method should cause failure");
         }
         catch (MultiException me) {

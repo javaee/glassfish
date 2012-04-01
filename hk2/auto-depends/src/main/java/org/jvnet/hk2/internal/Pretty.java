@@ -72,7 +72,7 @@ public class Pretty {
         return cn.substring(index + 1);
     }
     
-    public static String pType(ParameterizedType pType) {
+    private static String pType(ParameterizedType pType) {
         StringBuffer sb = new StringBuffer();
         
         sb.append(clazz(Utilities.getRawClass(pType)) + "<");

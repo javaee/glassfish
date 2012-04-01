@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.negative.constructor;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -59,7 +60,8 @@ public class NegativeConstructorTest {
     @Test
     public void testTwoBadNonZeroArgConstructor() {
         try {
-            locator.getService(BadC.class);
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    BadC.class.getName())));
             Assert.fail("Should have failed, two @Inject constructors");
         }
         catch (MultiException me) {

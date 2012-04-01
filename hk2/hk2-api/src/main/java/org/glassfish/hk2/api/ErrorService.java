@@ -37,51 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.scope;
+package org.glassfish.hk2.api;
 
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Assert;
-import org.junit.Test;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * This interface should be implemented by those who wish to be
+ * notified of error conditions that occur within HK2.  These
+ * errors are those that might happen during normal processing of
+ * HK2 requests but which are not otherwise reported up the
+ * calling stack frame.
+ * <p>
+ * An implementation of ErrorService must be in the Singleton scope
+ * 
  * @author jwells
  *
  */
-public class NegativeScopeTest {
-    private final static String TEST_NAME = "NegativeScopeTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeScopeModule());
-    
+@Contract
+public interface ErrorService {
     /**
-     * A class with two scopes
+     * This method is called if an ActiveDescriptor fails to reify properly during a lookup operation.
+     * To the caller of the lookup operation it will appear as though the passed descriptor does not
+     * exist.  The descriptor will not be automatically removed from the system.  This method may
+     * use any {@link ServiceLocator} api.  For example, an implementation of this method might want
+     * to remove the offending descriptor from the registry if the error can be determined to be a
+     * permanent failure.
+     * 
+     * @param descriptor The descriptor that failed to reify.  Will not be null
+     * @param injectee The injectee on behalf of whom this descriptor was being searched.  May be
+     * null if there is no known injectee (for example, if this is being called from the API).
+     * @param me The failure (or set of failures) that caused this descriptor to not become reified
+     * @throws MultiException if this method throws an exception that exception will be thrown back to
+     * the caller wrapped in another MultiException
      */
-    @Test
-    public void testDoubleScope() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    TwoScopeService.class.getName())));
-            Assert.fail("two scope service should cause failure");
-        }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage(), me.getMessage().contains(" may not have more than one scope.  It has at least "));
-        }
-    }
-    
-    /**
-     * A class with wrong bound scope
-     */
-    @Test
-    public void testWrongScope() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    WrongScopeService.class.getName())));
-            Assert.fail("wrong scope service should cause failure");
-        }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage(), me.getMessage().contains("The scope name given in the descriptor ("));
-        }
-    }
+    public void failureToReify(ActiveDescriptor<?> descriptor, Injectee injectee, MultiException me)
+        throws MultiException;
 
 }

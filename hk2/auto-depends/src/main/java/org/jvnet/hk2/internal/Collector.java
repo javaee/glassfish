@@ -39,8 +39,8 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.glassfish.hk2.api.MultiException;
 
@@ -51,7 +51,7 @@ import org.glassfish.hk2.api.MultiException;
  * @author jwells
  */
 public class Collector {
-    private final List<Throwable> throwables = new LinkedList<Throwable>();
+    private final LinkedHashSet<Throwable> throwables = new LinkedHashSet<Throwable>();
     
     /**
      * Adds a throwable to the list of throwables in this collector
@@ -71,7 +71,7 @@ public class Collector {
     public void throwIfErrors() throws MultiException {
         if (throwables.isEmpty()) return;
         
-        throw new MultiException(throwables);
+        throw new MultiException(new LinkedList<Throwable>(throwables));
     }
     
     /**

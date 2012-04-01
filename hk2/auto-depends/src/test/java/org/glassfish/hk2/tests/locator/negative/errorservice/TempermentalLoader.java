@@ -37,51 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.scope;
+package org.glassfish.hk2.tests.locator.negative.errorservice;
 
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class NegativeScopeTest {
-    private final static String TEST_NAME = "NegativeScopeTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeScopeModule());
+public class TempermentalLoader implements HK2Loader {
+    private static boolean findIt = false;
     
-    /**
-     * A class with two scopes
-     */
-    @Test
-    public void testDoubleScope() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    TwoScopeService.class.getName())));
-            Assert.fail("two scope service should cause failure");
-        }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage(), me.getMessage().contains(" may not have more than one scope.  It has at least "));
-        }
+    public static void fixIt() {
+        findIt = true;
     }
-    
-    /**
-     * A class with wrong bound scope
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.HK2Loader#loadClass(java.lang.String)
      */
-    @Test
-    public void testWrongScope() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    WrongScopeService.class.getName())));
-            Assert.fail("wrong scope service should cause failure");
+    @Override
+    public Class<?> loadClass(String className) throws MultiException {
+        if (!findIt) {
+            throw new MultiException(new AssertionError(ErrorServiceTest.EXCEPTION_STRING));
         }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage(), me.getMessage().contains("The scope name given in the descriptor ("));
-        }
+        
+        return FaultyClass.class;
     }
 
 }
