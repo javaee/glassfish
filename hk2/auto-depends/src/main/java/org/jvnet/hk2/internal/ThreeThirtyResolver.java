@@ -39,16 +39,12 @@
  */
 package org.jvnet.hk2.internal;
 
-import java.util.LinkedList;
 import java.util.SortedSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
@@ -68,47 +64,39 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
     
     private Object secondChanceResolve(Injectee injectee, ServiceHandle<?> root) {
         // OK, lets do the second chance protocol
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        if (dcs == null) {
-            // For whatever reason there is no dcs in this system
-            if (injectee.isOptional()) return null;
-            
-            throw new IllegalStateException("There was no object available for injection at " + injectee);
-        }
+        Collector collector = new Collector();
+        collector.addThrowable(new IllegalStateException("There was no object available for injection at " + injectee));
         
         SortedSet<ServiceHandle<JustInTimeInjectionResolver>> jitResolvers =
                 Utilities.<SortedSet<ServiceHandle<JustInTimeInjectionResolver>>>cast(
                 locator.getAllServiceHandles(JustInTimeInjectionResolver.class));
         
         try {
-            LinkedList<DynamicConfiguration> changedConfigurations =
-                    new LinkedList<DynamicConfiguration>();
+            boolean modified = false;
+            boolean aJITFailed = false;
             for (ServiceHandle<JustInTimeInjectionResolver> handle : jitResolvers) {
                 JustInTimeInjectionResolver jitResolver = handle.getService();
                 
-                DynamicConfiguration dc = dcs.createDynamicConfiguration();
-                if (dc instanceof DynamicConfigurationImpl) {
-                    ((DynamicConfigurationImpl) dc).setCommitable(false);
+                boolean jitModified = false;
+                try {
+                    jitModified = jitResolver.justInTimeResolution(injectee);
+                }
+                catch (Throwable th) {
+                    collector.addThrowable(th);
+                    aJITFailed = true;
                 }
                 
-                boolean modified = jitResolver.justInTimeResolution(dc, injectee);
-                if (modified) changedConfigurations.add(dc);
+                modified = jitModified || modified;
             }
             
-            boolean oneChanged = false;
-            for (DynamicConfiguration dc : changedConfigurations) {
-                oneChanged = true;
-                if (dc instanceof DynamicConfigurationImpl) {
-                    ((DynamicConfigurationImpl) dc).setCommitable(true);
-                }
-                    
-                dc.commit();
+            if (aJITFailed) {
+                collector.throwIfErrors();
             }
             
-            if (oneChanged == false) {
+            if (!modified) {
                 if (injectee.isOptional()) return null;
                 
-                throw new IllegalStateException("There was no object available for injection at " + injectee);
+                collector.throwIfErrors();
             }
             
             // Try again
@@ -117,7 +105,7 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
             if (ad == null) {
                 if (injectee.isOptional()) return null;
                 
-                throw new IllegalStateException("There was no object available for injection at " + injectee);
+                collector.throwIfErrors();
             }
             
             return locator.getService(ad, root);  

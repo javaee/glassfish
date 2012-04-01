@@ -61,7 +61,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     
     private final Object lock = new Object();
     private boolean committed = false;
-    private boolean commitable = true;
 
     /* package */ DynamicConfigurationImpl(ServiceLocatorImpl locator) {
         this.locator = locator;
@@ -180,7 +179,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     public void commit() throws MultiException {
         synchronized (lock) {
             checkState();
-            if (!commitable) throw new IllegalStateException();
             
             committed = true;
         }
@@ -216,11 +214,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     
     /* package */ LinkedList<Filter> getUnbindFilters() {
         return allUnbindFilters;
-    }
-    
-    /* package */ void setCommitable(boolean commitable) {
-        this.commitable = commitable;
-        
     }
     
     public String toString() {

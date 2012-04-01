@@ -41,9 +41,11 @@ package org.glassfish.hk2.tests.locator.justintime;
 
 import java.lang.reflect.Type;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -54,14 +56,18 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  */
 @Singleton
 public class SimpleServiceJITResolver implements JustInTimeInjectionResolver {
+    @Inject
+    private DynamicConfigurationService dcs;
+    
     private int numTimesCalled = 0;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Configuration, org.glassfish.hk2.api.Injectee)
      */
     @Override
-    public boolean justInTimeResolution(Configuration configuration,
-            Injectee failedInjectionPoint) {
+    public boolean justInTimeResolution(Injectee failedInjectionPoint) {
+        DynamicConfiguration configuration = dcs.createDynamicConfiguration();
+        
         numTimesCalled++;
         
         Type injectionType = failedInjectionPoint.getRequiredType();
@@ -71,9 +77,16 @@ public class SimpleServiceJITResolver implements JustInTimeInjectionResolver {
         if (!SimpleService.class.equals(injectionClass)) return false;
         
         configuration.bind(BuilderHelper.link(SimpleService.class).build());
+        
+        configuration.commit();
+        
         return true;
     }
     
+    /**
+     * For use by the test
+     * @return The number of times this resolver has been called
+     */
     public int getNumTimesCalled() {
         return numTimesCalled;
     }
