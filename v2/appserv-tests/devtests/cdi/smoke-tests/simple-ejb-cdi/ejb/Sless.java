@@ -43,5 +43,5 @@ public interface Sless
 {
     public String hello();
 
-    public com.sun.ejb.containers.TimerSchedule foo ();
+    public org.glassfish.common.util.timer.TimerSchedule foo ();
 }

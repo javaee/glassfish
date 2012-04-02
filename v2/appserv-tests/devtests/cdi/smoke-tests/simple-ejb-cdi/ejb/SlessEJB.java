@@ -50,5 +50,5 @@ public class SlessEJB implements Sless
         else return null;
     }
 
-    public com.sun.ejb.containers.TimerSchedule foo () {return null;}
+    public org.glassfish.common.util.timer.TimerSchedule foo () {return null;}
 }
