@@ -102,6 +102,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final LinkedList<ErrorService> errorHandlers =
             new LinkedList<ErrorService>();
     
+    private boolean shutdown = false;
+    
     /* package */ ServiceLocatorImpl(String name, ServiceLocator parent) {
         locatorName = name;
         this.parent = parent;
@@ -201,11 +203,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter) {
+        checkState();
+        
         return getDescriptors(filter, null, true);
     }
     
     public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
+        checkState();
         
         SortedSet<ActiveDescriptor<?>> sorted = getDescriptors(filter);
         
@@ -218,6 +223,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor, Injectee injectee)
             throws MultiException {
+        checkState();
         Class<?> implClass = loadClass(descriptor, injectee);
         
         if (!(descriptor instanceof ActiveDescriptor)) {
@@ -259,6 +265,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor)
             throws MultiException {
+        checkState();
         return reifyDescriptor(descriptor, null);
     }
 
@@ -269,6 +276,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee)
             throws MultiException {
         if (injectee == null) throw new IllegalArgumentException();
+        checkState();
         
         Type requiredType = injectee.getRequiredType();
         Class<?> rawType = Utilities.getRawClass(requiredType);
@@ -304,6 +312,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ActiveDescriptor<T> activeDescriptor,
             Injectee injectee) throws MultiException {
         if (activeDescriptor == null) throw new IllegalArgumentException();
+        checkState();
         
         return new ServiceHandleImpl<T>(this, activeDescriptor, injectee);
     }
@@ -315,6 +324,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor) throws MultiException {
         if (activeDescriptor == null) throw new IllegalArgumentException();
+        checkState();
         
         return getServiceHandle(activeDescriptor, null);
     }
@@ -326,6 +336,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public <T> T getService(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) throws MultiException {
         ServiceHandle<T> subHandle = getServiceHandle(activeDescriptor);
+        checkState();
         
         if (root != null && PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
             ((ServiceHandleImpl<?>) root).addSubHandle((ServiceHandleImpl<T>) subHandle);
@@ -339,6 +350,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public <T> T getService(Type contractOrImpl, Annotation... qualifiers) throws MultiException {
+        checkState();
+        
         ServiceHandle<T> serviceHandle = getServiceHandle(contractOrImpl, qualifiers);
         if (serviceHandle == null) return null;
         
@@ -352,6 +365,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> List<T> getAllServices(Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
+        checkState();
+        
         SortedSet<ServiceHandle<?>> services = getAllServiceHandles(contractOrImpl, qualifiers);
         
         List<T> retVal = new LinkedList<T>();
@@ -368,6 +383,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers)
             throws MultiException {
+        checkState();
+        
         ServiceHandle<T> handle = getServiceHandle(contractOrImpl, name, qualifiers);
         if (handle == null) return null;
         return handle.getService();
@@ -379,6 +396,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public List<?> getAllServices(Filter searchCriteria)
             throws MultiException {
+        checkState();
+        
         SortedSet<ServiceHandle<?>> handleSet = getAllServiceHandles(searchCriteria);
         
         List<Object> retVal = new LinkedList<Object>();
@@ -402,7 +421,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void shutdown() {
-        throw new AssertionError("not implemented yet");
+        synchronized (lock) {
+            if (shutdown) return;
+            
+            shutdown = true;
+            
+            allDescriptors.clear();
+            descriptorsByAdvertisedContract.clear();
+            descriptorsByName.clear();
+            allResolvers.clear();
+            allValidators.clear();
+            errorHandlers.clear();
+        }
 
     }
 
@@ -411,6 +441,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public <T> T create(Class<T> createMe) {
+        checkState();
+        
         return Utilities.justCreate(createMe, this);
     }
 
@@ -419,6 +451,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void inject(Object injectMe) {
+        checkState();
+        
         Utilities.justInject(injectMe, this);
     }
 
@@ -427,6 +461,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void postConstruct(Object postConstructMe) {
+        checkState();
+        
         Utilities.justPostConstruct(postConstructMe);
 
     }
@@ -436,6 +472,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void preDestroy(Object preDestroyMe) {
+        checkState();
+        
         Utilities.justPreDestroy(preDestroyMe);
 
     }
@@ -477,6 +515,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
             Annotation... qualifiers) throws MultiException {
+        checkState();
+        
         return internalGetServiceHandle(null, contractOrImpl, null, qualifiers);
     }
 
@@ -488,6 +528,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
         if (contractOrImpl == null) throw new IllegalArgumentException();
+        checkState();
         
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) {
@@ -524,6 +565,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
             String name, Annotation... qualifiers) throws MultiException {
+        checkState();
+        
         return internalGetServiceHandle(null, contractOrImpl, name, qualifiers);
     }
 
@@ -533,6 +576,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public SortedSet<ServiceHandle<?>> getAllServiceHandles(
             Filter searchCriteria) throws MultiException {
+        checkState();
+        
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
         synchronized (lock) {
@@ -872,6 +917,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public long getLocatorId() {
         return id;
+    }
+    
+    private void checkState() {
+        if (shutdown) throw new IllegalStateException(this + " has been shut down");
     }
     
     public String toString() {

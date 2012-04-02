@@ -47,12 +47,12 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
         <version>2.0.1-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>ctm-example</artifactId>
-    <name>CTM example</name>
-    <description>A use case for TenantScoped services</description>
+    <artifactId>hk2-locator</artifactId>
+    <name>ServiceLocator Default Implementation</name>
+    <description>${project.name}</description>
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
@@ -124,11 +124,6 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>auto-depends</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>tiger-types</artifactId>
             <version>1.4</version>
@@ -138,12 +133,6 @@
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>javax.inject</artifactId>
             <version>${project.version}</version>
-        </dependency>
-	<dependency>
-       	    <groupId>org.glassfish.hk2</groupId>
-            <artifactId>class-model</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -163,18 +152,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-locator</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>config</artifactId>
+            <groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>cglib</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-<!--
     <profiles>
         <profile>
             <id>jdk5</id>
@@ -192,5 +174,4 @@
             </dependencies>
         </profile>
     </profiles>
- -->
 </project>

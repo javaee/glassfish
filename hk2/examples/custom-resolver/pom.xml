@@ -160,14 +160,9 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>auto-depends</artifactId>
+            <artifactId>hk2-locator</artifactId>
             <version>${project.version}</version>
         </dependency>
         
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>
