@@ -41,37 +41,35 @@ package org.glassfish.hk2.tests.locator.validating;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.ValidationService;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Operation;
+import org.glassfish.hk2.api.Validator;
 
 /**
  * @author jwells
  *
  */
-public class ValidatingModule implements TestModule {
+@Singleton
+public class UnbindValidator implements Validator {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.Validator#validate(org.glassfish.hk2.api.Operation, org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee)
      */
     @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(SuperSecretService.class).qualifiedBy(Secret.class.getName()).build());
-        configurator.bind(BuilderHelper.link(SystemService.class).build());
-        configurator.bind(BuilderHelper.link(UserService.class).build());
-        configurator.bind(BuilderHelper.link(NeverUnbindMeService.class).build());
+    public boolean validate(Operation operation, ActiveDescriptor<?> candidate,
+            Injectee injectee) {
+        switch (operation) {
+        case LOOKUP:
+        case BIND:
+            return true;
+        }
         
-        // Add validation services
-        configurator.addActiveDescriptor(ValidationServiceImpl.class);
-        configurator.bind(BuilderHelper.link(BindValidatorService.class.getName()).
-                to(ValidationService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        configurator.bind(BuilderHelper.link(UnbindValidatorService.class.getName()).
-                to(ValidationService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
+        if (candidate.getAdvertisedContracts().contains(NeverUnbindMeService.class.getName())) {
+            return false;
+        }
+        
+        return true;
     }
 
 }
