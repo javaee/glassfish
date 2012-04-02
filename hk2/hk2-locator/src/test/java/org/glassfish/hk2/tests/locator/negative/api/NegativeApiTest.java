@@ -176,6 +176,49 @@ public class NegativeApiTest {
     }
     
     /**
+     * You cannot call reify a descriptor that forgot about its name
+     */
+    @Test
+    public void testReifyDescriptorNoNameButThereShouldBe() {
+        NullDescriptorImpl ndi = new NullDescriptorImpl();
+        ndi.setImplementation(NamedService.class.getName());
+        ndi.unNullContracts();
+        ndi.unNullType(false);
+        ndi.unNullMetadata();
+        
+        try {
+            locator.reifyDescriptor(ndi);
+            Assert.fail("Should have failed due to no name in descriptor, but name on the class");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(),
+                    me.getMessage().contains("No name was in the descriptor, but this element("));
+        }
+    }
+    
+    /**
+     * You cannot reify a descriptor with mismatched names
+     */
+    @Test
+    public void testReifyDescriptorWrongName() {
+        NullDescriptorImpl ndi = new NullDescriptorImpl();
+        ndi.setImplementation(NamedService.class.getName());
+        ndi.unNullContracts();
+        ndi.unNullType(false);
+        ndi.unNullMetadata();
+        ndi.setName("NotTheName");
+        
+        try {
+            locator.reifyDescriptor(ndi);
+            Assert.fail("Should have failed due to no name in descriptor, but name on the class");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(),
+                    me.getMessage().contains("The class had an @Named qualifier that was inconsistent."));
+        }
+    }
+    
+    /**
      * You cannot call getInjecteeDescriptor with null
      */
     @Test(expected=IllegalArgumentException.class)

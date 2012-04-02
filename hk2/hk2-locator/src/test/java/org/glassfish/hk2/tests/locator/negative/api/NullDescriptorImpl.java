@@ -59,6 +59,7 @@ public class NullDescriptorImpl implements Descriptor {
     private DescriptorType type;
     private Map<String, List<String>> metadata;
     private Set<String> qualifiers;
+    private String name;
     
     public void setImplementation(String implementation) {
         this.implementation = implementation;
@@ -91,13 +92,17 @@ public class NullDescriptorImpl implements Descriptor {
     public String getScope() {
         return null;
     }
+    
+    /* package */ void setName(String name) {
+        this.name = name;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getName()
      */
     @Override
     public String getName() {
-        return null;
+        return name;
     }
     
     public void unNullQualifiers() {

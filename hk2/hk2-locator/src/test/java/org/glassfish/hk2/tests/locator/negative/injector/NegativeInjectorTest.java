@@ -284,5 +284,39 @@ public class NegativeInjectorTest {
                     me.getMessage().contains("Invalid injectee with required type of "));
         }
     }
+    
+    /**
+     * This post construct has a bad parameter
+     */
+    @Test
+    public void testInvalidPostConstruct() {
+        BadPC badPC = new BadPC();
+        
+        try {
+            locator.postConstruct(badPC);
+            Assert.fail("This post construct should have caused failure");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(
+                    " annotated with @PostConstruct must not have any arguments"));
+        }
+    }
+    
+    /**
+     * This post construct has a bad parameter
+     */
+    @Test
+    public void testInvalidPreDestroy() {
+        BadPD badPD = new BadPD();
+        
+        try {
+            locator.preDestroy(badPD);
+            Assert.fail("This pre destroy should have caused failure");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(
+                    " annotated with @PreDestroy must not have any arguments"));
+        }
+    }
 
 }
