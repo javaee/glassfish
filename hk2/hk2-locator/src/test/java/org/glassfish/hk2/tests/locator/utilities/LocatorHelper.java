@@ -81,7 +81,7 @@ public class LocatorHelper {
         ServiceLocator retVal = factory.find(name);
         Assert.assertNull("There is already a service locator of this name, change names to ensure a clean test: " + name, retVal);
         
-        retVal = factory.create(name);
+        retVal = factory.create(name, parent);
         
         if (module == null) return retVal;
         
