@@ -500,4 +500,67 @@ public class NegativeApiTest {
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         config.addActiveDescriptor(new UnreifiedActiveDescriptor());
     }
+    
+    /**
+     * Invalid qualifier passed
+     */
+    @Test
+    public void testAskingForInvalidQualifier() {
+        try {
+          locator.getService(NamedService.class,
+                new NotAQualifierImpl());
+          Assert.fail("Asking for invalid qualifier");
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage(), iae.getMessage().contains(
+                    " is not a qualifier"));
+        }
+    }
+    
+    /**
+     * Same qualifier passed twice
+     */
+    @Test
+    public void testAskingForDoubleQualifier() {
+        try {
+          locator.getService(NamedService.class,
+                new IsAQualifierImpl(), new IsAQualifierImpl());
+          Assert.fail("Asking for valid qualifier twice");
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage(), iae.getMessage().contains(
+                    " appears more than once in the qualifier list"));
+        }
+    }
+    
+    /**
+     * Invalid name qualifier passed
+     */
+    @Test
+    public void testAskingForBadName() {
+        try {
+          locator.getService(NamedService.class, "A different name",
+                new NamedImpl("NotTheName"));
+          Assert.fail("Asking for a name qualifier but named service has a different name");
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage(), iae.getMessage().contains(
+                    ") does not match the value of the @Named qualifier ("));
+        }
+    }
+    
+    /**
+     * Invalid name qualifier passed (no name value)
+     */
+    @Test
+    public void testAskingForNoName() {
+        try {
+          locator.getService(NamedService.class, new NamedImpl(""));
+          Assert.fail("Asking for a name qualifier but named service has a different name");
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage(), iae.getMessage().contains(
+                    "The @Named qualifier must have a value"));
+        }
+    }
 }
