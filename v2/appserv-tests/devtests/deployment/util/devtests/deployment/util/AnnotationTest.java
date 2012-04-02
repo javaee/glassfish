@@ -16,7 +16,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
+import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 

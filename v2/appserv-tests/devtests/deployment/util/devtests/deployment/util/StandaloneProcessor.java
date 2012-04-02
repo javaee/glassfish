@@ -40,12 +40,12 @@ import com.sun.enterprise.deployment.annotation.factory.SJSASFactory;
 import org.glassfish.apf.impl.AnnotationUtils;
 import com.sun.enterprise.deployment.annotation.impl.AppClientScanner;
 import org.glassfish.apf.impl.DirectoryScanner;
-import com.sun.enterprise.deployment.annotation.impl.EjbJarScanner;
+import org.glassfish.ejb.deployment.annotation.impl.EjbJarScanner;
 import com.sun.enterprise.deployment.annotation.impl.WarScanner;
 import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.EjbDeploymentDescriptorFile;
+import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 
