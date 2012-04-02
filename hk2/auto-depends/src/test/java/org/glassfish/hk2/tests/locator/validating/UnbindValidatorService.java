@@ -41,37 +41,33 @@ package org.glassfish.hk2.tests.locator.validating;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ValidationService;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class ValidatingModule implements TestModule {
+@Singleton
+public class UnbindValidatorService implements ValidationService {
+    private final Validator validator = new UnbindValidator();
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
      */
     @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(SuperSecretService.class).qualifiedBy(Secret.class.getName()).build());
-        configurator.bind(BuilderHelper.link(SystemService.class).build());
-        configurator.bind(BuilderHelper.link(UserService.class).build());
-        configurator.bind(BuilderHelper.link(NeverUnbindMeService.class).build());
-        
-        // Add validation services
-        configurator.addActiveDescriptor(ValidationServiceImpl.class);
-        configurator.bind(BuilderHelper.link(BindValidatorService.class.getName()).
-                to(ValidationService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        configurator.bind(BuilderHelper.link(UnbindValidatorService.class.getName()).
-                to(ValidationService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
+    public Filter getLookupFilter() {
+        return BuilderHelper.allFilter();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getValidator()
+     */
+    @Override
+    public Validator getValidator() {
+        return validator;
     }
 
 }

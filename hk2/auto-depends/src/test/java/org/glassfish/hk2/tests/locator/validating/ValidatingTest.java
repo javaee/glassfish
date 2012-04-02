@@ -43,9 +43,12 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
 
 /**
@@ -96,6 +99,43 @@ public class ValidatingTest {
         Assert.assertNull(locator.getService(SuperSecretService.class));
     }
     
+    /**
+     * Tests a bind that should fail validation
+     */
+    @Test
+    public void testBindValidationFailure() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration configuration = dcs.createDynamicConfiguration();
+        
+        configuration.bind(BuilderHelper.link(NeverBindMeService.class).build());
+        
+        try {
+            configuration.commit();
+            Assert.fail("Bind should have failed due to validation problem");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(
+                " did not pass the BIND validation"));
+        }
+    }
     
-
+    /**
+     * Tests a bind that should fail validation
+     */
+    @Test
+    public void testUnBindValidationFailure() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration configuration = dcs.createDynamicConfiguration();
+        
+        configuration.addUnbindFilter(BuilderHelper.createContractFilter(NeverUnbindMeService.class.getName()));
+        
+        try {
+            configuration.commit();
+            Assert.fail("Bind should have failed due to unbind validation problem");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(
+                    " did not pass the UNBIND validation"));
+        }
+    }
 }
