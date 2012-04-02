@@ -492,7 +492,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         LinkedList<ErrorService> currentErrorHandlers = null;
         synchronized (lock) {
             SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true);
-            results = narrow(candidates, contractOrImpl, null, false, onBehalfOf, qualifiers);
+            results = narrow(candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
             if (!results.getErrors().isEmpty()) {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
             }
