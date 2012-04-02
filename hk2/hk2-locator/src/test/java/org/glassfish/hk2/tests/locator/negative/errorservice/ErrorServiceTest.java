@@ -39,11 +39,14 @@
  */
 package org.glassfish.hk2.tests.locator.negative.errorservice;
 
+import java.util.SortedSet;
+
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -93,7 +96,6 @@ public class ErrorServiceTest {
     }
     
     private void testLookupInjecteePriorToFixing(ErrorServiceImpl esi) {
-        
         esi.clear();
         
         try {
@@ -115,6 +117,51 @@ public class ErrorServiceTest {
         Assert.assertEquals(faultyDesc, fromError);
         
         Assert.assertNotNull(esi.getInjectee());
+        
+        MultiException me = esi.getMe();
+        Assert.assertNotNull(me);
+        
+        Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+    }
+    
+    private void testLookupHandlesPriorToFixing(ErrorServiceImpl esi) {
+        esi.clear();
+        
+        SortedSet<ServiceHandle<?>> handles = locator.getAllServiceHandles(
+                BuilderHelper.createContractFilter(FaultyClass.class.getName()));
+        Assert.assertTrue("handles.size=" + handles.size(), handles.isEmpty());
+        
+        Descriptor faultyDesc = locator.getBestDescriptor(BuilderHelper.createContractFilter(FaultyClass.class.getName()));
+        Assert.assertNotNull(faultyDesc);
+        
+        ActiveDescriptor<?> fromError = esi.getDescriptor();
+        Assert.assertNotNull(fromError);
+        
+        Assert.assertEquals(faultyDesc, fromError);
+        
+        Assert.assertNull(esi.getInjectee());
+        
+        MultiException me = esi.getMe();
+        Assert.assertNotNull(me);
+        
+        Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+    }
+    
+    private void testLookupHandlesWithContractPriorToFixing(ErrorServiceImpl esi) {
+        esi.clear();
+        
+        SortedSet<ServiceHandle<?>> handles = locator.getAllServiceHandles(FaultyClass.class);
+        Assert.assertTrue("handles.size=" + handles.size(), handles.isEmpty());
+        
+        Descriptor faultyDesc = locator.getBestDescriptor(BuilderHelper.createContractFilter(FaultyClass.class.getName()));
+        Assert.assertNotNull(faultyDesc);
+        
+        ActiveDescriptor<?> fromError = esi.getDescriptor();
+        Assert.assertNotNull(fromError);
+        
+        Assert.assertEquals(faultyDesc, fromError);
+        
+        Assert.assertNull(esi.getInjectee());
         
         MultiException me = esi.getMe();
         Assert.assertNotNull(me);
@@ -179,12 +226,17 @@ public class ErrorServiceTest {
         Assert.assertNotNull(iwfc);
     }
     
+    /**
+     * This test ensures that the other methods are called in the proper order
+     */
     @Test
     public void testOrdered() {
         ErrorServiceImpl esi = locator.getService(ErrorServiceImpl.class);
         
         testLookupPriorToFixing(esi);
         testLookupInjecteePriorToFixing(esi);
+        testLookupHandlesPriorToFixing(esi);
+        testLookupHandlesWithContractPriorToFixing(esi);
         testLookupPriorToFixingButThrowing(esi);
         testLookupPriorToFixingButReThrowing(esi);
         

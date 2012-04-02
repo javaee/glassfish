@@ -37,35 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.lang.annotation.Annotation;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
+ * @param <T> Type of thing being created
  *
  */
-@Singleton
-public class DynamicConfigurationServiceImpl implements
-        DynamicConfigurationService {
-    private final ServiceLocatorImpl locator;
-    
-    @Inject
-    private DynamicConfigurationServiceImpl(ServiceLocator locator) {
-        this.locator = (ServiceLocatorImpl) locator;
+@PerLookup
+public class BadContext<T> implements Context<T> {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#getScope()
+     */
+    @Override
+    public Class<? extends Annotation> getScope() {
+        throw new AssertionError("not called");
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.DynamicConfigurationService#createDynamicConfiguration()
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public DynamicConfiguration createDynamicConfiguration() {
-        return new DynamicConfigurationImpl(locator);
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public <U> U find(ActiveDescriptor<U> descriptor) {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        throw new AssertionError("not called");
     }
 
 }
