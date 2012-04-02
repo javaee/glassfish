@@ -624,12 +624,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
-            if (sd.getLocatorId().longValue() != id) {
-                throw new MultiException(new IllegalArgumentException("A descriptor " + sd +
-                        " is targeted to a ServiceLocator with id " + sd.getLocatorId() +
-                        " but this ServiceLocator has id " + id));
-            }
-            
             boolean checkScope = false;
             if (sd.getAdvertisedContracts().contains(ValidationService.class.getName()) ||
                 sd.getAdvertisedContracts().contains(ErrorService.class.getName())) {

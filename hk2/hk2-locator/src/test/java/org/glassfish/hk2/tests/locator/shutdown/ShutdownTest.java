@@ -37,35 +37,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.shutdown;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import junit.framework.Assert;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.qualifiers.QualifierModule;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class DynamicConfigurationServiceImpl implements
-        DynamicConfigurationService {
-    private final ServiceLocatorImpl locator;
+public class ShutdownTest {
+    private final static String TEST_NAME = "ShutdownTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, null, null);
     
-    @Inject
-    private DynamicConfigurationServiceImpl(ServiceLocator locator) {
-        this.locator = (ServiceLocatorImpl) locator;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.DynamicConfigurationService#createDynamicConfiguration()
-     */
-    @Override
-    public DynamicConfiguration createDynamicConfiguration() {
-        return new DynamicConfigurationImpl(locator);
+    @Test
+    public void testShutdown() {
+        Assert.assertNotNull(locator.getService(ServiceLocator.class));
+        
+        long locatorId = locator.getLocatorId();
+        String locatorName = locator.getName();
+        
+        locator.shutdown();
+        
+        try {
+            locator.getService(ServiceLocator.class);
+            Assert.fail("Should not work now since the locator has been shutdown");
+        }
+        catch (IllegalStateException ise) {
+        }
+        
+        // Test that you can in fact call shutdown again
+        locator.shutdown();
+        
+        Assert.assertEquals(locatorId, locator.getLocatorId());
+        Assert.assertEquals(locatorName, locator.getName());
     }
 
 }

@@ -37,35 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class DynamicConfigurationServiceImpl implements
-        DynamicConfigurationService {
-    private final ServiceLocatorImpl locator;
-    
-    @Inject
-    private DynamicConfigurationServiceImpl(ServiceLocator locator) {
-        this.locator = (ServiceLocatorImpl) locator;
+public class BadValidationService implements ValidationService {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
+     */
+    @Override
+    public Filter getLookupFilter() {
+        throw new AssertionError("not called");
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.DynamicConfigurationService#createDynamicConfiguration()
+     * @see org.glassfish.hk2.api.ValidationService#getValidator()
      */
     @Override
-    public DynamicConfiguration createDynamicConfiguration() {
-        return new DynamicConfigurationImpl(locator);
+    public Validator getValidator() {
+        throw new AssertionError("not called");
     }
 
 }

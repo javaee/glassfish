@@ -37,35 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class DynamicConfigurationServiceImpl implements
-        DynamicConfigurationService {
-    private final ServiceLocatorImpl locator;
-    
-    @Inject
-    private DynamicConfigurationServiceImpl(ServiceLocator locator) {
-        this.locator = (ServiceLocatorImpl) locator;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.DynamicConfigurationService#createDynamicConfiguration()
-     */
-    @Override
-    public DynamicConfiguration createDynamicConfiguration() {
-        return new DynamicConfigurationImpl(locator);
-    }
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD })
+public @interface BadInject {
 
 }

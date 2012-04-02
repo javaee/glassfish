@@ -37,35 +37,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class DynamicConfigurationServiceImpl implements
-        DynamicConfigurationService {
-    private final ServiceLocatorImpl locator;
-    
-    @Inject
-    private DynamicConfigurationServiceImpl(ServiceLocator locator) {
-        this.locator = (ServiceLocatorImpl) locator;
-    }
+@PerLookup
+public class BadErrorService implements ErrorService {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.DynamicConfigurationService#createDynamicConfiguration()
+     * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)
      */
     @Override
-    public DynamicConfiguration createDynamicConfiguration() {
-        return new DynamicConfigurationImpl(locator);
+    public void failureToReify(ActiveDescriptor<?> descriptor,
+            Injectee injectee, MultiException me) throws MultiException {
+        throw new AssertionError("not called");
+
     }
 
 }
