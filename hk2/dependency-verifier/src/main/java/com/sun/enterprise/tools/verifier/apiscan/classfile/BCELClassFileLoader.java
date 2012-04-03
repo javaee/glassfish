@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  */
 class BCELClassFileLoader implements ClassFileLoader {
 
-    private ClassLoader cl;
+    private ResourceFinder rf;
     private static String resourceBundleName = "com.sun.enterprise.tools.verifier.apiscan.LocalStrings";
     private static Logger logger = Logger.getLogger("apiscan.classfile", resourceBundleName); // NOI18N
     private final static String myClassName = "BCELClassFileLoader"; // NOI18N
@@ -91,7 +91,8 @@ class BCELClassFileLoader implements ClassFileLoader {
         }
         //We do not want system class loader or even extension class loadera s our parent.
         //We want only boot class loader as our parent. Boot class loader is represented as null.
-        cl = new URLClassLoader((URL[]) urls.toArray(new URL[0]), null);
+        final ClassLoader cl = new URLClassLoader((URL[]) urls.toArray(new URL[0]), null);
+        rf = new ClassLoaderBasedResourceFinder(cl);
     }
 
     /**
@@ -101,23 +102,23 @@ class BCELClassFileLoader implements ClassFileLoader {
      *           operations.
      */
     public BCELClassFileLoader(ClassLoader cl) {
-        this.cl = cl;
+        rf = new ClassLoaderBasedResourceFinder(cl);
+    }
+
+    public BCELClassFileLoader(ResourceFinder rf) {
+        this.rf = rf;
     }
 
     //See corresponding method of ClassFileLoader
     public ClassFile load(String externalClassName) throws IOException {
         logger.entering("BCELClassFileLoader", "load", externalClassName); // NOI18N
-        //URLClassLoader library expects me to pass in internal form.
-        String internalClassName = externalClassName.replace('.', '/');
-        URL resource = cl.getResource(internalClassName + ".class");
-        //URLClassLoader returns null if resource is not found.
-        if(resource == null)
-            throw new IOException("Not able to load " + internalClassName + ".class");
-        URLConnection urlcon = resource.openConnection();
-        urlcon.setUseCaches(false); // bug 6328564
-        InputStream is = urlcon.getInputStream();
+        String resourcePath = externalClassName.replace('.', '/') + ".class";
+        InputStream is = rf.findResourceAsStream(resourcePath);
+        if (is == null) {
+            throw new IOException(resourcePath + " is not found using " + rf);
+        }
         try {
-            ClassFile cf = new BCELClassFile(is, internalClassName + ".class"); // NOI18N
+            ClassFile cf = new BCELClassFile(is, resourcePath); // NOI18N
             matchClassSignature(cf, externalClassName);
             return cf;
         } finally {
