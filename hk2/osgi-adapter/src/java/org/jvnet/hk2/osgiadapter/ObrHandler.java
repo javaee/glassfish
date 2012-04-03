@@ -224,7 +224,8 @@ class ObrHandler extends ServiceTracker {
         resolver.add(resource);
         if (resolver.resolve()) {
             printResolverOutput(resolver);
-            resolver.deploy(Resolver.NO_OPTIONAL_RESOURCES);
+            final int flags = Resolver.NO_OPTIONAL_RESOURCES; // We are not deploying optional resources
+            resolver.deploy(flags);
         } else {
             printResolverOutput(resolver);
             Reason[] reqs = resolver.getUnsatisfiedRequirements();
@@ -300,10 +301,10 @@ class ObrHandler extends ServiceTracker {
         for (Resource r : requiredResources) {
             sb.append("\n").append(r.getURI());
         }
-//        sb.append("]\nOptional resources: [");
-//        for (Resource r : optionalResources) {
-//            sb.append("\n").append(r.getURI());
-//        }
+        sb.append("]\nOptional resources (not deployed): [");
+        for (Resource r : optionalResources) {
+            sb.append("\n").append(r.getURI());
+        }
         sb.append("]\nUnsatisfied requirements: [");
         for (Reason r : unsatisfiedRequirements) {
             sb.append("\n").append(r.getRequirement());
