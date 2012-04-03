@@ -43,8 +43,8 @@ package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
+import org.osgi.framework.*;
+import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsParser;
@@ -157,6 +157,14 @@ public class OSGiModuleImpl implements Module {
                 logger.logp(Level.FINER, "OSGiModuleImpl", "start",
                         "Ignoring start of bundle {0} as it is in {1} state",
                         new Object[]{bundle, toString(bundle.getState())} );
+            }
+            return;
+        }
+        if (registry.getPackageAdmin().getBundleType(bundle) == PackageAdmin.BUNDLE_TYPE_FRAGMENT) {
+            if (logger.isLoggable(Level.FINER)) {
+                logger.logp(Level.FINER, "OSGiModuleImpl", "start",
+                        "Ignoring start of bundle {0} as it is a fragment bundle",
+                        new Object[]{bundle} );
             }
             return;
         }
