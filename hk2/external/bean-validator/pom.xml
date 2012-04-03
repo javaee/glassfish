@@ -121,6 +121,18 @@
                            javax.persistence.*; version="2.0"; resolution:=optional,
                            *
                        </Import-Package>
+                       <!--
+                       See https://hibernate.onjira.com/browse/HV-562 which I have filed against hibernate validator.
+                       It's a bug in hibernate validator the way it detects JPA. It uses thread's context classloader to
+                       see if JPA classes are available and then goes onto instantiate its JPATraversableResolver which
+                       has staic dependency on JPA classes. It should have used its own class loader to detect existence 
+                       of JPA classes. If we don't add this DynamicImport-Package, what could happen is that at the time
+                       of resolution of hibernate-validator, it's optional dependency on javax.persistence may not be
+                       satisfied, so this bundle won't be able to load jpa classes, yet when it uses TCL to detect JPA,
+                       that might return true. Based on this outcome, it could go onto use JPATraversableResolver and 
+                       eventually fail with NCDFE. Adding a DynamicImport-Package helps rewiring this bundle to JPA late.
+                       -->
+                       <DynamicImport-Package>javax.persistence; javax.persistence.*;  version="2.0"</DynamicImport-Package>
                        <Implementation-Version>
                          ${hibernate-validator.version}
                        </Implementation-Version>
