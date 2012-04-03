@@ -290,5 +290,39 @@ public class DynamicConfigTest {
         Assert.assertTrue(config.toString(), config.toString().contains("DynamicConfiguration"));
     }
     
+    /**
+     * Tests retrieving original descriptor
+     */
+    @Test
+    public void testRetrieveOriginalDescriptor() {
+        ForeignDescriptor fd = new ForeignDescriptor();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        ActiveDescriptor<?> filledIn = config.bind(fd);
+        Assert.assertEquals(locator.getLocatorId(), filledIn.getLocatorId().longValue());
+        
+        Assert.assertNotNull(filledIn.getServiceId());
+        
+        Assert.assertEquals(fd, filledIn.getBaseDescriptor());
+        
+        config.commit();
+        
+        // Also now look it up and check that we can get it that way
+        ActiveDescriptor<?> fromLookup = locator.getBestDescriptor(new Filter() {
 
+            @Override
+            public boolean matches(Descriptor d) {
+                if (d.getBaseDescriptor() instanceof ForeignDescriptor) return true;
+                
+                return false;
+            }
+            
+        });
+        
+        Assert.assertNotNull(fromLookup);
+        
+        Assert.assertEquals(fd, fromLookup.getBaseDescriptor());
+    }
 }

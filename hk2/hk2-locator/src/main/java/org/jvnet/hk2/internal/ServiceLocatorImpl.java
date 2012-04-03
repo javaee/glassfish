@@ -78,12 +78,13 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  */
 public class ServiceLocatorImpl implements ServiceLocator {
     private final static Object sLock = new Object();
-    private static long currentId = 0L;
+    private static long currentLocatorId = 0L;
     
     /* package */ final static DescriptorComparator DESCRIPTOR_COMPARATOR = new DescriptorComparator();
     private final static ServiceHandleComparator HANDLE_COMPARATOR = new ServiceHandleComparator();
     
     private final Object lock = new Object();
+    private long nextServiceId = 0L;
     private final String locatorName;
     private final long id;
     private final ServiceLocator parent;
@@ -108,7 +109,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         locatorName = name;
         this.parent = parent;
         synchronized (sLock) {
-            id = currentId++;
+            id = currentLocatorId++;
         }
     }
     
@@ -227,7 +228,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> implClass = loadClass(descriptor, injectee);
         
         if (!(descriptor instanceof ActiveDescriptor)) {
-            SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor, new Long(id));
+            SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor, new Long(id), new Long(getNextServiceId()));
             
             Collector collector = new Collector();
             sd.reify(implClass, this, collector);
@@ -246,7 +247,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             sd = (SystemDescriptor<?>) active;
         }
         else {
-            sd = new SystemDescriptor<Object>(descriptor, new Long(id));
+            sd = new SystemDescriptor<Object>(descriptor, new Long(id), new Long(getNextServiceId()));
         }
         
         Collector collector = new Collector();
@@ -911,6 +912,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public long getLocatorId() {
         return id;
+    }
+    
+    /* package */ long getNextServiceId() {
+        synchronized (lock) {
+            return nextServiceId++;
+        }
     }
     
     private void checkState() {

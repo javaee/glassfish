@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.locator;
+package org.glassfish.hk2.tests.locator.dynamicconfig;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,31 +51,20 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
 
 /**
+ * This external descriptor can only describe SimpleService4, and has some
+ * extra data associated with it that I can retrieve using the getBaseDescriptor
+ * call
+ * 
  * @author jwells
- *
  */
 public class ForeignDescriptor implements Descriptor {
-    private String implementation;
-    private final Set<String> advertisedContracts = new HashSet<String>();
-    private Set<String> qualifiers = new HashSet<String>();
-    private Map<String, List<String>> metadata =
-            new HashMap<String, List<String>>();
-    private int rank;
-    
-    /**
-     * Setter for implementation
-     * @param implementation
-     */
-    public void setImplementation(String implementation) {
-        this.implementation = implementation;
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getImplementation()
      */
     @Override
     public String getImplementation() {
-        return implementation;
+        return SimpleService4.class.getName();
     }
 
     /* (non-Javadoc)
@@ -83,7 +72,10 @@ public class ForeignDescriptor implements Descriptor {
      */
     @Override
     public Set<String> getAdvertisedContracts() {
-        return advertisedContracts;
+        HashSet<String> retVal = new HashSet<String>();
+        retVal.add(SimpleService4.class.getName());
+        
+        return retVal;
     }
 
     /* (non-Javadoc)
@@ -107,7 +99,7 @@ public class ForeignDescriptor implements Descriptor {
      */
     @Override
     public Set<String> getQualifiers() {
-        return qualifiers;
+        return new HashSet<String>();
     }
 
     /* (non-Javadoc)
@@ -123,7 +115,7 @@ public class ForeignDescriptor implements Descriptor {
      */
     @Override
     public Map<String, List<String>> getMetadata() {
-        return metadata;
+        return new HashMap<String, List<String>>();
     }
 
     /* (non-Javadoc)
@@ -133,6 +125,8 @@ public class ForeignDescriptor implements Descriptor {
     public HK2Loader getLoader() {
         return null;
     }
+    
+    private int rank;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getRanking()
@@ -153,6 +147,14 @@ public class ForeignDescriptor implements Descriptor {
     }
 
     /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
+     */
+    @Override
+    public Descriptor getBaseDescriptor() {
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getServiceId()
      */
     @Override
@@ -167,13 +169,4 @@ public class ForeignDescriptor implements Descriptor {
     public Long getLocatorId() {
         return null;
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
-     */
-    @Override
-    public Descriptor getBaseDescriptor() {
-        return null;
-    }
-
 }

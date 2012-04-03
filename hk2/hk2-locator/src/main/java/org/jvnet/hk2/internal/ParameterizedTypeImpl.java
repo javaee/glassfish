@@ -51,7 +51,13 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     private final Type rawType;
     private final Type actualTypeArguments[];
     
-    /* package */ ParameterizedTypeImpl(Type rawType, Type actualTypeArguments[]) {
+    /**
+     * A new parameterized type
+     * 
+     * @param rawType The raw type of this type
+     * @param actualTypeArguments The actual type arguments
+     */
+    public ParameterizedTypeImpl(Type rawType, Type... actualTypeArguments) {
         this.rawType = rawType;
         this.actualTypeArguments = actualTypeArguments;
     }

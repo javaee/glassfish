@@ -155,15 +155,6 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given rank
 	 */
 	public DescriptorBuilder ofRank(int rank);
-	
-	/**
-	 * The id to be associated with this descriptor
-	 * 
-	 * @param id May be null.  Will be ignored on binding operations
-	 * @return A DescriptorBuilder with the given metadata
-	 * @throws IllegalArgumentException if the id is set non-null more than once
-	 */
-	public DescriptorBuilder withId(Long id) throws IllegalArgumentException;
     
     /**
      * Call this if this descriptor should be loaded with the given HK2Loader

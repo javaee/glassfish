@@ -56,15 +56,14 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  * @param <T> The type from the cache
  */
 public class SystemDescriptor<T> implements ActiveDescriptor<T> {
-    private final static Object sLock = new Object();
-    private static long currentId = 1L;
-    
+    private final Descriptor originalDescriptor;
     private final Descriptor baseDescriptor;
     private final Long id;
     private final ActiveDescriptor<T> activeDescriptor;
@@ -86,13 +85,11 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             new HashMap<ValidationService, Boolean>();
     
     /* package */ @SuppressWarnings("unchecked")
-    SystemDescriptor(Descriptor baseDescriptor, Long locatorId) {
-        this.baseDescriptor = baseDescriptor;
+    SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId) {
+        this.originalDescriptor = baseDescriptor;
+        this.baseDescriptor = BuilderHelper.deepCopyDescriptor(baseDescriptor);
         this.locatorId = locatorId;
-        
-        synchronized (sLock) {
-            id = new Long(currentId++);
-        }
+        this.id = serviceId;
         
         if (baseDescriptor instanceof ActiveDescriptor) {
             ActiveDescriptor<T> active = (ActiveDescriptor<T>) baseDescriptor;
@@ -190,6 +187,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public int setRanking(int ranking) {
         return baseDescriptor.setRanking(ranking);
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
+     */
+    @Override
+    public Descriptor getBaseDescriptor() {
+        return originalDescriptor;
+    } 
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getServiceId()
@@ -482,5 +487,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public String toString() {
         return "SystemDescriptor(" + getImplementation() + "," + Pretty.collection(getAdvertisedContracts()) + "," +
           Pretty.collection(getQualifiers()) + "," + System.identityHashCode(this) + ")";
-    }  
+    }
+
+     
 }
