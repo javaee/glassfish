@@ -80,4 +80,17 @@ public final class Constants {
      * List of HK2 module repository URIs. Currently, we only support directory URIs.
      */
     public static final String HK2_REPOSITORIES = "com.sun.enterprise.hk2.repositories";
+
+    /**
+     * This boolean flag is used to indicate if OBR deploys fragment bundles for any given required bundle.
+     * Since fragments are not required resources of a bundle, it requires two pass resolution.
+     * Default is false.
+     */
+    public static final String OBR_DEPLOYS_FRGAMENTS = "com.sun.enterprise.hk2.obrDeploysFragments";
+
+    /**
+     * This boolean flag is used to indicate if OBR deploys optional requirements.
+     * Default is false.
+     */
+    public static final String OBR_DEPLOYS_OPTIONAL_REQUIREMENTS = "com.sun.enterprise.hk2.obrDeploysOptionalRequirements";
 }

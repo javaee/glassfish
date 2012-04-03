@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,8 +66,13 @@ import static org.jvnet.hk2.osgiadapter.Logger.logger;
  */
 class ObrHandler extends ServiceTracker {
 
+    private boolean deployFragments = false;
+    public boolean deployOptionalRequirements = false;
+
     public ObrHandler(BundleContext bctx) {
         super(bctx, RepositoryAdmin.class.getName(), null);
+        deployFragments = Boolean.valueOf(bctx.getProperty(Constants.OBR_DEPLOYS_FRGAMENTS));
+        deployOptionalRequirements = Boolean.valueOf(bctx.getProperty(Constants.OBR_DEPLOYS_OPTIONAL_REQUIREMENTS));
         open();
     }
 
@@ -219,21 +224,46 @@ class ObrHandler extends ServiceTracker {
         });
         return files;
     }
+
     /* package */ synchronized Bundle deploy(Resource resource) {
         final Resolver resolver = getRepositoryAdmin().resolver();
-        resolver.add(resource);
-        if (resolver.resolve()) {
-            printResolverOutput(resolver);
-            final int flags = Resolver.NO_OPTIONAL_RESOURCES; // We are not deploying optional resources
+        boolean resolved = resolve(resolver, resource);
+        if (resolved) {
+            final int flags = !deployOptionalRequirements ? Resolver.NO_OPTIONAL_RESOURCES : 0;
             resolver.deploy(flags);
+            return getBundle(resource);
         } else {
-            printResolverOutput(resolver);
             Reason[] reqs = resolver.getUnsatisfiedRequirements();
             logger.logp(Level.WARNING, "ObrHandler", "deploy",
                     "Unable to satisfy the requirements: {0}", new Object[]{Arrays.toString(reqs)});
             return null;
         }
-        return getBundle(resource);
+    }
+
+    /* package */ boolean resolve(final Resolver resolver, Resource resource) {
+        resolver.add(resource);
+        boolean resolved = resolver.resolve();
+        logger.logp(Level.INFO, "ObrHandler", "resolve", "At the end of first pass, resolver outcome is \n: {0}",
+                new Object[]{getResolverOutput(resolver)});
+        // The following code is not enough to deploy fragments, so it is commented out.
+//        if (resolved && deployFragments) {
+//            // Take a copy of required and optional resources before adding them to resolver, otherwise
+//            // resolver.getRequiredResources() or resolver.getOptionalResources() throws IllegalStateException
+//            // as its m_resolved flag changes to false when we add a resource to it.
+//            final Resource[] requiredResources = resolver.getRequiredResources();
+//            final Resource[] optionalResources = resolver.getOptionalResources();
+//
+//            for (Resource r: requiredResources) {
+//                resolver.add(r);
+//            }
+//            for (Resource r: optionalResources) {
+//                resolver.add(r);
+//            }
+//            resolved = resolver.resolve();
+//            logger.logp(Level.INFO, "ObrHandler", "resolve", "At the end of second pass, resolver outcome is \n: {0}",
+//                    new Object[]{getResolverOutput(resolver)});
+//        }
+        return resolved;
     }
 
     /* package */ synchronized Bundle deploy(String name, String version) {
@@ -289,7 +319,11 @@ class ObrHandler extends ServiceTracker {
     }
 
     private void printResolverOutput(Resolver resolver) {
-        Resource[] addedResources = resolver.getAddedResources();
+        StringBuffer sb = getResolverOutput(resolver);
+        logger.logp(Level.INFO, "ObrHandler", "printResolverOutput", "OBR resolver state: {0}", new Object[]{sb});
+    }
+
+    private StringBuffer getResolverOutput(Resolver resolver) {Resource[] addedResources = resolver.getAddedResources();
         Resource[] requiredResources = resolver.getRequiredResources();
         Resource[] optionalResources = resolver.getOptionalResources();
         Reason[] unsatisfiedRequirements = resolver.getUnsatisfiedRequirements();
@@ -301,7 +335,8 @@ class ObrHandler extends ServiceTracker {
         for (Resource r : requiredResources) {
             sb.append("\n").append(r.getURI());
         }
-        sb.append("]\nOptional resources (not deployed): [");
+        String optionalRequirementsDeployed = deployOptionalRequirements ? "deployed" : "not deployed";
+        sb.append("]\nOptional resources (" +  optionalRequirementsDeployed + "): [");
         for (Resource r : optionalResources) {
             sb.append("\n").append(r.getURI());
         }
@@ -310,7 +345,7 @@ class ObrHandler extends ServiceTracker {
             sb.append("\n").append(r.getRequirement());
         }
         sb.append("]");
-        logger.logp(Level.INFO, "ObrHandler", "printResolverOutput", "OBR resolver state: {0}", new Object[]{sb});
+        return sb;
     }
 
 }
