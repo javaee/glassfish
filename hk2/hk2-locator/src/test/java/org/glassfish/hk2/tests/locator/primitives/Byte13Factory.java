@@ -37,29 +37,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.primitives;
 
-import java.util.HashMap;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * @author jwells
  *
  */
-public class Constants {
-    /** The name of the system class loader */
-    public final static String SYSTEM_LOADER_NAME = "SystemLoader";
-    
-    /** Map from primitive type to java type */
-    public final static HashMap<Class<?>, Class<?>> PRIMITIVE_MAP = new HashMap<Class<?>, Class<?>>();
-    
-    static {
-        PRIMITIVE_MAP.put(char.class, Character.class);
-        PRIMITIVE_MAP.put(byte.class, Byte.class);
-        PRIMITIVE_MAP.put(short.class, Short.class);
-        PRIMITIVE_MAP.put(int.class, Integer.class);
-        PRIMITIVE_MAP.put(long.class, Long.class);
-        PRIMITIVE_MAP.put(float.class, Float.class);
-        PRIMITIVE_MAP.put(double.class, Double.class);
+@Singleton
+public class Byte13Factory implements Factory<Byte> {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#provide()
+     */
+    @Override @PerLookup @Thirteen
+    public Byte provide() {
+        return new Byte(PrimitivesTest.THIRTEEN_BYTE);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
+     */
+    @Override
+    public void dispose(Byte instance) {
+
     }
 
 }

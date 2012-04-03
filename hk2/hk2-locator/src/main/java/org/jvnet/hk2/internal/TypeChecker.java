@@ -61,13 +61,14 @@ public class TypeChecker {
      * 
      * @param requiredType The type being assigned into
      * @param beanType the type being assigned
-     * @return
+     * @return true if things are type safe
      */
     public static boolean isTypeSafe(Type requiredType, Type beanType) {
         Class<?> requiredClass = Utilities.getRawClass(requiredType);
         if (requiredClass == null) {
             return false;
         }
+        requiredClass = Utilities.translatePrimitiveType(requiredClass);
         
         Class<?> beanClass = Utilities.getRawClass(beanType);
         if (beanClass == null) {

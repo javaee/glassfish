@@ -37,29 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.primitives;
 
-import java.util.HashMap;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
  * @author jwells
  *
  */
-public class Constants {
-    /** The name of the system class loader */
-    public final static String SYSTEM_LOADER_NAME = "SystemLoader";
-    
-    /** Map from primitive type to java type */
-    public final static HashMap<Class<?>, Class<?>> PRIMITIVE_MAP = new HashMap<Class<?>, Class<?>>();
-    
-    static {
-        PRIMITIVE_MAP.put(char.class, Character.class);
-        PRIMITIVE_MAP.put(byte.class, Byte.class);
-        PRIMITIVE_MAP.put(short.class, Short.class);
-        PRIMITIVE_MAP.put(int.class, Integer.class);
-        PRIMITIVE_MAP.put(long.class, Long.class);
-        PRIMITIVE_MAP.put(float.class, Float.class);
-        PRIMITIVE_MAP.put(double.class, Double.class);
-    }
-
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface Thirteen {
 }
