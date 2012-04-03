@@ -47,6 +47,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
+import org.glassfish.hk2.internal.DescriptorImpl;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
 import org.glassfish.hk2.internal.ReflectionHelper;
 import org.glassfish.hk2.internal.StarFilter;
@@ -201,5 +202,13 @@ public class BuilderHelper {
                 ReflectionHelper.getQualifiersFromObject(constant));
     }
 	
-	
+    /**
+     * Makes a deep copy of the incoming descriptor
+     * 
+     * @param copyMe The descriptor to copy
+     * @return A new descriptor with all fields copied
+     */
+	public static Descriptor deepCopyDescriptor(Descriptor copyMe) {
+	    return new DescriptorImpl(copyMe);
+	}
 }

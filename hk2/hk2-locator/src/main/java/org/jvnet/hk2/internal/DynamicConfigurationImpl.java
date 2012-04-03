@@ -74,7 +74,9 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         checkState();
         checkDescriptor(key);
         
-        SystemDescriptor<?> sd = new SystemDescriptor<Object>(key, new Long(locator.getLocatorId()));
+        SystemDescriptor<?> sd = new SystemDescriptor<Object>(key,
+                new Long(locator.getLocatorId()),
+                new Long(locator.getNextServiceId()));
         
         allDescriptors.add(sd);
         
@@ -143,7 +145,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         }
         
         SystemDescriptor<T> retVal = new SystemDescriptor<T>(activeDescriptor,
-                new Long(locator.getLocatorId()));
+                new Long(locator.getLocatorId()),
+                new Long(locator.getNextServiceId()));
         
         allDescriptors.add(retVal);
         

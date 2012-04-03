@@ -75,6 +75,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private DescriptorType descriptorType;
 	private HK2Loader loader;
 	private int rank;
+	private Descriptor baseDescriptor;
 	private Long id;
 	private Long locatorId;
 	
@@ -90,18 +91,37 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param copyMe The descriptor to copy
 	 */
 	public DescriptorImpl(Descriptor copyMe) {
-		contracts = copyMe.getAdvertisedContracts();
-		name = copyMe.getName();
-		scope = copyMe.getScope();
-		implementation = copyMe.getImplementation();
-		qualifiers = copyMe.getQualifiers();
-		descriptorType = copyMe.getDescriptorType();
-		loader = copyMe.getLoader();
+	    name = copyMe.getName();
+        scope = copyMe.getScope();
+        implementation = copyMe.getImplementation();
+        descriptorType = copyMe.getDescriptorType();
+        loader = copyMe.getLoader();
+        rank = copyMe.getRanking();
+        id = copyMe.getServiceId();
+        locatorId = copyMe.getLocatorId();
+        baseDescriptor = copyMe.getBaseDescriptor();
+        
+	    if (copyMe.getAdvertisedContracts() == null) {
+		    contracts = new HashSet<String>();
+	    }
+	    else {
+	        contracts = new HashSet<String>(copyMe.getAdvertisedContracts());
+	    }
 		
-		metadatas = copyMe.getMetadata();
-		rank = copyMe.getRanking();
-		id = copyMe.getServiceId();
-		locatorId = copyMe.getLocatorId();
+	    if (copyMe.getQualifiers() == null) {
+	        qualifiers = new HashSet<String>();
+	    }
+	    else {
+		    qualifiers = new HashSet<String>(copyMe.getQualifiers());
+	    }
+		
+	    if (copyMe.getMetadata() == null) {
+	        metadatas = new HashMap<String, List<String>>();
+	    }
+	    else {
+		    metadatas = new HashMap<String, List<String>>(copyMe.getMetadata());
+	    }
+		
 	}
 	
 	/**
@@ -117,6 +137,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param descriptorType 
 	 * @param loader 
 	 * @param rank 
+	 * @param baseDescriptor 
 	 * @param id
 	 * @param locatorId 
 	 */
@@ -130,6 +151,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			DescriptorType descriptorType,
 			HK2Loader loader,
 			int rank,
+			Descriptor baseDescriptor,
 			Long id,
 			Long locatorId) {
 		this.contracts = new HashSet<String>(contracts);
@@ -145,6 +167,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.rank = rank;
 		this.locatorId = locatorId;
 		this.loader = loader;
+		this.baseDescriptor = baseDescriptor;
 	}
 
 	@Override
@@ -203,6 +226,14 @@ public class DescriptorImpl implements Descriptor, Serializable {
         int retVal = rank;
         rank = ranking;
         return retVal;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
+     */
+    @Override
+    public Descriptor getBaseDescriptor() {
+        return baseDescriptor;
     }
 	
 	@Override
@@ -306,6 +337,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		
 		return sb.toString();
 	}
+
+    
 
     
 
