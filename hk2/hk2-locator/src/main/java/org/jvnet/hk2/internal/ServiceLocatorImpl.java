@@ -288,7 +288,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         if (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType) ) {
             IterableProviderImpl<?> value = new IterableProviderImpl<Object>(this,
-                    Utilities.getFirstTypeArgument(requiredType),
+                    (Utilities.getFirstTypeArgument(requiredType)),
                     injectee.getRequiredQualifiers());
             
             return new ConstantActiveDescriptor<Object>(value, id);
@@ -487,6 +487,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
+        rawClass = Utilities.translatePrimitiveType(rawClass);
         
         Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
         NarrowResults results;

@@ -87,6 +87,18 @@ import org.jvnet.hk2.annotations.Service;
  */
 public class Utilities {
     /**
+     * Converts the type to its java form, or returns the original
+     * 
+     * @param type The type to convert
+     * @return The translated type or the type itself
+     */
+    public static Class<?> translatePrimitiveType(Class<?> type) {
+        Class<?> translation = Constants.PRIMITIVE_MAP.get(type);
+        if (translation == null) return type;
+        return translation;
+    }
+    
+    /**
      * Calls the list of error services for the list of errors
      * 
      * @param results

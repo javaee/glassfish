@@ -37,29 +37,82 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.primitives;
 
-import java.util.HashMap;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * @author jwells
  *
  */
-public class Constants {
-    /** The name of the system class loader */
-    public final static String SYSTEM_LOADER_NAME = "SystemLoader";
+@PerLookup
+public class PrimitiveInjectee {
+    @Inject @Thirteen
+    private char thirteenChar;
     
-    /** Map from primitive type to java type */
-    public final static HashMap<Class<?>, Class<?>> PRIMITIVE_MAP = new HashMap<Class<?>, Class<?>>();
+    @Inject @Thirteen
+    private byte thirteenByte;
     
-    static {
-        PRIMITIVE_MAP.put(char.class, Character.class);
-        PRIMITIVE_MAP.put(byte.class, Byte.class);
-        PRIMITIVE_MAP.put(short.class, Short.class);
-        PRIMITIVE_MAP.put(int.class, Integer.class);
-        PRIMITIVE_MAP.put(long.class, Long.class);
-        PRIMITIVE_MAP.put(float.class, Float.class);
-        PRIMITIVE_MAP.put(double.class, Double.class);
+    @Inject @Thirteen
+    private short thirteenShort;
+    
+    @Inject @Thirteen
+    private int thirteenInt;
+    
+    @Inject @Thirteen
+    private long thirteenLong;
+    
+    @Inject @Thirteen
+    private float thirteenFloat;
+    
+    @Inject @Thirteen
+    private double thirteenDouble;
+    
+    /* package */ char getThirteenChar() {
+        return thirteenChar;
     }
 
+    /**
+     * @return the thirteenByte
+     */
+    byte getThirteenByte() {
+        return thirteenByte;
+    }
+
+    /**
+     * @return the thirteenShort
+     */
+    short getThirteenShort() {
+        return thirteenShort;
+    }
+
+    /**
+     * @return the thirteenInt
+     */
+    int getThirteenInt() {
+        return thirteenInt;
+    }
+
+    /**
+     * @return the thirteenLong
+     */
+    long getThirteenLong() {
+        return thirteenLong;
+    }
+
+    /**
+     * @return the thirteenFloat
+     */
+    float getThirteenFloat() {
+        return thirteenFloat;
+    }
+
+    /**
+     * @return the thirteenDouble
+     */
+    double getThirteenDouble() {
+        return thirteenDouble;
+    }
 }
