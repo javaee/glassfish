@@ -43,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -609,6 +610,26 @@ public class Utilities {
      */
     public static Class<?> getRawClass(Type type) {
         if (type == null) return null;
+        
+        if (type instanceof GenericArrayType) {
+            Type componentType = ((GenericArrayType) type).getGenericComponentType();
+            
+            if (!(componentType instanceof ParameterizedType)) {
+                // type variable is not supported
+                return null;
+            }
+            
+            Class<?> rawComponentClass = getRawClass(componentType);
+            
+            String forNameName = "[L" + rawComponentClass.getName() + ";";
+            try {
+                return Class.forName(forNameName);
+            }
+            catch (Throwable th) {
+                // ignore, but return null
+                return null;
+            }
+        }
         
         if (type instanceof Class) {
             return (Class<?>) type;

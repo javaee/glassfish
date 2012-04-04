@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -77,7 +78,8 @@ public class TypeChecker {
         
         if (!requiredClass.isAssignableFrom(beanClass)) return false;
         
-        if (requiredType instanceof Class) {
+        if ((requiredType instanceof Class) ||
+            (requiredType instanceof GenericArrayType)) {
             // Both types are raw, and already passed assignability check above
             return true;
         }
