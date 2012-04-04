@@ -34,7 +34,7 @@ public class Client {
 
 	try {
 
-	    SFSB bean = (SFSB) new InitialContext().lookup("java:global/" + appName + "/SFSB");
+	    Hello bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB");
 	    System.out.println("SFSB says : " + bean.hello());
 
 	     stat.addStatus("local main", stat.PASS);
