@@ -17,36 +17,40 @@ public class SFSB implements Hello {
     @PostConstruct
     public void init() {
         System.out.println("In SFSB::init()");
-        FooEntity fe = new FooEntity("POST_CONSTRUCT");
+        FooEntity fe = new FooEntity("BAR");
         em.persist(fe);
         System.out.println("Done SFSB::init()");
     }
     
-    public String hello() throws EJBException {
-	System.out.println("In SFSB::hello()");
-        Query q = em.createQuery("SELECT f FROM FooEntity f WHERE f.name=\"POST_CONSTRUCT\"");
+    public String test(String value, int count) throws EJBException {
+	System.out.println("In SFSB::test()");
+        Query q = em.createQuery("SELECT f FROM FooEntity f WHERE f.name=:name");
+        q.setParameter("name", value);
         java.util.List result = q.getResultList(); 
-        if (result.size() == 0) 
-            throw new EJBException("FooEntity POST_CONSTRUCT not found!!!");
+        if (result.size() != count) 
+            throw new EJBException("ERROR: Found " + result.size() + " FooEntity named " + value + ", not expected " + count);
 
-	System.out.println("Found " + result.size() + " FooEntity named POST_CONSTRUCT");
-	return "Found " + result.size() + " FooEntity named POST_CONSTRUCT";
+	return "Found " + result.size() + " FooEntity named " + value;
+    }
+
+    @Remove
+    public void testRemove() {
+        System.out.println("In SFSB::testRemove()");
     }
 
     @PreDestroy
     public void destroy() {
         System.out.println("In SFSB::destroy()");
+Thread.dumpStack();
         try {
             javax.transaction.TransactionSynchronizationRegistry r = (javax.transaction.TransactionSynchronizationRegistry)
                    new InitialContext().lookup("java:comp/TransactionSynchronizationRegistry");
             if (r.getTransactionStatus() != javax.transaction.Status.STATUS_ACTIVE) {
                 throw new IllegalStateException("Transaction status is not STATUS_ACTIVE: " + r.getTransactionStatus());
             }
-/**
             FooEntity fe = new FooEntity("FOO");
             em.persist(fe);
-**/
-        System.out.println("Done SFSB::destroy()");
+            System.out.println("Done SFSB::destroy()");
         } catch(Exception e) {
             throw new EJBException(e);
         }

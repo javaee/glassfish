@@ -35,7 +35,12 @@ public class Client {
 	try {
 
 	    Hello bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB");
-	    System.out.println("SFSB says : " + bean.hello());
+	    System.out.println("SFSB test : " + bean.test("BAR", 1));
+            bean.testRemove();
+
+	    bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB");
+	    System.out.println("SFSB test destroyed: " + bean.test("FOO", 1));
+	    System.out.println("SFSB test again: " + bean.test("BAR", 2));
 
 	     stat.addStatus("local main", stat.PASS);
 

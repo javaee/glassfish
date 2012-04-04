@@ -3,6 +3,7 @@ package com.acme;
 @javax.ejb.Remote
 public interface Hello {
 
-    String hello();
+    String test(String value, int count);
 
+    void testRemove();
 }
