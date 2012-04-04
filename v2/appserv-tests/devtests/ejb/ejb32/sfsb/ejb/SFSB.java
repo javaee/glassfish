@@ -41,7 +41,6 @@ public class SFSB implements Hello {
     @PreDestroy
     public void destroy() {
         System.out.println("In SFSB::destroy()");
-Thread.dumpStack();
         try {
             javax.transaction.TransactionSynchronizationRegistry r = (javax.transaction.TransactionSynchronizationRegistry)
                    new InitialContext().lookup("java:comp/TransactionSynchronizationRegistry");
