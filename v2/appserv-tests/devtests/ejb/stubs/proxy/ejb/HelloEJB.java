@@ -177,8 +177,9 @@ public class HelloEJB implements SessionBean {
             bmp.remove(); 
 
         } catch(Exception e) {
+            e.printStackTrace();
             EJBException ejbEx = new EJBException();
-            e.initCause(e);
+            ejbEx.initCause(e);
             throw ejbEx;
         }
 

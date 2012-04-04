@@ -227,7 +227,7 @@ public class HelloEJB implements Hello  {
 
         } catch(Exception e) {
             EJBException ejbEx = new EJBException();
-            e.initCause(e);
+            ejbEx.initCause(e);
             throw ejbEx;
         }
 
