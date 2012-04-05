@@ -75,6 +75,7 @@ import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Optional;
@@ -435,6 +436,7 @@ public class Utilities {
      */
     public static Class<?>[] getInterfacesForProxy(Set<Type> contracts) {
         LinkedList<Class<?>> retVal = new LinkedList<Class<?>>();
+        retVal.add(ProxyCtl.class);    // Every proxy implements this interface
         
         for (Type type : contracts) {
             Class<?> rawClass = getRawClass(type);

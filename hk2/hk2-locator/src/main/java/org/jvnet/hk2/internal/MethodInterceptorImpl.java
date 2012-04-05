@@ -53,6 +53,8 @@ import net.sf.cglib.proxy.MethodProxy;
  *
  */
 public class MethodInterceptorImpl implements MethodInterceptor {
+    private final static String PROXY_MORE_METHOD_NAME = "__make";
+    
     private final ServiceLocatorImpl locator;
     private final ActiveDescriptor<?> descriptor;
     private final ServiceHandle<?> root;
@@ -71,6 +73,11 @@ public class MethodInterceptorImpl implements MethodInterceptor {
             MethodProxy arg3) throws Throwable {
         Context<?> context = locator.resolveContext(descriptor.getScopeAnnotation());
         Object service = context.findOrCreate(descriptor, root);
+        
+        if (arg1.getName().equals(PROXY_MORE_METHOD_NAME)) {
+            // We did what we came here to do
+            return null;
+        }
         
         return Utilities.invoke(service, arg1, arg2);
     }
