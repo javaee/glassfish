@@ -302,7 +302,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * Adds an advertised contract to the set of contracts advertised by this descriptor
      * @param addMe The contract to add.  May not be null
      */
-    public synchronized void addAdvertisedContract(Type addMe) {
+    public synchronized void addContractType(Type addMe) {
         if (addMe == null) return;
         
         advertisedContracts.add(addMe);
@@ -317,7 +317,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @param removeMe The contract to remove.  May not be null
      * @return true if removeMe was removed from the set
      */
-    public synchronized boolean removeAdvertisedContract(Type removeMe) {
+    public synchronized boolean removeContractType(Type removeMe) {
         if (removeMe == null) return false;
         
         boolean retVal = advertisedContracts.remove(removeMe);
@@ -349,7 +349,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * 
      * @param addMe The fully qualified class name of the qualifier to add.  May not be null
      */
-    public synchronized void addQualifier(Annotation addMe) {
+    public synchronized void addQualifierAnnotation(Annotation addMe) {
         if (addMe == null) return;
         qualifiers.add(addMe);
         qualifiersAsStrings.add(addMe.annotationType().getName());
@@ -361,7 +361,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @param removeMe The fully qualifier class name of the qualifier to remove.  May not be null
      * @return true if the given qualifier was removed
      */
-    public synchronized boolean removeQualifier(Annotation removeMe) {
+    public synchronized boolean removeQualifierAnnotation(Annotation removeMe) {
         if (removeMe == null) return false;
         
         boolean retVal = qualifiers.remove(removeMe);

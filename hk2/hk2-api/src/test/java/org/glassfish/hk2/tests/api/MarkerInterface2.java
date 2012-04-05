@@ -39,10 +39,13 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
+@Contract
 public interface MarkerInterface2 {
 
 }
