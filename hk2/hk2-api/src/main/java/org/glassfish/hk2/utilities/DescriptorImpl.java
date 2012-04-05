@@ -37,12 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.internal;
+package org.glassfish.hk2.utilities;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -53,12 +54,9 @@ import org.glassfish.hk2.api.HK2Loader;
 
 /**
  * The implementation of the descriptor itself, with the
- * bonus of being serializable
+ * bonus of being serializable, and having writeable fields
  * 
  * @author jwells
- *
- * TODO:  Should this implementation class be put into a public package?
- * I (JRW) think yes, it should
  */
 public class DescriptorImpl implements Descriptor, Serializable {
 	/**
@@ -125,21 +123,21 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	}
 	
 	/**
-	 * This is a deep copy, as the sets are taken directly into
-	 * this object
+	 * This creates this descriptor impl, taking all of the fields
+	 * as given
 	 * 
-	 * @param contracts
-	 * @param name 
-	 * @param scope 
-	 * @param implementation 
-	 * @param metadatas
-	 * @param qualifiers
-	 * @param descriptorType 
-	 * @param loader 
-	 * @param rank 
-	 * @param baseDescriptor 
-	 * @param id
-	 * @param locatorId 
+	 * @param contracts The set of contracts this descriptor impl should advertise (should not be null)
+	 * @param name The name of this descriptor (may be null)
+	 * @param scope The scope of this descriptor.  If null PerLookup is assumed
+	 * @param implementation The name of the implementation class (should not be null)
+	 * @param metadatas The metadata associated with this descriptor (should not be null)
+	 * @param qualifiers The set of qualifiers associated with this descriptor (should not be null)
+	 * @param descriptorType The type of this descriptor (should not be null)
+	 * @param loader The HK2Loader to associated with this descriptor (may be null)
+	 * @param rank The rank to initially associate with this descriptor
+	 * @param baseDescriptor The base descriptor to associated with this descriptor
+	 * @param id The ID this descriptor should take (may be null)
+	 * @param locatorId The locator ID this descriptor should take (may be null)
 	 */
 	public DescriptorImpl(
 	        Set<String> contracts,
@@ -169,52 +167,139 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.loader = loader;
 		this.baseDescriptor = baseDescriptor;
 	}
-
+	
 	@Override
-	public Set<String> getAdvertisedContracts() {
+	public synchronized Set<String> getAdvertisedContracts() {
 		return Collections.unmodifiableSet(contracts);
+	}
+	
+	/**
+	 * Adds an advertised contract to the set of contracts advertised by this descriptor
+	 * @param addMe The contract to add.  May not be null
+	 */
+	public synchronized void addAdvertisedContract(String addMe) {
+	    if (addMe == null) return;
+	    contracts.add(addMe);
+	}
+	
+	/**
+	 * Removes an advertised contract from the set of contracts advertised by this descriptor
+	 * @param removeMe The contract to remove.  May not be null
+	 * @return true if removeMe was removed from the set
+	 */
+	public synchronized boolean removeAdvertisedContract(String removeMe) {
+	    if (removeMe == null) return false;
+	    return contracts.remove(removeMe);
 	}
 
 	@Override
-	public String getImplementation() {
+	public synchronized String getImplementation() {
 		return implementation;
 	}
 
 	@Override
-	public String getScope() {
+	public synchronized String getScope() {
 		return scope;
 	}
 
 	@Override
-	public String getName() {
+	public synchronized String getName() {
 		return name;
 	}
 
 	@Override
-	public Set<String> getQualifiers() {
+	public synchronized Set<String> getQualifiers() {
 		return new HashSet<String>(qualifiers);
+	}
+	
+	/**
+	 * Adds the given string to the list of qualifiers
+	 * 
+	 * @param addMe The fully qualified class name of the qualifier to add.  May not be null
+	 */
+	public synchronized void addQualifier(String addMe) {
+	    if (addMe == null) return;
+	    qualifiers.add(addMe);
+	}
+	
+	/**
+	 * Removes the given qualifier from the list of qualifiers
+	 * 
+	 * @param removeMe The fully qualifier class name of the qualifier to remove.  May not be null
+	 * @return true if the given qualifier was removed
+	 */
+	public synchronized boolean removeQualifier(String removeMe) {
+	    if (removeMe == null) return false;
+	    return qualifiers.remove(removeMe);
 	}
 
     @Override
-    public DescriptorType getDescriptorType() {
+    public synchronized DescriptorType getDescriptorType() {
         return descriptorType;
     }
 
 	@Override
-	public Map<String, List<String>> getMetadata() {
+	public synchronized Map<String, List<String>> getMetadata() {
 		return new HashMap<String, List<String>>(metadatas);
+	}
+	
+	/**
+	 * Adds a value to the list of values associated with this key
+	 * 
+	 * @param key The key to which to add the value.  May not be null
+	 * @param value The value to add.  May not be null
+	 */
+	public synchronized void addMetadata(String key, String value) {
+	    if (key == null || value == null) return;
+	    List<String> inner = metadatas.get(key);
+	    if (inner == null) {
+	        inner = new LinkedList<String>();
+	        metadatas.put(key, inner);
+	    }
+	    
+	    inner.add(value);
+	}
+	
+	/**
+	 * Removes the given value from the given key
+	 * 
+	 * @param key The key of the value to remove.  May not be null
+	 * @param value The value to remove.  May not be null
+	 * @return true if the value was removed
+	 */
+	public synchronized boolean removeMetadata(String key, String value) {
+	    if (key == null || value == null) return false;
+	    
+	    List<String> inner = metadatas.get(key);
+	    if (inner == null) return false;
+	    
+	    boolean retVal = inner.remove(value);
+	    if (inner.size() <= 0) metadatas.remove(key);
+	    
+	    return retVal;
+	}
+	
+	/**
+	 * Removes all the metadata values associated with key
+	 * 
+	 * @param key The key of the metadata values to remove
+	 * @return true if any value was removed
+	 */
+	public synchronized boolean removeAllMetadata(String key) {
+	    List<String> values = metadatas.remove(key);
+	    return (values != null && values.size() > 0);
 	}
 	
 	/* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getLoader()
      */
     @Override
-    public HK2Loader getLoader() {
+    public synchronized HK2Loader getLoader() {
         return loader;
     }
 
     @Override
-    public int getRanking() {
+    public synchronized int getRanking() {
         return rank;
     }
     
@@ -222,7 +307,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
      * @see org.glassfish.hk2.api.Descriptor#setRanking(int)
      */
     @Override
-    public int setRanking(int ranking) {
+    public synchronized int setRanking(int ranking) {
         int retVal = rank;
         rank = ranking;
         return retVal;
@@ -232,17 +317,17 @@ public class DescriptorImpl implements Descriptor, Serializable {
      * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
      */
     @Override
-    public Descriptor getBaseDescriptor() {
+    public synchronized Descriptor getBaseDescriptor() {
         return baseDescriptor;
     }
 	
 	@Override
-	public Long getServiceId() {
+	public synchronized Long getServiceId() {
 		return id;
 	}
 	
 	@Override
-	public Long getLocatorId() {
+	public synchronized Long getLocatorId() {
 	    return locatorId;
 	}
 	
@@ -305,7 +390,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		return sb.toString();
 	}
 	
-	public String toString() {
+	public synchronized String toString() {
 		StringBuffer sb = new StringBuffer("DescriptorImpl(");
 		
 		sb.append("\n\timplementation=" + implementation);
@@ -337,13 +422,4 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		
 		return sb.toString();
 	}
-
-    
-
-    
-
-    
-
-    
-    
 }

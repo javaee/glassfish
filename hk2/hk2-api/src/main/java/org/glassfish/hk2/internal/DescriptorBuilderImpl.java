@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
  * This is a simple implementation of the {@link DescriptorBuilder}
@@ -234,7 +235,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#build()
 	 */
 	@Override
-	public Descriptor build() throws IllegalArgumentException {
+	public DescriptorImpl build() throws IllegalArgumentException {
 		return new DescriptorImpl(
 				contracts,
 				name,
