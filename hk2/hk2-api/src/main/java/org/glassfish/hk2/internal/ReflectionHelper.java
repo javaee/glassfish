@@ -43,12 +43,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -175,5 +180,178 @@ public class ReflectionHelper {
         
         return retVal;
     }
+    
+    private static String writeSet(Set<?> set) {
+        StringBuffer sb = new StringBuffer("{");
+        
+        boolean first = true;
+        for (Object writeMe : set) {
+            if (first) {
+                first = false;
+                sb.append(writeMe.toString());
+            }
+            else {
+                sb.append("," + writeMe.toString());
+            }
+        }
+        
+        sb.append("}");
+        
+        return sb.toString();
+    }
+    
+    private static String writeList(List<String> list) {
+        StringBuffer sb = new StringBuffer("[");
+        
+        boolean first = true;
+        for (String writeMe : list) {
+            if (first) {
+                first = false;
+                sb.append(writeMe.toString());
+            }
+            else {
+                sb.append("," + writeMe.toString());
+            }
+        }
+        
+        sb.append("]");
+        
+        return sb.toString();
+    }
+    
+    private static String writeMetadata(Map<String, List<String>> metadata) {
+        StringBuffer sb = new StringBuffer("{");
+        
+        boolean first = true;
+        for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
+            if (first) {
+                first = false;
+                sb.append(entry.getKey() + "=");
+            }
+            else {
+                sb.append("," + entry.getKey() + "=");
+            }
+            
+            sb.append(writeList(entry.getValue()));
+        }
+        
+        sb.append("}");
+        
+        return sb.toString();
+    }
+    
+    /**
+     * Pretty prints this descriptor
+     * 
+     * @param d The descriptor to write out nicely
+     * @return The descriptor to print
+     */
+    public static String prettyPrintDescriptor(Descriptor d) {
+        StringBuffer sb = new StringBuffer("Descriptor(");
+        
+        sb.append("\n\timplementation=" + d.getImplementation());
+        
+        if (d.getName() != null) {
+            sb.append("\n\tname=" + d.getName());
+        }
+        
+        sb.append("\n\tcontracts=");
+        sb.append(writeSet(d.getAdvertisedContracts()));
+        
+        sb.append("\n\tscope=" + d.getScope());
+        
+        sb.append("\n\tqualifiers=");
+        sb.append(writeSet(d.getQualifiers()));
+        
+        sb.append("\n\tdescriptorType=" + d.getDescriptorType());
+        
+        sb.append("\n\tmetadata=");
+        sb.append(writeMetadata(d.getMetadata()));
+        
+        sb.append("\n\tloader=" + d.getLoader());
+        
+        sb.append("\n\tid=" + d.getServiceId());
+        
+        sb.append("\n\tlocatorId=" + d.getServiceId());
+        
+        sb.append("\n\tidentityHashCode=" + System.identityHashCode(d));
+        
+        sb.append(")");
+        
+        return sb.toString();
+    }
 
+    /**
+     * Adds a value to the list of values associated with this key
+     * 
+     * @param metadatas The base metadata object
+     * @param key The key to which to add the value.  May not be null
+     * @param value The value to add.  May not be null
+     */
+    public static void addMetadata(Map<String, List<String>> metadatas, String key, String value) {
+        if (key == null || value == null) return;
+        List<String> inner = metadatas.get(key);
+        if (inner == null) {
+            inner = new LinkedList<String>();
+            metadatas.put(key, inner);
+        }
+        
+        inner.add(value);
+    }
+    
+    /**
+     * Removes the given value from the given key
+     * 
+     * @param metadatas The base metadata object
+     * @param key The key of the value to remove.  May not be null
+     * @param value The value to remove.  May not be null
+     * @return true if the value was removed
+     */
+    public static boolean removeMetadata(Map<String, List<String>> metadatas, String key, String value) {
+        if (key == null || value == null) return false;
+        
+        List<String> inner = metadatas.get(key);
+        if (inner == null) return false;
+        
+        boolean retVal = inner.remove(value);
+        if (inner.size() <= 0) metadatas.remove(key);
+        
+        return retVal;
+    }
+    
+    /**
+     * Removes all the metadata values associated with key
+     * 
+     * @param metadatas The base metadata object
+     * @param key The key of the metadata values to remove
+     * @return true if any value was removed
+     */
+    public static boolean removeAllMetadata(Map<String, List<String>> metadatas, String key) {
+        List<String> values = metadatas.remove(key);
+        return (values != null && values.size() > 0);
+    }
+    
+    /**
+     * This method does a deep copy of the incoming meta-data, (which basically means we will
+     * also make copies of the value list)
+     * 
+     * @param copyMe The guy to copy (if null, null will be returned)
+     * @return A deep copy of the metadata
+     */
+    public static Map<String, List<String>> deepCopyMetadata(Map<String, List<String>> copyMe) {
+        if (copyMe == null) return null;
+        
+        Map<String, List<String>> retVal = new LinkedHashMap<String, List<String>>();
+        
+        for (Map.Entry<String, List<String>> entry : copyMe.entrySet()) {
+            String key = entry.getKey();
+            List<String> value = entry.getValue();
+            
+            LinkedList<String> valueCopy = new LinkedList<String>(value);
+            
+            retVal.put(key, valueCopy);
+        }
+        
+        return retVal;
+    }
 }

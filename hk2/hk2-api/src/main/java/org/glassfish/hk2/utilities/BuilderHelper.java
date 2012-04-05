@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.utilities;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Factory;
@@ -190,7 +189,7 @@ public class BuilderHelper {
      * @return The descriptor returned can be used in calls to
      * {@link Configuration}.addActiveDescriptor
      */
-    public static ActiveDescriptor<?> createConstantDescriptor(Object constant) {
+    public static AbstractActiveDescriptor<?> createConstantDescriptor(Object constant) {
         if (constant == null) throw new IllegalArgumentException();
         
         return new ConstantActiveDescriptor<Object>(

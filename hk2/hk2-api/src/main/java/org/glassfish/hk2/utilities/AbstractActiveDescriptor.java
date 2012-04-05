@@ -39,9 +39,11 @@
  */
 package org.glassfish.hk2.utilities;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -56,21 +58,37 @@ import org.glassfish.hk2.internal.ReflectionHelper;
 
 /**
  * This class can be used as a starting point for those writing their own
- * ActiveDescriptor.  Most of the methods are implemented, except the create
- * and destroy
+ * ActiveDescriptor.  It also has some helper methods to deal with metadata
+ * and adding and removing contracts and qualifiers, which can be helpful
+ * when customizing the implementation
  * 
  * @author jwells
  * @param <T> The type returned from the cache and other methods
  */
-public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
-    private final Set<Type> advertisedContracts;
-    private final Set<String> contractsAsStrings = new HashSet<String>();
-    private final Class<? extends Annotation> scope;
-    private final String name;
-    private final Set<Annotation> qualifiers;
-    private final Set<String> qualifiersAsStrings = new HashSet<String>();
-    private final DescriptorType descriptorType;
+public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>, Serializable {
+    /**
+     * For serialization 
+     */
+    private static final long serialVersionUID = 7080312303893604939L;
+    
+    private Set<Type> advertisedContracts = new HashSet<Type>();
+    private Set<String> contractsAsStrings = new HashSet<String>();
+    private Class<? extends Annotation> scope;
+    private String name;
+    private Set<Annotation> qualifiers = new HashSet<Annotation>();
+    private Set<String> qualifiersAsStrings = new HashSet<String>();
+    private DescriptorType descriptorType;
+    private Map<String, List<String>> metadata = new HashMap<String, List<String>>();
     private int ranking;
+    
+    private transient boolean cacheSet = false;
+    private transient T cachedValue;
+    
+    /**
+     * For serialization
+     */
+    public AbstractActiveDescriptor() {
+    }
     
     /**
      * This constructor must be called with the information about
@@ -94,8 +112,8 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
             DescriptorType descriptorType,
             int ranking) {
         this.scope = scope;
-        this.advertisedContracts = Collections.unmodifiableSet(advertisedContracts);
-        this.qualifiers = Collections.unmodifiableSet(qualifiers);
+        this.advertisedContracts.addAll(advertisedContracts);
+        this.qualifiers.addAll(qualifiers);
         this.ranking = ranking;
         this.descriptorType = descriptorType;
         this.name = name;
@@ -116,7 +134,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.Descriptor#getAdvertisedContracts()
      */
     @Override
-    public Set<String> getAdvertisedContracts() {
+    public synchronized Set<String> getAdvertisedContracts() {
         return Collections.unmodifiableSet(contractsAsStrings);
     }
 
@@ -124,7 +142,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.Descriptor#getScope()
      */
     @Override
-    public String getScope() {
+    public synchronized String getScope() {
         return scope.getName();
     }
 
@@ -132,12 +150,12 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.Descriptor#getNames()
      */
     @Override
-    public String getName() {
+    public synchronized String getName() {
         return name;
     }
     
     @Override
-    public Long getLocatorId() {
+    public synchronized Long getLocatorId() {
         return null;
     }
 
@@ -145,14 +163,14 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.Descriptor#getQualifiers()
      */
     @Override
-    public Set<String> getQualifiers() {
+    public synchronized Set<String> getQualifiers() {
         return Collections.unmodifiableSet(qualifiersAsStrings);
     }
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getDescriptorType()
      */
-    public DescriptorType getDescriptorType() {
+    public synchronized DescriptorType getDescriptorType() {
         return descriptorType;
     }
 
@@ -160,15 +178,46 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.Descriptor#getMetadata()
      */
     @Override
-    public Map<String, List<String>> getMetadata() {
-        return Collections.emptyMap();
+    public synchronized Map<String, List<String>> getMetadata() {
+        return Collections.unmodifiableMap(metadata);
+    }
+    
+    /**
+     * Adds a value to the list of values associated with this key
+     * 
+     * @param key The key to which to add the value.  May not be null
+     * @param value The value to add.  May not be null
+     */
+    public synchronized void addMetadata(String key, String value) {
+        ReflectionHelper.addMetadata(metadata, key, value);
+    }
+    
+    /**
+     * Removes the given value from the given key
+     * 
+     * @param key The key of the value to remove.  May not be null
+     * @param value The value to remove.  May not be null
+     * @return true if the value was removed
+     */
+    public synchronized boolean removeMetadata(String key, String value) {
+        return ReflectionHelper.removeMetadata(metadata, key, value);
+    }
+    
+    /**
+     * Removes all the metadata values associated with key
+     * 
+     * @param key The key of the metadata values to remove
+     * @return true if any value was removed
+     */
+    public synchronized boolean removeAllMetadata(String key) {
+        return ReflectionHelper.removeAllMetadata(metadata, key);
     }
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getLoader()
      */
     @Override
-    public HK2Loader getLoader() {
+    public synchronized HK2Loader getLoader() {
         return null;
     }
 
@@ -176,7 +225,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.Descriptor#getRanking()
      */
     @Override
-    public int getRanking() {
+    public synchronized int getRanking() {
         return ranking;
     }
     
@@ -184,7 +233,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.Descriptor#setRanking(int)
      */
     @Override
-    public int setRanking(int ranking) {
+    public synchronized int setRanking(int ranking) {
         int retVal = this.ranking;
         this.ranking = ranking;
         return retVal;
@@ -194,7 +243,7 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.Descriptor#getServiceId()
      */
     @Override
-    public Long getServiceId() {
+    public synchronized Long getServiceId() {
         // Set by system, no need to have it here
         return null;
     }
@@ -203,41 +252,41 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.SingleCache#getCache()
      */
     @Override
-    public T getCache() {
-        return null;
+    public synchronized T getCache() {
+        return cachedValue;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.SingleCache#isCacheSet()
      */
     @Override
-    public boolean isCacheSet() {
-        return false;
+    public synchronized boolean isCacheSet() {
+        return cacheSet;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.SingleCache#setCache(java.lang.Object)
      */
     @Override
-    public void setCache(T cacheMe) {
-        // Does nothing
-        
+    public synchronized void setCache(T cacheMe) {
+        cachedValue = cacheMe;
+        cacheSet = true;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.SingleCache#releaseCache()
      */
     @Override
-    public void releaseCache() {
-        // Does nothing
-        
+    public synchronized void releaseCache() {
+        cacheSet = false;
+        cachedValue = null;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
      */
     @Override
-    public boolean isReified() {
+    public synchronized boolean isReified() {
         return true;
     }
 
@@ -245,15 +294,45 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.ActiveDescriptor#getContractTypes()
      */
     @Override
-    public Set<Type> getContractTypes() {
-        return advertisedContracts;
+    public synchronized Set<Type> getContractTypes() {
+        return Collections.unmodifiableSet(advertisedContracts);
+    }
+    
+    /**
+     * Adds an advertised contract to the set of contracts advertised by this descriptor
+     * @param addMe The contract to add.  May not be null
+     */
+    public synchronized void addAdvertisedContract(Type addMe) {
+        if (addMe == null) return;
+        
+        advertisedContracts.add(addMe);
+        
+        Class<?> rawClass = ReflectionHelper.getRawClass(addMe);
+        if (rawClass == null) return;
+        contractsAsStrings.add(rawClass.getName());
+    }
+    
+    /**
+     * Removes an advertised contract from the set of contracts advertised by this descriptor
+     * @param removeMe The contract to remove.  May not be null
+     * @return true if removeMe was removed from the set
+     */
+    public synchronized boolean removeAdvertisedContract(Type removeMe) {
+        if (removeMe == null) return false;
+        
+        boolean retVal = advertisedContracts.remove(removeMe);
+        
+        Class<?> rawClass = ReflectionHelper.getRawClass(removeMe);
+        if (rawClass == null) return retVal;
+        
+        return contractsAsStrings.remove(rawClass.getName());
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getScopeAnnotation()
      */
     @Override
-    public Class<? extends Annotation> getScopeAnnotation() {
+    public synchronized Class<? extends Annotation> getScopeAnnotation() {
         return scope;
     }
 
@@ -261,15 +340,41 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.ActiveDescriptor#getQualifierAnnotations()
      */
     @Override
-    public Set<Annotation> getQualifierAnnotations() {
-        return qualifiers;
+    public synchronized Set<Annotation> getQualifierAnnotations() {
+        return Collections.unmodifiableSet(qualifiers);
+    }
+    
+    /**
+     * Adds the given string to the list of qualifiers
+     * 
+     * @param addMe The fully qualified class name of the qualifier to add.  May not be null
+     */
+    public synchronized void addQualifier(Annotation addMe) {
+        if (addMe == null) return;
+        qualifiers.add(addMe);
+        qualifiersAsStrings.add(addMe.annotationType().getName());
+    }
+    
+    /**
+     * Removes the given qualifier from the list of qualifiers
+     * 
+     * @param removeMe The fully qualifier class name of the qualifier to remove.  May not be null
+     * @return true if the given qualifier was removed
+     */
+    public synchronized boolean removeQualifier(Annotation removeMe) {
+        if (removeMe == null) return false;
+        
+        boolean retVal = qualifiers.remove(removeMe);
+        qualifiersAsStrings.remove(removeMe.annotationType().getName());
+        
+        return retVal;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getInjectees()
      */
     @Override
-    public List<Injectee> getInjectees() {
+    public synchronized List<Injectee> getInjectees() {
         return Collections.emptyList();
     }
     
@@ -277,17 +382,19 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
      * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public void dispose(T instance) {
+    public synchronized void dispose(T instance) {
 
     }
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
      */
-    public Descriptor getBaseDescriptor() {
+    public synchronized Descriptor getBaseDescriptor() {
         return null;
     }
     
-    
+    public synchronized String toString() {
+        return ReflectionHelper.prettyPrintDescriptor(this);
+    }
 }
 
