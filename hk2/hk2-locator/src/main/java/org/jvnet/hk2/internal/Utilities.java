@@ -40,6 +40,7 @@
 package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -875,27 +876,86 @@ public class Utilities {
     public static Class<? extends Annotation> getScopeAnnotationType(
             AnnotatedElement annotatedGuy,
             Collector collector) {
+        AnnotatedElement topLevelElement = annotatedGuy;
+        
+        Annotation winnerScope = null;
+        while (annotatedGuy != null) {
+            Annotation current = internalGetScopeAnnotationType(
+                    annotatedGuy,
+                    collector);
+            if (current != null) {
+                if (annotatedGuy.equals(topLevelElement)) {
+                    // We found a winner, no matter the inherited state
+                    winnerScope = current;
+                    break;
+                }
+                else {
+                    if (current.annotationType().isAnnotationPresent(Inherited.class)) {
+                        winnerScope = current;
+                        break;
+                    }
+                    
+                    // This non-inherited annotation wipes out all scopes above it
+                    break;
+                }
+            }
+                
+            if (annotatedGuy instanceof Class) {    
+                annotatedGuy = ((Class<?>) annotatedGuy).getSuperclass();
+            }
+            else {
+                Method theMethod = (Method) annotatedGuy;
+                Class<?> methodClass = theMethod.getDeclaringClass();
+                
+                annotatedGuy = null;
+                Class<?> methodSuperclass = methodClass.getSuperclass();
+                while (methodSuperclass != null) {
+                    if (Factory.class.isAssignableFrom(methodSuperclass)) {
+                        annotatedGuy = getFactoryProvideMethod(methodSuperclass);
+                        break;
+                    }
+                    
+                    methodSuperclass = methodSuperclass.getSuperclass();
+                }
+            }
+        }
+        
+        if (winnerScope != null) return winnerScope.annotationType();
+        
+        if (topLevelElement.isAnnotationPresent(Service.class)) {
+            return Singleton.class;
+        }
+            
+        return PerLookup.class;
+    }
+    
+    /**
+     * This returns the scope annotation on this class *itself*, and no other
+     * classes (like, not subclasses).
+     */
+    private static Annotation internalGetScopeAnnotationType(
+            AnnotatedElement annotatedGuy,
+            Collector collector) {
         boolean epicFail = false;
-        Class<? extends Annotation> retVal = null;
-        for (Annotation annotation : annotatedGuy.getAnnotations()) {
+        Annotation retVal = null;
+        for (Annotation annotation : annotatedGuy.getDeclaredAnnotations()) {
             if (annotation.annotationType().isAnnotationPresent(Scope.class)) {
                 if (retVal != null) {
                     collector.addThrowable(new IllegalArgumentException("The type " + annotatedGuy +
-                            " may not have more than one scope.  It has at least " + Pretty.clazz(retVal) +
+                            " may not have more than one scope.  It has at least " +
+                            Pretty.clazz(retVal.annotationType()) +
                             " and " + Pretty.clazz(annotation.annotationType())));
                     epicFail = true;
                     continue;
                 }
                 
-                retVal = annotation.annotationType();
+                retVal = annotation;
             }
         }
         
         if (epicFail) return null;
         
-        if (retVal != null) return retVal;
-        
-        return (annotatedGuy.isAnnotationPresent(Service.class)) ? Singleton.class : PerLookup.class; 
+        return retVal; 
     }
     
     /**
