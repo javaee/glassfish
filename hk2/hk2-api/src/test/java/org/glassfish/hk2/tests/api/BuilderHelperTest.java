@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,11 +48,13 @@ import java.util.Set;
 
 import javax.inject.Named;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.hk2.tests.contracts.AnotherContract;
-import org.glassfish.hk2.tests.contracts.Red;
 import org.glassfish.hk2.tests.contracts.SomeContract;
 import org.glassfish.hk2.tests.services.AnotherService;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -179,5 +182,73 @@ public class BuilderHelperTest {
         Filter allFilter = BuilderHelper.allFilter();
     
         Assert.assertTrue(allFilter.matches(predicate));
+    }
+	
+	/**
+     * Tests the all descriptor filter
+     */
+    @Test
+    public void testConstantFilter() {
+        FullDescriptorImpl c = new FullDescriptorImpl();
+        ActiveDescriptor<FullDescriptorImpl> cDesc = BuilderHelper.createConstantDescriptor(c);
+        Assert.assertNotNull(cDesc);
+        
+        Assert.assertEquals(FullDescriptorImpl.class.getName(), cDesc.getImplementation());
+        Assert.assertEquals(FullDescriptorImpl.class, cDesc.getImplementationClass());
+        
+        Assert.assertEquals(2, cDesc.getAdvertisedContracts().size());
+        Assert.assertTrue(cDesc.getAdvertisedContracts().contains(FullDescriptorImpl.class.getName()));
+        Assert.assertTrue(cDesc.getAdvertisedContracts().contains(MarkerInterface2.class.getName()));
+        
+        Assert.assertEquals(2, cDesc.getContractTypes().size());
+        Assert.assertTrue(cDesc.getContractTypes().contains(FullDescriptorImpl.class));
+        Assert.assertTrue(cDesc.getContractTypes().contains(MarkerInterface2.class));
+        
+        Assert.assertNull(cDesc.getName());
+        
+        Assert.assertEquals(PerLookup.class.getName(), cDesc.getScope());
+        Assert.assertEquals(PerLookup.class, cDesc.getScopeAnnotation());
+        
+        Assert.assertEquals(3, cDesc.getQualifiers().size());
+        Assert.assertTrue(cDesc.getQualifiers().contains(Red.class.getName()));
+        Assert.assertTrue(cDesc.getQualifiers().contains(Green.class.getName()));
+        Assert.assertTrue(cDesc.getQualifiers().contains(Blue.class.getName()));
+        
+        Assert.assertEquals(3, cDesc.getQualifierAnnotations().size());
+        boolean red = false;
+        boolean green = false;
+        boolean blue = false;
+        
+        for (Annotation anno : cDesc.getQualifierAnnotations()) {
+            if (Red.class.equals(anno.annotationType())) red = true;
+            if (Green.class.equals(anno.annotationType())) green = true;
+            if (Blue.class.equals(anno.annotationType())) blue = true;
+        }
+        
+        Assert.assertTrue(red);
+        Assert.assertTrue(green);
+        Assert.assertTrue(blue);
+        
+        Assert.assertEquals(DescriptorType.CLASS, cDesc.getDescriptorType());
+        Assert.assertTrue(cDesc.getMetadata().isEmpty());
+        Assert.assertNull(cDesc.getLoader());
+        Assert.assertEquals(0, cDesc.getRanking());
+        Assert.assertNull(cDesc.getBaseDescriptor());
+        Assert.assertNull(cDesc.getServiceId());
+        Assert.assertNull(cDesc.getLocatorId());
+        Assert.assertTrue(cDesc.isReified());
+        Assert.assertTrue(cDesc.getInjectees().isEmpty());
+        
+        Assert.assertEquals(c, cDesc.create(null));
+        
+        // Call the destroy, though it should do nothing
+        cDesc.dispose(c);
+        
+        // Check the cache
+        Assert.assertEquals(c, cDesc.getCache());
+        Assert.assertTrue(cDesc.isCacheSet());
+        
+        String asString = cDesc.toString();
+        Assert.assertTrue(asString.contains("implementation=org.glassfish.hk2.tests.api.FullDescriptorImpl"));
     }
 }
