@@ -53,7 +53,19 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
  *
  */
 public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
-    private final T theOne;
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = -9196390718074767455L;
+    
+    private T theOne;
+    
+    /**
+     * For serializable
+     */
+    public ConstantActiveDescriptor() {
+        super();
+    }
     
     /**
      * Creates the constant descriptor
@@ -114,14 +126,4 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     public T create(ServiceHandle<?> root) {
         return theOne;
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
-     */
-    @Override
-    public void dispose(T instance) {
-        // Do nothing
-        
-    }
-
 }

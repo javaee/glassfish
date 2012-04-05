@@ -41,9 +41,8 @@ package org.glassfish.hk2.utilities;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +50,8 @@ import java.util.Set;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.internal.ReflectionHelper;
 
 /**
  * The implementation of the descriptor itself, with the
@@ -64,13 +65,13 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 */
 	private static final long serialVersionUID = 77937523212000548L;
 	
-	private Set<String> contracts;
+	private Set<String> contracts = new HashSet<String>();
 	private String implementation;
 	private String name;
-	private String scope;
-	private Map<String, List<String>> metadatas;
-	private Set<String> qualifiers;
-	private DescriptorType descriptorType;
+	private String scope = PerLookup.class.getName();
+	private Map<String, List<String>> metadatas = new LinkedHashMap<String, List<String>>();
+	private Set<String> qualifiers = new HashSet<String>();
+	private DescriptorType descriptorType = DescriptorType.CLASS;
 	private HK2Loader loader;
 	private int rank;
 	private Descriptor baseDescriptor;
@@ -99,27 +100,17 @@ public class DescriptorImpl implements Descriptor, Serializable {
         locatorId = copyMe.getLocatorId();
         baseDescriptor = copyMe.getBaseDescriptor();
         
-	    if (copyMe.getAdvertisedContracts() == null) {
-		    contracts = new HashSet<String>();
-	    }
-	    else {
-	        contracts = new HashSet<String>(copyMe.getAdvertisedContracts());
+	    if (copyMe.getAdvertisedContracts() != null) {
+	        contracts.addAll(copyMe.getAdvertisedContracts());
 	    }
 		
-	    if (copyMe.getQualifiers() == null) {
-	        qualifiers = new HashSet<String>();
-	    }
-	    else {
-		    qualifiers = new HashSet<String>(copyMe.getQualifiers());
+	    if (copyMe.getQualifiers() != null) {
+		    qualifiers.addAll(copyMe.getQualifiers());
 	    }
 		
-	    if (copyMe.getMetadata() == null) {
-	        metadatas = new HashMap<String, List<String>>();
+	    if (copyMe.getMetadata() != null) {
+		    metadatas.putAll(copyMe.getMetadata());
 	    }
-	    else {
-		    metadatas = new HashMap<String, List<String>>(copyMe.getMetadata());
-	    }
-		
 	}
 	
 	/**
@@ -152,14 +143,14 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			Descriptor baseDescriptor,
 			Long id,
 			Long locatorId) {
-		this.contracts = new HashSet<String>(contracts);
+		this.contracts.addAll(contracts);
 		
 		this.implementation = implementation;
 		
 		this.name = name;
 		this.scope = scope;
-		this.metadatas = new HashMap<String, List<String>>(metadatas);
-		this.qualifiers = new HashSet<String>(qualifiers);
+		this.metadatas.putAll(ReflectionHelper.deepCopyMetadata(metadatas));
+		this.qualifiers.addAll(qualifiers);
 		this.descriptorType = descriptorType;
 		this.id = id;
 		this.rank = rank;
@@ -196,6 +187,14 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	public synchronized String getImplementation() {
 		return implementation;
 	}
+	
+	/**
+	 * Sets the implementation
+	 * @param implementation The implementation this descriptor should have
+	 */
+    public synchronized void setImplementation(String implementation) {
+        this.implementation = implementation;
+    }
 
 	@Override
 	public synchronized String getScope() {
@@ -206,10 +205,18 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	public synchronized String getName() {
 		return name;
 	}
+	
+	/**
+	 * Sets the name this descriptor should have
+	 * @param name The name for this descriptor
+	 */
+	public synchronized void setName(String name) {
+	    this.name = name;
+	}
 
 	@Override
 	public synchronized Set<String> getQualifiers() {
-		return new HashSet<String>(qualifiers);
+		return Collections.unmodifiableSet(qualifiers);
 	}
 	
 	/**
@@ -237,10 +244,19 @@ public class DescriptorImpl implements Descriptor, Serializable {
     public synchronized DescriptorType getDescriptorType() {
         return descriptorType;
     }
+    
+    /**
+     * Sets the descriptor type
+     * @param descriptorType The descriptor type.  May not be null
+     */
+    public synchronized void setDescriptorType(DescriptorType descriptorType) {
+        if (descriptorType == null) throw new IllegalArgumentException();
+        this.descriptorType = descriptorType;
+    }
 
 	@Override
 	public synchronized Map<String, List<String>> getMetadata() {
-		return new HashMap<String, List<String>>(metadatas);
+		return Collections.unmodifiableMap(metadatas);
 	}
 	
 	/**
@@ -250,14 +266,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param value The value to add.  May not be null
 	 */
 	public synchronized void addMetadata(String key, String value) {
-	    if (key == null || value == null) return;
-	    List<String> inner = metadatas.get(key);
-	    if (inner == null) {
-	        inner = new LinkedList<String>();
-	        metadatas.put(key, inner);
-	    }
-	    
-	    inner.add(value);
+	    ReflectionHelper.addMetadata(metadatas, key, value);
 	}
 	
 	/**
@@ -268,15 +277,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @return true if the value was removed
 	 */
 	public synchronized boolean removeMetadata(String key, String value) {
-	    if (key == null || value == null) return false;
-	    
-	    List<String> inner = metadatas.get(key);
-	    if (inner == null) return false;
-	    
-	    boolean retVal = inner.remove(value);
-	    if (inner.size() <= 0) metadatas.remove(key);
-	    
-	    return retVal;
+	    return ReflectionHelper.removeMetadata(metadatas, key, value);
 	}
 	
 	/**
@@ -286,8 +287,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @return true if any value was removed
 	 */
 	public synchronized boolean removeAllMetadata(String key) {
-	    List<String> values = metadatas.remove(key);
-	    return (values != null && values.size() > 0);
+	    return ReflectionHelper.removeAllMetadata(metadatas, key);
 	}
 	
 	/* (non-Javadoc)
@@ -296,6 +296,14 @@ public class DescriptorImpl implements Descriptor, Serializable {
     @Override
     public synchronized HK2Loader getLoader() {
         return loader;
+    }
+    
+    /**
+     * Sets the loader to use with this descriptor
+     * @param loader The loader to use with this descriptor
+     */
+    public synchronized void setLoader(HK2Loader loader) {
+        this.loader = loader;
     }
 
     @Override
@@ -320,10 +328,27 @@ public class DescriptorImpl implements Descriptor, Serializable {
     public synchronized Descriptor getBaseDescriptor() {
         return baseDescriptor;
     }
+    
+    /**
+     * Sets the base descriptor to be associated with this descriptor
+     * 
+     * @param baseDescriptor The base descriptor to be associated with this descriptor
+     */
+    public synchronized void setBaseDescriptor(Descriptor baseDescriptor) {
+        this.baseDescriptor = baseDescriptor;
+    }
 	
 	@Override
 	public synchronized Long getServiceId() {
 		return id;
+	}
+	
+	/**
+	 * Sets the service id for this descriptor
+	 * @param id the service id for this descriptor
+	 */
+	public synchronized void setServiceId(Long id) {
+	    this.id = id;
 	}
 	
 	@Override
@@ -331,95 +356,15 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    return locatorId;
 	}
 	
-	private static String writeSet(Set<?> set) {
-		StringBuffer sb = new StringBuffer("{");
-		
-		boolean first = true;
-		for (Object writeMe : set) {
-			if (first) {
-				first = false;
-				sb.append(writeMe.toString());
-			}
-			else {
-				sb.append("," + writeMe.toString());
-			}
-		}
-		
-		sb.append("}");
-		
-		return sb.toString();
-	}
-	
-	private static String writeList(List<String> list) {
-		StringBuffer sb = new StringBuffer("[");
-		
-		boolean first = true;
-		for (String writeMe : list) {
-			if (first) {
-				first = false;
-				sb.append(writeMe.toString());
-			}
-			else {
-				sb.append("," + writeMe.toString());
-			}
-		}
-		
-		sb.append("]");
-		
-		return sb.toString();
-	}
-	
-	private static String writeMetadata(Map<String, List<String>> metadata) {
-		StringBuffer sb = new StringBuffer("{");
-		
-		boolean first = true;
-		for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
-			if (first) {
-				first = false;
-			    sb.append(entry.getKey() + "=");
-			}
-			else {
-				sb.append("," + entry.getKey() + "=");
-			}
-			
-			sb.append(writeList(entry.getValue()));
-		}
-		
-		sb.append("}");
-		
-		return sb.toString();
+	/**
+	 * Sets the locator id for this descriptor
+	 * @param locatorId the locator id for this descriptor
+	 */
+	public synchronized void setLocatorId(Long locatorId) {
+	    this.locatorId = locatorId;
 	}
 	
 	public synchronized String toString() {
-		StringBuffer sb = new StringBuffer("DescriptorImpl(");
-		
-		sb.append("\n\timplementation=" + implementation);
-		
-		if (name != null) {
-		    sb.append("\n\tname=" + name);
-		}
-		
-		sb.append("\n\tcontracts=");
-		sb.append(writeSet(contracts));
-		
-		sb.append("\n\tscope=" + scope);
-		
-		sb.append("\n\tqualifiers=");
-		sb.append(writeSet(qualifiers));
-		
-		sb.append("\n\tdescriptorType=" + descriptorType);
-		
-		sb.append("\n\tmetadata=");
-		sb.append(writeMetadata(metadatas));
-		
-		sb.append("\n\tloader=" + loader);
-		
-		sb.append("\n\tid=" + id);
-		
-		sb.append("\n\tlocatorId=" + locatorId);
-		
-		sb.append(")");
-		
-		return sb.toString();
+	    return ReflectionHelper.prettyPrintDescriptor(this);
 	}
 }

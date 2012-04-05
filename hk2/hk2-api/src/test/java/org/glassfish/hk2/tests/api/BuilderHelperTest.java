@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests;
+package org.glassfish.hk2.tests.api;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -48,7 +48,6 @@ import java.util.Set;
 import javax.inject.Named;
 
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.hk2.tests.contracts.AnotherContract;
@@ -63,7 +62,7 @@ import org.junit.Test;
  * @author jwells
  *
  */
-public class FilterBuilderTest {
+public class BuilderHelperTest {
 	private final static String NAME = "hello";
 	
 	/**
@@ -71,12 +70,12 @@ public class FilterBuilderTest {
 	 */
 	@Test
 	public void testSimpleFilter() {
-		Descriptor predicate = BuilderHelper.link(FilterBuilderTest.class).to(SomeContract.class).build();
+		Descriptor predicate = BuilderHelper.link(BuilderHelperTest.class).to(SomeContract.class).build();
 		
 		Assert.assertNotNull(predicate);
 		
 		Assert.assertNotNull(predicate.getImplementation());
-		Assert.assertEquals(predicate.getImplementation(), FilterBuilderTest.class.getName());
+		Assert.assertEquals(predicate.getImplementation(), BuilderHelperTest.class.getName());
 		
 		Assert.assertNotNull(predicate.getAdvertisedContracts());
 		Assert.assertTrue(predicate.getAdvertisedContracts().size() == 2);
@@ -170,6 +169,9 @@ public class FilterBuilderTest {
 		Assert.assertEquals(bValue.get(1), VALUE_B2);
 	}
 	
+	/**
+	 * Tests the all descriptor filter
+	 */
 	@Test
     public void testAllDescriptorFilter() {
         Descriptor predicate = BuilderHelper.link("empty").build();
