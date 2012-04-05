@@ -154,6 +154,15 @@ public abstract class AbstractActiveDescriptor<T> implements ActiveDescriptor<T>
         return name;
     }
     
+    /**
+     * Sets the name that should be associated with this descriptor
+     * 
+     * @param name The name to be associated with this descriptor
+     */
+    public synchronized void setName(String name) {
+        this.name = name;
+    }
+    
     @Override
     public synchronized Long getLocatorId() {
         return null;
