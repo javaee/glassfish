@@ -12,11 +12,17 @@
     &reporting;
 
     <target name="all">
-        <antcall target="ejblite"/>
+        <antcall target="sfsb"/>
     </target>
 
     <target name="lite">
         <antcall target="ejblite"/>
+    </target>
+
+    <target name="sfsb">
+        <record name="sfsb.output" action="start" />
+            <ant dir="sfsb" target="all"/>
+        <record name="sfsb.output" action="stop" />
     </target>
 
     <target name="ejblite">
@@ -28,7 +34,8 @@
     <target name="usage">
 	<echo>
 		Usage:
-			ant all (Executes all the ejb-ejb32 tests)
+			ant all (Executes set of ejb-ejb32 tests in a full profile)
+			ant lite (Executes set of the ejb-ejb32 tests in a lite profile)
 	</echo>
     </target>
 </project>
