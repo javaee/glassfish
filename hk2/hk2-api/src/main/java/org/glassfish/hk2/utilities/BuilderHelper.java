@@ -47,7 +47,6 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
-import org.glassfish.hk2.internal.DescriptorImpl;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
 import org.glassfish.hk2.internal.ReflectionHelper;
 import org.glassfish.hk2.internal.StarFilter;

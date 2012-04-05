@@ -171,7 +171,7 @@ public interface DescriptorBuilder {
 	 * @return The descriptor that has been built up with this DescriptorBuilder
 	 * @throws IllegalArgumentException if the built descriptor is invalid
 	 */
-	public Descriptor build() throws IllegalArgumentException;
+	public DescriptorImpl build() throws IllegalArgumentException;
 	
 	/**
      * Generates a factory descriptor that can be used in binding operations.
