@@ -41,6 +41,7 @@ package org.glassfish.hk2.tests.locator.proxiable;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
@@ -88,5 +89,25 @@ public class ProxiableTest {
         Season winter2 = fall.getNextSeason();
         Assert.assertNotNull(winter2);
         Assert.assertEquals(WINTER, winter2.getName());
+    }
+    
+    /**
+     * Tests the ProxyCtl interface of proxies
+     */
+    @Test
+    public void testProxyCtl() {
+        PostConstructedProxiedService pcps = locator.getService(PostConstructedProxiedService.class);
+        Assert.assertNotNull(pcps);
+        
+        Assert.assertTrue(pcps instanceof ProxyCtl);
+        
+        ProxyCtl pc = (ProxyCtl) pcps;
+        
+        Assert.assertFalse(PostConstructedProxiedService.wasPostConstructCalled());
+        
+        pc.__make();
+        
+        Assert.assertTrue(PostConstructedProxiedService.wasPostConstructCalled());
+        
     }
 }

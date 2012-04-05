@@ -39,38 +39,30 @@
  */
 package org.glassfish.hk2.tests.locator.proxiable;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import javax.annotation.PostConstruct;
 
 /**
+ * This is only in SeasonScope because it is proxied.  It isn't really a season.  I swear.
+ * 
  * @author jwells
- *
  */
-public class ProxiableModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+@SeasonScope
+public class PostConstructedProxiedService {
+    private static boolean wasPostConstructCalled = false;
+    
+    /**
+     * Called by the test
+     * 
+     * @return true if post construct has been called...
      */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(
-                BuilderHelper.link(SeasonContext.class).to(Context.class).in(Singleton.class.getName()).build());
-        
-        configurator.bind(
-                BuilderHelper.link(Spring.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Summer.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Fall.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        configurator.bind(
-                BuilderHelper.link(Winter.class).to(Season.class).qualifiedBy(SeasonIndicator.class.getName()).in(SeasonScope.class).build());
-        
-        // For the ProxyCtl test
-        configurator.addActiveDescriptor(PostConstructedProxiedService.class);
+    public static boolean wasPostConstructCalled() {
+        return wasPostConstructCalled;
+    }
+    
+    @SuppressWarnings("unused")
+    @PostConstruct
+    private void postConstruct() {
+        wasPostConstructCalled = true;
     }
 
 }
