@@ -109,7 +109,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    }
 		
 	    if (copyMe.getMetadata() != null) {
-		    metadatas.putAll(copyMe.getMetadata());
+		    metadatas.putAll(ReflectionHelper.deepCopyMetadata(copyMe.getMetadata()));
 	    }
 	}
 	
