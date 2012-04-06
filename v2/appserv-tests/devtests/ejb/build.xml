@@ -69,7 +69,7 @@
         <ant dir="sfsb" target="all"/>
         <ant dir="allowedmethods" target="all"/> 
         <ant dir="jms" target="all"/>  
-<!-- disable as it fails on hudson --
+<!-- disable as it fails on hudson ...
         <ant dir="ejb32" target="all"/>
 -->
 
