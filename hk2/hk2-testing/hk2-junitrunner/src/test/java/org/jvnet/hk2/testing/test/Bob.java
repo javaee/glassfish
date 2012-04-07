@@ -39,14 +39,15 @@
  */
 package org.jvnet.hk2.testing.test;
 
-import org.glassfish.hk2.api.PerLookup;
+import javax.inject.Named;
+
 import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Service @PerLookup
-public class SimpleService1 implements SimpleService {
+@Service @Named(RunnerTest.BOB)
+public class Bob implements SimpleService {
 
 }

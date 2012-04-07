@@ -41,6 +41,7 @@ package org.jvnet.hk2.testing.junit.internal;
 
 import java.util.LinkedList;
 
+import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.inject.Singleton;
@@ -60,6 +61,8 @@ import org.objectweb.asm.MethodVisitor;
  */
 public class ClassVisitorImpl implements ClassVisitor {
     private final static String SERVICE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Service;";
+    private final static String NAME = "name";
+    private final static String VALUE = "value";
     
     private final DynamicConfiguration config;
     
@@ -68,6 +71,7 @@ public class ClassVisitorImpl implements ClassVisitor {
     private Class<?> scopeClass;
     private final LinkedList<String> qualifiers = new LinkedList<String>();
     private boolean isAService = false;
+    private String name;
     
     /**
      * Creates this with the config to add to if this is a service
@@ -113,26 +117,42 @@ public class ClassVisitorImpl implements ClassVisitor {
         
         if (SERVICE_CLASS_FORM.equals(desc)) {
             isAService = true;
-        }
-        else {
-            Class<?> annoClass;
-            try {
-                annoClass = Class.forName(desc);
-            }
-            catch (Throwable th) {
-                return null;
-            }
             
-            if (annoClass.isAnnotationPresent(Scope.class)) {
-                scopeClass = annoClass;
-            }
-            else if (annoClass.isAnnotationPresent(Qualifier.class)) {
-                qualifiers.add(annoClass.getName());
+            return new ServiceAnnotationVisitor();
+        }
+        
+        if (!desc.startsWith("L")) return null;
+            
+        String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
+        Class<?> annoClass;
+        try {
+            annoClass = Class.forName(loadQualifierName);
+        }
+        catch (Throwable th) {
+            return null;
+        }
+            
+        if (annoClass.isAnnotationPresent(Scope.class)) {
+            scopeClass = annoClass;
+        }
+        else if (annoClass.isAnnotationPresent(Qualifier.class)) {
+            qualifiers.add(annoClass.getName());
+            
+            if (Named.class.equals(annoClass)) {
+                return new NamedAnnotationVisitor(getDefaultName());
             }
         }
         
         return null;
     }
+    
+    private String getDefaultName() {
+        int index = implName.lastIndexOf('.');
+        if (index <= 0) return implName;
+        
+        return implName.substring(index + 1);
+    }
+        
 
     /* (non-Javadoc)
      * @see org.objectweb.asm.ClassVisitor#visitAttribute(org.objectweb.asm.Attribute)
@@ -166,6 +186,10 @@ public class ClassVisitorImpl implements ClassVisitor {
         
         for (String qualifier : qualifiers) {
             di.addQualifier(qualifier);
+        }
+        
+        if (name != null) {
+            di.setName(name);
         }
         
         config.bind(di);
@@ -210,6 +234,111 @@ public class ClassVisitorImpl implements ClassVisitor {
      */
     @Override
     public void visitSource(String arg0, String arg1) {
+        
+    }
+    
+    private class ServiceAnnotationVisitor implements AnnotationVisitor {
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visit(java.lang.String, java.lang.Object)
+         */
+        @Override
+        public void visit(String annotationName, Object value) {
+            if (annotationName.equals(NAME)) {
+                name = (String) value;
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public AnnotationVisitor visitAnnotation(String name, String desc) {
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
+         */
+        @Override
+        public AnnotationVisitor visitArray(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
+         */
+        @Override
+        public void visitEnd() {
+            
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visitEnum(String arg0, String arg1, String arg2) {
+            // TODO Auto-generated method stub
+            
+        }
+        
+    }
+    
+    private class NamedAnnotationVisitor implements AnnotationVisitor {
+        private final String defaultName;
+        private boolean nameSet = false;
+        
+        public NamedAnnotationVisitor(String defaultName) {
+            this.defaultName = defaultName;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visit(java.lang.String, java.lang.Object)
+         */
+        @Override
+        public void visit(String annotationName, Object value) {
+            if (annotationName.equals(VALUE)) {
+                name = (String) value;
+                nameSet = true;
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public AnnotationVisitor visitAnnotation(String name, String desc) {
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
+         */
+        @Override
+        public AnnotationVisitor visitArray(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
+         */
+        @Override
+        public void visitEnd() {
+            if (nameSet) return;
+            
+            name = defaultName;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visitEnum(String arg0, String arg1, String arg2) {
+            // TODO Auto-generated method stub
+            
+        }
         
     }
 

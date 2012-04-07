@@ -39,14 +39,13 @@
  */
 package org.jvnet.hk2.testing.test;
 
-import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Service @PerLookup
-public class SimpleService1 implements SimpleService {
+@Service(name=RunnerTest.ALICE)
+public class Alice implements SimpleService {
 
 }
