@@ -286,6 +286,7 @@
         <module>consolidatedbundle-maven-plugin</module>
         <module>hk2-api</module>
         <module>examples</module>
+        <module>hk2-testing</module>
   </modules>
 
     <dependencies>
