@@ -49,8 +49,14 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  * @author jwells
  */
 public class RunnerTest extends HK2Runner {
+    /** Alice as a name */
+    public final static String ALICE = "Alice";
+    /** Bob as a name */
+    public final static String BOB = "bob";
+    private final static String CAROL = "Carol";  // default Named
+    
     /**
-     * Tests that all services in this package are found
+     * Tests that services in this package are found
      */
     @Test
     public void testAllPackageServicesInLocator() {
@@ -59,9 +65,60 @@ public class RunnerTest extends HK2Runner {
         
         SimpleService1 ss1 = testLocator.getService(SimpleService1.class);
         Assert.assertNotNull(ss1);
+    }
+    
+    /**
+     * Tests a class that is JIT resolved
+     */
+    @Test
+    public void testJITInjectedClass() {
         
         ServiceInjectedWithGuyNotInPackage nonPackageService = testLocator.getService(ServiceInjectedWithGuyNotInPackage.class);
         Assert.assertNotNull(nonPackageService);
         Assert.assertNotNull(nonPackageService.getAltService());
+    }
+    
+    /**
+     * Tests a class via contract and qualifier
+     */
+    @Test
+    public void testByContractAndQualifier() {
+        SimpleService ss = testLocator.getService(SimpleService.class, new IAmAQualifierImpl());
+        Assert.assertNotNull(ss);
+        
+        Assert.assertTrue(ss instanceof SimpleService2);
+    }
+    
+    /**
+     * Tests a class with a name on Service
+     */
+    @Test
+    public void testNameFromService() {
+        SimpleService ss = testLocator.getService(SimpleService.class, ALICE);
+        Assert.assertNotNull(ss);
+        
+        Assert.assertTrue(ss instanceof Alice);
+    }
+    
+    /**
+     * Tests a class with a name on Named (explicitly set)
+     */
+    @Test
+    public void testNameFromNamedExplicit() {
+        SimpleService ss = testLocator.getService(SimpleService.class, BOB);
+        Assert.assertNotNull(ss);
+        
+        Assert.assertTrue(ss instanceof Bob);
+    }
+    
+    /**
+     * Tests a class with a name on Named (default set)
+     */
+    @Test
+    public void testNameFromNamedDefault() {
+        SimpleService ss = testLocator.getService(SimpleService.class, CAROL);
+        Assert.assertNotNull(ss);
+        
+        Assert.assertTrue(ss instanceof Carol);
     }
 }

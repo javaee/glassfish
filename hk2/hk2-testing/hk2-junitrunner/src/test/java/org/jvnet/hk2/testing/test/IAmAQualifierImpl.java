@@ -39,14 +39,17 @@
  */
 package org.jvnet.hk2.testing.test;
 
-import org.glassfish.hk2.api.PerLookup;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.AnnotationLiteral;
 
 /**
  * @author jwells
  *
  */
-@Service @PerLookup
-public class SimpleService1 implements SimpleService {
+public class IAmAQualifierImpl extends AnnotationLiteral<IAmAQualifier> implements IAmAQualifier {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2996233045550549994L;
 
 }
