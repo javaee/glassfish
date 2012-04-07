@@ -200,6 +200,14 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	public synchronized String getScope() {
 		return scope;
 	}
+	
+	/**
+	 * Sets the scope this descriptor should have
+	 * @param scope The scope of this descriptor
+	 */
+	public synchronized void setScope(String scope) {
+	    this.scope = scope;
+	}
 
 	@Override
 	public synchronized String getName() {
