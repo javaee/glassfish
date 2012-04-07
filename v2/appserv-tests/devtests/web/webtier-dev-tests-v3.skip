@@ -1,5 +1,1 @@
-singleengine # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=7548 is fixed
-genDocSchema
-responseErrorMessageEncoding # fixed in Grizzly 2.1.8. Remove when 2.1.8 is integrated.
-trailerHeader # need fix from Grizzly
-servlet-3.0/filterWithEmptyUrl # need Grizzly integration (IT 18132)
+weblogicDD/referenceDescriptor
