@@ -39,36 +39,17 @@
  */
 package org.glassfish.hk2.tests.locator.destroy;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Configuration;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-
 /**
  * @author jwells
  *
  */
-public class DestroyModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.Module#configure(org.glassfish.hk2.BinderFactory)
+public interface Sprocket {
+    /**
+     * This method must ONLY be called between the proper construction
+     * and deletion.  Otherwise the IllegalStateException is thrown
+     * 
+     * @throws IllegalStateException
      */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(Foo.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Bar.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Baz.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Qux.class).in(PerLookup.class.getName()).build());
-        
-        configurator.bind(BuilderHelper.link(Registrar.class).in(Singleton.class.getName()).build());
-        
-        // This is for the factory destruction test
-        configurator.bind(BuilderHelper.link(SprocketFactory.class).
-                to(Sprocket.class).
-                in(PerLookup.class.getName()).buildFactory(Singleton.class.getName()));
-        configurator.addActiveDescriptor(Widget.class);
-    }
+    public void useMe() throws IllegalStateException;
 
 }

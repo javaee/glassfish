@@ -39,36 +39,53 @@
  */
 package org.glassfish.hk2.tests.locator.destroy;
 
-import javax.inject.Singleton;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 
-import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class DestroyModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.Module#configure(org.glassfish.hk2.BinderFactory)
+@PerLookup
+public class Widget {
+    private boolean destroyCalled = false;
+    
+    @Inject
+    private Sprocket sprocket;
+    
+    /**
+     * Uses the socket to ensure it has been properly constructed before I have
      */
-    @Override
-    public void configure(Configuration configurator) {
-        configurator.bind(BuilderHelper.link(Foo.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Bar.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Baz.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Qux.class).in(PerLookup.class.getName()).build());
-        
-        configurator.bind(BuilderHelper.link(Registrar.class).in(Singleton.class.getName()).build());
-        
-        // This is for the factory destruction test
-        configurator.bind(BuilderHelper.link(SprocketFactory.class).
-                to(Sprocket.class).
-                in(PerLookup.class.getName()).buildFactory(Singleton.class.getName()));
-        configurator.addActiveDescriptor(Widget.class);
+    @PostConstruct
+    public void postConstruct() {
+        sprocket.useMe();
     }
-
+    
+    /**
+     * Uses the sprocket to ensure it has NOT been destroyed yet
+     */
+    @PreDestroy
+    public void preDestroy() {
+        sprocket.useMe();
+        destroyCalled = true;
+    }
+    
+    /**
+     * Called by the test to be sure the destruction happened
+     * @return true if the destroy has been called
+     */
+    public boolean isDestroyed() {
+        return destroyCalled;
+    }
+    
+    /**
+     * This method should throw IllegalStateException since it will be
+     * called by the test after destruction
+     */
+    public void badUse() {
+        sprocket.useMe();
+    }
 }
