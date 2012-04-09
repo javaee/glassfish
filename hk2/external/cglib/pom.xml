@@ -81,7 +81,7 @@
                              using OSGi. Sahoo.
                         -->
                         <Export-Package>net.sf.cglib.beans,net.sf.cglib.core,net.sf.cglib.proxy,net.sf.cglib.reflect,net.sf.cglib.transform,net.sf.cglib.transform.impl,net.sf.cglib.util</Export-Package>
-                        <Import-Package>org.apache.tools.ant,org.apache.tools.ant.types,org.objectweb.asm;password="GlassFish",org.objectweb.asm.util;password="GlassFish"</Import-Package>
+                        <Import-Package>org.apache.tools.ant;resolution:=optional,org.apache.tools.ant.types;resolution:=optional,org.objectweb.asm;password="GlassFish",org.objectweb.asm.util;password="GlassFish"</Import-Package>
                         <Private-Package>!*</Private-Package>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
