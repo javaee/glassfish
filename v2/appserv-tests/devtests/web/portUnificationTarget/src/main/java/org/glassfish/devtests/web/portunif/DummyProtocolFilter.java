@@ -61,18 +61,12 @@ public class DummyProtocolFilter extends BaseFilter {
                 new EmptyCompletionHandler<WriteResult>() {
             @Override
             public void completed(WriteResult result) {
-                try {
-                    connection.close();
-                } catch (IOException ex) {
-                }
+                connection.close();
             }
 
             @Override
             public void failed(Throwable throwable) {
-                try {
-                    connection.close();
-                } catch (IOException ex) {
-                }
+                connection.close();
             }
 
         });
