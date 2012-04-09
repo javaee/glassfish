@@ -88,5 +88,29 @@ public class DestroyTest {
         Assert.assertEquals("Got invalid birth order: " + Pretty.collection(births), Bar.class, deaths.get(1).getClass());
         Assert.assertEquals("Got invalid birth order: " + Pretty.collection(births), Foo.class, deaths.get(0).getClass());
     }
+    
+    /**
+     * Tests the destroy on a per-lookup factory produced object is called
+     */
+    @Test
+    public void testFactoryDestruction() {
+        ServiceHandle<Widget> widgetHandle = locator.getServiceHandle(Widget.class);
+        Assert.assertNotNull(widgetHandle);
+        
+        Widget widget = widgetHandle.getService();
+        Assert.assertNotNull(widget);
+        
+        widgetHandle.destroy();
+        
+        Assert.assertTrue(widget.isDestroyed());
+        
+        try {
+            widget.badUse();
+            Assert.fail("The underlying sprocket should be closed and hence throw");
+        }
+        catch (IllegalStateException ise) {
+            // This is good
+        }
+    }
 
 }
