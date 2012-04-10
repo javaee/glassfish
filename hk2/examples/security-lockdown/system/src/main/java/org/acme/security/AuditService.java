@@ -37,68 +37,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.injector;
+package org.acme.security;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Set;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.glassfish.hk2.api.Injectee;
+import javax.inject.Singleton;
+
+import org.jvnet.hk2.annotations.Service;
+
 
 /**
+ * This is a dummy security service that should be available to some code (Alice)
+ * but not directly available to other code (Mallory).  That's because Mallory would
+ * spam the service and do something evil to it, while Alice would use the service
+ * as intended.
+ * 
  * @author jwells
- *
  */
-public class InjecteeImpl implements Injectee {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
+@Service @Singleton
+public class AuditService {
+    private final LinkedList<String> audits = new LinkedList<String>();
+    
+    /**
+     * Securely (not really) audits a message
+     * 
+     * @param logMe The message to log
      */
-    @Override
-    public Type getRequiredType() {
-        // returns null on purpose
-        return null;
+    public void auditLog(String logMe) {
+        if (logMe == null) return;
+        audits.add(logMe);
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
+    
+    /**
+     * Gets everything that has been logged
+     * 
+     * @return A non-null (but possibly empty) set of logged messages
      */
-    @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
-     */
-    @Override
-    public int getPosition() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
-     */
-    @Override
-    public AnnotatedElement getParent() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#isOptional()
-     */
-    @Override
-    public boolean isOptional() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getInjecteeClass()
-     */
-    @Override
-    public Class<?> getInjecteeClass() {
-        throw new AssertionError("never called");
+    public List<String> getAuditLogs() {
+        return Collections.unmodifiableList(audits);
     }
 
 }

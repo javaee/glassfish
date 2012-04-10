@@ -42,6 +42,8 @@ package org.jvnet.hk2.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -196,6 +198,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
             return sorter;
         }
+        
+    }
+    
+    private SortedSet<ActiveDescriptor<?>> protectedGetDescriptors(final Filter filter) {
+        return AccessController.doPrivileged(new PrivilegedAction<SortedSet<ActiveDescriptor<?>>>() {
+
+            @Override
+            public SortedSet<ActiveDescriptor<?>> run() {
+                return getDescriptors(filter);
+            }
+            
+        });
         
     }
 
@@ -357,6 +371,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (serviceHandle == null) return null;
         
         return serviceHandle.getService();
+    }
+    
+    private <T> List<T> protectedGetAllServices(final Type contractOrImpl,
+            final Annotation... qualifiers) {
+        return AccessController.doPrivileged(new PrivilegedAction<List<T>>() {
+
+            @Override
+            public List<T> run() {
+                return getAllServices(contractOrImpl, qualifiers);
+            }
+        });
     }
 
     /* (non-Javadoc)
@@ -520,6 +545,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
         checkState();
         
         return internalGetServiceHandle(null, contractOrImpl, null, qualifiers);
+    }
+    
+    private SortedSet<ServiceHandle<?>> protectedGetAllServiceHandles(
+            final Type contractOrImpl, final Annotation... qualifiers) {
+        return AccessController.doPrivileged(new PrivilegedAction<SortedSet<ServiceHandle<?>>>() {
+
+            @Override
+            public SortedSet<ServiceHandle<?>> run() {
+                return getAllServiceHandles(contractOrImpl, qualifiers);
+            }
+            
+        });
     }
 
     /* (non-Javadoc)
@@ -749,7 +786,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Filter injectionResolverFilter = BuilderHelper.createContractFilter(
                 InjectionResolver.class.getName());
         
-        SortedSet<ActiveDescriptor<?>> resolverDescriptors = getDescriptors(injectionResolverFilter);
+        SortedSet<ActiveDescriptor<?>> resolverDescriptors = protectedGetDescriptors(injectionResolverFilter);
         
         for (ActiveDescriptor<?> resolverDescriptor : resolverDescriptors) {
             Class<? extends Annotation> iResolve = Utilities.getInjectionResolverType(resolverDescriptor);
@@ -767,7 +804,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     private void reupErrorHandlers() {
-        List<ErrorService> allErrorServices = getAllServices(ErrorService.class);
+        List<ErrorService> allErrorServices = protectedGetAllServices(ErrorService.class);
         
         errorHandlers.clear();
         errorHandlers.addAll(allErrorServices);

@@ -65,6 +65,7 @@ public class ClassVisitorImpl implements ClassVisitor {
     private final static String VALUE = "value";
     
     private final DynamicConfiguration config;
+    private final boolean verbose;
     
     private String implName;
     private final LinkedList<String> iFaces = new LinkedList<String>();
@@ -76,9 +77,11 @@ public class ClassVisitorImpl implements ClassVisitor {
     /**
      * Creates this with the config to add to if this is a service
      * @param config
+     * @param verbose true if we should print out any service we are binding
      */
-    public ClassVisitorImpl(DynamicConfiguration config) {
+    public ClassVisitorImpl(DynamicConfiguration config, boolean verbose) {
         this.config = config;
+        this.verbose = verbose;
     }
 
     /* (non-Javadoc)
@@ -192,6 +195,9 @@ public class ClassVisitorImpl implements ClassVisitor {
             di.setName(name);
         }
         
+        if (verbose) {
+            System.out.println("Binding service " + di);
+        }
         config.bind(di);
     }
 

@@ -46,16 +46,17 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
         <version>2.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>examples</artifactId>
+    <artifactId>security-lockdown-example</artifactId>
     <packaging>pom</packaging>
-    <name>Examples of various use cases</name>
+    <name>Security Lockdown Example</name>
     <modules>
-            <module>ctm</module>
-            <module>custom-resolver</module>
-            <module>security-lockdown</module>
+            <module>system</module>
+            <module>alice</module>
+            <module>mallory</module>
+            <module>runner</module>
     </modules>
 </project>

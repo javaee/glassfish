@@ -41,6 +41,9 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
@@ -55,6 +58,7 @@ public class InjecteeImpl implements Injectee {
     private final Type requiredType;
     private final Set<Annotation> qualifiers;
     private final int position;
+    private final Class<?> pClass;
     private final AnnotatedElement parent;
     private final boolean isOptional;
     
@@ -68,7 +72,17 @@ public class InjecteeImpl implements Injectee {
         this.position = position;
         this.parent = parent;
         this.qualifiers = Collections.unmodifiableSet(qualifiers);
-        this.isOptional = isOptional; 
+        this.isOptional = isOptional;
+        
+        if (parent instanceof Field) {
+            pClass = ((Field) parent).getDeclaringClass();
+        }
+        else if (parent instanceof Constructor) {
+            pClass = ((Constructor<?>) parent).getDeclaringClass();
+        }
+        else {
+            pClass = ((Method) parent).getDeclaringClass();
+        }
     }
 
     /* (non-Javadoc)
@@ -94,6 +108,14 @@ public class InjecteeImpl implements Injectee {
     public int getPosition() {
         return position;
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Injectee#getInjecteeClass()
+     */
+    @Override
+    public Class<?> getInjecteeClass() {
+        return pClass;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Injectee#getParent()
@@ -117,7 +139,5 @@ public class InjecteeImpl implements Injectee {
                 ",position=" + position +
                 ",optional=" + isOptional +
                 "," + System.identityHashCode(this) + ")";
-    }
-
-    
+    }    
 }
