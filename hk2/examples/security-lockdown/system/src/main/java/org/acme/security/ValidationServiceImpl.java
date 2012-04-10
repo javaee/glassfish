@@ -37,68 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.injector;
+package org.acme.security;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.jvnet.hk2.annotations.Service;
 
 /**
+ * An implementation of the security service that uses permission checks for
+ * everything
+ * 
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee {
+@Service @Singleton
+public class ValidationServiceImpl implements ValidationService {
+    private final ValidatorImpl validator = new ValidatorImpl();
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
      */
     @Override
-    public Type getRequiredType() {
-        // returns null on purpose
-        return null;
+    public Filter getLookupFilter() {
+        return BuilderHelper.allFilter();
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
+     * @see org.glassfish.hk2.api.ValidationService#getValidator()
      */
     @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        throw new AssertionError("never called");
+    public Validator getValidator() {
+        return validator;
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
-     */
-    @Override
-    public int getPosition() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
-     */
-    @Override
-    public AnnotatedElement getParent() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#isOptional()
-     */
-    @Override
-    public boolean isOptional() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getInjecteeClass()
-     */
-    @Override
-    public Class<?> getInjecteeClass() {
-        throw new AssertionError("never called");
-    }
-
 }

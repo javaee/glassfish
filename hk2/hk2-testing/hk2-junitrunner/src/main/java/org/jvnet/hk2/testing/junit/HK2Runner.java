@@ -85,6 +85,11 @@ public class HK2Runner {
     protected ServiceLocator testLocator;
     
     /**
+     * The verbosity of this runner
+     */
+    private boolean verbose = false;
+    
+    /**
      * This will generate the default testLocator for this test
      * class, which will search the package of the test itself for
      * classes annotated with &#64;Service.
@@ -110,7 +115,7 @@ public class HK2Runner {
      * @param clazzes A set of classes that should be analyzed as services, whether they declare
      * &#64;Service or not.  If null this is considered to be the empty set
      */
-    public void initialize(String name, List<String> packages, List<Class<?>> clazzes) {
+    protected void initialize(String name, List<String> packages, List<Class<?>> clazzes) {
         if (name == null) throw new IllegalArgumentException();
         if (packages == null) packages = new LinkedList<String>();
         if (clazzes == null) clazzes = new LinkedList<Class<?>>();
@@ -138,7 +143,11 @@ public class HK2Runner {
         config.commit();
     }
     
-    private static void addServicesFromPackage(DynamicConfiguration config, List<String> packages) {
+    protected void setVerbosity(boolean verbose) {
+        this.verbose = verbose;
+    }
+    
+    private void addServicesFromPackage(DynamicConfiguration config, List<String> packages) {
         if (packages.isEmpty()) return;
         
         String classPath = System.getProperty(CLASS_PATH_PROP);
@@ -152,7 +161,7 @@ public class HK2Runner {
         
     }
     
-    private static void addServicesFromPathElement(DynamicConfiguration config, List<String> packages, String element) {
+    private void addServicesFromPathElement(DynamicConfiguration config, List<String> packages, String element) {
         File fileElement = new File(element);
         if (!fileElement.exists()) return;
         
@@ -164,7 +173,7 @@ public class HK2Runner {
         }
     }
     
-    private static void addServicesFromPathDirectory(DynamicConfiguration config, List<String> packages, File directory) {
+    private void addServicesFromPathDirectory(DynamicConfiguration config, List<String> packages, File directory) {
         for (String pack : packages) {
             File searchDir = new File(directory, convertToFileFormat(pack));
             if (!searchDir.exists()) continue;
@@ -175,7 +184,7 @@ public class HK2Runner {
                 @Override
                 public boolean accept(File dir, String name) {
                     if (name == null) return false;
-                    if (name.endsWith(".class")) return true;
+                    if (name.endsWith(DOT_CLASS)) return true;
                     return false;
                 }
                 
@@ -197,7 +206,7 @@ public class HK2Runner {
         
     }
     
-    private static void addServicesFromPathJar(DynamicConfiguration config, List<String> packages, File jar) {
+    private void addServicesFromPathJar(DynamicConfiguration config, List<String> packages, File jar) {
         JarFile jarFile;
         try {
             jarFile = new JarFile(jar);
@@ -209,7 +218,7 @@ public class HK2Runner {
         
         for (String pack : packages) {
             String packAsFile = convertToFileFormat(pack);
-            int packAsFileLen = packAsFile.length();
+            int packAsFileLen = packAsFile.length() + 1;
             
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
@@ -237,13 +246,12 @@ public class HK2Runner {
                 }
             }
         }
-        
     }
     
-    private static void addClassIfService(DynamicConfiguration config, InputStream is) throws IOException {
+    private void addClassIfService(DynamicConfiguration config, InputStream is) throws IOException {
         ClassReader reader = new ClassReader(is);
         
-        ClassVisitorImpl cvi = new ClassVisitorImpl(config);
+        ClassVisitorImpl cvi = new ClassVisitorImpl(config, verbose);
         
         reader.accept(cvi, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         

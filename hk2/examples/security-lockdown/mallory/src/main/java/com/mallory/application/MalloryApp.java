@@ -37,68 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.injector;
+package com.mallory.application;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Set;
+import javax.inject.Inject;
 
-import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.annotations.Service;
+
+import com.alice.application.AliceApp;
 
 /**
+ * This naughty service will attempt to do many things it is not allowed to do
+ * 
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
+@Service
+public class MalloryApp {
+    @Inject
+    private AliceApp alice;
+    
+    @Inject
+    private ServiceLocator locator;
+    
+    /**
+     * This will do something bad, I'm sure
      */
-    @Override
-    public Type getRequiredType() {
-        // returns null on purpose
-        return null;
+    public void doWorkOfEvil() {
+        
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
-     */
-    @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
-     */
-    @Override
-    public int getPosition() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
-     */
-    @Override
-    public AnnotatedElement getParent() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#isOptional()
-     */
-    @Override
-    public boolean isOptional() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getInjecteeClass()
-     */
-    @Override
-    public Class<?> getInjecteeClass() {
-        throw new AssertionError("never called");
-    }
-
 }

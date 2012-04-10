@@ -81,6 +81,14 @@ public interface Injectee {
     public int getPosition();
     
     /**
+     * Returns the parent class for this injectee.  This is the
+     * class of the object that will be injected into.
+     * 
+     * @return The class of the object that will be injected into
+     */
+    public Class<?> getInjecteeClass();
+    
+    /**
      * If this Injectee is in a constructor this will return the 
      * constructor being injected into.  If this Injectee is in a
      * method this will return the method being injected into.  If this

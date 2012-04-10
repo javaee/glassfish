@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Export-Package: org.acme.security,org.jvnet.tiger_types
+Built-By: jwells
+Tool: Bnd-1.15.0
+Bundle-Name: Security Lockdown System
+Created-By: Apache Maven Bundle Plugin
+Bundle-Vendor: Oracle Corporation
+Build-Jdk: 1.6.0_29
+Bundle-Version: 2.0.1.SNAPSHOT
+Bnd-LastModified: 1333980799690
+Bundle-ManifestVersion: 2
+Bundle-License: http://glassfish.java.net/nonav/public/CDDL+GPL_1_1.ht
+ ml
+Bundle-Description: The system code for the security lockdown example
+Import-Package: javax.inject;version="[1.0,2)",org.glassfish.hk2.api;v
+ ersion="[2.0,3)",org.glassfish.hk2.utilities;version="[2.0,3)"
+Bundle-SymbolicName: org.glassfish.hk2.security-lockdown-example-syste
+ m
+Bundle-DocURL: http://www.oracle.com
+Archiver-Version: Plexus Archiver
+

@@ -37,68 +37,60 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.injector;
+package org.glassfish.securitylockdown.test;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
-import java.util.Set;
+import java.util.LinkedList;
 
-import org.glassfish.hk2.api.Injectee;
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.jvnet.hk2.testing.junit.HK2Runner;
+
+import com.alice.application.AliceApp;
+import com.mallory.application.MalloryApp;
 
 /**
+ * 
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredType()
+public class SecurityLockdownTest extends HK2Runner {
+    private final static String SERVICE_DIRECTORIES[] = new String[] {
+        "com.mallory.application",
+        "com.alice.application",
+        "org.acme.security"
+    };
+    
+    /**
+     * Initializes the services
      */
-    @Override
-    public Type getRequiredType() {
-        // returns null on purpose
-        return null;
+    @Before
+    public void before() {
+        LinkedList<String> serviceDirectories = new LinkedList<String>();
+        for (String dir : SERVICE_DIRECTORIES) {
+            serviceDirectories.add(dir);
+        }
+        
+        // super.setVerbosity(true);
+        super.initialize("SecurityLockdownTest", serviceDirectories, null);
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getRequiredQualifiers()
+    
+    /**
+     * Tests that we can do a lookup of AliceApp
      */
-    @Override
-    public Set<Annotation> getRequiredQualifiers() {
-        throw new AssertionError("never called");
+    @Test
+    public void testAliceApp() {
+        AliceApp aa = testLocator.getService(AliceApp.class);
+        Assert.assertNotNull(aa);
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getPosition()
+    
+    /**
+     * Tests that we can do a lookup of AliceApp
      */
-    @Override
-    public int getPosition() {
-        throw new AssertionError("never called");
+    @Test
+    public void testMalloryApp() {
+        MalloryApp ma = testLocator.getService(MalloryApp.class);
+        Assert.assertNotNull(ma);
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getParent()
-     */
-    @Override
-    public AnnotatedElement getParent() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#isOptional()
-     */
-    @Override
-    public boolean isOptional() {
-        throw new AssertionError("never called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Injectee#getInjecteeClass()
-     */
-    @Override
-    public Class<?> getInjecteeClass() {
-        throw new AssertionError("never called");
-    }
-
 }
