@@ -850,7 +850,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ParameterizedType findContext = new ParameterizedTypeImpl(Context.class, actuals);
         
         SortedSet<ServiceHandle<Context<?>>> contextHandles = Utilities.<SortedSet<ServiceHandle<Context<?>>>>cast(
-                getAllServiceHandles(findContext));
+                protectedGetAllServiceHandles(findContext));
         
         try {
             Context<?> retVal = null;
@@ -927,7 +927,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             // Now match the qualifiers
             Set<Annotation> candidateAnnotations = candidate.getQualifierAnnotations();
             
-            if (!candidateAnnotations.containsAll(requiredAnnotations)) {
+            if (!Utilities.annotationContainsAll(candidateAnnotations, requiredAnnotations)) {
                 // The qualifiers do not match
                 continue;
             }
