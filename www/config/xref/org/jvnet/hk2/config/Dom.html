@@ -942,250 +942,253 @@
 <a class="jxr_linenumber" name="932" href="#932">932</a>         <strong class="jxr_keyword">return</strong> habitat;
 <a class="jxr_linenumber" name="933" href="#933">933</a>     }
 <a class="jxr_linenumber" name="934" href="#934">934</a>     
-<a class="jxr_linenumber" name="935" href="#935">935</a> 
-<a class="jxr_linenumber" name="936" href="#936">936</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="937" href="#937">937</a> <em class="jxr_javadoccomment">     * Another version of the {@link #invoke(Object, Method, Object[])},</em>
-<a class="jxr_linenumber" name="938" href="#938">938</a> <em class="jxr_javadoccomment">     * but instead of {@link Method} object, it takes the method name and argument types.</em>
-<a class="jxr_linenumber" name="939" href="#939">939</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="940" href="#940">940</a>     <strong class="jxr_keyword">public</strong> Object invoke(Object proxy, String methodName, Class[] argTypes, Object[] args) <strong class="jxr_keyword">throws</strong> Throwable {
-<a class="jxr_linenumber" name="941" href="#941">941</a>         <strong class="jxr_keyword">return</strong> invoke( proxy, getProxyType().getMethod(methodName, argTypes), args );
-<a class="jxr_linenumber" name="942" href="#942">942</a>     }
-<a class="jxr_linenumber" name="943" href="#943">943</a> 
-<a class="jxr_linenumber" name="944" href="#944">944</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="945" href="#945">945</a> <em class="jxr_javadoccomment">     * Invoke the user defined static method in the nested "Duck" class so that</em>
-<a class="jxr_linenumber" name="946" href="#946">946</a> <em class="jxr_javadoccomment">     * the user can define convenience methods on the config beans.</em>
-<a class="jxr_linenumber" name="947" href="#947">947</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="948" href="#948">948</a>     Object invokeDuckMethod(Method method, Object proxy, Object[] args) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="949" href="#949">949</a>         Method duckMethod = model.getDuckMethod(method);
-<a class="jxr_linenumber" name="950" href="#950">950</a> 
-<a class="jxr_linenumber" name="951" href="#951">951</a>         Object[] duckArgs;
-<a class="jxr_linenumber" name="952" href="#952">952</a>         <strong class="jxr_keyword">if</strong>(args==<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="953" href="#953">953</a>             duckArgs = <strong class="jxr_keyword">new</strong> Object[]{proxy};
-<a class="jxr_linenumber" name="954" href="#954">954</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="955" href="#955">955</a>             duckArgs = <strong class="jxr_keyword">new</strong> Object[args.length+1];
-<a class="jxr_linenumber" name="956" href="#956">956</a>             duckArgs[0] = proxy;
-<a class="jxr_linenumber" name="957" href="#957">957</a>             System.arraycopy(args,0,duckArgs,1,args.length);
-<a class="jxr_linenumber" name="958" href="#958">958</a>         }
-<a class="jxr_linenumber" name="959" href="#959">959</a> 
-<a class="jxr_linenumber" name="960" href="#960">960</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="961" href="#961">961</a>             <strong class="jxr_keyword">return</strong> duckMethod.invoke(<strong class="jxr_keyword">null</strong>,duckArgs);
-<a class="jxr_linenumber" name="962" href="#962">962</a>         } <strong class="jxr_keyword">catch</strong> (InvocationTargetException e) {
-<a class="jxr_linenumber" name="963" href="#963">963</a>             Throwable t = e.getTargetException();
-<a class="jxr_linenumber" name="964" href="#964">964</a>             <strong class="jxr_keyword">if</strong> (t instanceof Exception)
-<a class="jxr_linenumber" name="965" href="#965">965</a>                 <strong class="jxr_keyword">throw</strong> (Exception) t;
-<a class="jxr_linenumber" name="966" href="#966">966</a>             <strong class="jxr_keyword">if</strong> (t instanceof Error)
-<a class="jxr_linenumber" name="967" href="#967">967</a>                 <strong class="jxr_keyword">throw</strong> (Error) t;
-<a class="jxr_linenumber" name="968" href="#968">968</a>             <strong class="jxr_keyword">throw</strong> e;
-<a class="jxr_linenumber" name="969" href="#969">969</a>         }
-<a class="jxr_linenumber" name="970" href="#970">970</a>     }
-<a class="jxr_linenumber" name="971" href="#971">971</a> 
-<a class="jxr_linenumber" name="972" href="#972">972</a>     <strong class="jxr_keyword">protected</strong> Object getter(ConfigModel.Property target, Type t) {
-<a class="jxr_linenumber" name="973" href="#973">973</a>         <strong class="jxr_keyword">return</strong> target.get(<strong class="jxr_keyword">this</strong>, t);
-<a class="jxr_linenumber" name="974" href="#974">974</a>     }
-<a class="jxr_linenumber" name="975" href="#975">975</a> 
-<a class="jxr_linenumber" name="976" href="#976">976</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setter(ConfigModel.Property target, Object value) <strong class="jxr_keyword">throws</strong> Exception {
-<a class="jxr_linenumber" name="977" href="#977">977</a>         target.set(<strong class="jxr_keyword">this</strong>, value);
-<a class="jxr_linenumber" name="978" href="#978">978</a>     }
-<a class="jxr_linenumber" name="979" href="#979">979</a>     
-<a class="jxr_linenumber" name="980" href="#980">980</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String convertName(String name) {
-<a class="jxr_linenumber" name="981" href="#981">981</a>         <em class="jxr_comment">// first, trim off the prefix</em>
-<a class="jxr_linenumber" name="982" href="#982">982</a>         <strong class="jxr_keyword">for</strong> (String p : PROPERTY_PREFIX) {
-<a class="jxr_linenumber" name="983" href="#983">983</a>             <strong class="jxr_keyword">if</strong>(name.startsWith(p)) {
-<a class="jxr_linenumber" name="984" href="#984">984</a>                 name = name.substring(p.length());
-<a class="jxr_linenumber" name="985" href="#985">985</a>                 <strong class="jxr_keyword">break</strong>;
-<a class="jxr_linenumber" name="986" href="#986">986</a>             }
-<a class="jxr_linenumber" name="987" href="#987">987</a>         }
-<a class="jxr_linenumber" name="988" href="#988">988</a> 
-<a class="jxr_linenumber" name="989" href="#989">989</a>         <em class="jxr_comment">// tokenize by finding 'x|X' and 'X|Xx' then insert '-'.</em>
-<a class="jxr_linenumber" name="990" href="#990">990</a>         StringBuilder buf = <strong class="jxr_keyword">new</strong> StringBuilder(name.length()+5);
-<a class="jxr_linenumber" name="991" href="#991">991</a>         <strong class="jxr_keyword">for</strong>(String t : TOKENIZER.split(name)) {
-<a class="jxr_linenumber" name="992" href="#992">992</a>             <strong class="jxr_keyword">if</strong>(buf.length()&gt;0)  buf.append('-');
-<a class="jxr_linenumber" name="993" href="#993">993</a>             buf.append(t.toLowerCase());
-<a class="jxr_linenumber" name="994" href="#994">994</a>         }
-<a class="jxr_linenumber" name="995" href="#995">995</a>         <strong class="jxr_keyword">return</strong> buf.toString();        
-<a class="jxr_linenumber" name="996" href="#996">996</a>     }
-<a class="jxr_linenumber" name="997" href="#997">997</a> 
-<a class="jxr_linenumber" name="998" href="#998">998</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="999" href="#999">999</a> <em class="jxr_javadoccomment">     * Used to tokenize the property name into XML name.</em>
-<a class="jxr_linenumber" name="1000" href="#1000">1000</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="1001" href="#1001">1001</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Pattern TOKENIZER;
-<a class="jxr_linenumber" name="1002" href="#1002">1002</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String split(String lookback,String lookahead) {
-<a class="jxr_linenumber" name="1003" href="#1003">1003</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"((?&lt;="</span>+lookback+<span class="jxr_string">")(?="</span>+lookahead+<span class="jxr_string">"))"</span>;
-<a class="jxr_linenumber" name="1004" href="#1004">1004</a>     }
-<a class="jxr_linenumber" name="1005" href="#1005">1005</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String or(String... tokens) {
-<a class="jxr_linenumber" name="1006" href="#1006">1006</a>         StringBuilder buf = <strong class="jxr_keyword">new</strong> StringBuilder();
-<a class="jxr_linenumber" name="1007" href="#1007">1007</a>         <strong class="jxr_keyword">for</strong> (String t : tokens) {
-<a class="jxr_linenumber" name="1008" href="#1008">1008</a>             <strong class="jxr_keyword">if</strong>(buf.length()&gt;0)  buf.append('|');
-<a class="jxr_linenumber" name="1009" href="#1009">1009</a>             buf.append(t);
-<a class="jxr_linenumber" name="1010" href="#1010">1010</a>         }
-<a class="jxr_linenumber" name="1011" href="#1011">1011</a>         <strong class="jxr_keyword">return</strong> buf.toString();
-<a class="jxr_linenumber" name="1012" href="#1012">1012</a>     }
-<a class="jxr_linenumber" name="1013" href="#1013">1013</a>     <strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="1014" href="#1014">1014</a>         String pattern = or(
-<a class="jxr_linenumber" name="1015" href="#1015">1015</a>                 split(<span class="jxr_string">"x"</span>,<span class="jxr_string">"X"</span>),     <em class="jxr_comment">// AbcDef -&gt; Abc|Def</em>
-<a class="jxr_linenumber" name="1016" href="#1016">1016</a>                 split(<span class="jxr_string">"X"</span>,<span class="jxr_string">"Xx"</span>),    <em class="jxr_comment">// USArmy -&gt; US|Army</em>
-<a class="jxr_linenumber" name="1017" href="#1017">1017</a>                 <em class="jxr_comment">//split("&#92;&#92;D","&#92;&#92;d"), // SSL2 -&gt; SSL|2</em>
-<a class="jxr_linenumber" name="1018" href="#1018">1018</a>                 split(<span class="jxr_string">"&#92;&#92;d"</span>,<span class="jxr_string">"&#92;&#92;D"</span>)  <em class="jxr_comment">// SSL2Connector -&gt; SSL|2|Connector</em>
-<a class="jxr_linenumber" name="1019" href="#1019">1019</a>         );
-<a class="jxr_linenumber" name="1020" href="#1020">1020</a>         pattern = pattern.replace(<span class="jxr_string">"x"</span>,<span class="jxr_string">"&#92;&#92;p{Lower}"</span>).replace(<span class="jxr_string">"X"</span>,<span class="jxr_string">"&#92;&#92;p{Upper}"</span>);
-<a class="jxr_linenumber" name="1021" href="#1021">1021</a>         TOKENIZER = Pattern.compile(pattern);
-<a class="jxr_linenumber" name="1022" href="#1022">1022</a>     }
-<a class="jxr_linenumber" name="1023" href="#1023">1023</a> 
-<a class="jxr_linenumber" name="1024" href="#1024">1024</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String[] PROPERTY_PREFIX = <strong class="jxr_keyword">new</strong> String[]{<span class="jxr_string">"get"</span>,<span class="jxr_string">"set"</span>,<span class="jxr_string">"is"</span>,<span class="jxr_string">"has"</span>};
-<a class="jxr_linenumber" name="1025" href="#1025">1025</a> 
-<a class="jxr_linenumber" name="1026" href="#1026">1026</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="1027" href="#1027">1027</a> <em class="jxr_javadoccomment">     * This is how we inject the configuration into the created object.</em>
-<a class="jxr_linenumber" name="1028" href="#1028">1028</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="1029" href="#1029">1029</a> <em class="jxr_javadoccomment">     * There are two kinds &amp;mdash; one where @{@link Configured} is put on</em>
-<a class="jxr_linenumber" name="1030" href="#1030">1030</a> <em class="jxr_javadoccomment">     * a bean and that is placedinto Habitat, and the other is</em>
-<a class="jxr_linenumber" name="1031" href="#1031">1031</a> <em class="jxr_javadoccomment">     * where @{@link Configured} is on {@link ConfigBeanProxy} subtype,</em>
-<a class="jxr_linenumber" name="1032" href="#1032">1032</a> <em class="jxr_javadoccomment">     * in which case the proxy to {@link Dom} will be placed into the habitat.</em>
-<a class="jxr_linenumber" name="1033" href="#1033">1033</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="1034" href="#1034">1034</a>     @Override
-<a class="jxr_linenumber" name="1035" href="#1035">1035</a>     @SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
-<a class="jxr_linenumber" name="1036" href="#1036">1036</a>     <strong class="jxr_keyword">protected</strong> Creator createCreator(Class c) {
-<a class="jxr_linenumber" name="1037" href="#1037">1037</a>         <strong class="jxr_keyword">return</strong> (ConfigBeanProxy.<strong class="jxr_keyword">class</strong>.isAssignableFrom(c)?<strong class="jxr_keyword">new</strong> DomProxyCreator(c,metadata(),<strong class="jxr_keyword">this</strong>):<strong class="jxr_keyword">new</strong> ConfiguredCreator(<strong class="jxr_keyword">super</strong>.createCreator(c),<strong class="jxr_keyword">this</strong>));
-<a class="jxr_linenumber" name="1038" href="#1038">1038</a>         <em class="jxr_comment">// turning off @Configured and @CagedBy until we get a clear picture on how this should work together.</em>
-<a class="jxr_linenumber" name="1039" href="#1039">1039</a> <em class="jxr_comment">/*<em class="jxr_comment">        Womb womb = (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));</em></em>
-<a class="jxr_linenumber" name="1040" href="#1040">1040</a> <em class="jxr_comment">        if (cagedBy==null) {</em>
-<a class="jxr_linenumber" name="1041" href="#1041">1041</a> <em class="jxr_comment">            return womb;</em>
-<a class="jxr_linenumber" name="1042" href="#1042">1042</a> <em class="jxr_comment">        } else {</em>
-<a class="jxr_linenumber" name="1043" href="#1043">1043</a> <em class="jxr_comment">            Class&lt;? extends CageBuilder&gt; value = cagedBy.value();</em>
-<a class="jxr_linenumber" name="1044" href="#1044">1044</a> <em class="jxr_comment">            CageBuilder builder = habitat.getByType(value);</em>
-<a class="jxr_linenumber" name="1045" href="#1045">1045</a> <em class="jxr_comment">            return new CagedConfiguredWomb(womb, this, builder);</em>
-<a class="jxr_linenumber" name="1046" href="#1046">1046</a> <em class="jxr_comment">        }</em>
-<a class="jxr_linenumber" name="1047" href="#1047">1047</a> <em class="jxr_comment">        */</em>
-<a class="jxr_linenumber" name="1048" href="#1048">1048</a>     }
-<a class="jxr_linenumber" name="1049" href="#1049">1049</a> 
-<a class="jxr_linenumber" name="1050" href="#1050">1050</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T <strong class="jxr_keyword">extends</strong> Annotation&gt; T digAnnotation(Class&lt;?&gt; target, Class&lt;T&gt; annotationType) {
-<a class="jxr_linenumber" name="1051" href="#1051">1051</a>         <strong class="jxr_keyword">return</strong> digAnnotation(target, annotationType, <strong class="jxr_keyword">new</strong> ArrayList&lt;Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt;&gt;());
-<a class="jxr_linenumber" name="1052" href="#1052">1052</a>     }
-<a class="jxr_linenumber" name="1053" href="#1053">1053</a> 
-<a class="jxr_linenumber" name="1054" href="#1054">1054</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T <strong class="jxr_keyword">extends</strong> Annotation&gt; T digAnnotation(Class&lt;?&gt; target, Class&lt;T&gt; annotationType, List&lt;Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt;&gt; visited) {
-<a class="jxr_linenumber" name="1055" href="#1055">1055</a>         T result = target.getAnnotation(annotationType);
-<a class="jxr_linenumber" name="1056" href="#1056">1056</a>         <strong class="jxr_keyword">if</strong> (result==<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="1057" href="#1057">1057</a>             <strong class="jxr_keyword">for</strong> (Annotation a : target.getAnnotations()) {
-<a class="jxr_linenumber" name="1058" href="#1058">1058</a>                 <strong class="jxr_keyword">if</strong> (!visited.contains(a.annotationType())) {
-<a class="jxr_linenumber" name="1059" href="#1059">1059</a>                     visited.add(a.annotationType());
-<a class="jxr_linenumber" name="1060" href="#1060">1060</a>                     result = digAnnotation(a.annotationType(), annotationType, visited);
-<a class="jxr_linenumber" name="1061" href="#1061">1061</a>                     <strong class="jxr_keyword">if</strong> (result!=<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="1062" href="#1062">1062</a>                         <strong class="jxr_keyword">return</strong> result;
-<a class="jxr_linenumber" name="1063" href="#1063">1063</a>                     }
-<a class="jxr_linenumber" name="1064" href="#1064">1064</a>                 }
-<a class="jxr_linenumber" name="1065" href="#1065">1065</a>             }
-<a class="jxr_linenumber" name="1066" href="#1066">1066</a>         }
-<a class="jxr_linenumber" name="1067" href="#1067">1067</a>         <strong class="jxr_keyword">return</strong> result;
-<a class="jxr_linenumber" name="1068" href="#1068">1068</a>     }
-<a class="jxr_linenumber" name="1069" href="#1069">1069</a> 
-<a class="jxr_linenumber" name="1070" href="#1070">1070</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="1071" href="#1071">1071</a> <em class="jxr_javadoccomment">     * Used by the parser to set a list of children.</em>
-<a class="jxr_linenumber" name="1072" href="#1072">1072</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="1073" href="#1073">1073</a>     <em class="jxr_comment">/*<em class="jxr_comment">package*/</em> <strong class="jxr_keyword">void</strong> setChildren(List&lt;Child&gt; children) {</em>
-<a class="jxr_linenumber" name="1074" href="#1074">1074</a>        <strong class="jxr_keyword">this</strong>.children = children;
-<a class="jxr_linenumber" name="1075" href="#1075">1075</a>     }
-<a class="jxr_linenumber" name="1076" href="#1076">1076</a> 
-<a class="jxr_linenumber" name="1077" href="#1077">1077</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="1078" href="#1078">1078</a> <em class="jxr_javadoccomment">     * Returns the map of attributes names and values for attributes which</em>
-<a class="jxr_linenumber" name="1079" href="#1079">1079</a> <em class="jxr_javadoccomment">     * value is neither null or the default value. These attributes are</em>
-<a class="jxr_linenumber" name="1080" href="#1080">1080</a> <em class="jxr_javadoccomment">     * considered having a non default value and must be written out.</em>
-<a class="jxr_linenumber" name="1081" href="#1081">1081</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="1082" href="#1082">1082</a> <em class="jxr_javadoccomment">     * @return map of attributes indexed by name that must be persisted</em>
-<a class="jxr_linenumber" name="1083" href="#1083">1083</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="1084" href="#1084">1084</a>     <strong class="jxr_keyword">private</strong> Map&lt;String, String&gt; attributesToWrite() {
-<a class="jxr_linenumber" name="1085" href="#1085">1085</a> 
-<a class="jxr_linenumber" name="1086" href="#1086">1086</a>         Map&lt;String, String&gt; attributesToWrite = <strong class="jxr_keyword">new</strong> HashMap&lt;String, String&gt;();
-<a class="jxr_linenumber" name="1087" href="#1087">1087</a>         Map&lt;String, String&gt; localAttr = <strong class="jxr_keyword">new</strong> HashMap&lt;String, String&gt;(attributes);
-<a class="jxr_linenumber" name="1088" href="#1088">1088</a>         <strong class="jxr_keyword">for</strong> (Map.Entry&lt;String, String&gt; a : localAttr.entrySet()) {
-<a class="jxr_linenumber" name="1089" href="#1089">1089</a>             ConfigModel.AttributeLeaf am = model.attributes.get(a.getKey());
-<a class="jxr_linenumber" name="1090" href="#1090">1090</a>             String dv = am.getDefaultValue();
-<a class="jxr_linenumber" name="1091" href="#1091">1091</a>             <strong class="jxr_keyword">if</strong> (dv==<strong class="jxr_keyword">null</strong> || !dv.equals(a.getValue())) {
-<a class="jxr_linenumber" name="1092" href="#1092">1092</a>                 attributesToWrite.put(a.getKey(), a.getValue());
-<a class="jxr_linenumber" name="1093" href="#1093">1093</a>             }
-<a class="jxr_linenumber" name="1094" href="#1094">1094</a>         }
-<a class="jxr_linenumber" name="1095" href="#1095">1095</a>         <strong class="jxr_keyword">return</strong> attributesToWrite;
-<a class="jxr_linenumber" name="1096" href="#1096">1096</a>     }
-<a class="jxr_linenumber" name="1097" href="#1097">1097</a> 
-<a class="jxr_linenumber" name="1098" href="#1098">1098</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="1099" href="#1099">1099</a> <em class="jxr_javadoccomment">     * Returns true if this element is empty</em>
-<a class="jxr_linenumber" name="1100" href="#1100">1100</a> <em class="jxr_javadoccomment">     * meaning all their attributes have default values and it has</em>
-<a class="jxr_linenumber" name="1101" href="#1101">1101</a> <em class="jxr_javadoccomment">     * no descendants.</em>
-<a class="jxr_linenumber" name="1102" href="#1102">1102</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="1103" href="#1103">1103</a> <em class="jxr_javadoccomment">     * @return true if the element is empty, false otherwise</em>
-<a class="jxr_linenumber" name="1104" href="#1104">1104</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="1105" href="#1105">1105</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isEmpty() {
-<a class="jxr_linenumber" name="1106" href="#1106">1106</a>         Map&lt;String, String&gt; attributesToWrite = attributesToWrite();
-<a class="jxr_linenumber" name="1107" href="#1107">1107</a> 
-<a class="jxr_linenumber" name="1108" href="#1108">1108</a>         <strong class="jxr_keyword">if</strong> (!attributesToWrite.isEmpty()) {
-<a class="jxr_linenumber" name="1109" href="#1109">1109</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="1110" href="#1110">1110</a>         }
-<a class="jxr_linenumber" name="1111" href="#1111">1111</a> 
-<a class="jxr_linenumber" name="1112" href="#1112">1112</a>         <em class="jxr_comment">// if we have children, we are not empty.</em>
-<a class="jxr_linenumber" name="1113" href="#1113">1113</a>         <strong class="jxr_keyword">return</strong> children.isEmpty();
+<a class="jxr_linenumber" name="935" href="#935">935</a>     <strong class="jxr_keyword">public</strong> BaseServiceLocator getBaseServiceLocator() {
+<a class="jxr_linenumber" name="936" href="#936">936</a>         <strong class="jxr_keyword">return</strong> habitat;
+<a class="jxr_linenumber" name="937" href="#937">937</a>     }
+<a class="jxr_linenumber" name="938" href="#938">938</a> 
+<a class="jxr_linenumber" name="939" href="#939">939</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="940" href="#940">940</a> <em class="jxr_javadoccomment">     * Another version of the {@link #invoke(Object, Method, Object[])},</em>
+<a class="jxr_linenumber" name="941" href="#941">941</a> <em class="jxr_javadoccomment">     * but instead of {@link Method} object, it takes the method name and argument types.</em>
+<a class="jxr_linenumber" name="942" href="#942">942</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="943" href="#943">943</a>     <strong class="jxr_keyword">public</strong> Object invoke(Object proxy, String methodName, Class[] argTypes, Object[] args) <strong class="jxr_keyword">throws</strong> Throwable {
+<a class="jxr_linenumber" name="944" href="#944">944</a>         <strong class="jxr_keyword">return</strong> invoke( proxy, getProxyType().getMethod(methodName, argTypes), args );
+<a class="jxr_linenumber" name="945" href="#945">945</a>     }
+<a class="jxr_linenumber" name="946" href="#946">946</a> 
+<a class="jxr_linenumber" name="947" href="#947">947</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="948" href="#948">948</a> <em class="jxr_javadoccomment">     * Invoke the user defined static method in the nested "Duck" class so that</em>
+<a class="jxr_linenumber" name="949" href="#949">949</a> <em class="jxr_javadoccomment">     * the user can define convenience methods on the config beans.</em>
+<a class="jxr_linenumber" name="950" href="#950">950</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="951" href="#951">951</a>     Object invokeDuckMethod(Method method, Object proxy, Object[] args) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="952" href="#952">952</a>         Method duckMethod = model.getDuckMethod(method);
+<a class="jxr_linenumber" name="953" href="#953">953</a> 
+<a class="jxr_linenumber" name="954" href="#954">954</a>         Object[] duckArgs;
+<a class="jxr_linenumber" name="955" href="#955">955</a>         <strong class="jxr_keyword">if</strong>(args==<strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="956" href="#956">956</a>             duckArgs = <strong class="jxr_keyword">new</strong> Object[]{proxy};
+<a class="jxr_linenumber" name="957" href="#957">957</a>         } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="958" href="#958">958</a>             duckArgs = <strong class="jxr_keyword">new</strong> Object[args.length+1];
+<a class="jxr_linenumber" name="959" href="#959">959</a>             duckArgs[0] = proxy;
+<a class="jxr_linenumber" name="960" href="#960">960</a>             System.arraycopy(args,0,duckArgs,1,args.length);
+<a class="jxr_linenumber" name="961" href="#961">961</a>         }
+<a class="jxr_linenumber" name="962" href="#962">962</a> 
+<a class="jxr_linenumber" name="963" href="#963">963</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="964" href="#964">964</a>             <strong class="jxr_keyword">return</strong> duckMethod.invoke(<strong class="jxr_keyword">null</strong>,duckArgs);
+<a class="jxr_linenumber" name="965" href="#965">965</a>         } <strong class="jxr_keyword">catch</strong> (InvocationTargetException e) {
+<a class="jxr_linenumber" name="966" href="#966">966</a>             Throwable t = e.getTargetException();
+<a class="jxr_linenumber" name="967" href="#967">967</a>             <strong class="jxr_keyword">if</strong> (t instanceof Exception)
+<a class="jxr_linenumber" name="968" href="#968">968</a>                 <strong class="jxr_keyword">throw</strong> (Exception) t;
+<a class="jxr_linenumber" name="969" href="#969">969</a>             <strong class="jxr_keyword">if</strong> (t instanceof Error)
+<a class="jxr_linenumber" name="970" href="#970">970</a>                 <strong class="jxr_keyword">throw</strong> (Error) t;
+<a class="jxr_linenumber" name="971" href="#971">971</a>             <strong class="jxr_keyword">throw</strong> e;
+<a class="jxr_linenumber" name="972" href="#972">972</a>         }
+<a class="jxr_linenumber" name="973" href="#973">973</a>     }
+<a class="jxr_linenumber" name="974" href="#974">974</a> 
+<a class="jxr_linenumber" name="975" href="#975">975</a>     <strong class="jxr_keyword">protected</strong> Object getter(ConfigModel.Property target, Type t) {
+<a class="jxr_linenumber" name="976" href="#976">976</a>         <strong class="jxr_keyword">return</strong> target.get(<strong class="jxr_keyword">this</strong>, t);
+<a class="jxr_linenumber" name="977" href="#977">977</a>     }
+<a class="jxr_linenumber" name="978" href="#978">978</a> 
+<a class="jxr_linenumber" name="979" href="#979">979</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setter(ConfigModel.Property target, Object value) <strong class="jxr_keyword">throws</strong> Exception {
+<a class="jxr_linenumber" name="980" href="#980">980</a>         target.set(<strong class="jxr_keyword">this</strong>, value);
+<a class="jxr_linenumber" name="981" href="#981">981</a>     }
+<a class="jxr_linenumber" name="982" href="#982">982</a>     
+<a class="jxr_linenumber" name="983" href="#983">983</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String convertName(String name) {
+<a class="jxr_linenumber" name="984" href="#984">984</a>         <em class="jxr_comment">// first, trim off the prefix</em>
+<a class="jxr_linenumber" name="985" href="#985">985</a>         <strong class="jxr_keyword">for</strong> (String p : PROPERTY_PREFIX) {
+<a class="jxr_linenumber" name="986" href="#986">986</a>             <strong class="jxr_keyword">if</strong>(name.startsWith(p)) {
+<a class="jxr_linenumber" name="987" href="#987">987</a>                 name = name.substring(p.length());
+<a class="jxr_linenumber" name="988" href="#988">988</a>                 <strong class="jxr_keyword">break</strong>;
+<a class="jxr_linenumber" name="989" href="#989">989</a>             }
+<a class="jxr_linenumber" name="990" href="#990">990</a>         }
+<a class="jxr_linenumber" name="991" href="#991">991</a> 
+<a class="jxr_linenumber" name="992" href="#992">992</a>         <em class="jxr_comment">// tokenize by finding 'x|X' and 'X|Xx' then insert '-'.</em>
+<a class="jxr_linenumber" name="993" href="#993">993</a>         StringBuilder buf = <strong class="jxr_keyword">new</strong> StringBuilder(name.length()+5);
+<a class="jxr_linenumber" name="994" href="#994">994</a>         <strong class="jxr_keyword">for</strong>(String t : TOKENIZER.split(name)) {
+<a class="jxr_linenumber" name="995" href="#995">995</a>             <strong class="jxr_keyword">if</strong>(buf.length()&gt;0)  buf.append('-');
+<a class="jxr_linenumber" name="996" href="#996">996</a>             buf.append(t.toLowerCase());
+<a class="jxr_linenumber" name="997" href="#997">997</a>         }
+<a class="jxr_linenumber" name="998" href="#998">998</a>         <strong class="jxr_keyword">return</strong> buf.toString();        
+<a class="jxr_linenumber" name="999" href="#999">999</a>     }
+<a class="jxr_linenumber" name="1000" href="#1000">1000</a> 
+<a class="jxr_linenumber" name="1001" href="#1001">1001</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="1002" href="#1002">1002</a> <em class="jxr_javadoccomment">     * Used to tokenize the property name into XML name.</em>
+<a class="jxr_linenumber" name="1003" href="#1003">1003</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="1004" href="#1004">1004</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Pattern TOKENIZER;
+<a class="jxr_linenumber" name="1005" href="#1005">1005</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String split(String lookback,String lookahead) {
+<a class="jxr_linenumber" name="1006" href="#1006">1006</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"((?&lt;="</span>+lookback+<span class="jxr_string">")(?="</span>+lookahead+<span class="jxr_string">"))"</span>;
+<a class="jxr_linenumber" name="1007" href="#1007">1007</a>     }
+<a class="jxr_linenumber" name="1008" href="#1008">1008</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> String or(String... tokens) {
+<a class="jxr_linenumber" name="1009" href="#1009">1009</a>         StringBuilder buf = <strong class="jxr_keyword">new</strong> StringBuilder();
+<a class="jxr_linenumber" name="1010" href="#1010">1010</a>         <strong class="jxr_keyword">for</strong> (String t : tokens) {
+<a class="jxr_linenumber" name="1011" href="#1011">1011</a>             <strong class="jxr_keyword">if</strong>(buf.length()&gt;0)  buf.append('|');
+<a class="jxr_linenumber" name="1012" href="#1012">1012</a>             buf.append(t);
+<a class="jxr_linenumber" name="1013" href="#1013">1013</a>         }
+<a class="jxr_linenumber" name="1014" href="#1014">1014</a>         <strong class="jxr_keyword">return</strong> buf.toString();
+<a class="jxr_linenumber" name="1015" href="#1015">1015</a>     }
+<a class="jxr_linenumber" name="1016" href="#1016">1016</a>     <strong class="jxr_keyword">static</strong> {
+<a class="jxr_linenumber" name="1017" href="#1017">1017</a>         String pattern = or(
+<a class="jxr_linenumber" name="1018" href="#1018">1018</a>                 split(<span class="jxr_string">"x"</span>,<span class="jxr_string">"X"</span>),     <em class="jxr_comment">// AbcDef -&gt; Abc|Def</em>
+<a class="jxr_linenumber" name="1019" href="#1019">1019</a>                 split(<span class="jxr_string">"X"</span>,<span class="jxr_string">"Xx"</span>),    <em class="jxr_comment">// USArmy -&gt; US|Army</em>
+<a class="jxr_linenumber" name="1020" href="#1020">1020</a>                 <em class="jxr_comment">//split("&#92;&#92;D","&#92;&#92;d"), // SSL2 -&gt; SSL|2</em>
+<a class="jxr_linenumber" name="1021" href="#1021">1021</a>                 split(<span class="jxr_string">"&#92;&#92;d"</span>,<span class="jxr_string">"&#92;&#92;D"</span>)  <em class="jxr_comment">// SSL2Connector -&gt; SSL|2|Connector</em>
+<a class="jxr_linenumber" name="1022" href="#1022">1022</a>         );
+<a class="jxr_linenumber" name="1023" href="#1023">1023</a>         pattern = pattern.replace(<span class="jxr_string">"x"</span>,<span class="jxr_string">"&#92;&#92;p{Lower}"</span>).replace(<span class="jxr_string">"X"</span>,<span class="jxr_string">"&#92;&#92;p{Upper}"</span>);
+<a class="jxr_linenumber" name="1024" href="#1024">1024</a>         TOKENIZER = Pattern.compile(pattern);
+<a class="jxr_linenumber" name="1025" href="#1025">1025</a>     }
+<a class="jxr_linenumber" name="1026" href="#1026">1026</a> 
+<a class="jxr_linenumber" name="1027" href="#1027">1027</a>     <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String[] PROPERTY_PREFIX = <strong class="jxr_keyword">new</strong> String[]{<span class="jxr_string">"get"</span>,<span class="jxr_string">"set"</span>,<span class="jxr_string">"is"</span>,<span class="jxr_string">"has"</span>};
+<a class="jxr_linenumber" name="1028" href="#1028">1028</a> 
+<a class="jxr_linenumber" name="1029" href="#1029">1029</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="1030" href="#1030">1030</a> <em class="jxr_javadoccomment">     * This is how we inject the configuration into the created object.</em>
+<a class="jxr_linenumber" name="1031" href="#1031">1031</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="1032" href="#1032">1032</a> <em class="jxr_javadoccomment">     * There are two kinds &amp;mdash; one where @{@link Configured} is put on</em>
+<a class="jxr_linenumber" name="1033" href="#1033">1033</a> <em class="jxr_javadoccomment">     * a bean and that is placedinto Habitat, and the other is</em>
+<a class="jxr_linenumber" name="1034" href="#1034">1034</a> <em class="jxr_javadoccomment">     * where @{@link Configured} is on {@link ConfigBeanProxy} subtype,</em>
+<a class="jxr_linenumber" name="1035" href="#1035">1035</a> <em class="jxr_javadoccomment">     * in which case the proxy to {@link Dom} will be placed into the habitat.</em>
+<a class="jxr_linenumber" name="1036" href="#1036">1036</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="1037" href="#1037">1037</a>     @Override
+<a class="jxr_linenumber" name="1038" href="#1038">1038</a>     @SuppressWarnings(<span class="jxr_string">"unchecked"</span>)
+<a class="jxr_linenumber" name="1039" href="#1039">1039</a>     <strong class="jxr_keyword">protected</strong> Creator createCreator(Class c) {
+<a class="jxr_linenumber" name="1040" href="#1040">1040</a>         <strong class="jxr_keyword">return</strong> (ConfigBeanProxy.<strong class="jxr_keyword">class</strong>.isAssignableFrom(c)?<strong class="jxr_keyword">new</strong> DomProxyCreator(c,metadata(),<strong class="jxr_keyword">this</strong>):<strong class="jxr_keyword">new</strong> ConfiguredCreator(<strong class="jxr_keyword">super</strong>.createCreator(c),<strong class="jxr_keyword">this</strong>));
+<a class="jxr_linenumber" name="1041" href="#1041">1041</a>         <em class="jxr_comment">// turning off @Configured and @CagedBy until we get a clear picture on how this should work together.</em>
+<a class="jxr_linenumber" name="1042" href="#1042">1042</a> <em class="jxr_comment">/*<em class="jxr_comment">        Womb womb = (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));</em></em>
+<a class="jxr_linenumber" name="1043" href="#1043">1043</a> <em class="jxr_comment">        if (cagedBy==null) {</em>
+<a class="jxr_linenumber" name="1044" href="#1044">1044</a> <em class="jxr_comment">            return womb;</em>
+<a class="jxr_linenumber" name="1045" href="#1045">1045</a> <em class="jxr_comment">        } else {</em>
+<a class="jxr_linenumber" name="1046" href="#1046">1046</a> <em class="jxr_comment">            Class&lt;? extends CageBuilder&gt; value = cagedBy.value();</em>
+<a class="jxr_linenumber" name="1047" href="#1047">1047</a> <em class="jxr_comment">            CageBuilder builder = habitat.getByType(value);</em>
+<a class="jxr_linenumber" name="1048" href="#1048">1048</a> <em class="jxr_comment">            return new CagedConfiguredWomb(womb, this, builder);</em>
+<a class="jxr_linenumber" name="1049" href="#1049">1049</a> <em class="jxr_comment">        }</em>
+<a class="jxr_linenumber" name="1050" href="#1050">1050</a> <em class="jxr_comment">        */</em>
+<a class="jxr_linenumber" name="1051" href="#1051">1051</a>     }
+<a class="jxr_linenumber" name="1052" href="#1052">1052</a> 
+<a class="jxr_linenumber" name="1053" href="#1053">1053</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T <strong class="jxr_keyword">extends</strong> Annotation&gt; T digAnnotation(Class&lt;?&gt; target, Class&lt;T&gt; annotationType) {
+<a class="jxr_linenumber" name="1054" href="#1054">1054</a>         <strong class="jxr_keyword">return</strong> digAnnotation(target, annotationType, <strong class="jxr_keyword">new</strong> ArrayList&lt;Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt;&gt;());
+<a class="jxr_linenumber" name="1055" href="#1055">1055</a>     }
+<a class="jxr_linenumber" name="1056" href="#1056">1056</a> 
+<a class="jxr_linenumber" name="1057" href="#1057">1057</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T <strong class="jxr_keyword">extends</strong> Annotation&gt; T digAnnotation(Class&lt;?&gt; target, Class&lt;T&gt; annotationType, List&lt;Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt;&gt; visited) {
+<a class="jxr_linenumber" name="1058" href="#1058">1058</a>         T result = target.getAnnotation(annotationType);
+<a class="jxr_linenumber" name="1059" href="#1059">1059</a>         <strong class="jxr_keyword">if</strong> (result==<strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="1060" href="#1060">1060</a>             <strong class="jxr_keyword">for</strong> (Annotation a : target.getAnnotations()) {
+<a class="jxr_linenumber" name="1061" href="#1061">1061</a>                 <strong class="jxr_keyword">if</strong> (!visited.contains(a.annotationType())) {
+<a class="jxr_linenumber" name="1062" href="#1062">1062</a>                     visited.add(a.annotationType());
+<a class="jxr_linenumber" name="1063" href="#1063">1063</a>                     result = digAnnotation(a.annotationType(), annotationType, visited);
+<a class="jxr_linenumber" name="1064" href="#1064">1064</a>                     <strong class="jxr_keyword">if</strong> (result!=<strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="1065" href="#1065">1065</a>                         <strong class="jxr_keyword">return</strong> result;
+<a class="jxr_linenumber" name="1066" href="#1066">1066</a>                     }
+<a class="jxr_linenumber" name="1067" href="#1067">1067</a>                 }
+<a class="jxr_linenumber" name="1068" href="#1068">1068</a>             }
+<a class="jxr_linenumber" name="1069" href="#1069">1069</a>         }
+<a class="jxr_linenumber" name="1070" href="#1070">1070</a>         <strong class="jxr_keyword">return</strong> result;
+<a class="jxr_linenumber" name="1071" href="#1071">1071</a>     }
+<a class="jxr_linenumber" name="1072" href="#1072">1072</a> 
+<a class="jxr_linenumber" name="1073" href="#1073">1073</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="1074" href="#1074">1074</a> <em class="jxr_javadoccomment">     * Used by the parser to set a list of children.</em>
+<a class="jxr_linenumber" name="1075" href="#1075">1075</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="1076" href="#1076">1076</a>     <em class="jxr_comment">/*<em class="jxr_comment">package*/</em> <strong class="jxr_keyword">void</strong> setChildren(List&lt;Child&gt; children) {</em>
+<a class="jxr_linenumber" name="1077" href="#1077">1077</a>        <strong class="jxr_keyword">this</strong>.children = children;
+<a class="jxr_linenumber" name="1078" href="#1078">1078</a>     }
+<a class="jxr_linenumber" name="1079" href="#1079">1079</a> 
+<a class="jxr_linenumber" name="1080" href="#1080">1080</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="1081" href="#1081">1081</a> <em class="jxr_javadoccomment">     * Returns the map of attributes names and values for attributes which</em>
+<a class="jxr_linenumber" name="1082" href="#1082">1082</a> <em class="jxr_javadoccomment">     * value is neither null or the default value. These attributes are</em>
+<a class="jxr_linenumber" name="1083" href="#1083">1083</a> <em class="jxr_javadoccomment">     * considered having a non default value and must be written out.</em>
+<a class="jxr_linenumber" name="1084" href="#1084">1084</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="1085" href="#1085">1085</a> <em class="jxr_javadoccomment">     * @return map of attributes indexed by name that must be persisted</em>
+<a class="jxr_linenumber" name="1086" href="#1086">1086</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="1087" href="#1087">1087</a>     <strong class="jxr_keyword">private</strong> Map&lt;String, String&gt; attributesToWrite() {
+<a class="jxr_linenumber" name="1088" href="#1088">1088</a> 
+<a class="jxr_linenumber" name="1089" href="#1089">1089</a>         Map&lt;String, String&gt; attributesToWrite = <strong class="jxr_keyword">new</strong> HashMap&lt;String, String&gt;();
+<a class="jxr_linenumber" name="1090" href="#1090">1090</a>         Map&lt;String, String&gt; localAttr = <strong class="jxr_keyword">new</strong> HashMap&lt;String, String&gt;(attributes);
+<a class="jxr_linenumber" name="1091" href="#1091">1091</a>         <strong class="jxr_keyword">for</strong> (Map.Entry&lt;String, String&gt; a : localAttr.entrySet()) {
+<a class="jxr_linenumber" name="1092" href="#1092">1092</a>             ConfigModel.AttributeLeaf am = model.attributes.get(a.getKey());
+<a class="jxr_linenumber" name="1093" href="#1093">1093</a>             String dv = am.getDefaultValue();
+<a class="jxr_linenumber" name="1094" href="#1094">1094</a>             <strong class="jxr_keyword">if</strong> (dv==<strong class="jxr_keyword">null</strong> || !dv.equals(a.getValue())) {
+<a class="jxr_linenumber" name="1095" href="#1095">1095</a>                 attributesToWrite.put(a.getKey(), a.getValue());
+<a class="jxr_linenumber" name="1096" href="#1096">1096</a>             }
+<a class="jxr_linenumber" name="1097" href="#1097">1097</a>         }
+<a class="jxr_linenumber" name="1098" href="#1098">1098</a>         <strong class="jxr_keyword">return</strong> attributesToWrite;
+<a class="jxr_linenumber" name="1099" href="#1099">1099</a>     }
+<a class="jxr_linenumber" name="1100" href="#1100">1100</a> 
+<a class="jxr_linenumber" name="1101" href="#1101">1101</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="1102" href="#1102">1102</a> <em class="jxr_javadoccomment">     * Returns true if this element is empty</em>
+<a class="jxr_linenumber" name="1103" href="#1103">1103</a> <em class="jxr_javadoccomment">     * meaning all their attributes have default values and it has</em>
+<a class="jxr_linenumber" name="1104" href="#1104">1104</a> <em class="jxr_javadoccomment">     * no descendants.</em>
+<a class="jxr_linenumber" name="1105" href="#1105">1105</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="1106" href="#1106">1106</a> <em class="jxr_javadoccomment">     * @return true if the element is empty, false otherwise</em>
+<a class="jxr_linenumber" name="1107" href="#1107">1107</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="1108" href="#1108">1108</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> isEmpty() {
+<a class="jxr_linenumber" name="1109" href="#1109">1109</a>         Map&lt;String, String&gt; attributesToWrite = attributesToWrite();
+<a class="jxr_linenumber" name="1110" href="#1110">1110</a> 
+<a class="jxr_linenumber" name="1111" href="#1111">1111</a>         <strong class="jxr_keyword">if</strong> (!attributesToWrite.isEmpty()) {
+<a class="jxr_linenumber" name="1112" href="#1112">1112</a>             <strong class="jxr_keyword">return</strong> false;
+<a class="jxr_linenumber" name="1113" href="#1113">1113</a>         }
 <a class="jxr_linenumber" name="1114" href="#1114">1114</a> 
-<a class="jxr_linenumber" name="1115" href="#1115">1115</a> 
-<a class="jxr_linenumber" name="1116" href="#1116">1116</a>     }
+<a class="jxr_linenumber" name="1115" href="#1115">1115</a>         <em class="jxr_comment">// if we have children, we are not empty.</em>
+<a class="jxr_linenumber" name="1116" href="#1116">1116</a>         <strong class="jxr_keyword">return</strong> children.isEmpty();
 <a class="jxr_linenumber" name="1117" href="#1117">1117</a> 
-<a class="jxr_linenumber" name="1118" href="#1118">1118</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="1119" href="#1119">1119</a> <em class="jxr_javadoccomment">     * Writes back this element.</em>
-<a class="jxr_linenumber" name="1120" href="#1120">1120</a> <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="1121" href="#1121">1121</a> <em class="jxr_javadoccomment">     * @param tagName</em>
-<a class="jxr_linenumber" name="1122" href="#1122">1122</a> <em class="jxr_javadoccomment">     *      The tag name of this element to be written. If null, this DOM node</em>
-<a class="jxr_linenumber" name="1123" href="#1123">1123</a> <em class="jxr_javadoccomment">     *      must be a global element and its tag name will be used.</em>
-<a class="jxr_linenumber" name="1124" href="#1124">1124</a> <em class="jxr_javadoccomment">     * @param w</em>
-<a class="jxr_linenumber" name="1125" href="#1125">1125</a> <em class="jxr_javadoccomment">     *      Receives XML infoset stream.</em>
-<a class="jxr_linenumber" name="1126" href="#1126">1126</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="1127" href="#1127">1127</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeTo(String tagName, XMLStreamWriter w) <strong class="jxr_keyword">throws</strong> XMLStreamException {
-<a class="jxr_linenumber" name="1128" href="#1128">1128</a>         <strong class="jxr_keyword">if</strong>(tagName==<strong class="jxr_keyword">null</strong>)
-<a class="jxr_linenumber" name="1129" href="#1129">1129</a>             tagName = model.tagName;
-<a class="jxr_linenumber" name="1130" href="#1130">1130</a>         <strong class="jxr_keyword">if</strong>(tagName==<strong class="jxr_keyword">null</strong>)
-<a class="jxr_linenumber" name="1131" href="#1131">1131</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Trying t write a local element "</span>+<strong class="jxr_keyword">this</strong>+<span class="jxr_string">" w/o a tag name"</span>);
-<a class="jxr_linenumber" name="1132" href="#1132">1132</a> 
-<a class="jxr_linenumber" name="1133" href="#1133">1133</a>         w.writeStartElement(tagName);
-<a class="jxr_linenumber" name="1134" href="#1134">1134</a>         
-<a class="jxr_linenumber" name="1135" href="#1135">1135</a>         <strong class="jxr_keyword">for</strong> (Map.Entry&lt;String, String&gt; attributeToWrite : attributesToWrite().entrySet()) {
-<a class="jxr_linenumber" name="1136" href="#1136">1136</a>             w.writeAttribute(attributeToWrite.getKey(), attributeToWrite.getValue());
-<a class="jxr_linenumber" name="1137" href="#1137">1137</a>         }
-<a class="jxr_linenumber" name="1138" href="#1138">1138</a> 
-<a class="jxr_linenumber" name="1139" href="#1139">1139</a>         List&lt;Child&gt; localChildren = <strong class="jxr_keyword">new</strong> ArrayList&lt;Child&gt;(children);
-<a class="jxr_linenumber" name="1140" href="#1140">1140</a>         <strong class="jxr_keyword">for</strong> (Child c : localChildren)
-<a class="jxr_linenumber" name="1141" href="#1141">1141</a>             c.writeTo(w);
-<a class="jxr_linenumber" name="1142" href="#1142">1142</a> 
-<a class="jxr_linenumber" name="1143" href="#1143">1143</a>         w.writeEndElement();
-<a class="jxr_linenumber" name="1144" href="#1144">1144</a>     }
+<a class="jxr_linenumber" name="1118" href="#1118">1118</a> 
+<a class="jxr_linenumber" name="1119" href="#1119">1119</a>     }
+<a class="jxr_linenumber" name="1120" href="#1120">1120</a> 
+<a class="jxr_linenumber" name="1121" href="#1121">1121</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="1122" href="#1122">1122</a> <em class="jxr_javadoccomment">     * Writes back this element.</em>
+<a class="jxr_linenumber" name="1123" href="#1123">1123</a> <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="1124" href="#1124">1124</a> <em class="jxr_javadoccomment">     * @param tagName</em>
+<a class="jxr_linenumber" name="1125" href="#1125">1125</a> <em class="jxr_javadoccomment">     *      The tag name of this element to be written. If null, this DOM node</em>
+<a class="jxr_linenumber" name="1126" href="#1126">1126</a> <em class="jxr_javadoccomment">     *      must be a global element and its tag name will be used.</em>
+<a class="jxr_linenumber" name="1127" href="#1127">1127</a> <em class="jxr_javadoccomment">     * @param w</em>
+<a class="jxr_linenumber" name="1128" href="#1128">1128</a> <em class="jxr_javadoccomment">     *      Receives XML infoset stream.</em>
+<a class="jxr_linenumber" name="1129" href="#1129">1129</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="1130" href="#1130">1130</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeTo(String tagName, XMLStreamWriter w) <strong class="jxr_keyword">throws</strong> XMLStreamException {
+<a class="jxr_linenumber" name="1131" href="#1131">1131</a>         <strong class="jxr_keyword">if</strong>(tagName==<strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="1132" href="#1132">1132</a>             tagName = model.tagName;
+<a class="jxr_linenumber" name="1133" href="#1133">1133</a>         <strong class="jxr_keyword">if</strong>(tagName==<strong class="jxr_keyword">null</strong>)
+<a class="jxr_linenumber" name="1134" href="#1134">1134</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Trying t write a local element "</span>+<strong class="jxr_keyword">this</strong>+<span class="jxr_string">" w/o a tag name"</span>);
+<a class="jxr_linenumber" name="1135" href="#1135">1135</a> 
+<a class="jxr_linenumber" name="1136" href="#1136">1136</a>         w.writeStartElement(tagName);
+<a class="jxr_linenumber" name="1137" href="#1137">1137</a>         
+<a class="jxr_linenumber" name="1138" href="#1138">1138</a>         <strong class="jxr_keyword">for</strong> (Map.Entry&lt;String, String&gt; attributeToWrite : attributesToWrite().entrySet()) {
+<a class="jxr_linenumber" name="1139" href="#1139">1139</a>             w.writeAttribute(attributeToWrite.getKey(), attributeToWrite.getValue());
+<a class="jxr_linenumber" name="1140" href="#1140">1140</a>         }
+<a class="jxr_linenumber" name="1141" href="#1141">1141</a> 
+<a class="jxr_linenumber" name="1142" href="#1142">1142</a>         List&lt;Child&gt; localChildren = <strong class="jxr_keyword">new</strong> ArrayList&lt;Child&gt;(children);
+<a class="jxr_linenumber" name="1143" href="#1143">1143</a>         <strong class="jxr_keyword">for</strong> (Child c : localChildren)
+<a class="jxr_linenumber" name="1144" href="#1144">1144</a>             c.writeTo(w);
 <a class="jxr_linenumber" name="1145" href="#1145">1145</a> 
-<a class="jxr_linenumber" name="1146" href="#1146">1146</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> injectInto(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> injectable, Object target) {
-<a class="jxr_linenumber" name="1147" href="#1147">1147</a>         <strong class="jxr_keyword">for</strong> (Class intf : target.getClass().getInterfaces()) {
-<a class="jxr_linenumber" name="1148" href="#1148">1148</a>             <strong class="jxr_keyword">if</strong> (ConfigListener.<strong class="jxr_keyword">class</strong>.isAssignableFrom(intf)) {
-<a class="jxr_linenumber" name="1149" href="#1149">1149</a>                 <a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> listener = (ConfigListener) target;
-<a class="jxr_linenumber" name="1150" href="#1150">1150</a>                 addListener(listener);
-<a class="jxr_linenumber" name="1151" href="#1151">1151</a>                 <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="1152" href="#1152">1152</a>             }
-<a class="jxr_linenumber" name="1153" href="#1153">1153</a>         }
-<a class="jxr_linenumber" name="1154" href="#1154">1154</a>     }
-<a class="jxr_linenumber" name="1155" href="#1155">1155</a> 
-<a class="jxr_linenumber" name="1156" href="#1156">1156</a>     @Override
-<a class="jxr_linenumber" name="1157" href="#1157">1157</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> release() {
-<a class="jxr_linenumber" name="1158" href="#1158">1158</a>         listeners.clear();
-<a class="jxr_linenumber" name="1159" href="#1159">1159</a>         <strong class="jxr_keyword">super</strong>.release();
-<a class="jxr_linenumber" name="1160" href="#1160">1160</a>     }
-<a class="jxr_linenumber" name="1161" href="#1161">1161</a> 
-<a class="jxr_linenumber" name="1162" href="#1162">1162</a>     Set&lt;ConfigListener&gt; listeners = <strong class="jxr_keyword">new</strong> HashSet&lt;ConfigListener&gt;();
-<a class="jxr_linenumber" name="1163" href="#1163">1163</a> 
-<a class="jxr_linenumber" name="1164" href="#1164">1164</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addListener(<a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> listener) {
-<a class="jxr_linenumber" name="1165" href="#1165">1165</a>         <strong class="jxr_keyword">if</strong> (listener==<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="1166" href="#1166">1166</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Listener cannot be null"</span>);
-<a class="jxr_linenumber" name="1167" href="#1167">1167</a>         }
-<a class="jxr_linenumber" name="1168" href="#1168">1168</a>         listeners.add(listener);
-<a class="jxr_linenumber" name="1169" href="#1169">1169</a>     }
-<a class="jxr_linenumber" name="1170" href="#1170">1170</a> 
-<a class="jxr_linenumber" name="1171" href="#1171">1171</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> removeListener(<a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> listener) {
-<a class="jxr_linenumber" name="1172" href="#1172">1172</a>         <strong class="jxr_keyword">return</strong> listeners.remove(listener);
-<a class="jxr_linenumber" name="1173" href="#1173">1173</a>     }
-<a class="jxr_linenumber" name="1174" href="#1174">1174</a> 
-<a class="jxr_linenumber" name="1175" href="#1175">1175</a>     Collection&lt;ConfigListener&gt; getListeners() {
-<a class="jxr_linenumber" name="1176" href="#1176">1176</a>         <strong class="jxr_keyword">return</strong> listeners;
-<a class="jxr_linenumber" name="1177" href="#1177">1177</a>     }
-<a class="jxr_linenumber" name="1178" href="#1178">1178</a> }
+<a class="jxr_linenumber" name="1146" href="#1146">1146</a>         w.writeEndElement();
+<a class="jxr_linenumber" name="1147" href="#1147">1147</a>     }
+<a class="jxr_linenumber" name="1148" href="#1148">1148</a> 
+<a class="jxr_linenumber" name="1149" href="#1149">1149</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> injectInto(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> injectable, Object target) {
+<a class="jxr_linenumber" name="1150" href="#1150">1150</a>         <strong class="jxr_keyword">for</strong> (Class intf : target.getClass().getInterfaces()) {
+<a class="jxr_linenumber" name="1151" href="#1151">1151</a>             <strong class="jxr_keyword">if</strong> (ConfigListener.<strong class="jxr_keyword">class</strong>.isAssignableFrom(intf)) {
+<a class="jxr_linenumber" name="1152" href="#1152">1152</a>                 <a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> listener = (ConfigListener) target;
+<a class="jxr_linenumber" name="1153" href="#1153">1153</a>                 addListener(listener);
+<a class="jxr_linenumber" name="1154" href="#1154">1154</a>                 <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="1155" href="#1155">1155</a>             }
+<a class="jxr_linenumber" name="1156" href="#1156">1156</a>         }
+<a class="jxr_linenumber" name="1157" href="#1157">1157</a>     }
+<a class="jxr_linenumber" name="1158" href="#1158">1158</a> 
+<a class="jxr_linenumber" name="1159" href="#1159">1159</a>     @Override
+<a class="jxr_linenumber" name="1160" href="#1160">1160</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> release() {
+<a class="jxr_linenumber" name="1161" href="#1161">1161</a>         listeners.clear();
+<a class="jxr_linenumber" name="1162" href="#1162">1162</a>         <strong class="jxr_keyword">super</strong>.release();
+<a class="jxr_linenumber" name="1163" href="#1163">1163</a>     }
+<a class="jxr_linenumber" name="1164" href="#1164">1164</a> 
+<a class="jxr_linenumber" name="1165" href="#1165">1165</a>     Set&lt;ConfigListener&gt; listeners = <strong class="jxr_keyword">new</strong> HashSet&lt;ConfigListener&gt;();
+<a class="jxr_linenumber" name="1166" href="#1166">1166</a> 
+<a class="jxr_linenumber" name="1167" href="#1167">1167</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addListener(<a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> listener) {
+<a class="jxr_linenumber" name="1168" href="#1168">1168</a>         <strong class="jxr_keyword">if</strong> (listener==<strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="1169" href="#1169">1169</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"Listener cannot be null"</span>);
+<a class="jxr_linenumber" name="1170" href="#1170">1170</a>         }
+<a class="jxr_linenumber" name="1171" href="#1171">1171</a>         listeners.add(listener);
+<a class="jxr_linenumber" name="1172" href="#1172">1172</a>     }
+<a class="jxr_linenumber" name="1173" href="#1173">1173</a> 
+<a class="jxr_linenumber" name="1174" href="#1174">1174</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> removeListener(<a href="../../../../org/jvnet/hk2/config/ConfigListener.html">ConfigListener</a> listener) {
+<a class="jxr_linenumber" name="1175" href="#1175">1175</a>         <strong class="jxr_keyword">return</strong> listeners.remove(listener);
+<a class="jxr_linenumber" name="1176" href="#1176">1176</a>     }
+<a class="jxr_linenumber" name="1177" href="#1177">1177</a> 
+<a class="jxr_linenumber" name="1178" href="#1178">1178</a>     Collection&lt;ConfigListener&gt; getListeners() {
+<a class="jxr_linenumber" name="1179" href="#1179">1179</a>         <strong class="jxr_keyword">return</strong> listeners;
+<a class="jxr_linenumber" name="1180" href="#1180">1180</a>     }
+<a class="jxr_linenumber" name="1181" href="#1181">1181</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
