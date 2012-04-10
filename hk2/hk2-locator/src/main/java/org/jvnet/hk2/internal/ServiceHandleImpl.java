@@ -39,9 +39,12 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -77,6 +80,20 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         this.locator = locator;
         this.injectee = injectee;
     }
+    
+    private Object secureCreate(final Class<?> superclass,
+            final Class<?>[] interfaces,
+            final Callback callback) {
+        return AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+            @Override
+            public Object run() {
+                return Enhancer.create(superclass, interfaces, callback);
+            }
+            
+        });
+        
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceHandle#getService()
@@ -94,7 +111,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             }
         
             if (Utilities.isProxiableScope(root.getScopeAnnotation())) {
-                T proxy = (T) Enhancer.create(root.getImplementationClass(),
+                T proxy = (T) secureCreate(root.getImplementationClass(),
                     Utilities.getInterfacesForProxy(root.getContractTypes()),
                     new MethodInterceptorImpl(locator, root, this));
             

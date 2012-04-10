@@ -161,7 +161,7 @@ public class ClazzCreator<T> implements Creator<T> {
             args[injectee.getPosition()] = resolved.get(injectee);
         }
         
-        c.setAccessible(true);
+        Utilities.setAccessible(c);
         
         return Utilities.makeMe(c, args);
     }
@@ -178,7 +178,7 @@ public class ClazzCreator<T> implements Creator<T> {
             
             Object putMeIn = resolved.get(fieldInjectee);
             
-            field.setAccessible(true);
+            Utilities.setAccessible(field);
             
             field.set(t, putMeIn);
         }
@@ -194,7 +194,7 @@ public class ClazzCreator<T> implements Creator<T> {
                 args[injectee.getPosition()] = resolved.get(injectee);
             }
             
-            m.setAccessible(true);
+            Utilities.setAccessible(m);
             
             Utilities.invoke(t, m, args);
         }
@@ -210,7 +210,7 @@ public class ClazzCreator<T> implements Creator<T> {
         
         if (postConstructMethod == null) return;
         
-        postConstructMethod.setAccessible(true);
+        Utilities.setAccessible(postConstructMethod);
         Utilities.invoke(t, postConstructMethod, new Object[0]);
     }
     
@@ -224,7 +224,7 @@ public class ClazzCreator<T> implements Creator<T> {
         
         if (preDestroyMethod == null) return;
         
-        preDestroyMethod.setAccessible(true);
+        Utilities.setAccessible(preDestroyMethod);
         Utilities.invoke(t, preDestroyMethod, new Object[0]);
     }
 

@@ -84,18 +84,29 @@ grant codeBase "file:${build.dir}/../../external/cglib/target/-" {
 // we are not doing any specific security testing here.  It is the
 // classes directory that should have minimal grants, not the tests 
 grant codeBase "file:${build.dir}/test-classes/-" {
-  permission java.security.AllPermission;
+  permission java.io.FilePermission "<<ALL FILES>>", "read";
 };
 
 // This is the grant that should contain the minimal grants necessary
 // for hk2-locator to run in Eclipse (assuming Eclipse is putting its
 // classes into the bin directory)
 grant codeBase "file:${user.dir}/bin/-" {
-  permission java.security.AllPermission;
+  permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+  permission java.lang.RuntimePermission "accessDeclaredMembers";
+  permission java.lang.RuntimePermission "setContextClassLoader";
+  permission java.util.PropertyPermission "cglib.*", "read";
+  permission java.util.PropertyPermission "org.jvnet.*", "read";
+  
+  // For the test
+  permission java.io.FilePermission "<<ALL FILES>>", "read";
 };
 
 // This is the grant that should contain the minimal grants necessary
 // for hk2-locator to run under maven. 
 grant codeBase "file:${build.dir}/classes/-" {
-  permission java.security.AllPermission;
+  permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+  permission java.lang.RuntimePermission "accessDeclaredMembers";
+  permission java.lang.RuntimePermission "setContextClassLoader";
+  permission java.util.PropertyPermission "cglib.*", "read";
+  permission java.util.PropertyPermission "org.jvnet.*", "read";
 };

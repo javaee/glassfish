@@ -41,10 +41,13 @@ package org.glassfish.hk2;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 
 /**
@@ -250,11 +253,26 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
        return hashCode;
     }
     
+    private static void setAccessible(final AccessibleObject ao) {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+            @Override
+            public Object run() {
+                ao.setAccessible(true);
+                return null;
+            }
+            
+        });
+        
+    }
+    
     private static Object invoke(Method method, Object instance)
     {
        try
        {
-          if (!method.isAccessible()) method.setAccessible(true);
+          if (!method.isAccessible()) {
+              setAccessible(method);
+          }
           return method.invoke(instance);
        }
        catch (IllegalArgumentException e)

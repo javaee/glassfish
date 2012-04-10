@@ -41,6 +41,7 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -53,6 +54,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -89,6 +92,86 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * This is used to check on the annotation set.  It must be done under protection because the annotations may
+     * attempt to discover if they are equal using getDeclaredMembers permission
+     * 
+     * @param candidateAnnotations The candidate annotations
+     * @param requiredAnnotations The required annotations
+     * @return
+     */
+    /* package */ static boolean annotationContainsAll(final Set<Annotation> candidateAnnotations, final Set<Annotation> requiredAnnotations) {
+        return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+
+            @Override
+            public Boolean run() {
+                return candidateAnnotations.containsAll(requiredAnnotations);
+            }
+            
+        });
+        
+    }
+    private static void setContextClassLoader(final Thread t, final ClassLoader l) {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+            @Override
+            public Object run() {
+                t.setContextClassLoader(l);
+                return null;
+            }
+            
+        });
+        
+    }
+    
+    private static Field[] getDeclaredFields(final Class<?> clazz) {
+        return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
+
+            @Override
+            public Field[] run() {
+                return clazz.getDeclaredFields();
+            }
+            
+        });
+        
+    }
+    
+    /**
+     * Sets this accessible object to be accessible using the permissions of
+     * the hk2-locator bundle (which will need the required grant)
+     * 
+     * @param ao The object to change
+     */
+    private static Method[] getDeclaredMethods(final Class<?> clazz) {
+        return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
+
+            @Override
+            public Method[] run() {
+                return clazz.getDeclaredMethods();
+            }
+            
+        });
+        
+    }
+    
+    /**
+     * Sets this accessible object to be accessible using the permissions of
+     * the hk2-locator bundle (which will need the required grant)
+     * 
+     * @param ao The object to change
+     */
+    /* package */ static void setAccessible(final AccessibleObject ao) {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+            @Override
+            public Object run() {
+                ao.setAccessible(true);
+                return null;
+            }
+            
+        });
+        
+    }
     /**
      * Converts the type to its java form, or returns the original
      * 
@@ -302,7 +385,7 @@ public class Utilities {
         
         collector.throwIfErrors();
         
-        preDestroy.setAccessible(true);
+        setAccessible(preDestroy);
         
         try {
             invoke(preMe, preDestroy, new Object[0]);
@@ -327,7 +410,7 @@ public class Utilities {
         
         collector.throwIfErrors();
         
-        postConstruct.setAccessible(true);
+        setAccessible(postConstruct);
         
         try {
             invoke(postMe, postConstruct, new Object[0]);
@@ -361,7 +444,7 @@ public class Utilities {
             
             Object fieldValue = resolver.resolve(injectee, null);
             
-            field.setAccessible(true);
+            setAccessible(field);
             
             try {
                 field.set(injectMe, fieldValue);
@@ -382,7 +465,7 @@ public class Utilities {
                 args[injectee.getPosition()] = resolver.resolve(injectee, null);
             }
             
-            method.setAccessible(true);
+            setAccessible(method);
             
             try {
                 invoke(injectMe, method, args);
@@ -419,7 +502,7 @@ public class Utilities {
             args[injectee.getPosition()] = resolver.resolve(injectee, null);
         }
         
-        c.setAccessible(true);
+        setAccessible(c);
         try {
           return (T) makeMe(c, args);
         }
@@ -499,7 +582,7 @@ public class Utilities {
         // overriden in the set
         getAllFieldKeys(clazz.getSuperclass(), currentFields);
         
-        for (Field field : clazz.getDeclaredFields()) {
+        for (Field field : getDeclaredFields(clazz)) {
             currentFields.add(new MemberKey(field));
         }
         
@@ -729,7 +812,7 @@ public class Utilities {
         // overriden in the set
         getAllMethodKeys(clazz.getSuperclass(), currentMethods);
         
-        for (Method method : clazz.getDeclaredMethods()) {
+        for (Method method : getDeclaredMethods(clazz)) {
             currentMethods.add(new MemberKey(method));
         }  
     }
@@ -1364,7 +1447,7 @@ public class Utilities {
             throw ite.getTargetException();
         }
         finally {
-            Thread.currentThread().setContextClassLoader(currentCCL);
+            setContextClassLoader(Thread.currentThread(), currentCCL);
         }
     }
     
@@ -1393,7 +1476,7 @@ public class Utilities {
             throw ite.getTargetException();
         }
         finally {
-            Thread.currentThread().setContextClassLoader(currentCCL);
+            setContextClassLoader(Thread.currentThread(), currentCCL);
         }
     }
     
