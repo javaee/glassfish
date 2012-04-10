@@ -24,6 +24,7 @@ org.jvnet.hk2.test
 org.jvnet.hk2.test.constructor
 org.jvnet.hk2.test.contracts
 org.jvnet.hk2.test.impl
+org.jvnet.hk2.test.jsr330
 org.jvnet.hk2.test.multiple.contracts
 org.jvnet.hk2.test.multiple.noindex
 org.jvnet.hk2.test.parameterized
