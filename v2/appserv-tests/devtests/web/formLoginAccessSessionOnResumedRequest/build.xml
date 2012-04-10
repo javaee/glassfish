@@ -111,7 +111,7 @@
         <antcall target="undeploy-war-common"/>
     </target>   
 
-    <target name="restore" depends="setup">
+    <target name="restore" depends="init-common">
         <antcall target="delete-user-common">
             <param name="user" value="${testuser}"/>
         </antcall>
