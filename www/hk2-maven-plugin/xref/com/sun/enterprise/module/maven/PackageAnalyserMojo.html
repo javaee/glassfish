@@ -150,7 +150,7 @@
 <a class="jxr_linenumber" name="140" href="#140">140</a>             sb.append(<span class="jxr_string">"******** GROSS STATISTICS *********\n"</span>);
 <a class="jxr_linenumber" name="141" href="#141">141</a>             sb.append(<span class="jxr_string">"Total number of bundles in this repository: "</span> + analyser.findAllBundles().size()+<span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="142" href="#142">142</a>             sb.append(<span class="jxr_string">"Total number of wires = "</span> + wires.size() + <span class="jxr_string">"\n"</span>);
-<a class="jxr_linenumber" name="143" href="#143">143</a>             Collection&lt;String&gt; exportedPkgs = analyser.findAllExportedPackageNames();
+<a class="jxr_linenumber" name="143" href="#143">143</a>             Collection&lt;PackageAnalyser.PackageCapability&gt; exportedPkgs = analyser.findAllExportedPackages();
 <a class="jxr_linenumber" name="144" href="#144">144</a>             sb.append(<span class="jxr_string">"Total number of exported packages = "</span> + exportedPkgs.size() + <span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="145" href="#145">145</a>             sb.append(<span class="jxr_string">"Total number of split-packages = "</span> + splitPkgs.size()+<span class="jxr_string">"\n"</span>);
 <a class="jxr_linenumber" name="146" href="#146">146</a>             sb.append(<span class="jxr_string">"Total number of unused-packages = "</span> + totalUnusedPkgs +<span class="jxr_string">"\n"</span>);
