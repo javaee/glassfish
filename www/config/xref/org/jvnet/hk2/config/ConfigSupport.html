@@ -601,7 +601,7 @@
 <a class="jxr_linenumber" name="591" href="#591">591</a>                         <em class="jxr_comment">// type will not work.</em>
 <a class="jxr_linenumber" name="592" href="#592">592</a>                         <strong class="jxr_keyword">for</strong> (Method m : parentProxyType.getMethods()) {
 <a class="jxr_linenumber" name="593" href="#593">593</a>                             <strong class="jxr_keyword">final</strong> Class returnType = m.getReturnType();
-<a class="jxr_linenumber" name="594" href="#594">594</a>                             <strong class="jxr_keyword">if</strong> (Collection.<strong class="jxr_keyword">class</strong>.isAssignableFrom(returnType)) {
+<a class="jxr_linenumber" name="594" href="#594">594</a>                             <strong class="jxr_keyword">if</strong> (Collection.<strong class="jxr_keyword">class</strong>.isAssignableFrom(returnType) &amp;&amp; (m.getParameterTypes().length == 0)) {
 <a class="jxr_linenumber" name="595" href="#595">595</a>                                 <em class="jxr_comment">// this could be it...</em>
 <a class="jxr_linenumber" name="596" href="#596">596</a>                                 <strong class="jxr_keyword">if</strong> (!(m.getGenericReturnType() instanceof ParameterizedType))
 <a class="jxr_linenumber" name="597" href="#597">597</a>                                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"List needs to be parameterized"</span>);
@@ -797,7 +797,7 @@
 <a class="jxr_linenumber" name="787" href="#787">787</a>                         <em class="jxr_comment">// type will not work.</em>
 <a class="jxr_linenumber" name="788" href="#788">788</a>                         <strong class="jxr_keyword">for</strong> (Method m : parentProxyType.getMethods()) {
 <a class="jxr_linenumber" name="789" href="#789">789</a>                             <strong class="jxr_keyword">final</strong> Class returnType = m.getReturnType();
-<a class="jxr_linenumber" name="790" href="#790">790</a>                             <strong class="jxr_keyword">if</strong> (Collection.<strong class="jxr_keyword">class</strong>.isAssignableFrom(returnType)) {
+<a class="jxr_linenumber" name="790" href="#790">790</a>                             <strong class="jxr_keyword">if</strong> (Collection.<strong class="jxr_keyword">class</strong>.isAssignableFrom(returnType)  &amp;&amp; (m.getParameterTypes().length == 0)) {
 <a class="jxr_linenumber" name="791" href="#791">791</a>                                 <em class="jxr_comment">// this could be it...</em>
 <a class="jxr_linenumber" name="792" href="#792">792</a>                                 <strong class="jxr_keyword">if</strong> (!(m.getGenericReturnType() instanceof ParameterizedType))
 <a class="jxr_linenumber" name="793" href="#793">793</a>                                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"List needs to be parameterized"</span>);
