@@ -75,7 +75,7 @@
 <a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_comment">// TODO: need to implement service ranking in Hk2</em>
 <a class="jxr_linenumber" name="67" href="#67">67</a>  @Service(metadata=org.jvnet.hk2.component.Constants.SERVICE_RANKING + <span class="jxr_string">"="</span> + Integer.MIN_VALUE)
-<a class="jxr_linenumber" name="68" href="#68">68</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> Jsr330BindingLocatorImpl <strong class="jxr_keyword">implements</strong> Jsr330BindingLocator, <a href="../../../../../../com/sun/hk2/jsr330/BindingFactory.html">BindingFactory</a> {
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> Jsr330BindingLocatorImpl <strong class="jxr_keyword">implements</strong> Jsr330BindingLocator, BindingFactory {
 <a class="jxr_linenumber" name="69" href="#69">69</a>  
 <a class="jxr_linenumber" name="70" href="#70">70</a>    @Inject
 <a class="jxr_linenumber" name="71" href="#71">71</a>    <strong class="jxr_keyword">private</strong> Habitat h;
@@ -103,13 +103,13 @@
 <a class="jxr_linenumber" name="93" href="#93">93</a>    }
 <a class="jxr_linenumber" name="94" href="#94">94</a>  
 <a class="jxr_linenumber" name="95" href="#95">95</a>    @Override
-<a class="jxr_linenumber" name="96" href="#96">96</a>    <strong class="jxr_keyword">public</strong> <a href="../../../../../../com/sun/hk2/jsr330/BasicBinding.html">BasicBinding</a> newBinding(String serviceName) {
-<a class="jxr_linenumber" name="97" href="#97">97</a>      <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/sun/hk2/jsr330/BasicBinding.html">BasicBinding</a>(serviceName);
+<a class="jxr_linenumber" name="96" href="#96">96</a>    <strong class="jxr_keyword">public</strong> BasicBinding newBinding(String serviceName) {
+<a class="jxr_linenumber" name="97" href="#97">97</a>      <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> BasicBinding(serviceName);
 <a class="jxr_linenumber" name="98" href="#98">98</a>    }
 <a class="jxr_linenumber" name="99" href="#99">99</a>  
 <a class="jxr_linenumber" name="100" href="#100">100</a>   @Override
-<a class="jxr_linenumber" name="101" href="#101">101</a>   <strong class="jxr_keyword">public</strong> <a href="../../../../../../com/sun/hk2/jsr330/BasicBinding.html">BasicBinding</a> newBinding(Class&lt;?&gt; serviceClass) {
-<a class="jxr_linenumber" name="102" href="#102">102</a>     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../../../com/sun/hk2/jsr330/BasicBinding.html">BasicBinding</a>(serviceClass);
+<a class="jxr_linenumber" name="101" href="#101">101</a>   <strong class="jxr_keyword">public</strong> BasicBinding newBinding(Class&lt;?&gt; serviceClass) {
+<a class="jxr_linenumber" name="102" href="#102">102</a>     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> BasicBinding(serviceClass);
 <a class="jxr_linenumber" name="103" href="#103">103</a>   }
 <a class="jxr_linenumber" name="104" href="#104">104</a> 
 <a class="jxr_linenumber" name="105" href="#105">105</a> }
