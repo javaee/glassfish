@@ -144,7 +144,7 @@
 <a class="jxr_linenumber" name="134" href="#134">134</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="135" href="#135">135</a>     }
 <a class="jxr_linenumber" name="136" href="#136">136</a>     
-<a class="jxr_linenumber" name="137" href="#137">137</a>     <strong class="jxr_keyword">private</strong> SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; getDescriptors(Filter filter, Injectee onBehalfOf, <strong class="jxr_keyword">boolean</strong> getParents) {
+<a class="jxr_linenumber" name="137" href="#137">137</a>     <strong class="jxr_keyword">private</strong> List&lt;ActiveDescriptor&lt;?&gt;&gt; getDescriptors(Filter filter, Injectee onBehalfOf, <strong class="jxr_keyword">boolean</strong> getParents) {
 <a class="jxr_linenumber" name="138" href="#138">138</a>         <strong class="jxr_keyword">if</strong> (filter == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"filter is null"</span>);
 <a class="jxr_linenumber" name="139" href="#139">139</a>         
 <a class="jxr_linenumber" name="140" href="#140">140</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
@@ -206,16 +206,16 @@
 <a class="jxr_linenumber" name="196" href="#196">196</a>                 sorter.addAll(parent.getDescriptors(filter));
 <a class="jxr_linenumber" name="197" href="#197">197</a>             }
 <a class="jxr_linenumber" name="198" href="#198">198</a>             
-<a class="jxr_linenumber" name="199" href="#199">199</a>             <strong class="jxr_keyword">return</strong> sorter;
+<a class="jxr_linenumber" name="199" href="#199">199</a>             <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> LinkedList&lt;ActiveDescriptor&lt;?&gt;&gt;(sorter);
 <a class="jxr_linenumber" name="200" href="#200">200</a>         }
 <a class="jxr_linenumber" name="201" href="#201">201</a>         
 <a class="jxr_linenumber" name="202" href="#202">202</a>     }
 <a class="jxr_linenumber" name="203" href="#203">203</a>     
-<a class="jxr_linenumber" name="204" href="#204">204</a>     <strong class="jxr_keyword">private</strong> SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; protectedGetDescriptors(<strong class="jxr_keyword">final</strong> Filter filter) {
-<a class="jxr_linenumber" name="205" href="#205">205</a>         <strong class="jxr_keyword">return</strong> AccessController.doPrivileged(<strong class="jxr_keyword">new</strong> PrivilegedAction&lt;SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt;&gt;() {
+<a class="jxr_linenumber" name="204" href="#204">204</a>     <strong class="jxr_keyword">private</strong> List&lt;ActiveDescriptor&lt;?&gt;&gt; protectedGetDescriptors(<strong class="jxr_keyword">final</strong> Filter filter) {
+<a class="jxr_linenumber" name="205" href="#205">205</a>         <strong class="jxr_keyword">return</strong> AccessController.doPrivileged(<strong class="jxr_keyword">new</strong> PrivilegedAction&lt;List&lt;ActiveDescriptor&lt;?&gt;&gt;&gt;() {
 <a class="jxr_linenumber" name="206" href="#206">206</a> 
 <a class="jxr_linenumber" name="207" href="#207">207</a>             @Override
-<a class="jxr_linenumber" name="208" href="#208">208</a>             <strong class="jxr_keyword">public</strong> SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; run() {
+<a class="jxr_linenumber" name="208" href="#208">208</a>             <strong class="jxr_keyword">public</strong> List&lt;ActiveDescriptor&lt;?&gt;&gt; run() {
 <a class="jxr_linenumber" name="209" href="#209">209</a>                 <strong class="jxr_keyword">return</strong> getDescriptors(filter);
 <a class="jxr_linenumber" name="210" href="#210">210</a>             }
 <a class="jxr_linenumber" name="211" href="#211">211</a>             
@@ -227,7 +227,7 @@
 <a class="jxr_linenumber" name="217" href="#217">217</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)</em>
 <a class="jxr_linenumber" name="218" href="#218">218</a> <em class="jxr_comment">     */</em>
 <a class="jxr_linenumber" name="219" href="#219">219</a>     @Override
-<a class="jxr_linenumber" name="220" href="#220">220</a>     <strong class="jxr_keyword">public</strong> SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; getDescriptors(Filter filter) {
+<a class="jxr_linenumber" name="220" href="#220">220</a>     <strong class="jxr_keyword">public</strong> List&lt;ActiveDescriptor&lt;?&gt;&gt; getDescriptors(Filter filter) {
 <a class="jxr_linenumber" name="221" href="#221">221</a>         checkState();
 <a class="jxr_linenumber" name="222" href="#222">222</a>         
 <a class="jxr_linenumber" name="223" href="#223">223</a>         <strong class="jxr_keyword">return</strong> getDescriptors(filter, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">true</strong>);
@@ -237,9 +237,9 @@
 <a class="jxr_linenumber" name="227" href="#227">227</a>         <strong class="jxr_keyword">if</strong> (filter == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(<span class="jxr_string">"filter is null"</span>);
 <a class="jxr_linenumber" name="228" href="#228">228</a>         checkState();
 <a class="jxr_linenumber" name="229" href="#229">229</a>         
-<a class="jxr_linenumber" name="230" href="#230">230</a>         SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; sorted = getDescriptors(filter);
+<a class="jxr_linenumber" name="230" href="#230">230</a>         List&lt;ActiveDescriptor&lt;?&gt;&gt; sorted = getDescriptors(filter);
 <a class="jxr_linenumber" name="231" href="#231">231</a>         
-<a class="jxr_linenumber" name="232" href="#232">232</a>         <strong class="jxr_keyword">return</strong> Utilities.getFirstThingInSet(sorted);
+<a class="jxr_linenumber" name="232" href="#232">232</a>         <strong class="jxr_keyword">return</strong> Utilities.getFirstThingInList(sorted);
 <a class="jxr_linenumber" name="233" href="#233">233</a>     }
 <a class="jxr_linenumber" name="234" href="#234">234</a> 
 <a class="jxr_linenumber" name="235" href="#235">235</a>     <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
@@ -403,7 +403,7 @@
 <a class="jxr_linenumber" name="393" href="#393">393</a>             <strong class="jxr_keyword">throws</strong> MultiException {
 <a class="jxr_linenumber" name="394" href="#394">394</a>         checkState();
 <a class="jxr_linenumber" name="395" href="#395">395</a>         
-<a class="jxr_linenumber" name="396" href="#396">396</a>         SortedSet&lt;ServiceHandle&lt;?&gt;&gt; services = getAllServiceHandles(contractOrImpl, qualifiers);
+<a class="jxr_linenumber" name="396" href="#396">396</a>         List&lt;ServiceHandle&lt;?&gt;&gt; services = getAllServiceHandles(contractOrImpl, qualifiers);
 <a class="jxr_linenumber" name="397" href="#397">397</a>         
 <a class="jxr_linenumber" name="398" href="#398">398</a>         List&lt;T&gt; retVal = <strong class="jxr_keyword">new</strong> LinkedList&lt;T&gt;();
 <a class="jxr_linenumber" name="399" href="#399">399</a>         <strong class="jxr_keyword">for</strong> (ServiceHandle&lt;?&gt; service : services) {
@@ -434,7 +434,7 @@
 <a class="jxr_linenumber" name="424" href="#424">424</a>             <strong class="jxr_keyword">throws</strong> MultiException {
 <a class="jxr_linenumber" name="425" href="#425">425</a>         checkState();
 <a class="jxr_linenumber" name="426" href="#426">426</a>         
-<a class="jxr_linenumber" name="427" href="#427">427</a>         SortedSet&lt;ServiceHandle&lt;?&gt;&gt; handleSet = getAllServiceHandles(searchCriteria);
+<a class="jxr_linenumber" name="427" href="#427">427</a>         List&lt;ServiceHandle&lt;?&gt;&gt; handleSet = getAllServiceHandles(searchCriteria);
 <a class="jxr_linenumber" name="428" href="#428">428</a>         
 <a class="jxr_linenumber" name="429" href="#429">429</a>         List&lt;Object&gt; retVal = <strong class="jxr_keyword">new</strong> LinkedList&lt;Object&gt;();
 <a class="jxr_linenumber" name="430" href="#430">430</a>         <strong class="jxr_keyword">for</strong> (ServiceHandle&lt;?&gt; handle : handleSet) {
@@ -528,7 +528,7 @@
 <a class="jxr_linenumber" name="518" href="#518">518</a>         <a href="../../../../org/jvnet/hk2/internal/NarrowResults.html">NarrowResults</a> results;
 <a class="jxr_linenumber" name="519" href="#519">519</a>         LinkedList&lt;ErrorService&gt; currentErrorHandlers = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="520" href="#520">520</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
-<a class="jxr_linenumber" name="521" href="#521">521</a>             SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; candidates = getDescriptors(filter, onBehalfOf, <strong class="jxr_keyword">true</strong>);
+<a class="jxr_linenumber" name="521" href="#521">521</a>             List&lt;ActiveDescriptor&lt;?&gt;&gt; candidates = getDescriptors(filter, onBehalfOf, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="522" href="#522">522</a>             results = narrow(candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
 <a class="jxr_linenumber" name="523" href="#523">523</a>             <strong class="jxr_keyword">if</strong> (!results.getErrors().isEmpty()) {
 <a class="jxr_linenumber" name="524" href="#524">524</a>                 currentErrorHandlers = <strong class="jxr_keyword">new</strong> LinkedList&lt;ErrorService&gt;(errorHandlers);
@@ -540,7 +540,7 @@
 <a class="jxr_linenumber" name="530" href="#530">530</a>             Utilities.handleErrors(results, currentErrorHandlers);
 <a class="jxr_linenumber" name="531" href="#531">531</a>         }
 <a class="jxr_linenumber" name="532" href="#532">532</a>         
-<a class="jxr_linenumber" name="533" href="#533">533</a>         ActiveDescriptor&lt;?&gt; topDog = Utilities.getFirstThingInSet(results.getResults());
+<a class="jxr_linenumber" name="533" href="#533">533</a>         ActiveDescriptor&lt;?&gt; topDog = Utilities.getFirstThingInList(results.getResults());
 <a class="jxr_linenumber" name="534" href="#534">534</a>         <strong class="jxr_keyword">if</strong> (topDog == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="535" href="#535">535</a>         
 <a class="jxr_linenumber" name="536" href="#536">536</a>         <strong class="jxr_keyword">return</strong> getServiceHandle((ActiveDescriptor&lt;T&gt;) topDog);
@@ -557,12 +557,12 @@
 <a class="jxr_linenumber" name="547" href="#547">547</a>         <strong class="jxr_keyword">return</strong> internalGetServiceHandle(<strong class="jxr_keyword">null</strong>, contractOrImpl, <strong class="jxr_keyword">null</strong>, qualifiers);
 <a class="jxr_linenumber" name="548" href="#548">548</a>     }
 <a class="jxr_linenumber" name="549" href="#549">549</a>     
-<a class="jxr_linenumber" name="550" href="#550">550</a>     <strong class="jxr_keyword">private</strong> SortedSet&lt;ServiceHandle&lt;?&gt;&gt; protectedGetAllServiceHandles(
+<a class="jxr_linenumber" name="550" href="#550">550</a>     <strong class="jxr_keyword">private</strong> List&lt;ServiceHandle&lt;?&gt;&gt; protectedGetAllServiceHandles(
 <a class="jxr_linenumber" name="551" href="#551">551</a>             <strong class="jxr_keyword">final</strong> Type contractOrImpl, <strong class="jxr_keyword">final</strong> Annotation... qualifiers) {
-<a class="jxr_linenumber" name="552" href="#552">552</a>         <strong class="jxr_keyword">return</strong> AccessController.doPrivileged(<strong class="jxr_keyword">new</strong> PrivilegedAction&lt;SortedSet&lt;ServiceHandle&lt;?&gt;&gt;&gt;() {
+<a class="jxr_linenumber" name="552" href="#552">552</a>         <strong class="jxr_keyword">return</strong> AccessController.doPrivileged(<strong class="jxr_keyword">new</strong> PrivilegedAction&lt;List&lt;ServiceHandle&lt;?&gt;&gt;&gt;() {
 <a class="jxr_linenumber" name="553" href="#553">553</a> 
 <a class="jxr_linenumber" name="554" href="#554">554</a>             @Override
-<a class="jxr_linenumber" name="555" href="#555">555</a>             <strong class="jxr_keyword">public</strong> SortedSet&lt;ServiceHandle&lt;?&gt;&gt; run() {
+<a class="jxr_linenumber" name="555" href="#555">555</a>             <strong class="jxr_keyword">public</strong> List&lt;ServiceHandle&lt;?&gt;&gt; run() {
 <a class="jxr_linenumber" name="556" href="#556">556</a>                 <strong class="jxr_keyword">return</strong> getAllServiceHandles(contractOrImpl, qualifiers);
 <a class="jxr_linenumber" name="557" href="#557">557</a>             }
 <a class="jxr_linenumber" name="558" href="#558">558</a>             
@@ -573,7 +573,7 @@
 <a class="jxr_linenumber" name="563" href="#563">563</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.reflect.Type, java.lang.annotation.Annotation[])</em>
 <a class="jxr_linenumber" name="564" href="#564">564</a> <em class="jxr_comment">     */</em>
 <a class="jxr_linenumber" name="565" href="#565">565</a>     @Override
-<a class="jxr_linenumber" name="566" href="#566">566</a>     <strong class="jxr_keyword">public</strong> SortedSet&lt;ServiceHandle&lt;?&gt;&gt; getAllServiceHandles(
+<a class="jxr_linenumber" name="566" href="#566">566</a>     <strong class="jxr_keyword">public</strong> List&lt;ServiceHandle&lt;?&gt;&gt; getAllServiceHandles(
 <a class="jxr_linenumber" name="567" href="#567">567</a>             Type contractOrImpl, Annotation... qualifiers)
 <a class="jxr_linenumber" name="568" href="#568">568</a>             <strong class="jxr_keyword">throws</strong> MultiException {
 <a class="jxr_linenumber" name="569" href="#569">569</a>         <strong class="jxr_keyword">if</strong> (contractOrImpl == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
@@ -588,7 +588,7 @@
 <a class="jxr_linenumber" name="578" href="#578">578</a>         <a href="../../../../org/jvnet/hk2/internal/NarrowResults.html">NarrowResults</a> results;
 <a class="jxr_linenumber" name="579" href="#579">579</a>         LinkedList&lt;ErrorService&gt; currentErrorHandlers = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="580" href="#580">580</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
-<a class="jxr_linenumber" name="581" href="#581">581</a>             SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; candidates = getDescriptors(filter);
+<a class="jxr_linenumber" name="581" href="#581">581</a>             List&lt;ActiveDescriptor&lt;?&gt;&gt; candidates = getDescriptors(filter);
 <a class="jxr_linenumber" name="582" href="#582">582</a>             results = narrow(candidates, contractOrImpl, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">null</strong>, qualifiers);
 <a class="jxr_linenumber" name="583" href="#583">583</a>             <strong class="jxr_keyword">if</strong> (!results.getErrors().isEmpty()) {
 <a class="jxr_linenumber" name="584" href="#584">584</a>                 currentErrorHandlers = <strong class="jxr_keyword">new</strong> LinkedList&lt;ErrorService&gt;(errorHandlers);
@@ -600,7 +600,7 @@
 <a class="jxr_linenumber" name="590" href="#590">590</a>             Utilities.handleErrors(results, currentErrorHandlers);
 <a class="jxr_linenumber" name="591" href="#591">591</a>         }
 <a class="jxr_linenumber" name="592" href="#592">592</a>         
-<a class="jxr_linenumber" name="593" href="#593">593</a>         SortedSet&lt;ServiceHandle&lt;?&gt;&gt; retVal = <strong class="jxr_keyword">new</strong> TreeSet&lt;ServiceHandle&lt;?&gt;&gt;(HANDLE_COMPARATOR);
+<a class="jxr_linenumber" name="593" href="#593">593</a>         LinkedList&lt;ServiceHandle&lt;?&gt;&gt; retVal = <strong class="jxr_keyword">new</strong> LinkedList&lt;ServiceHandle&lt;?&gt;&gt;();
 <a class="jxr_linenumber" name="594" href="#594">594</a>         <strong class="jxr_keyword">for</strong> (ActiveDescriptor&lt;?&gt; candidate : results.getResults()) {
 <a class="jxr_linenumber" name="595" href="#595">595</a>             retVal.add(getServiceHandle(candidate));
 <a class="jxr_linenumber" name="596" href="#596">596</a>         }
@@ -623,14 +623,14 @@
 <a class="jxr_linenumber" name="613" href="#613">613</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(org.glassfish.hk2.api.Filter)</em>
 <a class="jxr_linenumber" name="614" href="#614">614</a> <em class="jxr_comment">     */</em>
 <a class="jxr_linenumber" name="615" href="#615">615</a>     @Override
-<a class="jxr_linenumber" name="616" href="#616">616</a>     <strong class="jxr_keyword">public</strong> SortedSet&lt;ServiceHandle&lt;?&gt;&gt; getAllServiceHandles(
+<a class="jxr_linenumber" name="616" href="#616">616</a>     <strong class="jxr_keyword">public</strong> List&lt;ServiceHandle&lt;?&gt;&gt; getAllServiceHandles(
 <a class="jxr_linenumber" name="617" href="#617">617</a>             Filter searchCriteria) <strong class="jxr_keyword">throws</strong> MultiException {
 <a class="jxr_linenumber" name="618" href="#618">618</a>         checkState();
 <a class="jxr_linenumber" name="619" href="#619">619</a>         
 <a class="jxr_linenumber" name="620" href="#620">620</a>         <a href="../../../../org/jvnet/hk2/internal/NarrowResults.html">NarrowResults</a> results;
 <a class="jxr_linenumber" name="621" href="#621">621</a>         LinkedList&lt;ErrorService&gt; currentErrorHandlers = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="622" href="#622">622</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
-<a class="jxr_linenumber" name="623" href="#623">623</a>             SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; candidates = getDescriptors(searchCriteria);
+<a class="jxr_linenumber" name="623" href="#623">623</a>             List&lt;ActiveDescriptor&lt;?&gt;&gt; candidates = getDescriptors(searchCriteria);
 <a class="jxr_linenumber" name="624" href="#624">624</a>             results = narrow(candidates, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">true</strong>, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="625" href="#625">625</a>             <strong class="jxr_keyword">if</strong> (!results.getErrors().isEmpty()) {
 <a class="jxr_linenumber" name="626" href="#626">626</a>                 currentErrorHandlers = <strong class="jxr_keyword">new</strong> LinkedList&lt;ErrorService&gt;(errorHandlers);
@@ -647,14 +647,14 @@
 <a class="jxr_linenumber" name="637" href="#637">637</a>             retVal.add(getServiceHandle(candidate));
 <a class="jxr_linenumber" name="638" href="#638">638</a>         }
 <a class="jxr_linenumber" name="639" href="#639">639</a>         
-<a class="jxr_linenumber" name="640" href="#640">640</a>         <strong class="jxr_keyword">return</strong> retVal;
+<a class="jxr_linenumber" name="640" href="#640">640</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> LinkedList&lt;ServiceHandle&lt;?&gt;&gt;(retVal);
 <a class="jxr_linenumber" name="641" href="#641">641</a>     }
 <a class="jxr_linenumber" name="642" href="#642">642</a>     
 <a class="jxr_linenumber" name="643" href="#643">643</a>     <strong class="jxr_keyword">private</strong> SortedSet&lt;SystemDescriptor&lt;?&gt;&gt; checkConfiguration(<a href="../../../../org/jvnet/hk2/internal/DynamicConfigurationImpl.html">DynamicConfigurationImpl</a> dci) {
 <a class="jxr_linenumber" name="644" href="#644">644</a>         TreeSet&lt;SystemDescriptor&lt;?&gt;&gt; retVal = <strong class="jxr_keyword">new</strong> TreeSet&lt;SystemDescriptor&lt;?&gt;&gt;(DESCRIPTOR_COMPARATOR);
 <a class="jxr_linenumber" name="645" href="#645">645</a>         
 <a class="jxr_linenumber" name="646" href="#646">646</a>         <strong class="jxr_keyword">for</strong> (Filter unbindFilter : dci.getUnbindFilters()) {
-<a class="jxr_linenumber" name="647" href="#647">647</a>             SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; results = getDescriptors(unbindFilter, <strong class="jxr_keyword">null</strong>, false);
+<a class="jxr_linenumber" name="647" href="#647">647</a>             List&lt;ActiveDescriptor&lt;?&gt;&gt; results = getDescriptors(unbindFilter, <strong class="jxr_keyword">null</strong>, false);
 <a class="jxr_linenumber" name="648" href="#648">648</a>             
 <a class="jxr_linenumber" name="649" href="#649">649</a>             <strong class="jxr_keyword">for</strong> (ActiveDescriptor&lt;?&gt; result : results) {
 <a class="jxr_linenumber" name="650" href="#650">650</a>                 SystemDescriptor&lt;?&gt; candidate = (SystemDescriptor&lt;?&gt;) result;
@@ -796,7 +796,7 @@
 <a class="jxr_linenumber" name="786" href="#786">786</a>         Filter injectionResolverFilter = BuilderHelper.createContractFilter(
 <a class="jxr_linenumber" name="787" href="#787">787</a>                 InjectionResolver.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="788" href="#788">788</a>         
-<a class="jxr_linenumber" name="789" href="#789">789</a>         SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; resolverDescriptors = protectedGetDescriptors(injectionResolverFilter);
+<a class="jxr_linenumber" name="789" href="#789">789</a>         List&lt;ActiveDescriptor&lt;?&gt;&gt; resolverDescriptors = protectedGetDescriptors(injectionResolverFilter);
 <a class="jxr_linenumber" name="790" href="#790">790</a>         
 <a class="jxr_linenumber" name="791" href="#791">791</a>         <strong class="jxr_keyword">for</strong> (ActiveDescriptor&lt;?&gt; resolverDescriptor : resolverDescriptors) {
 <a class="jxr_linenumber" name="792" href="#792">792</a>             Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt; iResolve = Utilities.getInjectionResolverType(resolverDescriptor);
@@ -859,7 +859,7 @@
 <a class="jxr_linenumber" name="849" href="#849">849</a>         actuals[0] = scope;
 <a class="jxr_linenumber" name="850" href="#850">850</a>         ParameterizedType findContext = <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/internal/ParameterizedTypeImpl.html">ParameterizedTypeImpl</a>(Context.<strong class="jxr_keyword">class</strong>, actuals);
 <a class="jxr_linenumber" name="851" href="#851">851</a>         
-<a class="jxr_linenumber" name="852" href="#852">852</a>         SortedSet&lt;ServiceHandle&lt;Context&lt;?&gt;&gt;&gt; contextHandles = Utilities.&lt;SortedSet&lt;ServiceHandle&lt;Context&lt;?&gt;&gt;&gt;&gt;<strong class="jxr_keyword">cast</strong>(
+<a class="jxr_linenumber" name="852" href="#852">852</a>         List&lt;ServiceHandle&lt;Context&lt;?&gt;&gt;&gt; contextHandles = Utilities.&lt;List&lt;ServiceHandle&lt;Context&lt;?&gt;&gt;&gt;&gt;<strong class="jxr_keyword">cast</strong>(
 <a class="jxr_linenumber" name="853" href="#853">853</a>                 protectedGetAllServiceHandles(findContext));
 <a class="jxr_linenumber" name="854" href="#854">854</a>         
 <a class="jxr_linenumber" name="855" href="#855">855</a>         <strong class="jxr_keyword">try</strong> {
@@ -896,7 +896,7 @@
 <a class="jxr_linenumber" name="886" href="#886">886</a>         <strong class="jxr_keyword">return</strong> loader.loadClass(descriptor.getImplementation());
 <a class="jxr_linenumber" name="887" href="#887">887</a>     }
 <a class="jxr_linenumber" name="888" href="#888">888</a> 
-<a class="jxr_linenumber" name="889" href="#889">889</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../org/jvnet/hk2/internal/NarrowResults.html">NarrowResults</a> narrow(SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; candidates,
+<a class="jxr_linenumber" name="889" href="#889">889</a>     <strong class="jxr_keyword">private</strong> <a href="../../../../org/jvnet/hk2/internal/NarrowResults.html">NarrowResults</a> narrow(List&lt;ActiveDescriptor&lt;?&gt;&gt; candidates,
 <a class="jxr_linenumber" name="890" href="#890">890</a>             Type requiredType, String name, <strong class="jxr_keyword">boolean</strong> getAll, Injectee injectee, Annotation... qualifiers) {
 <a class="jxr_linenumber" name="891" href="#891">891</a>         <a href="../../../../org/jvnet/hk2/internal/NarrowResults.html">NarrowResults</a> retVal = <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/internal/NarrowResults.html">NarrowResults</a>();
 <a class="jxr_linenumber" name="892" href="#892">892</a>         

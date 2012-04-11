@@ -49,7 +49,7 @@
 <a class="jxr_linenumber" name="39" href="#39">39</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">package</strong> org.glassfish.hk2.tests.locator.negative.factory;
 <a class="jxr_linenumber" name="41" href="#41">41</a>  
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Configuration;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.DynamicConfiguration;
 <a class="jxr_linenumber" name="43" href="#43">43</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.locator.utilities.TestModule;
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.utilities.BuilderHelper;
 <a class="jxr_linenumber" name="45" href="#45">45</a>  
@@ -63,7 +63,7 @@
 <a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_comment">     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)</em>
 <a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_comment">     */</em>
 <a class="jxr_linenumber" name="55" href="#55">55</a>      @Override
-<a class="jxr_linenumber" name="56" href="#56">56</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> configure(Configuration config) {
+<a class="jxr_linenumber" name="56" href="#56">56</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> configure(DynamicConfiguration config) {
 <a class="jxr_linenumber" name="57" href="#57">57</a>          config.bind(BuilderHelper.link(TypeVariableFactory.<strong class="jxr_keyword">class</strong>).
 <a class="jxr_linenumber" name="58" href="#58">58</a>                  to(SimpleService.<strong class="jxr_keyword">class</strong>).
 <a class="jxr_linenumber" name="59" href="#59">59</a>                  buildFactory());

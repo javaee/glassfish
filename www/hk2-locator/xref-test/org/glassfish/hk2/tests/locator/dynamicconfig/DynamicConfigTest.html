@@ -166,7 +166,7 @@
 <a class="jxr_linenumber" name="156" href="#156">156</a>         
 <a class="jxr_linenumber" name="157" href="#157">157</a>         Filter filter = BuilderHelper.createContractFilter(SimpleService2.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="158" href="#158">158</a>         
-<a class="jxr_linenumber" name="159" href="#159">159</a>         SortedSet&lt;ActiveDescriptor&lt;?&gt;&gt; ss2Descriptors = locator.getDescriptors(filter);
+<a class="jxr_linenumber" name="159" href="#159">159</a>         List&lt;ActiveDescriptor&lt;?&gt;&gt; ss2Descriptors = locator.getDescriptors(filter);
 <a class="jxr_linenumber" name="160" href="#160">160</a>         Assert.assertEquals(1, ss2Descriptors.size());
 <a class="jxr_linenumber" name="161" href="#161">161</a>         
 <a class="jxr_linenumber" name="162" href="#162">162</a>         <strong class="jxr_keyword">for</strong> (ActiveDescriptor&lt;?&gt; ss2Descriptor : ss2Descriptors) {
