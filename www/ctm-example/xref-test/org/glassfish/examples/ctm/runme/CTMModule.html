@@ -57,7 +57,7 @@
 <a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.examples.ctm.TenantManager;
 <a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.glassfish.examples.ctm.TenantScoped;
 <a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> org.glassfish.examples.ctm.TenantScopedContext;
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Configuration;
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.DynamicConfiguration;
 <a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Context;
 <a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.utilities.BuilderHelper;
 <a class="jxr_linenumber" name="53" href="#53">53</a>  
@@ -76,7 +76,7 @@
 <a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment">     * @param configurator</em>
 <a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="69" href="#69">69</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> configure(Configuration configurator) {
+<a class="jxr_linenumber" name="69" href="#69">69</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> configure(DynamicConfiguration configurator) {
 <a class="jxr_linenumber" name="70" href="#70">70</a>          <em class="jxr_comment">// Bind our custom scope</em>
 <a class="jxr_linenumber" name="71" href="#71">71</a>          configurator.bind(
 <a class="jxr_linenumber" name="72" href="#72">72</a>                  BuilderHelper.link(TenantScopedContext.<strong class="jxr_keyword">class</strong>).
