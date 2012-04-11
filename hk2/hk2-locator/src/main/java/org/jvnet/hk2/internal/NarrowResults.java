@@ -41,8 +41,6 @@ package org.jvnet.hk2.internal;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
@@ -53,8 +51,7 @@ import org.glassfish.hk2.api.MultiException;
  *
  */
 public class NarrowResults {
-    private final SortedSet<ActiveDescriptor<?>> goodResults = new TreeSet<ActiveDescriptor<?>>(
-            ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
+    private final List<ActiveDescriptor<?>> goodResults = new LinkedList<ActiveDescriptor<?>>();
     private final List<ErrorResults> errors = new LinkedList<ErrorResults>();
     
     /* package */ void addGoodResult(ActiveDescriptor<?> result) {
@@ -65,7 +62,7 @@ public class NarrowResults {
         errors.add(new ErrorResults(fail, injectee, me));
     }
     
-    /* package */ SortedSet<ActiveDescriptor<?>> getResults() {
+    /* package */ List<ActiveDescriptor<?>> getResults() {
         return goodResults;
     }
     

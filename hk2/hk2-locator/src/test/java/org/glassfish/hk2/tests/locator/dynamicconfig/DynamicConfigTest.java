@@ -156,7 +156,7 @@ public class DynamicConfigTest {
         
         Filter filter = BuilderHelper.createContractFilter(SimpleService2.class.getName());
         
-        SortedSet<ActiveDescriptor<?>> ss2Descriptors = locator.getDescriptors(filter);
+        List<ActiveDescriptor<?>> ss2Descriptors = locator.getDescriptors(filter);
         Assert.assertEquals(1, ss2Descriptors.size());
         
         for (ActiveDescriptor<?> ss2Descriptor : ss2Descriptors) {

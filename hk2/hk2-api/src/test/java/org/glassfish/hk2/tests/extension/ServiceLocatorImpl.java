@@ -42,7 +42,6 @@ package org.glassfish.hk2.tests.extension;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.SortedSet;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
@@ -60,6 +59,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private boolean shutdownCalled = false;
     private final String name;
   
+    /**
+     * For use by the test
+     * @param name The name of this locator
+     */
     public ServiceLocatorImpl(String name) {
         this.name = name;
     }
@@ -81,6 +84,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     }
   
+    /**
+     * Called by the test
+     * @return true if shutdown has been called
+     */
     public boolean isShutdown() {
         return shutdownCalled;
     }
@@ -89,7 +96,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter) {
+    public List<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -227,7 +234,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.reflect.Type, java.lang.annotation.Annotation[])
      */
     @Override
-    public SortedSet<ServiceHandle<?>> getAllServiceHandles(
+    public List<ServiceHandle<?>> getAllServiceHandles(
             Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
         // TODO Auto-generated method stub
@@ -248,7 +255,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public SortedSet<ServiceHandle<?>> getAllServiceHandles(
+    public List<ServiceHandle<?>> getAllServiceHandles(
             Filter searchCriteria) throws MultiException {
         // TODO Auto-generated method stub
         return null;

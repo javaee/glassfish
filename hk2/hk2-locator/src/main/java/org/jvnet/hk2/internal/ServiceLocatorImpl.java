@@ -134,7 +134,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return true;
     }
     
-    private SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents) {
+    private List<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
@@ -196,16 +196,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 sorter.addAll(parent.getDescriptors(filter));
             }
             
-            return sorter;
+            return new LinkedList<ActiveDescriptor<?>>(sorter);
         }
         
     }
     
-    private SortedSet<ActiveDescriptor<?>> protectedGetDescriptors(final Filter filter) {
-        return AccessController.doPrivileged(new PrivilegedAction<SortedSet<ActiveDescriptor<?>>>() {
+    private List<ActiveDescriptor<?>> protectedGetDescriptors(final Filter filter) {
+        return AccessController.doPrivileged(new PrivilegedAction<List<ActiveDescriptor<?>>>() {
 
             @Override
-            public SortedSet<ActiveDescriptor<?>> run() {
+            public List<ActiveDescriptor<?>> run() {
                 return getDescriptors(filter);
             }
             
@@ -217,7 +217,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter) {
+    public List<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         checkState();
         
         return getDescriptors(filter, null, true);
@@ -227,9 +227,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         checkState();
         
-        SortedSet<ActiveDescriptor<?>> sorted = getDescriptors(filter);
+        List<ActiveDescriptor<?>> sorted = getDescriptors(filter);
         
-        return Utilities.getFirstThingInSet(sorted);
+        return Utilities.getFirstThingInList(sorted);
     }
 
     /* (non-Javadoc)
@@ -393,7 +393,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             throws MultiException {
         checkState();
         
-        SortedSet<ServiceHandle<?>> services = getAllServiceHandles(contractOrImpl, qualifiers);
+        List<ServiceHandle<?>> services = getAllServiceHandles(contractOrImpl, qualifiers);
         
         List<T> retVal = new LinkedList<T>();
         for (ServiceHandle<?> service : services) {
@@ -424,7 +424,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             throws MultiException {
         checkState();
         
-        SortedSet<ServiceHandle<?>> handleSet = getAllServiceHandles(searchCriteria);
+        List<ServiceHandle<?>> handleSet = getAllServiceHandles(searchCriteria);
         
         List<Object> retVal = new LinkedList<Object>();
         for (ServiceHandle<?> handle : handleSet) {
@@ -518,7 +518,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
         synchronized (lock) {
-            SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true);
+            List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true);
             results = narrow(candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
             if (!results.getErrors().isEmpty()) {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
@@ -530,7 +530,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Utilities.handleErrors(results, currentErrorHandlers);
         }
         
-        ActiveDescriptor<?> topDog = Utilities.getFirstThingInSet(results.getResults());
+        ActiveDescriptor<?> topDog = Utilities.getFirstThingInList(results.getResults());
         if (topDog == null) return null;
         
         return getServiceHandle((ActiveDescriptor<T>) topDog);
@@ -547,12 +547,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return internalGetServiceHandle(null, contractOrImpl, null, qualifiers);
     }
     
-    private SortedSet<ServiceHandle<?>> protectedGetAllServiceHandles(
+    private List<ServiceHandle<?>> protectedGetAllServiceHandles(
             final Type contractOrImpl, final Annotation... qualifiers) {
-        return AccessController.doPrivileged(new PrivilegedAction<SortedSet<ServiceHandle<?>>>() {
+        return AccessController.doPrivileged(new PrivilegedAction<List<ServiceHandle<?>>>() {
 
             @Override
-            public SortedSet<ServiceHandle<?>> run() {
+            public List<ServiceHandle<?>> run() {
                 return getAllServiceHandles(contractOrImpl, qualifiers);
             }
             
@@ -563,7 +563,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.reflect.Type, java.lang.annotation.Annotation[])
      */
     @Override
-    public SortedSet<ServiceHandle<?>> getAllServiceHandles(
+    public List<ServiceHandle<?>> getAllServiceHandles(
             Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
         if (contractOrImpl == null) throw new IllegalArgumentException();
@@ -578,7 +578,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
         synchronized (lock) {
-            SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(filter);
+            List<ActiveDescriptor<?>> candidates = getDescriptors(filter);
             results = narrow(candidates, contractOrImpl, null, true, null, qualifiers);
             if (!results.getErrors().isEmpty()) {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
@@ -590,7 +590,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Utilities.handleErrors(results, currentErrorHandlers);
         }
         
-        SortedSet<ServiceHandle<?>> retVal = new TreeSet<ServiceHandle<?>>(HANDLE_COMPARATOR);
+        LinkedList<ServiceHandle<?>> retVal = new LinkedList<ServiceHandle<?>>();
         for (ActiveDescriptor<?> candidate : results.getResults()) {
             retVal.add(getServiceHandle(candidate));
         }
@@ -613,14 +613,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(org.glassfish.hk2.api.Filter)
      */
     @Override
-    public SortedSet<ServiceHandle<?>> getAllServiceHandles(
+    public List<ServiceHandle<?>> getAllServiceHandles(
             Filter searchCriteria) throws MultiException {
         checkState();
         
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
         synchronized (lock) {
-            SortedSet<ActiveDescriptor<?>> candidates = getDescriptors(searchCriteria);
+            List<ActiveDescriptor<?>> candidates = getDescriptors(searchCriteria);
             results = narrow(candidates, null, null, true, null);
             if (!results.getErrors().isEmpty()) {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
@@ -637,14 +637,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
             retVal.add(getServiceHandle(candidate));
         }
         
-        return retVal;
+        return new LinkedList<ServiceHandle<?>>(retVal);
     }
     
     private SortedSet<SystemDescriptor<?>> checkConfiguration(DynamicConfigurationImpl dci) {
         TreeSet<SystemDescriptor<?>> retVal = new TreeSet<SystemDescriptor<?>>(DESCRIPTOR_COMPARATOR);
         
         for (Filter unbindFilter : dci.getUnbindFilters()) {
-            SortedSet<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false);
+            List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false);
             
             for (ActiveDescriptor<?> result : results) {
                 SystemDescriptor<?> candidate = (SystemDescriptor<?>) result;
@@ -786,7 +786,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Filter injectionResolverFilter = BuilderHelper.createContractFilter(
                 InjectionResolver.class.getName());
         
-        SortedSet<ActiveDescriptor<?>> resolverDescriptors = protectedGetDescriptors(injectionResolverFilter);
+        List<ActiveDescriptor<?>> resolverDescriptors = protectedGetDescriptors(injectionResolverFilter);
         
         for (ActiveDescriptor<?> resolverDescriptor : resolverDescriptors) {
             Class<? extends Annotation> iResolve = Utilities.getInjectionResolverType(resolverDescriptor);
@@ -849,7 +849,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         actuals[0] = scope;
         ParameterizedType findContext = new ParameterizedTypeImpl(Context.class, actuals);
         
-        SortedSet<ServiceHandle<Context<?>>> contextHandles = Utilities.<SortedSet<ServiceHandle<Context<?>>>>cast(
+        List<ServiceHandle<Context<?>>> contextHandles = Utilities.<List<ServiceHandle<Context<?>>>>cast(
                 protectedGetAllServiceHandles(findContext));
         
         try {
@@ -886,7 +886,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return loader.loadClass(descriptor.getImplementation());
     }
 
-    private NarrowResults narrow(SortedSet<ActiveDescriptor<?>> candidates,
+    private NarrowResults narrow(List<ActiveDescriptor<?>> candidates,
             Type requiredType, String name, boolean getAll, Injectee injectee, Annotation... qualifiers) {
         NarrowResults retVal = new NarrowResults();
         

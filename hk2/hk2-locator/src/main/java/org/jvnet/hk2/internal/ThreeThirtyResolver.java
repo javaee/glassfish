@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.util.List;
 import java.util.SortedSet;
 
 import javax.inject.Inject;
@@ -67,8 +68,8 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
         Collector collector = new Collector();
         collector.addThrowable(new IllegalStateException("There was no object available for injection at " + injectee));
         
-        SortedSet<ServiceHandle<JustInTimeInjectionResolver>> jitResolvers =
-                Utilities.<SortedSet<ServiceHandle<JustInTimeInjectionResolver>>>cast(
+        List<ServiceHandle<JustInTimeInjectionResolver>> jitResolvers =
+                Utilities.<List<ServiceHandle<JustInTimeInjectionResolver>>>cast(
                 locator.getAllServiceHandles(JustInTimeInjectionResolver.class));
         
         try {

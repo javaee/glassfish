@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.initialization;
 
-import java.util.SortedSet;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -82,7 +82,7 @@ public class InitializationTest {
      */
     @Test
     public void testFindDescriptors() {
-        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(aFilter);
+        List<ActiveDescriptor<?>> descriptors = locator.getDescriptors(aFilter);
         Assert.assertNotNull(descriptors);
         Assert.assertTrue(descriptors.size() == 2);
         
@@ -112,7 +112,7 @@ public class InitializationTest {
      */
     @Test
     public void testDidNotFindDescriptors() {
-        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(bFilter);
+        List<ActiveDescriptor<?>> descriptors = locator.getDescriptors(bFilter);
         Assert.assertNotNull(descriptors);
         Assert.assertTrue(descriptors.size() == 0);
         
@@ -124,7 +124,7 @@ public class InitializationTest {
      */
     @Test
     public void testNoMatchFilter() {
-        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(new Filter() {
+        List<ActiveDescriptor<?>> descriptors = locator.getDescriptors(new Filter() {
 
             @Override
             public boolean matches(Descriptor d) {
@@ -144,7 +144,7 @@ public class InitializationTest {
      */
     @Test
     public void testLookupByName() {
-        SortedSet<ActiveDescriptor<?>> descriptors = locator.getDescriptors(namedFilter);
+        List<ActiveDescriptor<?>> descriptors = locator.getDescriptors(namedFilter);
         
         Assert.assertNotNull(descriptors);
         Assert.assertTrue("Expecting 1 descriptor, found " + descriptors.size(), descriptors.size() == 1);

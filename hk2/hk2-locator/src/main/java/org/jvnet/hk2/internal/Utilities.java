@@ -548,7 +548,7 @@ public class Utilities {
      * @param set The set from which to get the first element
      * @return the first thing found in the set
      */
-    public static <T> T getFirstThingInSet(Set<T> set) {
+    public static <T> T getFirstThingInList(List<T> set) {
         for (T t : set) {
             return t;
         }
