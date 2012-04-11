@@ -287,6 +287,7 @@
         <module>hk2-api</module>
         <module>examples</module>
         <module>hk2-testing</module>
+        <module>hk2-deprecated</module>
   </modules>
 
     <dependencies>
