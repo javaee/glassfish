@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.named;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 
 /**
@@ -52,7 +52,7 @@ public class NamedModule implements TestModule {
      * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration config) {
+    public void configure(DynamicConfiguration config) {
         config.addActiveDescriptor(Romeo.class);
         config.addActiveDescriptor(Juliet.class);
         config.addActiveDescriptor(Mercutio.class);

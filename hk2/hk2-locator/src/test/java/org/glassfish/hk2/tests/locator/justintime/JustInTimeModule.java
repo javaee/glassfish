@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.locator.justintime;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -56,7 +56,7 @@ public class JustInTimeModule implements TestModule {
      * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration configurator) {
+    public void configure(DynamicConfiguration configurator) {
         // Whoops, I forgot to add my service here
         // Lucky for me, I can add it with my just
         // in time resolver:

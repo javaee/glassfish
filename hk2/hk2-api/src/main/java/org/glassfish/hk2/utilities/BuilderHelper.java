@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.utilities;
 
-import org.glassfish.hk2.api.Configuration;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
@@ -187,7 +186,7 @@ public class BuilderHelper {
      * @param constant The non-null constant that should always be returned from
      * the create method of this ActiveDescriptor.  
      * @return The descriptor returned can be used in calls to
-     * {@link Configuration}.addActiveDescriptor
+     * DynamicConfiguration.addActiveDescriptor
      */
     public static <T> AbstractActiveDescriptor<T> createConstantDescriptor(T constant) {
         if (constant == null) throw new IllegalArgumentException();

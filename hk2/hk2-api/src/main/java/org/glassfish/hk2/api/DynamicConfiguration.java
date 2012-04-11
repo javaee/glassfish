@@ -40,10 +40,99 @@
 package org.glassfish.hk2.api;
 
 /**
+ * This class is used to add {@link Descriptor}s to a {@link ServiceLocator}
+ * instance.  No operation performed on this object will be reflected
+ * in the {@link ServiceLocator} until the commit method is called.
+ * 
  * @author jwells
  *
  */
-public interface DynamicConfiguration extends Configuration {
+public interface DynamicConfiguration {
+    /**
+     * This method will bind the given descriptor to this Module.
+     * If the descriptor given is not an ActiveDescriptor then a
+     * non-reified ActiveDescriptor will be returned with the system
+     * provided fields set.  If the descriptor given is a reified
+     * ActiveDescriptor then the descriptor returned will be a
+     * reified ActiveDescriptor that takes all values except for the
+     * id from the given descriptor
+     * 
+     * @param key May not be null.  Will be used to derive the various
+     * key fields associated with the given provider
+     * @return The entry as added to the service registry, with fields
+     * of the Descriptor filled in by the system as appropriate
+     * @throws IllegalArgumentException if there is an error in the key
+     */
+    public ActiveDescriptor<?> bind(Descriptor key);
+    
+    /**
+     * This method will bind the descriptors found in the
+     * {@link FactoryDescriptors}.  This method will first
+     * validate the descriptors from the {@link FactoryDescriptors}
+     * and then simply bind them into this configuration as
+     * two independent descriptors. 
+     * 
+     * @param factoryDescriptors A description of a factory service
+     * and the type the factory service provides.  May not be null
+     * @return The descriptors returned from this object may be cast
+     * to ActiveDescriptor and will contain all the fields of the descriptors
+     * filled in by the system 
+     * @throws IllegalArgumentException if there is an error in the input parameter
+     */
+    public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors);
+    
+    /**
+     * This allows third party systems to add reified active descriptors to the system.
+     * The active descriptor given must be fully reified (isReified must return true) and
+     * the create and destroy methods must be implemented.
+     * 
+     * @param activeDescriptor The reified active descriptor to be added to the system.  The
+     * system will not attempt to reify this descriptor itself
+     * @return The entry as added to the service registry, with fields
+     * of the Descriptor filled in by the system as appropriate
+     * @throws IllegalArgumentException if the descriptor is not reified
+     */
+    public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor)
+            throws IllegalArgumentException;
+    
+    /**
+     * This adds an active descriptor to the system based completely on the analysis
+     * of the given class.  The class itself and all interfaces marked contract will
+     * be in the list of advertised services.  The scope and qualifiers will be taken
+     * from the annotations on the class.
+     * 
+     * @param rawClass The class to analyze, must not be null 
+     * @return The active (reified) descriptor that has been added to the system, with
+     * all fields filled in based on the rawClass
+     * @throws MultiException If this class cannot be a service
+     * @throws IllegalArgumentException if rawClass is null
+     */
+    public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
+            throws MultiException, IllegalArgumentException;
+    
+    /**
+     * This filter will added to the list of filters in this Configuration that will
+     * determine which Descriptors will be removed from the system.  Only services directly
+     * from this Configuration objects' associated ServiceLocator will be given to this Filter
+     * (it will not be given descriptors from the ServiceLocators parent).  The descriptors passed
+     * into this filter may be cast to {@link ActiveDescriptor}.  The descriptors passed into this
+     * filter may or may not have been reified.  This filter should not reify passed in descriptors.
+     * <p>
+     * And descriptor for which this filter returns true will be removed from the
+     * {@link ServiceLocator} prior to any additions that are performed with this
+     * Configuration object.  Hence a Configuration can remove and add a descriptor of the
+     * same type in one commit.
+     * <p>
+     * In order to unbind a filter the caller of commit must pass the LOOKUP validators and the
+     * UNBIND validators.
+     * 
+     * @param unbindFilter This filter will be added to the list of filters that this
+     * configuration object will use to determine which descriptors to unbind from the system.
+     * May not be null
+     * @throws IllegalArgumentException if unbindFilter is null
+     */
+    public void addUnbindFilter(Filter unbindFilter) throws IllegalArgumentException;
+    
     /**
      * This causes the configuration to get committed.  This
      * method may only be called once

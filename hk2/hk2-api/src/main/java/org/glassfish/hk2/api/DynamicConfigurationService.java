@@ -42,13 +42,15 @@ package org.glassfish.hk2.api;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * The dynamic configuration service  is the source of {@link DynamicConfiguration}
+ * instances, which can be used to bind and unbind entities into the system
+ * 
  * @author jwells
- *
  */
 @Contract
 public interface DynamicConfigurationService {
     /**
-     * Creates a dynamic configuration that can be used to add values
+     * Creates a dynamic configuration that can be used to add or remove values
      * to the system
      * 
      * @return A dynamic configuration to be used to add values to the system

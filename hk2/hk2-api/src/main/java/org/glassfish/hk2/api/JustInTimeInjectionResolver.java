@@ -42,8 +42,9 @@ package org.glassfish.hk2.api;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * The JustInTimeInjectionResolver allows a third party system
- * to dynamically add configuration objects to the system whenver
+ * The JustInTimeInjectionResolver is called when an injection point
+ * cannot find anything to inject.  It allows a third party systems
+ * to dynamically add descriptors to the system whenever
  * an injection point would have failed to resolve (or an Optional
  * injection point found no service definitions).
  * <p>

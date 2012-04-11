@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.qualifiers;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -54,7 +54,7 @@ public class QualifierModule implements TestModule {
      * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration configurator) {
+    public void configure(DynamicConfiguration configurator) {
         configurator.bind(BuilderHelper.link(RedImpl.class).to(Color.class).qualifiedBy(Red.class.getName()).build());
         configurator.bind(BuilderHelper.link(BlueImpl.class).to(Color.class).qualifiedBy(Blue.class.getName()).build());
         configurator.bind(BuilderHelper.link(YellowImpl.class).to(Color.class).qualifiedBy(Yellow.class.getName()).build());

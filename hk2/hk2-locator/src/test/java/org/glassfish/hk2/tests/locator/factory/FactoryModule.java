@@ -43,7 +43,7 @@ import java.util.Date;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -58,7 +58,7 @@ public class FactoryModule implements TestModule {
      * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration configurator) {
+    public void configure(DynamicConfiguration configurator) {
         configurator.bind(BuilderHelper.link(DateFactory.class).to(Date.class).buildFactory());
         configurator.bind(BuilderHelper.link(DateInjectee.class).in(Singleton.class).build());
         

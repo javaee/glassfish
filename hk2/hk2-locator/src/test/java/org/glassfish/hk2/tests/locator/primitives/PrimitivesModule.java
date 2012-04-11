@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.locator.primitives;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -56,7 +56,7 @@ public class PrimitivesModule implements TestModule {
      * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration config) {
+    public void configure(DynamicConfiguration config) {
         // char
         config.bind(BuilderHelper.link(Char13Factory.class).
                 to(Character.class).
