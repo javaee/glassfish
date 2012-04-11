@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.named;
 
-import java.util.SortedSet;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -97,7 +97,7 @@ public class NamedTest {
      */
     @Test
     public void getMultiNamed() {
-        SortedSet<ActiveDescriptor<?>> roses = locator.getDescriptors(BuilderHelper.createNameFilter(ROSE));
+        List<ActiveDescriptor<?>> roses = locator.getDescriptors(BuilderHelper.createNameFilter(ROSE));
         Assert.assertEquals(2, roses.size());
         
         int lcv = 0;
@@ -120,7 +120,7 @@ public class NamedTest {
      */
     @Test
     public void getMultiNamedQualifiedWithType() {
-        SortedSet<ActiveDescriptor<?>> roses = locator.getDescriptors(
+        List<ActiveDescriptor<?>> roses = locator.getDescriptors(
                 BuilderHelper.createNameAndContractFilter(Centifolia.class.getName(), ROSE));
         Assert.assertEquals(1, roses.size());
         
@@ -156,7 +156,7 @@ public class NamedTest {
      */
     @Test
     public void getIndexedFilterWithBothIndexesNull() {
-        SortedSet<ActiveDescriptor<?>> capulets = locator.getDescriptors(new DoubleNullIndexFilter(true));
+        List<ActiveDescriptor<?>> capulets = locator.getDescriptors(new DoubleNullIndexFilter(true));
         Assert.assertEquals(1, capulets.size());
         
         int lcv = 0;
@@ -170,7 +170,7 @@ public class NamedTest {
             lcv++;
         }
         
-        SortedSet<ActiveDescriptor<?>> montagues = locator.getDescriptors(new DoubleNullIndexFilter(false));
+        List<ActiveDescriptor<?>> montagues = locator.getDescriptors(new DoubleNullIndexFilter(false));
         Assert.assertEquals(2, montagues.size());
         
         lcv = 0;

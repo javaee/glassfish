@@ -1,173 +1,315 @@
-    ------
-    Introduction to Hk2-APIs
-    ------
-    Jerome Dochez
-    ------
-    ------
-
-        HK2 is primarily a declarative framework for services using annotations like
-    {{{./apidocs/org/jvnet/hk2/annotations/Contract.html}Contract}} and
-    {{{./apidocs/org/jvnet/hk2/annotations/Service.html}Service}}. However, it is possible to
-    use programmatic APIs to precisely control the services and bindings available within
-    the Services registry.
-
-        Find information about testing hk2 components {{{./testing.html}here}}.
+            ------
+            Introduction to HK2 API
+            ------
 
 
-Modules
+Compatibility
 
-    In HK2, there are different types of modules, the lower level modules that are often
-    implemented as OSGi modules, are basic jar files with a set of appropriate decorations.
-    Documentation on how to achieve modularity through jar files and OSGi can be found {{{./modularity.html}here}}.
-    However, there is a module notion for hk2 services that defines boundaries
-    with other services that are registered in other modules.
+ This page describes the HK2 2.0 API, which is based on
+ JSR-330 standard annotations.  Also, Habitat has been replaced with a new
+  interface called {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}.
+  
+Table of Contents
 
-    Such {{{./apidocs/org/glassfish/hk2/Module.html}Module}} provides a modular approach
-    to services bindings and access with precise control over the services visibility between
-    modules.
+ * {{Introduction}}
+ 
+ * {{ServiceLocator}}
+ 
+ * {{Adding in your own services}}
+ 
+   * {{BuilderHelper Binding EDSL}}
+   
+   * {{DescriptorImpl}}
+ 
+   * {{Binding a Descriptor into a ServiceLocator}}
+ 
+ * {{Looking up Services}}
+    
+{Introduction}
 
-    {{{./apidocs/org/glassfish/hk2/Module.html}Module}} implementations are the basic
-    entry point for applications to register their services and finally start the desired
-    top level services.
+ HK2 is a declarative framework for services using annotations like
+ {{{./apidocs/org/jvnet/hk2/annotations/Contract.html}Contract}} and
+ {{{./apidocs/org/jvnet/hk2/annotations/Service.html}Service}}. However, it is possible to
+ use programmatic APIs to precisely control the services and bindings available within
+ the Services registry.
 
-    Here is a simple example of a binding module from the auto-depends tests :
+ Find information about testing hk2 components {{{./testing.html}here}}.
 
-+-----------------------+
-public class MyModule implements Module {
+{ServiceLocator}
 
-    @Override
-    public void configure(BinderFactory binderFactory) {
-        binderFactory.bind(RandomContract.class).to(RandomService.class);
-        binderFactory.bind().to(MyStartupCode.class);
+ The most fundamental service in HK2 is the {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}}.  The
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} represents the registry where
+ services are looked up and where information about services (known as
+ {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptors}}) are bound into the registry.
+ The {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} itself is represented as a service in its
+ own registry;  it is always the first service bound into its own registry.
+ 
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocators}} are named uniquely in a JVM and each has
+ a unique locator ID.  It is possible to create or find {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocators}}
+ using the {{{./apidocs/org/jvnet/hk2/api/ServiceLocatorFactory.html}ServiceLocatorFactory}}.  The
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocatorFactory.html}ServiceLocatorFactory}} will normally use a
+ default implementation of {{{./apidocs/org/jvnet/hk2/api/ServiceLocatorGenerator.html}ServiceLocatorGenerator}}
+ specified in META-INF/services.  The default implementation can be changed by having a different META-INF/services
+ specification of the implementation of {{{./apidocs/org/jvnet/hk2/api/ServiceLocatorGenerator.html}ServiceLocatorGenerator}}
+ earlier in the classpath than the provided implementation.  An implementation of
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocatorGenerator.html}ServiceLocatorGenerator}} can also be given directly
+ to the {{{./apidocs/org/jvnet/hk2/api/ServiceLocatorFactory.html}ServiceLocatorFactory}} create method.
 
-        binderFactory.bind(SomeContract.class.getName()).to(PerThreadService.class.getName());
+ Once you have created a {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} with the
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocatorFactory.html}ServiceLocatorFactory}} it will contain three
+ services:
+ 
+ [[1]] Itself (see {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}})
+ 
+ [[2]] The default JSR-330 resolver (see {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}InjectionResolver}})
+ 
+ [[3]] A service for configuring further services (see {{{./apidocs/org/jvnet/hk2/api/DynamicConfigurationService.html}DynamicConfigurationService}})
+ 
+ []
+ 
+{Adding in your own services}
+
+ While the three services in your {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} are nice, they hardly constitute
+ a useful system.  What is needed is all of your services, in order to make it useful.  Also please note that this section assumes that
+ you are not using the upper level system that automatically reads in the descriptions of your services and populate
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocators}} for you.  For information on how that system works see
+ TBD.
+ 
+ You add your own service by getting the {{{./apidocs/org/jvnet/hk2/api/DynamicConfigurationService.html}DynamicConfigurationService}}.
+ Since that is one of the original three services added to the service locator, you can get that service by simply looking
+ it up:
+ 
++--------------------------------------
+    public void initialize() {
+        ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+        
+        ServiceLocator locator = factory.create("HelloWorld");
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        
+        ...
     }
++--------------------------------------
+
+ You use the {{{./apidocs/org/jvnet/hk2/api/DynamicConfigurationService.html}DynamicConfigurationService}} to create
+ {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}} instances.  The
+ {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}} interface has a few methods for
+ binding in descriptions of your services.
+ 
+ In order to bind in services you need to first create a description of your service.  A description of your service
+ gives information about the service, such as the name of the implementation class, and the name of the classes or
+ interfaces which the service should be available to be looked up as, and other information.  In general, any implementation
+ of {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} can be used, but we have provided at least two mechanisms
+ for creating {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptors}} that you might want to use.  We will go through
+ those mechanisms in the next two sections, and then come back to adding in your own descriptor to your newly created
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}}.
+ 
+* {BuilderHelper Binding EDSL}
+
+ An EDSL is an Embedded Domain Specific Language that allows you to build up objects specific to your particular domain.  In this
+ case we provide an EDSL for building Descriptors.
+ 
+ Lets take an example.  Suppose I wanted to tell the system about a service of mine that has implementation class
+ com.acme.internal.WidgetImpl which implements the com.acme.Widget contract (interface) and which is in the
+ PerLookup scope (which means a new instance of WidgetImpl will be provided for every injection point).  Here is how a descriptor
+ that contains all of that information can be built up using our EDSL:
+ 
++--------------------------------------
+    public Descriptor createWidgetDescriptor() {
+        return BuilderHelper.link("com.acme.internal.WidgetImpl").
+                         to("com.acme.Widget").
+                         in("org.glassfish.api.PerLookup").
+                         build();
+    }
++--------------------------------------
+
+ The {{{./apidocs/org/jvnet/hk2/utilities/BuilderHelper.html}BuilderHelper}} link method creates a
+ {{{./apidocs/org/jvnet/hk2/utilities/DescriptorBuilder.html}DescriptorBuilder}}.  The
+ {{{./apidocs/org/jvnet/hk2/utilities/DescriptorBuilder.html}DescriptorBuilder}} then creates more and
+ more specific versions of itself as you fill in the data with calls to "to" or "in" or "qualifiedBy".
+ 
+ Finally, when you are finished filling in all the details of your service, you call build in order to
+ produce a {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} that can be used in a
+ bind call of {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}}.
+ 
+ It is interesting to note that the build call of
+ {{{./apidocs/org/jvnet/hk2/utilities/DescriptorBuilder.html}DescriptorBuilder}} produces a
+ {{{./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html}DescriptorImpl}}.  A
+ {{{./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html}DescriptorImpl}} is nothing more than
+ a convenience implementation of {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} that
+ has settable fields.  Hence, if your code wanted to use the EDSL to produce a basic
+ {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} and then further customize it with the
+ added methods of {{{./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html}DescriptorImpl}} it could do
+ so.
+ 
+* {DescriptorImpl}
+
+ Rather than create your own implementation of {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} we
+ have provided an implementation of {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} called
+ {{{./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html}DescriptorImpl}}.  This implementation has
+ convenient methods for setting all of the fields of {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}}.
+ It should be noted that the bind API of {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}}
+ will make a deep copy of whatever {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} is passed to it, and
+ that the underlying implementation of the HK2 API never uses the
+ {{{./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html}DescriptorImpl}} class directly.  It is purely there
+ as a convenience class for those who wish to provide their own
+ {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptors}}.
+ 
+ Here is an example that achieves the same {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} as the example
+ in the previous section but uses the {{{./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html}DescriptorImpl}} to
+ do it:
+ 
++--------------------------------------
+    public Descriptor createWidgetDescriptor() {
+        DescriptorImpl retVal = new DescriptorImpl();
+        
+        retVal.setImplementation("com.acme.internal.WidgetImpl");
+        retVal.addAdvertisedContract("com.acme.internal.WidgetImpl");
+        retVal.addAdvertisedContract("com.acme.Widget");
+        retVal.setScope("org.glassfish.api.PerLookup");
+        
+        return retVal;
+    }
++--------------------------------------
+
+ One interesting thing to notice in the above code is that we added the implementation class as an advertisedContract.  This
+ was done automatically for us in the {{{./apidocs/org/jvnet/hk2/utilities/BuilderHelper.html}BuilderHelper}} case, but
+ needed to be explicitly done in this case.
+ 
+* {Binding a Descriptor into a ServiceLocator}
+
+ Now that we have seen two simple ways to create a {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} lets take a
+ look at how we bind that descriptor into our {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}}.  Here
+ is an example:
+ 
++--------------------------------------
+    public void initialize() {
+        ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+        
+        ServiceLocator locator = factory.create("HelloWorld");
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.bind(createWidgetDescriptor());
+        
+        config.commit();
+    }
++--------------------------------------
+
+ The method createWidgetDescriptor is from the preceeding examples.  In the above code we call the createDynamicConfiguration
+ method of {{{./apidocs/org/jvnet/hk2/api/DynamicConfigurationService.html}DynamicConfigurationService}}.  This creates
+ an instance of {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}}.  To use a
+ {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}} you call the bind or unbind methods until you
+ are happy with the change and then you call commit to make the changes occur for real in the system.  If you do not call
+ commit none of the changes you added to the {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}}
+ instance will be made to the system.
+ 
+ That is all there is to it!  The services you add in this manner can now be looked up or injected into other services or
+ generally manipulated through all of the other methods in {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}}.
+ 
+{Looking up Services}
+
+ There are several mechanisms for looking up services in HK2.  The simplest is to just call getService method of
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} with the class of the service you are interested in:
+ 
++--------------------------------------
+  Widget widget = locator.getService(Widget.class);
++--------------------------------------
+
+ The type passed in can be any implementation class or interface with which the service was bound with as an advertisable
+ contract.  If there is no Widget that can be found in the system then the getService method will return null.  If there
+ are more than one Widge (e.g. Widget is an interface that can have many implementations) then the best Widget will
+ be returned from the getService method.
+ 
+ The best instance of a service is a service with the highest ranking or the lowest service id.  The ranking of a service
+ is found in its {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} and can be changed at any time at run time.
+ The service id of a service is a system assigned value for the {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}}
+ when it is bound into the {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}}.  The system assigned value
+ is a monotonically increasing value.  Thus if two services have the same ranking the best service will be associated with the
+ oldest {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptor}} bound into the system.
+ 
+* {Looking up services by name}
+
+ Services can be qualified in many ways, but the most common is to have a name associated with the service.  Hence, in
+ our Widget example if there are several Widgets in the system but each has a different name we can find our particular
+ Widget like this:
+
++--------------------------------------
+    public Widget getNamedWidget(String name) {
+        return locator.getService(Widget.class, name);
+    }
++--------------------------------------
+
+ The given name is used to further qualify the specific Widget that was bound into the system.
+ 
+* {Looking up services with qualifiers}
+
+ If your services have qualifiers you can look them up via the qualifiers.  In order to do this you can use
+ the {{{./apidocs/org/jvnet/hk2/AnnotationLiteral.html}AnnotationLiteral}} in order to create concrete implementations of your annotations.  Lets see how this
+ would be done.  Suppose you have a qualifer called Blue, defined like this:
+
++-------------------------------------- 
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface Blue {
 }
-+-----------------------+
++--------------------------------------
 
-    The fist bind() call to {{{./apidocs/org/glassfish/hk2/BinderFactory.html#bind(java.lang.Class,%20java.lang.Class...)}bind(Class)}}
-    registers a service implementation type for a contract type.
+ Normally you wouldn't implement Blue, but in this case you do need an implementation in order to be able to
+ look it up.  You do that by providing an implement of Blue that extends
+ {{{./apidocs/org/jvnet/hk2/AnnotationLiteral.html}AnnotationLiteral}}:
 
-Hk2 Binding EDSL
-
-    Much like {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Binder.html}Guice}},
-    HK2 uses an embedded domain specific language to create bindings.
-
-* Simple Bindings
-
-    All the examples below assume having access to an implicit BinderFactory instance.
-
-+-----------------------+
-    bind(ServiceImpl.class)
-+-----------------------+
-
-    This statement does nothing as all classes are implicitly services.
-
-+-----------------------+
-    ServiceImpl instance = new MyServiceImpl(); // or another factory/builder pattern
-    bind(instance)
-+-----------------------+
-
-    This statement will register the "instance" as the provider for the ServiceImpl service type.
-
-+-----------------------+
-    bind(MyContract.class).to(MyServiceImpl.class)
-+-----------------------+
-
-    This statement will register MyServiceImpl type as the service type for the MyContract interface. This is
-    semantically equivalent to using the @Contract annotation on MyContract class and @Service annotation on
-    MyServiceImpl class.
-
-+-----------------------+
-    ServiceImpl instance = new MyServiceImpl(); // or another factory/builder pattern
-    bind(MyContract.class).to(instance)
-+-----------------------+
-
-    This statement will bind the "instance" as the provider for the MyContract interface.
-
-* Naming
-
-    Services registered thought the BinderFactory can also carry an optional name to disambiguate multiple providers.
-    A Service can only have one name.
-
-+-----------------------+
-    bind(MyContract.class).named("foo").to(MyServiceImpl.class)
-+-----------------------+
-
-    This statement is sematically equivalent as annotating MyServiceImpl class with @Service(name="foo). To depend
-    on this service, code will need to either use @Inject(name="foo") MyContract declaration or user the
-    {{{./apidocs/org/glassfish/hk2/Locator.html}Locator}} APIs.
-
-* Qualifiers
-
-    Services can be further qualified by using specific annotations when registering or looking up.
-
-+-----------------------+
-    bind(MyContract.class).annotatedWith(Red.class).to(MyRedServiceImpl.class)
-+-----------------------+
-
-    Such service can be once again looked up using the {{{./apidocs/org/glassfish/hk2/Locator.html}Locator}} APIs or
-    more simply, can use the same annotation on the injection point :
-
-+-----------------------+
-    @Inject
-    @Red
-    MyContract mc; // should be injected with an instance of MyRedServiceImpl type
-+-----------------------+
-
-* Factory Bindings
-
-    Sometimes, the instantiation of services requires specific domain behavior, which can be resolved by registering
-    a {{{./apidocs/org/glassfish/hk2/Factory.html}Factory}} for the service. The Factory is a contract to deliver an instance
-    of the service when called.
-
-+-----------------------+
-    bind(MyContract.class).named("foo").toFactory(MyServiceFactory.class)
-+-----------------------+
-
-* Parameterized Bindings
-
-    You can bind a parameterized type by forcing users to create a subclass of
-    {{{./apidocs/org/glassfish/hk2/TypeLiteral.html}TypeLiteral}} which will allow HK2 to retrieve the parameterized
-    type at runtime.
-
-+-----------------------+
-    // simple parameterized contract
-    public interface RouteBuilder<T extends Pattern> {
-    }
-
-    binderFactory.bind(new TypeLiteral<RouteBuilder<PathPattern>>() {}).to(PathPatternRouteBuilder.class);
-+-----------------------+
-
-* Dynamic Bindings
-
-    Although the simplest way of adding bindings into a {{{./apidocs/org/glassfish/hk2/Services.html}Services}} instance
-    at {{{./apidocs/org/glassfish/hk2/Module.html}Modulel}} configuration, it is also possible to add bindings after
-    the modules initialization phase using a {{{./apidocs/org/glassfish/hk2/DynamicBinderFactory.html}DynamicBinderFactory}}
-
-    An instance of {{{./apidocs/org/glassfish/hk2/DynamicBinderFactory.html}DynamicBinderFactory}} can be obtained from
-    {{{./apidocs/org/glassfish/hk2/Services.html#bindDynamically()}bindDynamically}} method on the Services instance.
-
-    One to many bindings can be added using the dynamic binder until the
-    {{{./apidocs/org/glassfish/hk2/DynamicBinderFactory.html#commit()}commit}} method is called which closes the late
-    binding phase.
-
-    Example :
-
-+-----------------------+
-@Service
-public class SomeUserService {
-
-    @Inject
-    Services services;
-
-    public void someMethod {
-        DynamicBinderFactory binder = services.bindDynamically();
-        binder.bind().to(SomeClass.class);
-        binder.bind().to(someInstance);
-        binder.bind(SomeContract.class).toFactory(SomeFactory.class);
-        binder.bind(SomeContract.class).to(someInstance);
-        binder.commit();
-    }
++-------------------------------------- 
+public class BlueImpl extends AnnotationLiteral<Blue> implements Blue {
 }
-+-----------------------+
++--------------------------------------
+
+ You can now use this BlueImpl to look up your qualified Widget in a
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} like this:
+ 
++--------------------------------------
+    Widget widget = locator.getService(Widget.class, new BlueImpl());
++--------------------------------------
+
+ This will get the Widget that has been qualified with @Blue.
+ 
+* {Getting all services}
+
+ You may also want to get all of the services that have advertised a certain contract.  You can do this like this:
+ 
++--------------------------------------
+    List<Widget> widgetList = locator.getAllServices(Widget.class);
++--------------------------------------
+
+ The list returned will have as many Widgets that could be found in the system.  It is important to note in this case that all
+ of the Widges will have been classloaded when you use this call, so if classloading performance is important to you be careful
+ of using the getAllServices method.  Instead, consider using the getAllServiceHandles or getDescriptors method.
+ 
+* {Getting service descriptors}
+
+ If you want to look up service descriptors rather than the services themselves you can use the getDescriptor or
+ getBestDescriptor methods on {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}}.  The getDescriptor
+ and getBestDescriptor methods will never cause classloading to occur, so it is safe to use in environments where
+ classloading can be an issue.
+ 
+ The getDescriptor methods on {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} use a
+ {{{./apidocs/org/jvnet/hk2/api/Filter.html}Filter}} to determine which
+ {{{./apidocs/org/jvnet/hk2/api/Descriptor.html}Descriptors}} to return.  You can implement your own
+ {{{./apidocs/org/jvnet/hk2/api/Filter.html}Filter}} or you can use one of the
+ {{{./apidocs/org/jvnet/hk2/api/Filter.html}Filter}} implementations provided by
+ {{{./apidocs/org/jvnet/hk2/utilities/BuilderHelper.html}BuilderHelper}}.  The most common case is to use
+ an {{{./apidocs/org/jvnet/hk2/api/IndexedFilter.html}IndexedFilter}} provided by
+ {{{./apidocs/org/jvnet/hk2/utilities/BuilderHelper.html}BuilderHelper}}, like this:
+ 
++--------------------------------------
++--------------------------------------
+
+ 
+
+
+
+ 
+ 

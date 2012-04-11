@@ -12,7 +12,7 @@ Compatibility
     
 Extensibility of HK2
 
- HK2 is extensible along many directions.  This page is intended to give an overview and example of each dimension along which
+ HK2 is extensible along many dimensions.  This page is intended to give an overview and example of each dimension along which
  users can customize thier HK2 environment.  Among the set of things which can be extended are these:
  
  * {{Adding a Scope and Context to the system}}
@@ -27,9 +27,38 @@ Extensibility of HK2
  
 * {Adding a Scope and Context to the system}
 
- This {{{./examples/ctm/index.html}example}} adds a context that is based on the current running tenant.
+ In HK2 a {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} is a class that is used to control the lifecycle of service instances.  A
+ {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} is an annotation that is put onto another
+ annotation that is used to associate any service with a particular {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}}.  All services
+ in HK2 are associated with a single scope.
  
- This {{{./examples/custom-resolver/index.html}example}} adds a request scoped context.
+ There are two system provided scope/context pairs.  The default {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}}
+ for services annotated with {{{./apidocs/org/jvnet/hk2/annotations/Service.html}@Serivce}} is the
+ {{{http://docs.oracle.com/javaee/6/api/javax/inject/Singleton.html}Singleton}} scope.  Service instances in the
+ {{{http://docs.oracle.com/javaee/6/api/javax/inject/Singleton.html}Singleton}} scope are created once and are
+ never destroyed.
+ 
+ The default {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} for services bound with
+ the {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}} bind call is
+ {{{./apidocs/org/jvnet/hk2/api/PerLookup.html}PerLookup}}.  Service
+ instances in the {{{./apidocs/org/jvnet/hk2/api/PerLookup.html}PerLookup}} scope are created every time that
+ the service is injected or looked up via the API.  These instances are destroyed when the
+ {{{http://docs.oracle.com/javaee/6/api/javax/inject/ServiceHandle.html}ServiceHandle}} destroy method is called
+ on any service that has injected a {{{./apidocs/org/jvnet/hk2/api/PerLookup.html}PerLookup}} object.
+ 
+ Any number of other scope/context pairs can be added to the system.  In order to do so, the user must write
+ an implementation of {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} where the parameterized type
+ of the {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} is the annotation annotated with
+ {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} that the
+ {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} is handling.  This implementation of
+ {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} is then bound into the
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
+ 
+ To make this more clear, we have two examples of user scope/context pairs:
+ 
+ [[1]] This {{{./examples/ctm/index.html}example}} adds a context that is based on the current running tenant.
+ 
+ [[2]] This {{{./examples/custom-resolver/index.html}example}} adds a request scoped context.
  
 * {Dealing with ClassLoading issues}
 
@@ -56,6 +85,18 @@ Extensibility of HK2
  ways {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} can be implemented.
  
 * {Custom Injection Resolvers}
+
+ By default the system provides JSR-330 standard injection.  That means honoring
+ {{{http://docs.oracle.com/javaee/6/api/javax/inject/Inject.html}@Inject}} and all other parts of the
+ JSR-330 specification.  (For more information see TBD).  However, it is sometimes the case that
+ a user would like to customize the JSR-330 resolution in some manner, or provide their
+ own injection points based on a different annotation.
+ 
+ In order to do so, the user implements {{{./apidocs/org/jvnet/hk2/api/InjectionResolver.html}InjectionResolver}}.  The
+ parameterized type of the {{{./apidocs/org/jvnet/hk2/api/InjectionResolver.html}InjectionResolver}} must be the injection
+ annotation that they will resolve.  The user implementation of
+ {{{./apidocs/org/jvnet/hk2/api/InjectionResolver.html}InjectionResolver}} is then bound into a
+ {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
 
  This {{{./examples/custom-resolver/index.html}example}} adds a custom injection resolver that customizes the default
  JSR-330 injection resolver.

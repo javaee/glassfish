@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.glassfish.hk2.api.IterableProvider;
@@ -53,7 +54,8 @@ import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * @author jwells
- *
+ * 
+ * @param <T> The type for this provider
  */
 public class IterableProviderImpl<T> implements IterableProvider<T> {
     private final ServiceLocator locator;
@@ -96,7 +98,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public Iterator<T> iterator() {
-        Set<ServiceHandle<T>> handles = Utilities.<Set<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
+        List<ServiceHandle<T>> handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
         
         return new MyIterator<T>(handles);
@@ -145,7 +147,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public Iterable<ServiceHandle<T>> handleIterator() {
-        Set<ServiceHandle<T>> handles = Utilities.<Set<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
+        List<ServiceHandle<T>> handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
         
         return new HandleIterable<T>(handles);
@@ -154,7 +156,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     private static class MyIterator<U> implements Iterator<U> {
         private final LinkedList<ServiceHandle<U>> handles;
         
-        private MyIterator(Set<ServiceHandle<U>> handles) {
+        private MyIterator(List<ServiceHandle<U>> handles) {
             this.handles = new LinkedList<ServiceHandle<U>>(handles);
         }
 
@@ -188,10 +190,10 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     }
     
     private static class HandleIterable<U> implements Iterable<ServiceHandle<U>> {
-        private final Set<ServiceHandle<U>> handles;
+        private final List<ServiceHandle<U>> handles;
         
-        private HandleIterable(Set<ServiceHandle<U>> handles) {
-            this.handles = new HashSet<ServiceHandle<U>>(handles);
+        private HandleIterable(List<ServiceHandle<U>> handles) {
+            this.handles = new LinkedList<ServiceHandle<U>>(handles);
         }
 
         /* (non-Javadoc)
@@ -207,7 +209,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     private static class MyHandleIterator<U> implements Iterator<ServiceHandle<U>> {
         private final LinkedList<ServiceHandle<U>> handles;
         
-        private MyHandleIterator(Set<ServiceHandle<U>> handles) {
+        private MyHandleIterator(List<ServiceHandle<U>> handles) {
             this.handles = new LinkedList<ServiceHandle<U>>(handles);
         }
 

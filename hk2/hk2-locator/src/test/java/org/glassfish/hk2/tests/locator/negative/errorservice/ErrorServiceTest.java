@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.negative.errorservice;
 
-import java.util.SortedSet;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -127,7 +127,7 @@ public class ErrorServiceTest {
     private void testLookupHandlesPriorToFixing(ErrorServiceImpl esi) {
         esi.clear();
         
-        SortedSet<ServiceHandle<?>> handles = locator.getAllServiceHandles(
+        List<ServiceHandle<?>> handles = locator.getAllServiceHandles(
                 BuilderHelper.createContractFilter(FaultyClass.class.getName()));
         Assert.assertTrue("handles.size=" + handles.size(), handles.isEmpty());
         
@@ -150,7 +150,7 @@ public class ErrorServiceTest {
     private void testLookupHandlesWithContractPriorToFixing(ErrorServiceImpl esi) {
         esi.clear();
         
-        SortedSet<ServiceHandle<?>> handles = locator.getAllServiceHandles(FaultyClass.class);
+        List<ServiceHandle<?>> handles = locator.getAllServiceHandles(FaultyClass.class);
         Assert.assertTrue("handles.size=" + handles.size(), handles.isEmpty());
         
         Descriptor faultyDesc = locator.getBestDescriptor(BuilderHelper.createContractFilter(FaultyClass.class.getName()));

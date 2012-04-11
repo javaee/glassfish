@@ -44,7 +44,6 @@ import org.jvnet.hk2.annotations.Contract;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.SortedSet;
 
 /**
  * ServiceLocator is the registry for HK2 services
@@ -171,12 +170,12 @@ public interface ServiceLocator {
      * or concrete implementation to get the best instance of
      * @param qualifiers The set of qualifiers that must match this service
      * definition
-     * @return A non-null but possibly empty set of service handles matching
+     * @return A non-null but possibly empty list of service handles matching
      * the given criteria
      * @throws MultiException if there was an error during service creation
      * @throws IllegalArgumentException if contractOrImpl is null
      */
-    public SortedSet<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
+    public List<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
             Annotation... qualifiers) throws MultiException;
     
     /**
@@ -190,19 +189,18 @@ public interface ServiceLocator {
      * method to retrieve objects, so that they can be destroyed in the proper sequence
      * 
      * @param searchCriteria A filter to use when determining which services should apply 
-     * @return Will return root as a convenience
+     * @return A list of handles in ranked order that match the given filter
      * @throws MultiException if there was an error during service creation
      */
-    public SortedSet<ServiceHandle<?>> getAllServiceHandles(Filter searchCriteria) throws MultiException;
+    public List<ServiceHandle<?>> getAllServiceHandles(Filter searchCriteria) throws MultiException;
     
     /**
      * Gets the list of descriptors that match the given filter
      * 
      * @param filter A filter to use when determining which services should apply
-     * @return A list of descriptors in ranked order that match the given
-     * filter
+     * @return A list of descriptors in ranked order that match the given filter
      */
-    public SortedSet<ActiveDescriptor<?>> getDescriptors(Filter filter);
+    public List<ActiveDescriptor<?>> getDescriptors(Filter filter);
     
     /**
      * Gets the descriptor that best matches this filter, taking ranking
