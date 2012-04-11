@@ -45,8 +45,11 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 /**
+ * An Injectee represents the point of injection.  It can be used
+ * by injection resolvers to discover all of the information available about
+ * the entity being injected into.
+ * 
  * @author jwells
- *
  */
 public interface Injectee {
     /**

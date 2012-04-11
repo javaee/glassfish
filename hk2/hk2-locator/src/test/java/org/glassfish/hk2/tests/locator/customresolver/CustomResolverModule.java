@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.locator.customresolver;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -56,7 +56,7 @@ public class CustomResolverModule implements TestModule {
      * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration configurator) {
+    public void configure(DynamicConfiguration configurator) {
         configurator.addActiveDescriptor(ServiceWithCustomInjections.class);
         
         // Setting it to rank 1 makes it supercede the system injection resolver

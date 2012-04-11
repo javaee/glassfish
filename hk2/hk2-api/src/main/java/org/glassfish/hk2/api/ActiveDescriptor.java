@@ -45,6 +45,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * An ActiveDescriptor contains information about a Descriptor after it has been reified.
+ * Most of the methods in an ActiveDescriptor cannot be called until the isReified method
+ * return true.  Prior to that the information is not yet known.  ActiveDescriptors
+ * can be reified with the {@link ServiceLocator}.reifyDescriptor method.
+ * <p>
+ * ActiveDescriptors may also be provided to the system pre-reified, which is useful
+ * when the Service described may be produced by a third-party system.  In this case
+ * the ActiveDescriptors create method must use the third-party system in order to
+ * create instances of the described service
+ * 
  * @author jwells
  * 
  * @param <T> This is the type produced by the cache and consumed by the cache

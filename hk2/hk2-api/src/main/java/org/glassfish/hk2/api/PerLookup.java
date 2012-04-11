@@ -49,8 +49,11 @@ import java.lang.annotation.Target;
 import javax.inject.Scope;
 
 /**
+ * PerLookup is the scope for objects that are created every time they are looked up.  PerLookup objects
+ * will be destroyed whenever a service containing them is destroyed or they are destroyed explicitly
+ * with the {@link ServiceHandle#destroy()} method.
+ * 
  * @author jwells
- *
  */
 @Retention(RUNTIME)
 @Scope

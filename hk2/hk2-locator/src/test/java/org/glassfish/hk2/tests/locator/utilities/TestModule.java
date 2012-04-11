@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.utilities;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 
 /**
  * @author jwells
@@ -51,6 +51,6 @@ public interface TestModule {
      * 
      * @param config
      */
-    public void configure(Configuration config);
+    public void configure(DynamicConfiguration config);
 
 }

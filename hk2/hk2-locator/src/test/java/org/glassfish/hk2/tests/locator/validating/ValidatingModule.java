@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.locator.validating;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -56,7 +56,7 @@ public class ValidatingModule implements TestModule {
      * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration configurator) {
+    public void configure(DynamicConfiguration configurator) {
         configurator.bind(BuilderHelper.link(SuperSecretService.class).qualifiedBy(Secret.class.getName()).build());
         configurator.bind(BuilderHelper.link(SystemService.class).build());
         configurator.bind(BuilderHelper.link(UserService.class).build());

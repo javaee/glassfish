@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.negative.field;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
@@ -53,7 +53,7 @@ public class NegativeFieldModule implements TestModule {
      * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration config) {
+    public void configure(DynamicConfiguration config) {
         config.bind(BuilderHelper.link(FinalFieldService.class).build());
         config.bind(BuilderHelper.link(StaticFieldService.class).build());
 

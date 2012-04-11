@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.negative.scope;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -54,7 +54,7 @@ public class NegativeScopeModule implements TestModule {
      * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
      */
     @Override
-    public void configure(Configuration config) {
+    public void configure(DynamicConfiguration config) {
         config.bind(BuilderHelper.link(TwoScopeService.class).build());
         config.bind(BuilderHelper.link(WrongScopeService.class).
                 in(PerLookup.class.getName()).build());

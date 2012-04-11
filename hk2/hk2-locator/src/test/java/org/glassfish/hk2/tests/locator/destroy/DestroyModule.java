@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.locator.destroy;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -56,7 +56,7 @@ public class DestroyModule implements TestModule {
      * @see org.glassfish.hk2.Module#configure(org.glassfish.hk2.BinderFactory)
      */
     @Override
-    public void configure(Configuration configurator) {
+    public void configure(DynamicConfiguration configurator) {
         configurator.bind(BuilderHelper.link(Foo.class).in(PerLookup.class.getName()).build());
         configurator.bind(BuilderHelper.link(Bar.class).in(PerLookup.class.getName()).build());
         configurator.bind(BuilderHelper.link(Baz.class).in(PerLookup.class.getName()).build());

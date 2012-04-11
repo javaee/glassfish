@@ -47,7 +47,7 @@ import org.glassfish.examples.ctm.ServiceProviderEngine;
 import org.glassfish.examples.ctm.TenantManager;
 import org.glassfish.examples.ctm.TenantScoped;
 import org.glassfish.examples.ctm.TenantScopedContext;
-import org.glassfish.hk2.api.Configuration;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
@@ -66,7 +66,7 @@ public class CTMModule {
      * 
      * @param configurator
      */
-    public void configure(Configuration configurator) {
+    public void configure(DynamicConfiguration configurator) {
         // Bind our custom scope
         configurator.bind(
                 BuilderHelper.link(TenantScopedContext.class).
