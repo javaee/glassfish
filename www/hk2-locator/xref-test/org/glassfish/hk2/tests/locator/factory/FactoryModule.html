@@ -53,7 +53,7 @@
 <a class="jxr_linenumber" name="43" href="#43">43</a>  
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> javax.inject.Singleton;
 <a class="jxr_linenumber" name="45" href="#45">45</a>  
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Configuration;
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.DynamicConfiguration;
 <a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Context;
 <a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.locator.utilities.TestModule;
 <a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.utilities.BuilderHelper;
@@ -68,7 +68,7 @@
 <a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_comment">     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)</em>
 <a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_comment">     */</em>
 <a class="jxr_linenumber" name="60" href="#60">60</a>      @Override
-<a class="jxr_linenumber" name="61" href="#61">61</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> configure(Configuration configurator) {
+<a class="jxr_linenumber" name="61" href="#61">61</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> configure(DynamicConfiguration configurator) {
 <a class="jxr_linenumber" name="62" href="#62">62</a>          configurator.bind(BuilderHelper.link(DateFactory.<strong class="jxr_keyword">class</strong>).to(Date.<strong class="jxr_keyword">class</strong>).buildFactory());
 <a class="jxr_linenumber" name="63" href="#63">63</a>          configurator.bind(BuilderHelper.link(DateInjectee.<strong class="jxr_keyword">class</strong>).in(Singleton.<strong class="jxr_keyword">class</strong>).build());
 <a class="jxr_linenumber" name="64" href="#64">64</a>          

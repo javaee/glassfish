@@ -49,7 +49,7 @@
 <a class="jxr_linenumber" name="39" href="#39">39</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">package</strong> org.glassfish.hk2.tests.locator.negative.errorservice;
 <a class="jxr_linenumber" name="41" href="#41">41</a>  
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> java.util.SortedSet;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> java.util.List;
 <a class="jxr_linenumber" name="43" href="#43">43</a>  
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> junit.framework.Assert;
 <a class="jxr_linenumber" name="45" href="#45">45</a>  
@@ -137,7 +137,7 @@
 <a class="jxr_linenumber" name="127" href="#127">127</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupHandlesPriorToFixing(<a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi) {
 <a class="jxr_linenumber" name="128" href="#128">128</a>         esi.clear();
 <a class="jxr_linenumber" name="129" href="#129">129</a>         
-<a class="jxr_linenumber" name="130" href="#130">130</a>         SortedSet&lt;ServiceHandle&lt;?&gt;&gt; handles = locator.getAllServiceHandles(
+<a class="jxr_linenumber" name="130" href="#130">130</a>         List&lt;ServiceHandle&lt;?&gt;&gt; handles = locator.getAllServiceHandles(
 <a class="jxr_linenumber" name="131" href="#131">131</a>                 BuilderHelper.createContractFilter(FaultyClass.<strong class="jxr_keyword">class</strong>.getName()));
 <a class="jxr_linenumber" name="132" href="#132">132</a>         Assert.assertTrue(<span class="jxr_string">"handles.size="</span> + handles.size(), handles.isEmpty());
 <a class="jxr_linenumber" name="133" href="#133">133</a>         
@@ -160,7 +160,7 @@
 <a class="jxr_linenumber" name="150" href="#150">150</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupHandlesWithContractPriorToFixing(<a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi) {
 <a class="jxr_linenumber" name="151" href="#151">151</a>         esi.clear();
 <a class="jxr_linenumber" name="152" href="#152">152</a>         
-<a class="jxr_linenumber" name="153" href="#153">153</a>         SortedSet&lt;ServiceHandle&lt;?&gt;&gt; handles = locator.getAllServiceHandles(FaultyClass.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="153" href="#153">153</a>         List&lt;ServiceHandle&lt;?&gt;&gt; handles = locator.getAllServiceHandles(FaultyClass.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="154" href="#154">154</a>         Assert.assertTrue(<span class="jxr_string">"handles.size="</span> + handles.size(), handles.isEmpty());
 <a class="jxr_linenumber" name="155" href="#155">155</a>         
 <a class="jxr_linenumber" name="156" href="#156">156</a>         Descriptor faultyDesc = locator.getBestDescriptor(BuilderHelper.createContractFilter(FaultyClass.<strong class="jxr_keyword">class</strong>.getName()));
