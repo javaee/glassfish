@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="ejb-ejb32-sfsb-App" default="usage" basedir=".">
+<project name="ejb-ejb32-sfsb-basic-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
