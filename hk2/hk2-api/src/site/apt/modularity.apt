@@ -253,7 +253,7 @@ public class MyContractImpl {
 
     while to look up will need to use the HK2 APIs to do an explicit lookup, and
     instantiate an object by extending an
-    {{{./apidocs/org/glassfish/hk2/api/AnnotationLiteral.html}AnnotationLiteral}}.
+    {{{./apidocs/org/glassfish/hk2/AnnotationLiteral.html}AnnotationLiteral}}.
 
 +-----------------------+
     Annotation annotation = ... get it from config ...
