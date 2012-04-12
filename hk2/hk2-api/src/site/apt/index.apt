@@ -24,8 +24,8 @@ Table of Contents
 {Introduction}
 
  HK2 is a declarative framework for services using annotations like
- {{{./apidocs/org/jvnet/hk2/annotations/Contract.html}Contract}} and
- {{{./apidocs/org/jvnet/hk2/annotations/Service.html}Service}}.  This page
+ {{{./apidocs/org/glassfish/hk2/annotations/Contract.html}Contract}} and
+ {{{./apidocs/org/glassfish/hk2/annotations/Service.html}Service}}.  This page
  is intended to show simple usages of HK2 mainly using the standard JSR-330
  API.
 
@@ -42,7 +42,7 @@ Table of Contents
 {Getting Started}
 
  In order to mark a concrete implementation class as one that should be available as a service you annotate your class with 
- {{{./apidocs/org/glassfish/hk2/annotations/Service.html}@Service}}.
+ {{{./apidocs/org/jvnet/hk2/annotations/Service.html}@Service}}.
  
 +--------------------------------------
 @Service
@@ -51,7 +51,7 @@ public class Foo {
 +--------------------------------------
 
  By default Foo will be advertised as itself and by any interfaces that are marked with
- {{{./apidocs/org/glassfish/hk2/annotations/Contract.html}@Contract}}.  Lets make Foo
+ {{{./apidocs/org/jvnet/hk2/annotations/Contract.html}@Contract}}.  Lets make Foo
  an interface that is a Contract and create an implementation of Foo:
  
 +--------------------------------------
