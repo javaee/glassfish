@@ -239,10 +239,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public ActiveDescriptor<?> reifyDescriptor(Descriptor descriptor, Injectee injectee)
             throws MultiException {
         checkState();
-        Class<?> implClass = loadClass(descriptor, injectee);
+        if (descriptor == null) throw new IllegalArgumentException();
         
         if (!(descriptor instanceof ActiveDescriptor)) {
             SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor, new Long(id), new Long(getNextServiceId()));
+            
+            Class<?> implClass = loadClass(descriptor, injectee);
             
             Collector collector = new Collector();
             sd.reify(implClass, this, collector);
@@ -264,6 +266,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             sd = new SystemDescriptor<Object>(descriptor, new Long(id), new Long(getNextServiceId()));
         }
         
+        Class<?> implClass = loadClass(descriptor, injectee);
         Collector collector = new Collector();
         synchronized(lock) {
             sd.reify(implClass, this, collector);

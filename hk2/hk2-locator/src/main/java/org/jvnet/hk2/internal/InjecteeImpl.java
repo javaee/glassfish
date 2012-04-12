@@ -135,6 +135,7 @@ public class InjecteeImpl implements Injectee {
     
     public String toString() {
         return "Injectee(requiredType=" + Pretty.type(requiredType) +
+                ",parent=" + Pretty.clazz(pClass) +
                 ",qualifiers=" + Pretty.collection(qualifiers) +
                 ",position=" + position +
                 ",optional=" + isOptional +
