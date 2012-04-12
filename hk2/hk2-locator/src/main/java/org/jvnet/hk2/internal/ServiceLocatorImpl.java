@@ -927,7 +927,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             // Now match the qualifiers
             Set<Annotation> candidateAnnotations = candidate.getQualifierAnnotations();
             
-            if (!Utilities.annotationContainsAll(candidateAnnotations, requiredAnnotations)) {
+            // Checking requiredAnnotations isEmpty is a performance optimization which avoids
+            // a potentially expensive doPriv call in the second part of the AND statement
+            if (!requiredAnnotations.isEmpty() &&
+                    !Utilities.annotationContainsAll(candidateAnnotations, requiredAnnotations)) {
                 // The qualifiers do not match
                 continue;
             }

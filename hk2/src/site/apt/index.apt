@@ -1,32 +1,55 @@
 Introduction
 
-    HK2 for Hundred Kilobytes Kernel is an abstraction to a module subsystem coupled with a simple yet powerful component model to build server side software. It is the foundation for the GlassFish V3 application server and consist of several technologies :
+ HK2 is an implementation of the JSR-330
+ standard.  It also provides an API for fine control over the operation
+ of HK2 and the ability to automatically load services into the
+ service registry.  It is the foundation for the GlassFish V3 application
+ server and consist of several technologies.
 
-* Modules subsystem abstraction
+* JSR-330 implementation
 
-    Modern large Java software usually rely on a module subsystem to offer a better level of isolation between parts of the
- application. Many technologies have been around for years, HK2 proposes a model which is aimed to be friendly to
- existing technologies such as OSGi by providing a direct mapping from its abstraction to most OSGi features while preserving the user code from dealing with modules directly in their code. The independence from OSGi APIs in hk2 enabled projects greatly simplifies the programmer's life by concentrating on services and dependencies rather than on modules (building blocks). 
+ HK2 is an implementation of the JSR-330 standard.  It adds in some useful
+ utilities for marking classes as services and interfaces as contracts.
+ JSR-330 defines services and injection points that can be dynamically
+ discovered at runtime and which allow for Inversion of Control.
 
-   Link to {{{.\/modules.html}Modules Subsystem}}
+ To see how to use HK2 as a JSR-330 implementation see
+ {{{./hk2-api/index.html}this page}}.
 
-* Component Model
+* HK2 API
 
-    On top of the module subsystem abstraction, HK2 define components which can also be seen as Services. These components can be
-automatically and dynamically discovered by the runtime and can use innovative tachnologies such as Inversion of Control
-or injection of dependencies as well as automatic resolution of dependencies.
+ HK2 also has a powerful API that can be used to perform several tasks
+ such as binding service descriptions into the system and looking up
+ services.
 
-   Link to {{{.\/components.html}Component Model}}
+ For more information on how to use the HK2 API see
+ {{{./hk2-api/api.html}this page}}.
 
-   Link to HK2 APIs {{{./hk2-api/index.html}Programmatic APIs}}
+ You can also see the Javadoc for the HK2 API
+ {{{./hk2-api/apidocs/index.html}here}}.
 
-   Link to information on how to build a modular application using HK2 {{{./hk2-api/modularity.html}here}}
+* HK2 Extensibility
 
-* Class Model
+ HK2 has several extensibility features.  These are features which allow the users to
+ customize or change the behavior of HK2.
+ 
+ The following list gives an overview of some of the things that can be customized or
+ extended with HK2:
 
-	In order to generate enough metadata to satisfy all injection points with a suitable injection target, HK2 has developped a simple class model which mimics a java class reflective API without the cost of loading the class files with a class loader. The class-model sub project can be used indenpendently of HK2, it is using ASM to load the byte code and provide a user friendly reflective APIs on the parsed classes.
+ * Custom scopes
 
-   Link to {{{.\/class-model/index.html}Class-Model}}
+ * Custom injection resolution
+
+ * Assisted injection
+
+ * Just In Time injection resolution
+
+ * Custom validation and security
+ 
+ []
+
+ For more information on HK2 extensibilty see
+ {{{./hk2-api/extensibility.html}this page}}.
 
 * Configuration
  
