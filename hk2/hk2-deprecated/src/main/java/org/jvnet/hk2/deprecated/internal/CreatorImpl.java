@@ -96,9 +96,11 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.Inhabitant#get(org.jvnet.hk2.component.Inhabitant)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T get(Inhabitant onBehalfOf) {
-        return locator.getService(c);
+        Object retVal = locator.getService(c);
+        return (T) retVal;
     }
 
     /* (non-Javadoc)
@@ -132,9 +134,11 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.Creator#create(org.jvnet.hk2.component.Inhabitant)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T create(Inhabitant onBehalfOf) throws ComponentException {
-        return locator.getService(c);
+        Object retVal = locator.getService(c);
+        return (T) retVal;
     }
 
     /* (non-Javadoc)
