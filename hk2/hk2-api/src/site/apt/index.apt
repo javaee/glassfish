@@ -20,12 +20,22 @@ Table of Contents
    * {{Qualified Services}}
  
  * {{Basic Injection}}
+ 
+   * {{Injection by name}}
+   
+   * {{Injection by qualifier}}
+   
+ * {{Provider injection}}
+ 
+ * {{IterableProvider injection}}
+ 
+ * {{Conclusion}}
     
 {Introduction}
 
  HK2 is a declarative framework for services using annotations like
- {{{./apidocs/org/glassfish/hk2/annotations/Contract.html}Contract}} and
- {{{./apidocs/org/glassfish/hk2/annotations/Service.html}Service}}.  This page
+ {{{./apidocs/org/jvnet/hk2/annotations/Contract.html}Contract}} and
+ {{{./apidocs/org/jvnet/hk2/annotations/Service.html}Service}}.  This page
  is intended to show simple usages of HK2 mainly using the standard JSR-330
  API.
 
@@ -78,7 +88,7 @@ public interface Book {
 }
 
 @Service @Named
-public class MobyDock implements Book {
+public class MobyDick implements Book {
 }
 
 @Service @Named
@@ -92,7 +102,7 @@ public class ParadiseLost implements Book {
  
 * {Qualified Services}
 
- Services can also be qualified with annotations called Qualifiers.  Qualifiers are annotations that are themselves
+ Services can also be qualified with annotations called qualifiers.  Qualifiers are annotations that are themselves
  annotated with {{{http://docs.oracle.com/javaee/6/api/javax/inject/Qualifier.html}@Qualifier}}.  Here is an
  example contract with three implementations:
  
@@ -177,8 +187,7 @@ public class FooImpl implements Foo {
 +--------------------------------------
 
  In all three of the above cases (field injected, constructor injected or initializer method injected) the injection will occur
- prior to the postConstruct method of FooImpl.  In this example we go back to field injection and use the book in our postConstruct
- method:
+ prior to the postConstruct method of FooImpl.  In this example we use the injected book in the postConstruct method:
  
 +--------------------------------------
 @Service
@@ -193,3 +202,163 @@ public class FooImpl implements Foo {
 }
 +--------------------------------------
 
+* {Injection by name}
+
+ The astute observer of our example will have noticed that when injecting a Book into FooImpl that we never selected which
+ book we wanted.  That can be fixed by using the {{{http://docs.oracle.com/javaee/6/api/javax/inject/Named.html}Named}}
+ qualifier at the point of injection.  Lets fix the example by injecting both of the Books we defined earlier:
+ 
++--------------------------------------
+@Service
+public class FooImpl implements Foo {
+  @Inject @Named("MobyDick")
+  private Book mobyDick;
+  
+  @Inject @Named("ParadiseLost")
+  private Book paradiseLost;
+}
++--------------------------------------
+
+ The implementation of Book given the name "MobyDick" will be injected into the mobyDick field, and the implementation of
+ Book given the name "ParadiseLost" will be injected into the paradiseLost field.
+ 
+* {Injection by qualifier}
+
+ Injections can also be more specifically chosen by using qualifiers.  In the previous example we created three implementations
+ of Color, each of which was qualified with a qualifier.  Here we create a class called ColorMixer which injects the colors
+ in an initializer method, which also demonstrates that an initializer method (or constructor) can take more than one
+ parameter:
+
++--------------------------------------
+@Service
+public class ColorMixer {
+    private Color red;
+    private Color blue;
+    private Color yellow;
+  
+    @Inject
+    private void addPrimaries(
+            @Red Color red,
+            @Blue Color blue,
+            @Yellow Color yellow) {
+      this.red = red;
+      this.blue = blue;
+      this.yellow = yellow;
+   }
+}
++--------------------------------------
+
+ Note that the qualifiers can go on the parameters of the initializer method addPrimaries.  In the above example the RedColor,
+ BlueColor and YellowColor services will be injected into the proper fields of the initializer.
+ 
+{Provider injection}
+
+ There are times when your code would like finer control over when a instance of a service is created.  Anywhere that you
+ can inject a service, you can also inject a {{{http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html}Provider}}.
+ When you inject a {{{http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html}Provider}} for a service rather than
+ the service itself the system will potentially delay the creation of the service until the
+ {{{http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html#get%28%29}get}} method of the
+ {{{http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html}Provider}} has been called.
+ 
+ Lets go back to our ColorMixer example, and inject providers (into fields this time) for our primaries.
+ 
++--------------------------------------
+@Service
+public class ColorMixer {
+    @Inject @Red
+    private Provider<Color> redProvider;
+    
+    @Inject @Blue
+    private Provider<Color> blueProvider;
+    
+    @Inject @Yellow
+    private Provider<Color> yellowProvider;
+}
++--------------------------------------
+
+ This service can then get the color implementations later.  In this method of ColorMixer we create purple by getting the
+ red and blue colors:
+
++--------------------------------------
+@Service
+public class ColorMixer {
+    ...
+    
+    public Color makePurple() {
+      return mix(redProvider.get(), blueProvider.get());
+    }
+}
++--------------------------------------
+
+ Note that if no-one ever makes a color that involves using yellow, that the YellowColor implementation class will never
+ be created, since no-one ever called the {{{http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html#get%28%29}get}}
+ method of the yellowProvider field.
+ 
+{IterableProvider injection}
+
+ It is often the case that a single contract has more than one implementation.  Sometimes it is useful to get access to
+ all of the implementations of the contract.  This can be done by using an
+ {{{./apidocs/org/glassfish/hk2/api/IterableProvider.html}IterableProvider}}.  {{{./apidocs/org/glassfish/hk2/api/IterableProvider.html}IterableProvider}}
+ extends {{{http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html}Provider}} and also implements
+ {{{http://docs.oracle.com/javase/6/docs/api/java/lang/Iterable.html}Iterable}}.  Anywhere a service can be injected an
+ {{{./apidocs/org/glassfish/hk2/api/IterableProvider.html}IterableProvider}} for that service can be injected.
+ 
+ In this example we create a Library service that wants to be able to list all of the books it carries:
+
++--------------------------------------
+@Service
+public class Library {
+    @Inject
+    private IterableProvider<Book> allBooks;
+    
+    public LinkedList<Book> getAllBooks() {
+        LinkedList<Book> retVal = new LinkedList<Book>();
+        
+        for (Book book : allBooks) {
+            retVal.add(book);
+        }
+        
+        return retVal;
+    }
+}
++--------------------------------------
+
+ Since {{{./apidocs/org/glassfish/hk2/api/IterableProvider.html}IterableProvider}} implements
+ {{{http://docs.oracle.com/javase/6/docs/api/java/lang/Iterable.html}Iterable}} it can be used in Java
+ for/while loops, as demonstrated in the above example.
+ 
+ Another feature of the {{{./apidocs/org/glassfish/hk2/api/IterableProvider.html}IterableProvider}} is that it can
+ be used to further narrow down the selection criteria at run time.  In our above example we can progrommatically choose
+ the book we are interested in based on a name passed into a method.  Here is how it would look:
+ 
++--------------------------------------
+@Service
+public class Library {
+    @Inject
+    private IterableProvider<Book> allBooks;
+    
+    public Book findBook(String name) {
+        return allBooks.named(name).get();
+    }
+}
++--------------------------------------
+
+ In the above example we call the
+ {{{http://hk2.java.net/hk2-api/apidocs/org/glassfish/hk2/api/IterableProvider.html#named%28java.lang.String%29}named}} method
+ of {{{./apidocs/org/glassfish/hk2/api/IterableProvider.html}IterableProvider}} in order to select the book with
+ the given name.  The call to
+ {{{http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html#get%28%29}get}} then just returns the book with
+ the given name.
+ 
+{Conclusion}
+
+ The majority of usages of HK2 should use standard JSR-330 annotations along with
+ {{{./apidocs/org/jvnet/hk2/annotations/Service.html}@Service}} and
+ {{{./apidocs/org/jvnet/hk2/annotations/Contract.html}@Contract}}.  In some cases code will also
+ use {{{./apidocs/org/glassfish/hk2/api/IterableProvider.html}IterableProvider}} as outlined above.  In even
+ rarer cases the code may need extremely specialized control over HK2 by using the
+ progrommatic API, as described {{{./api.html}here}}.
+ 
+ We have gone through many simple examples which have shown the basic functionality of HK2 and JSR-330 in your
+ applications.  Hopefully they have provided you with knowledge about how these annotations work and how they
+ can be used in your own applications.
