@@ -15,6 +15,7 @@ public class SFSB implements Hello {
     private EntityManager em;
 
     @PostConstruct
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void init() {
         System.out.println("In SFSB::init()");
         FooEntity fe = new FooEntity("BAR");
@@ -39,6 +40,7 @@ public class SFSB implements Hello {
     }
 
     @PreDestroy
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void destroy() {
         System.out.println("In SFSB::destroy()");
         try {
