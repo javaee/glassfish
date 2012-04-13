@@ -39,15 +39,18 @@
  */
 package org.glassfish.hk2.internal;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import javax.inject.Named;
 import javax.inject.Qualifier;
@@ -119,7 +122,7 @@ public class ReflectionHelper {
      * @return The type itself and the contracts it implements
      */
     public static Set<Type> getAdvertisedTypesFromObject(Object t) {
-        Set<Type> retVal = new HashSet<Type>();
+        Set<Type> retVal = new LinkedHashSet<Type>();
         if (t == null) return retVal;
         
         retVal.add(t.getClass());
@@ -138,6 +141,27 @@ public class ReflectionHelper {
     }
     
     /**
+     * Returns the set of types this class advertises
+     * @param clazz the class we are analyzing
+     * @return The type itself and the contracts it implements
+     */
+    public static Set<String> getContractsFromClass(Class<?> clazz) {
+        Set<String> retVal = new LinkedHashSet<String>();
+        if (clazz == null) return retVal;
+        
+        retVal.add(clazz.getName());
+        
+        Class<?> interfaces[] = clazz.getInterfaces();
+        for (Class<?> iFace : interfaces) {
+            if (iFace.isAnnotationPresent(Contract.class)) {
+                retVal.add(iFace.getName());
+            }
+        }
+        
+        return retVal;
+    }
+    
+    /**
      * Gets the scope annotation from the object
      * @param t The object to analyze
      * @return The class of the scope annotation
@@ -145,8 +169,18 @@ public class ReflectionHelper {
     public static Class<? extends Annotation> getScopeFromObject(Object t) {
         if (t == null) return PerLookup.class;
         
-        Class<?> oClass = t.getClass();
-        for (Annotation annotation : oClass.getAnnotations()) {
+        return getScopeFromClass(t.getClass());
+    }
+    
+    /**
+     * Gets the scope annotation from the object
+     * @param clazz The class to analyze
+     * @return The class of the scope annotation
+     */
+    public static Class<? extends Annotation> getScopeFromClass(Class<?> clazz) {
+        if (clazz == null) return PerLookup.class;
+        
+        for (Annotation annotation : clazz.getAnnotations()) {
             Class<? extends Annotation> annoClass = annotation.annotationType();
             
             if (annoClass.isAnnotationPresent(Scope.class)) {
@@ -165,7 +199,7 @@ public class ReflectionHelper {
      * @return The set of qualifiers.  Will not return null but may return an empty set
      */
     public static Set<Annotation> getQualifiersFromObject(Object t) {
-        Set<Annotation> retVal = new HashSet<Annotation>();
+        Set<Annotation> retVal = new LinkedHashSet<Annotation>();
         if (t == null) return retVal;
         
         Class<?> oClass = t.getClass();
@@ -181,7 +215,37 @@ public class ReflectionHelper {
         return retVal;
     }
     
-    private static String writeSet(Set<?> set) {
+    /**
+     * Gets all the qualifiers from the object
+     * 
+     * @param clazz The class to analyze
+     * @return The set of qualifiers.  Will not return null but may return an empty set
+     */
+    public static Set<String> getQualifiersFromClass(Class<?> clazz) {
+        Set<String> retVal = new LinkedHashSet<String>();
+        if (clazz == null) return retVal;
+        
+        for (Annotation annotation : clazz.getAnnotations()) {
+            Class<? extends Annotation> annoClass = annotation.annotationType();
+            
+            if (annoClass.isAnnotationPresent(Qualifier.class)) {
+                retVal.add(annotation.annotationType().getName());
+            }
+            
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Writes a set in a way that can be read from an input stream as well
+     * 
+     * @param set The set to write
+     * @return a representation of a list
+     */
+    public static String writeSet(Set<?> set) {
+        if (set == null) return "{}";
+        
         StringBuffer sb = new StringBuffer("{");
         
         boolean first = true;
@@ -200,8 +264,80 @@ public class ReflectionHelper {
         return sb.toString();
     }
     
+    /**
+     * Writes a set in a way that can be read from an input stream as well.  The values in
+     * the set may not contain the characters "{},"
+     * 
+     * @param line The line to read
+     * @param addToMe The set to add the strings to
+     * @throws IOException On a failure
+     */
+    public static void readSet(String line, Collection<String> addToMe) throws IOException {
+        int startIndex = line.indexOf('{');
+        if (startIndex < 0) {
+            throw new IOException("Unknown set format, no initial { character : " + line);
+        }
+        
+        int finishIndex = line.indexOf('}', startIndex);
+        if (finishIndex < 0) {
+            throw new IOException("Unknown set format, no trailing } character : " + line);
+        }
+        
+        String csl = line.substring(startIndex + 1, finishIndex);
+        
+        StringTokenizer st = new StringTokenizer(csl, ",");
+        while (st.hasMoreTokens()) {
+            addToMe.add(st.nextToken());
+        }
+    }
+    
+    private static void readKeyStringListLine(String line, Map<String, List<String>> addToMe) throws IOException {
+        int equalsIndex = line.indexOf('=');
+        if (equalsIndex < 0) {
+            throw new IOException("Uknown key-string list format, no equals: " + line);
+        }
+        
+        String key = line.substring(0, equalsIndex);  // Do NOT include the equals
+        
+        String listValue = line.substring(equalsIndex + 1);
+        if (listValue.length() <= 0) return;
+        
+        LinkedList<String> listValues = new LinkedList<String>();
+        
+        readSet(listValue, listValues);
+        
+        if (!listValues.isEmpty()) {
+            addToMe.put(key, listValues);
+        }
+    }
+    
+    /**
+     * Writes a set in a way that can be read from an input stream as well
+     * @param line The line to read
+     * @param addToMe The set to add the strings to
+     * @throws IOException On a failure
+     */
+    public static void readMetadataMap(String line, Map<String, List<String>> addToMe) throws IOException {
+        int startIndex = line.indexOf('[');
+        if (startIndex < 0) {
+            throw new IOException("Unknown metadata format, no initial [ character : " + line);
+        }
+        
+        int endIndex = line.indexOf(']', startIndex);
+        if (endIndex < 0) {
+            throw new IOException("Unknown set format, no trailing ] character : " + line);
+        }
+        
+        String csl = line.substring(startIndex + 1, endIndex);
+        
+        StringTokenizer tokenizer = new StringTokenizer(csl, ":");
+        while (tokenizer.hasMoreTokens()) {
+            readKeyStringListLine(tokenizer.nextToken(), addToMe);
+        }
+    }
+    
     private static String writeList(List<String> list) {
-        StringBuffer sb = new StringBuffer("[");
+        StringBuffer sb = new StringBuffer("{");
         
         boolean first = true;
         for (String writeMe : list) {
@@ -214,13 +350,19 @@ public class ReflectionHelper {
             }
         }
         
-        sb.append("]");
+        sb.append("}");
         
         return sb.toString();
     }
     
-    private static String writeMetadata(Map<String, List<String>> metadata) {
-        StringBuffer sb = new StringBuffer("{");
+    /**
+     * Used to write the metadata out
+     * 
+     * @param metadata The metadata to externalize
+     * @return The metadata in an externalizable format
+     */
+    public static String writeMetadata(Map<String, List<String>> metadata) {
+        StringBuffer sb = new StringBuffer("[");
         
         boolean first = true;
         for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
@@ -229,13 +371,13 @@ public class ReflectionHelper {
                 sb.append(entry.getKey() + "=");
             }
             else {
-                sb.append("," + entry.getKey() + "=");
+                sb.append(":" + entry.getKey() + "=");
             }
             
             sb.append(writeList(entry.getValue()));
         }
         
-        sb.append("}");
+        sb.append("]");
         
         return sb.toString();
     }

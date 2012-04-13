@@ -39,10 +39,14 @@
  */
 package org.glassfish.hk2.utilities;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,22 +59,34 @@ import org.glassfish.hk2.internal.ReflectionHelper;
 
 /**
  * The implementation of the descriptor itself, with the
- * bonus of being serializable, and having writeable fields
+ * bonus of being externalizable, and having writeable fields
  * 
  * @author jwells
  */
 public class DescriptorImpl implements Descriptor, Serializable {
-	/**
-	 * For Serialization
-	 */
-	private static final long serialVersionUID = 77937523212000548L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1558442492395467828L;
+    
+    private final static String VERSION = "version=1";
+    private final static String IMPLEMENTATION_KEY = "implementation=";
+    private final static String CONTRACT_KEY = "contract=";
+    private final static String NAME_KEY = "name=";
+    private final static String SCOPE_KEY = "scope=";
+    private final static String QUALIFIER_KEY = "qualifier=";
+    private final static String TYPE_KEY = "type=";
+    private final static String METADATA_KEY = "metadata=";
+    private final static String FACTORY_DT = "FACTORY";
+    private final static String START = "<hk2-descriptor><![CDATA[";
+    private final static String END = "]]</hk2-descriptor>";
 	
-	private Set<String> contracts = new HashSet<String>();
+	private Set<String> contracts = new LinkedHashSet<String>();
 	private String implementation;
 	private String name;
 	private String scope = PerLookup.class.getName();
 	private Map<String, List<String>> metadatas = new LinkedHashMap<String, List<String>>();
-	private Set<String> qualifiers = new HashSet<String>();
+	private Set<String> qualifiers = new LinkedHashSet<String>();
 	private DescriptorType descriptorType = DescriptorType.CLASS;
 	private HK2Loader loader;
 	private int rank;
@@ -372,7 +388,223 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    this.locatorId = locatorId;
 	}
 	
+	public int hashCode() {
+	    int retVal = 0;
+	    
+	    if (implementation != null) {
+	        retVal ^= implementation.hashCode();
+	    }
+	    if (contracts != null) {
+	        for (String contract : contracts) {
+	            retVal ^= contract.hashCode();
+	        }
+	    }
+	    if (name != null) {
+	        retVal ^= name.hashCode();
+	    }
+	    if (scope != null) {
+	        retVal ^= scope.hashCode();
+	    }
+	    if (qualifiers != null) {
+	        for (String qualifier : qualifiers) {
+	            retVal ^= qualifier.hashCode();
+	        }
+	    }
+	    if (descriptorType != null) {
+	        retVal ^= descriptorType.hashCode();
+	    }
+	    if (metadatas != null) {
+	        for (Map.Entry<String, List<String>> entries : metadatas.entrySet()) {
+	            retVal ^= entries.getKey().hashCode();
+	            
+	            for (String value : entries.getValue()) {
+	                retVal ^= value.hashCode();
+	            }
+	        }
+	    }
+	    
+	    return retVal;
+	}
+	
+	private static boolean safeEquals(Object a, Object b) {
+	    if (a == b) return true;
+	    if (a == null) return false;
+	    if (b == null) return false;
+	    return a.equals(b);
+	}
+	
+	private static <T> boolean equalOrderedCollection(Collection<T> a, Collection<T> b) {
+	    if (a == b) return true;
+	    if (a == null) return false;
+	    if (b == null) return false;
+	    
+	    if (a.size() != b.size()) return false;
+	    
+	    Object aAsArray[] = a.toArray();
+	    Object bAsArray[] = b.toArray();
+	    
+	    for (int lcv = 0; lcv < a.size(); lcv++) {
+	        if (!safeEquals(aAsArray[lcv], bAsArray[lcv])) return false;
+	    }
+	    
+	    return true;
+	}
+	
+	private static <T> boolean equalMetadata(Map<String, List<String>> a, Map<String, List<String>> b) {
+        if (a == b) return true;
+        if (a == null) return false;
+        if (b == null) return false;
+        
+        if (a.size() != b.size()) return false;
+        
+        for (Map.Entry<String, List<String>> entry : a.entrySet()) {
+            String aKey = entry.getKey();
+            List<String> aValue = entry.getValue();
+            
+            List<String> bValue = b.get(aKey);
+            if (bValue == null) return false;
+            
+            if (!equalOrderedCollection(aValue, bValue)) return false;
+        }
+        
+        return true;
+    }
+	
+	public boolean equals(Object a) {
+	    if (a == null) return false;
+	    if (!(a instanceof Descriptor)) return false;
+	    Descriptor d = (Descriptor) a;
+	    
+	    if (!safeEquals(implementation, d.getImplementation())) return false;
+	    if (!equalOrderedCollection(contracts, d.getAdvertisedContracts())) return false;
+	    if (!safeEquals(name, d.getName())) return false;
+	    if (!safeEquals(scope, d.getScope())) return false;
+	    if (!equalOrderedCollection(qualifiers, d.getQualifiers())) return false;
+	    if (!safeEquals(descriptorType, d.getDescriptorType())) return false;
+	    if (!equalMetadata(metadatas, d.getMetadata())) return false;
+	    
+	    return true;
+	}
+	
 	public synchronized String toString() {
 	    return ReflectionHelper.prettyPrintDescriptor(this);
 	}
+	
+	/**
+	 * This writes this object to the data output stream in a human-readable
+	 * format, excellent for writing out data files
+	 * 
+	 * @param out The output stream to write this object out to
+	 * @throws IOException on failure
+	 */
+	public void writeObject(PrintWriter out) throws IOException {
+	
+        out.println(START);
+        
+        // Version
+        out.println(VERSION);
+        
+        // Implementation
+        if (implementation != null) {
+            out.println(IMPLEMENTATION_KEY + implementation);
+        }
+        
+        // Contracts
+        if (contracts != null && !contracts.isEmpty()) {
+            out.println(CONTRACT_KEY + ReflectionHelper.writeSet(contracts));
+        }
+        
+        if (name != null) {
+            out.println(NAME_KEY + name);
+        }
+        
+        if (scope != null && !scope.equals(PerLookup.class.getName())) {
+            out.println(SCOPE_KEY + scope);
+        }
+        
+        if (qualifiers != null && !qualifiers.isEmpty()) {
+            out.println(QUALIFIER_KEY + ReflectionHelper.writeSet(qualifiers));
+        }
+        
+        if (descriptorType != null && descriptorType.equals(DescriptorType.FACTORY)) {
+            out.println(TYPE_KEY + FACTORY_DT);
+        }
+        
+        if (metadatas != null && !metadatas.isEmpty()) {
+            out.println(METADATA_KEY + ReflectionHelper.writeMetadata(metadatas));
+        }
+        
+        out.println(END);  // This demarks the end of the section
+    }
+
+	/**
+	 * This can be used to read in instances of this object that were previously written out with
+	 * writeObject.  Useful for reading from external data files
+	 * 
+	 * @param in The reader to read from
+	 * @throws IOException on failure
+	 */
+	public void readObject(BufferedReader in) throws IOException {
+        String line = in.readLine();
+        
+        boolean sectionStarted = false;
+        while (line != null) {
+            String trimmed = line.trim();
+            
+            if (!sectionStarted) {
+                if (trimmed.startsWith(START)) {
+                    sectionStarted = true;
+                }
+            }
+            else {
+                if (trimmed.startsWith(END)) {
+                    // A blank line indicates end of object
+                    return;
+                }
+                
+                int equalsIndex = trimmed.indexOf('=');
+                
+                if (equalsIndex >= 1) {
+                    
+                    String leftHandSide = trimmed.substring(0, equalsIndex + 1);  // include the =
+                    String rightHandSide = trimmed.substring(equalsIndex + 1);
+                    
+                    if (leftHandSide.equalsIgnoreCase(IMPLEMENTATION_KEY)) {
+                        implementation = rightHandSide;
+                    }
+                    if (leftHandSide.equalsIgnoreCase(CONTRACT_KEY)) {
+                        contracts = new LinkedHashSet<String>();
+                        
+                        ReflectionHelper.readSet(rightHandSide, contracts);
+                    }
+                    else if (leftHandSide.equals(QUALIFIER_KEY)) {
+                        qualifiers = new LinkedHashSet<String>();
+                        
+                        ReflectionHelper.readSet(rightHandSide, qualifiers);
+                    }
+                    else if (leftHandSide.equals(NAME_KEY)) {
+                        name = rightHandSide;
+                    }
+                    else if (leftHandSide.equals(SCOPE_KEY)) {
+                        scope = rightHandSide;
+                    }
+                    else if (leftHandSide.equals(TYPE_KEY)) {
+                        if (rightHandSide.equals(FACTORY_DT)) {
+                            descriptorType = DescriptorType.FACTORY;
+                        }
+                    }
+                    else if (leftHandSide.equals(METADATA_KEY)) {
+                        metadatas = new LinkedHashMap<String, List<String>>();
+                        
+                        ReflectionHelper.readMetadataMap(rightHandSide, metadatas);
+                    }
+                    
+                    // Otherwise it is an unknown type, just forget it
+                }
+            }
+            
+            line = in.readLine();
+        }
+        
+    }
 }

@@ -39,6 +39,15 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +59,7 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Test;
 
@@ -96,7 +106,7 @@ public class DescriptorImplTest {
         Assert.assertTrue(asString.contains("implementation=null"));
         Assert.assertTrue(asString.contains("contracts={}"));
         Assert.assertTrue(asString.contains("scope=org.glassfish.hk2.api.PerLookup"));
-        Assert.assertTrue(asString.contains("metadata={}"));
+        Assert.assertTrue(asString.contains("metadata=[]"));
         Assert.assertTrue(asString.contains("descriptorType=CLASS"));
     }
     
@@ -463,6 +473,62 @@ public class DescriptorImplTest {
         Assert.assertFalse(desc.removeAllMetadata(FullDescriptorImpl.FULL_KEY1));
         key1Values = desc.getMetadata().get(FullDescriptorImpl.FULL_KEY1);
         Assert.assertNull(key1Values);
+    }
+    
+    /**
+     * Tests the read and write external form of DescriptorImpl
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testReadAndWriteExternal() throws IOException {
+        DescriptorImpl writeA = BuilderHelper.createDescriptorFromClass(WriteServiceA.class);
+        DescriptorImpl writeB = BuilderHelper.createDescriptorFromClass(WriteServiceB.class);
+        writeB.addMetadata(FullDescriptorImpl.FULL_KEY1, FullDescriptorImpl.FULL_VALUE1);
+        writeB.addMetadata(FullDescriptorImpl.FULL_KEY2, FullDescriptorImpl.FULL_VALUE1);
+        writeB.addMetadata(FullDescriptorImpl.FULL_KEY2, FullDescriptorImpl.FULL_VALUE2);
+        DescriptorImpl writeC = new DescriptorImpl();  // Write out a completely empty one
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(baos);
+        
+        writeA.writeObject(pw);
+        pw.println();
+        writeB.writeObject(pw);
+        pw.println();
+        writeC.writeObject(pw);
+        
+        pw.close();
+        baos.close();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        BufferedReader br = new BufferedReader(new InputStreamReader(bais));
+        
+        int lcv = 0;
+        while (br.ready()) {
+            DescriptorImpl di = new DescriptorImpl();
+            
+            di.readObject(br);
+            
+            if (lcv == 0) {
+                Assert.assertEquals(writeA, di);
+                Assert.assertEquals(writeA.hashCode(), di.hashCode());
+            }
+            else if (lcv == 1) {
+                Assert.assertEquals(writeB, di);
+                Assert.assertEquals(writeB.hashCode(), di.hashCode());
+            }
+            else if (lcv == 2) {
+                Assert.assertEquals(writeC, di);
+                Assert.assertEquals(writeC.hashCode(), di.hashCode());
+            }
+            else {
+                Assert.fail("More descriptors were read than were written: " + di + " lcv=" + lcv);
+            }
+            
+            lcv++;
+        }
+        
     }
     
 }
