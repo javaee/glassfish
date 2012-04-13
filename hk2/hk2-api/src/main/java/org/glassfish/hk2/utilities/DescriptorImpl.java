@@ -186,6 +186,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 */
 	public synchronized void addAdvertisedContract(String addMe) {
 	    if (addMe == null) return;
+	    ReflectionHelper.checkCharacters(name);
 	    contracts.add(addMe);
 	}
 	
@@ -209,6 +210,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param implementation The implementation this descriptor should have
 	 */
     public synchronized void setImplementation(String implementation) {
+        ReflectionHelper.checkCharacters(implementation);
         this.implementation = implementation;
     }
 
@@ -235,6 +237,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param name The name for this descriptor
 	 */
 	public synchronized void setName(String name) {
+	    ReflectionHelper.checkCharacters(name);
 	    this.name = name;
 	}
 
@@ -250,6 +253,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 */
 	public synchronized void addQualifier(String addMe) {
 	    if (addMe == null) return;
+	    ReflectionHelper.checkCharacters(addMe);
 	    qualifiers.add(addMe);
 	}
 	
@@ -290,6 +294,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param value The value to add.  May not be null
 	 */
 	public synchronized void addMetadata(String key, String value) {
+	    ReflectionHelper.checkCharacters(key, value);
 	    ReflectionHelper.addMetadata(metadatas, key, value);
 	}
 	

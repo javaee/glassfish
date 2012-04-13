@@ -42,11 +42,8 @@ package org.glassfish.hk2.tests.api;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
@@ -531,4 +528,14 @@ public class DescriptorImplTest {
         
     }
     
+    /**
+     * Tests that a bad value cannot come in
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testAddBadMetadata() {
+        DescriptorImpl di = new DescriptorImpl();
+        
+        di.addMetadata("innocuousKey", "a key with a bad character :");
+        
+    }
 }
