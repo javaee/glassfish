@@ -39,7 +39,12 @@
  */
 package org.glassfish.hk2.utilities;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
@@ -197,6 +202,42 @@ public class BuilderHelper {
                 ReflectionHelper.getScopeFromObject(constant),
                 ReflectionHelper.getName(constant.getClass()),
                 ReflectionHelper.getQualifiersFromObject(constant));
+    }
+    
+    /**
+     * This returns a DescriptorImpl based on the given class.  The returned
+     * descriptor will include the class itself as an advertised contract and
+     * all implemented interfaces that are marked &#64;Contract
+     * 
+     * @param clazz The class to analyze
+     * @return The DescriptorImpl corresponding to this class
+     */
+    public static DescriptorImpl createDescriptorFromClass(Class<?> clazz) {
+        if (clazz == null) return new DescriptorImpl();
+        
+        Set<String> contracts = ReflectionHelper.getContractsFromClass(clazz);
+        String name = ReflectionHelper.getName(clazz);
+        String scope = ReflectionHelper.getScopeFromClass(clazz).getName();
+        Set<String> qualifiers = ReflectionHelper.getQualifiersFromClass(clazz);
+        DescriptorType type = DescriptorType.CLASS;
+        if (Factory.class.isAssignableFrom(clazz)) {
+            type = DescriptorType.FACTORY;
+        }
+        
+        // TODO:  Can we get metadata from @Service?
+        return new DescriptorImpl(
+                contracts,
+                name,
+                scope,
+                clazz.getName(),
+                new HashMap<String, List<String>>(),
+                qualifiers,
+                type,
+                null,
+                0,
+                null,
+                null,
+                null);
     }
 	
     /**
