@@ -487,13 +487,42 @@ public class ReflectionHelper {
         
         for (Map.Entry<String, List<String>> entry : copyMe.entrySet()) {
             String key = entry.getKey();
-            List<String> value = entry.getValue();
+            checkCharacters(key);
             
-            LinkedList<String> valueCopy = new LinkedList<String>(value);
+            List<String> values = entry.getValue();
+            LinkedList<String> valuesCopy = new LinkedList<String>();
+            for (String value : values) {
+                checkCharacters(value);
+                valuesCopy.add(value);
+            }
             
-            retVal.put(key, valueCopy);
+            retVal.put(key, valuesCopy);
         }
         
         return retVal;
+    }
+    
+    private final static char ILLEGAL_CHARACTERS[] = {
+        '{' , '}', '[', ']', ':', ';', '='
+    };
+    
+    /**
+     * Checks that no values come in that might mess up the parsing of the descriptor
+     * 
+     * @param checkMes The values to check
+     */
+    public static void checkCharacters(String... checkMes) {
+        if (checkMes == null) return;
+        
+        for (String checkMe : checkMes) {
+            if (checkMe == null) continue;
+            
+            for (char c : ILLEGAL_CHARACTERS) {
+                if (checkMe.indexOf(c) >= 0) {
+                    throw new IllegalArgumentException("value \"" + checkMe + "\" may not contain the characters \"{}[],:;=\"");
+                    
+                }
+            }
+        }
     }
 }
