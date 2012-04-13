@@ -135,6 +135,7 @@
             <method-param>int</method-param>
 	  </method-params>
 	</async-method>
+        <transaction-type>Container</transaction-type>
         <post-construct>
           <lifecycle-callback-class>com.acme.SingletonBean2</lifecycle-callback-class>
           <lifecycle-callback-method>init</lifecycle-callback-method>
@@ -209,5 +210,24 @@
       </session>
       
     </enterprise-beans>
+  <assembly-descriptor>
+    <container-transaction>
+      <method>
+        <ejb-name>SingletonBean2</ejb-name>
+        <method-name>init</method-name>
+        <method-params/>
+      </method>
+      <trans-attribute>NotSupported</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>SingletonBean2</ejb-name>
+        <method-name>destroy</method-name>
+        <method-params/>
+      </method>
+      <trans-attribute>NotSupported</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
+
 </ejb-jar>
 

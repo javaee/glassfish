@@ -3,8 +3,20 @@ package com.acme;
 
 public class SingletonBean2 {
 
+    private int initTx = -1;
+
     private void init() {
 	System.out.println("In SingletonBean2::init()");
+        try {
+            javax.naming.InitialContext ic = new javax.naming.InitialContext();
+	    javax.transaction.TransactionSynchronizationRegistry tr = 
+                 (javax.transaction.TransactionSynchronizationRegistry)
+                 ic.lookup("java:comp/TransactionSynchronizationRegistry");
+            System.out.println("In SingletonBean2::init() tx status: " + tr.getTransactionStatus());
+            initTx = tr.getTransactionStatus();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void foo() {
@@ -13,6 +25,8 @@ public class SingletonBean2 {
 
     public void foo2() { 
 	System.out.println("In SingletonBean2::foo2()");
+        if (initTx != 6)
+            throw new RuntimeException("initTx is " + initTx);
     }
 
     public void fooAsync(int sleepSeconds) {
