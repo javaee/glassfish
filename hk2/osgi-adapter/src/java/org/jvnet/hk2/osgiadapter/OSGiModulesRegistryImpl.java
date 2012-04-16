@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,18 +65,8 @@ import java.net.URISyntaxException;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 public class OSGiModulesRegistryImpl
-        extends com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl
+        extends AbstractOSGiModulesRegistryImpl
         implements SynchronousBundleListener {
-
-    /**
-     * OSGi BundleContext - used to install/uninstall, start/stop bundles
-     */
-    BundleContext bctx;
-    private PackageAdmin pa;
-    private Map<ModuleChangeListener, BundleListener> moduleChangeListeners =
-            new HashMap<ModuleChangeListener, BundleListener>();
-    private Map<ModuleLifecycleListener, BundleListener> moduleLifecycleListeners =
-            new HashMap<ModuleLifecycleListener, BundleListener>();
 
     // cache related attributes
     private Map<URI, ModuleDefinition> cachedData = new HashMap<URI, ModuleDefinition>();
@@ -87,8 +77,7 @@ public class OSGiModulesRegistryImpl
     private static final int DEFAULT_BUFFER_SIZE = 1024;
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
-        super(null);
-        this.bctx = bctx;
+        super(bctx);
 
         // Need to add a listener so that we get notification about
         // bundles that get installed/uninstalled from now on...
@@ -315,22 +304,6 @@ public class OSGiModulesRegistryImpl
         return null;
     }
 
-    public void parseInhabitants(
-            Module module, String name, InhabitantsParser inhabitantsParser)
-            throws IOException {
-        OSGiModuleImpl.class.cast(module).parseInhabitants(name, inhabitantsParser);
-    }
-
-    public ModulesRegistry createChild() {
-        throw new UnsupportedOperationException("Not Yet Implemented"); // TODO(Sahoo)
-    }
-
-    public synchronized void detachAll() {
-        for (Module m : modules.values()) {
-            m.detach();
-        }
-    }
-
     public synchronized void shutdown() {
         for (Module m : modules.values()) {
             // Only stop modules that were started after ModulesRegistry
@@ -347,230 +320,8 @@ public class OSGiModulesRegistryImpl
         } catch (IOException e) {
             Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
         }
-        modules.clear();
-
-        for (Repository repo : repositories.values()) {
-            try {
-                repo.shutdown();
-            } catch(Exception e) {
-                java.util.logging.Logger.getAnonymousLogger().log(Level.SEVERE, "Error while closing repository " + repo, e);
-                // swallows
-            }
-        }
-        // don't try to stop the system bundle, as we may be embedded inside
-        // something like Eclipse.
+        super.shutdown();
     }
 
-    /**
-     * Sets the classloader parenting the class loaders created by the modules
-     * associated with this registry.
-     * @param parent parent class loader
-     */
-    public void setParentClassLoader(ClassLoader parent) {
-        throw new UnsupportedOperationException("This method can't be implemented in OSGi environment");
-    }
-
-    /**
-     * Returns the parent class loader parenting the class loaders created
-     * by modules associated with this registry.
-     * @return the parent classloader
-     */
-    public ClassLoader getParentClassLoader() {
-        return Bundle.class.getClassLoader();
-    }
-
-    
-    /**
-     * Returns a ClassLoader capable of loading classes from a set of modules identified
-     * by their module definition and also load new urls.
-     *
-     * @param parent the parent class loader for the returned class loader instance
-     * @param mds module definitions for all modules this classloader should be
-     *        capable of loading
-     * @param urls urls to be added to the module classloader
-     * @return class loader instance
-     * @throws com.sun.enterprise.module.ResolveError if one of the provided module
-     *         definition cannot be resolved
-     */
-    public ClassLoader getModulesClassLoader(final ClassLoader parent,
-                                             Collection<ModuleDefinition> mds,
-                                             URL[] urls) throws ResolveError {
-        final List<ClassLoader> delegateCLs = new ArrayList<ClassLoader>();
-        final List<Module> delegateModules = new ArrayList<Module>();
-        for (ModuleDefinition md : mds) {
-            Module m = makeModuleFor(md.getName(), md.getVersion());
-            delegateModules.add(m);
-            delegateCLs.add(m.getClassLoader());
-        }
-        return new URLClassLoader(urls!=null?urls:new URL[0], parent) {
-            /*
-             * This is a delegating class loader.
-             * This extends URLClassLoader, because web layer (Jasper to be specific)
-             * expects it to be a URLClassLoader so that it can extract Classpath information
-             * used for javac.
-             * It always delegates to a chain of OSGi bundle's class loader.
-             * ClassLoader.defineClass() is never called in the context of this class.
-             * There will never be a class for which getClassLoader()
-             * would return this class loader.
-             */
-            @Override
-            public URL[] getURLs() {
-                List<URL> result = new ArrayList<URL>();
-                if (parent instanceof URLClassLoader) {
-                    URL[] parentURLs = URLClassLoader.class.cast(parent).getURLs();
-                    result.addAll(Arrays.asList(parentURLs));
-                }
-                for (Module m : delegateModules) {
-                    ModuleDefinition md = m.getModuleDefinition();
-                    URI[] uris = md.getLocations();
-                    URL[] urls = new URL[uris.length];
-                    for (int i = 0; i < uris.length; ++i) {
-                        try {
-                            urls[i] = uris[i].toURL();
-                        } catch (MalformedURLException e) {
-                            logger.warning("Exception " + e + " while converting " + uris[i] + " to URL");
-                        }
-                    }
-                    result.addAll(Arrays.asList(urls));
-                }
-                return result.toArray(new URL[0]);
-            }
-
-            @Override
-            protected Class<?> findClass(String name) throws ClassNotFoundException {
-                for (ClassLoader delegate : delegateCLs) {
-                    try {
-                        return delegate.loadClass(name);
-                    } catch(ClassNotFoundException e) {
-                        // This is expected, so ignore
-                    }
-                }
-                throw new ClassNotFoundException(name);
-            }
-
-            @Override
-            public URL findResource(String name) {
-                URL resource = null;
-                for (ClassLoader delegate : delegateCLs) {
-                    resource = delegate.getResource(name);
-                    if (resource != null) {
-                        return resource;
-                    }
-                }
-                return resource;
-            }
-
-            @Override
-            public Enumeration<URL> findResources(String name) throws IOException {
-                List<Enumeration<URL>> enumerators = new ArrayList<Enumeration<URL>>();
-                for (ClassLoader delegate : delegateCLs) {
-                    Enumeration<URL> enumerator = delegate.getResources(name);
-                    enumerators.add(enumerator);
-                }
-                return new CompositeEnumeration(enumerators);
-            }
-
-        };
-    }
-
-
-    /**
-     * Returns a ClassLoader capable of loading classes from a set of modules identified
-     * by their module definition
-     *
-     * @param parent the parent class loader for the returned class loader instance
-     * @param defs module definitions for all modules this classloader should be
-     *        capable of loading classes from
-     * @return class loader instance
-     * @throws com.sun.enterprise.module.ResolveError if one of the provided module
-     *         definition cannot be resolved
-     */
-    public ClassLoader getModulesClassLoader(ClassLoader parent,
-                                             Collection<ModuleDefinition> defs)
-        throws ResolveError {
-        return getModulesClassLoader(parent, defs, null);
-    }
-
-    
-    public Module find(Class clazz) {
-        Bundle b = pa.getBundle(clazz);
-        if (b!=null) {
-            return getModule(b);
-        }
-        return null;
-    }
-
-    public PackageAdmin getPackageAdmin() {
-        return pa;
-    }
-
-    public void addModuleChangeListener(final ModuleChangeListener listener, final OSGiModuleImpl module) {
-        BundleListener bundleListener = new BundleListener() {
-            public void bundleChanged(BundleEvent event) {
-                if ((event.getBundle() == module.getBundle()) &&
-                        ((event.getType() & BundleEvent.UPDATED) == BundleEvent.UPDATED)) {
-                    listener.changed(module);
-                }
-            }
-        };
-        bctx.addBundleListener(bundleListener);
-        moduleChangeListeners.put(listener, bundleListener);
-    }
-
-    public boolean removeModuleChangeListener(ModuleChangeListener listener) {
-        BundleListener bundleListener = moduleChangeListeners.remove(listener);
-        if (bundleListener!= null) {
-            bctx.removeBundleListener(bundleListener);
-            return true;
-        }
-        return false;
-    }
-
-    public void register(final ModuleLifecycleListener listener) {
-        // This is purposefully made an asynchronous bundle listener
-        BundleListener bundleListener = new BundleListener() {
-            public void bundleChanged(BundleEvent event) {
-                switch (event.getType()) {
-                    case BundleEvent.INSTALLED:
-                        listener.moduleInstalled(getModule(event.getBundle()));
-                        break;
-                    case BundleEvent.UPDATED:
-                        listener.moduleUpdated(getModule(event.getBundle()));
-                        break;
-                    case BundleEvent.RESOLVED:
-                        listener.moduleResolved(getModule(event.getBundle()));
-                        break;
-                    case BundleEvent.STARTED:
-                        listener.moduleStarted(getModule(event.getBundle()));
-                        break;
-                    case BundleEvent.STOPPED:
-                        listener.moduleStopped(getModule(event.getBundle()));
-                        break;
-                }
-            }
-        };
-        bctx.addBundleListener(bundleListener);
-        moduleLifecycleListeners.put(listener,  bundleListener);
-    }
-
-
-    public void unregister(ModuleLifecycleListener listener) {
-        BundleListener bundleListener = moduleLifecycleListeners.remove(listener);
-        if (bundleListener!=null) {
-            bctx.removeBundleListener(bundleListener);
-        }
-    }
-
-    /*package*/ Module getModule(Bundle bundle) {
-        return modules.get(new OSGiModuleId(bundle));
-    }
-
-    private String getProperty(String property) {
-        String value = bctx.getProperty(property);
-        // Check System properties to work around Equinox Bug:
-        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=320459
-        if (value == null) value = System.getProperty(property);
-        return value;
-    }
 
 }
