@@ -44,6 +44,7 @@ import java.util.HashMap;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * This class manages all information about all tenants, and also keeps
@@ -53,7 +54,7 @@ import org.glassfish.hk2.api.ServiceLocator;
  * @author jwells
  *
  */
-@Singleton
+@Service @Singleton
 public class TenantManager {
     private String currentTenant;
     

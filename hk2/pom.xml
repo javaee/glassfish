@@ -275,6 +275,7 @@
     <modules>
         <module>hk2-runlevel</module>
         <module>hk2-locator</module>
+        <module>hk2-inhabitant-generator</module>
     	<module>class-model</module>
         <module>auto-depends</module>
         <module>apt</module>
