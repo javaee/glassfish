@@ -221,13 +221,9 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("deprecation")
 @Service
-//@Named(RunLevelServiceIndicator.RUNLEVEL_SERVICE_DEFAULT_NAME)
 public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
     // the initial run level
     public static final int INITIAL_RUNLEVEL = -2;
-
-    // the default name
-    public static final String DEFAULT_NAME = "default";
 
     // the default timeout in milliseconds (to wait for async service types)
     public static final long DEFAULT_ASYNC_WAIT = 3000;
@@ -252,7 +248,7 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
     // async mode.
     private final ExecutorService exec;
 
-    // the name for this instance, defaulting to {@link DEFAULT_NAME}
+    // the name for this instance
     protected String name;
 
     // the current run level (the last one successfully achieved)
@@ -292,10 +288,10 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
     }
 
     public RunLevelServiceImpl() {
-        this(false, null);
+        this(false);
     }
 
-    private RunLevelServiceImpl(boolean async, String name) {
+    private RunLevelServiceImpl(boolean async) {
         this.asyncMode = async;
         if (asyncMode) {
             // we can't use a singleThreadExecutor because a thread could become
@@ -347,6 +343,7 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
         return recorders;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -363,7 +360,7 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
         }
     }
 
-    public Integer getActivatingRunLevel() {
+    private Integer getActivatingRunLevel() {
         synchronized (lock) {
             return (null == worker) ? null : worker.getActivatingRunLevel();
         }
@@ -492,16 +489,6 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
                 }
             }
         }
-    }
-
-    protected synchronized Collection<RunLevelListener> getListeners() {
-        Collection<RunLevelListener> listeners = new ArrayList<RunLevelListener>();
-        for (ServiceHandle<RunLevelListener> serviceHandle : allRunLevelListeners.handleIterator()) {
-            if (name.equals(getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
-                listeners.add(serviceHandle.getService());
-            }
-        }
-        return listeners;
     }
 
     @Override
@@ -635,6 +622,16 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
             }
         }
         return (activators.isEmpty()) ? this : activators.iterator().next();
+    }
+
+    protected synchronized Collection<RunLevelListener> getListeners() {
+        Collection<RunLevelListener> listeners = new ArrayList<RunLevelListener>();
+        for (ServiceHandle<RunLevelListener> serviceHandle : allRunLevelListeners.handleIterator()) {
+            if (name.equals(getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
+                listeners.add(serviceHandle.getService());
+            }
+        }
+        return listeners;
     }
 
     protected synchronized RunLevelSorter getSorter() {
