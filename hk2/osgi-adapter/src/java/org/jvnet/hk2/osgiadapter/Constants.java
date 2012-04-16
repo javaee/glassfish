@@ -55,9 +55,12 @@ public final class Constants {
     static final String INITIALIZE_OBR_SYNCHRONOUSLY = "com.sun.enterprise.hk2.initializeRepoSynchronously";
 
     /**
-     * File name used to store generated OBR repository information.
+     * File name prefix used to store generated OBR repository information.
+     * This will be suffixed with repository directory name.
+     * The file extension will depend on whether we store a binary file or an xml file.
+     * For binary file, no extension will be used. For xml file, .xml will be used as extension.
      */
-    static final String REPOSITORY_XML_FILE_NAME = "repository.xml";
+    static final String OBR_FILE_NAME_PREFIX = "obr-";
 
     /**
      * URL scheme used by OBR to deploy bundles.
@@ -93,4 +96,9 @@ public final class Constants {
      * Default is false.
      */
     public static final String OBR_DEPLOYS_OPTIONAL_REQUIREMENTS = "com.sun.enterprise.hk2.obrDeploysOptionalRequirements";
+
+    static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
+    static final String INHABITANTS_CACHE = "inhabitants";
+    static final String HK2_CACHE_IO_BUFFER_SIZE = "com.sun.enterprise.hk2.cacheIoBufferSize";
+    static final int DEFAULT_BUFFER_SIZE = 1024;
 }

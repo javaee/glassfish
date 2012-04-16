@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,14 +43,20 @@ package org.jvnet.hk2.osgiadapter;
 
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.framework.FrameworkUtil;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
+
+import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 /**
  * Only OSGi bundles are recognized as modules.
@@ -59,12 +65,104 @@ import java.util.logging.Level;
  */
 public class OSGiDirectoryBasedRepository extends DirectoryBasedRepository {
 
+    private Map<URI, ModuleDefinition> cachedData = new HashMap<URI, ModuleDefinition>();
+    private boolean cacheInvalidated = true;
+
     public OSGiDirectoryBasedRepository(String name, File repository) {
-        super(name, repository);
+        this(name, repository, true);
     }
 
     public OSGiDirectoryBasedRepository(String name, File repository, boolean isTimerThreadDaemon) {
         super(name, repository, isTimerThreadDaemon);
+    }
+
+    @Override
+    public void initialize() throws IOException {
+        try {
+            loadCachedData();
+        } catch (Exception e) {
+            logger.logp(Level.WARNING, "OSGiDirectoryBasedRepository", "initialize", "Cache disabled because of exception: ", e);
+        }
+        super.initialize();
+        if (cacheInvalidated) {
+            saveCache();
+        }
+    }
+
+    /**
+     * Loads the inhabitants metadata from the cache. metadata is saved in a file
+     * called inhabitants
+     *
+     * @throws Exception if the file cannot be read correctly
+     */
+    private void loadCachedData() throws Exception {
+        String cacheLocation = getProperty(org.jvnet.hk2.osgiadapter.Constants.HK2_CACHE_DIR);
+        if (cacheLocation == null) {
+            return;
+        }
+        File io = new File(cacheLocation, org.jvnet.hk2.osgiadapter.Constants.INHABITANTS_CACHE);
+        if (!io.exists()) return;
+        if(logger.isLoggable(Level.FINE)) {
+            logger.logp(Level.INFO, "OSGiDirectoryBasedRepository", "loadCachedData", "HK2 cache file = {0}", new Object[]{io});
+        }
+        ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(io),
+                getBufferSize()));
+        this.cachedData = (Map<URI, ModuleDefinition>) stream.readObject();
+        stream.close();
+        cacheInvalidated = false;
+    }
+
+    /**
+     * Saves the inhabitants metadata to the cache in a file called inhabitants
+     * @throws IOException if the file cannot be saved successfully
+     */
+    private void saveCache() throws IOException {
+        String cacheLocation = getProperty(org.jvnet.hk2.osgiadapter.Constants.HK2_CACHE_DIR);
+        if (cacheLocation == null) {
+            return;
+        }
+        File io = new File(cacheLocation, org.jvnet.hk2.osgiadapter.Constants.INHABITANTS_CACHE);
+        if(logger.isLoggable(Level.FINE)) {
+            logger.logp(Level.INFO, "OSGiDirectoryBasedRepository", "saveCache", "HK2 cache file = {0}", new Object[]{io});
+        }
+        if (io.exists()) io.delete();
+        io.createNewFile();
+        Map<URI, ModuleDefinition> data = new HashMap<URI, ModuleDefinition>();
+        for (ModuleDefinition md : findAll()) {
+            data.put(md.getLocations()[0], md);
+        }
+        ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(io), getBufferSize()));
+        os.writeObject(data);
+        os.close();
+    }
+
+    private void deleteCache() {
+        String cacheLocation = getProperty(org.jvnet.hk2.osgiadapter.Constants.HK2_CACHE_DIR);
+        if (cacheLocation == null) {
+            return;
+        }
+        File io = new File(cacheLocation, org.jvnet.hk2.osgiadapter.Constants.INHABITANTS_CACHE);
+        if (io.exists()) {
+            if (io.delete()) {
+                logger.logp(Level.FINE, "OSGiDirectoryBasedRepository",
+                        "deleteCache", "deleted = {0}", new Object[]{io});
+            } else {
+                logger.logp(Level.WARNING, "OSGiDirectoryBasedRepository",
+                        "deleteCache", "failed to delete = {0}", new Object[]{io});
+            }
+        }
+    }
+
+    private int getBufferSize() {
+        int bufsize = org.jvnet.hk2.osgiadapter.Constants.DEFAULT_BUFFER_SIZE;
+        try {
+            bufsize = Integer.valueOf(getProperty(org.jvnet.hk2.osgiadapter.Constants.HK2_CACHE_IO_BUFFER_SIZE));
+        } catch (Exception e) {
+        }
+        if(logger.isLoggable(Level.FINE)) {
+            logger.logp(Level.FINE, "OSGiDirectoryBasedRepository", "getBufferSize", "bufsize = {0}", new Object[]{bufsize});
+        }
+        return bufsize;
     }
 
     /**
@@ -80,6 +178,14 @@ public class OSGiDirectoryBasedRepository extends DirectoryBasedRepository {
     @Override
     protected ModuleDefinition loadJar(File jar) throws IOException {
         assert (jar.isFile()); // no support for exploded jar
+        ModuleDefinition md = cachedData.get(jar.toURI());
+        if (md != null) {
+            if(logger.isLoggable(Level.FINE)) {
+                logger.logp(Level.FINER, "OSGiDirectoryBasedRepository", "loadJar", "Found in mdCache for {0}", new Object[]{jar});
+            }
+            return md;
+        }
+        cacheInvalidated = true;
         Manifest m = new JarFile(jar).getManifest();
         if (m != null) {
             if (m.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME) != null) {
@@ -95,4 +201,15 @@ public class OSGiDirectoryBasedRepository extends DirectoryBasedRepository {
     protected ModuleDefinition newModuleDefinition(File jar, Attributes attr) throws IOException {
         return new OSGiModuleDefinition(jar);
     }
+    
+    protected String getProperty(String property) {
+        BundleContext bctx = null;
+        try {
+            bctx = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        } catch (Exception e) {
+        }
+        String value = bctx != null ? bctx.getProperty(property) : null;
+        return value != null ? value : System.getProperty(property);
+    }
+
 }

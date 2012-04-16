@@ -43,12 +43,8 @@ package org.jvnet.hk2.osgiadapter;
 
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.Repository;
-import org.apache.felix.bundlerepository.*;
 import org.osgi.framework.*;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.logging.Level;
@@ -74,7 +70,7 @@ public class OSGiObrModulesRegistryImpl extends AbstractOSGiModulesRegistryImpl 
     public void addRepository(Repository repository, int weight) {
         if (repository instanceof OSGiDirectoryBasedRepository) {
             try {
-                obrHandler.addRepository((OSGiDirectoryBasedRepository) repository);
+                obrHandler.addRepository(repository.getLocation());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -89,17 +85,14 @@ public class OSGiObrModulesRegistryImpl extends AbstractOSGiModulesRegistryImpl 
 
     @Override
     protected Module newModule(ModuleDefinition moduleDef) {
-        try {
-            return new OSGiObrModuleImpl(this, moduleDef);
-        } catch (IOException e) {
-            throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
-        }
+        Bundle alreadyDeployedBundle = getExistingBundle(moduleDef);
+        return new OSGiObrModuleImpl(this, alreadyDeployedBundle, moduleDef);
     }
 
     @Override
     protected Module loadFromRepository(String name, String version) {
         final Bundle bundle = getObrHandler().deploy(name, version);
-        return getModule(bundle);
+        return bundle!=null ? getModule(bundle) : null;
     }
 
     @Override
@@ -117,7 +110,7 @@ public class OSGiObrModulesRegistryImpl extends AbstractOSGiModulesRegistryImpl 
     @Override
     public void shutdown() {
         getObrHandler().close();
-        List<Bundle> bundlesToUninstall = getBundlesToUninstall();
+        List<Bundle> bundlesToUninstall = Collections.emptyList();// getBundlesToUninstall();
         System.out.println("OSGiObrModulesRegistryImpl.shutdown: bundlesToUninstall = " +
                 Arrays.toString(getBundleIds(bundlesToUninstall).toArray()));
         logger.logp(Level.INFO, "OSGiObrModulesRegistryImpl", "shutdown", "bundlesToUninstall = {0}", new Object[]{
@@ -170,5 +163,26 @@ public class OSGiObrModulesRegistryImpl extends AbstractOSGiModulesRegistryImpl 
 
     ObrHandler getObrHandler() {
         return obrHandler;
+    }
+
+    /**
+     * Return bundle corresponding to a given ModuleDefinition if such a bundle is already installed in
+     * current OSGi framework. It does not install the bundle itself - it simply returns null if it does find it.
+     * @param md
+     * @return
+     */
+    private Bundle getExistingBundle(ModuleDefinition md) {
+        final String mn = md.getName();
+        for (Bundle b : bctx.getBundles()) {
+            final String bsn = b.getSymbolicName();
+            boolean nameMatching = (bsn == mn) || (bsn != null && bsn.equals(mn));
+            if (nameMatching) {
+                Version mv = Version.parseVersion(md.getVersion());
+                final Version bv = b.getVersion();
+                boolean versionMatching = bv.equals(mv);
+                if (versionMatching) return b;
+            }
+        }
+        return null;
     }
 }

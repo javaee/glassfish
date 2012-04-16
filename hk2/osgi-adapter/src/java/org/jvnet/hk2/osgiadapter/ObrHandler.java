@@ -41,9 +41,7 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import com.sun.enterprise.module.*;
 import org.apache.felix.bundlerepository.*;
-import org.apache.felix.bundlerepository.Repository;
 import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -52,10 +50,10 @@ import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
@@ -66,8 +64,15 @@ import static org.jvnet.hk2.osgiadapter.Logger.logger;
  */
 class ObrHandler extends ServiceTracker {
 
+    /*
+    Implementation Note: This class has no dependency on HK2.
+     */
+
     private boolean deployFragments = false;
-    public boolean deployOptionalRequirements = false;
+    private boolean deployOptionalRequirements = false;
+    // We maintain our own repository list which we use during resolution process.
+    // That way, we are not affected by any repository added by user to a shared instance of repository admin.
+    private List<Repository> repositories = new ArrayList<Repository>();
 
     public ObrHandler(BundleContext bctx) {
         super(bctx, RepositoryAdmin.class.getName(), null);
@@ -83,6 +88,9 @@ class ObrHandler extends ServiceTracker {
                     "We already have a repository admin service, so ignoring {0}", new Object[]{reference});
             return null; // we are not tracking this
         }
+        RepositoryAdmin repositoryAdmin = (RepositoryAdmin) context.getService(reference);
+        repositories.add(repositoryAdmin.getSystemRepository());
+        repositories.add(repositoryAdmin.getLocalRepository());
         return super.addingService(reference);
     }
 
@@ -105,22 +113,16 @@ class ObrHandler extends ServiceTracker {
         if (isDirectory(obrUri)) {
             setupRepository(new File(obrUri), isSynchronous());
         } else {
-            getRepositoryAdmin().addRepository(obrUri.toURL());
+            repositories.add(getRepositoryAdmin().getHelper().repository(obrUri.toURL()));
         }
     }
 
     private boolean isDirectory(URI obrUri) {
         try {
-            new File(obrUri);
-            return true;
+            return new File(obrUri).isDirectory();
         } catch (Exception e) {
         }
         return false;
-    }
-
-    public synchronized void addRepository(OSGiDirectoryBasedRepository hk2Repo) throws Exception {
-        File dir = new File(hk2Repo.getLocation());
-        setupRepository(dir, isSynchronous());
     }
 
     private void setupRepository(final File repoDir, boolean synchronous) throws Exception {
@@ -147,44 +149,52 @@ class ObrHandler extends ServiceTracker {
     }
 
     private synchronized void _setupRepository(File repoDir) throws Exception {
-        File repoXml = getRepositoryXmlFile(repoDir);
+        Repository repository;
+        File repoFile = getRepositoryFile(repoDir);
         final long tid = Thread.currentThread().getId();
-        if (repoXml.exists()) {
+        if (repoFile != null && repoFile.exists()) {
             long t = System.currentTimeMillis();
-            updateRepository(repoXml, repoDir);
+            repository = updateRepository(repoFile, repoDir);
             long t2 = System.currentTimeMillis();
             logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: updateRepository took {1} ms",
                     new Object[]{tid, t2 - t});
         } else {
             long t = System.currentTimeMillis();
-            createRepository(repoXml, repoDir);
+            repository = createRepository(repoFile, repoDir);
             long t2 = System.currentTimeMillis();
             logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: createRepository took {1} ms",
                     new Object[]{tid, t2 - t});
         }
-        final URL repoUrl = repoXml.toURI().toURL();
-        logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: Adding repository = {1}",
-                new Object[]{tid, repoUrl});
-        long t = System.currentTimeMillis();
-        getRepositoryAdmin().addRepository(repoUrl);
-        long t2 = System.currentTimeMillis();
-        logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: Adding repo took {1} ms",
-                new Object[]{tid, t2 - t});
+        repositories.add(repository);
+        // We don't add repository to RepositoryAdmin, as we pass the list of repositories to use in resolver().
+//        final String repoUrl = repository.getURI();
+//        logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: Adding repository = {1}",
+//                new Object[]{tid, repoUrl});
+//        long t = System.currentTimeMillis();
+//        getRepositoryAdmin().addRepository(repository);
+//        long t2 = System.currentTimeMillis();
+//        logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: Adding repo took {1} ms",
+//                new Object[]{tid, t2 - t});
     }
 
-    private File getRepositoryXmlFile(File repoDir) {
-        return new File(context.getDataFile(""), repoDir.getName() + Constants.REPOSITORY_XML_FILE_NAME);
+    private File getRepositoryFile(File repoDir) {
+        String extn = ".xml";
+        String cacheDir = context.getProperty(Constants.HK2_CACHE_DIR);
+        if (cacheDir == null) {
+            return null; // caching is disabled, so don't do it.
+        }
+        return new File(cacheDir, Constants.OBR_FILE_NAME_PREFIX + repoDir.getName() + extn);
     }
 
     /**
      * Create a new Repository from a directory by recurssively traversing all the jar files found there.
      *
-     * @param repoXml
+     * @param repoFile
      * @param repoDir
      * @return
      * @throws IOException
      */
-    private void createRepository(File repoXml, File repoDir) throws IOException {
+    private Repository createRepository(File repoFile, File repoDir) throws IOException {
         DataModelHelper dmh = getRepositoryAdmin().getHelper();
         List<Resource> resources = new ArrayList<Resource>();
         for (File jar : findAllJars(repoDir)) {
@@ -192,34 +202,73 @@ class ObrHandler extends ServiceTracker {
             resources.add(r);
         }
         Repository repository = dmh.repository(resources.toArray(new Resource[resources.size()]));
-        final FileWriter writer = new FileWriter(repoXml);
-        dmh.writeRepository(repository, writer);
-        writer.flush();
-        logger.logp(Level.INFO, "ObrHandler", "createRepository", "Created {0} containing {1} resources.", new Object[]{repoXml, resources.size()});
+        logger.logp(Level.INFO, "ObrHandler", "createRepository", "Created {0} containing {1} resources.",
+                new Object[]{repoFile, resources.size()});
+        if (repoFile != null) {
+            saveRepository(repoFile, repository);
+        }
+        return repository;
     }
 
-    private void updateRepository(File repoXml, File repoDir) throws IOException {
-        boolean obsoleteRepo = false;
-        long lastModifiedTime = repoXml.lastModified();
-        obsoleteRepo = repoDir.lastModified() > lastModifiedTime; // let's be optimistic and see if the repoDir has been touched.
-        if (!obsoleteRepo) {
-            // now compare timestamp of each jar
-            for (File jar : findAllJars(repoDir)) {
-                if (jar.lastModified() > lastModifiedTime) {
-                    logger.logp(Level.INFO, "ObrHandler", "updateRepository", "{0} is newer than repository.xml", new Object[]{jar});
-                    obsoleteRepo = true;
-                    break;
-                }
+    private void saveRepository(File repoFile, Repository repository) throws IOException {
+        assert (repoFile != null);
+        final FileWriter writer = new FileWriter(repoFile);
+        getRepositoryAdmin().getHelper().writeRepository(repository, writer);
+        writer.flush();
+    }
+
+    private Repository loadRepository(File repoFile) throws Exception {
+        assert (repoFile != null);
+        return getRepositoryAdmin().getHelper().repository(repoFile.toURI().toURL());
+    }
+
+    private Repository updateRepository(File repoFile, File repoDir) throws Exception {
+        Repository repository = loadRepository(repoFile);
+        if (isObsoleteRepo(repository, repoFile, repoDir)) {
+            if (!repoFile.delete()) {
+                throw new IOException("Failed to delete " + repoFile.getAbsolutePath());
             }
+            logger.logp(Level.INFO, "ObrHandler", "updateRepository", "Recreating {0}", new Object[]{repoFile});
+            repository = createRepository(repoFile, repoDir);
         }
-        if (obsoleteRepo) {
-            if (!repoXml.delete()) {
-                throw new IOException("Failed to delete " + repoXml);
-            } else {
-                logger.logp(Level.INFO, "ObrHandler", "updateRepository", "Recreating {0}", new Object[]{repoXml});
+        return repository;
+    }
+
+    private boolean isObsoleteRepo(Repository repository, File repoFile, File repoDir) {
+        // TODO(Sahoo): Revisit this...
+        // This method assumes that the cached repoFile has been created before a newer jar is created.
+        // So, this method does not always detect stale repoFile. Imagine the following situation:
+        // time t1: v1 version of jar is released.
+        // time t2: v2 version of jar is released.
+        // time t3: repo.xml is populated using v1 version of jar, so repo.xml records a timestamp of t3 > t2.
+        // time t4: v2 version of jar is unzipped on modules/ and unzip maintains the timestamp of jar as t2.
+        // Next time when we compare timestamp, we will see that repo.xml is newer than this jar, when it is not.
+        // So, we include a size check. We go for the total size check...
+
+        long lastModifiedTime = repoFile.lastModified();
+        // optimistic: see if the repoDir has been touched. dir timestamp changes when files are added or removed.
+        if (repoDir.lastModified() > lastModifiedTime) {
+            return true;
+        }
+        long totalSize = 0;
+        // now compare timestamp of each jar and take a sum of size of all jars.
+        for (File jar : findAllJars(repoDir)) {
+            if (jar.lastModified() > lastModifiedTime) {
+                logger.logp(Level.INFO, "ObrHandler", "isObsoleteRepo", "{0} is newer than {1}", new Object[]{jar, repoFile});
+                return true;
             }
-            createRepository(repoXml, repoDir);
+            totalSize += jar.length();
         }
+        // time stamps didn't identify any difference, so check sizes. The probabibility of sizes of all jars being same
+        // when some jars have changed is very very low.
+        for (Resource r : repository.getResources()) {
+            totalSize -= r.getSize();
+        }
+        if (totalSize != 0) {
+            logger.logp(Level.INFO, "ObrHandler", "isObsoleteRepo", "Change in size detected by {0} bytes", new Object[]{totalSize});
+            return true;
+        }
+        return false;
     }
 
     private List<File> findAllJars(File repo) {
@@ -238,8 +287,9 @@ class ObrHandler extends ServiceTracker {
         return files;
     }
 
-    /* package */ synchronized Bundle deploy(Resource resource) {
-        final Resolver resolver = getRepositoryAdmin().resolver();
+    /* package */
+    synchronized Bundle deploy(Resource resource) {
+        final Resolver resolver = getRepositoryAdmin().resolver(getRepositories());
         boolean resolved = resolve(resolver, resource);
         if (resolved) {
             final int flags = !deployOptionalRequirements ? Resolver.NO_OPTIONAL_RESOURCES : 0;
@@ -279,7 +329,8 @@ class ObrHandler extends ServiceTracker {
         return resolved;
     }
 
-    /* package */ synchronized Bundle deploy(String name, String version) {
+    /* package */
+    synchronized Bundle deploy(String name, String version) {
         Resource resource = findResource(name, version);
         if (resource == null) {
             logger.logp(Level.INFO, "ObrHandler", "deploy",
@@ -290,10 +341,6 @@ class ObrHandler extends ServiceTracker {
             return getBundle(resource);
         }
         return deploy(resource);
-    }
-
-    /* package */ synchronized Bundle deploy(ModuleDefinition md) {
-        return deploy(md.getName(), md.getVersion());
     }
 
     private Bundle getBundle(Resource resource) {
@@ -321,7 +368,7 @@ class ObrHandler extends ServiceTracker {
         String s2 = "(version=" + version + ")";
         String query = (version != null) ? "(&" + s1 + s2 + ")" : s1;
         try {
-            Resource[] resources = getRepositoryAdmin().discoverResources(query);
+            Resource[] resources = discoverResources(query);
             logger.logp(Level.INFO, "ObrHandler", "findResource",
                     "Using the first one from the list of {0} discovered bundles shown below: {1}",
                     new Object[]{resources.length, Arrays.toString(resources)});
@@ -331,12 +378,36 @@ class ObrHandler extends ServiceTracker {
         }
     }
 
+    private Resource[] discoverResources(String filterExpr) throws InvalidSyntaxException {
+        // TODO(Sahoo): File a bug against Obr to add a suitable method to Repository interface.
+        // We can't use the following method, because we can't rely on the RepositoryAdmin to have the correct
+        // list of repositories. So, we do the discovery ourselves.
+        // return getRepositoryAdmin().discoverResources(query);
+        Filter filter = filterExpr != null ? getRepositoryAdmin().getHelper().filter(filterExpr) : null;
+        Resource[] resources;
+        Repository[] repos = getRepositories();
+        List<Resource> matchList = new ArrayList<Resource>();
+        for (int repoIdx = 0; (repos != null) && (repoIdx < repos.length); repoIdx++) {
+            resources = repos[repoIdx].getResources();
+            for (int resIdx = 0; (resources != null) && (resIdx < resources.length); resIdx++) {
+                Properties dict = new Properties();
+                dict.putAll(resources[resIdx].getProperties());
+                if (filter == null || filter.match(dict)) {
+                    matchList.add(resources[resIdx]);
+                }
+            }
+        }
+
+        return matchList.toArray(new Resource[matchList.size()]);
+    }
+
     private void printResolverOutput(Resolver resolver) {
         StringBuffer sb = getResolverOutput(resolver);
         logger.logp(Level.INFO, "ObrHandler", "printResolverOutput", "OBR resolver state: {0}", new Object[]{sb});
     }
 
-    private StringBuffer getResolverOutput(Resolver resolver) {Resource[] addedResources = resolver.getAddedResources();
+    private StringBuffer getResolverOutput(Resolver resolver) {
+        Resource[] addedResources = resolver.getAddedResources();
         Resource[] requiredResources = resolver.getRequiredResources();
         Resource[] optionalResources = resolver.getOptionalResources();
         Reason[] unsatisfiedRequirements = resolver.getUnsatisfiedRequirements();
@@ -349,7 +420,7 @@ class ObrHandler extends ServiceTracker {
             sb.append("\n").append(r.getURI());
         }
         String optionalRequirementsDeployed = deployOptionalRequirements ? "deployed" : "not deployed";
-        sb.append("]\nOptional resources (" +  optionalRequirementsDeployed + "): [");
+        sb.append("]\nOptional resources (" + optionalRequirementsDeployed + "): [");
         for (Resource r : optionalResources) {
             sb.append("\n").append(r.getURI());
         }
@@ -361,4 +432,7 @@ class ObrHandler extends ServiceTracker {
         return sb;
     }
 
+    private Repository[] getRepositories() {
+        return repositories.toArray(new Repository[repositories.size()]);
+    }
 }

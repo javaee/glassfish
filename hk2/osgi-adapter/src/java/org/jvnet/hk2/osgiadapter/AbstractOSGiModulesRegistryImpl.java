@@ -45,10 +45,7 @@ import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import com.sun.hk2.component.InhabitantsParser;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.BundleListener;
+import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 import java.io.IOException;
@@ -78,6 +75,8 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
     protected AbstractOSGiModulesRegistryImpl(BundleContext bctx) {
         super(null);
         this.bctx = bctx;
+        ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
+        pa = PackageAdmin.class.cast(bctx.getService(ref));
     }
 
     @Override
@@ -310,13 +309,5 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
 
     /*package*/ Module getModule(Bundle bundle) {
         return modules.get(new OSGiModuleId(bundle));
-    }
-
-    protected String getProperty(String property) {
-        String value = bctx.getProperty(property);
-        // Check System properties to work around Equinox Bug:
-        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=320459
-        if (value == null) value = System.getProperty(property);
-        return value;
     }
 }
