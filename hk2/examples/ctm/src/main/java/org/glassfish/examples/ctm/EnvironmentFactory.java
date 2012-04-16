@@ -46,12 +46,13 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Singleton
+@Service @Singleton
 public class EnvironmentFactory implements Factory<Environment> {
     private final HashMap<String, ServiceLocator> backingLocators = new HashMap<String, ServiceLocator>();
     private final TenantLocatorGenerator generator = new TenantLocatorGenerator();

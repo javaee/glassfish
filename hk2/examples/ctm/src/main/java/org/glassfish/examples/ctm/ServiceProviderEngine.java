@@ -42,6 +42,8 @@ package org.glassfish.examples.ctm;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.jvnet.hk2.annotations.Service;
+
 /**
  * In the example, this code uses the Environment object, which sometimes
  * will be from Tenant1, and other times from Tenant2.  However, since this
@@ -54,7 +56,7 @@ import javax.inject.Singleton;
  * @author jwells
  *
  */
-@Singleton
+@Service @Singleton
 public class ServiceProviderEngine {
     // This is done with a final field to demonstrate that
     // the object here is never modified
