@@ -62,17 +62,22 @@ public class OSGiObrModuleImpl extends OSGiModuleImpl {
         this(registry, new OSGiModuleDefinition(file));
     }
 
-    public OSGiObrModuleImpl(OSGiObrModulesRegistryImpl registry, ModuleDefinition moduleDef) throws IOException {
-        super(registry, null, moduleDef);
+    public OSGiObrModuleImpl(OSGiObrModulesRegistryImpl registry, ModuleDefinition moduleDef) {
+        this(registry, null, moduleDef);
     }
 
-    private boolean isUninitialized() {
+    public OSGiObrModuleImpl(OSGiObrModulesRegistryImpl registry, Bundle bundle, ModuleDefinition moduleDef) {
+        super(registry, bundle, moduleDef);
+    }
+
+    private synchronized boolean isUninitialized() {
         return getBundle() == null;
     }
 
     private synchronized void init() {
         if (isUninitialized()) {
-            Bundle bundle = getRegistry().getObrHandler().deploy(getModuleDefinition());
+            final ModuleDefinition moduleDefinition = getModuleDefinition();
+            Bundle bundle = getRegistry().getObrHandler().deploy(moduleDefinition.getName(), moduleDefinition.getVersion());
             if (bundle != null) {
                 setBundle(bundle);
             } else {

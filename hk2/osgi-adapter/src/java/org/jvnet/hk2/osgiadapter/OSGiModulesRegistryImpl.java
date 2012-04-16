@@ -42,20 +42,14 @@
 package org.jvnet.hk2.osgiadapter;
 
 import org.osgi.framework.*;
-import org.osgi.service.packageadmin.PackageAdmin;
+
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.common_impl.CompositeEnumeration;
-import com.sun.enterprise.module.common_impl.ModuleId;
-import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import java.net.URL;
 import java.net.URI;
-import java.net.MalformedURLException;
-import java.net.URLClassLoader;
 import java.net.URISyntaxException;
 
 /**
@@ -71,10 +65,6 @@ public class OSGiModulesRegistryImpl
     // cache related attributes
     private Map<URI, ModuleDefinition> cachedData = new HashMap<URI, ModuleDefinition>();
     private boolean cacheInvalidated = false;
-    private static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
-    private static final String INHABITANTS_CACHE = "inhabitants";
-    private static final String HK2_CACHE_IO_BUFFER_SIZE = "com.sun.enterprise.hk2.cacheIoBufferSize";
-    private static final int DEFAULT_BUFFER_SIZE = 1024;
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(bctx);
@@ -107,8 +97,6 @@ public class OSGiModulesRegistryImpl
                 continue;
             }
         }
-        ServiceReference ref = bctx.getServiceReference(PackageAdmin.class.getName());
-        pa = PackageAdmin.class.cast(bctx.getService(ref));
     }
 
     public void bundleChanged(BundleEvent event) {
@@ -180,11 +168,11 @@ public class OSGiModulesRegistryImpl
      * @throws Exception if the file cannot be read correctly
      */
     private void loadCachedData() throws Exception {
-        String cacheLocation = getProperty(HK2_CACHE_DIR);
+        String cacheLocation = getProperty(Constants.HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
-        File io = new File(cacheLocation, INHABITANTS_CACHE);
+        File io = new File(cacheLocation, Constants.INHABITANTS_CACHE);
         if (!io.exists()) return;
         if(logger.isLoggable(Level.FINE)) {
             logger.logp(Level.INFO, "OSGiModulesRegistryImpl", "loadCachedData", "HK2 cache file = {0}", new Object[]{io});
@@ -200,11 +188,11 @@ public class OSGiModulesRegistryImpl
      * @throws IOException if the file cannot be saved successfully
      */
     private void saveCache() throws IOException {
-        String cacheLocation = getProperty(HK2_CACHE_DIR);
+        String cacheLocation = getProperty(Constants.HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
-        File io = new File(cacheLocation, INHABITANTS_CACHE);
+        File io = new File(cacheLocation, Constants.INHABITANTS_CACHE);
         if(logger.isLoggable(Level.FINE)) {
             logger.logp(Level.INFO, "OSGiModulesRegistryImpl", "saveCache", "HK2 cache file = {0}", new Object[]{io});
         }
@@ -220,11 +208,11 @@ public class OSGiModulesRegistryImpl
     }
 
     private void deleteCache() {
-        String cacheLocation = getProperty(HK2_CACHE_DIR);
+        String cacheLocation = getProperty(Constants.HK2_CACHE_DIR);
         if (cacheLocation == null) {
             return;
         }
-        File io = new File(cacheLocation, INHABITANTS_CACHE);
+        File io = new File(cacheLocation, Constants.INHABITANTS_CACHE);
         if (io.exists()) {
             if (io.delete()) {
                 logger.logp(Level.FINE, "OSGiModulesRegistryImpl",
@@ -237,9 +225,9 @@ public class OSGiModulesRegistryImpl
     }
 
     private int getBufferSize() {
-        int bufsize = DEFAULT_BUFFER_SIZE;
+        int bufsize = Constants.DEFAULT_BUFFER_SIZE;
         try {
-            bufsize = Integer.valueOf(bctx.getProperty(HK2_CACHE_IO_BUFFER_SIZE));
+            bufsize = Integer.valueOf(bctx.getProperty(Constants.HK2_CACHE_IO_BUFFER_SIZE));
         } catch (Exception e) {
         }
         if(logger.isLoggable(Level.FINE)) {
@@ -323,5 +311,12 @@ public class OSGiModulesRegistryImpl
         super.shutdown();
     }
 
+    protected String getProperty(String property) {
+        String value = bctx.getProperty(property);
+        // Check System properties to work around Equinox Bug:
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=320459
+        if (value == null) value = System.getProperty(property);
+        return value;
+    }
 
 }
