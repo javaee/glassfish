@@ -123,7 +123,7 @@ class ObrHandler extends ServiceTracker {
         setupRepository(dir, isSynchronous());
     }
 
-    public void setupRepository(final File repoDir, boolean synchronous) throws Exception {
+    private void setupRepository(final File repoDir, boolean synchronous) throws Exception {
         if (synchronous) {
             _setupRepository(repoDir);
         } else {
@@ -141,22 +141,35 @@ class ObrHandler extends ServiceTracker {
     }
 
     private boolean isSynchronous() {
-        return Boolean.TRUE.toString().equalsIgnoreCase(context.getProperty(Constants.INITIALIZE_OBR_SYNCHRONOUSLY));
+        String property = context.getProperty(Constants.INITIALIZE_OBR_SYNCHRONOUSLY);
+        // default is synchronous as we are not sure if we have covered every race condition in asynchronous path
+        return property == null || Boolean.TRUE.toString().equalsIgnoreCase(property);
     }
 
     private synchronized void _setupRepository(File repoDir) throws Exception {
         File repoXml = getRepositoryXmlFile(repoDir);
+        final long tid = Thread.currentThread().getId();
         if (repoXml.exists()) {
+            long t = System.currentTimeMillis();
             updateRepository(repoXml, repoDir);
+            long t2 = System.currentTimeMillis();
+            logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: updateRepository took {1} ms",
+                    new Object[]{tid, t2 - t});
         } else {
+            long t = System.currentTimeMillis();
             createRepository(repoXml, repoDir);
+            long t2 = System.currentTimeMillis();
+            logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: createRepository took {1} ms",
+                    new Object[]{tid, t2 - t});
         }
         final URL repoUrl = repoXml.toURI().toURL();
-        logger.logp(Level.INFO, "ObrHandler", "setupRepository", "Adding repository = {0}", new Object[]{repoUrl});
+        logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: Adding repository = {1}",
+                new Object[]{tid, repoUrl});
         long t = System.currentTimeMillis();
         getRepositoryAdmin().addRepository(repoUrl);
-        logger.logp(Level.INFO, "ObrHandler", "setupRepository", "Thread #{0}: Adding repo took {1} ms",
-                new Object[]{Thread.currentThread().getId(), System.currentTimeMillis() - t});
+        long t2 = System.currentTimeMillis();
+        logger.logp(Level.INFO, "ObrHandler", "_setupRepository", "Thread #{0}: Adding repo took {1} ms",
+                new Object[]{tid, t2 - t});
     }
 
     private File getRepositoryXmlFile(File repoDir) {
