@@ -59,13 +59,20 @@ public class HabitatGenerator {
     public final static String LOCATOR_ARG = "--locator";
     /** The flag for verbosity */
     public final static String VERBOSE_ARG = "--verbose";
+    /** The name of the JAR file to write to (defaults to input file, ignored if input file is directory) */
+    public final static String OUTJAR_ARG = "--outjar";
     
     private final String directoryOrFileToGenerateFor;
+    private final String outjarName;
     private final String locatorName;
     private final boolean verbose;
     
-    private HabitatGenerator(String directoryOrFileToGenerateFor, String locatorName, boolean verbose) {
+    private HabitatGenerator(String directoryOrFileToGenerateFor,
+            String outjarName,
+            String locatorName,
+            boolean verbose) {
         this.directoryOrFileToGenerateFor = directoryOrFileToGenerateFor;
+        this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
     }
@@ -83,7 +90,8 @@ public class HabitatGenerator {
     }
     
     private int go() {
-        GeneratorRunner runner = new GeneratorRunner(directoryOrFileToGenerateFor, locatorName, verbose);
+        GeneratorRunner runner = new GeneratorRunner(directoryOrFileToGenerateFor,
+                outjarName, locatorName, verbose);
         
         try {
             runner.go();
@@ -112,7 +120,7 @@ public class HabitatGenerator {
     }
     
     private static void usage() {
-        System.out.println("java org.jvnet.hk2.generator.HabitatGenerator [--file jarFileOrDirectory] [--locator locatorName] [--verbose]");
+        System.out.println("java org.jvnet.hk2.generator.HabitatGenerator [--file jarFileOrDirectory] [--outjar jarFile] [--locator locatorName] [--verbose]");
     }
     
     private final static String CLASS_PATH_PROP = "java.class.path";
@@ -122,13 +130,18 @@ public class HabitatGenerator {
      * A utility to generate inhabitants files.  By default the first element of the classpath will be analyzed and
      * an inhabitants file will be put into the JAR or directory.  The arguments are as follows:
      * <p>
-     * HabitatGenerator [--file jarFileOrDirectory] [--locator locatorName] [--verbose]
+     * HabitatGenerator [--file jarFileOrDirectory] [--outjar jarfile] [--locator locatorName] [--verbose]
      * </p>
      * If the input file is a directory then the output file will go into META-INF/locatorName in the
      * original directory
      * <p>
      * If the input file is a jar file then the output file will go into the JAR file under
      * META-INF/locatorName, overwriting any file that was previously in that location
+     * <p>
+     * --outjar only works if the file being added to is a JAR file, in which case this is the
+     * name of the output jar file that should be written.  This defaults to the input jar file
+     * itself if not specified.  If specified and the jarFileOrDirectory parameter is a directory
+     * then this parameter is ignored
      * 
      * @param argv The set of command line arguments
      * @return 0 on success, non-zero on failure
@@ -137,6 +150,7 @@ public class HabitatGenerator {
         String defaultFileToHandle = null;
         String defaultLocatorName = LOCATOR_DEFAULT;
         boolean defaultVerbose = false;
+        String outjarFile = null;
         
         for (int lcv = 0; lcv < argv.length; lcv++) {
             if (VERBOSE_ARG.equals(argv[lcv])) {
@@ -160,6 +174,15 @@ public class HabitatGenerator {
                 
                 defaultLocatorName = argv[lcv];
             }
+            else if (OUTJAR_ARG.equals(argv[lcv])) {
+                lcv++;
+                if (lcv >= argv.length) {
+                    usage();
+                    return 5;
+                }
+                
+                outjarFile = argv[lcv];
+            }
             else {
                 System.err.println("Uknown argument: " + argv[lcv]);
             }
@@ -181,7 +204,10 @@ public class HabitatGenerator {
             defaultFileToHandle = firstInLine;
         }
         
-        HabitatGenerator hg = new HabitatGenerator(defaultFileToHandle, defaultLocatorName, defaultVerbose);
+        if (outjarFile == null) outjarFile = defaultFileToHandle;
+        
+        HabitatGenerator hg = new HabitatGenerator(defaultFileToHandle, outjarFile,
+                defaultLocatorName, defaultVerbose);
         
         return hg.go();
     }

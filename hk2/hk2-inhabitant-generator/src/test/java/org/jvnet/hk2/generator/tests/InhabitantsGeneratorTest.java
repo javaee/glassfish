@@ -54,7 +54,10 @@ import org.jvnet.hk2.generator.HabitatGenerator;
  */
 public class InhabitantsGeneratorTest {
     private final static String FILE_ARGUMENT = "--file";
+    private final static String OUTJAR_FILE_ARGUMENT = "--outjar";
     private final static String CLASS_DIRECTORY = "gendir";
+    private final static String JAR_FILE = "gendir.jar";
+    private final static File OUTJAR_FILE = new File("outgendir.jar");
     
     private final static String META_INF_NAME = "META-INF";
     private final static String INHABITANTS = "inhabitants";
@@ -63,6 +66,7 @@ public class InhabitantsGeneratorTest {
     private final static String MAVEN_CLASSES_DIR = "test-classes";
     
     private File gendirDirectory;
+    private File gendirJar;
     private File inhabitantsDirectory;
     
     /**
@@ -77,9 +81,11 @@ public class InhabitantsGeneratorTest {
             
             File mavenClassesDir = new File(buildDirFile, MAVEN_CLASSES_DIR);
             gendirDirectory = new File(mavenClassesDir, CLASS_DIRECTORY);
+            gendirJar = new File(mavenClassesDir, JAR_FILE);
         }
         else {
             gendirDirectory = new File(CLASS_DIRECTORY);
+            gendirJar = new File(JAR_FILE);
         }
         
         File metaInfFile = new File(gendirDirectory, META_INF_NAME);
@@ -100,7 +106,7 @@ public class InhabitantsGeneratorTest {
         File defaultOutput = new File(inhabitantsDirectory, DEFAULT);
         if (defaultOutput.exists()) {
             // Start with a clean plate
-            defaultOutput.delete();
+            Assert.assertTrue(defaultOutput.delete());
         }
         
         try {
@@ -113,6 +119,40 @@ public class InhabitantsGeneratorTest {
         finally {
             // The test should be clean
             defaultOutput.delete();
+        }
+    }
+    
+    /**
+     * Tests generating into a directory
+     */
+    @Test
+    public void testDefaultJarGeneration() {
+        String argv[] = new String[4];
+        
+        argv[0] = FILE_ARGUMENT;
+        argv[1] = gendirJar.getAbsolutePath();
+        
+        argv[2] = OUTJAR_FILE_ARGUMENT;
+        argv[3] = OUTJAR_FILE.getAbsolutePath();
+        
+        Assert.assertTrue("Could not find file " + gendirJar.getAbsolutePath(),
+                gendirJar.exists());
+        
+        if (OUTJAR_FILE.exists()) {
+            // Start with a clean plate
+            Assert.assertTrue(OUTJAR_FILE.delete());
+        }
+        
+        try {
+            int result = HabitatGenerator.embeddedMain(argv);
+            Assert.assertEquals("Got error code: " + result, 0, result);
+            
+            Assert.assertTrue("did not generate JAR " + OUTJAR_FILE.getAbsolutePath(),
+                    OUTJAR_FILE.exists());
+        }
+        finally {
+            // The test should be clean
+            OUTJAR_FILE.delete();
         }
     }
 }
