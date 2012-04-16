@@ -201,6 +201,63 @@ public class RunLevelServiceTest {
     }
 
     @Test
+    public void proceedDownInPostConstruct() throws Exception {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("proceedDownInPostConstruct");
+
+        configureLocator(locator, new Class[]{
+                RunLevelServiceProceedDownInPostConstruct.class,
+                RunLevelServiceTen.class,
+                RunLevelServiceFive.class});
+
+        RunLevelServiceImpl rls = locator.getService(RunLevelService.class);
+
+        proceedToAndWait(rls, locator, 20);
+        assertEquals(5, rls.getCurrentRunLevel());
+        assertEquals(null, rls.getPlannedRunLevel());
+
+        HashMap<Integer, Stack<ActiveDescriptor<?>>> recorders = rls.getRecorders();
+
+        assertEquals(recorders.toString(), 2, recorders.size());
+        Stack<ActiveDescriptor<?>> recorder = recorders.get(5);
+        assertNotNull(recorder);
+
+        recorder = recorders.get(10);
+        assertNotNull(recorder);
+    }
+
+    @Test
+    public void proceedUpInPostConstruct() throws Exception {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("proceedUpInPostConstruct");
+
+        configureLocator(locator, new Class[]{
+                RunLevelServiceProceedUpInPostConstruct.class,
+                RunLevelServiceTen.class,
+                RunLevelServiceTwentyFive.class,
+                RunLevelServiceFive.class});
+
+        RunLevelServiceImpl rls = locator.getService(RunLevelService.class);
+
+        proceedToAndWait(rls, locator, 20);
+        assertEquals(25, rls.getCurrentRunLevel());
+        assertEquals(null, rls.getPlannedRunLevel());
+
+        HashMap<Integer, Stack<ActiveDescriptor<?>>> recorders = rls.getRecorders();
+
+        assertEquals(recorders.toString(), 4, recorders.size());
+        Stack<ActiveDescriptor<?>> recorder = recorders.get(5);
+        assertNotNull(recorder);
+
+        recorder = recorders.get(10);
+        assertNotNull(recorder);
+
+        recorder = recorders.get(15);
+        assertNotNull(recorder);
+
+        recorder = recorders.get(25);
+        assertNotNull(recorder);
+    }
+
+    @Test
     public void proceedUpTo49() throws Exception {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create("proceedUpTo49");
 
@@ -701,6 +758,36 @@ public class RunLevelServiceTest {
     @Service
     public static class RunLevelServiceLowPriority extends TestService {
     }
+
+    @RunLevel(15)
+    @Service
+    public static class RunLevelServiceProceedDownInPostConstruct extends TestService {
+        @Inject
+        private RunLevelServiceImpl rls;
+
+        @Override
+        public void postConstruct() {
+            rls.proceedTo(5);
+        }
+    }
+
+    @RunLevel(15)
+    @Service
+    public static class RunLevelServiceProceedUpInPostConstruct extends TestService {
+        @Inject
+        private RunLevelServiceImpl rls;
+
+        @Override
+        public void postConstruct() {
+            rls.proceedTo(25);
+        }
+    }
+
+    @RunLevel(25)
+    @Service
+    public static class RunLevelServiceTwentyFive extends TestService {
+    }
+
 
     // ----- inner class : RunLevelServiceTwenty -------------------------------
 
