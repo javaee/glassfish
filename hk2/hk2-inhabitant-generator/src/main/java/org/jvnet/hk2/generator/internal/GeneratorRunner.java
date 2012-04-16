@@ -69,6 +69,7 @@ public class GeneratorRunner {
     private final static String INHABITANTS = "inhabitants";
     
     private final String fileOrDirectory;
+    private final String outjarName;
     private final String locatorName;
     private final boolean verbose;
 
@@ -79,8 +80,12 @@ public class GeneratorRunner {
      * @param locatorName The name of the locator these files should be put into
      * @param verbose true if this should print information about progress
      */
-    public GeneratorRunner(String fileOrDirectory, String locatorName, boolean verbose) {
+    public GeneratorRunner(String fileOrDirectory,
+            String outjarName,
+            String locatorName,
+            boolean verbose) {
         this.fileOrDirectory = fileOrDirectory;
+        this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
     }
@@ -190,6 +195,7 @@ public class GeneratorRunner {
             
             if (entryName.equals(META_INF + "/" + INHABITANTS + "/" + locatorName)) {
                 // Don't write out the old one
+                zentry = zis.getNextEntry();
                 continue;
             }
             
@@ -199,6 +205,8 @@ public class GeneratorRunner {
             while ((len = zis.read(buffer)) > 0) {
                 zos.write(buffer, 0, len);
             }
+            
+            zentry = zis.getNextEntry();
         }
         
         zis.close();
@@ -217,7 +225,8 @@ public class GeneratorRunner {
         zos.close();
         
         // All went well, replace the JAR file with the new and improved jar file
-        tmpJarFile.renameTo(jarFile);
+        File outjar = new File(outjarName);
+        tmpJarFile.renameTo(outjar);
     }
     
     private File writeInhabitantsFile(List<DescriptorImpl> descriptors) throws IOException {
