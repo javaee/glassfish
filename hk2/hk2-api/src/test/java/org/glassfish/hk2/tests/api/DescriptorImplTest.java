@@ -490,9 +490,7 @@ public class DescriptorImplTest {
         PrintWriter pw = new PrintWriter(baos);
         
         writeA.writeObject(pw);
-        pw.println();
         writeB.writeObject(pw);
-        pw.println();
         writeC.writeObject(pw);
         
         pw.close();

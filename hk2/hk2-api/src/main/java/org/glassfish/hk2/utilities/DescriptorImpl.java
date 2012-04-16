@@ -69,8 +69,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
      */
     private static final long serialVersionUID = 1558442492395467828L;
     
-    private final static String VERSION = "version=1";
-    private final static String IMPLEMENTATION_KEY = "implementation=";
     private final static String CONTRACT_KEY = "contract=";
     private final static String NAME_KEY = "name=";
     private final static String SCOPE_KEY = "scope=";
@@ -78,8 +76,9 @@ public class DescriptorImpl implements Descriptor, Serializable {
     private final static String TYPE_KEY = "type=";
     private final static String METADATA_KEY = "metadata=";
     private final static String FACTORY_DT = "FACTORY";
-    private final static String START = "<hk2-descriptor><![CDATA[";
-    private final static String END = "]]</hk2-descriptor>";
+    private final static String START_START = "[";
+    private final static String END_START = "]";
+    private final static char END_START_CHAR = ']';
 	
 	private Set<String> contracts = new LinkedHashSet<String>();
 	private String implementation;
@@ -504,15 +503,14 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 */
 	public void writeObject(PrintWriter out) throws IOException {
 	
-        out.println(START);
-        
-        // Version
-        out.println(VERSION);
+        out.print(START_START);
         
         // Implementation
         if (implementation != null) {
-            out.println(IMPLEMENTATION_KEY + implementation);
+            out.print(implementation);
         }
+        
+        out.println(END_START);
         
         // Contracts
         if (contracts != null && !contracts.isEmpty()) {
@@ -539,7 +537,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
             out.println(METADATA_KEY + ReflectionHelper.writeMetadata(metadatas));
         }
         
-        out.println(END);  // This demarks the end of the section
+        out.println();  // This demarks the end of the section
     }
 
 	/**
@@ -557,12 +555,22 @@ public class DescriptorImpl implements Descriptor, Serializable {
             String trimmed = line.trim();
             
             if (!sectionStarted) {
-                if (trimmed.startsWith(START)) {
+                if (trimmed.startsWith(START_START)) {
                     sectionStarted = true;
+                    
+                    int endStartIndex = trimmed.indexOf(END_START_CHAR, 1);
+                    if (endStartIndex < 0) {
+                        throw new IOException("Start of implementation ends without ] character: " +
+                            trimmed);
+                    }
+                    
+                    if (endStartIndex > 1) {
+                        implementation = trimmed.substring(1, endStartIndex);
+                    }
                 }
             }
             else {
-                if (trimmed.startsWith(END)) {
+                if (trimmed.length() <= 0) {
                     // A blank line indicates end of object
                     return;
                 }
@@ -574,9 +582,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
                     String leftHandSide = trimmed.substring(0, equalsIndex + 1);  // include the =
                     String rightHandSide = trimmed.substring(equalsIndex + 1);
                     
-                    if (leftHandSide.equalsIgnoreCase(IMPLEMENTATION_KEY)) {
-                        implementation = rightHandSide;
-                    }
                     if (leftHandSide.equalsIgnoreCase(CONTRACT_KEY)) {
                         contracts = new LinkedHashSet<String>();
                         
