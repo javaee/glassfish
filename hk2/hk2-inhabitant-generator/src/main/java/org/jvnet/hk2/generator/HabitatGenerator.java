@@ -53,6 +53,13 @@ import org.jvnet.hk2.generator.internal.GeneratorRunner;
  *
  */
 public class HabitatGenerator {
+    /** The flag for the location of the file */
+    public final static String FILE_ARG = "--file";
+    /** The flag for the name of the locator */
+    public final static String LOCATOR_ARG = "--locator";
+    /** The flag for verbosity */
+    public final static String VERBOSE_ARG = "--verbose";
+    
     private final String directoryOrFileToGenerateFor;
     private final String locatorName;
     private final boolean verbose;
@@ -108,9 +115,6 @@ public class HabitatGenerator {
         System.out.println("java org.jvnet.hk2.generator.HabitatGenerator [--file jarFileOrDirectory] [--locator locatorName] [--verbose]");
     }
     
-    private final static String FILE_ARG = "--file";
-    private final static String LOCATOR_ARG = "--locator";
-    private final static String VERBOSE_ARG = "--verbose";
     private final static String CLASS_PATH_PROP = "java.class.path";
     private final static String LOCATOR_DEFAULT = "default";
     
@@ -120,6 +124,11 @@ public class HabitatGenerator {
      * <p>
      * HabitatGenerator [--file jarFileOrDirectory] [--locator locatorName] [--verbose]
      * </p>
+     * If the input file is a directory then the output file will go into META-INF/locatorName in the
+     * original directory
+     * <p>
+     * If the input file is a jar file then the output file will go into the JAR file under
+     * META-INF/locatorName, overwriting any file that was previously in that location
      * 
      * @param argv The set of command line arguments
      * @return 0 on success, non-zero on failure
