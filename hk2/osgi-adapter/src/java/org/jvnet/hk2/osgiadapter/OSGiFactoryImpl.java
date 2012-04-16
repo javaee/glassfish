@@ -69,7 +69,7 @@ public class OSGiFactoryImpl extends AbstractFactory {
         this.ctx = ctx;
     }
 
-    public OSGiModulesRegistryImpl createModulesRegistry() {
+    public AbstractOSGiModulesRegistryImpl createModulesRegistry() {
         String val = ctx.getProperty(Constants.OBR_ENABLED);
         return (val != null && Boolean.valueOf(val)) ? new OSGiObrModulesRegistryImpl(ctx) : new OSGiModulesRegistryImpl(ctx);
     }

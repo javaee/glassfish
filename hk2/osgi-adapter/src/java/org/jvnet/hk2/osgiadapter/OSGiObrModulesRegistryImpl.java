@@ -57,7 +57,7 @@ import java.util.logging.Logger;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiObrModulesRegistryImpl extends OSGiModulesRegistryImpl {
+public class OSGiObrModulesRegistryImpl extends AbstractOSGiModulesRegistryImpl implements SynchronousBundleListener {
     private final Logger logger = Logger.getLogger(getClass().getPackage().getName());
     private final ObrHandler obrHandler;
 
@@ -112,7 +112,6 @@ public class OSGiObrModulesRegistryImpl extends OSGiModulesRegistryImpl {
                     return;
                 }
         }
-        super.bundleChanged(event); // for everything else, delegate to super class.
     }
 
     @Override
