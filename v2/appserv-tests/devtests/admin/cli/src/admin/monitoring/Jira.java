@@ -149,8 +149,9 @@ public class Jira extends MonTest {
         catch (InterruptedException ex) {
             //ignore
         }
-        AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
-
+        //Try list -m server.* instead of * to see if it makes a difference
+        //AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
+        AsadminReturn ar = asadminWithOutput("list", "-m", "server.*");
         // this test started failing intermittenly in early March 2012.  I've now
         // added some diagnostic code...
         boolean b1 = checkForString(ar, "server.applications");
@@ -173,7 +174,9 @@ public class Jira extends MonTest {
         report(checkForString(ar, "server.web.request"), prepend + "check-listm-server-web-request");
         report(checkForString(ar, "server.web.servlet"), prepend + "check-listm-server-web-servlet");
 
-        AsadminReturn ar2 = asadminWithOutput("get", "-m", STAR);
+        //Try get -m server.* instead of * to see if it makes a difference
+        //AsadminReturn ar2 = asadminWithOutput("get", "-m", STAR);
+        AsadminReturn ar2 = asadminWithOutput("get", "-m", "server.*");
         report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
         report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
         report(checkForString(ar2, "server.web.request"), prepend + "check-getm-server-web-request");
