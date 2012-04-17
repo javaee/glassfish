@@ -39,48 +39,52 @@
  */
 package org.jvnet.hk2.generator.internal;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import javax.inject.Named;
-import javax.inject.Qualifier;
-import javax.inject.Scope;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.jvnet.hk2.annotations.Contract;
 import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 
 /**
  * @author jwells
  *
  */
-public class ClassVisitorImpl implements ClassVisitor {
+public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String SERVICE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Service;";
     private final static String NAME = "name";
     private final static String VALUE = "value";
+    private final static String PROVIDE = "provide";
     
     private final boolean verbose;
+    private final File searchHere;
+    private final Utilities utilities = new Utilities();
     
     private String implName;
     private final LinkedList<String> iFaces = new LinkedList<String>();
-    private Class<?> scopeClass;
+    private String scopeClass;
     private final LinkedList<String> qualifiers = new LinkedList<String>();
     private boolean isAService = false;
-    private String name;
+    private NamedAnnotationVisitor baseName;
     
-    private DescriptorImpl generatedDescriptor = null;
+    private final LinkedList<DescriptorImpl> generatedDescriptors = new LinkedList<DescriptorImpl>();
+    private boolean isFactory = false;
+    private boolean factoryMethodFound = false;
     
     /**
      * Creates this with the config to add to if this is a service
      * 
      * @param verbose true if we should print out any service we are binding
+     * @param searchHere if we cannot classload something directly, search for it here
      */
-    public ClassVisitorImpl(boolean verbose) {
+    public ClassVisitorImpl(boolean verbose, File searchHere) {
         this.verbose = verbose;
+        this.searchHere = searchHere;
     }
 
     /* (non-Javadoc)
@@ -97,14 +101,10 @@ public class ClassVisitorImpl implements ClassVisitor {
         
         for (String i : interfaces) {
             String iFace = i.replace("/", ".");
-            try {
-                Class<?> iClass = this.getClass().getClassLoader().loadClass(iFace);
-                if (iClass.isAnnotationPresent(Contract.class)) {
-                    iFaces.add(iClass.getName());
-                }
-            }
-            catch (Throwable th) {
-                // Ignore, simply can't be loaded
+            if (utilities.isClassAContract(searchHere, iFace)) {
+                iFaces.add(iFace);
+                
+                if (Factory.class.getName().equals(iFace)) isFactory = true;
             }
         }
         
@@ -126,22 +126,15 @@ public class ClassVisitorImpl implements ClassVisitor {
         if (!desc.startsWith("L")) return null;
             
         String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
-        Class<?> annoClass;
-        try {
-            annoClass = Class.forName(loadQualifierName);
+        if (utilities.isClassAScope(searchHere, loadQualifierName)) {
+            scopeClass = loadQualifierName;
         }
-        catch (Throwable th) {
-            return null;
-        }
+        else if (utilities.isClassAQualifier(searchHere, loadQualifierName)) {
+            qualifiers.add(loadQualifierName);
             
-        if (annoClass.isAnnotationPresent(Scope.class)) {
-            scopeClass = annoClass;
-        }
-        else if (annoClass.isAnnotationPresent(Qualifier.class)) {
-            qualifiers.add(annoClass.getName());
-            
-            if (Named.class.equals(annoClass)) {
-                return new NamedAnnotationVisitor(getDefaultName());
+            if (Named.class.getName().equals(loadQualifierName)) {
+                baseName = new NamedAnnotationVisitor(getDefaultName(), null);
+                return baseName;
             }
         }
         
@@ -153,15 +146,6 @@ public class ClassVisitorImpl implements ClassVisitor {
         if (index <= 0) return implName;
         
         return implName.substring(index + 1);
-    }
-        
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitAttribute(org.objectweb.asm.Attribute)
-     */
-    @Override
-    public void visitAttribute(Attribute arg0) {
-        
     }
 
     /* (non-Javadoc)
@@ -176,14 +160,14 @@ public class ClassVisitorImpl implements ClassVisitor {
             return;
         }
         
-        generatedDescriptor = new DescriptorImpl();
+        DescriptorImpl generatedDescriptor = new DescriptorImpl();
         generatedDescriptor.setImplementation(implName);
         if (scopeClass == null) {
-            // The default for classes with Service is Singelton
+            // The default for classes with Service is Singleton
             generatedDescriptor.setScope(Singleton.class.getName());
         }
         else {
-            generatedDescriptor.setScope(scopeClass.getName());
+            generatedDescriptor.setScope(scopeClass);
         }
         
         generatedDescriptor.addAdvertisedContract(implName);
@@ -195,58 +179,62 @@ public class ClassVisitorImpl implements ClassVisitor {
             generatedDescriptor.addQualifier(qualifier);
         }
         
-        if (name != null) {
-            generatedDescriptor.setName(name);
+        if (baseName != null) {
+            generatedDescriptor.setName(baseName.getName());
         }
         
         if (verbose) {
             System.out.println("Generated Descriptor: " + generatedDescriptor);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitField(int, java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
-     */
-    @Override
-    public FieldVisitor visitField(int arg0, String arg1, String arg2,
-            String arg3, Object arg4) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitInnerClass(java.lang.String, java.lang.String, java.lang.String, int)
-     */
-    @Override
-    public void visitInnerClass(String arg0, String arg1, String arg2, int arg3) {
         
+        generatedDescriptors.add(generatedDescriptor);
     }
 
     /* (non-Javadoc)
      * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
      */
     @Override
-    public MethodVisitor visitMethod(int arg0, String arg1, String arg2,
-            String arg3, String[] arg4) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitOuterClass(java.lang.String, java.lang.String, java.lang.String)
-     */
-    @Override
-    public void visitOuterClass(String arg0, String arg1, String arg2) {
+    public MethodVisitor visitMethod(int access, String name, String desc,
+            String signature, String[] exceptions) {
+        if (!isFactory) return null;
+        if (!PROVIDE.equals(name)) return null;
+        if (!desc.startsWith("()")) return null;
+        if (factoryMethodFound) return null;
+        factoryMethodFound = true;
         
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitSource(java.lang.String, java.lang.String)
-     */
-    @Override
-    public void visitSource(String arg0, String arg1) {
+        DescriptorImpl asAFactory = new DescriptorImpl();
+        generatedDescriptors.add(asAFactory);
         
+        asAFactory.setImplementation(implName);
+        asAFactory.setDescriptorType(DescriptorType.FACTORY);
+        
+        String factoryType = desc.substring(2);
+        if (factoryType.charAt(0) == '[') {
+            // Array type, may not be of an object!
+            asAFactory.addAdvertisedContract(factoryType);  // Just the array of whatever type
+        }
+        else {
+            if (factoryType.charAt(0) != 'L') {
+                throw new AssertionError("Unable to handle provide descriptor " + desc);
+            }
+            
+            int endIndex = factoryType.indexOf(';');
+            if (endIndex < 0) {
+                throw new AssertionError("Unable to find end of class return type in descriptor " + desc);
+            }
+            
+            String trueFactoryClass = factoryType.substring(1, endIndex);
+            
+            // This might be parametererized, strip of the parameters
+            trueFactoryClass = trueFactoryClass.replace('/', '.');
+            
+            asAFactory.addAdvertisedContract(trueFactoryClass);
+        }
+        
+        return new MethodVisitorImpl(asAFactory);
     }
     
-    private class ServiceAnnotationVisitor implements AnnotationVisitor {
+    private class ServiceAnnotationVisitor extends AbstractAnnotationVisitorImpl {
 
         /* (non-Javadoc)
          * @see org.objectweb.asm.AnnotationVisitor#visit(java.lang.String, java.lang.Object)
@@ -254,52 +242,19 @@ public class ClassVisitorImpl implements ClassVisitor {
         @Override
         public void visit(String annotationName, Object value) {
             if (annotationName.equals(NAME)) {
-                name = (String) value;
+                baseName = new NamedAnnotationVisitor(null, (String) value);
             }
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
-         */
-        @Override
-        public AnnotationVisitor visitAnnotation(String name, String desc) {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
-         */
-        @Override
-        public AnnotationVisitor visitArray(String arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
-         */
-        @Override
-        public void visitEnd() {
-            
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
-         */
-        @Override
-        public void visitEnum(String arg0, String arg1, String arg2) {
-            // TODO Auto-generated method stub
-            
-        }
-        
+        }        
     }
     
-    private class NamedAnnotationVisitor implements AnnotationVisitor {
+    private class NamedAnnotationVisitor extends AbstractAnnotationVisitorImpl {
         private final String defaultName;
         private boolean nameSet = false;
+        private String name;
         
-        public NamedAnnotationVisitor(String defaultName) {
+        public NamedAnnotationVisitor(String defaultName, String name) {
             this.defaultName = defaultName;
+            this.name = name;
         }
 
         /* (non-Javadoc)
@@ -314,23 +269,6 @@ public class ClassVisitorImpl implements ClassVisitor {
         }
 
         /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
-         */
-        @Override
-        public AnnotationVisitor visitAnnotation(String name, String desc) {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
-         */
-        @Override
-        public AnnotationVisitor visitArray(String arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
          * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
          */
         @Override
@@ -339,16 +277,54 @@ public class ClassVisitorImpl implements ClassVisitor {
             
             name = defaultName;
         }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
-         */
-        @Override
-        public void visitEnum(String arg0, String arg1, String arg2) {
-            // TODO Auto-generated method stub
-            
+        
+        private String getName() {
+            return name;
         }
         
+    }
+    
+    private class MethodVisitorImpl extends AbstractMethodVisitorImpl {
+        private final DescriptorImpl asAFactoryDI;
+        private NamedAnnotationVisitor factoryName;
+        
+        private MethodVisitorImpl(DescriptorImpl asAFactoryDI) {
+            this.asAFactoryDI = asAFactoryDI; 
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.MethodVisitor#visitAnnotation(java.lang.String, boolean)
+         */
+        @Override
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            if (!desc.startsWith("L")) return null;
+            
+            String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
+            if (utilities.isClassAScope(searchHere, loadQualifierName)) {
+                asAFactoryDI.setScope(loadQualifierName);
+            }
+            else if (utilities.isClassAQualifier(searchHere, loadQualifierName)) {
+                qualifiers.add(loadQualifierName);
+                
+                if (Named.class.getName().equals(loadQualifierName)) {
+                    factoryName = new NamedAnnotationVisitor(getDefaultName(), null);
+                    return factoryName;
+                }
+            }
+            
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.MethodVisitor#visitEnd()
+         */
+        @Override
+        public void visitEnd() {
+            if (factoryName != null && factoryName.getName() != null) {
+                asAFactoryDI.setName(factoryName.getName());
+            }
+            
+        }        
     }
     
     /**
@@ -357,8 +333,8 @@ public class ClassVisitorImpl implements ClassVisitor {
      * @return The descriptor generated by this visitor, or null if the
      * class was not annotated with &#64;Service
      */
-    public DescriptorImpl getGeneratedDescriptor() {
-        return generatedDescriptor;
+    public LinkedList<DescriptorImpl> getGeneratedDescriptor() {
+        return generatedDescriptors;
     }
 
 }

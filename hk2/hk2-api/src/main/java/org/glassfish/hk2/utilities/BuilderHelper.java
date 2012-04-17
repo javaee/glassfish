@@ -175,10 +175,6 @@ public class BuilderHelper {
 	    
 	    DescriptorBuilder db = link(implementationClass, !isFactory);
 	    
-	    if (isFactory) {
-	        db = db.to(Factory.class);
-	    }
-	    
 	    return db;
 	}
     
