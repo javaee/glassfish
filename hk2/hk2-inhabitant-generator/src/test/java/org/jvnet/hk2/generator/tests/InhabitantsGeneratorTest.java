@@ -74,10 +74,10 @@ public class InhabitantsGeneratorTest {
     private final static File OUTJAR_FILE = new File("outgendir.jar");
     
     private final static String META_INF_NAME = "META-INF";
-    private final static String INHABITANTS = "inhabitants";
+    private final static String INHABITANTS = "hk2-locator";
     private final static String DEFAULT = "default";
     
-    private final static String ZIP_FILE_INHABITANT_NAME = "META-INF/inhabitants/default";
+    private final static String ZIP_FILE_INHABITANT_NAME = "META-INF/hk2-locator/default";
     
     private final static String MAVEN_CLASSES_DIR = "test-classes";
     

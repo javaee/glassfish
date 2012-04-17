@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.generator.maven;
 
+import java.io.File;
 import java.util.LinkedList;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -76,6 +77,11 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
         
         arguments.add(HabitatGenerator.FILE_ARG);
         arguments.add(outputDirectory);
+        
+        File output = new File(outputDirectory);
+        if (!output.exists()) {
+            return;
+        }
         
         if (verbose) {
             arguments.add(HabitatGenerator.VERBOSE_ARG);
