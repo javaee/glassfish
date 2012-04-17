@@ -39,10 +39,24 @@
  */
 package org.jvnet.hk2.generator.tests;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+
+import javax.inject.Singleton;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.generator.HabitatGenerator;
@@ -63,7 +77,66 @@ public class InhabitantsGeneratorTest {
     private final static String INHABITANTS = "inhabitants";
     private final static String DEFAULT = "default";
     
+    private final static String ZIP_FILE_INHABITANT_NAME = "META-INF/inhabitants/default";
+    
     private final static String MAVEN_CLASSES_DIR = "test-classes";
+    
+    private final static Set<DescriptorImpl> EXPECTED_DESCRIPTORS = new HashSet<DescriptorImpl>();
+    
+    static {
+        {
+            // This is the Factory that should be generated
+            DescriptorImpl envFactory = new DescriptorImpl();
+            envFactory.setImplementation("org.glassfish.examples.ctm.EnvironmentFactory");
+            envFactory.addAdvertisedContract("org.glassfish.examples.ctm.EnvironmentFactory");
+            envFactory.addAdvertisedContract("org.glassfish.hk2.api.Factory");
+            envFactory.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(envFactory);
+        }
+        
+        {
+            // This is the class that the Factory produces
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation("org.glassfish.examples.ctm.EnvironmentFactory");
+            envItself.addAdvertisedContract("org.glassfish.examples.ctm.Environment");
+            envItself.setScope("org.glassfish.examples.ctm.TenantScoped");
+            envItself.setDescriptorType(DescriptorType.FACTORY);
+        
+            EXPECTED_DESCRIPTORS.add(envItself);
+        }
+        
+        {
+            // This is the class that implements the Context
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.glassfish.examples.ctm.TenantScopedContext");
+            di.addAdvertisedContract("org.glassfish.examples.ctm.TenantScopedContext");
+            di.addAdvertisedContract("org.glassfish.hk2.api.Context");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
+        
+        {
+            // This is the service provider engine
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.glassfish.examples.ctm.ServiceProviderEngine");
+            di.addAdvertisedContract("org.glassfish.examples.ctm.ServiceProviderEngine");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
+        
+        {
+            // This is the tenant manager
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.glassfish.examples.ctm.TenantManager");
+            di.addAdvertisedContract("org.glassfish.examples.ctm.TenantManager");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
+    }
     
     private File gendirDirectory;
     private File gendirJar;
@@ -92,12 +165,40 @@ public class InhabitantsGeneratorTest {
         inhabitantsDirectory = new File(metaInfFile, INHABITANTS);
     }
     
+    private Set<DescriptorImpl> getAllDescriptorsFromInputStream(InputStream is) throws IOException {
+        BufferedReader pr = new BufferedReader(new InputStreamReader(is));
+        
+        Set<DescriptorImpl> retVal = new HashSet<DescriptorImpl>();
+        while (pr.ready()) {
+            DescriptorImpl di = new DescriptorImpl();
+            
+            if (!di.readObject(pr)) {
+                continue;
+            }
+            
+            retVal.add(di);
+        }
+        
+        return retVal;
+    }
+    
+    private void checkDescriptors(Set<DescriptorImpl> dis) {
+        for (DescriptorImpl di : dis) {
+            Assert.assertTrue("Did not find " + di + " in the expected descriptors", EXPECTED_DESCRIPTORS.contains(di));
+        }
+        
+        
+        Assert.assertEquals("Expecting " + EXPECTED_DESCRIPTORS.size() + " descriptors, but only got " + dis.size(),
+                EXPECTED_DESCRIPTORS.size(), dis.size());
+    }
     
     /**
      * Tests generating into a directory
+     * @throws IOException 
+     * @throws FileNotFoundException 
      */
     @Test
-    public void testDefaultDirectoryGeneration() {
+    public void testDefaultDirectoryGeneration() throws IOException {
         String argv[] = new String[2];
         
         argv[0] = FILE_ARGUMENT;
@@ -115,6 +216,11 @@ public class InhabitantsGeneratorTest {
             
             Assert.assertTrue("did not generate " + defaultOutput.getAbsolutePath(),
                     defaultOutput.exists());
+            
+            Set<DescriptorImpl> generatedImpls = getAllDescriptorsFromInputStream(
+                    new FileInputStream(defaultOutput));
+            
+            checkDescriptors(generatedImpls);
         }
         finally {
             // The test should be clean
@@ -124,9 +230,10 @@ public class InhabitantsGeneratorTest {
     
     /**
      * Tests generating into a directory
+     * @throws IOException On failure
      */
     @Test
-    public void testDefaultJarGeneration() {
+    public void testDefaultJarGeneration() throws IOException {
         String argv[] = new String[4];
         
         argv[0] = FILE_ARGUMENT;
@@ -149,6 +256,16 @@ public class InhabitantsGeneratorTest {
             
             Assert.assertTrue("did not generate JAR " + OUTJAR_FILE.getAbsolutePath(),
                     OUTJAR_FILE.exists());
+            
+            JarFile jar = new JarFile(OUTJAR_FILE);
+            ZipEntry entry = jar.getEntry(ZIP_FILE_INHABITANT_NAME);
+            Assert.assertNotNull(entry);
+            
+            InputStream is = jar.getInputStream(entry);
+            
+            Set<DescriptorImpl> generatedImpls = getAllDescriptorsFromInputStream(is);
+            
+            checkDescriptors(generatedImpls);
         }
         finally {
             // The test should be clean

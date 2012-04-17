@@ -47,6 +47,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,6 +78,7 @@ public class GeneratorRunner {
      * This initializes the GeneratorRunner with the values needed to run
      * 
      * @param fileOrDirectory The fileOrDirectory to inspect for services
+     * @param outjarName The name of the jar file to create (can be the fileOrDirectory)
      * @param locatorName The name of the locator these files should be put into
      * @param verbose true if this should print information about progress
      */
@@ -106,7 +108,7 @@ public class GeneratorRunner {
         
         List<DescriptorImpl> allDescriptors;
         if (toInspect.isDirectory()) {
-            allDescriptors = findAllServicesFromDirectory(toInspect);
+            allDescriptors = findAllServicesFromDirectory(toInspect, toInspect);
             if (allDescriptors.isEmpty()) return;
             writeToDirectory(toInspect, allDescriptors);
         }
@@ -117,7 +119,7 @@ public class GeneratorRunner {
         
     }
     
-    private List<DescriptorImpl> findAllServicesFromDirectory(File directory) throws IOException {
+    private List<DescriptorImpl> findAllServicesFromDirectory(File directory, File parent) throws IOException {
         List<DescriptorImpl> retVal = new LinkedList<DescriptorImpl>();
         
         File subDirectories[] = directory.listFiles(new FileFilter() {
@@ -130,7 +132,7 @@ public class GeneratorRunner {
         });
         
         for (File subDirectory : subDirectories) {
-            retVal.addAll(findAllServicesFromDirectory(subDirectory));
+            retVal.addAll(findAllServicesFromDirectory(subDirectory, parent));
         }
         
         // Now get all the class files from this directory itself
@@ -145,10 +147,8 @@ public class GeneratorRunner {
         for (File candidate : candidates) {
             FileInputStream fis = new FileInputStream(candidate);
                 
-            DescriptorImpl di = createDescriptorIfService(fis);
-            if (di != null) {
-                retVal.add(di);
-            }
+            LinkedList<DescriptorImpl> dis = createDescriptorIfService(fis, parent);
+            retVal.addAll(dis);
         }
         
         return retVal;
@@ -236,6 +236,11 @@ public class GeneratorRunner {
         
         PrintWriter pw = new PrintWriter(fos);
         
+        pw.println("#");
+        pw.println("# Generated on " + new Date());
+        pw.println("#");
+        pw.println();
+        
         for (DescriptorImpl di : descriptors) {
             di.writeObject(pw);
         }
@@ -258,21 +263,17 @@ public class GeneratorRunner {
             String entryName = entry.getName();
             if (!entryName.endsWith(DOT_CLASS)) continue;
             
-            DescriptorImpl di = createDescriptorIfService(jarFile.getInputStream(entry));
-            if (di != null) {
-                retVal.add(di);
-            }
-            
-            
+            LinkedList<DescriptorImpl> dis = createDescriptorIfService(jarFile.getInputStream(entry), jar);
+            retVal.addAll(dis);
         }
         
         return retVal;
     }
     
-    private DescriptorImpl createDescriptorIfService(InputStream is) throws IOException {
+    private LinkedList<DescriptorImpl> createDescriptorIfService(InputStream is, File searchHere) throws IOException {
         ClassReader reader = new ClassReader(is);
         
-        ClassVisitorImpl cvi = new ClassVisitorImpl(verbose);
+        ClassVisitorImpl cvi = new ClassVisitorImpl(verbose, searchHere);
         
         reader.accept(cvi, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         

@@ -37,55 +37,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.arrays;
+package org.jvnet.hk2.generator.internal;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.FactoryDescriptors;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.jvnet.hk2.internal.Utilities;
+import org.objectweb.asm.AnnotationVisitor;
 
 /**
+ * This just makes the main-line code less messy
+ * 
  * @author jwells
  *
  */
-public class ArraysModule implements TestModule {
+public abstract class AbstractAnnotationVisitorImpl implements AnnotationVisitor {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
      */
     @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(ArrayOfIntFactory.class).
-                to(int[].class).
-                in(PerLookup.class.getName()).
-                buildFactory(Singleton.class.getName()));
-        
-        config.bind(BuilderHelper.link(ArrayOfListFactory.class).
-                to(List[].class).
-                in(PerLookup.class.getName()).
-                buildFactory(Singleton.class.getName()));
-        
-        config.bind(BuilderHelper.link(ArrayOfMapFactory.class).
-                to(Map[].class).
-                in(PerLookup.class.getName()).
-                buildFactory(Singleton.class.getName()));
-        
-        config.bind(BuilderHelper.link(ArrayOfSimpleServiceFactory.class).
-                to(SimpleService[].class).
-                in(PerLookup.class.getName()).
-                buildFactory(Singleton.class.getName()));
-        
-        config.addActiveDescriptor(ArrayInjectee.class);
+    public AnnotationVisitor visitAnnotation(String arg0, String arg1) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
+     */
+    @Override
+    public AnnotationVisitor visitArray(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
+     */
+    @Override
+    public void visitEnd() {
+        // TODO Auto-generated method stub
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
+     */
+    @Override
+    public void visitEnum(String arg0, String arg1, String arg2) {
+        // TODO Auto-generated method stub
 
     }
 
