@@ -53,19 +53,20 @@ public class ServiceLocatorHk2MainTest {
 
 	@Configuration
 	public static Option[] configuration() {
+		String projectVersion = System.getProperty("project.version");
 		return options(felix(),
 				systemPackage("sun.misc"),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("osgi-adapter")),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("core")),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("auto-depends")),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-api")),				
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-locator")),
-				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId("javax.inject")),
-				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId("cglib")),
-				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId("asm-all-repackaged")),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("osgi-resource-locator")),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("class-model")),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("test-module-startup")),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("osgi-adapter").version(projectVersion)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("core").version(projectVersion)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("auto-depends").version(projectVersion)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-api").version(projectVersion)),				
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-locator").version(projectVersion)),
+				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId("javax.inject").version(projectVersion)),
+				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId("cglib").version(projectVersion)),
+				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId("asm-all-repackaged").version(projectVersion)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("osgi-resource-locator").version("1.0.1")),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("class-model").version(projectVersion)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("test-module-startup").version(projectVersion)),
 				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level")
                 .value("DEBUG"), logProfile(), cleanCaches() 
                // systemProperty("com.sun.enterprise.hk2.repositories").value(cacheDir.toURI().toString()),
