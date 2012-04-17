@@ -185,7 +185,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 */
 	public synchronized void addAdvertisedContract(String addMe) {
 	    if (addMe == null) return;
-	    ReflectionHelper.checkCharacters(name);
 	    contracts.add(addMe);
 	}
 	
@@ -209,7 +208,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param implementation The implementation this descriptor should have
 	 */
     public synchronized void setImplementation(String implementation) {
-        ReflectionHelper.checkCharacters(implementation);
         this.implementation = implementation;
     }
 
@@ -236,7 +234,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param name The name for this descriptor
 	 */
 	public synchronized void setName(String name) {
-	    ReflectionHelper.checkCharacters(name);
 	    this.name = name;
 	}
 
@@ -252,7 +249,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 */
 	public synchronized void addQualifier(String addMe) {
 	    if (addMe == null) return;
-	    ReflectionHelper.checkCharacters(addMe);
 	    qualifiers.add(addMe);
 	}
 	
@@ -293,7 +289,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param value The value to add.  May not be null
 	 */
 	public synchronized void addMetadata(String key, String value) {
-	    ReflectionHelper.checkCharacters(key, value);
 	    ReflectionHelper.addMetadata(metadatas, key, value);
 	}
 	
@@ -545,9 +540,10 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * writeObject.  Useful for reading from external data files
 	 * 
 	 * @param in The reader to read from
+	 * @return true if a descriptor was read, false otherwise.  This is useful if reading a file that might have comments at the end
 	 * @throws IOException on failure
 	 */
-	public void readObject(BufferedReader in) throws IOException {
+	public boolean readObject(BufferedReader in) throws IOException {
         String line = in.readLine();
         
         boolean sectionStarted = false;
@@ -572,7 +568,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
             else {
                 if (trimmed.length() <= 0) {
                     // A blank line indicates end of object
-                    return;
+                    return true;
                 }
                 
                 int equalsIndex = trimmed.indexOf('=');
@@ -616,5 +612,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
             line = in.readLine();
         }
         
+        return sectionStarted;
     }
 }
