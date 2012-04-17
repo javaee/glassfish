@@ -53,7 +53,6 @@
     <packaging>hk2-jar</packaging>
     <name>HK2 config types</name>
     <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>

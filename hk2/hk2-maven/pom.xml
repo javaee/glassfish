@@ -57,9 +57,6 @@
   <name>Module system maven support</name>
   <description>Maven2 plugin for developing</description>
 
-  <build>
-    <sourceDirectory>src/main/java</sourceDirectory>
-  </build>
   <dependencies>
     <dependency>
       <groupId>org.glassfish.hk2</groupId>
