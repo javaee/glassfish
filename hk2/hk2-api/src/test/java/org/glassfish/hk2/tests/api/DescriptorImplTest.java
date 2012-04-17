@@ -103,7 +103,7 @@ public class DescriptorImplTest {
         Assert.assertTrue(asString.contains("implementation=null"));
         Assert.assertTrue(asString.contains("contracts={}"));
         Assert.assertTrue(asString.contains("scope=org.glassfish.hk2.api.PerLookup"));
-        Assert.assertTrue(asString.contains("metadata=[]"));
+        Assert.assertTrue(asString.contains("metadata="));
         Assert.assertTrue(asString.contains("descriptorType=CLASS"));
     }
     
@@ -472,6 +472,9 @@ public class DescriptorImplTest {
         Assert.assertNull(key1Values);
     }
     
+    private final static String KEY_WITH_ESCAPED_CHARACTERS = "escapedCharacters";
+    private final static String ESCAPED_VALUE = "}{,[\\]\r[\n:;=\\";
+    
     /**
      * Tests the read and write external form of DescriptorImpl
      * 
@@ -483,15 +486,21 @@ public class DescriptorImplTest {
         DescriptorImpl writeB = BuilderHelper.createDescriptorFromClass(WriteServiceB.class);
         writeB.addMetadata(FullDescriptorImpl.FULL_KEY1, FullDescriptorImpl.FULL_VALUE1);
         writeB.addMetadata(FullDescriptorImpl.FULL_KEY2, FullDescriptorImpl.FULL_VALUE1);
+        writeB.addMetadata(KEY_WITH_ESCAPED_CHARACTERS, ESCAPED_VALUE);
         writeB.addMetadata(FullDescriptorImpl.FULL_KEY2, FullDescriptorImpl.FULL_VALUE2);
         DescriptorImpl writeC = new DescriptorImpl();  // Write out a completely empty one
         
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(baos);
         
+        pw.println("# I can have a comment at the start of the file");
         writeA.writeObject(pw);
+        pw.println("# I can add a comment");
         writeB.writeObject(pw);
+        pw.println("# I can add a multi-line comment");
+        pw.println("# that has multiple lines");
         writeC.writeObject(pw);
+        pw.println("# I can add a comment and the end of the file");
         
         pw.close();
         baos.close();
@@ -503,7 +512,9 @@ public class DescriptorImplTest {
         while (br.ready()) {
             DescriptorImpl di = new DescriptorImpl();
             
-            di.readObject(br);
+            if (!di.readObject(br)) {
+                continue;
+            }
             
             if (lcv == 0) {
                 Assert.assertEquals(writeA, di);
@@ -533,7 +544,7 @@ public class DescriptorImplTest {
     public void testAddBadMetadata() {
         DescriptorImpl di = new DescriptorImpl();
         
-        di.addMetadata("innocuousKey", "a key with a bad character :");
+        di.addMetadata("innocuous=Key", "a key with a bad character :");
         
     }
 }

@@ -44,13 +44,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.inject.Named;
 import javax.inject.Qualifier;
@@ -65,6 +66,21 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 public class ReflectionHelper {
+    private final static HashSet<Character> ESCAPE_CHARACTERS = new HashSet<Character>();
+    private final static char ILLEGAL_CHARACTERS[] = {
+        '{' , '}', '[', ']', ':', ';', '=', ',', '\\'
+    };
+    private final static HashMap<Character, Character> REPLACE_CHARACTERS = new HashMap<Character, Character>();
+    
+    static {
+        for (char illegal : ILLEGAL_CHARACTERS) {
+            ESCAPE_CHARACTERS.add(illegal);
+        }
+        
+        REPLACE_CHARACTERS.put('\n', 'n');
+        REPLACE_CHARACTERS.put('\r', 'r');
+    }
+    
     /**
      * Given the type parameter gets the raw type represented
      * by the type, or null if this has no associated raw class
@@ -252,10 +268,10 @@ public class ReflectionHelper {
         for (Object writeMe : set) {
             if (first) {
                 first = false;
-                sb.append(writeMe.toString());
+                sb.append(escapeString(writeMe.toString()));
             }
             else {
-                sb.append("," + writeMe.toString());
+                sb.append("," + escapeString(writeMe.toString()));
             }
         }
         
@@ -273,42 +289,137 @@ public class ReflectionHelper {
      * @throws IOException On a failure
      */
     public static void readSet(String line, Collection<String> addToMe) throws IOException {
-        int startIndex = line.indexOf('{');
-        if (startIndex < 0) {
-            throw new IOException("Unknown set format, no initial { character : " + line);
-        }
+        char asChars[] = new char[line.length()];
+        line.getChars(0, line.length(), asChars, 0);
         
-        int finishIndex = line.indexOf('}', startIndex);
-        if (finishIndex < 0) {
-            throw new IOException("Unknown set format, no trailing } character : " + line);
-        }
-        
-        String csl = line.substring(startIndex + 1, finishIndex);
-        
-        StringTokenizer st = new StringTokenizer(csl, ",");
-        while (st.hasMoreTokens()) {
-            addToMe.add(st.nextToken());
-        }
+        internalReadSet(asChars, 0, addToMe);
     }
     
-    private static void readKeyStringListLine(String line, Map<String, List<String>> addToMe) throws IOException {
-        int equalsIndex = line.indexOf('=');
-        if (equalsIndex < 0) {
-            throw new IOException("Uknown key-string list format, no equals: " + line);
+    /**
+     * Writes a set in a way that can be read from an input stream as well.  The values in
+     * the set may not contain the characters "{},"
+     * 
+     * @param line The line to read
+     * @param addToMe The set to add the strings to
+     * @return The number of characters read until the end of the set
+     * @throws IOException On a failure
+     */
+    private static int internalReadSet(char asChars[], int startIndex, Collection<String> addToMe) throws IOException {
+        int dot = startIndex;
+        int startOfSet = -1;
+        while (dot < asChars.length) {
+            if (asChars[dot] == '{') {
+                startOfSet = dot;
+                dot++;
+                break;
+            }
+            dot++;
         }
         
-        String key = line.substring(0, equalsIndex);  // Do NOT include the equals
+        if (startOfSet == -1) {
+            throw new IOException("Unknown set format, no initial { character : " + new String(asChars));
+        }
         
-        String listValue = line.substring(equalsIndex + 1);
-        if (listValue.length() <= 0) return;
+        StringBuffer elementBuffer = new StringBuffer();
+        int endOfSet = -1;
+        while (dot < asChars.length) {
+            char dotChar = asChars[dot];
+            
+            if (dotChar == '}') {
+                addToMe.add(elementBuffer.toString());
+                
+                endOfSet = dot;
+                break;  // Done!
+            }
+            
+            if (dotChar == ',') {
+                // Terminating a single element
+                addToMe.add(elementBuffer.toString());
+                
+                elementBuffer = new StringBuffer();
+            }
+            else {
+                // This character is either an escape character or a real character
+                if (dotChar != '\\') {
+                    elementBuffer.append(dotChar);
+                }
+                else {
+                    // This is an escape character
+                    if (dot + 1 >= asChars.length) {
+                        // This is an error, escape at end of buffer
+                        break;
+                    }
+                    
+                    dot++;  // Moves it forward
+                    dotChar = asChars[dot];
+                    
+                    if (dotChar == 'n') {
+                        elementBuffer.append('\n');
+                    }
+                    else if (dotChar == 'r') {
+                        elementBuffer.append('\r');
+                    }
+                    else {
+                        elementBuffer.append(dotChar);
+                    }
+                }
+                
+            }
+            
+            dot++;
+        }
+        
+        if (endOfSet == -1) {
+            throw new IOException("Unknown set format, no ending } character : " + new String(asChars));
+        }
+        
+        return dot - startIndex;
+    }
+    
+    private static int readKeyStringListLine(char asChars[], int startIndex, Map<String, List<String>> addToMe) throws IOException {
+        int dot = startIndex;
+        
+        int equalsIndex = -1;
+        while (dot < asChars.length) {
+            char dotChar = asChars[dot];
+            
+            if (dotChar == '=') {
+                equalsIndex = dot;
+                break;
+            }
+            
+            dot++;
+        }
+        
+        if (equalsIndex < 0) {
+            throw new IOException("Uknown key-string list format, no equals: " + new String(asChars));
+        }
+        
+        String key = new String(asChars, startIndex, (equalsIndex - startIndex));  // Does not include the =
+        dot++;  // Move it past the equals
+        
+        if (dot >= asChars.length) {
+            // Key with no values, this is illegal
+            throw new IOException("Found a key with no value, " + key + " in line " + new String(asChars));
+            
+        }
         
         LinkedList<String> listValues = new LinkedList<String>();
         
-        readSet(listValue, listValues);
-        
+        int addOn = internalReadSet(asChars, dot, listValues);
         if (!listValues.isEmpty()) {
             addToMe.put(key, listValues);
         }
+        
+        dot += addOn + 1;
+        if (dot < asChars.length) {
+            char skipComma = asChars[dot];
+            if (skipComma == ',') {
+                dot++;
+            }
+        }
+        
+        return dot - startIndex;  // The +1 gets us to the next character in the stream
     }
     
     /**
@@ -318,22 +429,40 @@ public class ReflectionHelper {
      * @throws IOException On a failure
      */
     public static void readMetadataMap(String line, Map<String, List<String>> addToMe) throws IOException {
-        int startIndex = line.indexOf('[');
-        if (startIndex < 0) {
-            throw new IOException("Unknown metadata format, no initial [ character : " + line);
+        char asChars[] = new char[line.length()];
+        line.getChars(0, line.length(), asChars, 0);
+        
+        int dot = 0;
+        while (dot < asChars.length) {
+            int addMe = readKeyStringListLine(asChars, dot, addToMe);
+            dot += addMe;
+        }
+    }
+    
+    private static String escapeString(String escapeMe) {
+        char asChars[] = new char[escapeMe.length()];
+        
+        escapeMe.getChars(0, escapeMe.length(), asChars, 0);
+        
+        StringBuffer sb = new StringBuffer();
+        for (int lcv = 0; lcv < asChars.length; lcv++) {
+            char candidateChar = asChars[lcv];
+            
+            if (ESCAPE_CHARACTERS.contains(candidateChar)) {
+                sb.append('\\');
+                sb.append(candidateChar);
+            }
+            else if (REPLACE_CHARACTERS.containsKey(candidateChar)) {
+                char replaceWithMe = REPLACE_CHARACTERS.get(candidateChar);
+                sb.append('\\');
+                sb.append(replaceWithMe);
+            }
+            else {
+                sb.append(candidateChar);
+            }
         }
         
-        int endIndex = line.indexOf(']', startIndex);
-        if (endIndex < 0) {
-            throw new IOException("Unknown set format, no trailing ] character : " + line);
-        }
-        
-        String csl = line.substring(startIndex + 1, endIndex);
-        
-        StringTokenizer tokenizer = new StringTokenizer(csl, ":");
-        while (tokenizer.hasMoreTokens()) {
-            readKeyStringListLine(tokenizer.nextToken(), addToMe);
-        }
+        return sb.toString();
     }
     
     private static String writeList(List<String> list) {
@@ -343,10 +472,10 @@ public class ReflectionHelper {
         for (String writeMe : list) {
             if (first) {
                 first = false;
-                sb.append(writeMe.toString());
+                sb.append(escapeString(writeMe.toString()));
             }
             else {
-                sb.append("," + writeMe.toString());
+                sb.append("," + escapeString(writeMe.toString()));
             }
         }
         
@@ -362,22 +491,20 @@ public class ReflectionHelper {
      * @return The metadata in an externalizable format
      */
     public static String writeMetadata(Map<String, List<String>> metadata) {
-        StringBuffer sb = new StringBuffer("[");
+        StringBuffer sb = new StringBuffer();
         
         boolean first = true;
         for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
             if (first) {
                 first = false;
-                sb.append(entry.getKey() + "=");
+                sb.append(entry.getKey() + '=');
             }
             else {
-                sb.append(":" + entry.getKey() + "=");
+                sb.append("," + entry.getKey() + '=');
             }
             
             sb.append(writeList(entry.getValue()));
         }
-        
-        sb.append("]");
         
         return sb.toString();
     }
@@ -432,6 +559,10 @@ public class ReflectionHelper {
      */
     public static void addMetadata(Map<String, List<String>> metadatas, String key, String value) {
         if (key == null || value == null) return;
+        if (key.indexOf('=') >= 0) {
+            throw new IllegalArgumentException("The key field may not have an = in it:" + key);
+        }
+        
         List<String> inner = metadatas.get(key);
         if (inner == null) {
             inner = new LinkedList<String>();
@@ -487,12 +618,13 @@ public class ReflectionHelper {
         
         for (Map.Entry<String, List<String>> entry : copyMe.entrySet()) {
             String key = entry.getKey();
-            checkCharacters(key);
+            if (key.indexOf('=') >= 0) {
+                throw new IllegalArgumentException("The key field may not have an = in it:" + key);
+            }
             
             List<String> values = entry.getValue();
             LinkedList<String> valuesCopy = new LinkedList<String>();
             for (String value : values) {
-                checkCharacters(value);
                 valuesCopy.add(value);
             }
             
@@ -500,29 +632,5 @@ public class ReflectionHelper {
         }
         
         return retVal;
-    }
-    
-    private final static char ILLEGAL_CHARACTERS[] = {
-        '{' , '}', '[', ']', ':', ';', '='
-    };
-    
-    /**
-     * Checks that no values come in that might mess up the parsing of the descriptor
-     * 
-     * @param checkMes The values to check
-     */
-    public static void checkCharacters(String... checkMes) {
-        if (checkMes == null) return;
-        
-        for (String checkMe : checkMes) {
-            if (checkMe == null) continue;
-            
-            for (char c : ILLEGAL_CHARACTERS) {
-                if (checkMe.indexOf(c) >= 0) {
-                    throw new IllegalArgumentException("value \"" + checkMe + "\" may not contain the characters \"{}[],:;=\"");
-                    
-                }
-            }
-        }
     }
 }
