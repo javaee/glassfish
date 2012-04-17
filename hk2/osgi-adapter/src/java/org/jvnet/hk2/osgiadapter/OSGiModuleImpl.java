@@ -43,11 +43,13 @@ package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
 import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.InhabitantsParser;
 import com.sun.enterprise.module.*;
 
 import java.io.IOException;
@@ -346,6 +348,7 @@ public class OSGiModuleImpl implements Module {
      * Parses all the inhabitants descriptors of the given name in this module.
      */
     /* package */ void parseInhabitants(String name, InhabitantsParser parser) throws IOException {
+    	/*
         Holder<ClassLoader> holder = new Holder<ClassLoader>() {
             public ClassLoader get() {
                 //doprivileged needed for running with SecurityManager
@@ -389,9 +392,35 @@ public class OSGiModuleImpl implements Module {
                 return ret;
             }
         };
+        */
+    	
+        HK2Loader hk2Loader = new HK2Loader() {
 
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Class<?> loadClass(final String className)
+					throws MultiException {
+                start();
+				return (Class<?>) AccessController.doPrivileged(new PrivilegedAction() {
+					public java.lang.Object run() {
+						try {
+							return bundle.loadClass(className);
+						} catch (Throwable e) {
+							logger.logp(Level.SEVERE, "OSGiModuleImpl",
+									"loadClass",
+									"Exception in module " + bundle.toString()
+											+ " : " + e.toString());
+							throw new MultiException(e);
+						}
+					}
+				});
+
+			}
+        	
+        };
+        
         for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name))
-            parser.parse(d.createScanner(),holder);
+            parser.parse(d.createScanner(),hk2Loader);
     }
 
     /**

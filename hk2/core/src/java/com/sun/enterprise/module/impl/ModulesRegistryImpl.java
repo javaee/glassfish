@@ -44,7 +44,6 @@ import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.ModuleId;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -54,6 +53,8 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.net.URL;
+
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 
 /**
  * @author Jerome Dochez

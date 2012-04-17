@@ -44,7 +44,7 @@ package org.jvnet.hk2.osgiadapter;
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
-import com.sun.hk2.component.InhabitantsParser;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 

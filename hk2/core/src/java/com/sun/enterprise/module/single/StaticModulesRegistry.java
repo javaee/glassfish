@@ -46,6 +46,10 @@ import java.io.File;
 import java.util.List;
 import java.util.Properties;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitants;
@@ -78,22 +82,27 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
     }
 
     @Override
-    protected void populateConfig(Habitat habitat) {
+    protected void populateConfig(ServiceLocator habitat) {
         // do nothing...
     }
 
     @Override                         
-    public Habitat createHabitat(String name) throws ComponentException {
+    public ServiceLocator createServiceLocator(String name) throws ComponentException {
 
         StartupContext sc = startupContext;
-        Habitat habitat = super.newHabitat();
+        ServiceLocator serviceLocator = super.newServiceLocator();
 
         if (startupContext==null) {
             sc = new StartupContext(new Properties());
         }
-        super.createHabitat("default", habitat);
-        habitat.add(Inhabitants.create(sc));
-        return habitat;
+        super.createServiceLocator("default", serviceLocator);
+        
+        DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        config.bind(BuilderHelper.createConstantDescriptor(sc));
+        config.commit();
+        
+        return serviceLocator;
     }
 
 }

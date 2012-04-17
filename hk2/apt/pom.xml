@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>auto-depends</artifactId>
-            <version>${project.parent.version}</version>
+            <version>${project.version}</version>
         </dependency>
    		<dependency>
         	<groupId>org.glassfish.hk2</groupId>

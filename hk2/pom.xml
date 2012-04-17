@@ -282,8 +282,8 @@
         <module>hk2-locator</module>
         <module>hk2-inhabitant-generator</module>
     	<module>class-model</module>
-        <module>auto-depends</module>
         <module>apt</module>
+        <module>auto-depends</module>
         <module>core</module>
         <module>config</module>
         <module>config-generator</module>
@@ -292,6 +292,7 @@
         <module>hk2-maven</module>
         <module>hk2-maven-plugin</module>
         <module>osgi-adapter</module>
+        <module>osgi-adapter-tests</module>
         <module>dependency-verifier</module>
         <module>dependency-visualizer</module>
         <module>osgiversion-maven-plugin</module>
@@ -325,8 +326,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>auto-depends-tests</module>
-                <module>apt-test</module>
+                <!--module>apt-test</module-->
                 <module>test-harness</module>
                 <module>hk2</module>
                 <module>config-types</module>

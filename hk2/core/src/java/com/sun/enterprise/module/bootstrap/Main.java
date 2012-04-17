@@ -51,8 +51,18 @@ import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 
-import com.sun.hk2.component.InhabitantParser;
-import com.sun.hk2.component.InhabitantsParser;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.inhabitants.InhabitantParser;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.*;
 
 import java.io.File;
@@ -61,6 +71,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.jar.Attributes;
@@ -69,6 +80,8 @@ import java.util.jar.Manifest;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.text.AbstractDocument;
 
 /**
  * CLI entry point that will setup the module subsystem and delegate the
@@ -300,16 +313,16 @@ public class Main {
      * @return
      *      the entry point to all the components in this newly launched GlassFish.
      */
-    public Habitat launch(ModulesRegistry registry, StartupContext context) throws BootException {
+    public ServiceLocator launch(ModulesRegistry registry, StartupContext context) throws BootException {
         return launch(registry, null, context);
     }
 
     private static final String HABITAT_NAME = "default"; // TODO: take this as a parameter
 
-    public Habitat launch(ModulesRegistry registry, String mainModuleName, StartupContext context) throws BootException {
-        Habitat habitat = createHabitat(registry, context);
-        launch(registry, habitat,mainModuleName,context);
-        return habitat;
+    public ServiceLocator launch(ModulesRegistry registry, String mainModuleName, StartupContext context) throws BootException {
+    	ServiceLocator serviceLocator = createServiceLocator(registry, context);
+        launch(registry, serviceLocator,mainModuleName,context);
+        return serviceLocator;
     }
 
     /**
@@ -323,9 +336,9 @@ public class Main {
      *      startup context instance
      * @return The ModuleStartup service
      */
-    public ModuleStartup launch(ModulesRegistry registry, Habitat habitat, String mainModuleName, StartupContext context) throws BootException {
+    public ModuleStartup launch(ModulesRegistry registry, ServiceLocator serviceLocator, String mainModuleName, StartupContext context) throws BootException {
         // now go figure out the start up service
-        ModuleStartup startupCode = findStartupService(registry, habitat, mainModuleName, context);
+        ModuleStartup startupCode = findStartupService(registry, serviceLocator, mainModuleName, context);
         launch(startupCode, context);
         return startupCode;
     }
@@ -339,11 +352,9 @@ public class Main {
      * @return
      * @throws BootException
      */
-    public ModuleStartup findStartupService(ModulesRegistry registry, BaseServiceLocator serviceLocator, String mainModuleName, StartupContext context) throws BootException {
+    public ModuleStartup findStartupService(ModulesRegistry registry, ServiceLocator serviceLocator, String mainModuleName, StartupContext context) throws BootException {
         ModuleStartup startupCode=null;
         final Module mainModule;
-
-        Habitat habitat = (Habitat) serviceLocator;
         
         if(mainModuleName!=null) {
             // instantiate the main module, this is the entry point of the application
@@ -379,7 +390,7 @@ public class Main {
                     }
                 });
                 targetClass = moduleClassLoader.loadClass(targetClassName).asSubclass(ModuleStartup.class);
-                startupCode = habitat.getComponent(targetClass);
+                startupCode = serviceLocator.getService(targetClass);
             } catch (ClassNotFoundException e) {
                 throw new BootException("Unable to load component of type " + targetClassName,e);
             } catch (ComponentException e) {
@@ -394,31 +405,22 @@ public class Main {
                 });
             }
         } else {
-            Collection<Inhabitant<ModuleStartup>> startups = habitat.getInhabitantsByContract(ModuleStartup.class);
-
+           // Collection<Inhabitant<ModuleStartup>> startups = habitat.getInhabitantsByContract(ModuleStartup.class);
+        	List<ModuleStartup> startups = serviceLocator.getAllServices(ModuleStartup.class);
+        	
             if(startups.isEmpty())
                 throw new BootException("No module has a ModuleStartup implementation");
             if(startups.size()>1) {
                 // maybe the user specified a main
                 String mainServiceName = context.getPlatformMainServiceName();
-                for (Inhabitant<? extends ModuleStartup> startup : startups) {
-                    Collection<String> regNames = Inhabitants.getNamesFor(startup, ModuleStartup.class.getName());
-                    if (regNames.isEmpty() && mainServiceName==null) {
-                        startupCode = startup.get();
-                    } else {
-                        for (String regName : regNames) {
-                            if (regName.equals(mainServiceName)) {
-                                startupCode = startup.get();
-                            }
-                        }
-                    }
-
-                }
+ 
+                startupCode = serviceLocator.getService(ModuleStartup.class, mainServiceName);
+                
                 if (startupCode==null) {
                     if (mainServiceName==null) {
-                        Iterator<Inhabitant<ModuleStartup>> itr = startups.iterator();
-                        ModuleStartup a = itr.next().get();
-                        ModuleStartup b = itr.next().get();
+                        Iterator<ModuleStartup> itr = startups.iterator();
+                        ModuleStartup a = itr.next();
+                        ModuleStartup b = itr.next();
                         Module am = registry.find(a.getClass());
                         Module bm = registry.find(b.getClass());
                         throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
@@ -427,27 +429,42 @@ public class Main {
                     }
                 }
             } else {
-                startupCode = startups.iterator().next().get();
+                startupCode = startups.iterator().next();
             }
             mainModule = registry.find(startupCode.getClass());
         }
 
-        habitat.addIndex(Inhabitants.create(startupCode),
-                ModuleStartup.class.getName(), habitat.DEFAULT_NAME);
+        // TODO: What is this?
+        // habitat.addIndex(Inhabitants.create(startupCode),
+        //        ModuleStartup.class.getName(), habitat.DEFAULT_NAME);
         mainModule.setSticky(true);
         return startupCode;
     }
 
-    public Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+    public ServiceLocator createServiceLocator(ModulesRegistry registry, StartupContext context) throws BootException {
         // set the parent class loader before we start loading modules
         setParentClassLoader(context, registry);
 
         // create a habitat and initialize them
-        Habitat habitat = registry.newHabitat();
-        habitat.add(new ExistingSingletonInhabitant<StartupContext>(context));
-        habitat.add(new ExistingSingletonInhabitant<Logger>(Logger.global));
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(HABITAT_NAME);
+        
+        DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(context));
+        config.commit();
+        config = dcs.createDynamicConfiguration();
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(Logger.global));
+        config.commit();
+        config = dcs.createDynamicConfiguration();
         // the root registry must be added as other components sometimes inject it
-        habitat.add(new ExistingSingletonInhabitant(ModulesRegistry.class, registry));
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(registry));
+        config.commit();
+        config = dcs.createDynamicConfiguration();
+
+        config.addActiveDescriptor(DefaultErrorService.class);
+        config.commit();
+        
         final ClassLoader oldCL = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
             @Override
             public ClassLoader run() {
@@ -458,7 +475,7 @@ public class Main {
         });
 
         try {
-            registry.createHabitat(HABITAT_NAME, createInhabitantsParser(habitat));
+            registry.createServiceLocator(HABITAT_NAME, createInhabitantsParser(serviceLocator));
         } finally {
             AccessController.doPrivileged(new PrivilegedAction<Object>() {
                 @Override
@@ -468,14 +485,14 @@ public class Main {
                 }
             });
         }
-        return habitat;
+        return serviceLocator;
     }
 
     /**
      * Creates {@link InhabitantsParser} to fill in {@link Habitat}.
      * Override for customizing the behavior.
      */
-    protected InhabitantsParser createInhabitantsParser(Habitat habitat) {
+    protected InhabitantsParser createInhabitantsParser(ServiceLocator habitat) {
         return new InhabitantsParser(habitat);
     }
 

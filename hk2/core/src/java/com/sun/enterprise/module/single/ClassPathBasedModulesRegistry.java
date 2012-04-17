@@ -47,7 +47,6 @@ import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.common_impl.DefaultModuleDefinition;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +54,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 
 /**
  * Implements a modules registry based on a class-path style of module
@@ -132,17 +135,24 @@ public class ClassPathBasedModulesRegistry extends ModulesRegistryImpl {
     public void parseInhabitants(Module module, String name, InhabitantsParser inhabitantsParser)
             throws IOException {
 
-        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-            public ClassLoader get() {
-                return cLoader;
-            }
-        };
+        HK2Loader loader = new HK2Loader() {
 
+			@Override
+			public Class<?> loadClass(String className) throws MultiException {
+				try {
+				  return cLoader.loadClass(className);
+				} catch (ClassNotFoundException cnfe) {
+					throw new MultiException(cnfe);
+				}
+			}
+        	
+        };
+        
         for (Module m : modules) {
             // each module can have a different way of representing the inhabitant meta-data
             // some may use the inhabitant file, others may rely on introspection 
             for (InhabitantsDescriptor d :m.getMetadata().getHabitats(name))
-                inhabitantsParser.parse(d.createScanner(), holder);
+                inhabitantsParser.parse(d.createScanner(), loader);
         }
     }
 

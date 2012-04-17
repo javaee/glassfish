@@ -58,7 +58,7 @@
     <!-- This plugin is used during build of all OSGi artifacts in HK2 like core,
          config, auto-depends, etc. If we make this part of hk2-maven-plugin,
          it will cause a circular dependency like this:
-         hk2-maven-plugin -> hk2-maven -> hk2-core -> hk2-maven-plugin.
+         hk2-maven-plugin -> hk2-maven -> core -> hk2-maven-plugin.
          So, this is separated from hk2-maven-plugin.
          This plugin is used to set a predefined property called
          project.osgi.version which can then be used in pom.xmls.

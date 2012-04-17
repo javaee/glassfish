@@ -42,11 +42,13 @@
 package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
-import static com.sun.hk2.component.InhabitantsFile.CLASS_KEY;
-import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
+import static org.glassfish.hk2.inhabitants.InhabitantsFile.CLASS_KEY;
+import static org.glassfish.hk2.inhabitants.InhabitantsFile.INDEX_KEY;
 
-import com.sun.hk2.component.*;
-import org.jvnet.hk2.component.Habitat;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.inhabitants.InhabitantParser;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.component.Inhabitant;
 import org.osgi.framework.ServiceFactory;
@@ -67,7 +69,7 @@ import java.util.logging.Level;
  * 
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public class OSGiInhabitantsParser extends com.sun.hk2.component.InhabitantsParser {
+public class OSGiInhabitantsParser extends InhabitantsParser {
 
     /**
      * When an HK2 service is defined with a name (using the name attribute
@@ -80,8 +82,8 @@ public class OSGiInhabitantsParser extends com.sun.hk2.component.InhabitantsPars
 
     private BundleContext osgiCtx;
 
-    public OSGiInhabitantsParser(Habitat habitat, BundleContext ctx) {
-        super(habitat);
+    public OSGiInhabitantsParser(ServiceLocator serviceLocator, BundleContext ctx) {
+        super(serviceLocator);
         this.osgiCtx = ctx;
     }
 

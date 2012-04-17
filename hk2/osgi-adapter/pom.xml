@@ -58,6 +58,7 @@
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    <junit-version>4.4</junit-version>
     </properties>
 
     <build>
@@ -108,7 +109,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-core</artifactId>
+            <artifactId>core</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
@@ -116,12 +117,7 @@
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <version>1.6.6</version>
         </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
     <developers>
         <developer>

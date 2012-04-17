@@ -54,7 +54,6 @@ import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.hk2.component.Holder;
-import com.sun.hk2.component.InhabitantsParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,6 +75,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 
 /**
  * A module represents a set of resources accessible to third party modules. 
@@ -288,14 +291,22 @@ public final class ModuleImpl implements Module {
      * Parses all the inhabitants descriptors of the given name in this module.
      */
     void parseInhabitants(String name,InhabitantsParser parser) throws IOException {
-        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-            public ClassLoader get() {
-                return getPrivateClassLoader();
-            }
+        
+        HK2Loader loader = new HK2Loader() {
+
+			@Override
+			public Class<?> loadClass(String className) throws MultiException {
+				try {
+					return getPrivateClassLoader().loadClass(className);
+				} catch (ClassNotFoundException e) {
+					throw new MultiException(e);
+				}
+			}
+        	
         };
 
         for (InhabitantsDescriptor d : getMetadata().getHabitats(name))
-            parser.parse(d.createScanner(),holder);
+            parser.parse(d.createScanner(),loader);
     }
 
     /**
