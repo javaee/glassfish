@@ -48,13 +48,17 @@ import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Populator;
-import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 import org.glassfish.hk2.Services;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.inhabitants.InhabitantsParserFactory;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.InhabitantsParserFactory;
 import org.jvnet.hk2.config.ConfigParser;
 
 import java.io.IOException;
@@ -106,7 +110,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * any modules to see these classes.
      */
     protected final Map<String,Module> providers = new HashMap<String,Module>();
-    private Map<String, Habitat> habitats = new Hashtable<String, Habitat>();
+    private Map<String, ServiceLocator> habitats = new Hashtable<String, ServiceLocator>();
 
     protected AbstractModulesRegistryImpl(AbstractModulesRegistryImpl parent) {
         this.parent = parent;
@@ -116,24 +120,33 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * Creates an uninitialized {@link Habitat}
      *
      */
-    public Habitat newHabitat() throws ComponentException {
-        Habitat habitat = new Habitat();
-        initializeHabitat(habitat);
-        return habitat;
+    public ServiceLocator newServiceLocator() throws ComponentException {
+        ServiceLocator serviceLocator = newServiceLocator();
+        initializeServiceLocator(serviceLocator);
+        return serviceLocator;
     }
     
     /**
      * Create a new Habitat optionally providing a parent Services as well as a name.
      */
-    public Habitat newHabitat(Services parent, String name) throws ComponentException {
-        Habitat habitat = new Habitat(parent, name);
-        initializeHabitat(habitat);
-        return habitat;
+    public ServiceLocator newServiceLocator(ServiceLocator parent, String name) throws ComponentException {
+    	ServiceLocator serviceLocator = newServiceLocator();
+    	//TODO: Add parent
+    	
+        initializeServiceLocator(serviceLocator);
+        return serviceLocator;
     }
     
-    protected void initializeHabitat(Habitat h) throws ComponentException {
-      h.addIndex(new ExistingSingletonInhabitant<Logger>(Logger.getAnonymousLogger()),
-          Logger.class.getName(), null);
+    protected void initializeServiceLocator(ServiceLocator serviceLocator) throws ComponentException {
+		DynamicConfigurationService dcs = serviceLocator
+		.getService(DynamicConfigurationService.class);
+
+		DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+		config.bind(BuilderHelper.createConstantDescriptor(Logger.getAnonymousLogger()));
+
+		config.commit();
+		
     }
 
     /**
@@ -144,58 +157,51 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      *      (so that different parallel habitats can be
      *      created over the same modules registry.)
      */
-    public Habitat createHabitat(String name) throws ComponentException {
-        Habitat h = newHabitat();
-        return createHabitat(name, h);
+    public ServiceLocator createServiceLocator(String name) throws ComponentException {
+        ServiceLocator h = newServiceLocator();
+        return createServiceLocator(name, h);
     }
 
-    public Habitat createHabitat(String name, Habitat h) throws ComponentException {
+    public ServiceLocator createServiceLocator(String name, ServiceLocator h) throws ComponentException {
         if (h==null) {
-            h = newHabitat();
+            h = newServiceLocator();
         }
         
         // TODO: should get the inhabitantsParser out of Main instead since
         // this could have been overridden
-        return createHabitat(name, createInhabitantsParser(h));
+        return createServiceLocator(name, createInhabitantsParser(h));
     }
 
-    public Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException {
+    public ServiceLocator createServiceLocator(String name, InhabitantsParser parser) throws ComponentException {
         try {
-            Habitat habitat = parser.habitat;
+            ServiceLocator serviceLocator = parser.serviceLocator;
 
             for (final Module module : getModules())
                 parseInhabitants(module, name,parser);
 
-            populateConfig(habitat);
+            populateConfig(serviceLocator);
 
             // default modules registry is the one that created the habitat
-            habitat.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(this),
-                    ModulesRegistry.class.getName(), null);
-            habitats.put(name, habitat);
-
-            habitat.initialized();
+            DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+            DynamicConfiguration config = dcs.createDynamicConfiguration();
+            config.bind(BuilderHelper.createConstantDescriptor(this));
+            config.commit();
             
-            return habitat;
+            habitats.put(name, serviceLocator);
+            
+            return serviceLocator;
         } catch (Exception e) {
             throw new ComponentException("Failed to create a habitat",e);
         }
     }
 
-    protected void populateConfig(Habitat habitat) throws BootException {
-        boolean foundClass = false;
-        try {
-            ConfigParser configParser = new ConfigParser(habitat);
-            foundClass = true;
-            for (Populator p : habitat.getAllByContract(Populator.class)) {
-                p.run(configParser);
-            }
-        } catch (NoClassDefFoundError e) {
-            if (foundClass) {
-                // it must have been a different, unexpected problem
-                throw e;
-            }
-            Logger.getAnonymousLogger().fine("config classes not present - skipping config population.");
-        }
+    protected void populateConfig(ServiceLocator serviceLocator) throws BootException {
+//TODO: hook up config system here!    	    	
+//        	ConfigParser configParser = serviceLocator.getService(ConfigParser.class);
+//
+//            for (Object p : serviceLocator.getAllServices(Populator.class)) {
+//                 ((Populator)p).run(configParser);
+//            }
     }
 
     public abstract void parseInhabitants(Module module,
@@ -385,9 +391,9 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             for( String name : spi.providerNames )
                 providers.put(name,newModule);
         }
-        for (Map.Entry<String, Habitat> entry : habitats.entrySet()) {
+        for (Map.Entry<String, ServiceLocator> entry : habitats.entrySet()) {
             String name = entry.getKey();
-            Habitat h = entry.getValue();
+            ServiceLocator h = entry.getValue();
             try
             {
                 // TODO: should get the inhabitantsParser out of Main instead since
@@ -402,7 +408,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     }
     
     @Override
-    public InhabitantsParser createInhabitantsParser(Habitat h) {
+    public InhabitantsParser createInhabitantsParser(ServiceLocator h) {
       return new InhabitantsParser(h);
     }
     
@@ -474,7 +480,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      */
     public void changed(Module service) {
         
-        System.out.println("I have received changed event from " + service);        
+  
         // house keeping...
         remove(service);
         ModuleDefinition info = service.getModuleDefinition();

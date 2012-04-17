@@ -256,7 +256,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         // Descriptor is an active descriptor
         ActiveDescriptor<?> active = (ActiveDescriptor<?>) descriptor;
-        if (active.isReified()) return active;
+        if (active.isReified()) return active; 
         
         SystemDescriptor<?> sd;
         if (active instanceof SystemDescriptor) {

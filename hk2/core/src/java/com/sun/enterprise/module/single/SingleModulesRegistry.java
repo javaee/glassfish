@@ -42,13 +42,16 @@ package com.sun.enterprise.module.single;
 
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
-import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.Holder;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 
 /**
  * Normal modules registry with configuration handling backed up
@@ -115,14 +118,21 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
     public void parseInhabitants(Module module, String name, InhabitantsParser inhabitantsParser)
             throws IOException {
 
-        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-            public ClassLoader get() {
-                return proxyMod[0].getClassLoader();
-            }
-        };
+        HK2Loader loader = new HK2Loader() {
 
+			@Override
+			public Class<?> loadClass(String className) throws MultiException {
+				try {
+				  return proxyMod[0].getClassLoader().loadClass(className);
+				} catch (ClassNotFoundException cnfe) {
+					throw new MultiException(cnfe);
+				}
+			}
+        
+        };
+        
         for (InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
-            inhabitantsParser.parse(d.createScanner(), holder);
+            inhabitantsParser.parse(d.createScanner(), loader);
     }
 
 }

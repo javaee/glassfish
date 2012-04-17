@@ -40,7 +40,8 @@
 
 package com.sun.enterprise.module;
 
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.HabitatFactory;
 
@@ -50,12 +51,10 @@ import java.util.logging.Logger;
 import java.io.PrintStream;
 import java.net.URL;
 
-import com.sun.hk2.component.InhabitantsParser;
-
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public interface ModulesRegistry extends ModuleChangeListener, HabitatFactory {
+public interface ModulesRegistry extends ModuleChangeListener {
     /**
      * Creates a new child {@link ModulesRegistry} in this {@link ModulesRegistry}.
      */
@@ -65,7 +64,7 @@ public interface ModulesRegistry extends ModuleChangeListener, HabitatFactory {
      * Creates an uninitialized {@link Habitat}
      *
      */
-    Habitat newHabitat() throws ComponentException;
+    ServiceLocator newServiceLocator() throws ComponentException;
 
     /**
      * Creates a {@link Habitat} from all the modules in this registry
@@ -75,7 +74,7 @@ public interface ModulesRegistry extends ModuleChangeListener, HabitatFactory {
      *      (so that different parallel habitats can be
      *      created over the same modules registry.)
      */
-    Habitat createHabitat(String name) throws ComponentException;
+    ServiceLocator createServiceLocator(String name) throws ComponentException;
 
     /**
      * Creates a {@link Habitat} from all the modules in this registry.
@@ -92,7 +91,7 @@ public interface ModulesRegistry extends ModuleChangeListener, HabitatFactory {
      *
      * @return initialized Habitat
      */
-    Habitat createHabitat(String name, Habitat h) throws ComponentException;
+    ServiceLocator createServiceLocator(String name, ServiceLocator h) throws ComponentException;
 
     /**
      * Creates a {@link Habitat} from all the modules in this registry,
@@ -108,7 +107,7 @@ public interface ModulesRegistry extends ModuleChangeListener, HabitatFactory {
      *
      * @return initialized Habitat
      */
-    Habitat createHabitat(String name, InhabitantsParser parser) throws ComponentException;
+    ServiceLocator createServiceLocator(String name, InhabitantsParser parser) throws ComponentException;
 
     /**
      * Add a new <code>Repository</code> to this registry. From now on

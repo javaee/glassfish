@@ -41,11 +41,12 @@ package com.sun.enterprise.module.common_impl;
 
 import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.InhabitantsDescriptor;
-import com.sun.hk2.component.InhabitantParser;
 import com.sun.hk2.component.InhabitantsFile;
-import com.sun.hk2.component.InhabitantIntrospectionScanner;
+
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.glassfish.hk2.inhabitants.InhabitantIntrospectionScanner;
+import org.glassfish.hk2.inhabitants.InhabitantParser;
 
 import java.io.*;
 import java.util.Enumeration;

@@ -41,6 +41,33 @@
 
 package org.jvnet.hk2.osgiadapter;
 
+import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
+import static org.jvnet.hk2.osgiadapter.Logger.logger;
+
+import java.io.File;
+import java.net.URI;
+import java.util.Dictionary;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.Filter;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
+
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
@@ -48,22 +75,6 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.enterprise.module.common_impl.TracingUtilities;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
-import org.osgi.framework.*;
-import org.osgi.util.tracker.ServiceTracker;
-import org.osgi.util.tracker.ServiceTrackerCustomizer;
-
-import java.io.File;
-import java.net.URI;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-
-import static org.jvnet.hk2.osgiadapter.BundleEventType.valueOf;
-import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 /**
  * {@link org.osgi.framework.BundleActivator} that launches a Habitat.
@@ -76,35 +87,39 @@ public class HK2Main extends Main implements
         BundleActivator,
         SynchronousBundleListener {
 
+	// Not sure where this belongs now:
+	public final String DEFAULT_NAME = "_HABITAT_DEFAULT";
+	 
     // TODO(Sahoo): Change to use ServiceTracker for all ServiceRegistrations
 
     private BundleContext ctx;
 
     private ServiceRegistration mrReg;
-    private Map<Habitat, HabitatInfo> habitatInfos = new HashMap<Habitat, HabitatInfo>();
+    private Map<ServiceLocator, HabitatInfo> habitatInfos = new HashMap<ServiceLocator, HabitatInfo>();
 
     /**
      * Stores additional artifacts corresponding to each Habitat created by us.
      */
     private class HabitatInfo {
-        private Habitat habitat;
+        private ServiceLocator serviceLocator;
         private ServiceRegistration habitatRegistration;
         private ServiceTracker osgiServiceTracker;
         private ServiceRegistration moduleStartupRegistration;
     }
 
-    public Habitat createHabitat(ModulesRegistry registry, StartupContext context) throws BootException {
+    public ServiceLocator createServiceLocator(ModulesRegistry registry, StartupContext context) throws BootException {
+    	
         HabitatInfo habitatInfo = new HabitatInfo();
-        habitatInfo.habitat = super.createHabitat(registry, context);
+        habitatInfo.serviceLocator = super.createServiceLocator(registry, context);
         createHK2ServiceTracker(habitatInfo);
-        // register Habitat as an OSGi service
-        habitatInfo.habitatRegistration = ctx.registerService(Habitat.class.getName(), habitatInfo.habitat, context.getArguments());
-        habitatInfos.put(habitatInfo.habitat, habitatInfo);
-        return habitatInfo.habitat;
+        // register ServiceLocator as an OSGi service
+        habitatInfo.habitatRegistration = ctx.registerService(ServiceLocator.class.getName(), habitatInfo.serviceLocator, context.getArguments());
+        habitatInfos.put(habitatInfo.serviceLocator, habitatInfo);
+        return habitatInfo.serviceLocator;
     }
 
-    private void destroyHabitat(Habitat habitat) {
-        HabitatInfo habitatInfo = habitatInfos.get(habitat);
+    private void destroyHabitat(ServiceLocator serviceLocator) {
+        HabitatInfo habitatInfo = habitatInfos.get(serviceLocator);
         if (habitatInfo == null) {
             return;
         }
@@ -115,12 +130,12 @@ public class HK2Main extends Main implements
         // AMX i shaving trouble if we release inhabitants. So temporarily disable this.
         // habitat.release();
         habitatInfo = null;
-        habitatInfos.remove(habitat);
+        habitatInfos.remove(serviceLocator);
     }
 
     private void createHK2ServiceTracker(HabitatInfo habitatInfo) {
         habitatInfo.osgiServiceTracker = new ServiceTracker(
-                ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitatInfo.habitat));
+                ctx, new NonHK2ServiceFilter(), new HK2ServiceTrackerCustomizer(habitatInfo.serviceLocator));
         habitatInfo.osgiServiceTracker.open(true);
     }
 
@@ -138,6 +153,7 @@ public class HK2Main extends Main implements
 
     public void start(BundleContext context) throws Exception {
         this.ctx = context;
+        
         logger.entering("HK2Main", "start", new Object[]{context});
 
 //        ctx.addBundleListener(this); // used for debugging purpose
@@ -224,7 +240,7 @@ public class HK2Main extends Main implements
 
         for (HabitatInfo habitatInfo : habitatInfos.values()) {
             ModuleStartup startupService =
-                    habitatInfo.habitat.getComponent(ModuleStartup.class, habitatInfo.habitat.DEFAULT_NAME);
+                    habitatInfo.serviceLocator.getService(ModuleStartup.class, DEFAULT_NAME);
             if (startupService != null) {
                 try {
                     logger.info("Stopping " + startupService);
@@ -233,7 +249,7 @@ public class HK2Main extends Main implements
                     logger.log(Level.WARNING, "HK2Main:stop():Exception while stopping ModuleStartup service.", e);
                 }
             }
-            destroyHabitat(habitatInfo.habitat);
+            destroyHabitat(habitatInfo.serviceLocator);
         }
 
         ModulesRegistry mr = (ModulesRegistry) ctx.getService(mrReg.getReference());
@@ -270,10 +286,10 @@ public class HK2Main extends Main implements
     }
 
     private class HK2ServiceTrackerCustomizer implements ServiceTrackerCustomizer {
-        private final Habitat habitat;
+        private final ServiceLocator serviceLocator;
 
-        private HK2ServiceTrackerCustomizer(Habitat habitat) {
-            this.habitat = habitat;
+        private HK2ServiceTrackerCustomizer(ServiceLocator serviceLocator) {
+            this.serviceLocator = serviceLocator;
         }
 
         public Object addingService(final ServiceReference reference) {
@@ -288,6 +304,9 @@ public class HK2Main extends Main implements
                                 "as the service object could not be obtained.", new Object[]{reference});
                 return null;
             }
+            
+            DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+            DynamicConfiguration config = dcs.createDynamicConfiguration();
 
             // let's get the list of implemented contracts
             String[] contractNames = (String[]) reference.getProperty("objectclass");
@@ -300,14 +319,29 @@ public class HK2Main extends Main implements
                         // we may need to find a better way to get a potential name.
                         name = (String) reference.getProperty("org.springframework.osgi.bean.name");
                     }
-                    habitat.addIndex(new ExistingSingletonInhabitant(object), contractName, name);
-                    logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
-                            "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{
-                                    object, contractName, name});
+                      
+                    AbstractActiveDescriptor<Object> descriptor = BuilderHelper.createConstantDescriptor(object);
+                    
+                    try {
+						descriptor.addContractType(object.getClass().getClassLoader().loadClass(contractName));
+						
+	                    descriptor.setName(name);
+	                    config.addActiveDescriptor(descriptor);
+	                    
+	                    
+	                    logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
+	                            "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{
+	                                    object, contractName, name});
+					} catch (ClassNotFoundException e) {
+						logger.log(Level.SEVERE, "Cannot resolve contract " + contractName, e);
+					}
+                    
                 }
+                config.commit();
             } else {
                 // this service does not implement a specific contract, let's register it by its type.
-                habitat.add(new ExistingSingletonInhabitant(object));
+                config.bind(BuilderHelper.createConstantDescriptor(object));
+                config.commit();
                 logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
                         "addingService", "registering service = {0}", object);
             }
@@ -317,26 +351,37 @@ public class HK2Main extends Main implements
         public void modifiedService(ServiceReference reference, Object service) {
         }
 
-        public void removedService(ServiceReference reference, Object service) {
+        public void removedService(ServiceReference reference, final Object service) {
             // we need to unregister the service for each contract it implements.
             String[] contractNames = (String[]) reference.getProperty("objectclass");
+            
+            DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+            DynamicConfiguration config = dcs.createDynamicConfiguration();
+            
             if (contractNames != null && contractNames.length > 0) {
-                for (String contractName : contractNames) {
-                    habitat.removeIndex(contractName, service);
-                    logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
+            	
+            	config.addUnbindFilter(BuilderHelper.createNameAndContractFilter(contractNames[0], ""+service));
+            	config.commit();
+            	
+                logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
                             "removingService", "removing service = {0}, contract = {1}",
-                            new Object[]{service, contractName});
-
-                }
+                            new Object[]{service, contractNames[0]});
             } else {
                 // it was registered by type
-                Inhabitant<?> inhabitant = habitat.getInhabitantByType(service.getClass());
-                if (inhabitant != null) {
-                    habitat.remove(inhabitant);
-                } else {
-                    logger.logp(Level.WARNING, "HK2Main$HK2ServiceTrackerCustomizer",
-                            "removedService", "cannot removed singleton service = {0}", service);
-                }
+            
+            	org.glassfish.hk2.api.Filter filter = new org.glassfish.hk2.api.Filter() {
+
+					@Override
+					public boolean matches(Descriptor d) {
+						return d.getImplementation().equals(service.getClass());
+					}
+            		
+            	};
+            	
+            	config.addUnbindFilter(filter);
+            	
+            	config.commit();
+            	
             }
         }
 

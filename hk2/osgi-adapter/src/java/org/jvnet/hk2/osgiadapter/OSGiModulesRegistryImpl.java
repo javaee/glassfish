@@ -41,10 +41,13 @@
 
 package org.jvnet.hk2.osgiadapter;
 
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.osgi.framework.*;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.common_impl.CompositeEnumeration;
+import com.sun.enterprise.module.common_impl.ModuleId;
 
 import java.io.*;
 import java.util.*;

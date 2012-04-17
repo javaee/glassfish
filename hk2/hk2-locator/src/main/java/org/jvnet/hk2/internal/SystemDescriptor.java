@@ -90,7 +90,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         this.baseDescriptor = BuilderHelper.deepCopyDescriptor(baseDescriptor);
         this.locatorId = locatorId;
         this.id = serviceId;
-        
+ 
         if (baseDescriptor instanceof ActiveDescriptor) {
             ActiveDescriptor<T> active = (ActiveDescriptor<T>) baseDescriptor;
             if (active.isReified()) {
@@ -98,7 +98,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                 reified = true;
             }
             else {
-                activeDescriptor = null;
+            	activeDescriptor = null;
                 reified = false;
             }
         }

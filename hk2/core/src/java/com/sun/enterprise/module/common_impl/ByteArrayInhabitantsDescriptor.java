@@ -39,14 +39,15 @@
  */
 package com.sun.enterprise.module.common_impl;
 
-import com.sun.enterprise.module.InhabitantsDescriptor;
-import com.sun.hk2.component.InhabitantParser;
-import com.sun.hk2.component.InhabitantsScanner;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
+
+import org.glassfish.hk2.inhabitants.InhabitantParser;
+import org.glassfish.hk2.inhabitants.InhabitantsScanner;
+
+import com.sun.enterprise.module.InhabitantsDescriptor;
 
 /**
  * Implementation of {@link InhabitantsDescriptor} that loads the inhabitants

@@ -39,6 +39,7 @@
 #
 
 -exportcontents: \
+                            org.glassfish.hk2.inhabitants; \
                             com.sun.enterprise.module; \
                             com.sun.enterprise.module.bootstrap; \
                             com.sun.enterprise.module.common_impl; \
