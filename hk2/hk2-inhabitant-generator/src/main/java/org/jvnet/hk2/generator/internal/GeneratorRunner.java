@@ -67,7 +67,7 @@ import org.objectweb.asm.ClassReader;
 public class GeneratorRunner {
     private final static String DOT_CLASS = ".class";
     private final static String META_INF = "META-INF";
-    private final static String INHABITANTS = "inhabitants";
+    private final static String INHABITANTS = "hk2-locator";
     
     private final String fileOrDirectory;
     private final String outjarName;
