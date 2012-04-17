@@ -47,7 +47,6 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
         <version>0.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>toy-http-server</artifactId>
@@ -55,7 +54,6 @@
     <name>Toy HTTP server</name>
     
     <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>

@@ -48,7 +48,6 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
         <version>2.0.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
 	<artifactId>hk2-dependency-visualizer</artifactId>
@@ -80,8 +79,6 @@
     </properties>
 
 	<build>
-        <!-- parent HK2 pom uses src/java and hence need to override here -->
-        <sourceDirectory>src/main/java</sourceDirectory>
 		<resources>
 			<resource>
 				<directory>${basedir}/src/main/command</directory>

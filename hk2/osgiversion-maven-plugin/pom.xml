@@ -46,7 +46,6 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
         <version>2.0.2-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>osgiversion-maven-plugin</artifactId>
@@ -64,11 +63,6 @@
          project.osgi.version which can then be used in pom.xmls.
     -->
 
-    <build>
-        <!-- Override settings from parent which set the following to different values -->
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.apache.maven</groupId>

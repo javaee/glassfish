@@ -54,10 +54,6 @@
     <name>Run Level Service</name>
     <description>${project.name}</description>
 
-    <build>
-        <sourceDirectory>src/main/java</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
-    </build>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
