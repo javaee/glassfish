@@ -149,7 +149,10 @@ public class InhabitantsParser implements InhabitantStore {
             (null == serviceLocator) ? Collections.EMPTY_LIST :
               serviceLocator.getAllServices(InhabitantProviderInterceptor.class);
         
-
+        if (serviceLocator==null) {
+        	throw new RuntimeException("ServiceLocator not available");
+        }
+        
 		DynamicConfigurationService dcs = serviceLocator
 				.getService(DynamicConfigurationService.class);
 		
