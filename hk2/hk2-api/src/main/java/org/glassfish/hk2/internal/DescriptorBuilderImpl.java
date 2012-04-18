@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Named;
@@ -225,7 +226,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
     @Override
     public DescriptorBuilder andLoadWith(HK2Loader loader)
             throws IllegalArgumentException {
-        if (loader != null && this.loader != null) throw new IllegalArgumentException();
+        if (this.loader != null) throw new IllegalArgumentException();
         
         this.loader = loader;
         return this;
@@ -260,13 +261,14 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         factoryContracts.add(implementation);
         factoryContracts.add(Factory.class.getName());
         Set<String> factoryQualifiers = Collections.emptySet();
+        Map<String, List<String>> factoryMetadata = Collections.emptyMap();
         
         Descriptor asService = new DescriptorImpl(
                 factoryContracts,
                 null,
                 factoryScope,
                 implementation,
-                metadatas,
+                factoryMetadata,
                 factoryQualifiers,
                 DescriptorType.CLASS,
                 loader,
