@@ -42,7 +42,6 @@ package org.glassfish.hk2.utilities;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.HK2Loader;
 

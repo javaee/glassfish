@@ -40,12 +40,14 @@
 package org.glassfish.hk2.tests.api;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Set;
 
 import junit.framework.Assert;
 
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
 
 /**
@@ -192,6 +194,43 @@ public class ActiveDescriptorTest {
         
         currentQualifierNames = testMe.getQualifiers();
         Assert.assertEquals(0, currentQualifierNames.size());
+    }
+    
+    /**
+     * Tests adding and removing contract types
+     */
+    @Test
+    public void testCreateParameterizedConstant() {
+        ParameterizedObject po = new ParameterizedObject();
+        
+        AbstractActiveDescriptor<ParameterizedObject> desc = BuilderHelper.createConstantDescriptor(po);
+        
+        {
+            Set<String> contracts = desc.getAdvertisedContracts();
+            Assert.assertEquals(2, contracts.size());
+            Assert.assertTrue(contracts.contains(ParameterizedObject.class.getName()));
+            Assert.assertTrue(contracts.contains(ParameterizedInterface.class.getName()));
+        }
+        
+        {
+            Set<Type> contractTypes = desc.getContractTypes();
+            Assert.assertEquals(2, contractTypes.size());
+            
+            for (Type type : contractTypes) {
+                if (type instanceof Class) {
+                    Assert.assertEquals(ParameterizedObject.class, type);
+                }
+                else if (type instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) type;
+                    
+                    Assert.assertEquals(ParameterizedInterface.class, pt.getRawType());
+                    Assert.assertEquals(String.class, pt.getActualTypeArguments()[0]);
+                }
+                else {
+                    Assert.fail("Uknown type: " + type);
+                }
+            }
+        }
     }
 
 }
