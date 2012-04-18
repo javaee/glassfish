@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,14 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
+package org.glassfish.hk2.tests.api;
+
+import org.glassfish.hk2.AnnotationLiteral;
 
 /**
- * Simple builder contract
- * @author Jerome Dochez
+ * @author jwells
+ *
  */
-@Contract
-public interface Builder<T> {
+public class BlueImpl extends AnnotationLiteral<Blue> implements Blue {
 
-    T build();
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6473792081050991981L;
+
 }
