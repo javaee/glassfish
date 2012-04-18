@@ -186,3 +186,6 @@ wrongTransportTarget # Grizzly 2.1
 virtualServerAlternateDocrootRestart # Grizzly 2.1
 programmaticLogin # different class in the trunk
 testFormAuthenticator # need Grizzly 2.x
+contextXmlLifecycleListener # trunk
+contextXmlLifecycleListenerGlobal # trunk
+contextXmlRemoteHostValve #trunk
