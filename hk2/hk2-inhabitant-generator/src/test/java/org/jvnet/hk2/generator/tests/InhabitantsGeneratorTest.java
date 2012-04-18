@@ -57,6 +57,8 @@ import javax.inject.Singleton;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -162,13 +164,53 @@ public class InhabitantsGeneratorTest {
         }
         
         {
-            // This is a descriptor with a defaulted Name and a qualifier and metadata
+            // This is a descriptor with a non-defaulted Name from @Named
             DescriptorImpl di = new DescriptorImpl();
             di.setImplementation("org.jvnet.hk2.generator.tests.GivenNameFromQualifier");
             di.addAdvertisedContract("org.jvnet.hk2.generator.tests.GivenNameFromQualifier");
             di.setName(NON_DEFAULT_NAME);
             di.addQualifier(Named.class.getName());
             di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
+        
+        {
+            // This is a descriptor with a non-defaulted Name from @Service
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.generator.tests.ServiceWithName");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ServiceWithName");
+            di.setName(NON_DEFAULT_NAME);
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
+        
+        {
+            // ComplexFactory as a service
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.generator.tests.ComplexFactory");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexFactory");
+            di.addAdvertisedContract(Factory.class.getName());
+            di.setName("ComplexFactory");
+            di.setScope(Singleton.class.getName());
+            di.addQualifier(Named.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
+        
+        {
+            // ComplexFactory as a factory
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.generator.tests.ComplexFactory");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexImpl");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexA");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexC");
+            di.setName(NON_DEFAULT_NAME);
+            di.setScope(PerLookup.class.getName());
+            di.setDescriptorType(DescriptorType.FACTORY);
+            di.addQualifier(Blue.class.getName());
+            di.addQualifier(Named.class.getName());
         
             EXPECTED_DESCRIPTORS.add(di);
         }
