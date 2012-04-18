@@ -52,12 +52,14 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.hk2.tests.contracts.AnotherContract;
 import org.glassfish.hk2.tests.contracts.SomeContract;
 import org.glassfish.hk2.tests.services.AnotherService;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -250,5 +252,65 @@ public class BuilderHelperTest {
         
         String asString = cDesc.toString();
         Assert.assertTrue(asString.contains("implementation=org.glassfish.hk2.tests.api.FullDescriptorImpl"));
+    }
+    
+    /**
+     * Tests the contract filter
+     */
+    @Test
+    public void testCreateContractFilter() {
+        IndexedFilter iff = BuilderHelper.createContractFilter(Object.class.getName());
+        
+        Assert.assertEquals(Object.class.getName(), iff.getAdvertisedContract());
+        Assert.assertNull(iff.getName());
+        Assert.assertTrue(iff.matches(new DescriptorImpl()));
+    }
+    
+    /**
+     * Tests the contract filter
+     */
+    @Test
+    public void testCreateNameFilter() {
+        IndexedFilter iff = BuilderHelper.createNameFilter(NAME);
+        
+        Assert.assertEquals(NAME, iff.getName());
+        Assert.assertNull(iff.getAdvertisedContract());
+        Assert.assertTrue(iff.matches(new DescriptorImpl()));
+    }
+    
+    /**
+     * Tests the contract filter
+     */
+    @Test
+    public void testCreateNameAndContractFilter() {
+        IndexedFilter iff = BuilderHelper.createNameAndContractFilter(Object.class.getName(), NAME);
+        
+        Assert.assertEquals(NAME, iff.getName());
+        Assert.assertEquals(Object.class.getName(), iff.getAdvertisedContract());
+        Assert.assertTrue(iff.matches(new DescriptorImpl()));
+    }
+    
+    /**
+     * Tests the contract filter
+     */
+    @Test
+    public void testDeepCopy() {
+        DescriptorImpl a = new DescriptorImpl();
+        a.addMetadata(KEY_A, VALUE_A);
+        
+        DescriptorImpl b = BuilderHelper.deepCopyDescriptor(a);
+        
+        Assert.assertEquals(a, b);
+        
+        // This is a bit tricky, make sure we have separated the metadata values!
+        b.addMetadata(KEY_A, VALUE_B1);
+        
+        Assert.assertFalse(a.equals(b));
+        
+        Map<String, List<String>> aMeta= a.getMetadata();
+        List<String> keyAValues = aMeta.get(KEY_A);
+        Assert.assertEquals(1, keyAValues.size());
+        
+        Assert.assertEquals(VALUE_A, keyAValues.get(0));
     }
 }

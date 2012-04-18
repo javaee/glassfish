@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,34 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
+package org.glassfish.hk2.tests.api;
 
-import static java.lang.annotation.ElementType.TYPE;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import java.lang.annotation.Target;
-import java.lang.annotation.Documented;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
 /**
- * Marker annotation to allow implementations to be discovered from
- * the contract they implement.
- *
- * <p>
- * There are two usages of this annotation.
- *
- * <h2>Contract interface</h2>
- * <p>
- * This annotation can be placed on interfaces and abstract classes <tt>T</tt>,
- * and derived classes that are assignable to <tt>T</tt> with {@link Service}
- * annotation can be looked up by using {@link org.glassfish.hk2.Services#byType(Class)}
- * (and its family of methods.)
- *
- * @author Jerome Dochez
- * @see Index
+ * Used for testing
+ * 
+ * @author jwells
+ * @param <T> They type of this descriptor
  */
-@Documented
-@Retention(RUNTIME)
-@Target({TYPE})
-public @interface Contract {
-    
+public class MyActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
+
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = -5002947020251179636L;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     */
+    @Override
+    public Class<?> getImplementationClass() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public T create(ServiceHandle<?> root) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

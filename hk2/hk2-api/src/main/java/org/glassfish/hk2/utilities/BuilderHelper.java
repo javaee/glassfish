@@ -242,7 +242,7 @@ public class BuilderHelper {
      * @param copyMe The descriptor to copy
      * @return A new descriptor with all fields copied
      */
-	public static Descriptor deepCopyDescriptor(Descriptor copyMe) {
+	public static DescriptorImpl deepCopyDescriptor(Descriptor copyMe) {
 	    return new DescriptorImpl(copyMe);
 	}
 }
