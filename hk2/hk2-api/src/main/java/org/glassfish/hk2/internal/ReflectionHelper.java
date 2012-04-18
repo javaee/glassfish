@@ -392,7 +392,7 @@ public class ReflectionHelper {
         }
         
         if (equalsIndex < 0) {
-            throw new IOException("Uknown key-string list format, no equals: " + new String(asChars));
+            throw new IOException("Unknown key-string list format, no equals: " + new String(asChars));
         }
         
         String key = new String(asChars, startIndex, (equalsIndex - startIndex));  // Does not include the =
