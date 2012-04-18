@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import junit.framework.Assert;
@@ -80,6 +81,15 @@ public class InhabitantsGeneratorTest {
     private final static String ZIP_FILE_INHABITANT_NAME = "META-INF/hk2-locator/default";
     
     private final static String MAVEN_CLASSES_DIR = "test-classes";
+    
+    // metadata constants
+    private final static String KEY1 = "key1";
+    private final static String VALUE1 = "value1";
+    private final static String KEY2 = "key2";
+    private final static String VALUE2 = "value2";
+    
+    // Non-standard name
+    public final static String NON_DEFAULT_NAME = "non-default-name";
     
     private final static Set<DescriptorImpl> EXPECTED_DESCRIPTORS = new HashSet<DescriptorImpl>();
     
@@ -132,6 +142,32 @@ public class InhabitantsGeneratorTest {
             DescriptorImpl di = new DescriptorImpl();
             di.setImplementation("org.glassfish.examples.ctm.TenantManager");
             di.addAdvertisedContract("org.glassfish.examples.ctm.TenantManager");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
+        
+        {
+            // This is a descriptor with a defaulted Name and a qualifier and metadata
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.generator.tests.ServiceWithDefaultName");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ServiceWithDefaultName");
+            di.setName("ServiceWithDefaultName");
+            di.addQualifier(Named.class.getName());
+            di.addQualifier(Blue.class.getName());
+            di.addMetadata(KEY1, VALUE1);
+            di.addMetadata(KEY2, VALUE2);
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
+        
+        {
+            // This is a descriptor with a defaulted Name and a qualifier and metadata
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.generator.tests.GivenNameFromQualifier");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.GivenNameFromQualifier");
+            di.setName(NON_DEFAULT_NAME);
+            di.addQualifier(Named.class.getName());
             di.setScope(Singleton.class.getName());
         
             EXPECTED_DESCRIPTORS.add(di);

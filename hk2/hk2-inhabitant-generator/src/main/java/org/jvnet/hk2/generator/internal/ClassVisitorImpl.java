@@ -41,6 +41,7 @@ package org.jvnet.hk2.generator.internal;
 
 import java.io.File;
 import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -58,6 +59,7 @@ import org.objectweb.asm.MethodVisitor;
 public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String SERVICE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Service;";
     private final static String NAME = "name";
+    private final static String METADATA = "metadata";
     private final static String VALUE = "value";
     private final static String PROVIDE = "provide";
     
@@ -71,6 +73,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final LinkedList<String> qualifiers = new LinkedList<String>();
     private boolean isAService = false;
     private NamedAnnotationVisitor baseName;
+    private String metadataString = null;
     
     private final LinkedList<DescriptorImpl> generatedDescriptors = new LinkedList<DescriptorImpl>();
     private boolean isFactory = false;
@@ -183,6 +186,24 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             generatedDescriptor.setName(baseName.getName());
         }
         
+        if (metadataString != null) {
+            StringTokenizer commaTokenizer = new StringTokenizer(metadataString, ",");
+            
+            while (commaTokenizer.hasMoreTokens()) {
+                String keyValueString = commaTokenizer.nextToken();
+                
+                int equalsIndex = keyValueString.indexOf('=');
+                if (equalsIndex < 0) continue;  // unknown format
+                
+                String key = keyValueString.substring(0, equalsIndex);
+                String value = keyValueString.substring(equalsIndex + 1);
+                
+                if (key.length() <= 0 || value.length() <= 0) continue;  // no blanks allowed
+                
+                generatedDescriptor.addMetadata(key, value);
+            }
+        }
+        
         if (verbose) {
             System.out.println("Generated Descriptor: " + generatedDescriptor);
         }
@@ -243,6 +264,9 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         public void visit(String annotationName, Object value) {
             if (annotationName.equals(NAME)) {
                 baseName = new NamedAnnotationVisitor(null, (String) value);
+            }
+            else if (annotationName.equals(METADATA)) {
+                metadataString = (String) value;
             }
         }        
     }
