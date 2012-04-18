@@ -18,7 +18,7 @@
                 <timeout-method>
                     <method-name>ejbTimeout</method-name>
                     <method-params>
-                        <method-param>java.ejb.Timer</method-param>
+                        <method-param>javax.ejb.Timer</method-param>
                     </method-params>
                 </timeout-method>
                 <info>Timer00</info>
