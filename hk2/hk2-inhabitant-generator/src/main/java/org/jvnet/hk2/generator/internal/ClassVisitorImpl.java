@@ -41,6 +41,7 @@ package org.jvnet.hk2.generator.internal;
 
 import java.io.File;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import javax.inject.Named;
@@ -249,7 +250,12 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             // This might be parametererized, strip of the parameters
             trueFactoryClass = trueFactoryClass.replace('/', '.');
             
-            asAFactory.addAdvertisedContract(trueFactoryClass);
+            List<String> associatedContracts = utilities.getAssociatedContracts(
+                    searchHere, trueFactoryClass);
+            
+            for (String contract : associatedContracts) {
+                asAFactory.addAdvertisedContract(contract);
+            }
         }
         
         return new MethodVisitorImpl(asAFactory);
@@ -328,7 +334,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
                 asAFactoryDI.setScope(loadQualifierName);
             }
             else if (utilities.isClassAQualifier(searchHere, loadQualifierName)) {
-                qualifiers.add(loadQualifierName);
+                asAFactoryDI.addQualifier(loadQualifierName);
                 
                 if (Named.class.getName().equals(loadQualifierName)) {
                     factoryName = new NamedAnnotationVisitor(getDefaultName(), null);

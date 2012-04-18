@@ -47,6 +47,8 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.jar.JarFile;
@@ -277,6 +279,33 @@ public class Utilities {
         }
     }
     
+    /**
+     * Gets the contracts associated with the name passed in
+     * @param searchHere
+     * @param dotDelimitedName
+     * @return
+     */
+    public List<String> getAssociatedContracts(File searchHere, String dotDelimitedName) {
+        try {
+            InputStream is = findClass(searchHere, dotDelimitedName, true);
+            
+            ClassReader reader = new ClassReader(is);
+            
+            ContractFinderClassVisitor cfcv = new ContractFinderClassVisitor(this, searchHere);
+            
+            reader.accept(cfcv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            
+            return cfcv.getAllContracts();
+            
+        }
+        catch (IOException ioe) {
+            List<String> errorReturn = new LinkedList<String>();
+            errorReturn.add(dotDelimitedName);
+            
+            return errorReturn;
+        }
+    }
+    
     private static class ContractClassVisitor extends AbstractClassVisitorImpl {
         private boolean isContract = false;
         private final String lookForMe;
@@ -298,6 +327,45 @@ public class Utilities {
         private boolean isAContract() {
             return isContract;
         }
+        
+    }
+    
+    private static class ContractFinderClassVisitor extends AbstractClassVisitorImpl {
+        private final List<String> allContracts = new LinkedList<String>();
+        private final File searchHere;
+        private final Utilities utilities;
+        
+        private ContractFinderClassVisitor(Utilities utilities, File searchHere) {
+            this.utilities = utilities;
+            this.searchHere = searchHere;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.ClassVisitor#visit(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+         */
+        @Override
+        public void visit(int version,
+                int access,
+                String name,
+                String signature,
+                String superName,
+                String[] interfaces) {
+            allContracts.add(name.replace('/', '.'));
+            
+            for (String iFace : interfaces) {
+                String iWithDots = iFace.replace('/', '.');
+                if (utilities.isClassAContract(searchHere, iWithDots)) {
+                    allContracts.add(iWithDots);
+                    
+                }
+            }
+
+        }
+        
+        private List<String> getAllContracts() {
+            return allContracts;
+        }
+        
         
     }
 
