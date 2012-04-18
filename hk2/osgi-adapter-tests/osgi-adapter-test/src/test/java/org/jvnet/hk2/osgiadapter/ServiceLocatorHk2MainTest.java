@@ -37,6 +37,7 @@ import org.osgi.framework.*;
 import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(org.ops4j.pax.exam.junit.JUnit4TestRunner.class)
+@Ignore
 public class ServiceLocatorHk2MainTest {
 
 	private static final String GROUP_ID = "org.glassfish.hk2";
