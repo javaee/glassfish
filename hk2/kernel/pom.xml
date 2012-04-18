@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,18 +46,57 @@
 
     <parent>
         <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-kernel-parent</artifactId>
+        <artifactId>hk2-parent</artifactId>
         <version>2.0.2-SNAPSHOT</version>
-        <relativePath>../kernel</relativePath>
     </parent>
 
     <groupId>org.glassfish.hk2</groupId>
-    <artifactId>osgi-adapter-tests-parent</artifactId>
+    <artifactId>hk2-kernel-parent</artifactId>
     <packaging>pom</packaging>
 
+    <version>2.0.2-SNAPSHOT</version>
+    <name>Kernel Subsystem</name>
+    <description>generic kernel subsystem</description>
+
+    <build>
+        <pluginManagement>
+             <plugins>
+                <plugin>
+                    <groupId>org.glassfish.hk2</groupId>
+                    <artifactId>osgiversion-maven-plugin</artifactId>
+                    <version>${project.version}</version>
+                    <executions>
+                        <execution>
+                            <id>compute-osgi-version</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>compute-osgi-version</goal>
+                            </goals>
+                            <configuration>
+                                <dropVersionComponent>qualifier</dropVersionComponent>
+                                <versionPropertyName>project.osgi.version</versionPropertyName>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+             </plugins>
+        </pluginManagement>
+    </build>
     <modules>
-        <module>osgi-adapter-test</module>
-        <module>test-module-startup</module>
-    </modules>
+        <module>../hk2-runlevel</module>
+        <module>../hk2-locator</module>
+    	<module>../class-model</module>
+        <module>../auto-depends</module>
+        <module>../core</module>
+        <module>../config</module>
+        <module>../config-generator</module>
+        <module>../osgi-adapter</module>
+        <module>../osgi-adapter-tests</module>
+        <module>../dependency-verifier</module>
+        <module>../dependency-visualizer</module>
+        <module>../examples</module>
+        <module>../hk2-testing</module>
+        <module>../hk2-deprecated</module>
+  </modules>
 
 </project>

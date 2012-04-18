@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,18 +46,26 @@
 
     <parent>
         <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-kernel-parent</artifactId>
+        <artifactId>hk2-parent</artifactId>
         <version>2.0.2-SNAPSHOT</version>
-        <relativePath>../kernel</relativePath>
     </parent>
 
     <groupId>org.glassfish.hk2</groupId>
-    <artifactId>osgi-adapter-tests-parent</artifactId>
+    <artifactId>hk2-public</artifactId>
     <packaging>pom</packaging>
 
+    <version>2.0.2-SNAPSHOT</version>
+    <name>public-api</name>
+
     <modules>
-        <module>osgi-adapter-test</module>
-        <module>test-module-startup</module>
+        <module>../external</module>
+        <module>../hk2-api</module>
+        <module>../hk2-inhabitant-generator</module>
+        <module>../apt</module>
+        <module>../hk2-maven</module>
+        <module>../hk2-maven-plugin</module>
+        <module>../osgiversion-maven-plugin</module>
+        <module>../consolidatedbundle-maven-plugin</module>
     </modules>
 
 </project>
