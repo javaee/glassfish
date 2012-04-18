@@ -41,13 +41,11 @@ package org.glassfish.hk2.tests.locator.provider;
 
 import javax.inject.Named;
 
-import org.jvnet.hk2.annotations.Service;
-
 /**
  * @author jwells
  *
  */
-@Service @Named
+@Named
 public class Ishmael implements BookCharacter {
 
     /* (non-Javadoc)
