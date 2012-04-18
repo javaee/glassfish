@@ -56,12 +56,13 @@ public class Jira extends MonTest {
     void runTests(TestDriver driver) {
         setDriver(driver);
         report(true, "Hello from JIRA Tests!");
+        test14389();
         test16313();
         test15397();
         test15054();
         test15923();
         test15500();
-        test14389();
+        //test14389();  4/18/12 Try putting this test first
         test14748();
         test15895();
         test14461();
@@ -150,8 +151,9 @@ public class Jira extends MonTest {
             //ignore
         }
         //Try list -m server.* instead of * to see if it makes a difference
-        //AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
-        AsadminReturn ar = asadminWithOutput("list", "-m", "server.*");
+        // 4/18/12 'list -m server.*' works, but not 'list -m *'
+        AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
+        //AsadminReturn ar = asadminWithOutput("list", "-m", "server.*");
         // this test started failing intermittenly in early March 2012.  I've now
         // added some diagnostic code...
         boolean b1 = checkForString(ar, "server.applications");
@@ -175,8 +177,9 @@ public class Jira extends MonTest {
         report(checkForString(ar, "server.web.servlet"), prepend + "check-listm-server-web-servlet");
 
         //Try get -m server.* instead of * to see if it makes a difference
-        //AsadminReturn ar2 = asadminWithOutput("get", "-m", STAR);
-        AsadminReturn ar2 = asadminWithOutput("get", "-m", "server.*");
+        // 4/18/12 'get -m server.*' works, but not 'get -m *'
+        AsadminReturn ar2 = asadminWithOutput("get", "-m", STAR);
+        //AsadminReturn ar2 = asadminWithOutput("get", "-m", "server.*");
         report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
         report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
         report(checkForString(ar2, "server.web.request"), prepend + "check-getm-server-web-request");
