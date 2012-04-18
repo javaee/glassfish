@@ -54,6 +54,7 @@ import org.glassfish.hk2.Services;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.inhabitants.InhabitantsParserFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -121,7 +122,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      *
      */
     public ServiceLocator newServiceLocator() throws ComponentException {
-        ServiceLocator serviceLocator = newServiceLocator();
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create("default");
         initializeServiceLocator(serviceLocator);
         return serviceLocator;
     }
@@ -130,7 +131,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * Create a new Habitat optionally providing a parent Services as well as a name.
      */
     public ServiceLocator newServiceLocator(ServiceLocator parent, String name) throws ComponentException {
-    	ServiceLocator serviceLocator = newServiceLocator();
+    	ServiceLocator serviceLocator =  ServiceLocatorFactory.getInstance().create(name);
     	//TODO: Add parent
     	
         initializeServiceLocator(serviceLocator);
