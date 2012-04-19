@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.utilities;
 
 import javax.inject.Named;
 
@@ -54,7 +54,7 @@ public class NamedImpl extends AnnotationLiteral<Named> implements Named {
     
     private final String name;
     
-    /* package */ NamedImpl(String name) {
+    public NamedImpl(String name) {
         this.name = name;
     }
 
