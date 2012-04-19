@@ -69,6 +69,7 @@ public class GeneratorRunner {
     private final static String META_INF = "META-INF";
     private final static String INHABITANTS = "hk2-locator";
     
+    private final Utilities utilities;  // For caching
     private final String fileOrDirectory;
     private final String outjarName;
     private final String locatorName;
@@ -90,6 +91,7 @@ public class GeneratorRunner {
         this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
+        utilities = new Utilities(verbose);
     }
     
     /**
@@ -273,7 +275,7 @@ public class GeneratorRunner {
     private LinkedList<DescriptorImpl> createDescriptorIfService(InputStream is, File searchHere) throws IOException {
         ClassReader reader = new ClassReader(is);
         
-        ClassVisitorImpl cvi = new ClassVisitorImpl(verbose, searchHere);
+        ClassVisitorImpl cvi = new ClassVisitorImpl(utilities, verbose, searchHere);
         
         reader.accept(cvi, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         
