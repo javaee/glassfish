@@ -67,7 +67,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     
     private final boolean verbose;
     private final File searchHere;
-    private final Utilities utilities = new Utilities();
+    private final Utilities utilities;
     
     private String implName;
     private final LinkedHashSet<String> iFaces = new LinkedHashSet<String>();
@@ -87,7 +87,8 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
      * @param verbose true if we should print out any service we are binding
      * @param searchHere if we cannot classload something directly, search for it here
      */
-    public ClassVisitorImpl(boolean verbose, File searchHere) {
+    public ClassVisitorImpl(Utilities utilities, boolean verbose, File searchHere) {
+        this.utilities = utilities;
         this.verbose = verbose;
         this.searchHere = searchHere;
     }

@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -75,15 +76,23 @@ import org.objectweb.asm.ClassReader;
 public class Utilities {
     private final static String CLASS_PATH_PROPERTY = "java.class.path";
     private final static String DOT_CLASS = ".class";
+    private final static String CONTRACT_WITH_SLASHES = "L" + Contract.class.getName().replace('.', '/') + ";";
+    private final static String SCOPE_WITH_SLASHES = "L" + Scope.class.getName().replace('.', '/') + ";";
+    private final static String QUALIFIER_WITH_SLASHES = "L" + Qualifier.class.getName().replace('.', '/') + ";";
     
     private final Map<String, Boolean> ISA_CONTRACT = new HashMap<String, Boolean>();
     private final Map<String, Boolean> ISA_SCOPE = new HashMap<String, Boolean>();
     private final Map<String, Boolean> ISA_QUALIFIER = new HashMap<String, Boolean>();
     private final Map<String, String> FOUND_SUPERCLASS = new HashMap<String, String>();  // Terminal is null
+    private final Map<String, Set<String>> FOUND_INTERFACES = new HashMap<String, Set<String>>();
+    
+    private final boolean verbose;
     
     private final String CONFIGURED_CONTRACT = "org.jvnet.hk2.config.Configured";
     
-    /* package */ Utilities() {
+    /* package */ Utilities(boolean verbose) {
+        this.verbose = verbose;
+        
         // We can pre-load the cache with some obvious ones and thus reduce searching quite a bit
         ISA_CONTRACT.put(Factory.class.getName(), true);
         ISA_CONTRACT.put(Context.class.getName(), true);
@@ -98,6 +107,7 @@ public class Utilities {
         ISA_CONTRACT.put(Retention.class.getName(), false);
         ISA_CONTRACT.put(Proxiable.class.getName(), false);
         ISA_CONTRACT.put(Annotation.class.getName(), false);
+        ISA_CONTRACT.put(Qualifier.class.getName(), false);
         
         ISA_SCOPE.put(Singleton.class.getName(), true);
         ISA_SCOPE.put(PerLookup.class.getName(), true);
@@ -112,6 +122,7 @@ public class Utilities {
         ISA_SCOPE.put(Retention.class.getName(), false);
         ISA_SCOPE.put(Proxiable.class.getName(), false);
         ISA_SCOPE.put(Annotation.class.getName(), false);
+        ISA_SCOPE.put(Qualifier.class.getName(), false);
         
         ISA_QUALIFIER.put(Named.class.getName(), true);
         ISA_QUALIFIER.put(Singleton.class.getName(), false);
@@ -126,6 +137,39 @@ public class Utilities {
         ISA_QUALIFIER.put(Retention.class.getName(), false);
         ISA_QUALIFIER.put(Proxiable.class.getName(), false);
         ISA_QUALIFIER.put(Annotation.class.getName(), false);
+        ISA_QUALIFIER.put(Qualifier.class.getName(), false);
+        
+        FOUND_SUPERCLASS.put(Named.class.getName(), null);
+        FOUND_SUPERCLASS.put(Singleton.class.getName(), null);
+        FOUND_SUPERCLASS.put(PerLookup.class.getName(), null);
+        FOUND_SUPERCLASS.put(Factory.class.getName(), null);
+        FOUND_SUPERCLASS.put(Context.class.getName(), null);
+        FOUND_SUPERCLASS.put(ErrorService.class.getName(), null);
+        FOUND_SUPERCLASS.put(Contract.class.getName(), null);
+        FOUND_SUPERCLASS.put(CONFIGURED_CONTRACT, null);
+        FOUND_SUPERCLASS.put(Scope.class.getName(), null);
+        FOUND_SUPERCLASS.put(Target.class.getName(), null);
+        FOUND_SUPERCLASS.put(Retention.class.getName(), null);
+        FOUND_SUPERCLASS.put(Proxiable.class.getName(), null);
+        FOUND_SUPERCLASS.put(Annotation.class.getName(), null);
+        FOUND_SUPERCLASS.put(Qualifier.class.getName(), null);
+        
+        Set<String> empty = Collections.emptySet();
+        
+        FOUND_INTERFACES.put(Named.class.getName(), empty);
+        FOUND_INTERFACES.put(Singleton.class.getName(), empty);
+        FOUND_INTERFACES.put(PerLookup.class.getName(), empty);
+        FOUND_INTERFACES.put(Factory.class.getName(), empty);
+        FOUND_INTERFACES.put(Context.class.getName(), empty);
+        FOUND_INTERFACES.put(ErrorService.class.getName(), empty);
+        FOUND_INTERFACES.put(Contract.class.getName(), empty);
+        FOUND_INTERFACES.put(CONFIGURED_CONTRACT, empty);
+        FOUND_INTERFACES.put(Scope.class.getName(), empty);
+        FOUND_INTERFACES.put(Target.class.getName(), empty);
+        FOUND_INTERFACES.put(Retention.class.getName(), empty);
+        FOUND_INTERFACES.put(Proxiable.class.getName(), empty);
+        FOUND_INTERFACES.put(Annotation.class.getName(), empty);
+        FOUND_INTERFACES.put(Qualifier.class.getName(), empty);
     }
     
     /**
@@ -138,7 +182,11 @@ public class Utilities {
      * @return an IOStream if the file could be located
      * @throws IOException
      */
-    private InputStream findClass(File searchHere, String dotDelimitedName, boolean searchClassPath) throws IOException {
+    private InputStream findClass(File searchHere, String dotDelimitedName, boolean searchClassPath, String calledFrom) throws IOException {
+        if (verbose && searchClassPath) {
+            System.out.println("Looking for " + dotDelimitedName + " for discovery of " + calledFrom);
+        }
+        
         if (searchHere.isDirectory()) {
             String properPathName = dotDelimitedName.replace('.', File.separatorChar) + DOT_CLASS;
             
@@ -170,13 +218,21 @@ public class Utilities {
             String pathElement = st.nextToken();
             
             File nextSearchGuy = new File(pathElement);
-            InputStream is = findClass(nextSearchGuy, dotDelimitedName, false);
+            InputStream is = findClass(nextSearchGuy, dotDelimitedName, false, calledFrom);
             if (is != null) {
                 return is;
             }
         }
         
         return null;
+    }
+    
+    private void nullCaches(String dotDelimitedName) {
+        ISA_CONTRACT.put(dotDelimitedName, false);
+        ISA_SCOPE.put(dotDelimitedName, false);
+        ISA_QUALIFIER.put(dotDelimitedName, false);
+        FOUND_SUPERCLASS.put(dotDelimitedName, null);
+        
     }
     
     /**
@@ -192,23 +248,23 @@ public class Utilities {
         }
         
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true);
+            InputStream is = findClass(searchHere, dotDelimitedName, true, "isaContract");
+            if (is == null) {
+                nullCaches(dotDelimitedName);
+                
+                return false;
+            }
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(Contract.class.getName().replace('.', '/'));
+            ContractClassVisitor ccv = new ContractClassVisitor(CONTRACT_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
-            boolean retVal = ccv.isALookedForThing();
-            
-            // Record result
-            ISA_CONTRACT.put(dotDelimitedName, retVal);
-            
-            return retVal;
+            return ccv.isALookedForThing();
         }
         catch (IOException ioe) {
-            ISA_CONTRACT.put(dotDelimitedName, false);
+            nullCaches(dotDelimitedName);
             
             return false;
         }
@@ -228,23 +284,23 @@ public class Utilities {
         }
         
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true);
+            InputStream is = findClass(searchHere, dotDelimitedName, true, "superclass");
+            if (is == null) {
+                nullCaches(dotDelimitedName);
+                
+                return null;
+            }
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(null);
+            ContractClassVisitor ccv = new ContractClassVisitor(null, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
-            String retVal = ccv.getDotDelimitedSuperclass();
-            
-            // Record result
-            FOUND_SUPERCLASS.put(dotDelimitedName, retVal);
-            
-            return retVal;
+            return ccv.getDotDelimitedSuperclass();
         }
         catch (IOException ioe) {
-            FOUND_SUPERCLASS.put(dotDelimitedName, null);
+            nullCaches(dotDelimitedName);
             
             return null;
         }
@@ -263,22 +319,25 @@ public class Utilities {
         }
         
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true);
+            InputStream is = findClass(searchHere, dotDelimitedName, true, "isascope");
+            if (is == null) {
+                nullCaches(dotDelimitedName);
+                
+                return false;
+            }
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(Scope.class.getName().replace('.', '/'));
+            ContractClassVisitor ccv = new ContractClassVisitor(SCOPE_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
-            boolean retVal = ccv.isALookedForThing();
-            
-            ISA_SCOPE.put(dotDelimitedName, retVal);
-            
-            return retVal;
+            return ccv.isALookedForThing();
         }
         catch (IOException ioe) {
             // Error on the side of not a contract
+            nullCaches(dotDelimitedName);
+            
             return false;
         }
     }
@@ -296,22 +355,25 @@ public class Utilities {
         }
         
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true);
+            InputStream is = findClass(searchHere, dotDelimitedName, true, "isaQualifier");
+            if (is == null) {
+                nullCaches(dotDelimitedName);
+                
+                return false;
+            }
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(Qualifier.class.getName().replace('.', '/'));
+            ContractClassVisitor ccv = new ContractClassVisitor(QUALIFIER_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
-            boolean retVal = ccv.isALookedForThing();
-            
-            ISA_QUALIFIER.put(dotDelimitedName, retVal);
-            
-            return retVal;
+            return ccv.isALookedForThing();
         }
         catch (IOException ioe) {
             // Error on the side of not a contract
+            nullCaches(dotDelimitedName);
+            
             return false;
         }
     }
@@ -340,19 +402,18 @@ public class Utilities {
         getAssociatedSuperclassContracts(searchHere, dotDelimitedName, retVal);
         
         while (dotDelimitedName != null) {
-            try {
-                InputStream is = findClass(searchHere, dotDelimitedName, true);
-            
-                ClassReader reader = new ClassReader(is);
-            
-                ContractFinderClassVisitor cfcv = new ContractFinderClassVisitor(this, searchHere);
-            
-                reader.accept(cfcv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-            
-                retVal.addAll(cfcv.getAllContracts());
+            // getAssociatedSuperclassContracts is guaranteed to fill in the INTERFACES cache
+            Set<String> allInterfaces = FOUND_INTERFACES.get(dotDelimitedName);
+            if (allInterfaces == null) {
+                dotDelimitedName = getSuperclass(searchHere, dotDelimitedName);
+                
+                continue;
             }
-            catch (IOException ioe) {
-              // Don't add anything to the return
+            
+            for (String dotDelimitedInterface : allInterfaces) {
+                if (isClassAContract(searchHere, dotDelimitedInterface)) {
+                    retVal.add(dotDelimitedInterface);  
+                }
             }
             
             dotDelimitedName = getSuperclass(searchHere, dotDelimitedName);
@@ -361,13 +422,21 @@ public class Utilities {
         return retVal;
     }
     
-    private static class ContractClassVisitor extends AbstractClassVisitorImpl {
-        private boolean isContract = false;
+    private class ContractClassVisitor extends AbstractClassVisitorImpl {
+        private final String cacheKey;
         private final String lookForMe;
+        
+        private boolean isLookedFor = false;
+        
+        private boolean isContract = false;
+        private boolean isScope = false;
+        private boolean isQualifier = false;
+        
         private String dotDelimitedSuperclass;
         
-        private ContractClassVisitor(String lookForMe) {
+        private ContractClassVisitor(String lookForMe, String cacheKey) {
             this.lookForMe = lookForMe;
+            this.cacheKey = cacheKey;
         }
         
         /* (non-Javadoc)
@@ -380,7 +449,22 @@ public class Utilities {
                 String signature,
                 String superName,
                 String[] interfaces) {
-            if (superName == null) return;
+            if (!FOUND_INTERFACES.containsKey(cacheKey)) {
+                LinkedHashSet<String> iFaces = new LinkedHashSet<String>();
+                
+                for (String iFace : interfaces) {
+                    String iWithDots = iFace.replace('/', '.');
+                    iFaces.add(iWithDots);
+                }
+                
+                FOUND_INTERFACES.put(cacheKey, iFaces);
+            }
+            
+            if (superName == null) {
+                FOUND_SUPERCLASS.put(cacheKey, null);
+                
+                return;
+            }
             
             dotDelimitedSuperclass = superName.replace('/', '.');
             
@@ -388,6 +472,7 @@ public class Utilities {
                 dotDelimitedSuperclass = null;
             }
             
+            FOUND_SUPERCLASS.put(cacheKey, dotDelimitedSuperclass);
         }
         
         /* (non-Javadoc)
@@ -395,57 +480,38 @@ public class Utilities {
          */
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean arg1) {
-            if (lookForMe != null && desc.contains(lookForMe)) {
+            if (lookForMe != null && desc.equals(lookForMe)) {
+                isLookedFor = true;
+            }
+            
+            if (desc.equals(CONTRACT_WITH_SLASHES)) {
                 isContract = true;
+            }
+            
+            if (desc.equals(SCOPE_WITH_SLASHES)) {
+                isScope = true;
+            }
+            
+            if (desc.equals(QUALIFIER_WITH_SLASHES)) {
+                isQualifier = true;
             }
             
             return null;
         }
         
+        public void visitEnd() {
+            ISA_CONTRACT.put(cacheKey, isContract);
+            ISA_SCOPE.put(cacheKey, isScope);
+            ISA_QUALIFIER.put(cacheKey, isQualifier);
+        }
+        
         private boolean isALookedForThing() {
-            return isContract;
+            return isLookedFor;
         }
         
         private String getDotDelimitedSuperclass() {
             return dotDelimitedSuperclass;
         }
-        
-    }
-    
-    private static class ContractFinderClassVisitor extends AbstractClassVisitorImpl {
-        private final Set<String> allContracts = new LinkedHashSet<String>();
-        private final File searchHere;
-        private final Utilities utilities;
-        
-        private ContractFinderClassVisitor(Utilities utilities, File searchHere) {
-            this.utilities = utilities;
-            this.searchHere = searchHere;
-        }
-        
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.ClassVisitor#visit(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
-         */
-        @Override
-        public void visit(int version,
-                int access,
-                String name,
-                String signature,
-                String superName,
-                String[] interfaces) {
-            for (String iFace : interfaces) {
-                String iWithDots = iFace.replace('/', '.');
-                if (utilities.isClassAContract(searchHere, iWithDots)) {
-                    allContracts.add(iWithDots);
-                    
-                }
-            }
-
-        }
-        
-        private Set<String> getAllContracts() {
-            return allContracts;
-        }
-        
         
     }
 
