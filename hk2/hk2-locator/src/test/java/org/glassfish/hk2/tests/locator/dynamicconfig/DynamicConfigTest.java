@@ -39,9 +39,11 @@
  */
 package org.glassfish.hk2.tests.locator.dynamicconfig;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -324,5 +326,65 @@ public class DynamicConfigTest {
         Assert.assertNotNull(fromLookup);
         
         Assert.assertEquals(fd, fromLookup.getBaseDescriptor());
+    }
+    
+    /**
+     * Tests that a complex hierarchy of classes and interfaces gets all of the proper
+     * types and contracts
+     */
+    @Test
+    public void testProperSetOfTypes() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        ActiveDescriptor<ComplexObject> d = config.addActiveDescriptor(ComplexObject.class);
+        
+        {
+            Set<String> contracts = d.getAdvertisedContracts();
+        
+            Assert.assertTrue(contracts.contains(ComplexObject.class.getName()));
+            Assert.assertTrue(contracts.contains(IsAClassContract.class.getName()));
+            Assert.assertTrue(contracts.contains(IsAContract.class.getName()));
+            Assert.assertTrue(contracts.contains(ParameterizedObject.class.getName()));
+            Assert.assertTrue(contracts.contains(ParameterizedInterface.class.getName()));
+        
+            Assert.assertEquals(5, contracts.size());
+        }
+        
+        {
+            Set<Type> contracts = d.getContractTypes();
+            
+            // This also tests (kind of) that the returned set is ordered
+            // The ordering is classes first, interfaces second (in the order declared)
+            int lcv = 0;
+            for (Type contract : contracts) {
+                switch (lcv) {
+                case 0:
+                    Assert.assertEquals(ComplexObject.class, contract);
+                    break;
+                case 1:
+                    Assert.assertEquals(IsAClassContract.class, contract);
+                    break;
+                case 2:
+                    Assert.assertEquals(ParameterizedObject.class, contract);
+                    break;
+                case 3:
+                    Assert.assertEquals(IsAContract.class, contract);
+                    break;
+                case 4: {
+                    ParameterizedType pt = (ParameterizedType) contract;
+                    
+                    Assert.assertEquals(ParameterizedInterface.class, pt.getRawType());
+                    Assert.assertEquals(String.class, pt.getActualTypeArguments()[0]);
+                    break;  
+                } 
+                default:
+                    Assert.fail("Unknown type: " + contract);
+                }
+                
+                lcv++;
+            }
+        }
+        
     }
 }

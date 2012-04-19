@@ -58,6 +58,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -311,17 +312,33 @@ public class Utilities {
     }
     
     private static Set<Type> getAutoAdvertisedTypes(Type t) {
-        HashSet<Type> retVal = new HashSet<Type>();
+        LinkedHashSet<Type> retVal = new LinkedHashSet<Type>();
         retVal.add(t);
         
         Class<?> rawClass = getRawClass(t);
         if (rawClass == null) return retVal;
         
-        for (Type iface : rawClass.getGenericInterfaces()) {
-            Class<?> ifaceClass = getRawClass(iface);
-            if (ifaceClass.isAnnotationPresent(Contract.class)) { 
-                retVal.add(iface);
+        Type genericSuperclass = rawClass.getGenericSuperclass();
+        while (genericSuperclass != null) {
+            Class<?> rawSuperclass = getRawClass(genericSuperclass);
+            if (rawSuperclass == null) break;
+            
+            if (rawSuperclass.isAnnotationPresent(Contract.class)) {
+                retVal.add(genericSuperclass);
             }
+            
+            genericSuperclass = rawSuperclass.getGenericSuperclass();
+        }
+        
+        while (rawClass != null) {
+            for (Type iface : rawClass.getGenericInterfaces()) {
+                Class<?> ifaceClass = getRawClass(iface);
+                if (ifaceClass.isAnnotationPresent(Contract.class)) { 
+                    retVal.add(iface);
+                }
+            }
+            
+            rawClass = rawClass.getSuperclass();
         }
         
         return retVal;
@@ -1264,7 +1281,7 @@ public class Utilities {
     private static Set<Annotation> getAllQualifiers(
             AnnotatedElement annotatedGuy) {
         
-        HashSet<Annotation> retVal = new HashSet<Annotation>();
+        LinkedHashSet<Annotation> retVal = new LinkedHashSet<Annotation>();
         for (Annotation annotation : annotatedGuy.getAnnotations()) {
             if (isAnnotationAQualifier(annotation)) {
                 retVal.add(annotation);
