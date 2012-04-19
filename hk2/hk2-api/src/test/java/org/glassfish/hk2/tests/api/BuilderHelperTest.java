@@ -40,6 +40,8 @@
 package org.glassfish.hk2.tests.api;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +60,7 @@ import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.hk2.tests.contracts.AnotherContract;
 import org.glassfish.hk2.tests.contracts.SomeContract;
 import org.glassfish.hk2.tests.services.AnotherService;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Assert;
@@ -312,5 +315,67 @@ public class BuilderHelperTest {
         Assert.assertEquals(1, keyAValues.size());
         
         Assert.assertEquals(VALUE_A, keyAValues.get(0));
+    }
+    
+    /**
+     * Tests that a class with a complex hierarchy is analyzed properly
+     */
+    @Test
+    public void testComplexHierarchyClass() {
+        Descriptor d = BuilderHelper.createDescriptorFromClass(ComplexHierarchy.class);
+        
+        Set<String> contracts = d.getAdvertisedContracts();
+        
+        Assert.assertTrue(contracts.contains(ComplexHierarchy.class.getName()));
+        Assert.assertTrue(contracts.contains(MarkerInterfaceImpl.class.getName()));
+        Assert.assertTrue(contracts.contains(MarkerInterface2.class.getName()));
+        Assert.assertTrue(contracts.contains(ParameterizedInterface.class.getName()));
+        
+        Assert.assertEquals(4, contracts.size());
+    }
+    
+    /**
+     * Tests that an object with a complex hierarchy is analyzed properly
+     */
+    @Test
+    public void testComplexHierarchyObject() {
+        AbstractActiveDescriptor<ComplexHierarchy> d = BuilderHelper.createConstantDescriptor(new ComplexHierarchy());
+        
+        Set<String> contracts = d.getAdvertisedContracts();
+        
+        Assert.assertTrue(contracts.contains(ComplexHierarchy.class.getName()));
+        Assert.assertTrue(contracts.contains(MarkerInterfaceImpl.class.getName()));
+        Assert.assertTrue(contracts.contains(MarkerInterface2.class.getName()));
+        Assert.assertTrue(contracts.contains(ParameterizedInterface.class.getName()));
+        
+        Assert.assertEquals(4, contracts.size());
+        
+        Set<Type> contractsAsTypes = d.getContractTypes();
+        
+        int lcv = 0;
+        for (Type contractAsType : contractsAsTypes) {
+            // This tests that this is an ordered iterator
+            switch(lcv) {
+            case 0:
+                Assert.assertEquals(ComplexHierarchy.class, contractAsType);
+                break;
+            case 1:
+                Assert.assertEquals(MarkerInterfaceImpl.class, contractAsType);
+                break;
+            case 2:
+                Assert.assertEquals(MarkerInterface2.class, contractAsType);
+                break;
+            case 3:
+                ParameterizedType pt = (ParameterizedType) contractAsType;
+                
+                Assert.assertEquals(ParameterizedInterface.class, pt.getRawType());
+                Assert.assertEquals(String.class, pt.getActualTypeArguments()[0]);
+                break;
+            default:
+                Assert.fail("Too many types: " + contractAsType);
+            }
+            
+            lcv++;
+        }
     }
 }

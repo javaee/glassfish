@@ -141,16 +141,34 @@ public class ReflectionHelper {
         Set<Type> retVal = new LinkedHashSet<Type>();
         if (t == null) return retVal;
         
-        retVal.add(t.getClass());
+        Class<?> clazz = t.getClass();
         
-        Type genericInterfaces[] = t.getClass().getGenericInterfaces();
-        for (Type genericInterface : genericInterfaces) {
-            Class<?> rawClass = getRawClass(genericInterface);
-            if (rawClass == null) continue;
+        retVal.add(clazz);
+        
+        Type genericSuperclass = clazz.getGenericSuperclass();
+        while (genericSuperclass != null) {
+            Class<?> rawClass = getRawClass(genericSuperclass);
+            if (rawClass == null) break;
             
             if (rawClass.isAnnotationPresent(Contract.class)) {
-                retVal.add(genericInterface);
+                retVal.add(genericSuperclass);
             }
+            
+            genericSuperclass = rawClass.getGenericSuperclass();
+        }
+        
+        while (clazz != null) {
+            Type genericInterfaces[] = clazz.getGenericInterfaces();
+            for (Type genericInterface : genericInterfaces) {
+                Class<?> rawClass = getRawClass(genericInterface);
+                if (rawClass == null) continue;
+            
+                if (rawClass.isAnnotationPresent(Contract.class)) {
+                    retVal.add(genericInterface);
+                }
+            }
+            
+            clazz = clazz.getSuperclass();
         }
         
         return retVal;
@@ -167,11 +185,24 @@ public class ReflectionHelper {
         
         retVal.add(clazz.getName());
         
-        Class<?> interfaces[] = clazz.getInterfaces();
-        for (Class<?> iFace : interfaces) {
-            if (iFace.isAnnotationPresent(Contract.class)) {
-                retVal.add(iFace.getName());
+        Class<?> extendsClasses = clazz.getSuperclass();
+        while (extendsClasses != null) {
+            if (extendsClasses.isAnnotationPresent(Contract.class)) {
+                retVal.add(extendsClasses.getName());
             }
+            
+            extendsClasses = extendsClasses.getSuperclass();
+        }
+        
+        while (clazz != null) {
+            Class<?> interfaces[] = clazz.getInterfaces();
+            for (Class<?> iFace : interfaces) {
+                if (iFace.isAnnotationPresent(Contract.class)) {
+                    retVal.add(iFace.getName());
+                }
+            }
+            
+            clazz = clazz.getSuperclass();
         }
         
         return retVal;

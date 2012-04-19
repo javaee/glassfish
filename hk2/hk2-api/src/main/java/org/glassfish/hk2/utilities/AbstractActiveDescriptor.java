@@ -43,7 +43,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -67,9 +67,9 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      */
     private static final long serialVersionUID = 7080312303893604939L;
     
-    private Set<Type> advertisedContracts = new HashSet<Type>();
+    private Set<Type> advertisedContracts = new LinkedHashSet<Type>();
     private Class<? extends Annotation> scope;
-    private Set<Annotation> qualifiers = new HashSet<Annotation>();
+    private Set<Annotation> qualifiers = new LinkedHashSet<Annotation>();
     
     private transient boolean cacheSet = false;
     private transient T cachedValue;
