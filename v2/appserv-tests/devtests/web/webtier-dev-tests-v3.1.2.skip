@@ -10,3 +10,4 @@ testFormAuthenticator # need Grizzly 2.x
 contextXmlLifecycleListener # trunk
 contextXmlLifecycleListenerGlobal # trunk	
 contextXmlRemoteHostValve #trunk
+traceEnabled # trunk
