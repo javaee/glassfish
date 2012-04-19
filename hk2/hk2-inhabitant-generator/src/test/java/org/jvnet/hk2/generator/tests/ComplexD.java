@@ -40,10 +40,11 @@
 package org.jvnet.hk2.generator.tests;
 
 /**
- * Not annotated with &#64;Service but is produced by a factory
+ * Not a contract
  * 
  * @author jwells
+ *
  */
-public class ComplexImpl extends ComplexEImpl implements ComplexA, ComplexB, ComplexC {
+public interface ComplexD {
 
 }
