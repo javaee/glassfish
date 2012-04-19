@@ -90,7 +90,7 @@ public class InhabitantsGeneratorTest {
     private final static String KEY2 = "key2";
     private final static String VALUE2 = "value2";
     
-    // Non-standard name
+    /** The name for non-defaulted things */
     public final static String NON_DEFAULT_NAME = "non-default-name";
     
     private final static Set<DescriptorImpl> EXPECTED_DESCRIPTORS = new HashSet<DescriptorImpl>();
@@ -204,8 +204,10 @@ public class InhabitantsGeneratorTest {
             DescriptorImpl di = new DescriptorImpl();
             di.setImplementation("org.jvnet.hk2.generator.tests.ComplexFactory");
             di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexImpl");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexDImpl");
             di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexA");
             di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexC");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexE");
             di.setName(NON_DEFAULT_NAME);
             di.setScope(PerLookup.class.getName());
             di.setDescriptorType(DescriptorType.FACTORY);

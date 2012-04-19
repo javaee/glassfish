@@ -47,9 +47,9 @@ import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -79,6 +79,7 @@ public class Utilities {
     private final Map<String, Boolean> ISA_CONTRACT = new HashMap<String, Boolean>();
     private final Map<String, Boolean> ISA_SCOPE = new HashMap<String, Boolean>();
     private final Map<String, Boolean> ISA_QUALIFIER = new HashMap<String, Boolean>();
+    private final Map<String, String> FOUND_SUPERCLASS = new HashMap<String, String>();  // Terminal is null
     
     private final String CONFIGURED_CONTRACT = "org.jvnet.hk2.config.Configured";
     
@@ -199,7 +200,7 @@ public class Utilities {
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
-            boolean retVal = ccv.isAContract();
+            boolean retVal = ccv.isALookedForThing();
             
             // Record result
             ISA_CONTRACT.put(dotDelimitedName, retVal);
@@ -210,6 +211,42 @@ public class Utilities {
             ISA_CONTRACT.put(dotDelimitedName, false);
             
             return false;
+        }
+    }
+    
+    /**
+     * Returns true if the given class is a contract
+     * 
+     * @param searchHere The file or jar to look in
+     * @param dotDelimitedName The fully qualified class name to look for
+     * @return The dot-delimited superclass name or null if this is terminal (is
+     *   an interface or extends java.lang.Object)
+     */
+    private String getSuperclass(File searchHere, String dotDelimitedName) {
+        if (FOUND_SUPERCLASS.containsKey(dotDelimitedName)) {
+            return FOUND_SUPERCLASS.get(dotDelimitedName);
+        }
+        
+        try {
+            InputStream is = findClass(searchHere, dotDelimitedName, true);
+            
+            ClassReader reader = new ClassReader(is);
+            
+            ContractClassVisitor ccv = new ContractClassVisitor(null);
+            
+            reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            
+            String retVal = ccv.getDotDelimitedSuperclass();
+            
+            // Record result
+            FOUND_SUPERCLASS.put(dotDelimitedName, retVal);
+            
+            return retVal;
+        }
+        catch (IOException ioe) {
+            FOUND_SUPERCLASS.put(dotDelimitedName, null);
+            
+            return null;
         }
     }
     
@@ -234,7 +271,7 @@ public class Utilities {
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
-            boolean retVal = ccv.isAContract();
+            boolean retVal = ccv.isALookedForThing();
             
             ISA_SCOPE.put(dotDelimitedName, retVal);
             
@@ -267,7 +304,7 @@ public class Utilities {
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
-            boolean retVal = ccv.isAContract();
+            boolean retVal = ccv.isALookedForThing();
             
             ISA_QUALIFIER.put(dotDelimitedName, retVal);
             
@@ -279,39 +316,78 @@ public class Utilities {
         }
     }
     
+    private void getAssociatedSuperclassContracts(File searchHere, String dotDelimitedName, Set<String> addToMe) {
+        if (!addToMe.contains(dotDelimitedName) && isClassAContract(searchHere, dotDelimitedName)) {
+            addToMe.add(dotDelimitedName);
+        }
+        
+        String dotDelimitedSuperclass = getSuperclass(searchHere, dotDelimitedName);
+        if (dotDelimitedSuperclass != null) {
+            getAssociatedSuperclassContracts(searchHere, dotDelimitedSuperclass, addToMe);
+        }
+    }
+    
     /**
      * Gets the contracts associated with the name passed in
      * @param searchHere
      * @param dotDelimitedName
-     * @return
+     * @return The set of contracts associated with this dotDelimited name (ordered iterator)
      */
-    public List<String> getAssociatedContracts(File searchHere, String dotDelimitedName) {
-        try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true);
+    public Set<String> getAssociatedContracts(File searchHere, String dotDelimitedName) {
+        LinkedHashSet<String> retVal = new LinkedHashSet<String>();
+        retVal.add(dotDelimitedName);
+        
+        getAssociatedSuperclassContracts(searchHere, dotDelimitedName, retVal);
+        
+        while (dotDelimitedName != null) {
+            try {
+                InputStream is = findClass(searchHere, dotDelimitedName, true);
             
-            ClassReader reader = new ClassReader(is);
+                ClassReader reader = new ClassReader(is);
             
-            ContractFinderClassVisitor cfcv = new ContractFinderClassVisitor(this, searchHere);
+                ContractFinderClassVisitor cfcv = new ContractFinderClassVisitor(this, searchHere);
             
-            reader.accept(cfcv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                reader.accept(cfcv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
-            return cfcv.getAllContracts();
+                retVal.addAll(cfcv.getAllContracts());
+            }
+            catch (IOException ioe) {
+              // Don't add anything to the return
+            }
             
+            dotDelimitedName = getSuperclass(searchHere, dotDelimitedName);
         }
-        catch (IOException ioe) {
-            List<String> errorReturn = new LinkedList<String>();
-            errorReturn.add(dotDelimitedName);
-            
-            return errorReturn;
-        }
+        
+        return retVal;
     }
     
     private static class ContractClassVisitor extends AbstractClassVisitorImpl {
         private boolean isContract = false;
         private final String lookForMe;
+        private String dotDelimitedSuperclass;
         
         private ContractClassVisitor(String lookForMe) {
             this.lookForMe = lookForMe;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.ClassVisitor#visit(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+         */
+        @Override
+        public void visit(int version,
+                int access,
+                String name,
+                String signature,
+                String superName,
+                String[] interfaces) {
+            if (superName == null) return;
+            
+            dotDelimitedSuperclass = superName.replace('/', '.');
+            
+            if (Object.class.getName().equals(dotDelimitedSuperclass)) {
+                dotDelimitedSuperclass = null;
+            }
+            
         }
         
         /* (non-Javadoc)
@@ -319,19 +395,25 @@ public class Utilities {
          */
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean arg1) {
-            if (desc.contains(lookForMe)) isContract = true;
+            if (lookForMe != null && desc.contains(lookForMe)) {
+                isContract = true;
+            }
             
             return null;
         }
         
-        private boolean isAContract() {
+        private boolean isALookedForThing() {
             return isContract;
+        }
+        
+        private String getDotDelimitedSuperclass() {
+            return dotDelimitedSuperclass;
         }
         
     }
     
     private static class ContractFinderClassVisitor extends AbstractClassVisitorImpl {
-        private final List<String> allContracts = new LinkedList<String>();
+        private final Set<String> allContracts = new LinkedHashSet<String>();
         private final File searchHere;
         private final Utilities utilities;
         
@@ -350,8 +432,6 @@ public class Utilities {
                 String signature,
                 String superName,
                 String[] interfaces) {
-            allContracts.add(name.replace('/', '.'));
-            
             for (String iFace : interfaces) {
                 String iWithDots = iFace.replace('/', '.');
                 if (utilities.isClassAContract(searchHere, iWithDots)) {
@@ -362,7 +442,7 @@ public class Utilities {
 
         }
         
-        private List<String> getAllContracts() {
+        private Set<String> getAllContracts() {
             return allContracts;
         }
         

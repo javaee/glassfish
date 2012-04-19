@@ -39,11 +39,14 @@
  */
 package org.jvnet.hk2.generator.tests;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
- * Not annotated with &#64;Service but is produced by a factory
+ * Is a contract
  * 
  * @author jwells
  */
-public class ComplexImpl extends ComplexEImpl implements ComplexA, ComplexB, ComplexC {
+@Contract
+public class ComplexDImpl implements ComplexD {
 
 }

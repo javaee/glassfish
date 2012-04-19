@@ -40,8 +40,9 @@
 package org.jvnet.hk2.generator.internal;
 
 import java.io.File;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.inject.Named;
@@ -69,7 +70,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final Utilities utilities = new Utilities();
     
     private String implName;
-    private final LinkedList<String> iFaces = new LinkedList<String>();
+    private final LinkedHashSet<String> iFaces = new LinkedHashSet<String>();
     private String scopeClass;
     private final LinkedList<String> qualifiers = new LinkedList<String>();
     private boolean isAService = false;
@@ -103,15 +104,11 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             String[] interfaces) {
         implName = name.replace("/", ".");
         
-        for (String i : interfaces) {
-            String iFace = i.replace("/", ".");
-            if (utilities.isClassAContract(searchHere, iFace)) {
-                iFaces.add(iFace);
-                
-                if (Factory.class.getName().equals(iFace)) isFactory = true;
-            }
-        }
+        iFaces.addAll(utilities.getAssociatedContracts(searchHere, implName));
         
+        if (iFaces.contains(Factory.class.getName())) {
+            isFactory = true;
+        }
     }
 
     /* (non-Javadoc)
@@ -250,7 +247,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             // This might be parametererized, strip of the parameters
             trueFactoryClass = trueFactoryClass.replace('/', '.');
             
-            List<String> associatedContracts = utilities.getAssociatedContracts(
+            Set<String> associatedContracts = utilities.getAssociatedContracts(
                     searchHere, trueFactoryClass);
             
             for (String contract : associatedContracts) {
