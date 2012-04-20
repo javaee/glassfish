@@ -81,8 +81,8 @@ public class UtilitiesTest {
 
         assertEquals(s1, locator.getService(MyInterface1.class));
 
-        Utilities.addIndex(locator, descriptor, MyInterface2.class, "foo");
-        Utilities.addIndex(locator, descriptor, MyInterface3.class, "bar");
+        Utilities.addIndex(locator, descriptor, MyInterface2.class.getName(), "foo");
+        Utilities.addIndex(locator, descriptor, MyInterface3.class.getName(), "bar");
 
         MyInterface2 s2 = locator.getService(MyInterface2.class, "foo");
 
