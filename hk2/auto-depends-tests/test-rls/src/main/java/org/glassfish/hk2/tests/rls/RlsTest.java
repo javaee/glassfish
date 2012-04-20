@@ -48,12 +48,15 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.rls.model.ServiceOtherToYImpl;
 import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
 import org.glassfish.hk2.tests.rls.infra.RLSTestMultiThreadedInhabitantActivator;
@@ -64,6 +67,7 @@ import org.glassfish.hk2.tests.rls.model.ServiceBaseX;
 import org.glassfish.hk2.tests.rls.model.ServiceDerivedX;
 import org.glassfish.hk2.tests.rls.model.ServiceOtherToY;
 import org.glassfish.hk2.tests.rls.model.ServiceZ;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -72,10 +76,10 @@ import com.sun.hk2.component.Holder;
 @Service
 public class RlsTest implements ModuleStartup {
 
-  @Inject static Habitat h;
+  @Inject ServiceLocator h;
 //  @Inject(optional=true) static ContractY y;
 //  @Inject(optional=true) static ServiceOtherToY other;
-  @Inject static Holder<ServiceZ> zHolder;
+  @Inject Provider<ServiceZ> zHolder;
   
   @Override
   public void setStartupContext(StartupContext context) {
@@ -90,12 +94,8 @@ public class RlsTest implements ModuleStartup {
   public void stop() {
   }
 
-  public static void runTests() {
-    assert h.isInitialized() : "Sanity check";
-    
-    assertTrue("Sorter should be called", RandomInhabitantSorter.wasCalled());
-    assertTrue("Activator should be called", RLSTestMultiThreadedInhabitantActivator.wasCalled());
-    
+  public void runTests() {
+     
 //    assertNull("can't support dependencies to a non RLS", y);
 //    assertNull("can't support dependencies to a non RLS", other);
 
@@ -105,21 +105,17 @@ public class RlsTest implements ModuleStartup {
       fail(e.getMessage());
     }
     
-    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(ContractX.class.getName());
+    List<?> coll = h.getAllServices(BuilderHelper.createContractFilter(ContractX.class.getName()));
     assertEquals("ContractX service count: " + coll, 2, coll.size());
-    mustBeActive(coll, true);
-
-    coll = new HashSet<Inhabitant<?>>(h.getInhabitantsByContract(RunLevel.class.getName()));
+    
+    coll =  h.getAllServices(BuilderHelper.createContractFilter(RunLevel.class.getName()));
     assertEquals("ContractX service count: " + coll, 5, coll.size());
     
-    mustBeActive(coll, true);
-
     verifyServiceBaseX();
     verifyServiceDerivedX();
     verifyServiceY();
     verifyServiceZ();
     
-    verifyInhabitantMetaData();
   }
 
   @SuppressWarnings("static-access")
@@ -128,9 +124,6 @@ public class RlsTest implements ModuleStartup {
         2, ServiceBaseX.ctorCount);
     assertEquals("postConstruct count (one for base one for derived thru base)", 
         2, ServiceBaseX.postConstructCount);
-    assertNotNull(ServiceBaseX.y);
-    assertNotNull(ServiceBaseX.other);
-    assertSame(ServiceBaseX.y, ServiceBaseX.other.getY());
   }
 
   private static void verifyServiceDerivedX() {
@@ -138,24 +131,18 @@ public class RlsTest implements ModuleStartup {
         1, ServiceDerivedX.ctorCount);
     assertEquals("postConstruct count", 
         1, ServiceDerivedX.postConstructCount);
-    assertNotNull(ServiceDerivedX.y);
   }
 
-  private static void verifyServiceY() {
+  private void verifyServiceY() {
     assertEquals("ctor count", 
         1, ServiceOtherToYImpl.ctorCount);
     assertEquals("postConstruct count", 
         1, ServiceOtherToYImpl.postConstructCount);
-    assertNotNull("other.y", ServiceOtherToYImpl.y);
-    assertNotNull("other.allY", ServiceOtherToYImpl.allY);
-    assertEquals("other.allY count", 3, ServiceOtherToYImpl.allY.length);
-    Collection<Inhabitant<?>> coll = h.getInhabitantsByContract(ContractY.class.getName());
+    List<?> coll = h.getAllServices(BuilderHelper.createContractFilter(ContractY.class.getName()));
     assertEquals("ContractY service count: " + coll, 3, coll.size());
-    mustBeActive(coll, true);
-    assertNotNull("other.zHolder", ServiceOtherToYImpl.zHolder);
   }
 
-  private static void verifyServiceZ() {
+  private  void verifyServiceZ() {
     assertNotNull("holder to z", zHolder);
     
     assertEquals("ctor count", 
@@ -168,8 +155,6 @@ public class RlsTest implements ModuleStartup {
         1, ServiceZ.ctorCount);
     assertEquals("postConstruct count", 
         1, ServiceZ.postConstructCount);
-
-    assertSame("other.zHolder", zHolder.get(), ServiceOtherToYImpl.zHolder.get());
   }
   
   private static void mustBeActive(Collection<Inhabitant<?>> coll, boolean expectActive) {
@@ -182,21 +167,5 @@ public class RlsTest implements ModuleStartup {
     }
   }
 
-  /**
-   * verifies that RunLevel metadata exists on the inhabitants (using habitat file approach)
-   */
-  private static void verifyInhabitantMetaData() {
-    Iterable<Inhabitant<?>> inhabs = h.getInhabitantsByAnnotation(RunLevel.class, null);
-    assertNotNull(inhabs);
-    int count = 0;
-    for (Inhabitant<?> i : inhabs) {
-      count++;
-      assertNotNull(i.metadata());
-      String val = i.metadata().getOne("runLevel");
-      assertNotNull(i.toString(), val);
-      assertTrue(i + " runLevel val=" + val, Integer.valueOf(val) >= RunLevel.KERNEL_RUNLEVEL);
-    }
-    assertTrue(String.valueOf(count), count >= 5);
-  }
 
 }
