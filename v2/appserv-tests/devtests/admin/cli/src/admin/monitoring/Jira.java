@@ -152,8 +152,9 @@ public class Jira extends MonTest {
         }
         //Try list -m server.* instead of * to see if it makes a difference
         // 4/18/12 'list -m server.*' works, but not 'list -m *'
-        AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
-        //AsadminReturn ar = asadminWithOutput("list", "-m", "server.*");
+        // Almost certainly caused by the the command processor "globbing".
+        //AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
+        AsadminReturn ar = asadminWithOutput("list", "-m", SERVERDOTSTAR);
         // this test started failing intermittenly in early March 2012.  I've now
         // added some diagnostic code...
         boolean b1 = checkForString(ar, "server.applications");
@@ -178,8 +179,8 @@ public class Jira extends MonTest {
 
         //Try get -m server.* instead of * to see if it makes a difference
         // 4/18/12 'get -m server.*' works, but not 'get -m *'
-        AsadminReturn ar2 = asadminWithOutput("get", "-m", STAR);
-        //AsadminReturn ar2 = asadminWithOutput("get", "-m", "server.*");
+        AsadminReturn ar2 = asadminWithOutput("get", "-m", SERVERDOTSTAR);
+        //AsadminReturn ar2 = asadminWithOutput("get", "-m", STAR);
         report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
         report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
         report(checkForString(ar2, "server.web.request"), prepend + "check-getm-server-web-request");
