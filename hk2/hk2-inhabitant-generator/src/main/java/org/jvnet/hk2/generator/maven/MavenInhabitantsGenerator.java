@@ -59,6 +59,11 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
     private String outputDirectory;
     
     /**
+     * @parameter expression="${project.build.testOutputDirectory}"
+     */
+    private String testOutputDirectory;
+    
+    /**
      * @parameter
      */
     private boolean verbose;
@@ -67,21 +72,35 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
      * @parameter
      */
     private String locator;
+    
+    /**
+     * @parameter
+     */
+    private boolean test = false;
 
     /**
      * This method will compile the inhabitants file based on
      * the classes just compiled
      */
     public void execute() throws MojoFailureException {
-        LinkedList<String> arguments = new LinkedList<String>();
         
-        arguments.add(HabitatGenerator.FILE_ARG);
-        arguments.add(outputDirectory);
         
-        File output = new File(outputDirectory);
+        File output;
+        if (!test) {
+            output = new File(outputDirectory);
+        }
+        else {
+            output = new File(testOutputDirectory);
+        }
+        
         if (!output.exists()) {
             return;
         }
+        
+        LinkedList<String> arguments = new LinkedList<String>();
+        
+        arguments.add(HabitatGenerator.FILE_ARG);
+        arguments.add(output.getAbsolutePath());
         
         if (verbose) {
             arguments.add(HabitatGenerator.VERBOSE_ARG);
@@ -97,7 +116,8 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
         int result = HabitatGenerator.embeddedMain(argv);
         
         if (result != 0) {
-            throw new MojoFailureException("Could not generate inhabitants file for " + outputDirectory);
+            throw new MojoFailureException("Could not generate inhabitants file for " +
+                (test ? testOutputDirectory : outputDirectory));
         }
     }
 
