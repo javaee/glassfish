@@ -1,0 +1,4 @@
+
+com.sun.enterprise.module.single
+org.glassfish.hk2.bootstrap.impl
+org.glassfish.hk2.core.utilities
