@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.configuration.introspection.anyreally;
 
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.IOException;

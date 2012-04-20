@@ -40,7 +40,7 @@
 package org.glassfish.hk2.tests.rls.model;
 
 import org.glassfish.hk2.PostConstruct;
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 

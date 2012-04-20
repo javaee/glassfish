@@ -42,7 +42,7 @@ package qualifier;
 
 import contractBy.Bar;
 import junit.framework.Assert;
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 import test1.Test;
 
