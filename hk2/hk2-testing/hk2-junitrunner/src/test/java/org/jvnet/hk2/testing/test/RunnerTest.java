@@ -39,7 +39,10 @@
  */
 package org.jvnet.hk2.testing.test;
 
+import java.util.LinkedList;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -54,6 +57,14 @@ public class RunnerTest extends HK2Runner {
     /** Bob as a name */
     public final static String BOB = "bob";
     private final static String CAROL = "Carol";  // default Named
+    
+    @Before
+    public void before() {
+        LinkedList<String> packages = new LinkedList<String>();
+        packages.add(this.getClass().getPackage().getName());
+        
+        initialize(this.getClass().getName(), packages, null);
+    }
     
     /**
      * Tests that services in this package are found

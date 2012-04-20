@@ -69,5 +69,21 @@ public class NegativeConstructorTest {
         }
         
     }
+    
+    /**
+     * This constructor has two non-zero arg constructors marked &#64;Inject
+     */
+    @Test
+    public void testBadNoConstructorAtAll() {
+        try {
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    NoC.class.getName())));
+            Assert.fail("Should have failed, no constructor");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(" has no constructor marked @Inject and no zero argument constructor"));
+        }
+        
+    }
 
 }
