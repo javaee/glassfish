@@ -39,10 +39,14 @@
  */
 package test1;
 
+import java.util.Collection;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
 
@@ -57,7 +61,7 @@ public class Start extends Assert implements ModuleStartup {
     private StartupContext context;
 
     @Inject
-    Test[] tests;
+   IterableProvider<Test> tests; 
 
     @Inject ServiceLocator serviceLocator;
     
@@ -68,7 +72,7 @@ public class Start extends Assert implements ModuleStartup {
     public void start() {
         assertNotNull(context);
         assertNotNull(serviceLocator);
-        assertTrue(tests.length!=0);
+        assertTrue(tests.getSize()!=0);
 
         for (Test test : tests) {
             System.out.println("Running "+test);

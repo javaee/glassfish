@@ -105,7 +105,7 @@ public class ServiceLocatorTest {
 	       assertEquals( "restore-domain", d.getName());
 	       
 	       Set<String> contracts = d.getAdvertisedContracts();
-	       assertEquals(1, contracts.size());
+	       assertEquals(2, contracts.size());
 	       
 	       assertTrue(contracts.contains("com.sun.enterprise.admin.cli.CLICommand"));
 	      

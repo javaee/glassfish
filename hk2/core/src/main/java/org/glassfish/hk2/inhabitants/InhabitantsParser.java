@@ -179,6 +179,7 @@ public class InhabitantsParser implements InhabitantStore {
 			DescriptorImpl descriptor = new DescriptorImpl();
 			
 			descriptor.setImplementation(implName);
+			descriptor.addAdvertisedContract(implName);
 			descriptor.setScope(Singleton.class.getCanonicalName()); //TODO: scope support?
 			descriptor.setLoader(classLoader);
 			

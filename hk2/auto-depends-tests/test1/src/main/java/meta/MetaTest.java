@@ -41,6 +41,8 @@ package meta;
 
 import test1.Test;
 import javax.inject.Inject;
+
+import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -52,7 +54,7 @@ import org.jvnet.hk2.annotations.Service;
 public class MetaTest extends Test {
 
     @Inject
-    Animal[] animals;
+    IterableProvider<Animal> animals;
 
     /**
      * When an object implementing interface <code>Runnable</code> is used

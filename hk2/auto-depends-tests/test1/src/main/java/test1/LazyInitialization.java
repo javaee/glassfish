@@ -40,10 +40,11 @@
 package test1;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
+
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import com.sun.hk2.component.Holder;
 
 /**
  * Tests lazy initialization patterns of hk2
@@ -54,38 +55,15 @@ import com.sun.hk2.component.Holder;
 public class LazyInitialization extends Test {
 
     @Inject
-    Holder<HeavyBean> holder;
+    Provider<HeavyBean> holder;
 
     @Inject
-    Habitat habitat;
+    ServiceLocator serviceLocator;
     
     public void run() {
         assertNotNull(holder);
 
-        // test injection access
-        if (holder instanceof Inhabitant) {
-            Inhabitant<HeavyBean> i = (Inhabitant<HeavyBean>) holder;
-            assertFalse(i.isActive());
-        }
-
-        // test API access.
-        Inhabitant<HeavyBean> inhabitant = habitat.getInhabitantByType(HeavyBean.class);
-        assertFalse(inhabitant.isActive());
-        System.out.println("Inhabitant isInitialized is " + inhabitant.isActive());
-
         // instanciate the component.
         assertNotNull(holder.get());
-
-        // ensure only instance
-        assertTrue(holder.get()==inhabitant.get());
-
-        // post-conditions testing
-        assertTrue(inhabitant.isActive());
-
-        if (holder instanceof Inhabitant) {
-            Inhabitant<HeavyBean> i = (Inhabitant<HeavyBean>) holder;
-            assertTrue(i.isActive());
-        }
-        System.out.println("Inhabitant isInitialized is " + inhabitant.isActive());
     }
 }
