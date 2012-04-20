@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,44 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2;
+
+package org.glassfish.hk2.runlevel;
+
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.jvnet.hk2.annotations.Contract;
+
 
 /**
  * Implementations of this contract are responsible for orchestration
  * lifecycle events (i.e., start levels) in Hk2.
  * <p>
- * Each resident run level service is responsible for a particular
- * class of <code>RunLevel</code> that is identified by a scope value.
+ * Each run level service is responsible for a particular class of
+ * {@link RunLevel} that is identified by a {@link RunLevelServiceIndicator}
+ * value.
  * <p>
  * Implementations of this service are responsible for orchestrating
- * lifecycle events for services annotated with <code>RunLevel</code>.
+ * lifecycle events for services annotated with {@link RunLevel}.
  * <p>
- * Third parties (or otherwise any sub-component) may choose to define
- * implementation variations of this contract for other specific needs.
  *
- * @author Jeff Trent, tbeerbower
+ * @author jtrent, tbeerbower
  */
 @Contract
 public interface RunLevelService {
+
+    // ----- Constants ------------------------------------------------------
+
+    /**
+     * The default run level service name.
+     */
+    public static final String RUNLEVEL_SERVICE_DEFAULT_NAME = "__runLevelDefaultName";
+
+
+    // ----- Methods --------------------------------------------------------
+
     /**
      * Causes this RunLevelService to move to the specified run level for
-     * all RunLevel instances (identified by scope), orchestrating
-     * the appropriate lifecycle events based on the given implementation
-     * strategy.  See the javadoc for each implementation for specific
-     * details.
+     * all {@link RunLevel} instances (identified by {@link RunLevelServiceIndicator}),
+     * orchestrating the appropriate lifecycle events.
      * <p>
-     * If the RunLevel specified is the same as the current RunLevel then
+     * If the run level specified is the same as the current run level then
      * the RunLevelService may return immediately.
      * <p>
      * Note that the underlying implementation may perform this operation
      * asynchronously. Implementors who choose the asynchronous approach
      * are expected to treat a subsequent proceedTo(newRunLevel) call as
      * an implicit cancellation of any currently running proceedTo() that
-     * is running on one or more managed threads.  Again, see the javadoc
-     * for each implementation for details.
+     * is running on one or more managed threads.
      *
      * @param runLevel  the run level to move to
      */
@@ -98,21 +108,21 @@ public interface RunLevelService {
     Integer getCurrentRunLevel();
 
     /**
-     * The planned run level state.  If this value is different from current
-     * run level, this signifies movement of the underlying RunLevelService.
+     * The planned run level state.
      *
      * @return the planned run level, or null if there is no planned level
      */
     Integer getPlannedRunLevel();
 
     /**
+     * Get the name of this RunLevelService.
      *
      * @return the name
      */
     String getName();
 
     /**
-     * Called to activate the run level service associated with the given
+     * Record the activation the run level service associated with the given
      * descriptor.
      *
      * @param descriptor  the descriptor

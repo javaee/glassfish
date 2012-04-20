@@ -37,7 +37,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.internal;
+package org.glassfish.hk2.runlevel.internal;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +53,7 @@ import java.util.logging.Logger;
 import org.glassfish.hk2.AsyncPostConstruct;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceHandle;
+
 
 /**
  * Helper class that will manage all {@link AsyncPostConstruct} services

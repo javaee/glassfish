@@ -1,9 +1,50 @@
-package org.glassfish.hk2.internal;
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
 
-import org.glassfish.hk2.RunLevelActivator;
-import org.glassfish.hk2.RunLevelListener;
-import org.glassfish.hk2.RunLevelService;
-import org.glassfish.hk2.RunLevelSorter;
+package org.glassfish.hk2.runlevel.internal;
+
+
+import org.glassfish.hk2.runlevel.RunLevelListener;
+import org.glassfish.hk2.runlevel.RunLevelService;
+import org.glassfish.hk2.runlevel.RunLevelServiceIndicator;
+import org.glassfish.hk2.runlevel.Sorter;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -16,8 +57,6 @@ import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Priority;
-import org.jvnet.hk2.annotations.RunLevel;
-import org.jvnet.hk2.annotations.RunLevelServiceIndicator;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.annotation.PreDestroy;
@@ -44,10 +83,16 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+
 /**
+ * Run level service tests.
  *
+ * @author tbeerbower
  */
+@SuppressWarnings("deprecation")
 public class RunLevelServiceTest {
+
+    // ----- Utility methods ------------------------------------------------
 
     private void configureLocator(ServiceLocator locator,
                                   Class<? extends TestService>[] runLevelServices) {
@@ -68,6 +113,9 @@ public class RunLevelServiceTest {
 //        }
     }
 
+
+    // ----- Tests ----------------------------------------------------------
+
     @Test
     public void validateRunLevelNegOneInhabitants() throws Exception {
 
@@ -86,7 +134,7 @@ public class RunLevelServiceTest {
         ServiceHandle<RunLevelServiceNegOne> serviceHandleOne = locator.getServiceHandle(RunLevelServiceOne.class);
         assertNotNull(serviceHandleOne);
 
-        proceedToAndWait(rls, locator, RunLevel.RUNLEVEL_VAL_KERNAL);
+        proceedToAndWait(rls, locator, org.glassfish.hk2.runlevel.RunLevel.RUNLEVEL_VAL_IMMEDIATE);
 
         assertTrue(serviceHandleNegOne.toString() + " expected to be active.", serviceHandleNegOne.isActive());
         assertFalse(serviceHandleOne.toString() + " expected to be inactive.", serviceHandleOne.isActive());
@@ -104,16 +152,16 @@ public class RunLevelServiceTest {
         RunLevelServiceImpl rls = locator.getService(RunLevelService.class);
 
         List<ActiveDescriptor<?>> descriptors =
-                locator.getDescriptors(BuilderHelper.createContractFilter(RunLevel.class.getName()));
+                locator.getDescriptors(BuilderHelper.createContractFilter(org.glassfish.hk2.runlevel.RunLevel.class.getName()));
 
         assertNotNull(descriptors);
         int count = 0;
         for (ActiveDescriptor<?> descriptor : descriptors) {
             count++;
             assertNotNull(descriptor.getMetadata());
-            String val = descriptor.getMetadata().get(RunLevel.RUNLEVEL_VAL_META_TAG).get(0);
+            String val = descriptor.getMetadata().get(org.glassfish.hk2.runlevel.RunLevel.RUNLEVEL_VAL_META_TAG).get(0);
             assertNotNull(descriptor.toString(), val);
-            assertTrue(descriptor + " runLevel val=" + val, Integer.valueOf(val) >= RunLevel.RUNLEVEL_VAL_KERNAL);
+            assertTrue(descriptor + " runLevel val=" + val, Integer.valueOf(val) >= org.glassfish.hk2.runlevel.RunLevel.RUNLEVEL_VAL_IMMEDIATE);
         }
         assertTrue(String.valueOf(count), count == 2);
     }
@@ -599,7 +647,7 @@ public class RunLevelServiceTest {
         assertTrue(recorders.toString(), recorders.get(10).isEmpty());
     }
 
-    // ----- inner class : RLSModule ----------------------------------------
+    // ----- inner classes --------------------------------------------------
 
     /**
      *
@@ -632,13 +680,13 @@ public class RunLevelServiceTest {
         private void bindService(DynamicConfiguration configurator, Class<?> service, Class<? extends Annotation> scope) {
             final DescriptorBuilder descriptorBuilder = BuilderHelper.link(service);
 
-            final RunLevel rla = service.getAnnotation(RunLevel.class);
+            final org.glassfish.hk2.runlevel.RunLevel rla = service.getAnnotation(org.glassfish.hk2.runlevel.RunLevel.class);
             if (rla != null) {
-                descriptorBuilder.to(RunLevel.class).
-                        has(RunLevel.RUNLEVEL_VAL_META_TAG, Collections.singletonList(((Integer) rla.value()).toString())).
-                        has(RunLevel.RUNLEVEL_MODE_META_TAG, Collections.singletonList(((Integer) rla.mode().toInt()).toString()));
+                descriptorBuilder.to(org.glassfish.hk2.runlevel.RunLevel.class).
+                        has(org.glassfish.hk2.runlevel.RunLevel.RUNLEVEL_VAL_META_TAG, Collections.singletonList(((Integer) rla.value()).toString())).
+                        has(org.glassfish.hk2.runlevel.RunLevel.RUNLEVEL_MODE_META_TAG, Collections.singletonList(rla.mode().toString()));
 
-                descriptorBuilder.in(RunLevel.class);
+                descriptorBuilder.in(org.glassfish.hk2.runlevel.RunLevel.class);
             }
             Class clazz = service;
             while (clazz != null) {
@@ -667,16 +715,8 @@ public class RunLevelServiceTest {
         }
     }
 
-
-    // ----- inner class : TestService --------------------------------------
-
-    /**
-     * Abstract service.
-     */
     public static abstract class TestService
             implements org.glassfish.hk2.PostConstruct, org.glassfish.hk2.PreDestroy {
-
-
         @Override
         public void postConstruct() {
         }
@@ -684,82 +724,53 @@ public class RunLevelServiceTest {
         @Override
         public void preDestroy() {
         }
-
     }
 
-
-    // ----- inner class : RunLevelServiceNegOne ----------------------------
-
-    /**
-     * A run level service with a value of RunLevel.KERNEL_RUNLEVEL.
-     * Should be initialized by the framework immediately.
-     */
-    @RunLevel(RunLevel.RUNLEVEL_VAL_KERNAL)
+    @org.glassfish.hk2.runlevel.RunLevel(org.glassfish.hk2.runlevel.RunLevel.RUNLEVEL_VAL_IMMEDIATE)
     @Service
     public static class RunLevelServiceNegOne extends TestService {
     }
 
-
-    // ----- inner class : RunLevelServiceOne -------------------------------
-
-    /**
-     * A run level service with a value of 1.
-     */
-    @RunLevel(1)
+    @org.glassfish.hk2.runlevel.RunLevel(1)
     @Service
     public static class RunLevelServiceOne extends TestService {
     }
 
-    // ----- inner class : RunLevelServiceFive -------------------------------
-
-    /**
-     * A run level service with a value of 5.
-     */
-    @RunLevel(5)
+    @org.glassfish.hk2.runlevel.RunLevel(5)
     @Service
     public static class RunLevelServiceFive extends TestService {
     }
 
-    // ----- inner class : RunLevelServiceFive -------------------------------
-
-    /**
-     * A run level service with a value of 5.
-     */
-    @RunLevel(5)
+    @org.glassfish.hk2.runlevel.RunLevel(5)
     @Service
     @RunLevelServiceIndicator("foo")
     public static class FooRunLevelServiceFive extends TestService {
     }
 
-    // ----- inner class : RunLevelServiceTen -------------------------------
-
-    /**
-     * A run level service with a value of 10.
-     */
-    @RunLevel(10)
+    @org.glassfish.hk2.runlevel.RunLevel(10)
     @Service
     public static class RunLevelServiceTen extends TestService {
     }
 
-    @RunLevel(10)
+    @org.glassfish.hk2.runlevel.RunLevel(10)
     @Priority(1)
     @Service
     public static class RunLevelServiceHighPriority extends TestService {
     }
 
-    @RunLevel(10)
+    @org.glassfish.hk2.runlevel.RunLevel(10)
     @Priority(6)
     @Service
     public static class RunLevelServiceMedPriority extends TestService {
     }
 
-    @RunLevel(10)
+    @org.glassfish.hk2.runlevel.RunLevel(10)
     @Priority(9)
     @Service
     public static class RunLevelServiceLowPriority extends TestService {
     }
 
-    @RunLevel(15)
+    @org.glassfish.hk2.runlevel.RunLevel(15)
     @Service
     public static class RunLevelServiceProceedDownInPostConstruct extends TestService {
         @Inject
@@ -771,7 +782,7 @@ public class RunLevelServiceTest {
         }
     }
 
-    @RunLevel(15)
+    @org.glassfish.hk2.runlevel.RunLevel(15)
     @Service
     public static class RunLevelServiceProceedUpInPostConstruct extends TestService {
         @Inject
@@ -783,22 +794,15 @@ public class RunLevelServiceTest {
         }
     }
 
-    @RunLevel(25)
+    @org.glassfish.hk2.runlevel.RunLevel(25)
     @Service
     public static class RunLevelServiceTwentyFive extends TestService {
     }
 
-
-    // ----- inner class : RunLevelServiceTwenty -------------------------------
-
-    /**
-     * A run level service with a value of 20.
-     */
-    @RunLevel(20)
+    @org.glassfish.hk2.runlevel.RunLevel(20)
     @Service
     public static class RunLevelServiceTwenty extends TestService {
     }
-
 
     @Contract
     public interface ServiceA {
@@ -812,7 +816,7 @@ public class RunLevelServiceTest {
     public interface ServiceC {
     }
 
-    @RunLevel(10)
+    @org.glassfish.hk2.runlevel.RunLevel(10)
     @Service
     public static class RunLevelServiceA extends TestService implements ServiceA {
         @Inject
@@ -828,14 +832,14 @@ public class RunLevelServiceTest {
         }
     }
 
-    @RunLevel(10)
+    @org.glassfish.hk2.runlevel.RunLevel(10)
     @Service
     public static class RunLevelServiceB extends TestService implements ServiceB {
         @Inject
         ServiceC serviceC;
     }
 
-    @RunLevel(10)
+    @org.glassfish.hk2.runlevel.RunLevel(10)
     @Service
     public static class RunLevelServiceC extends TestService implements ServiceC {
     }
@@ -845,7 +849,7 @@ public class RunLevelServiceTest {
         public void doSomething();
     }
 
-    @RunLevel(value = 10, mode = RunLevel.Mode.NON_VALIDATING)
+    @org.glassfish.hk2.runlevel.RunLevel(value = 10, mode = org.glassfish.hk2.runlevel.RunLevel.Mode.NON_VALIDATING)
     @Service
     public static class RunLevelServiceNonValidating extends TestService implements ServiceD {
         @Override
@@ -940,7 +944,7 @@ public class RunLevelServiceTest {
         }
     }
 
-    public static abstract class BaseActivator implements RunLevelActivator {
+    public static abstract class BaseActivator implements org.glassfish.hk2.runlevel.Activator {
 
         ActiveDescriptor lastActivated = null;
         ActiveDescriptor lastDeactivated = null;
@@ -1001,7 +1005,7 @@ public class RunLevelServiceTest {
         }
     }
 
-    public static class PrioritySorter implements RunLevelSorter {
+    public static class PrioritySorter implements Sorter {
 
         @Inject
         private ServiceLocator locator;
@@ -1026,7 +1030,6 @@ public class RunLevelServiceTest {
     @RunLevelServiceIndicator("foo")
     public static class FooPrioritySorter extends PrioritySorter {
     }
-
 }
 
 

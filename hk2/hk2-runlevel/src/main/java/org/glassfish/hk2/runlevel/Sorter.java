@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,24 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2;
+
+package org.glassfish.hk2.runlevel;
+
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+
 
 /**
- * Exception related to the operations of the {@link RunLevelService}.
+ * Contract for sorting descriptors for run level services.
  *
- * @author Jeff Trent, tbeerbower
+ * @author tbeerbower
  */
-public class RunLevelException extends ComponentException {
+public interface Sorter {
 
-    public RunLevelException(String message) {
-        super(message);
-    }
-
-    public RunLevelException(Throwable origin) {
-        super(origin);
-    }
-
-    public RunLevelException(String message, Throwable origin) {
-        super(message, origin);
-    }
+    /**
+     * Sort the given list of run level service descriptors.
+     *
+     * @param descriptors  the list descriptors to be sorted
+     */
+    public void sort(java.util.List<ActiveDescriptor<?>> descriptors);
 }
