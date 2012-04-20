@@ -34,12 +34,10 @@ Platforms, based on an intuitive file in a form similar to registry
 file.</td></tr><tr class="b"><td><a href="hk2-compile-mojo.html">hk2:hk2-compile</a></td><td>Replacement of the default javac mojo that uses APT, so that we can
 not only compile source code but also generate HK2 related metadata
 at the same time.</td></tr><tr class="a"><td><a href="hk2-test-compile-mojo.html">hk2:hk2-test-compile</a></td><td>No description.</td></tr><tr class="b"><td><a href="package-mojo.html">hk2:package</a></td><td>Creates a jar with a special manifest entry. 
-
 <p>Mostly copied from JarMojo. See
 http://jira.codehaus.org/browse/MNG-2789 why we can't rely on
 it.</p></td></tr><tr class="a"><td><a href="run-mojo.html">hk2:run</a></td><td>Launches the module system by using all the dependencies as
 modules. 
-
 <p>Not specifying "@execute phase=compile" so that it runs quickly
 even with a large project.</p></td></tr></table><a name="System_Requirements"></a><div class="section"><h3>System Requirements<a name="System_Requirements"></a></h3><p>The following specifies the minimum requirements to run this Maven plugin:</p><table border="0" class="bodyTable"><tr class="b"><td>Maven</td><td>2.0</td></tr><tr class="a"><td>JDK</td><td>1.6</td></tr><tr class="b"><td>Memory</td><td>No minimum requirement.</td></tr><tr class="a"><td>Disk Space</td><td>No minimum requirement.</td></tr></table></div><a name="Usage"></a><div class="section"><h3>Usage<a name="Usage"></a></h3><p>You should specify the version in your project's plugin configuration:</p><div class="source"><pre>&lt;project&gt;
   ...
@@ -50,7 +48,7 @@ even with a large project.</p></td></tr></table><a name="System_Requirements"></
         &lt;plugin&gt;
           &lt;groupId&gt;org.glassfish.hk2&lt;/groupId&gt;
           &lt;artifactId&gt;hk2-maven-plugin&lt;/artifactId&gt;
-          &lt;version&gt;2.0.1-SNAPSHOT&lt;/version&gt;
+          &lt;version&gt;2.0.2-SNAPSHOT&lt;/version&gt;
         &lt;/plugin&gt;
         ...
       &lt;/plugins&gt;
@@ -60,7 +58,7 @@ even with a large project.</p></td></tr></table><a name="System_Requirements"></
       &lt;plugin&gt;
         &lt;groupId&gt;org.glassfish.hk2&lt;/groupId&gt;
         &lt;artifactId&gt;hk2-maven-plugin&lt;/artifactId&gt;
-        &lt;version&gt;2.0.1-SNAPSHOT&lt;/version&gt;
+        &lt;version&gt;2.0.2-SNAPSHOT&lt;/version&gt;
       &lt;/plugin&gt;
       ...
     &lt;/plugins&gt;
@@ -83,8 +81,8 @@ even with a large project.</p></td></tr></table><a name="System_Requirements"></
 
   
   
-  &nbsp;| Last Published: 04/11/2012
-  &nbsp;| Version: 2.0.1-SNAPSHOT
+  &nbsp;| Last Published: 04/20/2012
+  &nbsp;| Version: 2.0.2-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
