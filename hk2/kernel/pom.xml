@@ -69,6 +69,16 @@
                             <goal>generateInhabitants</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>test</id>
+                        <phase>process-test-classes</phase>
+                        <configuration>
+                          <test>true</test>
+                        </configuration>
+                        <goals>
+                            <goal>generateInhabitants</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
