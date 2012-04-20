@@ -74,8 +74,6 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     /**
      * The contract type of this descriptor.
      */
-//    private final Type contract;
-    
     private final String contract;
 
     /**
