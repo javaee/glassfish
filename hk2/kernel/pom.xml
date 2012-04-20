@@ -106,22 +106,34 @@
              </plugins>
         </pluginManagement>
     </build>
-    <modules>
-        <module>../hk2-runlevel</module>
-        <module>../hk2-locator</module>
-    	<module>../class-model</module>
-        <module>../auto-depends</module>
-        <module>../core</module>
-        <module>../config</module>
-        <module>../config-generator</module>
-        <module>../osgi-adapter</module>
-        <module>../osgi-adapter-tests</module>
-        <module>../dependency-verifier</module>
-        <module>../dependency-visualizer</module>
-        <module>../examples</module>
-        <module>../hk2-testing</module>
-        <module>../hk2-deprecated</module>
-        <module>../auto-depends-tests</module>
-  </modules>
-
+    <profiles>
+        <profile>
+           <id>default</id>
+           <activation>
+               <activeByDefault>true</activeByDefault>
+           </activation>
+           <modules>
+               <module>../hk2-runlevel</module>
+               <module>../hk2-locator</module>
+               <module>../class-model</module>
+               <module>../auto-depends</module>
+               <module>../core</module>
+               <module>../config</module>
+               <module>../config-generator</module>
+               <module>../osgi-adapter</module>
+               <module>../osgi-adapter-tests</module>
+               <module>../dependency-verifier</module>
+               <module>../dependency-visualizer</module>
+               <module>../examples</module>
+               <module>../hk2-testing</module>
+               <module>../hk2-deprecated</module>
+          </modules>
+       </profile>
+       <profile>
+           <id>tests</id>
+           <modules>
+               <module>../auto-depends-tests</module>
+           </modules>
+       </profile>
+   </profiles>
 </project>
