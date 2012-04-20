@@ -39,11 +39,14 @@
  */
 package org.jvnet.hk2.testing.junit;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,6 +58,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Before;
 import org.jvnet.hk2.testing.junit.internal.ClassVisitorImpl;
 import org.jvnet.hk2.testing.junit.internal.ErrorServiceImpl;
@@ -96,10 +100,7 @@ public class HK2Runner {
      */
     @Before
     public void before() {
-        LinkedList<String> packages = new LinkedList<String>();
-        packages.add(this.getClass().getPackage().getName());
-        
-        initialize(this.getClass().getName(), packages, null);
+        initialize(this.getClass().getName(), null, null);
     }
 
     /**
@@ -134,6 +135,8 @@ public class HK2Runner {
         config.addActiveDescriptor(ErrorServiceImpl.class);
         config.addActiveDescriptor(JustInTimeInjectionResolverImpl.class);
         
+        addServicesFromDefault(config);
+        
         addServicesFromPackage(config, packages);
         
         for (Class<?> clazz : clazzes) {
@@ -145,6 +148,46 @@ public class HK2Runner {
     
     protected void setVerbosity(boolean verbose) {
         this.verbose = verbose;
+    }
+    
+    private void addServicesFromDefault(DynamicConfiguration config) {
+        ClassLoader loader = this.getClass().getClassLoader();
+        
+        Enumeration<URL> resources;
+        try {
+            resources = loader.getResources("META-INF/hk2-locator/default");
+        }
+        catch (IOException ioe) {
+            ioe.printStackTrace();
+            
+            return;
+        }
+        
+        
+        while (resources.hasMoreElements()) {
+            URL url = resources.nextElement();
+           
+            try {
+                InputStream urlStream = url.openStream();
+                
+                BufferedReader reader = new BufferedReader(new InputStreamReader(urlStream));
+                
+                DescriptorImpl bindMe = new DescriptorImpl();
+                
+                if (bindMe.readObject(reader)) {
+                    System.out.println("JRW(10) adding " + bindMe);
+                    config.bind(bindMe);
+                }
+                
+                reader.close();
+            }
+            catch (IOException ioe) {
+                continue;
+            }
+            
+            
+        }
+        
     }
     
     private void addServicesFromPackage(DynamicConfiguration config, List<String> packages) {

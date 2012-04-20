@@ -39,23 +39,20 @@
  */
 package org.glassfish.hk2.tests.locator.negative.constructor;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-
 /**
+ * This class does not have a properly annotated constructor
+ * 
  * @author jwells
  *
  */
-public class NegativeConstructorModule implements TestModule {
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
+public class NoC {
+    /**
+     * This constructor is NOT annotated with &#64;Inject
+     * 
+     * @param hi
      */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(BadC.class).build());
-        config.bind(BuilderHelper.link(NoC.class).build());
-
+    public NoC(int hi) {
+        throw new AssertionError("not called");
     }
 
 }

@@ -703,6 +703,12 @@ public class Utilities {
             return aConstructorWithInjectAnnotation;
         }
         
+        if (zeroArgConstructor == null) {
+            collector.addThrowable(new IllegalArgumentException("The class "+ Pretty.clazz(annotatedType) +
+                    " has no constructor marked @Inject and no zero argument constructor"));
+            return null;
+        }
+        
         return zeroArgConstructor;
     }
     
