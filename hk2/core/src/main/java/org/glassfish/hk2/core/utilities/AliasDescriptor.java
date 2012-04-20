@@ -49,7 +49,6 @@ import org.glassfish.hk2.utilities.NamedImpl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -75,7 +74,9 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     /**
      * The contract type of this descriptor.
      */
-    private final Type contract;
+//    private final Type contract;
+    
+    private final String contract;
 
     /**
      * The set of annotations for this descriptor.
@@ -112,7 +113,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
      */
     public AliasDescriptor(ServiceLocator locator,
                            ActiveDescriptor<T> descriptor,
-                           Class<?> contract,
+                           String contract,
                            String name) {
         // pass in an empty contract set, an empty annotation set and a null
         // scope since we are not really reified and we don't want to reify
@@ -122,7 +123,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         this.locator    = locator;
         this.descriptor = descriptor;
         this.contract   = contract;
-        addAdvertisedContract(contract.getName());
+        addAdvertisedContract(contract);
         super.setScope(descriptor.getScope());
     }
 
@@ -239,7 +240,10 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
             if (!descriptor.isReified()) {
                 locator.reifyDescriptor(descriptor);
             }
-            super.addContractType(contract);
+            Class<?> implClass    = descriptor.getImplementationClass();
+            Type     contractType = Utilities.getTypeClosure(implClass, contract);
+
+            super.addContractType(contractType);
 
             initialized = true;
         }

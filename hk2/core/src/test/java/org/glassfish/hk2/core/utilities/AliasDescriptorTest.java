@@ -91,8 +91,8 @@ public class AliasDescriptorTest {
         assertEquals(s1, locator.getService(MyInterface1.class));
 
         config = dcs.createDynamicConfiguration();
-        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class, "foo"));
-        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface3.class, "bar"));
+        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo"));
+        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface3.class.getName(), "bar"));
         config.commit();
 
         MyInterface2 s2 = locator.getService(MyInterface2.class, "foo");
@@ -179,7 +179,7 @@ public class AliasDescriptorTest {
                         to(MyInterface1.class).in(Singleton.class.getName()).build());
 
         AliasDescriptor<MyService> aliasDescriptor =
-                new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class, "foo");
+                new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo");
 
         config = dcs.createDynamicConfiguration();
         config.addActiveDescriptor(aliasDescriptor);
@@ -204,7 +204,7 @@ public class AliasDescriptorTest {
 
         config.commit();
 
-        return new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class, "foo");
+        return new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo");
     }
 
 

@@ -46,6 +46,11 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+
 
 /**
  * Core utilities.
@@ -65,12 +70,30 @@ public class Utilities {
      */
     public static <T> void addIndex(ServiceLocator locator,
                                     ActiveDescriptor<T> descriptor,
-                                    Class<?> contract,
+                                    String contract,
                                     String name) {
         DynamicConfigurationService dcs    = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration        config = dcs.createDynamicConfiguration();
 
         config.addActiveDescriptor(new AliasDescriptor<T>(locator, descriptor, contract, name));
         config.commit();
+    }
+
+    /**
+     * Returns the type closure for the given contract.
+     *
+     * @param ofType   the type to check
+     * @param contract the contract this type is allowed to handle
+     *
+     * @return the type closure restricted to the contracts; null if the
+     *         given type does not implement the given contract
+     */
+    protected static Type getTypeClosure(Type ofType, String contract){
+        Set<Type> contractTypes =
+                org.jvnet.hk2.internal.Utilities.getTypeClosure(ofType,
+                        Collections.singleton(contract));
+
+        Iterator<Type> iterator = contractTypes.iterator();
+        return iterator.hasNext() ? iterator.next() : null;
     }
 }
