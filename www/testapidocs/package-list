@@ -1,13 +1,10 @@
 
-bindings
 com.sun.enterprise.module.single
 com.sun.enterprise.tools.classmodel
-com.sun.enterprise.tools.classmodel.test.local
 com.sun.hk2.component
-com.sun.hk2.jsr330.test
-com.sun.hk2.jsr330.test.components
 org.glassfish.examples.ctm.runme
 org.glassfish.examples.http.test
+org.glassfish.hk2.bootstrap.impl
 org.glassfish.hk2.classmodel.reflect.impl
 org.glassfish.hk2.classmodel.reflect.test
 org.glassfish.hk2.classmodel.reflect.test.method
@@ -15,6 +12,8 @@ org.glassfish.hk2.classmodel.reflect.test.model
 org.glassfish.hk2.classmodel.reflect.test.model.qualifier
 org.glassfish.hk2.classmodel.reflect.test.ordering
 org.glassfish.hk2.classmodel.reflect.test.parameterized
+org.glassfish.hk2.core.utilities
+org.glassfish.hk2.internal
 org.glassfish.hk2.tests
 org.glassfish.hk2.tests.api
 org.glassfish.hk2.tests.basic
@@ -76,7 +75,9 @@ org.jvnet.hk2.config
 org.jvnet.hk2.config.model
 org.jvnet.hk2.config.provider
 org.jvnet.hk2.config.provider.internal
+org.jvnet.hk2.generator.tests
 org.jvnet.hk2.junit
+org.jvnet.hk2.osgiadapter
 org.jvnet.hk2.test
 org.jvnet.hk2.test.constructor
 org.jvnet.hk2.test.contracts
