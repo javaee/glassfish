@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,13 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2;
+package org.glassfish.hk2.runlevel;
+
 
 import org.jvnet.hk2.annotations.Contract;
 
+
 /**
- * Implementations of RunLevelService are encouraged to use this contract
- * for publishing RunLevel events.
+ * Implementations of RunLevelService should use this contract for publishing
+ * RunLevel events.
  * <p>
  * Instances of classes implementing this contract can be registered to be
  * informed of events of RunLevelServices.
@@ -54,7 +56,7 @@ import org.jvnet.hk2.annotations.Contract;
  * that may impact the performance of the RunLevelService calling the
  * listener on the same thread.
  *
- * @author Jeff Trent, tbeerbower
+ * @author jtrent, tbeerbower
  */
 @Contract
 public interface RunLevelListener {

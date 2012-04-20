@@ -37,7 +37,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
+package org.glassfish.hk2.runlevel;
+
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -47,8 +48,10 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+
 /**
- * Identifies the run level service target for the annotated component.
+ * Identifies the {@link RunLevelService} target for the {@link RunLevel}
+ * annotated service.
  *
  * @author tbeerbower
  */
@@ -56,10 +59,15 @@ import javax.inject.Qualifier;
 @Retention(RUNTIME)
 @Target( { TYPE })
 public @interface RunLevelServiceIndicator {
+    // ----- Constants ------------------------------------------------------
 
-    public static final String RUNLEVEL_SERVICE_NAME_META_TAG = "runLevelScope";
+    /**
+     * The metadata key for the target {@link RunLevelService} name.
+     */
+    public static final String RUNLEVEL_SERVICE_NAME_META_TAG = "runLevelServiceName";
 
-    public static final String RUNLEVEL_SERVICE_DEFAULT_NAME = "__runLevelDefaultScope";
+
+    // ----- Elements -------------------------------------------------------
 
     /**
      * Defines the run level scope in which this RunLevel applies.
@@ -71,6 +79,6 @@ public @interface RunLevelServiceIndicator {
      *
      * @return the run level scope type this annotation value applies
      */
-    //@InhabitantMetadata(RUNLEVEL_SERVICE_NAME_META_TAG)  // TODO : is something like this supported in HK2 2.0?
-    public String value();
+    //@InhabitantMetadata(RUNLEVEL_SERVICE_NAME_META_TAG)
+    public String value() default RunLevelService.RUNLEVEL_SERVICE_DEFAULT_NAME;
 }

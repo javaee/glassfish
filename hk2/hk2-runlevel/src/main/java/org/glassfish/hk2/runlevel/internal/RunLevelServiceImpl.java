@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,23 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.internal;
+package org.glassfish.hk2.runlevel.internal;
 
 
-import org.glassfish.hk2.RunLevelActivator;
-import org.glassfish.hk2.RunLevelException;
-import org.glassfish.hk2.RunLevelListener;
-import org.glassfish.hk2.RunLevelService;
-import org.glassfish.hk2.RunLevelSorter;
+import org.glassfish.hk2.runlevel.RunLevel;
+import org.glassfish.hk2.runlevel.Activator;
+import org.glassfish.hk2.runlevel.RunLevelException;
+import org.glassfish.hk2.runlevel.RunLevelListener;
+import org.glassfish.hk2.runlevel.RunLevelService;
+import org.glassfish.hk2.runlevel.Sorter;
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.jvnet.hk2.annotations.RunLevel;
-import org.jvnet.hk2.annotations.RunLevelServiceIndicator;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.annotation.PostConstruct;
@@ -79,8 +77,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The default {@link org.glassfish.hk2.RunLevelService} implementation for Hk2. See the
- * {@link org.glassfish.hk2.RunLevelService} javadoc for general details regarding this service.
+ * The default {@link org.glassfish.hk2.runlevel.RunLevelService} implementation for Hk2. See the
+ * {@link org.glassfish.hk2.runlevel.RunLevelService} javadoc for general details regarding this service.
  * <p/>
  * Here is a brief example of the behavior of this service:<br>
  * <p/>
@@ -172,8 +170,8 @@ import java.util.logging.Logger;
  * <p/>
  * In the synchronous mode, calls can be made to proceedTo() to interrupt
  * processing of any currently executing proceedTo() operation. This might
- * occur: in another thread, in the {@link org.glassfish.hk2.RunLevelListener} handlers, or in a
- * {@link org.jvnet.hk2.annotations.RunLevel} annotated service's {@link javax.annotation.PostConstruct} method call.
+ * occur: in another thread, in the {@link org.glassfish.hk2.runlevel.RunLevelListener} handlers, or in a
+ * {@link org.glassfish.hk2.runlevel.RunLevel} annotated service's {@link javax.annotation.PostConstruct} method call.
  * <p/>
  * Note, however, that even in synchronous mode the proceedTo() operation may
  * exhibit asynchronous behavior. This is the case when the caller has two
@@ -191,7 +189,7 @@ import java.util.logging.Logger;
  * synchronous mode.
  * <p/>
  * proceedTo invocations from a {@link javax.annotation.PostConstruct} callback are discouraged.
- * Consider using {@link org.glassfish.hk2.RunLevelListener} instead.
+ * Consider using {@link org.glassfish.hk2.runlevel.RunLevelListener} instead.
  * <p/>
  * <b>Important Note:</b><br>
  * The proceedTo() method will throw unchecked exceptions if it detects that
@@ -209,7 +207,7 @@ import java.util.logging.Logger;
  * <p/>
  * ~~~
  * <p/>
- * All calls to the {@link org.glassfish.hk2.RunLevelListener} happens synchronously on the
+ * All calls to the {@link org.glassfish.hk2.runlevel.RunLevelListener} happens synchronously on the
  * same thread that caused the Inhabitant to be activated. Therefore,
  * implementors of this interface should be careful and avoid calling long
  * operations.
@@ -221,7 +219,7 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("deprecation")
 @Service
-public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
+public class RunLevelServiceImpl implements RunLevelService, Activator {
     // the initial run level
     public static final int INITIAL_RUNLEVEL = -2;
 
@@ -272,10 +270,10 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
     private IterableProvider<RunLevelListener> allRunLevelListeners;
 
     @Inject
-    private IterableProvider<RunLevelActivator> allActivators;
+    private IterableProvider<Activator> allActivators;
 
     @Inject
-    private IterableProvider<RunLevelSorter> allSorters;
+    private IterableProvider<Sorter> allSorters;
 
     @Inject
     private Provider<RunLevelContext> contextProvider;
@@ -318,7 +316,7 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
     @PostConstruct
     public void postConstruct() {
         final Named named = getClass().getAnnotation(Named.class);
-        name = named == null ? RunLevelServiceIndicator.RUNLEVEL_SERVICE_DEFAULT_NAME : named.value();
+        name = named == null ? RUNLEVEL_SERVICE_DEFAULT_NAME : named.value();
     }
 
     @Override
@@ -376,14 +374,14 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
      *         be processed by this RunLevelService instance
      */
     protected boolean accept(ActiveDescriptor<?> descriptor, int activeRunLevel) {
-        Integer runLevel = getRunLevelValue(descriptor);
+        Integer runLevel = Utilities.getRunLevelValue(descriptor);
         if (null != runLevel) {
             if (runLevel != activeRunLevel) {
                 return false;
             }
         }
 
-        return getName().equals(getRunLevelServiceName(descriptor));
+        return getName().equals(Utilities.getRunLevelServiceName(descriptor));
     }
 
     private boolean isCancelled(Worker worker) {
@@ -493,7 +491,7 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
 
     @Override
     public void recordActivation(ActiveDescriptor<?> descriptor) {
-        Integer activeRunLevel = getRunLevelValue(descriptor);
+        Integer activeRunLevel = Utilities.getRunLevelValue(descriptor);
 
         Stack<ActiveDescriptor<?>> activeRecorder;
         synchronized (lock) {
@@ -504,33 +502,6 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
             }
         }
         activeRecorder.push(descriptor);
-    }
-
-    /**
-     * Attempts to obtain the RunLevel value from the metadata() instead of from
-     * the annotation which requires a class load. If it can't get it from the
-     * metadata() it will default to load the class to obtain the RunLevel
-     * value.
-     *
-     * @param descriptor the descriptor to get the runLevel for
-     * @return the active run level
-     */
-    protected static Integer getRunLevelValue(Descriptor descriptor) {
-        Descriptor baseDescriptor = descriptor.getBaseDescriptor();
-        List<String> list = baseDescriptor.getMetadata().get(RunLevel.RUNLEVEL_VAL_META_TAG);
-        return list == null ? RunLevel.RUNLEVEL_VAL_KERNAL : Integer.valueOf(list.get(0));
-    }
-
-    protected static String getRunLevelServiceName(Descriptor descriptor) {
-        Descriptor baseDescriptor = descriptor.getBaseDescriptor();
-        List<String> list = baseDescriptor.getMetadata().get(RunLevelServiceIndicator.RUNLEVEL_SERVICE_NAME_META_TAG);
-        return list == null ? RunLevelServiceIndicator.RUNLEVEL_SERVICE_DEFAULT_NAME : list.get(0);
-    }
-
-    protected static RunLevel.Mode getRunLevelMode(Descriptor descriptor) {
-        Descriptor baseDescriptor = descriptor.getBaseDescriptor();
-        List<String> list = baseDescriptor.getMetadata().get(RunLevel.RUNLEVEL_MODE_META_TAG);
-        return list == null ? RunLevel.Mode.VALIDATING : RunLevel.Mode.fromInt(Integer.valueOf(list.get(0)));
     }
 
     @Override
@@ -549,7 +520,7 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
     }
 
     protected void proceedTo(Integer runLevel, boolean isHardInterrupt) {
-        if (null != runLevel && runLevel < RunLevel.RUNLEVEL_VAL_KERNAL) {
+        if (null != runLevel && runLevel < RunLevel.RUNLEVEL_VAL_IMMEDIATE) {
             throw new IllegalArgumentException();
         }
 
@@ -614,10 +585,10 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
      *
      * @return an InhabitantActivator, defaulting to this
      */
-    protected synchronized RunLevelActivator getActivator() {
-        Collection<RunLevelActivator> activators = new ArrayList<RunLevelActivator>();
-        for (ServiceHandle<RunLevelActivator> serviceHandle : allActivators.handleIterator()) {
-            if (name.equals(getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
+    protected synchronized Activator getActivator() {
+        Collection<Activator> activators = new ArrayList<Activator>();
+        for (ServiceHandle<Activator> serviceHandle : allActivators.handleIterator()) {
+            if (name.equals(Utilities.getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
                 activators.add(serviceHandle.getService());
             }
         }
@@ -627,17 +598,17 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
     protected synchronized Collection<RunLevelListener> getListeners() {
         Collection<RunLevelListener> listeners = new ArrayList<RunLevelListener>();
         for (ServiceHandle<RunLevelListener> serviceHandle : allRunLevelListeners.handleIterator()) {
-            if (name.equals(getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
+            if (name.equals(Utilities.getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
                 listeners.add(serviceHandle.getService());
             }
         }
         return listeners;
     }
 
-    protected synchronized RunLevelSorter getSorter() {
-        Collection<RunLevelSorter> sorters = new ArrayList<RunLevelSorter>();
-        for (ServiceHandle<RunLevelSorter> serviceHandle : allSorters.handleIterator()) {
-            if (name.equals(getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
+    protected synchronized Sorter getSorter() {
+        Collection<Sorter> sorters = new ArrayList<Sorter>();
+        for (ServiceHandle<Sorter> serviceHandle : allSorters.handleIterator()) {
+            if (name.equals(Utilities.getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
                 sorters.add(serviceHandle.getService());
             }
         }
@@ -793,12 +764,12 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
                     logger.log(LEVEL, "sorting {0}", activations);
                 }
 
-                RunLevelSorter sorter = getSorter();
+                Sorter sorter = getSorter();
                 if (sorter != null) {
                     sorter.sort(activations);
                 }
 
-                RunLevelActivator ia = getActivator();
+                Activator ia = getActivator();
 
                 // clear out the old set of watches
                 if (null != waiter) {
@@ -862,7 +833,7 @@ public class RunLevelServiceImpl implements RunLevelService, RunLevelActivator {
                     // because of dependencies. The shutdown ordering will b
                     // (A,B,C).
 
-                    RunLevelActivator ia = getActivator();
+                    Activator ia = getActivator();
 
                     ActiveDescriptor<?> descriptor;
                     while (!downRecorder.isEmpty()) {

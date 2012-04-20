@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
+package org.glassfish.hk2.runlevel;
+
+
+import org.jvnet.hk2.annotations.Contract;
 
 import javax.inject.Scope;
 import java.lang.annotation.Documented;
@@ -49,12 +52,11 @@ import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+
 /**
  * Defines a run/start level.
  *
- * TODO : docs
- *
- * @author Jerome Dochez, Jeff Trent, tbeerbower
+ * @author jdochez, jtrent, tbeerbower
  */
 @Scope
 @Retention(RUNTIME)
@@ -63,39 +65,52 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Inherited
 @Contract
 public @interface RunLevel {
+    // ----- Constants ------------------------------------------------------
 
+    /**
+     * The metadata key for run level value.
+     */
     public static final String RUNLEVEL_VAL_META_TAG  = "runLevelValue";
+
+    /**
+     * The metadata key for run level mode.
+     */
     public static final String RUNLEVEL_MODE_META_TAG = "runLevelMode";
 
-    // the "kernel" (aka immediate) run level
-    public static final int RUNLEVEL_VAL_KERNAL = -1;
+    /**
+     * The immediate run level.  Services set to this run level will be
+     * activated immediately.
+     */
+    public static final int RUNLEVEL_VAL_IMMEDIATE = -1;
+
+
+    // ----- Mode enum ------------------------------------------------------
 
     public enum Mode {
+        /**
+         * Services set to have a validating run level mode will be activated
+         * and deactivated by their associated run level service but may also
+         * be activated through injection into another service.  The current
+         * run level of the associated run level service will be checked
+         * during activation of these services to ensure that the service
+         * is being activated in at an appropriate run level.
+         */
         VALIDATING,
-        NON_VALIDATING;
 
         /**
-         * Convert an RecordType to an integer.
-         *
-         * @return the integer
+         * Services set to have a non-validating run level mode will be
+         * activated by their associated run level service or through
+         * injection into another service.  These services will not be
+         * checked during activation which means that the service can be
+         * activated prior to the run level service reaching the run level.
+         * The run level serves only as a fail safe for activation.  These
+         * services will not be deactivated by the run level service.
          */
-        public int toInt()
-        {
-            return ordinal();
-        }
-
-        /**
-         * Convert an integer value to a Mode
-         *
-         * @param nOrdinal  the ordinal value of a Mode
-         *
-         * @return the RecordType
-         */
-        public static Mode fromInt(int nOrdinal)
-        {
-            return Mode.class.getEnumConstants()[nOrdinal];
-        }
+        NON_VALIDATING
     }
+
+
+    // ----- Elements -------------------------------------------------------
 
     /**
      * Defines the run level.
@@ -105,5 +120,11 @@ public @interface RunLevel {
     //@InhabitantMetadata(RUNLEVEL_VAL_META_TAG)
     public int value() default 0;
 
+    /**
+     * Defines the run level mode.
+     *
+     * @return the mode
+     */
+    //@InhabitantMetadata(RUNLEVEL_MODE_META_TAG)
     public Mode mode() default Mode.VALIDATING;
 }
