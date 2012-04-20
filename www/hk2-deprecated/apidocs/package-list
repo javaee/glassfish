@@ -1,0 +1,6 @@
+com.sun.hk2.component
+org.glassfish.hk2
+org.glassfish.hk2.api
+org.glassfish.hk2.inject
+org.jvnet.hk2.component
+org.jvnet.hk2.deprecated.internal
