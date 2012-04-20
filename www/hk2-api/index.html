@@ -11,7 +11,7 @@
 
 <html>
   <head>
-    <title>Introduction to HK2 API</title>
+    <title>Introduction to HK2</title>
     <style type="text/css" media="all">
       @import url("./css/maven-base.css");
       @import url("./css/maven-theme.css");
@@ -26,48 +26,137 @@
     -->
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Compatibility<a name="Compatibility"></a></h2><p>This page describes the HK2 2.0 API, which is based on JSR-330 standard annotations. Also, Habitat has been replaced with a new interface called <a href="./apidocs/org/glassfish/hk2/api/ServiceLocator.html">ServiceLocator</a>.</p></div><div class="section"><h2>Table of Contents<a name="Table_of_Contents"></a></h2><ul><li><a href="#Introduction">Introduction</a></li><li><a href="#ServiceLocator">ServiceLocator</a></li><li><a href="#Adding_in_your_own_services">Adding in your own services</a><ul><li><a href="#BuilderHelper_Binding_EDSL">BuilderHelper Binding EDSL</a></li><li><a href="#DescriptorImpl">DescriptorImpl</a></li><li><a href="#Binding_a_Descriptor_into_a_ServiceLocator">Binding a Descriptor into a ServiceLocator</a></li></ul></li><li><a href="#Looking_up_Services">Looking up Services</a></li></ul></div><div class="section"><h2><a name="Introduction">Introduction</a></h2><p>HK2 is a declarative framework for services using annotations like <a href="./apidocs/org/jvnet/hk2/annotations/Contract.html">Contract</a> and <a href="./apidocs/org/jvnet/hk2/annotations/Service.html">Service</a>. However, it is possible to use programmatic APIs to precisely control the services and bindings available within the Services registry.</p><p>Find information about testing hk2 components <a href="./testing.html">here</a>.</p></div><div class="section"><h2><a name="ServiceLocator">ServiceLocator</a></h2><p>The most fundamental service in HK2 is the <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a>. The <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a> represents the registry where services are looked up and where information about services (known as <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptors</a>) are bound into the registry. The <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a> itself is represented as a service in its own registry; it is always the first service bound into its own registry.</p><p><a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocators</a> are named uniquely in a JVM and each has a unique locator ID. It is possible to create or find <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocators</a> using the <a href="./apidocs/org/jvnet/hk2/api/ServiceLocatorFactory.html">ServiceLocatorFactory</a>. The <a href="./apidocs/org/jvnet/hk2/api/ServiceLocatorFactory.html">ServiceLocatorFactory</a> will normally use a default implementation of <a href="./apidocs/org/jvnet/hk2/api/ServiceLocatorGenerator.html">ServiceLocatorGenerator</a> specified in META-INF/services. The default implementation can be changed by having a different META-INF/services specification of the implementation of <a href="./apidocs/org/jvnet/hk2/api/ServiceLocatorGenerator.html">ServiceLocatorGenerator</a> earlier in the classpath than the provided implementation. An implementation of <a href="./apidocs/org/jvnet/hk2/api/ServiceLocatorGenerator.html">ServiceLocatorGenerator</a> can also be given directly to the <a href="./apidocs/org/jvnet/hk2/api/ServiceLocatorFactory.html">ServiceLocatorFactory</a> create method.</p><p>Once you have created a <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a> with the <a href="./apidocs/org/jvnet/hk2/api/ServiceLocatorFactory.html">ServiceLocatorFactory</a> it will contain three services:</p><ol style="list-style-type: decimal"><li>Itself (see <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a>)</li><li>The default JSR-330 resolver (see <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">InjectionResolver</a>)</li><li>A service for configuring further services (see <a href="./apidocs/org/jvnet/hk2/api/DynamicConfigurationService.html">DynamicConfigurationService</a>)</li></ol></div><div class="section"><h2><a name="Adding_in_your_own_services">Adding in your own services</a></h2><p>While the three services in your <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a> are nice, they hardly constitute a useful system. What is needed is all of your services, in order to make it useful. Also please note that this section assumes that you are not using the upper level system that automatically reads in the descriptions of your services and populate <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocators</a> for you. For information on how that system works see TBD.</p><p>You add your own service by getting the <a href="./apidocs/org/jvnet/hk2/api/DynamicConfigurationService.html">DynamicConfigurationService</a>. Since that is one of the original three services added to the service locator, you can get that service by simply looking it up:</p><div class="source"><pre>    public void initialize() {
-        ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
-        
-        ServiceLocator locator = factory.create(&quot;HelloWorld&quot;);
-        
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        
-        ...
-    }</pre></div><p>You use the <a href="./apidocs/org/jvnet/hk2/api/DynamicConfigurationService.html">DynamicConfigurationService</a> to create <a href="./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html">DynamicConfiguration</a> instances. The <a href="./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html">DynamicConfiguration</a> interface has a few methods for binding in descriptions of your services.</p><p>In order to bind in services you need to first create a description of your service. A description of your service gives information about the service, such as the name of the implementation class, and the name of the classes or interfaces which the service should be available to be looked up as, and other information. In general, any implementation of <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> can be used, but we have provided at least two mechanisms for creating <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptors</a> that you might want to use. We will go through those mechanisms in the next two sections, and then come back to adding in your own descriptor to your newly created <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a>.</p><div class="section"><h3><a name="BuilderHelper_Binding_EDSL">BuilderHelper Binding EDSL</a></h3><p>An EDSL is an Embedded Domain Specific Language that allows you to build up objects specific to your particular domain. In this case we provide an EDSL for building Descriptors.</p><p>Lets take an example. Suppose I wanted to tell the system about a service of mine that has implementation class com.acme.internal.WidgetImpl which implements the com.acme.Widget contract (interface) and which is in the PerLookup scope (which means a new instance of WidgetImpl will be provided for every injection point). Here is how a descriptor that contains all of that information can be built up using our EDSL:</p><div class="source"><pre>    public Descriptor createWidgetDescriptor() {
-        return BuilderHelper.link(&quot;com.acme.internal.WidgetImpl&quot;).
-                         to(&quot;com.acme.Widget&quot;).
-                         in(&quot;org.glassfish.api.PerLookup&quot;).
-                         build();
-    }</pre></div><p>The <a href="./apidocs/org/jvnet/hk2/utilities/BuilderHelper.html">BuilderHelper</a> link method creates a <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorBuilder.html">DescriptorBuilder</a>. The <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorBuilder.html">DescriptorBuilder</a> then creates more and more specific versions of itself as you fill in the data with calls to &quot;to&quot; or &quot;in&quot; or &quot;qualifiedBy&quot;.</p><p>Finally, when you are finished filling in all the details of your service, you call build in order to produce a <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> that can be used in a bind call of <a href="./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html">DynamicConfiguration</a>.</p><p>It is interesting to note that the build call of <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorBuilder.html">DescriptorBuilder</a> produces a <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a>. A <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a> is nothing more than a convenience implementation of <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> that has settable fields. Hence, if your code wanted to use the EDSL to produce a basic <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> and then further customize it with the added methods of <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a> it could do so.</p></div><div class="section"><h3><a name="DescriptorImpl">DescriptorImpl</a></h3><p>Rather than create your own implementation of <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> we have provided an implementation of <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> called <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a>. This implementation has convenient methods for setting all of the fields of <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a>. It should be noted that the bind API of <a href="./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html">DynamicConfiguration</a> will make a deep copy of whatever <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> is passed to it, and that the underlying implementation of the HK2 API never uses the <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a> class directly. It is purely there as a convenience class for those who wish to provide their own <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptors</a>.</p><p>Here is an example that achieves the same <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> as the example in the previous section but uses the <a href="./apidocs/org/jvnet/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a> to do it:</p><div class="source"><pre>    public Descriptor createWidgetDescriptor() {
-        DescriptorImpl retVal = new DescriptorImpl();
-        
-        retVal.setImplementation(&quot;com.acme.internal.WidgetImpl&quot;);
-        retVal.addAdvertisedContract(&quot;com.acme.internal.WidgetImpl&quot;);
-        retVal.addAdvertisedContract(&quot;com.acme.Widget&quot;);
-        retVal.setScope(&quot;org.glassfish.api.PerLookup&quot;);
-        
-        return retVal;
-    }</pre></div><p>One interesting thing to notice in the above code is that we added the implementation class as an advertisedContract. This was done automatically for us in the <a href="./apidocs/org/jvnet/hk2/utilities/BuilderHelper.html">BuilderHelper</a> case, but needed to be explicitly done in this case.</p></div><div class="section"><h3><a name="Binding_a_Descriptor_into_a_ServiceLocator">Binding a Descriptor into a ServiceLocator</a></h3><p>Now that we have seen two simple ways to create a <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> lets take a look at how we bind that descriptor into our <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a>. Here is an example:</p><div class="source"><pre>    public void initialize() {
-        ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
-        
-        ServiceLocator locator = factory.create(&quot;HelloWorld&quot;);
-        
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        config.bind(createWidgetDescriptor());
-        
-        config.commit();
-    }</pre></div><p>The method createWidgetDescriptor is from the preceeding examples. In the above code we call the createDynamicConfiguration method of <a href="./apidocs/org/jvnet/hk2/api/DynamicConfigurationService.html">DynamicConfigurationService</a>. This creates an instance of <a href="./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html">DynamicConfiguration</a>. To use a <a href="./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html">DynamicConfiguration</a> you call the bind or unbind methods until you are happy with the change and then you call commit to make the changes occur for real in the system. If you do not call commit none of the changes you added to the <a href="./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html">DynamicConfiguration</a> instance will be made to the system.</p><p>That is all there is to it! The services you add in this manner can now be looked up or injected into other services or generally manipulated through all of the other methods in <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a>.</p></div></div><div class="section"><h2><a name="Looking_up_Services">Looking up Services</a></h2><p>There are several mechanisms for looking up services in HK2. The simplest is to just call getService method of <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a> with the class of the service you are interested in:</p><div class="source"><pre>  Widget widget = locator.getService(Widget.class);</pre></div><p>The type passed in can be any implementation class or interface with which the service was bound with as an advertisable contract. If there is no Widget that can be found in the system then the getService method will return null. If there are more than one Widge (e.g. Widget is an interface that can have many implementations) then the best Widget will be returned from the getService method.</p><p>The best instance of a service is a service with the highest ranking or the lowest service id. The ranking of a service is found in its <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> and can be changed at any time at run time. The service id of a service is a system assigned value for the <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> when it is bound into the <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a>. The system assigned value is a monotonically increasing value. Thus if two services have the same ranking the best service will be associated with the oldest <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptor</a> bound into the system.</p><div class="section"><h3><a name="Looking_up_services_by_name">Looking up services by name</a></h3><p>Services can be qualified in many ways, but the most common is to have a name associated with the service. Hence, in our Widget example if there are several Widgets in the system but each has a different name we can find our particular Widget like this:</p><div class="source"><pre>    public Widget getNamedWidget(String name) {
-        return locator.getService(Widget.class, name);
-    }</pre></div><p>The given name is used to further qualify the specific Widget that was bound into the system.</p></div><div class="section"><h3><a name="Looking_up_services_with_qualifiers">Looking up services with qualifiers</a></h3><p>If your services have qualifiers you can look them up via the qualifiers. In order to do this you can use the <a href="./apidocs/org/jvnet/hk2/AnnotationLiteral.html">AnnotationLiteral</a> in order to create concrete implementations of your annotations. Lets see how this would be done. Suppose you have a qualifer called Blue, defined like this:</p><div class="source"><pre>@Qualifier
+        <div class="section"><h2>Compatibility<a name="Compatibility"></a></h2><p>This page describes the HK2 2.0 API, which is based on JSR-330 standard annotations. Also, Habitat has been replaced with a new interface called <a href="./apidocs/org/glassfish/hk2/api/ServiceLocator.html">ServiceLocator</a>.</p></div><div class="section"><h2>Table of Contents<a name="Table_of_Contents"></a></h2><ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Getting_Started">Getting Started</a><ul><li><a href="#Named_Services">Named Services</a></li><li><a href="#Qualified_Services">Qualified Services</a></li></ul></li><li><a href="#Basic_Injection">Basic Injection</a><ul><li><a href="#Injection_by_name">Injection by name</a></li><li><a href="#Injection_by_qualifier">Injection by qualifier</a></li></ul></li><li><a href="#Provider_injection">Provider injection</a></li><li><a href="#IterableProvider_injection">IterableProvider injection</a></li><li><a href="#Conclusion">Conclusion</a></li></ul></div><div class="section"><h2><a name="Introduction">Introduction</a></h2><p>HK2 is a declarative framework for services using annotations like <a href="./apidocs/org/jvnet/hk2/annotations/Contract.html">Contract</a> and <a href="./apidocs/org/jvnet/hk2/annotations/Service.html">Service</a>. This page is intended to show simple usages of HK2 mainly using the standard JSR-330 API.</p><p>For information about using the HK2 progrommatic API see <a href="./api.html">this page</a>.</p><p>For information about HK2 extensibility options see <a href="./extensibility.html">this page</a>.</p><p>For information about JSR-330 see <a class="externalLink" href="http://www.jcp.org/en/jsr/detail?id=330">this site</a>.</p><p>This page assumes that you are using the HK2 provided ability to automatically find and register services in an HK2 registry. For more information on how to control what services are automatically bound to what registries see TBD.</p></div><div class="section"><h2><a name="Getting_Started">Getting Started</a></h2><p>In order to mark a concrete implementation class as one that should be available as a service you annotate your class with <a href="./apidocs/org/jvnet/hk2/annotations/Service.html">@Service</a>.</p><div class="source"><pre>@Service
+public class Foo {
+}</pre></div><p>By default Foo will be advertised as itself and by any interfaces that are marked with <a href="./apidocs/org/jvnet/hk2/annotations/Contract.html">@Contract</a>. Lets make Foo an interface that is a Contract and create an implementation of Foo:</p><div class="source"><pre>@Contract
+public interface Foo {
+}
+
+@Service
+public class FooImpl implements Foo {
+}</pre></div><p>The FooImpl class will be placed into the registry advertised under both FooImpl and Foo.</p><div class="section"><h3><a name="Named_Services">Named Services</a></h3><p>In order to differentiate different implementations of the same interface you can name your services. Here is an example of a class that implements a contract and has two implementations, both named differently:</p><div class="source"><pre>@Contract
+public interface Book {
+}
+
+@Service @Named
+public class MobyDick implements Book {
+}
+
+@Service @Named
+public class ParadiseLost implements Book {
+}</pre></div><p>The two classes, MobyDick and ParadiseLost, will be added to the service registry with the names &quot;MobyDick&quot; and &quot;ParadiseLost&quot;. If you use the <a class="externalLink" href="http://docs.oracle.com/javaee/6/api/javax/inject/Named.html">Named</a> qualifier without specifying a name then the name you get is the class name without the package.</p></div><div class="section"><h3><a name="Qualified_Services">Qualified Services</a></h3><p>Services can also be qualified with annotations called qualifiers. Qualifiers are annotations that are themselves annotated with <a class="externalLink" href="http://docs.oracle.com/javaee/6/api/javax/inject/Qualifier.html">@Qualifier</a>. Here is an example contract with three implementations:</p><div class="source"><pre>@Contract
+public interface Color {
+}
+
+@Service @Blue
+public class BlueColor implements Color {
+}
+
+@Service @Red
+public class RedColor implements Color {
+}
+
+@Service @Yellow
+public class YellowColor implements Color {
+}</pre></div><p>The Blue annotation is defined like this:</p><div class="source"><pre>@Qualifier
 @Retention(RUNTIME)
 @Target( { TYPE, METHOD, FIELD, PARAMETER })
 public @interface Blue {
-}</pre></div><p>Normally you wouldn't implement Blue, but in this case you do need an implementation in order to be able to look it up. You do that by providing an implement of Blue that extends <a href="./apidocs/org/jvnet/hk2/AnnotationLiteral.html">AnnotationLiteral</a>:</p><div class="source"><pre>public class BlueImpl extends AnnotationLiteral&lt;Blue&gt; implements Blue {
-}</pre></div><p>You can now use this BlueImpl to look up your qualified Widget in a <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a> like this:</p><div class="source"><pre>    Widget widget = locator.getService(Widget.class, new BlueImpl());</pre></div><p>This will get the Widget that has been qualified with @Blue.</p></div><div class="section"><h3><a name="Getting_all_services">Getting all services</a></h3><p>You may also want to get all of the services that have advertised a certain contract. You can do this like this:</p><div class="source"><pre>    List&lt;Widget&gt; widgetList = locator.getAllServices(Widget.class);</pre></div><p>The list returned will have as many Widgets that could be found in the system. It is important to note in this case that all of the Widges will have been classloaded when you use this call, so if classloading performance is important to you be careful of using the getAllServices method. Instead, consider using the getAllServiceHandles or getDescriptors method.</p></div><div class="section"><h3><a name="Getting_service_descriptors">Getting service descriptors</a></h3><p>If you want to look up service descriptors rather than the services themselves you can use the getDescriptor or getBestDescriptor methods on <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a>. The getDescriptor and getBestDescriptor methods will never cause classloading to occur, so it is safe to use in environments where classloading can be an issue.</p><p>The getDescriptor methods on <a href="./apidocs/org/jvnet/hk2/api/ServiceLocator.html">ServiceLocator</a> use a <a href="./apidocs/org/jvnet/hk2/api/Filter.html">Filter</a> to determine which <a href="./apidocs/org/jvnet/hk2/api/Descriptor.html">Descriptors</a> to return. You can implement your own <a href="./apidocs/org/jvnet/hk2/api/Filter.html">Filter</a> or you can use one of the <a href="./apidocs/org/jvnet/hk2/api/Filter.html">Filter</a> implementations provided by <a href="./apidocs/org/jvnet/hk2/utilities/BuilderHelper.html">BuilderHelper</a>. The most common case is to use an <a href="./apidocs/org/jvnet/hk2/api/IndexedFilter.html">IndexedFilter</a> provided by <a href="./apidocs/org/jvnet/hk2/utilities/BuilderHelper.html">BuilderHelper</a>, like this:</p><div class="source"><pre></pre></div></div></div>
+}</pre></div><p>It is an exercise left up to the reader to implement the Red and Yellow annotations.</p></div></div><div class="section"><h2><a name="Basic_Injection">Basic Injection</a></h2><p>Lets make our example a little more interesting by injecting a book into Foo. This is done using the JSR-330 standard <a class="externalLink" href="http://docs.oracle.com/javaee/6/api/javax/inject/Inject.html">Inject</a> annotation:</p><div class="source"><pre>@Service
+public class FooImpl implements Foo {
+  @Inject
+  private Book book;
+  
+  ...
+}</pre></div><p>Upon construction the book field will be filled in by HK2. You can also inject into the constructor of FooImpl, or use an initializer method. In both of those cases the constructor or method must be annotated with <a class="externalLink" href="http://docs.oracle.com/javaee/6/api/javax/inject/Inject.html">@Inject</a> in order to tell HK2 which is the proper constructor or method to call.</p><p>Here is FooImpl implemented with constructor injection:</p><div class="source"><pre>@Service
+public class FooImpl implements Foo {
+  private final Book book;
+  
+  @Inject
+  public FooImpl(Book book) {
+      // constructor injected!
+      this.book = book;
+  }
+}</pre></div><p>Here is FooImpl implemented with initializer method injection:</p><div class="source"><pre>@Service
+public class FooImpl implements Foo {
+  private Book book;
+  
+  @Inject
+  public void setBook(Book book) {
+      // initializer method injected!
+      this.book = book;
+  }
+}</pre></div><p>In all three of the above cases (field injected, constructor injected or initializer method injected) the injection will occur prior to the postConstruct method of FooImpl. In this example we use the injected book in the postConstruct method:</p><div class="source"><pre>@Service
+public class FooImpl implements Foo {
+  @Inject
+  private Book book;
+  
+  @PostConstruct
+  private void postConstruct() {
+      book.doSomething();
+  }
+}</pre></div><div class="section"><h3><a name="Injection_by_name">Injection by name</a></h3><p>The astute observer of our example will have noticed that when injecting a Book into FooImpl that we never selected which book we wanted. That can be fixed by using the <a class="externalLink" href="http://docs.oracle.com/javaee/6/api/javax/inject/Named.html">Named</a> qualifier at the point of injection. Lets fix the example by injecting both of the Books we defined earlier:</p><div class="source"><pre>@Service
+public class FooImpl implements Foo {
+  @Inject @Named(&quot;MobyDick&quot;)
+  private Book mobyDick;
+  
+  @Inject @Named(&quot;ParadiseLost&quot;)
+  private Book paradiseLost;
+}</pre></div><p>The implementation of Book given the name &quot;MobyDick&quot; will be injected into the mobyDick field, and the implementation of Book given the name &quot;ParadiseLost&quot; will be injected into the paradiseLost field.</p></div><div class="section"><h3><a name="Injection_by_qualifier">Injection by qualifier</a></h3><p>Injections can also be more specifically chosen by using qualifiers. In the previous example we created three implementations of Color, each of which was qualified with a qualifier. Here we create a class called ColorMixer which injects the colors in an initializer method, which also demonstrates that an initializer method (or constructor) can take more than one parameter:</p><div class="source"><pre>@Service
+public class ColorMixer {
+    private Color red;
+    private Color blue;
+    private Color yellow;
+  
+    @Inject
+    private void addPrimaries(
+            @Red Color red,
+            @Blue Color blue,
+            @Yellow Color yellow) {
+      this.red = red;
+      this.blue = blue;
+      this.yellow = yellow;
+   }
+}</pre></div><p>Note that the qualifiers can go on the parameters of the initializer method addPrimaries. In the above example the RedColor, BlueColor and YellowColor services will be injected into the proper fields of the initializer.</p></div></div><div class="section"><h2><a name="Provider_injection">Provider injection</a></h2><p>There are times when your code would like finer control over when a instance of a service is created. Anywhere that you can inject a service, you can also inject a <a class="externalLink" href="http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html">Provider</a>. When you inject a <a class="externalLink" href="http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html">Provider</a> for a service rather than the service itself the system will potentially delay the creation of the service until the <a class="externalLink" href="http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html#get%28%29">get</a> method of the <a class="externalLink" href="http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html">Provider</a> has been called.</p><p>Lets go back to our ColorMixer example, and inject providers (into fields this time) for our primaries.</p><div class="source"><pre>@Service
+public class ColorMixer {
+    @Inject @Red
+    private Provider&lt;Color&gt; redProvider;
+    
+    @Inject @Blue
+    private Provider&lt;Color&gt; blueProvider;
+    
+    @Inject @Yellow
+    private Provider&lt;Color&gt; yellowProvider;
+}</pre></div><p>This service can then get the color implementations later. In this method of ColorMixer we create purple by getting the red and blue colors:</p><div class="source"><pre>@Service
+public class ColorMixer {
+    ...
+    
+    public Color makePurple() {
+      return mix(redProvider.get(), blueProvider.get());
+    }
+}</pre></div><p>Note that if no-one ever makes a color that involves using yellow, that the YellowColor implementation class will never be created, since no-one ever called the <a class="externalLink" href="http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html#get%28%29">get</a> method of the yellowProvider field.</p></div><div class="section"><h2><a name="IterableProvider_injection">IterableProvider injection</a></h2><p>It is often the case that a single contract has more than one implementation. Sometimes it is useful to get access to all of the implementations of the contract. This can be done by using an <a href="./apidocs/org/glassfish/hk2/api/IterableProvider.html">IterableProvider</a>. <a href="./apidocs/org/glassfish/hk2/api/IterableProvider.html">IterableProvider</a> extends <a class="externalLink" href="http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html">Provider</a> and also implements <a class="externalLink" href="http://docs.oracle.com/javase/6/docs/api/java/lang/Iterable.html">Iterable</a>. Anywhere a service can be injected an <a href="./apidocs/org/glassfish/hk2/api/IterableProvider.html">IterableProvider</a> for that service can be injected.</p><p>In this example we create a Library service that wants to be able to list all of the books it carries:</p><div class="source"><pre>@Service
+public class Library {
+    @Inject
+    private IterableProvider&lt;Book&gt; allBooks;
+    
+    public LinkedList&lt;Book&gt; getAllBooks() {
+        LinkedList&lt;Book&gt; retVal = new LinkedList&lt;Book&gt;();
+        
+        for (Book book : allBooks) {
+            retVal.add(book);
+        }
+        
+        return retVal;
+    }
+}</pre></div><p>Since <a href="./apidocs/org/glassfish/hk2/api/IterableProvider.html">IterableProvider</a> implements <a class="externalLink" href="http://docs.oracle.com/javase/6/docs/api/java/lang/Iterable.html">Iterable</a> it can be used in Java for/while loops, as demonstrated in the above example.</p><p>Another feature of the <a href="./apidocs/org/glassfish/hk2/api/IterableProvider.html">IterableProvider</a> is that it can be used to further narrow down the selection criteria at run time. In our above example we can progrommatically choose the book we are interested in based on a name passed into a method. Here is how it would look:</p><div class="source"><pre>@Service
+public class Library {
+    @Inject
+    private IterableProvider&lt;Book&gt; allBooks;
+    
+    public Book findBook(String name) {
+        return allBooks.named(name).get();
+    }
+}</pre></div><p>In the above example we call the <a class="externalLink" href="http://hk2.java.net/hk2-api/apidocs/org/glassfish/hk2/api/IterableProvider.html#named%28java.lang.String%29">named</a> method of <a href="./apidocs/org/glassfish/hk2/api/IterableProvider.html">IterableProvider</a> in order to select the book with the given name. The call to <a class="externalLink" href="http://atinject.googlecode.com/svn/trunk/javadoc/javax/inject/Provider.html#get%28%29">get</a> then just returns the book with the given name.</p></div><div class="section"><h2><a name="Conclusion">Conclusion</a></h2><p>The majority of usages of HK2 should use standard JSR-330 annotations along with <a href="./apidocs/org/jvnet/hk2/annotations/Service.html">@Service</a> and <a href="./apidocs/org/jvnet/hk2/annotations/Contract.html">@Contract</a>. In some cases code will also use <a href="./apidocs/org/glassfish/hk2/api/IterableProvider.html">IterableProvider</a> as outlined above. In even rarer cases the code may need extremely specialized control over HK2 by using the progrommatic API, as described <a href="./api.html">here</a>.</p><p>We have gone through many simple examples which have shown the basic functionality of HK2 and JSR-330 in your applications. Hopefully they have provided you with knowledge about how these annotations work and how they can be used in your own applications.</p></div>
       </div>
     </div>
     <div class="clear">
@@ -83,8 +172,8 @@ public @interface Blue {
 
   
   
-  &nbsp;| Last Published: 04/11/2012
-  &nbsp;| Version: 2.0.1-SNAPSHOT
+  &nbsp;| Last Published: 04/20/2012
+  &nbsp;| Version: 2.0.2-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
