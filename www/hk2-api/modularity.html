@@ -98,7 +98,7 @@ public class MyContractImpl {
     public void doSomething() {
 
     }
-}</pre></div><p>while to look up will need to use the HK2 APIs to do an explicit lookup, and instantiate an object by extending an <a href="./apidocs/org/glassfish/hk2/api/AnnotationLiteral.html">AnnotationLiteral</a>.</p><div class="source"><pre>    Annotation annotation = ... get it from config ...
+}</pre></div><p>while to look up will need to use the HK2 APIs to do an explicit lookup, and instantiate an object by extending an <a href="./apidocs/org/glassfish/hk2/AnnotationLiteral.html">AnnotationLiteral</a>.</p><div class="source"><pre>    Annotation annotation = ... get it from config ...
 
     // hopefully service name is either &quot;foo&quot; or &quot;bar&quot;
     MyContract myContractImpl = serviceLocator.getService(MyContract.class, annotation);
@@ -164,8 +164,8 @@ public class SomeUserCode {
 
   
   
-  &nbsp;| Last Published: 04/11/2012
-  &nbsp;| Version: 2.0.1-SNAPSHOT
+  &nbsp;| Last Published: 04/20/2012
+  &nbsp;| Version: 2.0.2-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
