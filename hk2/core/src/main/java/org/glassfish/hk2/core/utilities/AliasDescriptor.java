@@ -233,7 +233,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     /**
      * Ensure that this descriptor has been initialized.
      */
-    private void ensureInitialized() {
+    private synchronized void ensureInitialized() {
         if (!initialized) {
             // reify the underlying descriptor if needed
             if (!descriptor.isReified()) {
