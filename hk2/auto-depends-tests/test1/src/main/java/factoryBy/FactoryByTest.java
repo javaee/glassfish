@@ -40,7 +40,7 @@
 package factoryBy;
 
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 import test1.Test;
 
 /**

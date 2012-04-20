@@ -39,12 +39,15 @@
  */
 package test1;
 
+import javax.inject.Inject;
+
+import junit.framework.Assert;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.annotations.Service;
+
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import junit.framework.Assert;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -56,16 +59,15 @@ public class Start extends Assert implements ModuleStartup {
     @Inject
     Test[] tests;
 
-    @Inject
-    Habitat habitat;
-
+    @Inject ServiceLocator serviceLocator;
+    
     public void setStartupContext(StartupContext context) {
         this.context = context;
     }
 
     public void start() {
         assertNotNull(context);
-        assertNotNull(habitat);
+        assertNotNull(serviceLocator);
         assertTrue(tests.length!=0);
 
         for (Test test : tests) {

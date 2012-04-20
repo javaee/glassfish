@@ -3,6 +3,7 @@ package org.glassfish.hk2.bootstrap.impl;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
@@ -21,6 +22,13 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.ArgumentManager;
+import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.impl.ModulesRegistryImpl;
 import com.sun.hk2.component.Holder;
 
 import static org.junit.Assert.*;
@@ -104,5 +112,19 @@ public class ServiceLocatorTest {
 	    }
 	    
 	}
+	
+	@Test
+	public void testCreateServiceLocator() throws BootException {
+
+        StartupContext context = new StartupContext();
+        
+        Main main = new Main();
+
+        ServiceLocator serviceLocator = main.createServiceLocator(new ModulesRegistryImpl(null), new StartupContext());
+        
+        assertEquals("ServiceLocator should be bound", serviceLocator, serviceLocator.getService(ServiceLocator.class));
+        
+	}
+	
 	
 }

@@ -57,10 +57,12 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.inhabitants.InhabitantParser;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.*;
@@ -446,11 +448,14 @@ public class Main {
         setParentClassLoader(context, registry);
 
         // create a habitat and initialize them
-        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(HABITAT_NAME);
+        final ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(HABITAT_NAME);
         
         DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
+
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(serviceLocator));
+        config.commit();
+        config = dcs.createDynamicConfiguration();
         config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(context));
         config.commit();
         config = dcs.createDynamicConfiguration();
