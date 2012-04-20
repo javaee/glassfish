@@ -52,8 +52,8 @@ import java.io.IOException;
 @Service
 public class SimpleSanityTests implements ModuleStartup  {
 
-    @Inject
-    TopLevel topLevel;
+ //   @Inject Config...
+ //   TopLevel topLevel;   
 
     @Override
     public void setStartupContext(StartupContext context) {
@@ -62,14 +62,15 @@ public class SimpleSanityTests implements ModuleStartup  {
 
     @Override
     public void start() {
-        assert(topLevel!=null);
-        assert(topLevel.getConfigs().getConfig().size()>0);
-        assert(topLevel.getServers().getServer().size()>0);
-        try {
-            (new LocatorTest()).testLocator();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    	// config...
+//        assert(topLevel!=null);
+//        assert(topLevel.getConfigs().getConfig().size()>0);
+//        assert(topLevel.getServers().getServer().size()>0);
+//        try {
+//            (new LocatorTest()).testLocator();
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     @Override

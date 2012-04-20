@@ -41,6 +41,8 @@ package org.glassfish.hk2.tests.rls.model;
 
 import org.glassfish.hk2.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
@@ -51,9 +53,9 @@ public class ServiceBaseX implements ContractX, PostConstruct {
   public static int ctorCount = 0;
   public static int postConstructCount = 0;
   
-  @Inject public static ContractY y;
+  @Inject public ContractY y;
   
-  @Inject(name="other") public static ServiceOtherToY other;
+  @Inject @Named("other") public ServiceOtherToY other;
   
   public ServiceBaseX() {
     ctorCount++;

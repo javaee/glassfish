@@ -51,7 +51,7 @@ public class ServiceDerivedX extends ServiceBaseX implements PostConstruct {
   public static int ctorCount = 0;
   public static int postConstructCount = 0;
 
-  @Inject public static ContractY y;
+  @Inject public ContractY y;
 
   public ServiceDerivedX() {
     ctorCount++;

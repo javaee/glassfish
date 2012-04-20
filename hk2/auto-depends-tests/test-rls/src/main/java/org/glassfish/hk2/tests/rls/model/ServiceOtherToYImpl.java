@@ -39,12 +39,13 @@
  */
 package org.glassfish.hk2.tests.rls.model;
 
-import org.glassfish.hk2.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Provider;
+
+import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
-
-import com.sun.hk2.component.Holder;
 
 @RunLevel(RunLevel.KERNEL_RUNLEVEL)
 @Service(name = "other")
@@ -54,13 +55,13 @@ public class ServiceOtherToYImpl implements ServiceOtherToY, PostConstruct {
     public static int postConstructCount = 0;
 
     @Inject
-    public static ContractY y;
+    public  ContractY y;
 
     @Inject
-    public static ContractY[] allY;
+    public  IterableProvider<ContractY> allY;
 
     @Inject
-    public static Holder<ServiceZ> zHolder;
+    public  Provider<ServiceZ> zHolder;
 
 
     public ServiceOtherToYImpl() {

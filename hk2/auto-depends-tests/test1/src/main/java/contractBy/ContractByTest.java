@@ -40,6 +40,8 @@
 package contractBy;
 
 import javax.inject.Inject;
+
+import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractProvided;
 import test1.Test;
@@ -55,10 +57,10 @@ public class ContractByTest extends Test {
     Bar bar;
 
     @Inject
-    Bar[] bars;
+    IterableProvider<Bar> bars;
 
     public void run() {
         assertNotNull(bar);
-        assertEquals(1,bars.length);
+        assertEquals(1,bars.getSize());
     }
 }
