@@ -148,9 +148,14 @@ public class MavenProjectRepository extends AbstractRepositoryImpl {
         MavenModuleDefinition main = buildModule(project.getArtifact(), moduleDefs, libraries);
         if(main!=null) {
             // artifact from the main project, in case those are not compiled yet
+        	logger.info("Adding classpath entry: "+project.getBuild().getOutputDirectory());
+        	
             main.addClasspath(new File(project.getBuild().getOutputDirectory()));
-            for (Resource res : (List<Resource>)project.getBuild().getResources())
-                main.addClasspath(new File(res.getDirectory()));
+            for (Resource res : (List<Resource>)project.getBuild().getResources()) {
+            	logger.info("Adding classpath entry: "+res.getDirectory());
+            	
+            	main.addClasspath(new File(res.getDirectory()));
+            }
         }
 
         for (Artifact a : (List<Artifact>) project.getAttachedArtifacts()) {
