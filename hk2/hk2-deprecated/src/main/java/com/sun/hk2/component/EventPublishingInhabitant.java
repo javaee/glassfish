@@ -41,6 +41,8 @@ package com.sun.hk2.component;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,7 +101,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   }
 
   @Override
-  public MultiMap<String, String> metadata() {
+  public Map<String, List<String>> metadata() {
     return (null == real) ? null : real.metadata();
   }
 

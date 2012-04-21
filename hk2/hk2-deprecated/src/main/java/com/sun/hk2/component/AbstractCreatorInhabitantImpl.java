@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,65 +37,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.deprecated.internal;
+package com.sun.hk2.component;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import org.glassfish.hk2.api.Descriptor;
+import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.component.MultiMap;
+
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.hk2.MultiMap;
-import org.glassfish.hk2.utilities.DescriptorImpl;
-
 /**
- * @author jwells
+ * Partial implementation of {@link org.jvnet.hk2.component.Inhabitant} that delegates to {@link org.jvnet.hk2.component.Creator}
+ * for object creation.
+ * <p>
+ * Derived types are expected to implement the {@link #get()} method and
+ * choose when to create an object. 
  *
+ * @author Kohsuke Kawaguchi
  */
-public class Utilities {
-    public static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null) return false;
-        if (b == null) return false;
-        
-        return a.equals(b);
+public abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
+//    private static final Logger logger = Logger.getLogger(AbstractCreatorInhabitantImpl.class.getName());
+
+    protected final Creator<T> creator;
+
+    protected AbstractCreatorInhabitantImpl(Creator<T> creator) {
+        this(getDescriptorFor(creator), creator);
+    }
+
+    public AbstractCreatorInhabitantImpl(Descriptor descriptor, Creator<T> creator) {
+        super(descriptor);
+        this.creator = creator;
+    }
+
+    public final String typeName() {
+        return creator.typeName();
+    }
+
+    public final Class<? extends T> type() {
+        return creator.type();
+    }
+
+    public Map<String, List<String>> metadata() {
+        return creator.metadata();
     }
     
-    public static void printThrowable(Throwable th) {
-        int lcv = 0;
-        while (th != null) {
-            System.err.println("[" + lcv++ + "]=" + th.getMessage());
-            th.printStackTrace();
-            
-            th = th.getCause();
-        }
-    }
-
-    public static void fillInMetadata(MultiMap<String, String> multi, DescriptorImpl d) {
-        if (multi == null) return;
-
-        for (String key : multi.keySet()) {
-            List<String> values = multi.get(key);
-
-            if (values == null) continue;
-
-            for (String value : values) {
-                d.addMetadata(key, value);
-            }
-        }
-    }
-
-    public static void fillInMetadata(Map<String, List<String>> multi, DescriptorImpl d) {
-        if (multi == null) return;
-
-        for (String key : multi.keySet()) {
-            List<String> values = multi.get(key);
-
-            if (values == null) continue;
-
-            for (String value : values) {
-                d.addMetadata(key, value);
-            }
-        }
+    public Creator<T> getCreator() {
+        return creator;
     }
 
 }

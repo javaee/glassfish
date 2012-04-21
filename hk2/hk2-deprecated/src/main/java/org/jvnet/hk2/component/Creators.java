@@ -43,10 +43,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -78,7 +75,7 @@ public class Creators {
      * @return
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Creator<T> create(Class<T> c, ServiceLocator habitat, MultiMap<String,String> metadata) {
+    public static <T> Creator<T> create(Class<T> c, ServiceLocator habitat, Map<String, List<String>> metadata) {
         MetadataIndexFilter mif = new MetadataIndexFilter(c, metadata);
         
         List<ActiveDescriptor<?>> descriptors = habitat.getDescriptors(mif);

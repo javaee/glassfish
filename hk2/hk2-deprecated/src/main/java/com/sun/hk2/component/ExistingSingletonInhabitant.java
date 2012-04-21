@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,70 +37,76 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.deprecated.internal;
+package com.sun.hk2.component;
+
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.component.MultiMap;
 
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.hk2.MultiMap;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.IndexedFilter;
-
 /**
- * @author jwells
+ * {@link org.jvnet.hk2.component.Inhabitant} built around an object that already exists.
  *
+ * @author Kohsuke Kawaguchi
  */
-public class MetadataIndexFilter implements IndexedFilter {
-    private final Class<?> c;
-    private final Map<String, List<String>> multiMap;
-    
-    /**
-     * 
-     * @param c
-     * @param multiMap
-     */
-    public MetadataIndexFilter(Class<?> c, Map<String, List<String>> multiMap) {
-        this.c = c;
-        this.multiMap = multiMap;
+public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
+    private final T object;
+    private final Class<T> type;
+
+    public ExistingSingletonInhabitant(T object) {
+        this((Class<T>) object.getClass(), object);
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
-     */
+    public ExistingSingletonInhabitant(Class<T> type, T object) {
+        super(BuilderHelper.createConstantDescriptor(object));
+        this.object = object;
+        this.type = (Class<T>) object.getClass();
+    }
+
+    public ExistingSingletonInhabitant(Class<T> type, T object, Map<String, List<String>> metadata) {
+        this(type, object);
+        super.getDescriptor().getMetadata().putAll(metadata);
+    }
+    
     @Override
-    public boolean matches(Descriptor d) {
-        if (multiMap == null) return true;
-        
-        Map<String, List<String>> dMeta = d.getMetadata();
-        for (String key : multiMap.keySet()) {
-            List<String> values = multiMap.get(key);
-            
-            if (values == null || values.isEmpty()) continue;
-            
-            List<String> dValues = dMeta.get(key);
-            if (dValues == null) return false;
-            
-            if (!dValues.containsAll(values)) return false;
-        }
-        
+    public String toString() {
+        return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
+          "(value=" + get(null) + ", " + getDescriptor() + ")\n";
+    }
+
+    @Override
+    public String typeName() {
+        return type.getName();
+    }
+
+    @Override
+    public Class<T> type() {
+        return type;
+    }
+
+    @Override
+    public Map<String, List<String>> metadata() {
+        return (Map<String, List<String>>) getDescriptor().getMetadata();
+    }
+
+    public T get(Inhabitant onBehalfOf) throws ComponentException {
+        return object;
+    }
+
+    @Override
+    public boolean isActive() {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
-     */
     @Override
-    public String getAdvertisedContract() {
-        if (c == null) return null;
-        return c.getName();
+    public void release() {
+        // since we are working on the existing object,
+        // we can't release its instance.
+        // (technically it's possible to invoke PreDestroy,
+        // not clear which is better --- you can argue both ways.)
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.IndexedFilter#getName()
-     */
-    @Override
-    public String getName() {
-        return null;
-    }
-
 }
