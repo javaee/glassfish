@@ -143,18 +143,14 @@ public class Jira extends MonTest {
 
     private void test14389() {
         String prepend = "14389::";
-        try {
-            // 3/28/12 Add a sleep and see if it makes a difference.
-            Thread.sleep(30000);
-        }
-        catch (InterruptedException ex) {
-            //ignore
-        }
         //Try list -m server.* instead of * to see if it makes a difference
         // 4/18/12 'list -m server.*' works, but not 'list -m *'
         // Almost certainly caused by the the command processor "globbing".
         //AsadminReturn ar = asadminWithOutput("list", "-m", STAR);
-        AsadminReturn ar = asadminWithOutput("list", "-m", SERVERDOTSTAR);
+        AsadminReturn ar = asadminWithOutput("list", "-m", "server.*");
+        AsadminReturn arx = asadminWithOutput("list", "-m", "server.applications.*");
+        AsadminReturn ary = asadminWithOutput("list", "-m", "server.applications*");
+
         // this test started failing intermittenly in early March 2012.  I've now
         // added some diagnostic code...
         boolean b1 = checkForString(ar, "server.applications");
@@ -168,6 +164,8 @@ public class Jira extends MonTest {
             System.out.println("Monitoring Test for 14389 FAILED!!");
             System.out.printf("b1: %b, b2: %b, b3: %b, b4: %b\n", b1,b2,b3,b4);
             System.out.println("Here is outAndErr:\n" + ar.outAndErr);
+            System.out.println("HERE is output from arx: \n" + arx.outAndErr);
+            System.out.println("HERE is output from ary: \n" + ary.outAndErr);
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
             System.out.println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
