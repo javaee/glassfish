@@ -42,6 +42,7 @@ package com.sun.hk2.component;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,7 +53,6 @@ import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Creators;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.deprecated.internal.Utilities;
 
 /**
@@ -63,17 +63,17 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
     private final static Logger logger = Logger.getLogger(AbstractCreatorImpl.class.getName());
 
     protected final Class<? extends T> type;
-    protected final ServiceLocator habitat;
-    private final MultiMap metadata;
+    protected final ServiceLocator serviceLocator;
+    private final Map<String, List<String>> metadata;
 
-    public AbstractCreatorImpl(Class<? extends T> type, ServiceLocator habitat, MultiMap<String,String> metadata) {
+    public AbstractCreatorImpl(Class<? extends T> type, ServiceLocator serviceLocator, Map<String, List<String>> metadata) {
         super(new DescriptorImpl());
         
         setImplementation(type.getName());
         Utilities.fillInMetadata(metadata, this);
         
         this.type = type;
-        this.habitat = habitat;
+        this.serviceLocator = serviceLocator;
         
         this.metadata = metadata;
         
@@ -100,7 +100,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
 
     @Override
     public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
-        habitat.inject(t);
+        serviceLocator.inject(t);
       // I could rely on injection, but the algorithm is slow enough for now that I
       // need a faster scheme.
         /**
@@ -117,7 +117,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
     }
 
     @Override
-    public MultiMap<String, String> metadata() {
+    public Map<String, List<String>> metadata() {
         return metadata;
     }
 

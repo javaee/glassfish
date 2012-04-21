@@ -48,6 +48,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -64,7 +65,7 @@ import sun.misc.BASE64Decoder;
 
 /**
  * Partial implementation of {@link Inhabitant} that defines methods whose
- * semantics is fixed by {@link Habitat}.
+ * semantics is fixed by {@link org.glassfish.hk2.api.ServiceLocator}.
  *
  * @author Kohsuke Kawaguchi
  */
@@ -142,7 +143,11 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
 
     @Override
     public <T> T getSerializedMetadata(final Class<T> type, String key) {
-        String v = metadata().getOne(key);
+        List<String> lst = metadata().get(key);
+        if (lst == null || lst.isEmpty()) {
+            return null;
+        }
+        String v = lst.get(0);
         if (v==null) {
             return null;
         }

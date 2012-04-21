@@ -39,9 +39,13 @@
  */
 package com.sun.hk2.component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.ComponentException;
@@ -61,24 +65,24 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
      */
     // private final Holder<ClassLoader> classLoader;
 
-    protected final ServiceLocator habitat;
+    protected final ServiceLocator serviceLocator;
 
     private final Inhabitant<?> lead;
 
     
-    public LazyInhabitant(ServiceLocator habitat, Holder<ClassLoader> cl, String typeName, MultiMap<String,String> metadata) {
-        this(habitat, cl, typeName, metadata, null);
+    public LazyInhabitant(ServiceLocator serviceLocator, HK2Loader hk2CL, String typeName, Map<String, List<String>> metadata) {
+        this(serviceLocator, hk2CL, typeName, metadata, null);
     }
 
-    public LazyInhabitant(ServiceLocator habitat, Holder<ClassLoader> cl, String typeName, MultiMap<String,String> metadata, Inhabitant<?> lead) {
+    public LazyInhabitant(ServiceLocator serviceLocator, HK2Loader cl, String typeName, Map<String, List<String>> metadata, Inhabitant<?> lead) {
         super(new DescriptorImpl());
         assert metadata!=null;
         
         setImplementation(typeName);
         Utilities.fillInMetadata(metadata, this);
-        setLoader(new HolderHK2LoaderImpl(cl));
+        setLoader(cl);
         
-        this.habitat = habitat;
+        this.serviceLocator = serviceLocator;
         this.lead = lead;
     }
 
@@ -106,14 +110,14 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     }
 
     @Override
-    public MultiMap<String,String> metadata() {
-        return (MultiMap<String, String>) getDescriptor().getMetadata();
+    public Map<String, List<String>> metadata() {
+        return getDescriptor().getMetadata();
     }
 
     @Override
     protected synchronized void fetch() {
         if (null == real) {
-            ActiveDescriptor<?> reified = habitat.reifyDescriptor(this);
+            ActiveDescriptor<?> reified = serviceLocator.reifyDescriptor(this);
             
             real = (Inhabitant<T>) reified.getBaseDescriptor();
         }
@@ -122,18 +126,22 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     public final ClassLoader getClassLoader() {
         return ((HolderHK2LoaderImpl) getLoader()).getClassLoader();
     }
+
+    public final ServiceLocator getServiceLocator() {
+        return serviceLocator;
+    }
     
     @SuppressWarnings("unchecked")
     protected Class<T> loadClass() {
         String typeName = typeName();
         logger.log(Level.FINER, "loading class for: {0}", typeName);
         
-        final ClassLoader cl = getClassLoader();
+        //final ClassLoader cl = getClassLoader();
         try {
-            Class<T> c = (Class<T>) cl.loadClass(typeName);
+            Class<T> c = (Class<T>) getLoader().loadClass(typeName);
             return c;
-        } catch (ClassNotFoundException e) {
-            throw new ComponentException("Failed to load "+typeName+" from " + cl, e);
+        } catch (MultiException e) {
+            throw new ComponentException("Failed to load "+typeName+" from " + getLoader(), e);
         }
     }
 
@@ -147,8 +155,8 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
      * Creates {@link Creator} for instantiating objects.
      */
     protected Creator<T> createCreator(Class<T> c) {
-        MultiMap<String, String> metadata = metadata();
-        return Creators.create(c,habitat,metadata);
+        Map<String, List<String>> metadata = metadata();
+        return Creators.create(c,serviceLocator,metadata);
     }
 
 }

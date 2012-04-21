@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,65 +37,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.deprecated.internal;
+package org.jvnet.hk2.tracing;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import org.jvnet.hk2.component.Inhabitant;
 
-import org.glassfish.hk2.MultiMap;
-import org.glassfish.hk2.utilities.DescriptorImpl;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Iterator;
 
 /**
- * @author jwells
+ * experimental thread local class for tracing inhabitant initialization and module resolution
  *
+ * @author Jerome Dochez
  */
-public class Utilities {
-    public static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null) return false;
-        if (b == null) return false;
-        
-        return a.equals(b);
+public class InhabitantTracing {
+
+    private Deque<TracingUtilities.Node> stack = new ArrayDeque<TracingUtilities.Node>();
+
+    public void push(Inhabitant i) {
+        TracingUtilities.Node parent = (stack.isEmpty()?TracingUtilities.rootNode:stack.peek());
+        TracingUtilities.Node newNode = new TracingUtilities.Node(i);
+        parent.children.add(newNode);
+        stack.push(newNode);
+    }
+
+    public Iterator<Inhabitant> inOrder() {
+        return new Iterator<Inhabitant>() {
+            final Iterator<TracingUtilities.Node> itr = stack.iterator();
+            @Override
+            public boolean hasNext() {
+                return itr.hasNext();
+            }
+
+            @Override
+            public Inhabitant next() {
+                return itr.next().t;
+            }
+
+            @Override
+            public void remove() {
+                itr.remove();
+            }
+        };
     }
     
-    public static void printThrowable(Throwable th) {
-        int lcv = 0;
-        while (th != null) {
-            System.err.println("[" + lcv++ + "]=" + th.getMessage());
-            th.printStackTrace();
-            
-            th = th.getCause();
+    public void pop() {
+        TracingUtilities.Node current = stack.pop();
+        current.done();
+        if (stack.isEmpty()) {
+            TracingThreadLocal.clean();
         }
     }
-
-    public static void fillInMetadata(MultiMap<String, String> multi, DescriptorImpl d) {
-        if (multi == null) return;
-
-        for (String key : multi.keySet()) {
-            List<String> values = multi.get(key);
-
-            if (values == null) continue;
-
-            for (String value : values) {
-                d.addMetadata(key, value);
-            }
-        }
-    }
-
-    public static void fillInMetadata(Map<String, List<String>> multi, DescriptorImpl d) {
-        if (multi == null) return;
-
-        for (String key : multi.keySet()) {
-            List<String> values = multi.get(key);
-
-            if (values == null) continue;
-
-            for (String value : values) {
-                d.addMetadata(key, value);
-            }
-        }
-    }
-
 }

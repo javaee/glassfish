@@ -40,22 +40,25 @@
 package org.jvnet.hk2.component;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.ManagedComponentProvider;
+import org.glassfish.hk2.ServiceLocator;
 import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.annotations.Service;
 
 import com.sun.hk2.component.Holder;
 
 /**
- * Represents a component in the world of {@link Habitat}.
+ * Represents a component in the world of {@link ServiceLocator}.
  *
  * <p>
  * {@link Inhabitant} extends from {@link Holder}, as one of its
  * purposes is to encapsulate how we obtain an instance of a component.
  * On topf of that, {@link Inhabitant} enhances {@link Holder} by
- * adding more metadata that {@link Habitat} uses for finding
+ * adding more metadata that {@link ServiceLocator} uses for finding
  * components and hooking them up together.
  *
  * <p>
@@ -75,6 +78,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
      * The short-cut for {@code type().getName()}
      * but this allows us to defer loading the actual types.
      */
+
     String typeName();
 
     /**
@@ -93,7 +97,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
      * That said, this method is not designed for the semantics of
      * contract/implementation split --- implementations of a contract
      * should return the concrete type from this method, and use
-     * {@link Habitat#addIndex(Inhabitant, String, String) habitat index}
+     * {@link ServiceLocator#addIndex(Inhabitant, String, String) habitat index}
      * to support look-up by contract. 
      *
      * @return
@@ -124,7 +128,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
      * (see {@link com.sun.hk2.component.AbstractCreatorInhabitantImpl} for example), yet during
      * the object initializtion inside the {@link #get()} method, we often
      * need the reference to the outer-most {@link Inhabitant} registered to
-     * the {@link Habitat} (for example so that we can request the injection
+     * the {@link ServiceLocator} (for example so that we can request the injection
      * of {link Inhabita} that represents itself, or to inject companions.)
      *
      * <p>
@@ -143,7 +147,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
      * This data is usually used by a sub-system of HK2, and not really meant to
      * be used by applications. (At least for now.)
      * The main benefit of metadata is that it's available right away
-     * as soon as the {@link Habitat} is properly initialized, even before
+     * as soon as the {@link ServiceLocator} is properly initialized, even before
      * component classes are loaded. In contrast, accessing annotations would require
      * classes to be loaded and resolved.
      *
@@ -151,7 +155,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
      *      can be empty but never null. The values are read-only.
      * @see Service#metadata() 
      */
-    MultiMap<String,String> metadata();
+    Map<String, List<String>> metadata();
 
     /**
      * Obtains the serialized metadata.
@@ -193,7 +197,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
     <T> T getSerializedMetadata(Class<T> type);
 
     /**
-     * Called to orderly shutdown {@link Habitat}.
+     * Called to orderly shutdown {@link ServiceLocator}.
      * <p>
      * The expected behavior is for objects to get its {@link org.glassfish.hk2.PreDestroy}
      * callback invoked, and its reference released. For singleton
@@ -205,7 +209,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
     void release();
 
 //
-// methods below here are more or less used for book-keeping purpose by Habitat,
+// methods below here are more or less used for book-keeping purpose by ServiceLocator,
 // and implementations of Inhabitant should implement them just by using
 // AbstractInhabitantImpl
 //
@@ -231,7 +235,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
     Collection<Inhabitant> companions();
 
     /**
-     * This method is only meant to be invoked by {@link Habitat}.
+     * This method is only meant to be invoked by {@link ServiceLocator}.
      */
     void setCompanions(Collection<Inhabitant> companions);
 

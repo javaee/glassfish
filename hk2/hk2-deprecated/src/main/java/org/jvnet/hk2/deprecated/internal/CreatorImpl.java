@@ -41,6 +41,8 @@ package org.jvnet.hk2.deprecated.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.Context;
 import org.glassfish.hk2.Provider;
@@ -61,7 +63,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
 public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
     private final Class<?> c;
     private final ServiceLocator locator;
-    private final MultiMap<String,String> metadata;
+    private final Map<String, List<String>> metadata;
     
     /**
      * 
@@ -70,7 +72,7 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
      * @param metadata
      * @param d
      */
-    public CreatorImpl(Class<?> c, ServiceLocator locator, MultiMap<String,String> metadata, Descriptor d) {
+    public CreatorImpl(Class<?> c, ServiceLocator locator, Map<String, List<String>> metadata, Descriptor d) {
         super(d);
         this.c = c;
         this.locator = locator;
@@ -107,7 +109,7 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
      * @see org.jvnet.hk2.component.Inhabitant#metadata()
      */
     @Override
-    public MultiMap<String, String> metadata() {
+    public Map<String, List<String>> metadata() {
         return metadata;
     }
 

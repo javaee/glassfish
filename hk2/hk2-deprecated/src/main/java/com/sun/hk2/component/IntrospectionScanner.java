@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,65 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.deprecated.internal;
+package com.sun.hk2.component;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.glassfish.hk2.MultiMap;
-import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * @author jwells
+ * Plugability API for allowing sub parsers to be looked up during
+ * introspection. These sub parsers will have the right to peek at
+ * the introspected.
  *
+ * @author Jerome Dochez
  */
-public class Utilities {
-    public static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null) return false;
-        if (b == null) return false;
-        
-        return a.equals(b);
-    }
-    
-    public static void printThrowable(Throwable th) {
-        int lcv = 0;
-        while (th != null) {
-            System.err.println("[" + lcv++ + "]=" + th.getMessage());
-            th.printStackTrace();
-            
-            th = th.getCause();
-        }
-    }
+@Contract
+public interface IntrospectionScanner {
 
-    public static void fillInMetadata(MultiMap<String, String> multi, DescriptorImpl d) {
-        if (multi == null) return;
-
-        for (String key : multi.keySet()) {
-            List<String> values = multi.get(key);
-
-            if (values == null) continue;
-
-            for (String value : values) {
-                d.addMetadata(key, value);
-            }
-        }
-    }
-
-    public static void fillInMetadata(Map<String, List<String>> multi, DescriptorImpl d) {
-        if (multi == null) return;
-
-        for (String key : multi.keySet()) {
-            List<String> values = multi.get(key);
-
-            if (values == null) continue;
-
-            for (String value : values) {
-                d.addMetadata(key, value);
-            }
-        }
-    }
-
+    /**
+     * Called by the introspection framework with the class model
+     * context.
+     *
+     * @param context the reflection interfaces accesses
+     * @param loader class loader that call load introspected classes
+     */
+    void parse(ParsingContext context, Holder<ClassLoader> loader);
 }
