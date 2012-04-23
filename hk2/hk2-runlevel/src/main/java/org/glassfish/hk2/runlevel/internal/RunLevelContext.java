@@ -94,33 +94,34 @@ public class RunLevelContext implements Context<RunLevel> {
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
                               ServiceHandle<?> root) {
 
-        Map<ActiveDescriptor<?>, Object> backingStore =
-                getBackingMap(Utilities.getRunLevelServiceName(activeDescriptor));
+        String rlsName = Utilities.getRunLevelServiceName(activeDescriptor);
 
-        if (backingStore.containsKey(activeDescriptor)) {
-            return (T) backingStore.get(activeDescriptor);
+        Map<ActiveDescriptor<?>, Object> backingMap = getBackingMap(rlsName);
+
+        if (backingMap.containsKey(activeDescriptor)) {
+            return (T) backingMap.get(activeDescriptor);
         }
 
-        String scope = Utilities.getRunLevelServiceName(activeDescriptor);
-        RunLevelService runLevelService =  allRunLevelServices.named(scope).get();
+        RunLevelService runLevelService = getRunLevelService(rlsName);
+
         if (runLevelService == null) {
-            runLevelService = allRunLevelServices.get();
+            return null;
         }
 
         RunLevel.Mode mode = Utilities.getRunLevelMode(activeDescriptor);
-        
+
         if (mode == RunLevel.Mode.VALIDATING) {
-            verifyState(activeDescriptor, runLevelService);
+            validate(activeDescriptor, runLevelService);
         }
 
-        T retVal = activeDescriptor.create(root);
-        backingStore.put(activeDescriptor, retVal);
+        T service = activeDescriptor.create(root);
+        backingMap.put(activeDescriptor, service);
 
         if (mode == RunLevel.Mode.VALIDATING) {
             runLevelService.recordActivation(activeDescriptor);
         }
 
-        return retVal;
+        return service;
     }
 
     /* (non-Javadoc)
@@ -150,9 +151,9 @@ public class RunLevelContext implements Context<RunLevel> {
      * Deactivate the given descriptor.
      *
      * @param activeDescriptor  the descriptor
-     * @param <T>               the type of the descriptor
+     * @param <T>               the descriptor type
      */
-    public <T> void deactivate(ActiveDescriptor<T> activeDescriptor) {
+    protected <T> void deactivate(ActiveDescriptor<T> activeDescriptor) {
         Map<ActiveDescriptor<?>, Object> backingStore =
                 getBackingMap(Utilities.getRunLevelServiceName(activeDescriptor));
 
@@ -163,47 +164,62 @@ public class RunLevelContext implements Context<RunLevel> {
     }
 
     /**
-     * Verifies that the state of the RunLevelService is appropriate for this
-     * instance activation.
+     * Verifies that the run level value of the {@link RunLevel} annotated
+     * service described by the given descriptor is valid for activation.
+     * Valid means that the run level value is less than or equal to the
+     * current or planned run level of the given {@link RunLevelService}.
      *
-     * @param descriptor  the descriptor
+     * @param descriptor  the descriptor of the service being activated
      * @param service     the run level service
      *
-     * @throws RunLevelException  if the verification fails
+     * @throws RunLevelException if the validation fails
      */
-    private void verifyState(ActiveDescriptor<?> descriptor,
-                             RunLevelService service)
+    private void validate(ActiveDescriptor<?> descriptor,
+                          RunLevelService service)
             throws RunLevelException {
 
         Integer runLevel = Utilities.getRunLevelValue(descriptor);
-        String  scope    = Utilities.getRunLevelServiceName(descriptor);
         Integer planned  = service.getPlannedRunLevel();
         Integer current  = service.getCurrentRunLevel();
 
-        if (!(!(planned == null && current == null) &&
-                ((planned == null || runLevel <= planned) &&
-                        (current == null || runLevel <= (current + 1))))) {
-            throw new RunLevelException("unable to activate " + this +
+        if (runLevel > current && (planned == null || runLevel > planned)) {
+            throw new RunLevelException("Unable to activate " + descriptor +
                     "; minimum expected RunLevel is: " + runLevel +
                     "; planned is: " + planned +
-                    "; current is: " + current);
+                    "; current is: " + current + ".");
         }
     }
 
     /**
      * Get the backing map associated with the given run level service name.
      *
-     * @param runLevelServiceName  the run level service name
+     * @param name  the run level service name
      *
      * @return the backing map
      */
-    private Map<ActiveDescriptor<?>, Object> getBackingMap(String runLevelServiceName) {
-        Map<ActiveDescriptor<?>, Object> retVal = backingMaps.get(runLevelServiceName);
-        if (retVal == null) {
-            retVal = new HashMap<ActiveDescriptor<?>, Object>();
-
-            backingMaps.put(runLevelServiceName, retVal);
+    private Map<ActiveDescriptor<?>, Object> getBackingMap(String name) {
+        Map<ActiveDescriptor<?>, Object> backingMap = backingMaps.get(name);
+        if (backingMap == null) {
+            backingMap = new HashMap<ActiveDescriptor<?>, Object>();
+            backingMaps.put(name, backingMap);
         }
-        return retVal;
+        return backingMap;
+    }
+
+    /**
+     * Get the {@link RunLevelService} for the given name.
+     *
+     * @param name  the run level service name
+     * @param <T>   the {@link RunLevelService} type
+     *
+     * @return the {@link RunLevelService} for the given name; null if none
+     *         exists
+     */
+    private <T> RunLevelService getRunLevelService(String name) {
+        RunLevelService runLevelService =
+                allRunLevelServices.named(name).get();
+
+        return runLevelService == null ?
+                allRunLevelServices.get() : runLevelService;
     }
 }
