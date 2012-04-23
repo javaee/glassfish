@@ -31,6 +31,8 @@ org.glassfish.hk2.extension
 org.glassfish.hk2.inhabitants
 org.glassfish.hk2.inject
 org.glassfish.hk2.internal
+org.glassfish.hk2.runlevel
+org.glassfish.hk2.runlevel.internal
 org.glassfish.hk2.scopes
 org.glassfish.hk2.spi
 org.glassfish.hk2.utilities
@@ -46,6 +48,7 @@ org.jvnet.hk2.config.provider
 org.jvnet.hk2.config.provider.internal
 org.jvnet.hk2.deprecated.internal
 org.jvnet.hk2.generator
+org.jvnet.hk2.generator.eclipse
 org.jvnet.hk2.generator.internal
 org.jvnet.hk2.generator.maven
 org.jvnet.hk2.internal
