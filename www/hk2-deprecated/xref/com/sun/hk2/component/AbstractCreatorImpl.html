@@ -52,17 +52,17 @@
 <a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
 <a class="jxr_linenumber" name="43" href="#43">43</a>  <strong class="jxr_keyword">import</strong> java.util.Collection;
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> java.util.List;
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.ExecutorService;
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> java.util.logging.Level;
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> java.util.logging.Logger;
-<a class="jxr_linenumber" name="48" href="#48">48</a>  
-<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.utilities.DescriptorImpl;
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.ComponentException;
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Creator;
-<a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Creators;
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Inhabitant;
-<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.MultiMap;
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.ExecutorService;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> java.util.logging.Level;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> java.util.logging.Logger;
+<a class="jxr_linenumber" name="49" href="#49">49</a>  
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.utilities.DescriptorImpl;
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.ComponentException;
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Creator;
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Creators;
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Inhabitant;
 <a class="jxr_linenumber" name="56" href="#56">56</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.deprecated.internal.Utilities;
 <a class="jxr_linenumber" name="57" href="#57">57</a>  
 <a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">/**</em>
@@ -73,17 +73,17 @@
 <a class="jxr_linenumber" name="63" href="#63">63</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> Logger logger = Logger.getLogger(AbstractCreatorImpl.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="64" href="#64">64</a>  
 <a class="jxr_linenumber" name="65" href="#65">65</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> Class&lt;? <strong class="jxr_keyword">extends</strong> T&gt; type;
-<a class="jxr_linenumber" name="66" href="#66">66</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> ServiceLocator habitat;
-<a class="jxr_linenumber" name="67" href="#67">67</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../org/jvnet/hk2/component/MultiMap.html">MultiMap</a> metadata;
+<a class="jxr_linenumber" name="66" href="#66">66</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">final</strong> ServiceLocator serviceLocator;
+<a class="jxr_linenumber" name="67" href="#67">67</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, List&lt;String&gt;&gt; metadata;
 <a class="jxr_linenumber" name="68" href="#68">68</a>  
-<a class="jxr_linenumber" name="69" href="#69">69</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../com/sun/hk2/component/AbstractCreatorImpl.html">AbstractCreatorImpl</a>(Class&lt;? <strong class="jxr_keyword">extends</strong> T&gt; type, ServiceLocator habitat, MultiMap&lt;String,String&gt; metadata) {
+<a class="jxr_linenumber" name="69" href="#69">69</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../com/sun/hk2/component/AbstractCreatorImpl.html">AbstractCreatorImpl</a>(Class&lt;? <strong class="jxr_keyword">extends</strong> T&gt; type, ServiceLocator serviceLocator, Map&lt;String, List&lt;String&gt;&gt; metadata) {
 <a class="jxr_linenumber" name="70" href="#70">70</a>          <strong class="jxr_keyword">super</strong>(<strong class="jxr_keyword">new</strong> DescriptorImpl());
 <a class="jxr_linenumber" name="71" href="#71">71</a>          
 <a class="jxr_linenumber" name="72" href="#72">72</a>          setImplementation(type.getName());
 <a class="jxr_linenumber" name="73" href="#73">73</a>          Utilities.fillInMetadata(metadata, <strong class="jxr_keyword">this</strong>);
 <a class="jxr_linenumber" name="74" href="#74">74</a>          
 <a class="jxr_linenumber" name="75" href="#75">75</a>          <strong class="jxr_keyword">this</strong>.type = type;
-<a class="jxr_linenumber" name="76" href="#76">76</a>          <strong class="jxr_keyword">this</strong>.habitat = habitat;
+<a class="jxr_linenumber" name="76" href="#76">76</a>          <strong class="jxr_keyword">this</strong>.serviceLocator = serviceLocator;
 <a class="jxr_linenumber" name="77" href="#77">77</a>          
 <a class="jxr_linenumber" name="78" href="#78">78</a>          <strong class="jxr_keyword">this</strong>.metadata = metadata;
 <a class="jxr_linenumber" name="79" href="#79">79</a>          
@@ -110,7 +110,7 @@
 <a class="jxr_linenumber" name="100" href="#100">100</a> 
 <a class="jxr_linenumber" name="101" href="#101">101</a>     @Override
 <a class="jxr_linenumber" name="102" href="#102">102</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> initialize(T t, <a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) <strong class="jxr_keyword">throws</strong> ComponentException {
-<a class="jxr_linenumber" name="103" href="#103">103</a>         habitat.inject(t);
+<a class="jxr_linenumber" name="103" href="#103">103</a>         serviceLocator.inject(t);
 <a class="jxr_linenumber" name="104" href="#104">104</a>       <em class="jxr_comment">// I could rely on injection, but the algorithm is slow enough for now that I</em>
 <a class="jxr_linenumber" name="105" href="#105">105</a>       <em class="jxr_comment">// need a faster scheme.</em>
 <a class="jxr_linenumber" name="106" href="#106">106</a>         <em class="jxr_javadoccomment">/**</em>
@@ -127,7 +127,7 @@
 <a class="jxr_linenumber" name="117" href="#117">117</a>     }
 <a class="jxr_linenumber" name="118" href="#118">118</a> 
 <a class="jxr_linenumber" name="119" href="#119">119</a>     @Override
-<a class="jxr_linenumber" name="120" href="#120">120</a>     <strong class="jxr_keyword">public</strong> MultiMap&lt;String, String&gt; metadata() {
+<a class="jxr_linenumber" name="120" href="#120">120</a>     <strong class="jxr_keyword">public</strong> Map&lt;String, List&lt;String&gt;&gt; metadata() {
 <a class="jxr_linenumber" name="121" href="#121">121</a>         <strong class="jxr_keyword">return</strong> metadata;
 <a class="jxr_linenumber" name="122" href="#122">122</a>     }
 <a class="jxr_linenumber" name="123" href="#123">123</a> 
