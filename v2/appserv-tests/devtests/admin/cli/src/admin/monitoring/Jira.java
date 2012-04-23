@@ -184,6 +184,14 @@ public class Jira extends MonTest {
     }
 
     private void test14389() {
+        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.out.println("ZZZZZZZZZZZZZZ   CAN YOU SEE THIS????   ZZZZZZZZZZZ");
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+        System.err.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        System.err.println("ZZZZZZZZZZZZZZ   CAN YOU SEE THIS????   ZZZZZZZZZZZ");
+        System.err.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+
+
         thisIsCrazy();
         String prepend = "14389::";
         //Try list -m server.* instead of * to see if it makes a difference
