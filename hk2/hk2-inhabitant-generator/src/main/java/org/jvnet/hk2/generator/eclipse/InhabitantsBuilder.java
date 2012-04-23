@@ -41,10 +41,12 @@ package org.jvnet.hk2.generator.eclipse;
 
 import java.util.Map;
 
+/*
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+*/
 
 /**
  * This is the builder for the Eclipse inhabitants generator project
@@ -52,16 +54,17 @@ import org.eclipse.core.runtime.IProgressMonitor;
  * @author jwells
  *
  */
-public class InhabitantsBuilder extends IncrementalProjectBuilder {
+public class InhabitantsBuilder {
 
     /* (non-Javadoc)
      * @see org.eclipse.core.resources.IncrementalProjectBuilder#build(int, java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
-     */
+     *
     @Override
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
             throws CoreException {
         // TODO Auto-generated method stub
         return null;
     }
+    */
 
 }
