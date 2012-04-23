@@ -110,6 +110,11 @@
             <artifactId>javax.inject</artifactId>
             <version>1</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
     </dependencies>
 </project>

@@ -45,7 +45,6 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
@@ -82,6 +81,7 @@ import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.NamedImpl;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
@@ -257,7 +257,7 @@ public class Utilities {
     @SuppressWarnings("unchecked")
     public static Class<? extends Annotation> getInjectionResolverType(ActiveDescriptor<?> desc) {
         for (Type advertisedType : desc.getContractTypes()) {
-            Class<?> rawClass = getRawClass(advertisedType);
+            Class<?> rawClass = ReflectionHelper.getRawClass(advertisedType);
             
             if (!InjectionResolver.class.equals(rawClass)) continue;
             
@@ -291,7 +291,7 @@ public class Utilities {
      */
     public static void checkFactoryType(Class<?> factoryClass, Collector collector) {
         for (Type type : factoryClass.getGenericInterfaces()) {
-            Class<?> rawClass = getRawClass(type);
+            Class<?> rawClass = ReflectionHelper.getRawClass(type);
             if (rawClass == null) continue;
             
             if (!Factory.class.equals(rawClass)) continue;
@@ -316,12 +316,12 @@ public class Utilities {
         LinkedHashSet<Type> retVal = new LinkedHashSet<Type>();
         retVal.add(t);
         
-        Class<?> rawClass = getRawClass(t);
+        Class<?> rawClass = ReflectionHelper.getRawClass(t);
         if (rawClass == null) return retVal;
         
         Type genericSuperclass = rawClass.getGenericSuperclass();
         while (genericSuperclass != null) {
-            Class<?> rawSuperclass = getRawClass(genericSuperclass);
+            Class<?> rawSuperclass = ReflectionHelper.getRawClass(genericSuperclass);
             if (rawSuperclass == null) break;
             
             if (rawSuperclass.isAnnotationPresent(Contract.class)) {
@@ -333,7 +333,7 @@ public class Utilities {
         
         while (rawClass != null) {
             for (Type iface : rawClass.getGenericInterfaces()) {
-                Class<?> ifaceClass = getRawClass(iface);
+                Class<?> ifaceClass = ReflectionHelper.getRawClass(iface);
                 if (ifaceClass.isAnnotationPresent(Contract.class)) { 
                     retVal.add(iface);
                 }
@@ -540,7 +540,7 @@ public class Utilities {
         retVal.add(ProxyCtl.class);    // Every proxy implements this interface
         
         for (Type type : contracts) {
-            Class<?> rawClass = getRawClass(type);
+            Class<?> rawClass = ReflectionHelper.getRawClass(type);
             if (rawClass == null) continue;
             if (!rawClass.isInterface()) continue;
             
@@ -710,49 +710,6 @@ public class Utilities {
         }
         
         return zeroArgConstructor;
-    }
-    
-    /**
-     * Given the type parameter gets the raw type represented
-     * by the type, or null if this has no associated raw class
-     * @param type The type to find the raw class on
-     * @return The raw class associated with this type
-     */
-    public static Class<?> getRawClass(Type type) {
-        if (type == null) return null;
-        
-        if (type instanceof GenericArrayType) {
-            Type componentType = ((GenericArrayType) type).getGenericComponentType();
-            
-            if (!(componentType instanceof ParameterizedType)) {
-                // type variable is not supported
-                return null;
-            }
-            
-            Class<?> rawComponentClass = getRawClass(componentType);
-            
-            String forNameName = "[L" + rawComponentClass.getName() + ";";
-            try {
-                return Class.forName(forNameName);
-            }
-            catch (Throwable th) {
-                // ignore, but return null
-                return null;
-            }
-        }
-        
-        if (type instanceof Class) {
-            return (Class<?>) type;
-        }
-        
-        if (type instanceof ParameterizedType) {
-            Type rawType = ((ParameterizedType) type).getRawType();
-            if (rawType instanceof Class) {
-                return (Class<?>) rawType;
-            }
-        }
-        
-        return null;
     }
     
     /**
@@ -1109,73 +1066,6 @@ public class Utilities {
         catch (NoSuchMethodException e) {
             return null;
         }
-    }
-    
-    /**
-     * Gets all the interfaces on this particular class (but not any
-     * superclasses of this class).
-     */
-    private static void addAllGenericInterfaces(Type types[], Set<Type> closures) {
-        
-        for (Type type : types) {
-            closures.add(type);
-            
-            Class<?> rawClass = getRawClass(type);
-            if (rawClass != null) {
-                addAllGenericInterfaces(rawClass.getGenericInterfaces(), closures);
-            }
-        }
-    }
-    
-    /**
-     * Returns the type closure of the given class
-     * 
-     * @param ofClass The full type closure of the given class
-     * with nothing omitted (normal case).  May not be null
-     * @return The non-null (and never empty) set of classes
-     * that this class can be assigned to
-     */
-    private static Set<Type> getTypeClosure(Type ofType) {
-        HashSet<Type> retVal = new HashSet<Type>();
-        
-        Type currentType = ofType;
-        while (currentType != null) {
-            Class<?> rawClass = getRawClass(currentType);
-            if (rawClass == null) {
-                break;
-            }
-            retVal.add(currentType);
-            
-            addAllGenericInterfaces(rawClass.getGenericInterfaces(), retVal);
-            
-            currentType = rawClass.getGenericSuperclass();
-        }
-        
-        return retVal;
-    }
-    
-    /**
-     * Returns the type closure, as restricted by the classes listed in the
-     * set of contracts implemented
-     * 
-     * @param ofType The type to check
-     * @param contracts The contracts this type is allowed to handle
-     * @return The type closure restricted to the contracts
-     */
-    public static Set<Type> getTypeClosure(Type ofType, Set<String> contracts) {
-        Set<Type> closure = getTypeClosure(ofType);
-        
-        HashSet<Type> retVal = new HashSet<Type>();
-        for (Type t : closure) {
-            Class<?> rawClass = getRawClass(t);
-            if (rawClass == null) continue;
-            
-            if (contracts.contains(rawClass.getName())) {
-                retVal.add(t);
-            }
-        }
-        
-        return retVal;
     }
     
     private static boolean isAnnotationAQualifier(Annotation anno) {

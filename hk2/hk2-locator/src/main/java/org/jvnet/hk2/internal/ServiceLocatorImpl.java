@@ -73,6 +73,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * @author jwells
@@ -297,7 +298,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         checkState();
         
         Type requiredType = injectee.getRequiredType();
-        Class<?> rawType = Utilities.getRawClass(requiredType);
+        Class<?> rawType = ReflectionHelper.getRawClass(requiredType);
         if (rawType == null) {
             throw new MultiException(new IllegalArgumentException(
                     "Invalid injectee with required type of " + injectee.getRequiredType() + " passed to getInjecteeDescriptor"));
@@ -513,7 +514,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Annotation... qualifiers) throws MultiException {
         if (contractOrImpl == null) throw new IllegalArgumentException();
         
-        Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
+        Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
         rawClass = Utilities.translatePrimitiveType(rawClass);
         
@@ -572,7 +573,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (contractOrImpl == null) throw new IllegalArgumentException();
         checkState();
         
-        Class<?> rawClass = Utilities.getRawClass(contractOrImpl);
+        Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
         if (rawClass == null) {
             throw new MultiException(new IllegalArgumentException("Type must be a class or parameterized type, it was " + contractOrImpl));
         }

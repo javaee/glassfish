@@ -46,6 +46,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+
 /**
  * @author jwells
  *
@@ -75,7 +77,7 @@ public class Pretty {
     private static String pType(ParameterizedType pType) {
         StringBuffer sb = new StringBuffer();
         
-        sb.append(clazz(Utilities.getRawClass(pType)) + "<");
+        sb.append(clazz(ReflectionHelper.getRawClass(pType)) + "<");
         
         boolean first = true;
         for (Type t : pType.getActualTypeArguments()) {

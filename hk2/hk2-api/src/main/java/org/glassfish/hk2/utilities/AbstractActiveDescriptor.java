@@ -50,7 +50,7 @@ import java.util.Set;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.internal.ReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * This class can be used as a starting point for those writing their own

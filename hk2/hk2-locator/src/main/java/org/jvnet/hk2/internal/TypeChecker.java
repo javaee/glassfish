@@ -45,6 +45,8 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+
 /**
  * This class contains various utilities for ensuring
  * java type safety
@@ -65,13 +67,13 @@ public class TypeChecker {
      * @return true if things are type safe
      */
     public static boolean isTypeSafe(Type requiredType, Type beanType) {
-        Class<?> requiredClass = Utilities.getRawClass(requiredType);
+        Class<?> requiredClass = ReflectionHelper.getRawClass(requiredType);
         if (requiredClass == null) {
             return false;
         }
         requiredClass = Utilities.translatePrimitiveType(requiredClass);
         
-        Class<?> beanClass = Utilities.getRawClass(beanType);
+        Class<?> beanClass = ReflectionHelper.getRawClass(beanType);
         if (beanClass == null) {
             return false;
         }
@@ -110,7 +112,7 @@ public class TypeChecker {
             }
             else if (isWildcard(requiredTypeVariable) && isActualType(beanTypeVariable)) {
                 WildcardType wt = getWildcard(requiredTypeVariable);
-                Class<?> beanActualType = Utilities.getRawClass(beanTypeVariable);
+                Class<?> beanActualType = ReflectionHelper.getRawClass(beanTypeVariable);
                 
                 if (!isWildcardActualSafe(wt, beanActualType)) return false;
             }
@@ -121,7 +123,7 @@ public class TypeChecker {
                 if (!isWildcardTypeVariableSafe(wt, tv)) return false;
             }
             else if (isActualType(requiredTypeVariable) && isTypeVariable(beanTypeVariable)) {
-                Class<?> requiredActual = Utilities.getRawClass(requiredTypeVariable);
+                Class<?> requiredActual = ReflectionHelper.getRawClass(requiredTypeVariable);
                 TypeVariable<?> tv = getTypeVariable(beanTypeVariable);
                 
                 if (!isActualTypeVariableSafe(requiredActual, tv)) return false;
@@ -212,7 +214,7 @@ public class TypeChecker {
             throw new AssertionError("Do not understand multiple bounds");
         }
         
-        return Utilities.getRawClass(bounds[0]);
+        return ReflectionHelper.getRawClass(bounds[0]);
     }
     
     private static boolean isWildcardActualSafe(WildcardType wildcard, Class<?> actual) {

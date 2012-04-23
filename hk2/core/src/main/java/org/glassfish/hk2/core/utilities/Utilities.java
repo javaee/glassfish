@@ -45,6 +45,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -90,7 +91,7 @@ public class Utilities {
      */
     protected static Type getTypeClosure(Type ofType, String contract){
         Set<Type> contractTypes =
-                org.jvnet.hk2.internal.Utilities.getTypeClosure(ofType,
+                ReflectionHelper.getTypeClosure(ofType,
                         Collections.singleton(contract));
 
         Iterator<Type> iterator = contractTypes.iterator();
