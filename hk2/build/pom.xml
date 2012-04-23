@@ -51,45 +51,14 @@
     </parent>
 
     <groupId>org.glassfish.hk2</groupId>
-    <artifactId>hk2-public</artifactId>
+    <artifactId>hk2-build</artifactId>
     <packaging>pom</packaging>
 
     <version>2.0.2-SNAPSHOT</version>
-    <name>public-api</name>
-
-    <build>
-        <pluginManagement>
-             <plugins>
-                <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>osgiversion-maven-plugin</artifactId>
-                    <version>${project.version}</version>
-                    <executions>
-                        <execution>
-                            <id>compute-osgi-version</id>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>compute-osgi-version</goal>
-                            </goals>
-                            <configuration>
-                                <dropVersionComponent>qualifier</dropVersionComponent>
-                                <versionPropertyName>project.osgi.version</versionPropertyName>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-             </plugins>
-        </pluginManagement>
-    </build>
+    <name>hk2-build</name>
 
     <modules>
-        <module>../external</module>
-        <module>../hk2-api</module>
-        <module>../hk2-inhabitant-generator</module>
-        <module>../apt</module>
-        <module>../hk2-maven</module>
-        <module>../hk2-maven-plugin</module>
-        <module>../consolidatedbundle-maven-plugin</module>
+        <module>../osgiversion-maven-plugin</module>
     </modules>
 
 </project>
