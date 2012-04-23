@@ -62,14 +62,14 @@
 <a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/jvnet/hk2/deprecated/internal/MetadataIndexFilter.html">MetadataIndexFilter</a> <strong class="jxr_keyword">implements</strong> IndexedFilter {
 <a class="jxr_linenumber" name="54" href="#54">54</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Class&lt;?&gt; c;
-<a class="jxr_linenumber" name="55" href="#55">55</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> MultiMap&lt;String, String&gt; multiMap;
+<a class="jxr_linenumber" name="55" href="#55">55</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Map&lt;String, List&lt;String&gt;&gt; multiMap;
 <a class="jxr_linenumber" name="56" href="#56">56</a>      
 <a class="jxr_linenumber" name="57" href="#57">57</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">     * </em>
 <a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">     * @param c</em>
 <a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">     * @param multiMap</em>
 <a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="62" href="#62">62</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../org/jvnet/hk2/deprecated/internal/MetadataIndexFilter.html">MetadataIndexFilter</a>(Class&lt;?&gt; c, MultiMap&lt;String,String&gt; multiMap) {
+<a class="jxr_linenumber" name="62" href="#62">62</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../org/jvnet/hk2/deprecated/internal/MetadataIndexFilter.html">MetadataIndexFilter</a>(Class&lt;?&gt; c, Map&lt;String, List&lt;String&gt;&gt; multiMap) {
 <a class="jxr_linenumber" name="63" href="#63">63</a>          <strong class="jxr_keyword">this</strong>.c = c;
 <a class="jxr_linenumber" name="64" href="#64">64</a>          <strong class="jxr_keyword">this</strong>.multiMap = multiMap;
 <a class="jxr_linenumber" name="65" href="#65">65</a>      }
