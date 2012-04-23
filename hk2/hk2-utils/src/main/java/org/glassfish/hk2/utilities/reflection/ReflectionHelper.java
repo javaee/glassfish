@@ -37,13 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.internal;
+package org.glassfish.hk2.utilities.reflection;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -56,10 +58,6 @@ import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
-
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.PerLookup;
-import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
@@ -89,6 +87,26 @@ public class ReflectionHelper {
      */
     public static Class<?> getRawClass(Type type) {
         if (type == null) return null;
+        
+        if (type instanceof GenericArrayType) {
+            Type componentType = ((GenericArrayType) type).getGenericComponentType();
+            
+            if (!(componentType instanceof ParameterizedType)) {
+                // type variable is not supported
+                return null;
+            }
+            
+            Class<?> rawComponentClass = getRawClass(componentType);
+            
+            String forNameName = "[L" + rawComponentClass.getName() + ";";
+            try {
+                return Class.forName(forNameName);
+            }
+            catch (Throwable th) {
+                // ignore, but return null
+                return null;
+            }
+        }
         
         if (type instanceof Class) {
             return (Class<?>) type;
@@ -133,42 +151,67 @@ public class ReflectionHelper {
     }
     
     /**
-     * Returns the set of types this class advertises
-     * @param t the object we are analyzing
-     * @return The type itself and the contracts it implements
+     * Gets all the interfaces on this particular class (but not any
+     * superclasses of this class).
      */
-    public static Set<Type> getAdvertisedTypesFromObject(Object t) {
-        Set<Type> retVal = new LinkedHashSet<Type>();
-        if (t == null) return retVal;
+    private static void addAllGenericInterfaces(Type types[], Set<Type> closures) {
         
-        Class<?> clazz = t.getClass();
-        
-        retVal.add(clazz);
-        
-        Type genericSuperclass = clazz.getGenericSuperclass();
-        while (genericSuperclass != null) {
-            Class<?> rawClass = getRawClass(genericSuperclass);
-            if (rawClass == null) break;
+        for (Type type : types) {
+            closures.add(type);
             
-            if (rawClass.isAnnotationPresent(Contract.class)) {
-                retVal.add(genericSuperclass);
+            Class<?> rawClass = ReflectionHelper.getRawClass(type);
+            if (rawClass != null) {
+                addAllGenericInterfaces(rawClass.getGenericInterfaces(), closures);
             }
+        }
+    }
+    
+    /**
+     * Returns the type closure of the given class
+     * 
+     * @param ofClass The full type closure of the given class
+     * with nothing omitted (normal case).  May not be null
+     * @return The non-null (and never empty) set of classes
+     * that this class can be assigned to
+     */
+    private static Set<Type> getTypeClosure(Type ofType) {
+        HashSet<Type> retVal = new HashSet<Type>();
+        
+        Type currentType = ofType;
+        while (currentType != null) {
+            Class<?> rawClass = ReflectionHelper.getRawClass(currentType);
+            if (rawClass == null) {
+                break;
+            }
+            retVal.add(currentType);
             
-            genericSuperclass = rawClass.getGenericSuperclass();
+            addAllGenericInterfaces(rawClass.getGenericInterfaces(), retVal);
+            
+            currentType = rawClass.getGenericSuperclass();
         }
         
-        while (clazz != null) {
-            Type genericInterfaces[] = clazz.getGenericInterfaces();
-            for (Type genericInterface : genericInterfaces) {
-                Class<?> rawClass = getRawClass(genericInterface);
-                if (rawClass == null) continue;
+        return retVal;
+    }
+    
+    /**
+     * Returns the type closure, as restricted by the classes listed in the
+     * set of contracts implemented
+     * 
+     * @param ofType The type to check
+     * @param contracts The contracts this type is allowed to handle
+     * @return The type closure restricted to the contracts
+     */
+    public static Set<Type> getTypeClosure(Type ofType, Set<String> contracts) {
+        Set<Type> closure = getTypeClosure(ofType);
+        
+        HashSet<Type> retVal = new HashSet<Type>();
+        for (Type t : closure) {
+            Class<?> rawClass = ReflectionHelper.getRawClass(t);
+            if (rawClass == null) continue;
             
-                if (rawClass.isAnnotationPresent(Contract.class)) {
-                    retVal.add(genericInterface);
-                }
+            if (contracts.contains(rawClass.getName())) {
+                retVal.add(t);
             }
-            
-            clazz = clazz.getSuperclass();
         }
         
         return retVal;
@@ -176,10 +219,67 @@ public class ReflectionHelper {
     
     /**
      * Returns the set of types this class advertises
-     * @param clazz the class we are analyzing
+     * @param type The outer type to analyze
+     * @param markerAnnotation The annotation to use to discover the advertised types
      * @return The type itself and the contracts it implements
      */
-    public static Set<String> getContractsFromClass(Class<?> clazz) {
+    public static Set<Type> getAdvertisedTypesFromClass(Type type, Class<? extends Annotation> markerAnnotation) {
+        Set<Type> retVal = new LinkedHashSet<Type>();
+        if (type == null) return retVal;
+        
+        retVal.add(type);
+        
+        Class<?> originalRawClass = getRawClass(type);
+        if (originalRawClass == null) return retVal;
+        
+        Type genericSuperclass = originalRawClass.getGenericSuperclass();
+        while (genericSuperclass != null) {
+            Class<?> rawClass = getRawClass(genericSuperclass);
+            if (rawClass == null) break;
+            
+            if (rawClass.isAnnotationPresent(markerAnnotation)) {
+                retVal.add(genericSuperclass);
+            }
+            
+            genericSuperclass = rawClass.getGenericSuperclass();
+        }
+        
+        while (originalRawClass != null) {
+            Type genericInterfaces[] = originalRawClass.getGenericInterfaces();
+            for (Type genericInterface : genericInterfaces) {
+                Class<?> rawClass = getRawClass(genericInterface);
+                if (rawClass == null) continue;
+            
+                if (rawClass.isAnnotationPresent(markerAnnotation)) {
+                    retVal.add(genericInterface);
+                }
+            }
+            
+            originalRawClass = originalRawClass.getSuperclass();
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Returns the set of types this class advertises
+     * @param t the object we are analyzing
+     * @param markerAnnotation The annotation to use to discover the advertised types
+     * @return The type itself and the contracts it implements
+     */
+    public static Set<Type> getAdvertisedTypesFromObject(Object t, Class<? extends Annotation> markerAnnotation) {
+        if (t == null) return Collections.emptySet();
+        
+        return getAdvertisedTypesFromClass(t.getClass(), markerAnnotation);
+    }
+    
+    /**
+     * Returns the set of types this class advertises
+     * @param clazz the class we are analyzing
+     * @param markerAnnotation The annotation to use to discover annotated types
+     * @return The type itself and the contracts it implements
+     */
+    public static Set<String> getContractsFromClass(Class<?> clazz, Class<? extends Annotation> markerAnnotation) {
         Set<String> retVal = new LinkedHashSet<String>();
         if (clazz == null) return retVal;
         
@@ -187,7 +287,7 @@ public class ReflectionHelper {
         
         Class<?> extendsClasses = clazz.getSuperclass();
         while (extendsClasses != null) {
-            if (extendsClasses.isAnnotationPresent(Contract.class)) {
+            if (extendsClasses.isAnnotationPresent(markerAnnotation)) {
                 retVal.add(extendsClasses.getName());
             }
             
@@ -197,7 +297,7 @@ public class ReflectionHelper {
         while (clazz != null) {
             Class<?> interfaces[] = clazz.getInterfaces();
             for (Class<?> iFace : interfaces) {
-                if (iFace.isAnnotationPresent(Contract.class)) {
+                if (iFace.isAnnotationPresent(markerAnnotation)) {
                     retVal.add(iFace.getName());
                 }
             }
@@ -211,21 +311,23 @@ public class ReflectionHelper {
     /**
      * Gets the scope annotation from the object
      * @param t The object to analyze
+     * @param annoDefault The default that this should have if no scope could be found
      * @return The class of the scope annotation
      */
-    public static Class<? extends Annotation> getScopeFromObject(Object t) {
-        if (t == null) return PerLookup.class;
+    public static Class<? extends Annotation> getScopeFromObject(Object t, Class<? extends Annotation> annoDefault) {
+        if (t == null) return annoDefault;
         
-        return getScopeFromClass(t.getClass());
+        return getScopeFromClass(t.getClass(), annoDefault);
     }
     
     /**
      * Gets the scope annotation from the object
      * @param clazz The class to analyze
+     * @param annoDefault The scope that should be returned if no scope could be found
      * @return The class of the scope annotation
      */
-    public static Class<? extends Annotation> getScopeFromClass(Class<?> clazz) {
-        if (clazz == null) return PerLookup.class;
+    public static Class<? extends Annotation> getScopeFromClass(Class<?> clazz, Class<? extends Annotation> annoDefault) {
+        if (clazz == null) return annoDefault;
         
         for (Annotation annotation : clazz.getAnnotations()) {
             Class<? extends Annotation> annoClass = annotation.annotationType();
@@ -236,7 +338,7 @@ public class ReflectionHelper {
             
         }
         
-        return PerLookup.class;
+        return annoDefault;
     }
     
     /**
@@ -539,47 +641,6 @@ public class ReflectionHelper {
         
         return sb.toString();
     }
-    
-    /**
-     * Pretty prints this descriptor
-     * 
-     * @param d The descriptor to write out nicely
-     * @return The descriptor to print
-     */
-    public static String prettyPrintDescriptor(Descriptor d) {
-        StringBuffer sb = new StringBuffer("Descriptor(");
-        
-        sb.append("\n\timplementation=" + d.getImplementation());
-        
-        if (d.getName() != null) {
-            sb.append("\n\tname=" + d.getName());
-        }
-        
-        sb.append("\n\tcontracts=");
-        sb.append(writeSet(d.getAdvertisedContracts()));
-        
-        sb.append("\n\tscope=" + d.getScope());
-        
-        sb.append("\n\tqualifiers=");
-        sb.append(writeSet(d.getQualifiers()));
-        
-        sb.append("\n\tdescriptorType=" + d.getDescriptorType());
-        
-        sb.append("\n\tmetadata=");
-        sb.append(writeMetadata(d.getMetadata()));
-        
-        sb.append("\n\tloader=" + d.getLoader());
-        
-        sb.append("\n\tid=" + d.getServiceId());
-        
-        sb.append("\n\tlocatorId=" + d.getServiceId());
-        
-        sb.append("\n\tidentityHashCode=" + System.identityHashCode(d));
-        
-        sb.append(")");
-        
-        return sb.toString();
-    }
 
     /**
      * Adds a value to the list of values associated with this key
@@ -664,4 +725,5 @@ public class ReflectionHelper {
         
         return retVal;
     }
+
 }

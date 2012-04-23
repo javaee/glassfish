@@ -48,11 +48,13 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
-import org.glassfish.hk2.internal.ReflectionHelper;
 import org.glassfish.hk2.internal.StarFilter;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * This class is used to generate DescriptorBuilders to be used
@@ -194,8 +196,8 @@ public class BuilderHelper {
         
         return new ConstantActiveDescriptor<T>(
                 constant,
-                ReflectionHelper.getAdvertisedTypesFromObject(constant),
-                ReflectionHelper.getScopeFromObject(constant),
+                ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.class),
+                ReflectionHelper.getScopeFromObject(constant, PerLookup.class),
                 ReflectionHelper.getName(constant.getClass()),
                 ReflectionHelper.getQualifiersFromObject(constant));
     }
@@ -211,9 +213,9 @@ public class BuilderHelper {
     public static DescriptorImpl createDescriptorFromClass(Class<?> clazz) {
         if (clazz == null) return new DescriptorImpl();
         
-        Set<String> contracts = ReflectionHelper.getContractsFromClass(clazz);
+        Set<String> contracts = ReflectionHelper.getContractsFromClass(clazz, Contract.class);
         String name = ReflectionHelper.getName(clazz);
-        String scope = ReflectionHelper.getScopeFromClass(clazz).getName();
+        String scope = ReflectionHelper.getScopeFromClass(clazz, PerLookup.class).getName();
         Set<String> qualifiers = ReflectionHelper.getQualifiersFromClass(clazz);
         DescriptorType type = DescriptorType.CLASS;
         if (Factory.class.isAssignableFrom(clazz)) {

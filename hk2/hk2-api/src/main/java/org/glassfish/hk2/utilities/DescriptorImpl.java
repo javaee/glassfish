@@ -55,7 +55,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.internal.ReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * The implementation of the descriptor itself, with the
@@ -486,7 +486,38 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	}
 	
 	public synchronized String toString() {
-	    return ReflectionHelper.prettyPrintDescriptor(this);
+        StringBuffer sb = new StringBuffer("Descriptor(");
+        
+        sb.append("\n\timplementation=" + getImplementation());
+        
+        if (getName() != null) {
+            sb.append("\n\tname=" + getName());
+        }
+        
+        sb.append("\n\tcontracts=");
+        sb.append(ReflectionHelper.writeSet(getAdvertisedContracts()));
+        
+        sb.append("\n\tscope=" + getScope());
+        
+        sb.append("\n\tqualifiers=");
+        sb.append(ReflectionHelper.writeSet(getQualifiers()));
+        
+        sb.append("\n\tdescriptorType=" + getDescriptorType());
+        
+        sb.append("\n\tmetadata=");
+        sb.append(ReflectionHelper.writeMetadata(getMetadata()));
+        
+        sb.append("\n\tloader=" + getLoader());
+        
+        sb.append("\n\tid=" + getServiceId());
+        
+        sb.append("\n\tlocatorId=" + getServiceId());
+        
+        sb.append("\n\tidentityHashCode=" + System.identityHashCode(this));
+        
+        sb.append(")");
+        
+        return sb.toString();
 	}
 	
 	/**

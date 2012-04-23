@@ -57,6 +57,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * @author jwells
@@ -369,7 +370,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             creator = new ClazzCreator<T>(locator, implClass, collector);
             
             scope = Utilities.getScopeAnnotationType(implClass, collector);
-            contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(implClass,
+            contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(implClass,
                     baseDescriptor.getAdvertisedContracts()));
         }
         else {
@@ -395,7 +396,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             scope = Utilities.getScopeAnnotationType(provideMethod, collector);
             
             Type factoryProvidedType = provideMethod.getGenericReturnType();
-            contracts = Collections.unmodifiableSet(Utilities.getTypeClosure(factoryProvidedType,
+            contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(factoryProvidedType,
                     baseDescriptor.getAdvertisedContracts()));
         }
         
