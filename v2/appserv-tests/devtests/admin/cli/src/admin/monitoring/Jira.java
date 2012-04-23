@@ -141,7 +141,50 @@ public class Jira extends MonTest {
 
     }
 
+    private void thisIsCrazy() {
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+        System.out.println("ZZZZZZZZZZZZZZ   THIS IS  CRAZY !!!   ZZZZZZZZZZZ");
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+
+        System.out.printf("SERVERDOTSTAR = [%s]\n", SERVERDOTSTAR);
+        System.out.printf("STAR = [%s]\n", STAR);
+
+        AsadminReturn ar1 = asadminWithOutput("list", "-m", "server.*");
+        AsadminReturn ar2 = asadminWithOutput("list", "-m", "\"server.*\"");
+        AsadminReturn ar3 = asadminWithOutput("list", "-m", SERVERDOTSTAR);
+        AsadminReturn ar4 = asadminWithOutput("list", "-m", STAR);
+        AsadminReturn ar5 = asadminWithOutput("list", "-m", "*");
+        AsadminReturn ar6 = asadminWithOutput("list", "-m", "\"*\"");
+        AsadminReturn ar7 = asadminWithOutput("list", "-m", "server.*");
+        AsadminReturn ar8 = asadminWithOutput("list", "-m", "\"server.*\"");
+        AsadminReturn ar9 = asadminWithOutput("list", "-m", SERVERDOTSTAR);
+        AsadminReturn ar10 = asadminWithOutput("list", "-m", STAR);
+        AsadminReturn ar11= asadminWithOutput("list", "-m", "*");
+        AsadminReturn ar12 = asadminWithOutput("list", "-m", "\"*\"");
+        thisIsCrazyDetail(ar1, "ar1");
+        thisIsCrazyDetail(ar2, "ar2");
+        thisIsCrazyDetail(ar3, "ar3");
+        thisIsCrazyDetail(ar4, "ar4");
+        thisIsCrazyDetail(ar5, "ar5");
+        thisIsCrazyDetail(ar6, "ar6");
+        thisIsCrazyDetail(ar7, "ar7");
+        thisIsCrazyDetail(ar8, "ar8");
+        thisIsCrazyDetail(ar9, "ar9");
+        thisIsCrazyDetail(ar10, "ar10");
+        thisIsCrazyDetail(ar11, "ar11");
+        thisIsCrazyDetail(ar12, "ar12");
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+    }
+    private void thisIsCrazyDetail(AsadminReturn ar, final String label) {
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+        System.out.printf("Output from %s:\n%s\n", label, ar.outAndErr);
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+    }
+
     private void test14389() {
+        thisIsCrazy();
         String prepend = "14389::";
         //Try list -m server.* instead of * to see if it makes a difference
         // 4/18/12 'list -m server.*' works, but not 'list -m *'
