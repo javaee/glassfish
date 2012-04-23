@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.hk2.auto-depends-test</groupId>
         <artifactId>auto-depends-tests</artifactId>
-        <version>2.0.2-SNAPSHOT</version>
+        <version>2.1.0-SNAPSHOT</version>
     </parent>
     
     <artifactId>test-inhabitant-gen-ifaces</artifactId>
