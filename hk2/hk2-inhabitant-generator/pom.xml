@@ -96,5 +96,10 @@
             <artifactId>maven-plugin-api</artifactId>
             <version>2.0.4</version>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.core</groupId>
+            <artifactId>resources</artifactId>
+            <version>3.3.0-v20070604</version>
+        </dependency>
     </dependencies>
 </project>
