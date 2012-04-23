@@ -56,9 +56,9 @@ Extensibility of HK2
  
  To make this more clear, we have two examples of user scope/context pairs:
  
- [[1]] This {{{./examples/ctm/index.html}example}} adds a context that is based on the current running tenant.
+ [[1]] This {{{../ctm-example/index.html}example}} adds a context that is based on the current running tenant.
  
- [[2]] This {{{./examples/custom-resolver/index.html}example}} adds a request scoped context.
+ [[2]] This {{{../custom-resolver-example/index.html}example}} adds a request scoped context.
  
 * {Dealing with ClassLoading issues}
 
@@ -98,7 +98,7 @@ Extensibility of HK2
  {{{./apidocs/org/jvnet/hk2/api/InjectionResolver.html}InjectionResolver}} is then bound into a
  {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
 
- This {{{./examples/custom-resolver/index.html}example}} adds a custom injection resolver that customizes the default
+ This {{{../custom-resolver-example/index.html}example}} adds a custom injection resolver that customizes the default
  JSR-330 injection resolver.
  
 * {Foreign Active Descriptor implementations}
