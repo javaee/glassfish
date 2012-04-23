@@ -258,6 +258,7 @@
         </pluginManagement>
     </build>
     <modules>
+        <module>build</module>
         <module>public</module>
         <module>kernel</module>
   </modules>

@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Export-Package: org.jvnet.hk2.generator;version=2.0.2,
+ org.jvnet.hk2.generator.maven;version=2.0.2;
+ uses:="org.jvnet.hk2.generator,org.apache.maven.plugin"
+Built-By: jwells
+Tool: Bnd-1.15.0
+Bundle-Name: Inhabitant Generator
+Created-By: Apache Maven Bundle Plugin
+Bundle-Vendor: Oracle Corporation
+Build-Jdk: 1.6.0_29
+Bundle-Version: 2.0.2.SNAPSHOT
+service: foo
+Bnd-LastModified: 1335186011853
+Bundle-ManifestVersion: 2
+Bundle-License: http://glassfish.java.net/nonav/public/CDDL+GPL_1_1.ht
+ ml
+Bundle-Description: Inhabitant Generator
+Import-Package: javax.inject;version="[1.0,2)",org.apache.maven.plugin
+ ,org.glassfish.hk2.api;version="[2.0,3)",org.glassfish.hk2.utilities;
+ version="[2.0,3)",org.jvnet.hk2.annotations;version="[2.0,3)",org.obj
+ ectweb.asm;password=GlassFish;version="[3.3,4)"
+Bundle-SymbolicName: org.glassfish.hk2.inhabitant-generator
+Bundle-DocURL: http://www.oracle.com
+
