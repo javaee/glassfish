@@ -78,6 +78,11 @@ public @interface RunLevel {
     public static final String RUNLEVEL_MODE_META_TAG = "runLevelMode";
 
     /**
+     * The initial run level.
+     */
+    public static final int RUNLEVEL_VAL_INITIAL = -2;
+
+    /**
      * The immediate run level.  Services set to this run level will be
      * activated immediately.
      */

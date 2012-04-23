@@ -215,15 +215,14 @@ import java.util.logging.Logger;
  * ~~~
  * <p/>
  *
- * @author Jeff Trent, tbeerbower
+ * @author jtrent, tbeerbower
  */
 @SuppressWarnings("deprecation")
 @Service
 public class RunLevelServiceImpl implements RunLevelService, Activator {
-    // the initial run level
-    public static final int INITIAL_RUNLEVEL = -2;
-
-    // the default timeout in milliseconds (to wait for async service types)
+    /**
+     * The default timeout in milliseconds (to wait for async service types).
+     */
     public static final long DEFAULT_ASYNC_WAIT = 3000;
 
     private static final Logger logger = Logger.getLogger(RunLevelServiceImpl.class.getName());
@@ -247,17 +246,19 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
     private final ExecutorService exec;
 
     // the name for this instance
-    protected String name;
+    private String name;
 
     // the current run level (the last one successfully achieved)
-    private Integer currentRunLevel;
+    private Integer currentRunLevel = RunLevel.RUNLEVEL_VAL_INITIAL;
 
     // the set of recorders, one per runlevel (used as necessary, cleared when
     // shutdown)
     private final HashMap<Integer, Stack<ActiveDescriptor<?>>> recorders =
             new LinkedHashMap<Integer, Stack<ActiveDescriptor<?>>>();
 
-    // the "active" proceedTo worker
+    /**
+     * The active proceedTo worker.
+     */
     private Worker worker;
 
     // used for Async service types
@@ -284,6 +285,9 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
         CANCEL,
         ERROR,
     }
+
+
+    // ----- Constructors ----------------------------------------------------
 
     public RunLevelServiceImpl() {
         this(false);
@@ -313,33 +317,17 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
         }
     }
 
+
+    // ----- PostConstruct -------------------------------------------------
+
     @PostConstruct
     public void postConstruct() {
-        final Named named = getClass().getAnnotation(Named.class);
+        Named named = getClass().getAnnotation(Named.class);
         name = named == null ? RUNLEVEL_SERVICE_DEFAULT_NAME : named.value();
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + "-" + System.identityHashCode(this)
-                + "(" + getDescription(false) + ")";
-    }
 
-    public String getDescription(boolean extended) {
-        StringBuilder b = new StringBuilder();
-        b.append("curr=").append(getCurrentRunLevel()).append(", ");
-        b.append("act=").append(getActivatingRunLevel()).append(", ");
-        b.append("plan=").append(getPlannedRunLevel()).append(", ");
-        b.append("scope=").append(getName()).append(", ");
-        if (extended) {
-            b.append("thrd=").append(Thread.currentThread()).append(", ");
-        }
-        return b.toString();
-    }
-
-    protected HashMap<Integer, Stack<ActiveDescriptor<?>>> getRecorders() {
-        return recorders;
-    }
+    // ----- RunLevelService ------------------------------------------------
 
     @Override
     public String getName() {
@@ -356,6 +344,95 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
         synchronized (lock) {
             return (null == worker) ? null : worker.getPlannedRunLevel();
         }
+    }
+
+    @Override
+    public void recordActivation(ActiveDescriptor<?> descriptor) {
+        Integer activeRunLevel = Utilities.getRunLevelValue(descriptor);
+
+        Stack<ActiveDescriptor<?>> activeRecorder;
+        synchronized (lock) {
+            activeRecorder = recorders.get(activeRunLevel);
+            if (null == activeRecorder) {
+                activeRecorder = new Stack<ActiveDescriptor<?>>();
+                recorders.put(activeRunLevel, activeRecorder);
+            }
+        }
+        activeRecorder.push(descriptor);
+    }
+
+    @Override
+    public void proceedTo(int runLevel) {
+        proceedTo(runLevel, false);
+    }
+
+    @Override
+    public void interrupt() {
+        proceedTo(null, true);
+    }
+
+
+    // ----- Activator ------------------------------------------------------
+
+    @Override
+    public void activate(ActiveDescriptor<?> descriptor) {
+        serviceLocator.getServiceHandle(descriptor).getService();
+    }
+
+    @Override
+    public void deactivate(ActiveDescriptor<?> descriptor) {
+        contextProvider.get().deactivate(descriptor);
+    }
+
+    @Override
+    public void awaitCompletion()
+            throws InterruptedException, ExecutionException, TimeoutException {
+        if (null != waiter) {
+            long start = System.currentTimeMillis();
+            logger.log(Level.FINER, "awaiting completion");
+            waiter.waitForDone();
+            logger.log(Level.FINER, "finished awaiting completion - {0} ms", System.currentTimeMillis() - start);
+        }
+    }
+
+    @Override
+    public void awaitCompletion(long timeout, TimeUnit unit)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        if (null != waiter) {
+            long start = System.currentTimeMillis();
+            logger.log(Level.FINER, "awaiting completion");
+            boolean done = waiter.waitForDone(timeout, unit);
+            logger.log(Level.FINER, "finished awaiting completion - {0} ms; done = {1}",
+                    new Object[]{System.currentTimeMillis() - start, done});
+        }
+    }
+
+
+    // ----- Object overrides -----------------------------------------------
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "-" + System.identityHashCode(this)
+                + "(" + getDescription(false) + ")";
+    }
+
+
+    // ----- Utility methods ------------------------------------------------
+
+    public String getDescription(boolean extended) {
+        StringBuilder b = new StringBuilder();
+        b.append("curr=").append(getCurrentRunLevel()).append(", ");
+        b.append("act=").append(getActivatingRunLevel()).append(", ");
+        b.append("plan=").append(getPlannedRunLevel()).append(", ");
+        b.append("scope=").append(getName()).append(", ");
+        if (extended) {
+            b.append("thrd=").append(Thread.currentThread()).append(", ");
+        }
+        return b.toString();
+    }
+
+    protected HashMap<Integer, Stack<ActiveDescriptor<?>>> getRecorders() {
+        return recorders;
     }
 
     private Integer getActivatingRunLevel() {
@@ -375,7 +452,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
      */
     protected boolean accept(ActiveDescriptor<?> descriptor, int activeRunLevel) {
         Integer runLevel = Utilities.getRunLevelValue(descriptor);
-        if (null != runLevel) {
+        if (runLevel != null) {
             if (runLevel != activeRunLevel) {
                 return false;
             }
@@ -423,11 +500,10 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
         }
 
         // notify listeners that we progressed
-        event(worker, ListenerEvent.PROGRESS, null);
+        event(worker, ListenerEvent.PROGRESS, null, false);
     }
 
-    protected List<Integer> getRecordersToRelease(
-            HashMap<Integer, Stack<ActiveDescriptor<?>>> list, int runLevel) {
+    protected List<Integer> getRecordersToRelease(int runLevel) {
         List<Integer> qualifying = new ArrayList<Integer>();
         synchronized (lock) {
             for (Map.Entry<Integer, Stack<ActiveDescriptor<?>>> entry : recorders.entrySet()) {
@@ -443,11 +519,6 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
         Collections.reverse(qualifying);
 
         return qualifying;
-    }
-
-    protected void event(Worker worker, ListenerEvent event,
-                         Throwable error) {
-        event(worker, event, error, false);
     }
 
     protected void event(Worker worker, ListenerEvent event,
@@ -479,46 +550,22 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
                 }
             }
 
-            if (null != lastInterrupt) {
+            if (lastInterrupt != null) {
                 throw lastInterrupt;
             } else {
-                if (null != error) {
+                if (error != null) {
                     logger.log(LEVEL, "swallowing error - " + error);
                 }
             }
         }
     }
 
-    @Override
-    public void recordActivation(ActiveDescriptor<?> descriptor) {
-        Integer activeRunLevel = Utilities.getRunLevelValue(descriptor);
-
-        Stack<ActiveDescriptor<?>> activeRecorder;
-        synchronized (lock) {
-            activeRecorder = recorders.get(activeRunLevel);
-            if (null == activeRecorder) {
-                activeRecorder = new Stack<ActiveDescriptor<?>>();
-                recorders.put(activeRunLevel, activeRecorder);
-            }
-        }
-        activeRecorder.push(descriptor);
-    }
-
-    @Override
-    public void proceedTo(int runLevel) {
-        proceedTo(runLevel, false);
-    }
-
-    @Override
-    public void interrupt() {
-        proceedTo(null, true);
-    }
-
-    //    @Override
-    public void interrupt(int runLevel) {
-        proceedTo(runLevel, true);
-    }
-
+    /**
+     * Proceed to the given run level.
+     *
+     * @param runLevel         the run level
+     * @param isHardInterrupt  indicates a hard interrupt
+     */
     protected void proceedTo(Integer runLevel, boolean isHardInterrupt) {
         if (null != runLevel && runLevel < RunLevel.RUNLEVEL_VAL_IMMEDIATE) {
             throw new IllegalArgumentException();
@@ -526,153 +573,154 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
 
         // see if we can interrupt first
         Worker worker = this.worker;
-        if (null != worker) {
+        if (worker != null) {
             if (worker.interrupt(isHardInterrupt, runLevel)) {
                 return;
             }
         }
 
-        if (null != runLevel) {
-            // if we are here then we interrupt isn't enough and we must create
+        if (runLevel != null) {
+            // if we are here then the interrupt isn't enough and we must create
             // a new worker
             synchronized (lock) {
-                this.worker = worker = (asyncMode) ? new AsyncProceedToOp(
-                        runLevel) : new SyncProceedToOp(runLevel);
+                this.worker = worker = asyncMode ?
+                        new AsyncProceedToWorker(runLevel) :
+                        new SyncProceedToWorker(runLevel);
             }
 
             worker.proceedTo(runLevel);
         }
     }
 
-    @Override
-    public void activate(ActiveDescriptor<?> descriptor) {
-        serviceLocator.getServiceHandle(descriptor).getService();
-    }
-
-    @Override
-    public void deactivate(ActiveDescriptor<?> descriptor) {
-        contextProvider.get().deactivate(descriptor);
-    }
-
-    @Override
-    public void awaitCompletion()
-            throws InterruptedException, ExecutionException, TimeoutException {
-        if (null != waiter) {
-            long start = System.currentTimeMillis();
-            logger.log(Level.FINER, "awaiting completion");
-            waiter.waitForDone();
-            logger.log(Level.FINER, "finished awaiting completion - {0} ms", System.currentTimeMillis() - start);
-        }
-    }
-
-    @Override
-    public void awaitCompletion(long timeout, TimeUnit unit)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        if (null != waiter) {
-            long start = System.currentTimeMillis();
-            logger.log(Level.FINER, "awaiting completion");
-            boolean done = waiter.waitForDone(timeout, unit);
-            logger.log(Level.FINER, "finished awaiting completion - {0} ms; done = {1}",
-                    new Object[]{System.currentTimeMillis() - start, done});
-        }
-    }
-
     /**
-     * Obtains the "best" InhabitantActivator, first looking up out of the
-     * habitat any service registered under the same name as this, then
-     * defaulting to the first one registered by type alone, followed by
-     * ourself.
+     * Get the best {@link Activator}.
      *
-     * @return an InhabitantActivator, defaulting to this
+     * @return the best actvator; defaulting to this
      */
     protected synchronized Activator getActivator() {
         Collection<Activator> activators = new ArrayList<Activator>();
         for (ServiceHandle<Activator> serviceHandle : allActivators.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
+            if (name.equals(Utilities.getRunLevelServiceName(
+                    serviceHandle.getActiveDescriptor()))) {
                 activators.add(serviceHandle.getService());
             }
         }
         return (activators.isEmpty()) ? this : activators.iterator().next();
     }
 
+    /**
+     * Get all of the {@link RunLevelListener}s.
+     *
+     * @return the listeners
+     */
     protected synchronized Collection<RunLevelListener> getListeners() {
         Collection<RunLevelListener> listeners = new ArrayList<RunLevelListener>();
         for (ServiceHandle<RunLevelListener> serviceHandle : allRunLevelListeners.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
+            if (name.equals(Utilities.getRunLevelServiceName(
+                    serviceHandle.getActiveDescriptor()))) {
                 listeners.add(serviceHandle.getService());
             }
         }
         return listeners;
     }
 
+    /**
+     * Get the best {@link Sorter}.
+     *
+     * @return the best sorter; null if none exists
+     */
     protected synchronized Sorter getSorter() {
         Collection<Sorter> sorters = new ArrayList<Sorter>();
         for (ServiceHandle<Sorter> serviceHandle : allSorters.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelServiceName(serviceHandle.getActiveDescriptor()))) {
+            if (name.equals(Utilities.getRunLevelServiceName(
+                    serviceHandle.getActiveDescriptor()))) {
                 sorters.add(serviceHandle.getService());
             }
         }
         return (sorters.isEmpty()) ? null : sorters.iterator().next();
     }
 
+
+    // ----- inner class Worker ---------------------------------------------
+
     private abstract class Worker implements Runnable {
-        // the target runLevel we want to achieve
+        /**
+         * The target run level.
+         */
         protected volatile Integer planned;
 
-        // the active run level attempting to be activated
+        /**
+         * The active run level to be activated.
+         */
         private Integer activeRunLevel;
 
-        // tracks the direction of any active proceedTo worker
+        /**
+         * Tracks the direction of any active proceedTo worker.
+         */
         protected Boolean upSide;
 
-        // records whether a cancel was actually an hard interrupt
+        /**
+         * Records whether a cancel was actually an hard interrupt.
+         */
         protected Boolean isHardInterrupt;
+
+
+        // ----- Constructors -----------------------------------------------
 
         protected Worker(int runLevel) {
             this.planned = runLevel;
         }
 
-        public Integer getPlannedRunLevel() {
-            return planned;
-        }
 
-        public Integer getActivatingRunLevel() {
-            return activeRunLevel;
-        }
+        // ----- Runnable ---------------------------------------------------
 
         /**
-         * Checks to see if this worker has been interrupted, and will abort if
-         * it finds it has been.
-         *
-         * @param e          any error encountered during the nested proceedTo
-         *                   operation; may be null
-         * @param descriptor the inhabitant that was being activated / released during
-         *                   the operation; may be null
-         * @param isHard     true when this is a "hard" interrupt originating from an
-         *                   interrupt() call, false when it was from a "soft"
-         *                   interrupt involving a new proceedTo(), null when its
-         *                   unknown altogether
+         * Core control logic.
          */
-        protected void checkInterrupt(Exception e, ActiveDescriptor<?> descriptor,
-                                      Boolean isHard) {
-            if (null != e) {
-                boolean isHardInterrupt = isHardInterrupt(isHard, e);
-                if (isHardInterrupt) {
-                    event(this, ListenerEvent.CANCEL, e, isHardInterrupt);
-                } else {
-                    event(this, ListenerEvent.ERROR, e, isHardInterrupt);
+        @Override
+        public void run() {
+            logger.log(LEVEL, "proceedTo({0}) - " + getDescription(true),
+                    planned);
+
+            upSide = null;
+
+            if (null != planned) {
+                int current = getCurrentRunLevel();
+                if (planned > current) {
+                    upSide = true;
+
+                    int rl = current + 1;
+                    while (rl <= planned) {
+                        upActiveRecorder(rl);
+                        rl++;
+                    }
+                } else if (planned < current) {
+                    upSide = false;
+
+                    // start things off with a notification of the current
+                    // runLevel
+                    setCurrent(this, current);
+
+                    down(current);
+                } else { // planned == current
+                    upSide = false;
+
+                    // force closure of any orphaned higher RunLevel services
+                    down(current + 1);
                 }
             }
+            finished(this);
         }
 
         /**
          * Attempts to interrupt processing to go to a new runLevel.
          *
-         * @param isHard   if true, this was based on an explicit call to interrupt;
-         *                 false otherwise. The latter is the case for a new
-         *                 proceedTo() causing a cancel in order to proceedTo a new
-         *                 runLevel.
-         * @param runLevel optionally, the revised runLevel to proceedTo
+         * @param isHard    if true, this was based on an explicit call to
+         *                  interrupt; false otherwise. The latter is the
+         *                  case for a new proceedTo() causing a cancel in
+         *                  order to proceedTo a new runLevel.
+         * @param runLevel  optionally, the revised runLevel to proceedTo
+         *
          * @return true, if its possible to go to the new runLevel; note that
          *         implementation may handle the interrupt by other means (i.e.,
          *         throwing an InterruptException for the synchronous case)
@@ -686,51 +734,61 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
          */
         public abstract void proceedTo(int runLevel);
 
-        /**
-         * Core control logic.
-         */
-        @Override
-        public void run() {
-            logger.log(LEVEL, "proceedTo({0}) - " + getDescription(true),
-                    planned);
-
-            upSide = null;
-
-            if (null != planned) {
-                int current = (null == getCurrentRunLevel()) ? INITIAL_RUNLEVEL
-                        : getCurrentRunLevel();
-                if (planned > current) {
-                    upSide = true;
-
-                    int rl = current + 1;
-                    while (rl <= planned) {
-                        upActiveRecorder(rl);
-                        rl++;
-                    }
-                } else if (planned < current) {
-                    upSide = false;
-
-                    // start things off we a notification of the current
-                    // runLevel
-                    setCurrent(this, current);
-
-                    down(current);
-                } else { // planned == current
-                    upSide = false;
-
-                    // force closure of any orphaned higher RunLevel services
-                    down(current + 1);
-                }
-            }
-
-            finished(this);
+        public Integer getPlannedRunLevel() {
+            return planned;
         }
 
-        private void down(int start) {
-            int rl = start;
-            while (rl > planned) {
-                downActiveRecorder(rl);
-                rl--;
+        public Integer getActivatingRunLevel() {
+            return activeRunLevel;
+        }
+
+        /**
+         * Checks to see if this worker has been interrupted, and will abort
+         * if it finds it has been.
+         *
+         * @param e           any error encountered during the nested
+         *                    proceedTo operation; may be null
+         * @param descriptor  the inhabitant that was being activated /
+         *                    released during the operation; may be null
+         * @param isHard      true when this is a "hard" interrupt originating
+         *                    from an interrupt() call, false when it was from
+         *                    a "soft" interrupt involving a new proceedTo(),
+         *                    null when its unknown altogether
+         */
+        protected void checkInterrupt(Exception e, ActiveDescriptor<?> descriptor,
+                                      Boolean isHard) {
+            if (e != null) {
+                boolean isHardInterrupt = isHardInterrupt(isHard, e);
+                if (isHardInterrupt) {
+                    event(this, ListenerEvent.CANCEL, e, isHardInterrupt);
+                } else {
+                    event(this, ListenerEvent.ERROR, e, isHardInterrupt);
+                }
+            }
+        }
+
+        protected void downActiveRecorder(int runLevel) {
+            activeRunLevel = runLevel;
+
+            // release stuff
+            deactivateRunLevel(runLevel);
+
+            // don't set current until we've actually reached it
+            setCurrent(this, activeRunLevel = runLevel - 1);
+        }
+
+        protected boolean isHardInterrupt(Boolean isHard, Throwable e) {
+            if (null != isHard) {
+                return isHard;
+            }
+
+            return (null == isHardInterrupt) ? false : isHardInterrupt;
+        }
+
+        private void down(int runLevel) {
+            while (runLevel > planned) {
+                downActiveRecorder(runLevel);
+                runLevel--;
             }
         }
 
@@ -800,38 +858,23 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
                 try {
                     ia.awaitCompletion(DEFAULT_ASYNC_WAIT, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
-                    ActiveDescriptor<?> descriptor = (null == waiter) ? null : waiter.getLastDescriptorWorkingOn();
+                    ActiveDescriptor<?> descriptor = (null == waiter) ?
+                            null :
+                            waiter.getLastDescriptorWorkingOn();
                     checkInterrupt(e, descriptor, null);
                 }
             }
         }
 
-        protected void downActiveRecorder(int runLevel) {
-            activeRunLevel = runLevel;
-
-            // release stuff
-            deactivateRunLevel(runLevel);
-
-            // don't set current until we've actually reached it
-            setCurrent(this, activeRunLevel = runLevel - 1);
-        }
-
         private void deactivateRunLevel(int runLevel) {
-            List<Integer> downRecorders = getRecordersToRelease(recorders,
-                    runLevel);
+            List<Integer> downRecorders = getRecordersToRelease(runLevel);
             for (int current : downRecorders) {
                 Stack<ActiveDescriptor<?>> downRecorder;
                 synchronized (lock) {
                     downRecorder = recorders.get(current);
                 }
 
-                if (null != downRecorder) {
-                    // Causes release of the entire activationSet. Release
-                    // occurs in the inverse
-                    // order of the recordings. So A->B->C will have startUp
-                    // ordering be (C,B,A)
-                    // because of dependencies. The shutdown ordering will b
-                    // (A,B,C).
+                if (downRecorder != null) {
 
                     Activator ia = getActivator();
 
@@ -845,7 +888,6 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
 
                         try {
                             ia.deactivate(descriptor);
-                            // assert(!i.isActive()); <- this might happen
                             // asynchronously
                             checkInterrupt(null, descriptor, null);
                         } catch (Exception e) {
@@ -861,20 +903,15 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
                 }
             }
         }
-
-        protected boolean isHardInterrupt(Boolean isHard, Throwable e) {
-            if (null != isHard) {
-                return isHard;
-            }
-
-            return (null == isHardInterrupt) ? false : isHardInterrupt;
-        }
     }
+
+
+    // ----- inner class SyncProceedToWorker --------------------------------
 
     /**
      * Sync worker
      */
-    private class SyncProceedToOp extends Worker {
+    private class SyncProceedToWorker extends Worker {
         // record the thread performing the operation
         private final Thread activeThread = Thread.currentThread();
 
@@ -884,7 +921,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
         // records whether a cancel event was issued
         private boolean cancelIssued;
 
-        private SyncProceedToOp(int runLevel) {
+        private SyncProceedToWorker(int runLevel) {
             super(runLevel);
         }
 
@@ -1011,14 +1048,17 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
 
     }
 
+
+    // ----- inner class AsyncProceedToWorker -------------------------------
+
     /**
      * Async worker
      */
-    private class AsyncProceedToOp extends Worker implements Runnable {
+    private class AsyncProceedToWorker extends Worker {
         // record the future for the operation
         private Future<?> activeFuture;
 
-        private AsyncProceedToOp(int runLevel) {
+        private AsyncProceedToWorker(int runLevel) {
             super(runLevel);
         }
 
@@ -1071,6 +1111,9 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
         }
     }
 
+
+    // ----- inner class RunLevelServiceThread ------------------------------
+
     private static class RunLevelServiceThread extends Thread {
         private RunLevelServiceThread(Runnable r) {
             super(r);
@@ -1079,6 +1122,9 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
                     + System.currentTimeMillis());
         }
     }
+
+
+    // ----- inner class Interrupt ------------------------------------------
 
     @SuppressWarnings("serial")
     public static class Interrupt extends RuntimeException {
