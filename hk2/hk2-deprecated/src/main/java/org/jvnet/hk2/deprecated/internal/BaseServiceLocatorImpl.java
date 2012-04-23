@@ -65,10 +65,11 @@ public class BaseServiceLocatorImpl implements BaseServiceLocator {
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.BaseServiceLocator#getComponent(java.lang.Class, java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getComponent(Class<T> contract, String name)
             throws ComponentException {
-        return locator.getService(contract, name);
+        return (T) locator.getService(contract, name);
     }
 
     /* (non-Javadoc)
@@ -88,49 +89,56 @@ public class BaseServiceLocatorImpl implements BaseServiceLocator {
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.BaseServiceLocator#getComponent(java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getComponent(Class<T> clazz) throws ComponentException {
-        return locator.getService(clazz);
+        return (T) locator.getService(clazz);
     }
 
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.BaseServiceLocator#getByType(java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getByType(Class<T> implType) {
-        return locator.getService(implType);
+        return (T) locator.getService(implType);
     }
 
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.BaseServiceLocator#getByType(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getByType(String implType) {
-        return getComponent(implType, null);
+        return (T) getComponent(implType, null);
     }
 
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.BaseServiceLocator#getByContract(java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getByContract(Class<T> contractType) {
-        return locator.getService(contractType);
+        return (T) locator.getService(contractType);
     }
 
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.BaseServiceLocator#getByContract(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getByContract(String contractType) {
-        return getComponent(contractType, null);
+        Object retVal = getComponent(contractType, null);
+        return (T) retVal;
     }
 
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.BaseServiceLocator#getAllByContract(java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> Collection<T> getAllByContract(Class<T> contractType) {
-        return locator.getAllServices(contractType);
+        return (Collection<T>) locator.getAllServices(contractType);
     }
 
     /* (non-Javadoc)
