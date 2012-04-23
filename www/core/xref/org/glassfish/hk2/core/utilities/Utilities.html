@@ -56,34 +56,57 @@
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.DynamicConfigurationService;
 <a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
 <a class="jxr_linenumber" name="48" href="#48">48</a>  
-<a class="jxr_linenumber" name="49" href="#49">49</a>  
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment"> * Core utilities.</em>
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment"> * @author tbeerbower</em>
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/glassfish/hk2/core/utilities/Utilities.html">Utilities</a> {
-<a class="jxr_linenumber" name="56" href="#56">56</a>  
-<a class="jxr_linenumber" name="57" href="#57">57</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">     * Add an alternate index to look up the given descriptor.</em>
-<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">     * @param locator     the service locator to associate this index with</em>
-<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">     * @param descriptor  the descriptor that we are adding the index for</em>
-<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment">     * @param contract    the contract for the index</em>
-<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">     * @param name        the name for the index</em>
-<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment">     * @param &lt;T&gt;         the descriptor type</em>
-<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="66" href="#66">66</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; <strong class="jxr_keyword">void</strong> addIndex(ServiceLocator locator,
-<a class="jxr_linenumber" name="67" href="#67">67</a>                                      ActiveDescriptor&lt;T&gt; descriptor,
-<a class="jxr_linenumber" name="68" href="#68">68</a>                                      Class&lt;?&gt; contract,
-<a class="jxr_linenumber" name="69" href="#69">69</a>                                      String name) {
-<a class="jxr_linenumber" name="70" href="#70">70</a>          DynamicConfigurationService dcs    = locator.getService(DynamicConfigurationService.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="71" href="#71">71</a>          DynamicConfiguration        config = dcs.createDynamicConfiguration();
-<a class="jxr_linenumber" name="72" href="#72">72</a>  
-<a class="jxr_linenumber" name="73" href="#73">73</a>          config.addActiveDescriptor(<strong class="jxr_keyword">new</strong> AliasDescriptor&lt;T&gt;(locator, descriptor, contract, name));
-<a class="jxr_linenumber" name="74" href="#74">74</a>          config.commit();
-<a class="jxr_linenumber" name="75" href="#75">75</a>      }
-<a class="jxr_linenumber" name="76" href="#76">76</a>  }
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> java.lang.reflect.Type;
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> java.util.Collections;
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> java.util.Iterator;
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="53" href="#53">53</a>  
+<a class="jxr_linenumber" name="54" href="#54">54</a>  
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment"> * Core utilities.</em>
+<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment"> * @author tbeerbower</em>
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/glassfish/hk2/core/utilities/Utilities.html">Utilities</a> {
+<a class="jxr_linenumber" name="61" href="#61">61</a>  
+<a class="jxr_linenumber" name="62" href="#62">62</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">     * Add an alternate index to look up the given descriptor.</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment">     * @param locator     the service locator to associate this index with</em>
+<a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment">     * @param descriptor  the descriptor that we are adding the index for</em>
+<a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment">     * @param contract    the contract for the index</em>
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment">     * @param name        the name for the index</em>
+<a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment">     * @param &lt;T&gt;         the descriptor type</em>
+<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="71" href="#71">71</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; <strong class="jxr_keyword">void</strong> addIndex(ServiceLocator locator,
+<a class="jxr_linenumber" name="72" href="#72">72</a>                                      ActiveDescriptor&lt;T&gt; descriptor,
+<a class="jxr_linenumber" name="73" href="#73">73</a>                                      String contract,
+<a class="jxr_linenumber" name="74" href="#74">74</a>                                      String name) {
+<a class="jxr_linenumber" name="75" href="#75">75</a>          DynamicConfigurationService dcs    = locator.getService(DynamicConfigurationService.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="76" href="#76">76</a>          DynamicConfiguration        config = dcs.createDynamicConfiguration();
+<a class="jxr_linenumber" name="77" href="#77">77</a>  
+<a class="jxr_linenumber" name="78" href="#78">78</a>          config.addActiveDescriptor(<strong class="jxr_keyword">new</strong> AliasDescriptor&lt;T&gt;(locator, descriptor, contract, name));
+<a class="jxr_linenumber" name="79" href="#79">79</a>          config.commit();
+<a class="jxr_linenumber" name="80" href="#80">80</a>      }
+<a class="jxr_linenumber" name="81" href="#81">81</a>  
+<a class="jxr_linenumber" name="82" href="#82">82</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="83" href="#83">83</a>  <em class="jxr_javadoccomment">     * Returns the type closure for the given contract.</em>
+<a class="jxr_linenumber" name="84" href="#84">84</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="85" href="#85">85</a>  <em class="jxr_javadoccomment">     * @param ofType   the type to check</em>
+<a class="jxr_linenumber" name="86" href="#86">86</a>  <em class="jxr_javadoccomment">     * @param contract the contract this type is allowed to handle</em>
+<a class="jxr_linenumber" name="87" href="#87">87</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="88" href="#88">88</a>  <em class="jxr_javadoccomment">     * @return the type closure restricted to the contracts; null if the</em>
+<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment">     *         given type does not implement the given contract</em>
+<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="91" href="#91">91</a>      <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">static</strong> Type getTypeClosure(Type ofType, String contract){
+<a class="jxr_linenumber" name="92" href="#92">92</a>          Set&lt;Type&gt; contractTypes =
+<a class="jxr_linenumber" name="93" href="#93">93</a>                  org.jvnet.hk2.internal.Utilities.getTypeClosure(ofType,
+<a class="jxr_linenumber" name="94" href="#94">94</a>                          Collections.singleton(contract));
+<a class="jxr_linenumber" name="95" href="#95">95</a>  
+<a class="jxr_linenumber" name="96" href="#96">96</a>          Iterator&lt;Type&gt; iterator = contractTypes.iterator();
+<a class="jxr_linenumber" name="97" href="#97">97</a>          <strong class="jxr_keyword">return</strong> iterator.hasNext() ? iterator.next() : <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="98" href="#98">98</a>      }
+<a class="jxr_linenumber" name="99" href="#99">99</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
