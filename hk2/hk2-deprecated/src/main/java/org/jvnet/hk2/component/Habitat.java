@@ -45,6 +45,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -53,7 +54,18 @@ import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Descriptor;
 import org.glassfish.hk2.DynamicBinderFactory;
 import org.glassfish.hk2.TypeLiteral;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.inject.Injector;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.component.HabitatListener.EventType;
@@ -66,7 +78,10 @@ import org.jvnet.hk2.component.InhabitantTracker.Callback;
  * @author Jerome Dochez
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class Habitat implements Injector, SimpleServiceLocator {
+public class Habitat implements ServiceLocator, SimpleServiceLocator {
+    private final static String DEFAULT_NAME = "default";
+    
+    private final ServiceLocator delegate;
 
     public Habitat() {
         this(null, null, null);
@@ -77,7 +92,26 @@ public class Habitat implements Injector, SimpleServiceLocator {
     }
 
     Habitat(Habitat parent, String name, Boolean concurrency_controls) {
-        throw new UnsupportedOperationException("<clinit> in Habitat");
+        if (parent != null || concurrency_controls != null) {
+            throw new UnsupportedOperationException("<clinit> (" + parent + "," + name + "," + concurrency_controls + ") in Habitat");
+        }
+        
+        if (name == null || name.length() <= 0) {
+            name = DEFAULT_NAME;
+        }
+        
+        delegate = ServiceLocatorFactory.getInstance().create(name);
+        
+        // Add this habitat in, so it can be looked up!
+        AbstractActiveDescriptor<Habitat> habitatDescriptor = BuilderHelper.createConstantDescriptor(this);
+        habitatDescriptor.removeContractType(ServiceLocator.class);
+        
+        DynamicConfigurationService dcs = delegate.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(habitatDescriptor);
+        
+        config.commit();
     }
 
     public Habitat getDefault() {
@@ -561,10 +595,7 @@ public class Habitat implements Injector, SimpleServiceLocator {
         throw new UnsupportedOperationException("getInhabitantsByContract(" + contract + ") in Habitat");
     }
 
-    @Override
-    public <T> T inject(final T object) {
-        throw new UnsupportedOperationException("inject(" + object + ") in Habitat");
-    }
+    
 
     /**
      * Instantiate the passed type and injects all the {@link org.jvnet.hk2.annotations.Inject}
@@ -690,6 +721,208 @@ public class Habitat implements Injector, SimpleServiceLocator {
      */
     public void release() {
         throw new UnsupportedOperationException("release in Habitat");
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> T getService(Type contractOrImpl, Annotation... qualifiers)
+            throws MultiException {
+        return delegate.getService(contractOrImpl, qualifiers);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> T getService(Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException {
+        return delegate.getService(contractOrImpl, name, qualifiers);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> List<T> getAllServices(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        return delegate.getAllServices(contractOrImpl, qualifiers);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public List<?> getAllServices(Filter searchCriteria) throws MultiException {
+        return delegate.getAllServices(searchCriteria);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        return delegate.getServiceHandle(contractOrImpl, qualifiers);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.String, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl,
+            String name, Annotation... qualifiers) throws MultiException {
+        return delegate.getServiceHandle(contractOrImpl, name, qualifiers);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public List<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        return delegate.getAllServiceHandles(contractOrImpl, qualifiers);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public List<ServiceHandle<?>> getAllServiceHandles(Filter searchCriteria)
+            throws MultiException {
+        return delegate.getAllServiceHandles(searchCriteria);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getDescriptors(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public List<ActiveDescriptor<?>> getDescriptors(Filter filter) {
+        return delegate.getDescriptors(filter);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getBestDescriptor(org.glassfish.hk2.api.Filter)
+     */
+    @Override
+    public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
+        return delegate.getBestDescriptor(filter);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#reifyDescriptor(org.glassfish.hk2.api.Descriptor, org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public ActiveDescriptor<?> reifyDescriptor(
+            org.glassfish.hk2.api.Descriptor descriptor, Injectee injectee)
+            throws MultiException {
+        return delegate.reifyDescriptor(descriptor, injectee);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#reifyDescriptor(org.glassfish.hk2.api.Descriptor)
+     */
+    @Override
+    public ActiveDescriptor<?> reifyDescriptor(
+            org.glassfish.hk2.api.Descriptor descriptor) throws MultiException {
+        return delegate.reifyDescriptor(descriptor);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getInjecteeDescriptor(org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee)
+            throws MultiException {
+        return delegate.getInjecteeDescriptor(injectee);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(
+            ActiveDescriptor<T> activeDescriptor, Injectee injectee)
+            throws MultiException {
+        return delegate.getServiceHandle(activeDescriptor, injectee);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(
+            ActiveDescriptor<T> activeDescriptor) throws MultiException {
+        return delegate.getServiceHandle(activeDescriptor);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public <T> T getService(ActiveDescriptor<T> activeDescriptor,
+            ServiceHandle<?> root) throws MultiException {
+        return delegate.getService(activeDescriptor, root);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getName()
+     */
+    @Override
+    public String getName() {
+        return delegate.getName();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getLocatorId()
+     */
+    @Override
+    public long getLocatorId() {
+        return delegate.getLocatorId();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        delegate.shutdown();
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#create(java.lang.Class)
+     */
+    @Override
+    public <T> T create(Class<T> createMe) {
+        return delegate.create(createMe);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#inject(java.lang.Object)
+     */
+    @Override
+    public void inject(Object object) {
+        delegate.inject(object);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#postConstruct(java.lang.Object)
+     */
+    @Override
+    public void postConstruct(Object postConstructMe) {
+        delegate.postConstruct(postConstructMe);
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#preDestroy(java.lang.Object)
+     */
+    @Override
+    public void preDestroy(Object preDestroyMe) {
+        delegate.preDestroy(preDestroyMe);
         
     }
 }
