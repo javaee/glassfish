@@ -127,9 +127,9 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         injectionMgr.inject(t, onBehalfOf, es, targets);
 
         // postContruct call if any
-        if (t instanceof org.glassfish.hk2.PostConstruct) {
+        if (t instanceof org.glassfish.hk2.api.PostConstruct) {
             logger.log(Level.FINER, "calling PostConstruct on {0}", t);
-            ((org.glassfish.hk2.PostConstruct) t).postConstruct();
+            ((org.glassfish.hk2.api.PostConstruct) t).postConstruct();
         }
 
         logger.log(Level.FINER, "injection finished on {0}", t);

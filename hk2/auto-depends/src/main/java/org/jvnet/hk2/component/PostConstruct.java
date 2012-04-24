@@ -41,9 +41,9 @@ package org.jvnet.hk2.component;
 
 /**
  *
- * Compatibility class for {@link org.glassfish.hk2.PostConstruct}
+ * Compatibility class for {@link org.glassfish.hk2.api.PostConstruct}
  *
  * @author Jerome Dochez
  */
-public interface PostConstruct extends org.glassfish.hk2.PostConstruct {
+public interface PostConstruct extends org.glassfish.hk2.api.PostConstruct {
 }

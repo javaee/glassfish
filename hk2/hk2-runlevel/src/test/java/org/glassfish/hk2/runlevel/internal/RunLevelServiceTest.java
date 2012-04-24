@@ -716,7 +716,7 @@ public class RunLevelServiceTest {
     }
 
     public static abstract class TestService
-            implements org.glassfish.hk2.PostConstruct, org.glassfish.hk2.PreDestroy {
+            implements org.glassfish.hk2.api.PostConstruct, org.glassfish.hk2.PreDestroy {
         @Override
         public void postConstruct() {
         }

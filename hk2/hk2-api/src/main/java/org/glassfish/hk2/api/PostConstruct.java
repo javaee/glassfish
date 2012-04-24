@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2;
+package org.glassfish.hk2.api;
 
 /**
  * Classes implementing this interface register an interest in

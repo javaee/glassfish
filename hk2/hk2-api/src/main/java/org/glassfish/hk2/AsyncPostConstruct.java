@@ -43,6 +43,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.glassfish.hk2.api.PostConstruct;
+
 /**
  * Some service's PostConstruct may optionally spawn internal 
  * initializations on separate threads.

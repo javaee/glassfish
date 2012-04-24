@@ -51,11 +51,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.glassfish.hk2.PostConstruct;
 import org.glassfish.hk2.PreDestroy;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.ServiceHandle;
 
 /**

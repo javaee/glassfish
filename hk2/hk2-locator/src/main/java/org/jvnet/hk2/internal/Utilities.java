@@ -1284,7 +1284,7 @@ public class Utilities {
      * @return The post construct method or null
      */
     public static Method findPostConstruct(Class<?> clazz, Collector collector) {
-        if (org.glassfish.hk2.PostConstruct.class.isAssignableFrom(clazz)) {
+        if (org.glassfish.hk2.api.PostConstruct.class.isAssignableFrom(clazz)) {
             // A little performance optimization
             return null;  
         }

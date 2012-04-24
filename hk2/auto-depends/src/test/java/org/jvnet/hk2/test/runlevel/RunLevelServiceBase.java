@@ -39,7 +39,7 @@
  */
 package org.jvnet.hk2.test.runlevel;
 
-import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 import org.jvnet.hk2.test.contracts.TestingInfoService;
 
 public abstract class RunLevelServiceBase implements TestingInfoService, PostConstruct {
