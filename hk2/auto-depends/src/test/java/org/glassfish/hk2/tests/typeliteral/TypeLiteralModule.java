@@ -42,7 +42,7 @@ package org.glassfish.hk2.tests.typeliteral;
 
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.Module;
-import org.glassfish.hk2.TypeLiteral;
+import org.glassfish.hk2.api.TypeLiteral;
 
 /**
  * Module for {@link TypeLiteral} testing

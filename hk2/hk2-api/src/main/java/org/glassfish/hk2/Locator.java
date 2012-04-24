@@ -40,6 +40,7 @@
 
 package org.glassfish.hk2;
 
+import org.glassfish.hk2.api.TypeLiteral;
 import org.jvnet.hk2.annotations.Contract;
 
 /**

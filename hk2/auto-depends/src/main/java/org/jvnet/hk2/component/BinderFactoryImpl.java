@@ -55,7 +55,7 @@ import org.glassfish.hk2.Binder;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.Bindings;
 import org.glassfish.hk2.NamedBinder;
-import org.glassfish.hk2.TypeLiteral;
+import org.glassfish.hk2.api.TypeLiteral;
 
 /**
  * Implementation of the {@link org.glassfish.hk2.BinderFactory} interface.

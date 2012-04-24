@@ -1,6 +1,7 @@
 package org.glassfish.hk2.tests.typeliteral;
 
 import org.glassfish.hk2.*;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

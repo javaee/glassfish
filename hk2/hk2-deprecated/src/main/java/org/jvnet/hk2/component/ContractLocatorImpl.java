@@ -44,8 +44,8 @@ import com.sun.hk2.component.ScopedInhabitant;
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.Scope;
-import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeLiteral;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;

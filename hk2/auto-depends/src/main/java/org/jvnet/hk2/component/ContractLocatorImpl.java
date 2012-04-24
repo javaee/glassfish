@@ -54,7 +54,7 @@ import com.sun.hk2.component.ScopedInhabitant;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.Scope;
-import org.glassfish.hk2.TypeLiteral;
+import org.glassfish.hk2.api.TypeLiteral;
 
 /**
  * Implementation of the {@link ContractLocator} interface.

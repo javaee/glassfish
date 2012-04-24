@@ -41,6 +41,8 @@ package org.glassfish.hk2;
 
 import java.lang.annotation.Annotation;
 
+import org.glassfish.hk2.api.TypeLiteral;
+
 /**
  * Provides a means to more fully describe a binding that has already been
  * named, or where the name has been assumed to be left blank.
