@@ -39,8 +39,8 @@
  */
 package org.glassfish.hk2.tests.typeliteral;
 
-import org.glassfish.hk2.Services;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Fake service which gets injected will all the bound services
@@ -50,7 +50,7 @@ import org.jvnet.hk2.annotations.Inject;
 public class PathPatternInjectionTarget {
 
     @Inject
-    Services services;
+    Habitat services;
 
     @Inject
     RouteBuilder<PathPattern> routeBuilder;

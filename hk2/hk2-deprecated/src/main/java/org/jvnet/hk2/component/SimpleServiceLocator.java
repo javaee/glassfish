@@ -37,47 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.jvnet.hk2.component;
 
-package org.glassfish.hk2.tests;
-
-import org.glassfish.hk2.DynamicBinderFactory;
-import org.glassfish.hk2.Services;
-import org.glassfish.hk2.inject.Creator;
-import org.glassfish.hk2.tests.contracts.SomeContract;
-import org.glassfish.hk2.tests.services.SomeService;
-import org.junit.Ignore;
+import java.lang.reflect.Type;
+import java.util.Collection;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/3/11
- * Time: 10:13 AM
- * To change this template use File | Settings | File Templates.
+ * Provide a simple abstraction for getting services by contract or type.
+ *
+ * @author Jerome Dochez, Jeff Trent
  */
-@Ignore
-public class ServicesTest {
+public interface SimpleServiceLocator extends BaseServiceLocator {
 
-    public ServicesTest(Services services) {
-        // not supported any longer --- Descriptor is not a valid argument to locator
-//        services.locate(services.forContract(String.class).named("foo"));
+    /**
+     * Gets an inhabitant from its type and optionally name
+     * @param type requested inhabitant type
+     * @param name optional name
+     */
+    <T> Inhabitant<T> getProvider(Type type, String name);
 
-        services.forContract(String.class).named("foo").get();
+    <T> Inhabitant<T> getProvider(String fqcn, String name);
 
-//        services.bind(services.newBinder().named("foo").in(ThreadScope.class);
+    /**
+     * Gets all the inhabitants that has the given contract.
+     */
+    public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
+            Type contract) throws ComponentException;
 
+    public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
+            String contractName) throws ComponentException;
 
-        // not supported any longer --- Descriptor is not a valid argument to locator
-//        Descriptor t = null;
-//        MyType myType = MyType.class.cast(services.locate(t).get());
+    /**
+     * Gets all the inhabitants that has the given type.
+     */
+    public <T> Collection<Inhabitant<T>> getInhabitantsByType(
+            Class<T> type) throws ComponentException;
 
-        DynamicBinderFactory binder = services.bindDynamically();
-        binder.bind(String.class).named("foo").to("Foo");
-        binder.bind(SomeContract.class).toInstance(new SomeService());
-        binder.bind(SomeContract.class).to(SomeService.class).in(ThreadScope.class);
-
-        binder.commit();
-
-        services.forContract(Creator.class).get().newValueObject(String.class);
-
-    }
+    public <T> Collection<Inhabitant<T>> getInhabitantsByType(
+            String typeName) throws ComponentException;
 }

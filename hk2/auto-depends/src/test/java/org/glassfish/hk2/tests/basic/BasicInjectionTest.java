@@ -48,7 +48,6 @@ import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Provider;
-import org.glassfish.hk2.Services;
 import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.inject.Injector;
 import org.glassfish.hk2.tests.basic.annotations.*;
@@ -64,6 +63,7 @@ import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedProvide
 import static org.glassfish.hk2.tests.basic.AssertionUtils.assertQualifierInjectedContent;
 
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -156,11 +156,11 @@ public class BasicInjectionTest {
             binderFactory.bind().to(ConstructorInjectedFactoryBindingTestClass.class);
         }
     }
-    private static Services services;
+    private static Habitat services;
 
     @BeforeClass
     public static void setup() {
-        services = HK2.get().create(null, new TestModule());
+        services = (Habitat) HK2.get().create(null, new TestModule());
     }
 
     @Test
@@ -186,14 +186,14 @@ public class BasicInjectionTest {
                 return null;
             }
         };
-        Injector injector = HK2.get().create(null, new Module() {
+        Injector injector = ((Habitat) HK2.get().create(null, new Module() {
 
             @Override
             public void configure(BinderFactory binderFactory) {
                 binderFactory.bind(ContractB.class).toInstance(b);
                 binderFactory.bind(ContractA.class).toFactory(NonEmptyConstructorContractAFactory.class);
             }
-        }).forContract(Injector.class).get();
+        })).forContract(Injector.class).get();
 
         ContractA a = injector.inject(ContractA.class);
         assertNotNull(a);
@@ -202,7 +202,7 @@ public class BasicInjectionTest {
 
     @Test
     public void testOptionalNullFactoryValueInjection() {
-        Injector injector = HK2.get().create(null, new Module() {
+        Injector injector = ((Habitat) HK2.get().create(null, new Module() {
 
             @Override
             public void configure(BinderFactory binderFactory) {
@@ -214,7 +214,7 @@ public class BasicInjectionTest {
                     }
                 });
             }
-        }).forContract(Injector.class).get();
+        })).forContract(Injector.class).get();
 
         OptionallyInjected oi = injector.inject(OptionallyInjected.class);
         assertNotNull(oi);
@@ -355,7 +355,7 @@ public class BasicInjectionTest {
     @Test
     public void testTypeLiteralBoundToFactory() {
         final List<String> expected = Arrays.asList("test");
-        Services s = HK2.get().create(null, new Module() {
+        Habitat s = (Habitat) HK2.get().create(null, new Module() {
 
             @Override
             public void configure(BinderFactory binderFactory) {

@@ -40,11 +40,11 @@
 package org.glassfish.hk2.tests.scoping;
 
 import org.glassfish.hk2.HK2;
-import org.glassfish.hk2.Services;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.junit.Hk2Runner;
 
 /**
@@ -54,12 +54,12 @@ import org.jvnet.hk2.junit.Hk2Runner;
 @RunWith(Hk2Runner.class)
 public class ScopingTest {
 
-    static Services services;
+    static Habitat services;
 
     @BeforeClass
     public static void setup() {
         HK2 hk2 = HK2.get();
-        services = hk2.create(null, ScopingModule.class);
+        services = (Habitat) hk2.create(null, ScopingModule.class);
     }
 
     @Test

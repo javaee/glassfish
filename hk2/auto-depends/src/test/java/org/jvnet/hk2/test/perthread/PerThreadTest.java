@@ -39,11 +39,11 @@
  */
 package org.jvnet.hk2.test.perthread;
 
-import org.glassfish.hk2.Services;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.junit.Hk2Runner;
 
 import java.util.concurrent.*;
@@ -56,7 +56,7 @@ import java.util.concurrent.*;
 public class PerThreadTest {
 
     @Inject
-    Services services;
+    Habitat services;
 
     @Inject(name = "singleton")
     SomeContract singleton;

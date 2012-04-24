@@ -41,9 +41,9 @@ package org.glassfish.hk2.tests.multiplemodules;
 
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.Module;
-import org.glassfish.hk2.Services;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.hk2.PostConstruct;
 import org.jvnet.hk2.test.runlevel.RandomContract;
 
@@ -54,7 +54,7 @@ import org.jvnet.hk2.test.runlevel.RandomContract;
 public class SecondModule implements Module, PostConstruct {
 
     @Inject(name="first")
-    Services secondModuleServices;
+    Habitat secondModuleServices;
 
     @Override
     public void postConstruct() {

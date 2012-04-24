@@ -43,11 +43,11 @@ import com.sun.hk2.component.Holder;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
-import org.glassfish.hk2.Services;
 import org.glassfish.hk2.scopes.PerThread;
 import org.glassfish.hk2.scopes.Singleton;
 import org.junit.Assert;
 import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ public class PerThreadTest {
     @Test
     public void perThreadTest() throws Exception {
 
-        final Services services = HK2.get().create(null, new Module() {
+        final Habitat services = (Habitat) HK2.get().create(null, new Module() {
             @Override
             public void configure(BinderFactory binderFactory) {
                 binderFactory.bind().to(PerThread.class).in(Singleton.class);
@@ -92,7 +92,7 @@ public class PerThreadTest {
 
     @Test
     public void removalTest() throws Exception {
-        final Services services = HK2.get().create(null, new Module() {
+        final Habitat services = (Habitat) HK2.get().create(null, new Module() {
             @Override
             public void configure(BinderFactory binderFactory) {
                 binderFactory.bind().to(PerThread.class).in(Singleton.class);
@@ -124,7 +124,7 @@ public class PerThreadTest {
 
     @Test
     public void severalTest() throws Exception {
-        final Services services = HK2.get().create(null, new Module() {
+        final Habitat services = (Habitat) HK2.get().create(null, new Module() {
             @Override
             public void configure(BinderFactory binderFactory) {
                 binderFactory.bind().to(PerThread.class).in(Singleton.class);

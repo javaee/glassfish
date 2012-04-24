@@ -39,7 +39,6 @@
  */
 package org.jvnet.hk2.junit;
 
-import org.glassfish.hk2.Services;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -242,10 +241,6 @@ public class Hk2Runner extends Runner {
     }
     
     public static Habitat getHabitat() {
-        return singleton.getHabitat();
-    }
-
-    public static Services getServices() {
         return singleton.getHabitat();
     }
 

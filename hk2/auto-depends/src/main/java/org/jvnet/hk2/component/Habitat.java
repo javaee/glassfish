@@ -71,7 +71,6 @@ import org.glassfish.hk2.DynamicBinderFactory;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.ScopeInstance;
 import org.glassfish.hk2.ServiceLocator;
-import org.glassfish.hk2.Services;
 import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.annotations.Contract;
@@ -100,7 +99,7 @@ import com.sun.hk2.jsr330.spi.internal.Jsr330InjectionResolver;
  * @author Jerome Dochez
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class Habitat implements Services, Injector, SimpleServiceLocator {
+public class Habitat implements Injector, SimpleServiceLocator {
 
     private static final Logger logger = Logger.getLogger(Habitat.class.getName());
 
@@ -164,7 +163,7 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
 
     private boolean initialized;
 
-    final private Services parent;
+    final private Habitat parent;
 
     // final private String name;
 
@@ -172,11 +171,11 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         this(null, null, null);
     }
 
-    public Habitat(Services parent, String name) {
+    public Habitat(Habitat parent, String name) {
         this(parent, name, null);
     }
 
-    Habitat(Services parent, String name, Boolean concurrency_controls) {
+    Habitat(Habitat parent, String name, Boolean concurrency_controls) {
         this.parent = parent;
         // this.name = name;
         this.concurrencyControls = (null == concurrency_controls) ? CONCURRENCY_CONTROLS_DEFAULT
@@ -225,12 +224,11 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
        
         add(habitatInh);
         addIndex(habitatInh, Injector.class.getName(), null);
-        addIndex(habitatInh, Services.class.getName(), null);
         addIndex(habitatInh, BaseServiceLocator.class.getName(), null);
         
         if (parent != null && name != null) {
             DynamicBinderFactory parentBinder = parent.bindDynamically();
-            parentBinder.bind(Services.class).named(name).toInstance(this);
+            parentBinder.bind(Habitat.class).named(name).toInstance(this);
             parentBinder.commit();
         }
 
@@ -250,34 +248,30 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
                 DefaultRunLevelService.DEFAULT_NAME);
     }
 
-    @Override
-    public Services getDefault() {
+    public Habitat getDefault() {
         if (parent == null) {
             return this;
         }
         return parent.getDefault();
     }
 
-    @Override
-    public Services getServices(String moduleName) {
+    public Habitat getServices(String moduleName) {
         // look up first.
         if (parent != null) {
-            Services parentServices = parent.forContract(Services.class)
+            Habitat parentServices = parent.forContract(Habitat.class)
                     .named(moduleName).get();
             if (parentServices != null) {
                 return parentServices;
             }
         }
         // in our registry ?
-        return forContract(Services.class).named(moduleName).get();
+        return forContract(Habitat.class).named(moduleName).get();
     }
 
-    @Override
     public Collection<Binding<?>> getDeclaredBindings() {
         return getDeclaredBindings(null);
     }
 
-    @Override
     public Collection<Binding<?>> getDeclaredBindings(Descriptor descriptor) {
         LinkedHashSet<Binding<?>> result = new LinkedHashSet<Binding<?>>();
 
@@ -337,12 +331,10 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         }
     }
 
-    @Override
     public Collection<Binding<?>> getBindings() {
         return getBindings(null);
     }
 
-    @Override
     public Collection<Binding<?>> getBindings(Descriptor descriptor) {
         ArrayList<Binding<?>> result = new ArrayList<Binding<?>>();
         
@@ -358,33 +350,27 @@ public class Habitat implements Services, Injector, SimpleServiceLocator {
         return result;
     }
     
-    @Override
     public DynamicBinderFactory bindDynamically() {
         return new DynamicBinderFactoryImpl(parent == null ? null
                 : parent.bindDynamically(), this);
     }
 
-    @Override
     public <U> ContractLocator<U> forContract(Class<U> contract) {
         return new ContractLocatorImpl<U>(this, contract, true);
     }
 
-    @Override
     public ContractLocator<?> forContract(String contractName) {
         return new ContractLocatorImpl(this, contractName, true);
     }
 
-    @Override
     public <U> ContractLocator<U> forContract(TypeLiteral<U> typeLiteral) {
         return new ContractLocatorImpl<U>(this, BinderFactoryImpl.exploreType(typeLiteral), true);
     }
 
-    @Override
     public <U> ServiceLocator<U> byType(Class<U> type) {
         return new ContractLocatorImpl<U>(this, type, false);
     }
 
-    @Override
     public ServiceLocator<?> byType(String typeName) {
         return new ContractLocatorImpl(this, typeName, false);
     }

@@ -46,7 +46,6 @@ import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Provider;
-import org.glassfish.hk2.Services;
 import org.glassfish.hk2.TypeLiteral;
 import org.glassfish.hk2.inject.Injector;
 import org.glassfish.hk2.tests.basic.annotations.*;
@@ -57,6 +56,7 @@ import org.glassfish.hk2.tests.basic.services.*;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
 
 import static org.junit.Assert.*;
 import static org.glassfish.hk2.tests.basic.AssertionUtils.*;
@@ -143,11 +143,11 @@ public class CustomInjectionTest {
             binderFactory.bind().to(ConstructorInjectedFactoryBindingTestClass.class);
         }
     }
-    private static Services services;
+    private static Habitat services;
 
     @BeforeClass
     public static void setup() {
-        services = HK2.get().create(null, new ContextInjectionResolver.ContextInjectionModule(), new BasicTestModule());
+        services = (Habitat) HK2.get().create(null, new ContextInjectionResolver.ContextInjectionModule(), new BasicTestModule());
     }
 
     @Test
@@ -167,7 +167,7 @@ public class CustomInjectionTest {
 
     @Test
     public void testTypeBindingConstructorInjection() {
-        Services s = HK2.get().create(services, new ConstructorInjectionTestModule());
+        Habitat s = (Habitat) HK2.get().create(services, new ConstructorInjectionTestModule());
 
         final ConstructorInjectedTypeBinidngTestClass ci = s.byType(ConstructorInjectedTypeBinidngTestClass.class).get();
         ci.assertInjection();
@@ -182,7 +182,7 @@ public class CustomInjectionTest {
 
     @Test
     public void testInstanceBindingConstructorInjection() {
-        Services s = HK2.get().create(services, new ConstructorInjectionTestModule());
+        Habitat s = (Habitat) HK2.get().create(services, new ConstructorInjectionTestModule());
         final ConstructorInjectedInstanceBindingTestClass ci = s.forContract(ConstructorInjectedInstanceBindingTestClass.class).get();
         ci.assertInjection();
     }
@@ -233,7 +233,7 @@ public class CustomInjectionTest {
 
     @Test
     public void testFactoryProvidedContractConstructorInjection() {
-        Services s = HK2.get().create(services, new ConstructorInjectionTestModule());
+        Habitat s = (Habitat) HK2.get().create(services, new ConstructorInjectionTestModule());
         final ConstructorInjectedFactoryBindingTestClass ci = s.byType(ConstructorInjectedFactoryBindingTestClass.class).get();
         ci.assertInjection();
 
@@ -250,7 +250,7 @@ public class CustomInjectionTest {
 
     @Test
     public void testInjectorConstructorInjection() {
-        Services s = HK2.get().create(services, new ConstructorInjectionTestModule());
+        Habitat s = (Habitat) HK2.get().create(services, new ConstructorInjectionTestModule());
         Injector injector = s.forContract(Injector.class).get();
 
         ConstructorInjectedTypeBinidngTestClass ci = injector.inject(ConstructorInjectedTypeBinidngTestClass.class);
@@ -259,7 +259,7 @@ public class CustomInjectionTest {
 
     @Test
     public void testConstructorBasedInjectionOnNonStaticInnerClass() {
-        Services s = HK2.get().create(services, new ConstructorInjectionTestModule());
+        Habitat s = (Habitat) HK2.get().create(services, new ConstructorInjectionTestModule());
         Injector injector = s.forContract(Injector.class).get();
         class TestClass {
 

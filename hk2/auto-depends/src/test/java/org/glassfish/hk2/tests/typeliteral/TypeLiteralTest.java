@@ -4,6 +4,7 @@ import org.glassfish.hk2.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * JUnit test
@@ -12,11 +13,11 @@ import org.junit.Test;
  */
 public class TypeLiteralTest {
 
-    Services services;
+    Habitat services;
 
     @Before
     public void setUp() {
-        services = HK2.get().create(null, TypeLiteralModule.class);
+        services = (Habitat) HK2.get().create(null, TypeLiteralModule.class);
     }
 
     @Test

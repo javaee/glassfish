@@ -72,7 +72,7 @@ public class HK2ProviderImpl implements HK2Provider {
                 }
 
                 @Override
-                public Habitat newHabitat(Services parent, String name) throws ComponentException {
+                public Habitat newHabitat(Habitat parent, String name) throws ComponentException {
                     return new Habitat(parent, name);
                 }
             };
@@ -82,18 +82,18 @@ public class HK2ProviderImpl implements HK2Provider {
     }
     
     @Override
-    public Services create(Services parent, Class<? extends Module>... moduleTypes) {
-        final Habitat habitat = hFactory.newHabitat(parent, moduleTypes.length>0?getModuleName(moduleTypes[0]):null);
+    public Object create(Object parent, Class<? extends Module>... moduleTypes) {
+        final Habitat habitat = hFactory.newHabitat((Habitat) parent, moduleTypes.length>0?getModuleName(moduleTypes[0]):null);
         if (null == moduleTypes || 0 == moduleTypes.length) {
             return habitat;
         }
         
-        final DynamicBinderFactory parentBinder = (parent==null?null:parent.bindDynamically());
+        final DynamicBinderFactory parentBinder = (parent==null?null:(((Habitat) parent).bindDynamically()));
         final BinderFactoryImpl binderFactory = new BinderFactoryImpl(parentBinder);
 
         // The trick in the code below is that when users request an instance of Services,
         // we need to run the corresponding Module configuration.
-        List<Inhabitant<Services>> inhabitants = new ArrayList<Inhabitant<Services>>();
+        List<Inhabitant<Habitat>> inhabitants = new ArrayList<Inhabitant<Habitat>>();
 
         for (Class<? extends Module> moduleType : moduleTypes) {
 
@@ -115,9 +115,9 @@ public class HK2ProviderImpl implements HK2Provider {
             // At the end, all Services instances are the unique habitat, which is registered
             // multiple times under each Services names (obtained from the Module's Service
             // annotation)
-            final Inhabitant<Services> servicesInhabitant = new ExistingSingletonInhabitant<Services>(habitat) {
+            final Inhabitant<Habitat> servicesInhabitant = new ExistingSingletonInhabitant<Habitat>(habitat) {
                     @Override
-                    public Services get(Inhabitant onBehalfOf) throws ComponentException {
+                    public Habitat get(Inhabitant onBehalfOf) throws ComponentException {
                         if (!scopedInhabitant.isActive()) {
                             // time to get the module instance finally
                             Module module = scopedInhabitant.get(null);
@@ -138,7 +138,6 @@ public class HK2ProviderImpl implements HK2Provider {
             // module instance
             if (moduleName!=null) {
                 habitat.addIndex(servicesInhabitant, Module.class.getName(), moduleName);
-                habitat.addIndex(servicesInhabitant, Services.class.getName(), moduleName);
             }
             inhabitants.add(servicesInhabitant);
         }
@@ -146,20 +145,20 @@ public class HK2ProviderImpl implements HK2Provider {
         // all the modules inhabitants are added, this should take care of instantiating
         // in the right order, as well as calling Module.configure at the same time the
         // postConstruct is called
-        for (Inhabitant<Services> serviceInhabitant : inhabitants) {
+        for (Inhabitant<Habitat> serviceInhabitant : inhabitants) {
             serviceInhabitant.get();
         }
 
         return habitat;
     }
 
-    public Services create(Services parent, Module... modules) {
-        Habitat habitat = hFactory.newHabitat(parent, modules.length>0?getModuleName(modules[0].getClass()):null);
+    public Object create(Object parent, Module... modules) {
+        Habitat habitat = hFactory.newHabitat((Habitat) parent, modules.length>0?getModuleName(modules[0].getClass()):null);
         if (null == modules || 0 == modules.length) {
             return habitat;
         }
         
-        DynamicBinderFactory parentBinder = (parent==null?null:parent.bindDynamically());
+        DynamicBinderFactory parentBinder = (parent==null?null:((Habitat) parent).bindDynamically());
         BinderFactoryImpl binderFactory = new BinderFactoryImpl(parentBinder);
 
         for (Module module : modules) {

@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.component;
 
-import org.glassfish.hk2.Services;
-
 /**
  * Contract responsible for habitat creation.
  * 
@@ -56,6 +54,6 @@ public interface HabitatFactory {
     /**
      * Create a new Habitat optionally providing a parent Services as well as a name.
      */
-    Habitat newHabitat(Services parent, String name) throws ComponentException;
+    Habitat newHabitat(Habitat parent, String name) throws ComponentException;
   
 }

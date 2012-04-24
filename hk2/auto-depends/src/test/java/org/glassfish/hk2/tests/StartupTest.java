@@ -43,9 +43,9 @@ import static org.junit.Assert.*;
 
 import org.glassfish.hk2.ContractLocator;
 import org.glassfish.hk2.HK2;
-import org.glassfish.hk2.Services;
 import org.glassfish.hk2.tests.perthread.SomeContract;
 import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,7 +59,7 @@ public class StartupTest {
     @Test
     public void startupTest() {
         HK2 hk2 = HK2.get();
-        Services services = hk2.create(null, MyModule.class);
+        Habitat services = (Habitat) hk2.create(null, MyModule.class);
         assertNotNull(services.byType(MyStartupCode.class).get());
         
         ContractLocator<?> locator = services.forContract(SomeContract.class.getName());
