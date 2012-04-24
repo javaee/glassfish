@@ -506,13 +506,13 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      *                            the component.
      */
     public <T> T getComponent(Class<T> clazz) throws ComponentException {
-        return delegate.getService(clazz);
+        return (T) delegate.getService(clazz);
     }
 
     @Override
     public <T> T getComponent(final Class<T> contract, String name)
             throws ComponentException {
-        return delegate.getService(contract, name);
+        return (T) delegate.getService(contract, name);
     }
 
     @Override
@@ -766,7 +766,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
 
     @Override
     public <T> T getByType(Class<T> implType) {
-        return delegate.getService(implType);
+        return (T) delegate.getService(implType);
     }
 
     @Override
@@ -774,7 +774,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         ActiveDescriptor<T> best = (ActiveDescriptor<T>)
                 delegate.getBestDescriptor(BuilderHelper.createContractFilter(implType));
         
-        return delegate.getServiceHandle(best).getService();
+        return (T) delegate.getServiceHandle(best).getService();
     }
 
     @Override
@@ -793,11 +793,11 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * them.
      */
     public <T> T getByContract(Class<T> contractType) {
-        return delegate.getService(contractType);
+        return (T) delegate.getService(contractType);
     }
 
     public <T> T getByContract(String contractType) {
-        return getByType(contractType);
+        return (T) getByType(contractType);
     }
 
     /**
