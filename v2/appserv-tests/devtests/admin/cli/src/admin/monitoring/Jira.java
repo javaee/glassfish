@@ -62,7 +62,6 @@ public class Jira extends MonTest {
         test15054();
         test15923();
         test15500();
-        //test14389();  4/18/12 Try putting this test first
         test14748();
         test15895();
         test14461();
@@ -158,7 +157,7 @@ public class Jira extends MonTest {
 
         boolean continueWaiting = true;
         int numSeconds = 3000; // this gives me plenty of time to get to Starbucks and attach!
-        
+
         while(continueWaiting && --numSeconds > 0) {
             try {
                 Thread.sleep(1000);
@@ -185,15 +184,23 @@ public class Jira extends MonTest {
     }
 
     private void test14389() {
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.out.println("ZZZZZZZZZZZZZZ   CAN YOU SEE THIS????   ZZZZZZZZZZZ");
-        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-        System.err.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        System.err.println("ZZZZZZZZZZZZZZ   CAN YOU SEE THIS????   ZZZZZZZZZZZ");
-        System.err.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+        String prepend = "14389::";
+        AsadminReturn ar = asadminWithOutput("list", "-m", SERVERDOTSTAR);
+        report(checkForString(ar, "server.applications"), prepend + "check-listm-server-applications");
+        report(checkForString(ar, "server.web.session"), prepend + "check-listm-server-web-session");
+        report(checkForString(ar, "server.web.request"), prepend + "check-listm-server-web-request");
+        report(checkForString(ar, "server.web.servlet"), prepend + "check-listm-server-web-servlet");
+        AsadminReturn ar2 = asadminWithOutput("get", "-m", SERVERDOTSTAR);
+        report(checkForString(ar2, "server.applications"), prepend + "check-getm-server");
+        report(checkForString(ar2, "server.web.session"), prepend + "check-getm-server-web-session");
+        report(checkForString(ar2, "server.web.request"), prepend + "check-getm-server-web-request");
+        report(checkForString(ar2, "server.web.servlet"), prepend + "check-getm-server-web-servlet");
+        AsadminReturn ar3 = asadminWithOutput("list", "-m", "clustered-i1.*");
+        report(checkForString(ar, "clustered-i1.applications"), prepend + "check-listm-clustered-i1-applications");
+        report(checkForString(ar, "clustered-i1.web.session"), prepend + "check-listm-clustered-i1-web-session");
+    }
 
-
-        thisIsCrazy();
+    private void test14389_old() {
         String prepend = "14389::";
         //Try list -m server.* instead of * to see if it makes a difference
         // 4/18/12 'list -m server.*' works, but not 'list -m *'

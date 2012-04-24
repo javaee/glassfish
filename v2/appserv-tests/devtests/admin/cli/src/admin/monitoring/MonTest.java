@@ -211,7 +211,7 @@ abstract class MonTest {
         verifyInstances(true);
 
         for (String iname : INSTANCES) {
-            report(asadmin("start-local-instance", iname),
+            report(asadmin("start-local-instance", "--debug", iname),
                     "start-instance --debug " + iname);
         }
     }
