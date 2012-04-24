@@ -212,7 +212,7 @@ abstract class MonTest {
 
         for (String iname : INSTANCES) {
             report(asadmin("start-local-instance", iname),
-                    "start-instance " + iname);
+                    "start-instance --debug " + iname);
         }
     }
 
