@@ -40,7 +40,7 @@
 package org.jvnet.hk2.test.runlevel;
 
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 /**
  * A properly defined runlevel service.

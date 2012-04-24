@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.locator.destroy;
 
 import javax.inject.Inject;
 
-import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 /**
  * This uses PostConstruct and method convention

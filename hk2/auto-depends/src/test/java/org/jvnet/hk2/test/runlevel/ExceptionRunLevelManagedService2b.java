@@ -43,8 +43,8 @@ import java.lang.reflect.Constructor;
 
 import org.jvnet.hk2.annotations.RunLevel;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.PostConstruct;
 import org.glassfish.hk2.PreDestroy;
+import org.glassfish.hk2.api.PostConstruct;
 
 /**
  * Used in testing exception handling, also belonging to another RunLevel scope.

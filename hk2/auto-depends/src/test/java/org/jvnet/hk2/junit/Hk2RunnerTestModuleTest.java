@@ -41,7 +41,7 @@ package org.jvnet.hk2.junit;
 
 import static org.junit.Assert.*;
 
-import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
