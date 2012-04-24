@@ -142,6 +142,10 @@ public class Jira extends MonTest {
     }
 
     private void thisIsCrazy() {
+
+        if(Constants.isWindows == false)
+            return;
+
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
         System.out.println("ZZZZZZZZZZZZZZ   ATTACH NOW !!!!!!!   ZZZZZZZZZZZ");
         System.out.println("ZZZZZZZZZZZZZZ   ATTACH NOW !!!!!!!   ZZZZZZZZZZZ");
@@ -153,7 +157,8 @@ public class Jira extends MonTest {
          */
 
         boolean continueWaiting = true;
-        int numSeconds = 300;
+        int numSeconds = 3000; // this gives me plenty of time to get to Starbucks and attach!
+        
         while(continueWaiting && --numSeconds > 0) {
             try {
                 Thread.sleep(1000);
