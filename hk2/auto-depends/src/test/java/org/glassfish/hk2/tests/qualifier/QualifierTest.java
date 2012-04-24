@@ -43,9 +43,9 @@ package org.glassfish.hk2.tests.qualifier;
 import org.junit.Ignore;
 import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.BinderFactory;
-import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.junit.Test;
+import org.jvnet.hk2.component.HK2;
 import org.jvnet.hk2.component.Habitat;
 
 import static org.junit.Assert.*;

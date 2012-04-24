@@ -43,7 +43,6 @@ import org.glassfish.hk2.tests.basic.resolving.injected.*;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.TypeLiteral;
@@ -56,6 +55,7 @@ import org.glassfish.hk2.tests.basic.services.*;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.jvnet.hk2.component.HK2;
 import org.jvnet.hk2.component.Habitat;
 
 import static org.junit.Assert.*;

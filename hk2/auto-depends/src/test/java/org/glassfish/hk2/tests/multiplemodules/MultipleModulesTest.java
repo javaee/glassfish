@@ -39,10 +39,10 @@
  */
 package org.glassfish.hk2.tests.multiplemodules;
 
-import org.glassfish.hk2.HK2;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.jvnet.hk2.component.HK2;
 import org.jvnet.hk2.component.Habitat;
 
 /**

@@ -4,6 +4,7 @@ import org.glassfish.hk2.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.jvnet.hk2.component.HK2;
 import org.jvnet.hk2.component.Habitat;
 
 /**

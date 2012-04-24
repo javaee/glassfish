@@ -41,12 +41,12 @@ package org.glassfish.hk2.tests.perthread;
 
 import com.sun.hk2.component.Holder;
 import org.glassfish.hk2.BinderFactory;
-import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.scopes.PerThread;
 import org.glassfish.hk2.scopes.Singleton;
 import org.junit.Assert;
 import org.junit.Test;
+import org.jvnet.hk2.component.HK2;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PerLookup;
 
