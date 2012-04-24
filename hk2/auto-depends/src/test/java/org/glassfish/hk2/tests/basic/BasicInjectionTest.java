@@ -45,7 +45,6 @@ import java.util.List;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.TypeLiteral;
@@ -63,6 +62,7 @@ import static org.glassfish.hk2.tests.basic.AssertionUtils.assertInjectedProvide
 import static org.glassfish.hk2.tests.basic.AssertionUtils.assertQualifierInjectedContent;
 
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.HK2;
 import org.jvnet.hk2.component.Habitat;
 
 import org.junit.BeforeClass;

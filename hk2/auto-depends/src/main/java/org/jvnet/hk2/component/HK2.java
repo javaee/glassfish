@@ -38,10 +38,11 @@
  * holder.
  */
 
-package org.glassfish.hk2;
+package org.jvnet.hk2.component;
 
+import org.glassfish.hk2.Module;
 import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
-import org.glassfish.hk2.spi.HK2Provider;
+import org.jvnet.hk2.component.spi.HK2Provider;
 
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -134,7 +135,7 @@ public class HK2 {
      * returned {@link Services} instance.
      * @return a {@link Services} instance configured with all the {@link Module} services
      */
-    public Object create(Object parent, Class<? extends Module>... moduleTypes) {
+    public Habitat create(Habitat parent, Class<? extends Module>... moduleTypes) {
         return provider.create(parent, moduleTypes);
     }
 
@@ -153,7 +154,7 @@ public class HK2 {
      * returned {@link Services} instance.
      * @return a {@link Services} instance configured with all the {@link Module} services
      */
-    public Object create(Object parent, Module... modules) {
+    public Habitat create(Habitat parent, Module... modules) {
         return provider.create(parent, modules);
     }
 }

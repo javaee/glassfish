@@ -44,8 +44,8 @@ import com.sun.hk2.component.ConstructorCreator;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.ScopedInhabitant;
 import org.glassfish.hk2.*;
-import org.glassfish.hk2.spi.HK2Provider;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.spi.HK2Provider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +82,7 @@ public class HK2ProviderImpl implements HK2Provider {
     }
     
     @Override
-    public Object create(Object parent, Class<? extends Module>... moduleTypes) {
+    public Habitat create(Habitat parent, Class<? extends Module>... moduleTypes) {
         final Habitat habitat = hFactory.newHabitat((Habitat) parent, moduleTypes.length>0?getModuleName(moduleTypes[0]):null);
         if (null == moduleTypes || 0 == moduleTypes.length) {
             return habitat;
@@ -152,7 +152,8 @@ public class HK2ProviderImpl implements HK2Provider {
         return habitat;
     }
 
-    public Object create(Object parent, Module... modules) {
+    @Override
+    public Habitat create(Habitat parent, Module... modules) {
         Habitat habitat = hFactory.newHabitat((Habitat) parent, modules.length>0?getModuleName(modules[0].getClass()):null);
         if (null == modules || 0 == modules.length) {
             return habitat;

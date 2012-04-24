@@ -38,9 +38,10 @@
  * holder.
  */
 
-package org.glassfish.hk2.spi;
+package org.jvnet.hk2.component.spi;
 
 import org.glassfish.hk2.Module;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * SPI for providing an implementation of the HK2 APIs.
@@ -52,10 +53,10 @@ public interface HK2Provider {
     /**
      * {@link org.glassfish.hk2.HK2#create(org.glassfish.hk2.Services, Class[])}
      */
-    Object create(Object parent, Class<? extends Module>... moduleTypes);
+    Habitat create(Habitat parent, Class<? extends Module>... moduleTypes);
 
     /**
      * {@link org.glassfish.hk2.HK2#create(org.glassfish.hk2.Services, org.glassfish.hk2.Module...)}
      */
-    Object create(Object parent, Module... modules);
+    Habitat create(Habitat parent, Module... modules);
 }

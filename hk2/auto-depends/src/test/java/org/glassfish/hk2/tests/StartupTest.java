@@ -42,9 +42,9 @@ package org.glassfish.hk2.tests;
 import static org.junit.Assert.*;
 
 import org.glassfish.hk2.ContractLocator;
-import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.tests.perthread.SomeContract;
 import org.junit.Test;
+import org.jvnet.hk2.component.HK2;
 import org.jvnet.hk2.component.Habitat;
 
 /**
