@@ -83,8 +83,6 @@ public class ValidatorImpl implements Validator {
                 System.out.println("candidate " + candidate +
                         " LOOKUP FAILED the security check");
                 File hello = new File("policy.txt");
-                System.out.println("JRW(10) hello exists? " + hello.exists() + " at " + hello.getAbsolutePath());
-                
             }
             return retVal;
         }

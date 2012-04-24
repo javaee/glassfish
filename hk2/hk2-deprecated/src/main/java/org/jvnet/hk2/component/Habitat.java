@@ -45,6 +45,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Future;
@@ -70,6 +71,8 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.component.HabitatListener.EventType;
 import org.jvnet.hk2.component.InhabitantTracker.Callback;
+import org.jvnet.hk2.deprecated.internal.InhabitantImpl;
+import org.jvnet.hk2.deprecated.internal.QualifierFilter;
 
 /**
  * A set of templates that constitute a world of objects.
@@ -295,7 +298,10 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     }
 
     protected static Long getServiceRanking(Inhabitant<?> i, boolean wantNonNull) {
-        throw new UnsupportedOperationException("getServiceRanking(" + i + ","  + wantNonNull + ") in Habitat");
+        int rank = i.getRanking();
+        Long retVal = new Long(rank);
+        
+        return retVal;
     }
 
     /**
@@ -356,7 +362,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * FOR INTERNAL USE ONLY
      */
     public synchronized void initialized() {
-        throw new UnsupportedOperationException("initialized in Habitat");
+        return;
     }
 
     static void contextualFactoriesPresent() {
@@ -364,7 +370,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     }
 
     public boolean isInitialized() {
-        throw new UnsupportedOperationException("isInitialized in Habitat");
+        return true;
     }
 
     /**
@@ -451,11 +457,12 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @return can be empty but never null.
      */
     public <T> Collection<T> getAllByContract(Class<T> contractType) {
-        throw new UnsupportedOperationException("getAllByContract(" + contractType + ") in Habitat");
+        return delegate.getAllServices(contractType);
     }
 
     public <T> Collection<T> getAllByContract(String contractType) {
-        throw new UnsupportedOperationException("getAllByContract(" + contractType + ") in Habitat");
+        List<?> allServices = delegate.getAllServices(BuilderHelper.createContractFilter(contractType));
+        return (Collection<T>) allServices;
     }
 
     /**
@@ -464,7 +471,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @return can be empty but never null.
      */
     public <T> Collection<T> getAllByType(Class<T> implType) {
-        throw new UnsupportedOperationException("getAllByType(" + implType + ") in Habitat");
+        return delegate.getAllServices(implType);
     }
 
     /**
@@ -499,13 +506,13 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      *                            the component.
      */
     public <T> T getComponent(Class<T> clazz) throws ComponentException {
-        throw new UnsupportedOperationException("getComponent(" + clazz + ") in Habitat");
+        return delegate.getService(clazz);
     }
 
     @Override
     public <T> T getComponent(final Class<T> contract, String name)
             throws ComponentException {
-        throw new UnsupportedOperationException("getComponent(" + contract + "," + name + ") in Habitat");
+        return delegate.getService(contract, name);
     }
 
     @Override
@@ -515,7 +522,21 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
 
     @Override
     public <T> T getComponent(String fullQualifiedName, String name) {
-        throw new UnsupportedOperationException("getComponent(" + fullQualifiedName + "," + name + ") in Habitat");
+        ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(fullQualifiedName, name));
+        if (best == null) return null;
+        
+        return (T) delegate.getServiceHandle(best).getService();
+    }
+    
+    private <T> Inhabitant<T> getInhabitantFromActiveDescriptor(ActiveDescriptor<T> fromMe) {
+        if (fromMe == null) return null;
+        
+        org.glassfish.hk2.api.Descriptor original = fromMe.getBaseDescriptor();
+        if (original != null && (original instanceof Inhabitant)) {
+            return (Inhabitant) original;
+        }
+        
+        return new InhabitantImpl(fromMe, delegate);
     }
 
     /**
@@ -529,12 +550,18 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      */
     public <T> Inhabitant<T> getInhabitant(Class<T> contract, String name)
             throws ComponentException {
-        throw new UnsupportedOperationException("getInhabitant(" + contract + "," + name + ") in Habitat");
+        ActiveDescriptor<T> best = (ActiveDescriptor<T>)
+                delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(contract.getName(), name));
+        return getInhabitantFromActiveDescriptor(best);
     }
 
 
     public <T> Inhabitant<T> getInhabitant(java.lang.reflect.Type type, String name) {
-        throw new UnsupportedOperationException("getInhabitant(" + type + "," + name + ") in Habitat");
+        ServiceHandle<T> handle = delegate.getServiceHandle(type, name);
+        if (handle == null) return null;
+        
+        ActiveDescriptor<T> best = (ActiveDescriptor<T>) handle.getActiveDescriptor();
+        return getInhabitantFromActiveDescriptor(best);
     }
 
     /**
@@ -547,15 +574,16 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @return null if no such component is found.
      */
     public <T> Inhabitant<T> getInhabitantByType(Class<T> implType) {
-        throw new UnsupportedOperationException("getInhabitantByType(" + implType + ") in Habitat");
+        return getInhabitant(implType, null);
     }
 
     public <T> Inhabitant<T> getInhabitantByType(java.lang.reflect.Type implType) {
-        throw new UnsupportedOperationException("getInhabitantByType(" + implType + ") in Habitat");
+        return getInhabitant(implType, null);
     }
 
     public Inhabitant<?> getInhabitantByType(String fullyQualifiedClassName) {
-        throw new UnsupportedOperationException("getInhabitantByType(" + fullyQualifiedClassName + ") in Habitat");
+        ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createContractFilter(fullyQualifiedClassName));
+        return getInhabitantFromActiveDescriptor(best);
     }
 
     /**
@@ -571,7 +599,8 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     public Inhabitant<?> getInhabitantByAnnotation(
             Class<? extends Annotation> contract, String name)
             throws ComponentException {
-        throw new UnsupportedOperationException("getInhabitantByAnnotation(" + contract + "," + name + ") in Habitat");
+        ActiveDescriptor<?> best = delegate.getBestDescriptor(new QualifierFilter(contract.getName(), name));
+        return getInhabitantFromActiveDescriptor(best);
     }
 
     /**
@@ -584,7 +613,17 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @return
      */
     public <T> Collection<Inhabitant<? extends T>> getInhabitants(Class<T> type) {
-        throw new UnsupportedOperationException("getInhabitants(" + type + ") in Habitat");
+        List<ActiveDescriptor<?>> all = delegate.getDescriptors(BuilderHelper.createContractFilter(type.getName()));
+        
+        LinkedList<Inhabitant<? extends T>> retVal = new LinkedList<Inhabitant<? extends T>>();
+        
+        for (ActiveDescriptor<?> a : all) {
+            Inhabitant<? extends T> addMe = getInhabitantFromActiveDescriptor((ActiveDescriptor<? extends T>) a);
+            
+            retVal.add(addMe);
+        }
+        
+        return retVal;
     }
 
     /**
@@ -592,10 +631,19 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      */
     public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
             Type contract) throws ComponentException {
-        throw new UnsupportedOperationException("getInhabitantsByContract(" + contract + ") in Habitat");
+        List<ServiceHandle<?>> all = delegate.getAllServiceHandles(contract);
+        
+        LinkedList<Inhabitant<T>> retVal = new LinkedList<Inhabitant<T>>();
+        
+        for (ServiceHandle<?> a : all) {
+            Inhabitant<T> addMe = getInhabitantFromActiveDescriptor(
+                    (ActiveDescriptor<T>) a.getActiveDescriptor());
+            
+            retVal.add(addMe);
+        }
+        
+        return retVal;
     }
-
-    
 
     /**
      * Instantiate the passed type and injects all the {@link org.jvnet.hk2.annotations.Inject}
@@ -606,7 +654,11 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @return the instantiated and injected instance
      */
     public <T> T inject(Class<T> type) {
-        throw new UnsupportedOperationException("inject(" + type + ") in Habitat");
+        Object o = delegate.create(type);
+        delegate.inject(o);
+        delegate.postConstruct(o);
+        
+        return (T) o;
     }
 
     /**
@@ -614,7 +666,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      */
     public <T> Collection<Inhabitant<T>> getInhabitantsByType(Class<T> implType)
             throws ComponentException {
-        throw new UnsupportedOperationException("getInhabitantsByType(" + implType + ") in Habitat");
+        return getInhabitantsByContract(implType);
     }
 
     /**
@@ -622,7 +674,17 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      */
     public Collection<Inhabitant<?>> getInhabitantsByType(
             String fullyQualifiedClassName) {
-        throw new UnsupportedOperationException("getInhabitantsByType(" + fullyQualifiedClassName + ") in Habitat");
+        List<ActiveDescriptor<?>> all = delegate.getDescriptors(BuilderHelper.createContractFilter(fullyQualifiedClassName));
+        
+        LinkedList<Inhabitant<?>> retVal = new LinkedList<Inhabitant<?>>();
+        
+        for (ActiveDescriptor<?> a : all) {
+            Inhabitant<?> addMe = getInhabitantFromActiveDescriptor((ActiveDescriptor<?>) a);
+            
+            retVal.add(addMe);
+        }
+        
+        return retVal;
     }
 
     /**
@@ -632,12 +694,12 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @return
      */
     public Inhabitant<?> getInhabitantByContract(String typeName) {
-        throw new UnsupportedOperationException("getInhabitantsByContract(" + typeName + ") in Habitat");
+        return getInhabitantByType(typeName);
     }
 
     public Collection<Inhabitant<?>> getInhabitantsByContract(
             String fullyQualifiedClassName) {
-        throw new UnsupportedOperationException("getInhabitantsByContract(" + fullyQualifiedClassName + ") in Habitat");
+        return getInhabitantsByType(fullyQualifiedClassName);
     }
 
     public Iterator<String> getAllContracts() {
@@ -650,7 +712,8 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
 
     public Inhabitant getInhabitantByContract(String fullyQualifiedName,
                                               String name) {
-        throw new UnsupportedOperationException("getInhabitantByContract(" + fullyQualifiedName + "," + name + ") in Habitat");
+        ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(fullyQualifiedName, name));
+        return getInhabitantFromActiveDescriptor(best);
     }
 
     /**
@@ -664,7 +727,16 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      */
     public <T> Iterable<Inhabitant<? extends T>> getInhabitants(
             Class<T> contract, String name) throws ComponentException {
-        throw new UnsupportedOperationException("getInhabitants(" + contract + "," + name + ") in Habitat");
+        List<ActiveDescriptor<?>> all = delegate.getDescriptors(BuilderHelper.createNameAndContractFilter(contract.getName(), name));
+        
+        LinkedList<Inhabitant<? extends T>> retVal = new LinkedList<Inhabitant<? extends T>>();
+        for (ActiveDescriptor<?> a : all) {
+            Inhabitant<? extends T> addMe = getInhabitantFromActiveDescriptor((ActiveDescriptor<? extends T>) a);
+            
+            retVal.add(addMe);
+        }
+        
+        return retVal;
     }
 
     /**
@@ -680,22 +752,37 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     public Iterable<Inhabitant<?>> getInhabitantsByAnnotation(
             Class<? extends Annotation> contract, String name)
             throws ComponentException {
-        throw new UnsupportedOperationException("getInhabitantsByAnnotation(" + contract + "," + name + ") in Habitat");
+        List<ActiveDescriptor<?>> all = delegate.getDescriptors(new QualifierFilter(contract.getName(), name));
+        
+        LinkedList<Inhabitant<?>> retVal = new LinkedList<Inhabitant<?>>();
+        for (ActiveDescriptor<?> a : all) {
+            Inhabitant<?> addMe = getInhabitantFromActiveDescriptor(a);
+            
+            retVal.add(addMe);
+        }
+        
+        return retVal;
     }
 
     @Override
     public <T> T getByType(Class<T> implType) {
-        throw new UnsupportedOperationException("getByType(" + implType + ") in Habitat");
+        return delegate.getService(implType);
     }
 
     @Override
     public <T> T getByType(String implType) {
-        throw new UnsupportedOperationException("getByType(" + implType + ") in Habitat");
+        ActiveDescriptor<T> best = (ActiveDescriptor<T>)
+                delegate.getBestDescriptor(BuilderHelper.createContractFilter(implType));
+        
+        return delegate.getServiceHandle(best).getService();
     }
 
     @Override
     public <T> Inhabitant<T> getProvider(Type type, String name) {
-        throw new UnsupportedOperationException("getByType(" + type + "," + name + ") in Habitat");
+        ServiceHandle<T> handle = delegate.getServiceHandle(type, name);
+        
+        ActiveDescriptor<T> best = handle.getActiveDescriptor();
+        return getInhabitantFromActiveDescriptor(best);
     }
 
     /**
@@ -706,11 +793,11 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * them.
      */
     public <T> T getByContract(Class<T> contractType) {
-        throw new UnsupportedOperationException("getByContract(" + contractType + ") in Habitat");
+        return delegate.getService(contractType);
     }
 
     public <T> T getByContract(String contractType) {
-        throw new UnsupportedOperationException("getByContract(" + contractType + ") in Habitat");
+        return getByType(contractType);
     }
 
     /**
@@ -730,7 +817,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     @Override
     public <T> T getService(Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
-        return delegate.getService(contractOrImpl, qualifiers);
+        return (T) delegate.getService(contractOrImpl, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -739,7 +826,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     @Override
     public <T> T getService(Type contractOrImpl, String name,
             Annotation... qualifiers) throws MultiException {
-        return delegate.getService(contractOrImpl, name, qualifiers);
+        return (T) delegate.getService(contractOrImpl, name, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -864,7 +951,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     @Override
     public <T> T getService(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) throws MultiException {
-        return delegate.getService(activeDescriptor, root);
+        return (T) delegate.getService(activeDescriptor, root);
     }
 
     /* (non-Javadoc)
@@ -897,7 +984,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      */
     @Override
     public <T> T create(Class<T> createMe) {
-        return delegate.create(createMe);
+        return (T) delegate.create(createMe);
     }
     
     /* (non-Javadoc)
