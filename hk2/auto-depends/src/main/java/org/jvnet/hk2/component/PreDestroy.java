@@ -40,9 +40,9 @@
 package org.jvnet.hk2.component;
 
 /**
- * Compatibility class for the {@link org.glassfish.hk2.PreDestroy} interface
+ * Compatibility class for the {@link org.glassfish.hk2.api.PreDestroy} interface
  *
  * @author Jerome Dochez
  */
-public interface PreDestroy extends org.glassfish.hk2.PreDestroy {
+public interface PreDestroy extends org.glassfish.hk2.api.PreDestroy {
 }

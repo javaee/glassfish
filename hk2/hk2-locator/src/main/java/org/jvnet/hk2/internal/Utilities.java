@@ -1316,7 +1316,7 @@ public class Utilities {
      * @return The pre destroy method or null
      */
     public static Method findPreDestroy(Class<?> clazz, Collector collector) {
-        if (org.glassfish.hk2.PreDestroy.class.isAssignableFrom(clazz)) {
+        if (org.glassfish.hk2.api.PreDestroy.class.isAssignableFrom(clazz)) {
             // A little performance optimization
             return null;  
         }

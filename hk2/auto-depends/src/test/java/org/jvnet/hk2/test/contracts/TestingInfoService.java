@@ -39,7 +39,7 @@
  */
 package org.jvnet.hk2.test.contracts;
 
-import org.glassfish.hk2.PreDestroy;
+import org.glassfish.hk2.api.PreDestroy;
 
 /**
  * Used in Testing

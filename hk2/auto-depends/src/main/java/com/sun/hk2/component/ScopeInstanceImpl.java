@@ -39,9 +39,9 @@
  */
 package com.sun.hk2.component;
 
-import org.glassfish.hk2.PreDestroy;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.ScopeInstance;
+import org.glassfish.hk2.api.PreDestroy;
 
 import java.util.Map;
 import java.util.logging.Level;

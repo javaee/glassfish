@@ -39,8 +39,8 @@
  */
 package org.jvnet.hk2.test.impl;
 
-import org.glassfish.hk2.PreDestroy;
 import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.PreDestroy;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
