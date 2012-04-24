@@ -175,7 +175,6 @@ public class HK2Runner {
                 DescriptorImpl bindMe = new DescriptorImpl();
                 
                 if (bindMe.readObject(reader)) {
-                    System.out.println("JRW(10) adding " + bindMe);
                     config.bind(bindMe);
                 }
                 
