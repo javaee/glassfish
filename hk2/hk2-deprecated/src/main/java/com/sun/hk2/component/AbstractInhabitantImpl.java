@@ -54,9 +54,9 @@ import java.util.logging.Logger;
 
 import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.Context;
-import org.glassfish.hk2.PreDestroy;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.deprecated.internal.Utilities;

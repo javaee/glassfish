@@ -42,7 +42,7 @@ package org.glassfish.hk2.tests.locator.destroy;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.glassfish.hk2.PreDestroy;
+import org.glassfish.hk2.api.PreDestroy;
 
 /**
  * This uses PreDestroy interface and the

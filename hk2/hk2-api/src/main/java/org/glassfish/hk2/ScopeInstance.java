@@ -79,6 +79,8 @@
  */
 package org.glassfish.hk2;
 
+import org.glassfish.hk2.api.PreDestroy;
+
 /**
  * A particular instantiation of a {@link Scope}. Will be
  * used to store and retrieve components for that particular
@@ -134,7 +136,7 @@ public interface ScopeInstance {
     public <T> T put(Provider<T> provider, T value);
 
     /**
-     * release the backend storage and call {@link org.glassfish.hk2.PreDestroy#preDestroy()}
+     * release the backend storage and call {@link org.glassfish.hk2.api.PreDestroy#preDestroy()}
      * on all instantiated components that implement the {@link PreDestroy} interface.
      */
     public void release();

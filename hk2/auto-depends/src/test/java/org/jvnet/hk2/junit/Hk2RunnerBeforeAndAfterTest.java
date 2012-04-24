@@ -47,8 +47,8 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.glassfish.hk2.PreDestroy;
 import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.PreDestroy;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

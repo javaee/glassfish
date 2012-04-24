@@ -194,7 +194,7 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
     /**
      * Called to orderly shutdown {@link Habitat}.
      * <p>
-     * The expected behavior is for objects to get its {@link org.glassfish.hk2.PreDestroy}
+     * The expected behavior is for objects to get its {@link org.glassfish.hk2.api.PreDestroy}
      * callback invoked, and its reference released. For singleton
      * objects, this method is expected to dispose that object.
      * <p>
