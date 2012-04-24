@@ -45,7 +45,7 @@ import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.Module;
 import org.glassfish.hk2.Provider;
-import org.glassfish.hk2.TypeLiteral;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.inject.Injector;
 import org.glassfish.hk2.tests.basic.annotations.*;
 import org.glassfish.hk2.tests.basic.arbitrary.*;

@@ -41,7 +41,8 @@ package org.jvnet.hk2.component;
 
 import com.sun.hk2.component.ConstructorCreator;
 import com.sun.hk2.component.InhabitantsFile;
-import org.glassfish.hk2.TypeLiteral;
+
+import org.glassfish.hk2.api.TypeLiteral;
 
 import java.util.StringTokenizer;
 

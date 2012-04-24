@@ -71,7 +71,7 @@ import org.glassfish.hk2.DynamicBinderFactory;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.ScopeInstance;
 import org.glassfish.hk2.ServiceLocator;
-import org.glassfish.hk2.TypeLiteral;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;

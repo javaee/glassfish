@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2;
 
+import org.glassfish.hk2.api.TypeLiteral;
+
 /**
  * Factory for adding services instances to a {@link Services}. Services
  * definition can vary per service, some services implement well defined

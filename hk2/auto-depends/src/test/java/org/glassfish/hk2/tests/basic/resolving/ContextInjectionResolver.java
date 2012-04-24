@@ -47,6 +47,7 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 
 import org.glassfish.hk2.*;
+import org.glassfish.hk2.api.TypeLiteral;
 
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;

@@ -45,7 +45,7 @@ import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.NamedBinder;
 import org.glassfish.hk2.ResolvedBinder;
 import org.glassfish.hk2.Scope;
-import org.glassfish.hk2.TypeLiteral;
+import org.glassfish.hk2.api.TypeLiteral;
 
 import java.lang.annotation.Annotation;
 import java.security.AccessController;
