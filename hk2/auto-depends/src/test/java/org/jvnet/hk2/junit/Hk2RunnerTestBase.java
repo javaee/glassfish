@@ -43,7 +43,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.HashSet;
 
-import org.glassfish.hk2.Services;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.jvnet.hk2.annotations.Inject;
@@ -77,7 +76,7 @@ class TestHabitatFactory implements HabitatFactory {
     }
 
     @Override
-    public Habitat newHabitat(Services parent, String name) throws ComponentException {
+    public Habitat newHabitat(Habitat parent, String name) throws ComponentException {
         assert(null == parent);
         assert(null == name);
         return new TestHabitat();

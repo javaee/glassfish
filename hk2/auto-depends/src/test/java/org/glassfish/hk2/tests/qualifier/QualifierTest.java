@@ -45,8 +45,8 @@ import org.glassfish.hk2.Factory;
 import org.glassfish.hk2.BinderFactory;
 import org.glassfish.hk2.HK2;
 import org.glassfish.hk2.Module;
-import org.glassfish.hk2.Services;
 import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
 
 import static org.junit.Assert.*;
 
@@ -61,7 +61,7 @@ public class QualifierTest {
 
     @Test
     public void assertInjectionsQualifiedBoundBeforeUnqualified() {
-        Services services = HK2.get().create(null, new Module() {
+        Habitat services = (Habitat) HK2.get().create(null, new Module() {
             @Override
             public void configure(BinderFactory binderFactory) {
                 binderFactory.bind().to(QualifierInjectionTarget.class);
@@ -85,7 +85,7 @@ public class QualifierTest {
     
     @Test
     public void assertInjectionsUnqualifiedBoundBeforeQualified() {
-        Services services = HK2.get().create(null, new Module() {
+        Habitat services = (Habitat) HK2.get().create(null, new Module() {
             @Override
             public void configure(BinderFactory binderFactory) {
                 binderFactory.bind().to(QualifierInjectionTarget.class);

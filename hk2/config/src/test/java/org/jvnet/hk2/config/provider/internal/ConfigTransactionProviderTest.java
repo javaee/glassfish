@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.glassfish.hk2.Services;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -112,7 +111,7 @@ public class ConfigTransactionProviderTest implements HabitatFactory {
   }
   
   @Override
-  public Habitat newHabitat(Services parent, String name) throws ComponentException {
+  public Habitat newHabitat(Habitat parent, String name) throws ComponentException {
       return newHabitat();
   }
   

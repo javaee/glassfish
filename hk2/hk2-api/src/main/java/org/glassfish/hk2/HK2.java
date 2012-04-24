@@ -134,7 +134,7 @@ public class HK2 {
      * returned {@link Services} instance.
      * @return a {@link Services} instance configured with all the {@link Module} services
      */
-    public Services create(Services parent, Class<? extends Module>... moduleTypes) {
+    public Object create(Object parent, Class<? extends Module>... moduleTypes) {
         return provider.create(parent, moduleTypes);
     }
 
@@ -153,7 +153,7 @@ public class HK2 {
      * returned {@link Services} instance.
      * @return a {@link Services} instance configured with all the {@link Module} services
      */
-    public Services create(Services parent, Module... modules) {
+    public Object create(Object parent, Module... modules) {
         return provider.create(parent, modules);
     }
 }

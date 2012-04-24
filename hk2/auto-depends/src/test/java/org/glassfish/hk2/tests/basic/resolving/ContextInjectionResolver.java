@@ -49,6 +49,7 @@ import javax.inject.Qualifier;
 import org.glassfish.hk2.*;
 
 import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
 import com.sun.hk2.component.InjectionResolver;
@@ -68,7 +69,7 @@ import org.jvnet.tiger_types.Types;
 public class ContextInjectionResolver extends InjectionResolver<Context> {
 
     @Inject
-    Services services;
+    Habitat services;
 
     public ContextInjectionResolver() {
         super(Context.class);

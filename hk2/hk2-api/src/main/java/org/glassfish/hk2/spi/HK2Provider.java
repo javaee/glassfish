@@ -41,7 +41,6 @@
 package org.glassfish.hk2.spi;
 
 import org.glassfish.hk2.Module;
-import org.glassfish.hk2.Services;
 
 /**
  * SPI for providing an implementation of the HK2 APIs.
@@ -53,10 +52,10 @@ public interface HK2Provider {
     /**
      * {@link org.glassfish.hk2.HK2#create(org.glassfish.hk2.Services, Class[])}
      */
-    Services create(Services parent, Class<? extends Module>... moduleTypes);
+    Object create(Object parent, Class<? extends Module>... moduleTypes);
 
     /**
      * {@link org.glassfish.hk2.HK2#create(org.glassfish.hk2.Services, org.glassfish.hk2.Module...)}
      */
-    Services create(Services parent, Module... modules);
+    Object create(Object parent, Module... modules);
 }

@@ -50,7 +50,6 @@ import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 
-import org.glassfish.hk2.Services;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;

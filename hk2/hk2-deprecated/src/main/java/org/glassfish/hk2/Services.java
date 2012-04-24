@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.util.Collection;
