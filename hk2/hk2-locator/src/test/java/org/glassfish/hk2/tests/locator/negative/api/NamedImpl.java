@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.locator.negative.api;
 
 import javax.inject.Named;
 
-import org.glassfish.hk2.AnnotationLiteral;
+import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
  * @author jwells

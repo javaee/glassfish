@@ -39,7 +39,7 @@
  */
 package org.jvnet.hk2.testing.test;
 
-import org.glassfish.hk2.AnnotationLiteral;
+import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
  * @author jwells

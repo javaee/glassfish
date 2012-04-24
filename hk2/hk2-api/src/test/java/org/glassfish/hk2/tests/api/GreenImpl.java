@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.tests.api;
 
-import org.glassfish.hk2.AnnotationLiteral;
+import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
  * @author jwells
