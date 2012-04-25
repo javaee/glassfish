@@ -42,14 +42,21 @@ package org.glassfish.hk2.deprecated.utilities;
 
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -59,6 +66,29 @@ import java.util.Set;
  * @author tbeerbower
  */
 public class Utilities {
+
+    // ----- Constants ------------------------------------------------------
+
+    private static final HashSet<String> EMPTY_QUALIFIERS = new HashSet<String>();
+
+
+    // ----- Utilities ------------------------------------------------------
+
+    /**
+     * Bind the given descriptor to the given service locator.
+     *
+     * @param locator     the service locator to bind to
+     * @param descriptor  the descriptor that we are adding
+     */
+    public static ActiveDescriptor<?> add(ServiceLocator locator, Descriptor descriptor) {
+        DynamicConfigurationService dcs    = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration        config = dcs.createDynamicConfiguration();
+
+        ActiveDescriptor<?> activeDescriptor = config.bind(descriptor);
+        config.commit();
+
+        return activeDescriptor;
+    }
 
     /**
      * Add an alternate index to look up the given descriptor.
@@ -78,6 +108,34 @@ public class Utilities {
 
         config.addActiveDescriptor(new AliasDescriptor<T>(locator, descriptor, contract, name));
         config.commit();
+    }
+
+    /**
+     * Create a descriptor from the given type name.
+     *
+     * @param typeName  the type name
+     * @param cl        the loader
+     * @param metadata  the metadata
+     *
+     * @return a new descriptor
+     */
+    public static DescriptorImpl getDescriptor(
+            String typeName,
+            HK2Loader cl,
+            Map<String, List<String>> metadata) {
+        return new DescriptorImpl(
+                Collections.singleton(typeName),
+                null,
+                null,
+                typeName,
+                metadata,
+                EMPTY_QUALIFIERS,
+                DescriptorType.CLASS,
+                cl,
+                0,
+                null,
+                null,
+                null);
     }
 
     /**

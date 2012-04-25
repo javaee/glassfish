@@ -49,7 +49,6 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.junit.Test;
-import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Singleton;
 
@@ -205,35 +204,5 @@ public class AliasDescriptorTest {
         config.commit();
 
         return new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo");
-    }
-
-
-    // ----- inner classes --------------------------------------------------
-
-    public interface MyInterface1 {
-        public void doSomething();
-    }
-
-    public interface MyInterface2 {
-        public void doSomethingElse();
-    }
-
-    public interface MyInterface3 {
-        public void doSomethingCompletelyDifferent();
-    }
-
-    @Service
-    public static class MyService implements MyInterface1, MyInterface2, MyInterface3{
-        @Override
-        public void doSomething() {
-        }
-
-        @Override
-        public void doSomethingElse() {
-        }
-
-        @Override
-        public void doSomethingCompletelyDifferent() {
-        }
     }
 }

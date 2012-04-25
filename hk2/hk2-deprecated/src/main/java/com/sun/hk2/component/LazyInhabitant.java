@@ -39,11 +39,16 @@
  */
 package com.sun.hk2.component;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -75,16 +80,12 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     }
 
     public LazyInhabitant(ServiceLocator serviceLocator, HK2Loader cl, String typeName, Map<String, List<String>> metadata, Inhabitant<?> lead) {
-        super(new DescriptorImpl());
-        assert metadata!=null;
-        
-        setImplementation(typeName);
-        Utilities.fillInMetadata(metadata, this);
-        setLoader(cl);
-        
+        super(org.glassfish.hk2.deprecated.utilities.Utilities.getDescriptor(typeName, cl, metadata));
+
         this.serviceLocator = serviceLocator;
         this.lead = lead;
     }
+
 
     @Override
     public Inhabitant<?> lead() {
