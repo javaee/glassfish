@@ -50,6 +50,8 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.deprecated.internal.InhabitantImpl;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -153,5 +155,23 @@ public class Utilities {
 
         Iterator<Type> iterator = contractTypes.iterator();
         return iterator.hasNext() ? iterator.next() : null;
+    }
+    
+    /**
+     * Creates an Inhabitant from an ActiveDescriptor
+     * 
+     * @param fromMe The Descriptor to turn into an Inhabitant
+     * @param locator The locator to use for the inhabitant
+     * @return An Inhabitant
+     */
+    public static <T> Inhabitant<T> getInhabitantFromActiveDescriptor(ActiveDescriptor<T> fromMe, ServiceLocator locator) {
+        if (fromMe == null) return null;
+        
+        org.glassfish.hk2.api.Descriptor original = fromMe.getBaseDescriptor();
+        if (original != null && (original instanceof Inhabitant)) {
+            return (Inhabitant<T>) original;
+        }
+        
+        return new InhabitantImpl<T>(fromMe, locator);
     }
 }

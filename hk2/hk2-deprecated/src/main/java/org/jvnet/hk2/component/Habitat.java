@@ -65,12 +65,12 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
+import org.jvnet.hk2.deprecated.internal.ContractLocatorImpl;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.HabitatListener.EventType;
 import org.jvnet.hk2.component.InhabitantTracker.Callback;
-import org.jvnet.hk2.deprecated.internal.InhabitantImpl;
 import org.jvnet.hk2.deprecated.internal.QualifierFilter;
 
 /**
@@ -149,23 +149,24 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     }
 
     public <U> ContractLocator<U> forContract(Class<U> contract) {
-        throw new UnsupportedOperationException("forContract(" + contract + ") in Habitat");
+        return new ContractLocatorImpl(delegate, contract.getName());
     }
 
     public ContractLocator<?> forContract(String contractName) {
-        throw new UnsupportedOperationException("forContract(" + contractName + ") in Habitat");
+        return new ContractLocatorImpl(delegate, contractName);
     }
 
     public <U> ContractLocator<U> forContract(TypeLiteral<U> typeLiteral) {
-        throw new UnsupportedOperationException("forContract(" + typeLiteral + ") in Habitat");
+        String contractName = typeLiteral.getRawType().getName();
+        return new ContractLocatorImpl(delegate, contractName);
     }
 
     public <U> org.glassfish.hk2.ServiceLocator<U> byType(Class<U> type) {
-        throw new UnsupportedOperationException("byType(" + type + ") in Habitat");
+        return new ContractLocatorImpl(delegate, type.getName());
     }
 
     public org.glassfish.hk2.ServiceLocator<?> byType(String typeName) {
-        throw new UnsupportedOperationException("byType(" + typeName + ") in Habitat");
+        return new ContractLocatorImpl(delegate, typeName);
     }
 
     /**
@@ -544,17 +545,6 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         
         return (T) delegate.getServiceHandle(best).getService();
     }
-    
-    private <T> Inhabitant<T> getInhabitantFromActiveDescriptor(ActiveDescriptor<T> fromMe) {
-        if (fromMe == null) return null;
-        
-        org.glassfish.hk2.api.Descriptor original = fromMe.getBaseDescriptor();
-        if (original != null && (original instanceof Inhabitant)) {
-            return (Inhabitant) original;
-        }
-        
-        return new InhabitantImpl(fromMe, delegate);
-    }
 
     /**
      * Gets a lazy reference to the component.
@@ -569,7 +559,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
             throws ComponentException {
         ActiveDescriptor<T> best = (ActiveDescriptor<T>)
                 delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(contract.getName(), name));
-        return getInhabitantFromActiveDescriptor(best);
+        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
 
@@ -578,7 +568,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         if (handle == null) return null;
         
         ActiveDescriptor<T> best = (ActiveDescriptor<T>) handle.getActiveDescriptor();
-        return getInhabitantFromActiveDescriptor(best);
+        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
     /**
@@ -600,7 +590,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
 
     public Inhabitant<?> getInhabitantByType(String fullyQualifiedClassName) {
         ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createContractFilter(fullyQualifiedClassName));
-        return getInhabitantFromActiveDescriptor(best);
+        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
     /**
@@ -617,7 +607,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
             Class<? extends Annotation> contract, String name)
             throws ComponentException {
         ActiveDescriptor<?> best = delegate.getBestDescriptor(new QualifierFilter(contract.getName(), name));
-        return getInhabitantFromActiveDescriptor(best);
+        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
     /**
@@ -635,7 +625,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         LinkedList<Inhabitant<? extends T>> retVal = new LinkedList<Inhabitant<? extends T>>();
         
         for (ActiveDescriptor<?> a : all) {
-            Inhabitant<? extends T> addMe = getInhabitantFromActiveDescriptor((ActiveDescriptor<? extends T>) a);
+            Inhabitant<? extends T> addMe = Utilities.getInhabitantFromActiveDescriptor((ActiveDescriptor<? extends T>) a, delegate);
             
             retVal.add(addMe);
         }
@@ -653,8 +643,8 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         LinkedList<Inhabitant<T>> retVal = new LinkedList<Inhabitant<T>>();
         
         for (ServiceHandle<?> a : all) {
-            Inhabitant<T> addMe = getInhabitantFromActiveDescriptor(
-                    (ActiveDescriptor<T>) a.getActiveDescriptor());
+            Inhabitant<T> addMe = Utilities.getInhabitantFromActiveDescriptor(
+                    (ActiveDescriptor<T>) a.getActiveDescriptor(), delegate);
             
             retVal.add(addMe);
         }
@@ -696,7 +686,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         LinkedList<Inhabitant<?>> retVal = new LinkedList<Inhabitant<?>>();
         
         for (ActiveDescriptor<?> a : all) {
-            Inhabitant<?> addMe = getInhabitantFromActiveDescriptor((ActiveDescriptor<?>) a);
+            Inhabitant<?> addMe = Utilities.getInhabitantFromActiveDescriptor((ActiveDescriptor<?>) a, delegate);
             
             retVal.add(addMe);
         }
@@ -730,7 +720,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     public Inhabitant getInhabitantByContract(String fullyQualifiedName,
                                               String name) {
         ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(fullyQualifiedName, name));
-        return getInhabitantFromActiveDescriptor(best);
+        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
     /**
@@ -748,7 +738,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         
         LinkedList<Inhabitant<? extends T>> retVal = new LinkedList<Inhabitant<? extends T>>();
         for (ActiveDescriptor<?> a : all) {
-            Inhabitant<? extends T> addMe = getInhabitantFromActiveDescriptor((ActiveDescriptor<? extends T>) a);
+            Inhabitant<? extends T> addMe = Utilities.getInhabitantFromActiveDescriptor((ActiveDescriptor<? extends T>) a, delegate);
             
             retVal.add(addMe);
         }
@@ -773,7 +763,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         
         LinkedList<Inhabitant<?>> retVal = new LinkedList<Inhabitant<?>>();
         for (ActiveDescriptor<?> a : all) {
-            Inhabitant<?> addMe = getInhabitantFromActiveDescriptor(a);
+            Inhabitant<?> addMe = Utilities.getInhabitantFromActiveDescriptor(a, delegate);
             
             retVal.add(addMe);
         }
@@ -799,7 +789,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         ServiceHandle<T> handle = delegate.getServiceHandle(type, name);
         
         ActiveDescriptor<T> best = handle.getActiveDescriptor();
-        return getInhabitantFromActiveDescriptor(best);
+        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
     /**
