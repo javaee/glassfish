@@ -41,8 +41,6 @@ package com.sun.hk2.component;
 
 import org.glassfish.hk2.Scope;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.scopes.PerLookup;
-import org.glassfish.hk2.scopes.Singleton;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.component.InhabitantProviderInterceptor;

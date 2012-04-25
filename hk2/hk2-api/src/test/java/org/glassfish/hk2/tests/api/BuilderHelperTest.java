@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
@@ -56,7 +57,6 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.hk2.tests.contracts.AnotherContract;
 import org.glassfish.hk2.tests.contracts.SomeContract;
 import org.glassfish.hk2.tests.services.AnotherService;

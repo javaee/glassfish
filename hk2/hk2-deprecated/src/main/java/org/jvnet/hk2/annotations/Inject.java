@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,54 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.jvnet.hk2.annotations;
 
-package org.glassfish.hk2.tests.services;
 
-import org.jvnet.hk2.annotations.ContractProvided;
-import org.jvnet.hk2.annotations.Service;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.logging.Logger;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/12/11
- * Time: 6:46 AM
- * To change this template use File | Settings | File Templates.
+ * Annotation to define a required resource for a component. 
+ * The HK2 runtime inject all instance variables annotated with
+ * &#064;Inject as well as setter methods.
+ <p>
+ * Examples:<br>
+<pre>
+        &#064;Inject("GlassfishMBeanServer")
+        MBeanServer mbeanserver;
+        
+        &#064;Inject  // unnamed
+        MBeanServer mbeanserver;
+</pre>
+ *
+ * @see org.jvnet.hk2.component.Habitat
+ *
+ * @author Jerome Dochez
  */
-@Service
-@ContractProvided(Lock.class)
-public class MyLock implements Lock {
-    @Override
-    public void lock() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
+@Retention(RUNTIME)
+@Target({METHOD,FIELD, PARAMETER})
+public @interface Inject {
+    /**
+     * Returns the name.
+     * @return name of the resource
+     */
+    public String name() default "";
 
-    @Override
-    public void lockInterruptibly() throws InterruptedException {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean tryLock() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void unlock() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public Condition newCondition() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    /**
+     * When true, it is not an error if not present.
+     * When false, a failure occurs when not present.
+     @return true if optional, false otherwise
+     */
+    public boolean optional() default false;
 }

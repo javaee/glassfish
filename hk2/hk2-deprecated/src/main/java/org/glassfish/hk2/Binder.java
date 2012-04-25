@@ -37,17 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package org.glassfish.hk2.tests.services;
-
-import org.glassfish.hk2.tests.contracts.SomeContract;
+package org.glassfish.hk2;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/12/11
- * Time: 6:36 AM
- * To change this template use File | Settings | File Templates.
+ * A binder instance can be used to customize a binding
+ * by providing a name for the bound service.
+ *
+ * <p/>
+ * The combination of contract interface fully qualified
+ * class name and this name is unique in the registry of
+ * services. If another service is already registered under
+ * this interface name and this name, this binding will
+ * replace the service in the registry.
+ *
+ * @author Jerome Dochez, Jeff Trent
  */
-public class LatinService implements SomeContract {
+public interface Binder<T> extends NamedBinder<T> {
+
+    /**
+     * Names a binding that will be used to register
+     * the service in the registry.
+     *
+     * @param name service name
+     * @return a {@link NamedBinder} to further customize
+     * the binding request.
+     */
+    NamedBinder<T> named(String name);
+
 }

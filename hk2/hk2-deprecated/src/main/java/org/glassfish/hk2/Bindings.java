@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,19 +37,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package org.glassfish.hk2.tests.services;
-
-import org.glassfish.hk2.tests.contracts.RequestProcessor;
-import org.jvnet.hk2.annotations.Service;
+package org.glassfish.hk2;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/12/11
- * Time: 6:42 AM
- * To change this template use File | Settings | File Templates.
+ * This represents the result of dynamically binding [services] to
+ * the underlying {@link Services} instance.
+ * 
+ * <p/>
+ * WARNING: Hk2 does not guard against the possibility that someone
+ * has cached (or injected) a {@link Provider} from the committed
+ * Bindings group.  Upon {{@link #release()} these services become
+ * orphaned as they are no longer registered in {@link Services}.
+ *
+ * @author Jeff Trent, Tom Beerbower
+ * 
+ * @see Services#bindDynamically()
+ * @see DynamicBinderFactory
  */
-@Service
-public class DefaultRequestProcessor implements RequestProcessor {
+// TODO: consider in the future extending this to support iteration over the actual Binding objects
+public interface Bindings extends Releasable {
+    /**
+     * Indicates whether or not this Bindings instance is active.
+     *
+     * @return true if this instance is currently active
+     */
+    boolean isActive();
 }

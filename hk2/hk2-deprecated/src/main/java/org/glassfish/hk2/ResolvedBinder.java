@@ -37,17 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package org.glassfish.hk2.tests.services;
-
-import org.glassfish.hk2.tests.contracts.SomeContract;
+package org.glassfish.hk2;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/12/11
- * Time: 3:16 AM
- * To change this template use File | Settings | File Templates.
+ * This contract is used to apply scope to an otherwise described / resolved
+ * {@link Binder}.
+ * 
+ * @author Jerome Dochez, @author Jeff Trent
+ * 
+ * @see NamedBinder
  */
-public class SomeService implements SomeContract {
+public interface ResolvedBinder<T> {
+
+    /**
+     * Ascribe a scope to this Binder, terminating the builder-like process.
+     * 
+     * @param scope the scope to apply
+     */
+    void in(Class<? extends Scope> scope);
+
 }

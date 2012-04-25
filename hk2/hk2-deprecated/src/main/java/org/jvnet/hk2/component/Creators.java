@@ -39,21 +39,13 @@
  */
 package org.jvnet.hk2.component;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
-import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Factory;
-import org.jvnet.hk2.annotations.FactoryFor;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.deprecated.internal.CreatorImpl;
 import org.jvnet.hk2.deprecated.internal.MetadataIndexFilter;
 import org.jvnet.hk2.deprecated.internal.Utilities;
