@@ -26,7 +26,7 @@ org.glassfish.hk2.api
 org.glassfish.hk2.classmodel.reflect
 org.glassfish.hk2.classmodel.reflect.impl
 org.glassfish.hk2.classmodel.reflect.util
-org.glassfish.hk2.core.utilities
+org.glassfish.hk2.deprecated.utilities
 org.glassfish.hk2.extension
 org.glassfish.hk2.inhabitants
 org.glassfish.hk2.inject
@@ -34,14 +34,15 @@ org.glassfish.hk2.internal
 org.glassfish.hk2.runlevel
 org.glassfish.hk2.runlevel.internal
 org.glassfish.hk2.scopes
-org.glassfish.hk2.spi
 org.glassfish.hk2.utilities
+org.glassfish.hk2.utilities.reflection
 org.jvnet.hk2.annotations
 org.jvnet.hk2.component
 org.jvnet.hk2.component.classmodel
 org.jvnet.hk2.component.concurrent
 org.jvnet.hk2.component.internal.runlevel
 org.jvnet.hk2.component.matcher
+org.jvnet.hk2.component.spi
 org.jvnet.hk2.config
 org.jvnet.hk2.config.generator
 org.jvnet.hk2.config.provider
