@@ -37,18 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package org.glassfish.hk2.tests.services;
-
-import org.glassfish.hk2.tests.contracts.PathPattern;
-import org.glassfish.hk2.tests.contracts.RouteBuilder;
+package org.glassfish.hk2;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/12/11
- * Time: 5:47 AM
- * To change this template use File | Settings | File Templates.
+ * Sub interfaces of the {@link BinderFactory} to allow dynamic registration of
+ * services.
+ * 
+ * @author Jerome Dochez, Jeff Trent
  */
-public class PathPatternRouteBuilder extends RouteBuilder<PathPattern> {
+public interface DynamicBinderFactory extends BinderFactory {
+    
+    /**
+     * Commits all the binders to the {@link Services} registry.
+     * 
+     * <p/>
+     * The return object can be used to release all of the bindings as a group.
+     * 
+     * <p/>
+     * WARNING: Hk2 does not guard against the possibility that someone has
+     * cached (or injected) a {@link Provider} from the committed Bindings
+     * group. Upon {{@link #release()} these services become orphaned as they
+     * are no longer registered in {@link Services}.
+     */
+    Bindings commit();
+    
 }

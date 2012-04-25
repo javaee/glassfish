@@ -38,23 +38,11 @@
  * holder.
  */
 
-package org.glassfish.hk2.tests.services;
+package org.glassfish.hk2;
 
-import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.tests.contracts.SomeContract;
+import org.jvnet.hk2.annotations.Contract;
 
-/**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/12/11
- * Time: 6:01 AM
- * To change this template use File | Settings | File Templates.
- */
-public class MySomeServiceFactory implements Factory<SomeContract> {
-    final SomeService singleton = new SomeService();
-    @Override
-    public SomeContract get() throws ComponentException {
-        return singleton;
-    }
+@Contract
+public interface Scope {
+    ScopeInstance current();
 }

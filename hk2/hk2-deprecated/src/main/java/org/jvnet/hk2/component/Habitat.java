@@ -52,7 +52,7 @@ import java.util.concurrent.Future;
 
 import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.ContractLocator;
-import org.glassfish.hk2.Descriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.DynamicBinderFactory;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -68,7 +68,6 @@ import org.glassfish.hk2.inject.Injector;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.component.HabitatListener.EventType;
 import org.jvnet.hk2.component.InhabitantTracker.Callback;
 import org.jvnet.hk2.deprecated.internal.InhabitantImpl;

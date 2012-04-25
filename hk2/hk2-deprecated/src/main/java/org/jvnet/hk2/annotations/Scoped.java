@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,24 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.jvnet.hk2.annotations;
 
-package org.glassfish.hk2.tests.services;
+import org.glassfish.hk2.Scope;
 
-import org.glassfish.hk2.ComponentException;
-import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.tests.contracts.PathPattern;
-import org.glassfish.hk2.tests.contracts.RouteBuilder;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.TYPE;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
+import java.lang.annotation.Documented;
 
 /**
- * Created by IntelliJ IDEA.
- * User: dochez
- * Date: 5/12/11
- * Time: 6:04 AM
- * To change this template use File | Settings | File Templates.
+ * Indicates the scope that this managed object is tied to.
+ *
+ * In the absence of this annotation, singleton scope is assumed.
+ *
+ * <p>
+ * A scope can be placed on the same type as {@link Contract} does,
+ * in which case it is used to force the use of a specific scope
+ * for all {@link Service services}.
+ *
+ * @author Kohsuke Kawaguchi
  */
-public class PPRBFactory implements Factory<RouteBuilder<PathPattern>> {
-    @Override
-    public RouteBuilder<PathPattern> get() throws ComponentException {
-        return new PathPatternRouteBuilder();
-    }
+@Retention(RUNTIME)
+@Documented
+@Target({TYPE,ANNOTATION_TYPE})
+public @interface Scoped {
+    Class<? extends Scope> value();
 }
