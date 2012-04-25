@@ -12,7 +12,7 @@ org.glassfish.hk2.classmodel.reflect.test.model
 org.glassfish.hk2.classmodel.reflect.test.model.qualifier
 org.glassfish.hk2.classmodel.reflect.test.ordering
 org.glassfish.hk2.classmodel.reflect.test.parameterized
-org.glassfish.hk2.core.utilities
+org.glassfish.hk2.deprecated.utilities
 org.glassfish.hk2.runlevel.internal
 org.glassfish.hk2.tests
 org.glassfish.hk2.tests.api
