@@ -37,10 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
+
 package org.glassfish.hk2.runlevel;
-
-
-import org.glassfish.hk2.ComponentException;
 
 
 /**
@@ -48,7 +47,7 @@ import org.glassfish.hk2.ComponentException;
  *
  * @author jtrent, tbeerbower
  */
-public class RunLevelException extends ComponentException {
+public class RunLevelException extends RuntimeException {
 
     public RunLevelException(String message) {
         super(message);
