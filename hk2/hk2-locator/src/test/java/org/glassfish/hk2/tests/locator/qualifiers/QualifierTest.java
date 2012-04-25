@@ -39,8 +39,12 @@
  */
 package org.glassfish.hk2.tests.locator.qualifiers;
 
+import java.lang.annotation.Annotation;
+import java.util.List;
+
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
@@ -82,5 +86,76 @@ public class QualifierTest {
         Assert.assertEquals(PURPLE, wheel.getPurple().getColorName());
         
     }
-
+    
+    /**
+     * Tests getting something via a qualifier only
+     */
+    @Test
+    public void testGetByQualifierOnly() {
+        List<SpecifiedImplementation> specs =
+                locator.getAllServices(new ImplementationQualifierImpl(SpecifiedImplementation.class.getName()));
+        
+        Assert.assertNotNull(specs);
+        Assert.assertEquals(1, specs.size());
+        Assert.assertTrue(specs.get(0) instanceof SpecifiedImplementation);
+    }
+    
+    /**
+     * Tests getting something via a qualifier only
+     */
+    @Test
+    public void testGetByQualifierOnlyHandles() {
+        List<ServiceHandle<?>> specs =
+                locator.getAllServiceHandles(new ImplementationQualifierImpl(SpecifiedImplementation.class.getName()));
+        
+        Assert.assertNotNull(specs);
+        Assert.assertEquals(1, specs.size());
+        ServiceHandle<?> handle = specs.get(0);
+        
+        SpecifiedImplementation si = (SpecifiedImplementation) handle.getService();
+        Assert.assertNotNull(si);
+    }
+    
+    /**
+     * Tests getting something via a qualifier only
+     */
+    @Test
+    public void testFailToGetByQualifierOnly() {
+        List<SpecifiedImplementation> specs =
+                locator.getAllServices(new ImplementationQualifierImpl(SpecifiedImplementation.class.getName()),
+                        new BlueAnnotationImpl());
+        
+        Assert.assertNotNull(specs);
+        Assert.assertEquals(0, specs.size());
+    }
+    
+    /**
+     * Tests getting something via a qualifier only
+     */
+    @Test
+    public void testFailToGetByQualifierOnlyHandles() {
+        List<ServiceHandle<?>> specs =
+                locator.getAllServiceHandles(new ImplementationQualifierImpl(SpecifiedImplementation.class.getName()),
+                        new BlueAnnotationImpl());
+        
+        Assert.assertNotNull(specs);
+        Assert.assertEquals(0, specs.size());
+    }
+    
+    /**
+     * Tests getting something via a qualifier only
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullQualifier() {
+        locator.getAllServiceHandles((Annotation) null);
+    }
+    
+    /**
+     * Tests getting something via a qualifier only
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testDoubleQualifier() {
+        locator.getAllServiceHandles(new ImplementationQualifierImpl(SpecifiedImplementation.class.getName()),
+                new ImplementationQualifierImpl(SpecifiedImplementation.class.getName() + "_another"));
+    }
 }

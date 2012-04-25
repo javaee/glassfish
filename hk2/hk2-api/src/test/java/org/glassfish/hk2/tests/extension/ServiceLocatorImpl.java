@@ -290,4 +290,24 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // TODO Auto-generated method stub
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.annotation.Annotation, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> List<T> getAllServices(Annotation qualifier,
+            Annotation... qualifiers) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.annotation.Annotation, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public List<ServiceHandle<?>> getAllServiceHandles(Annotation qualifier,
+            Annotation... qualifiers) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

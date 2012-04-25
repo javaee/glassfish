@@ -62,6 +62,15 @@ grant codeBase "file:${locator.api.dir}/-" {
 };
 
 // This is for when running in the top-level directory
+// of hk2 in maven, we need to grant the hk2-utils jar file
+// allPermission.  If running from the hk2-locator directory
+// itself the all permission for hk2-utils will be coming
+// from the local.repo grant
+grant codeBase "file:${build.dir}/../../hk2-utils/target/-" {
+  permission java.security.AllPermission;
+};
+
+// This is for when running in the top-level directory
 // of hk2 in maven, we need to grant the hk2-api jar file
 // allPermission.  If running from the hk2-locator directory
 // itself the all permission for hk2-api will be coming

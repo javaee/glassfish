@@ -39,46 +39,31 @@
  */
 package org.glassfish.hk2.tests.locator.qualifiers;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
  * @author jwells
  *
  */
-public class QualifierModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+@Inherited
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE })
+public @interface ImplementationQualifier {
+    /**
+     * Oddly gives the name of its implementing class
+     * @return The name of the class implementing this interface
      */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.bind(BuilderHelper.link(RedImpl.class).to(Color.class).qualifiedBy(Red.class.getName()).build());
-        configurator.bind(BuilderHelper.link(BlueImpl.class).to(Color.class).qualifiedBy(Blue.class.getName()).build());
-        configurator.bind(BuilderHelper.link(YellowImpl.class).to(Color.class).qualifiedBy(Yellow.class.getName()).build());
-        
-        // Now the factory pairs
-        configurator.bind(BuilderHelper.link(GreenFactory.class).
-                to(Color.class).
-                qualifiedBy(Green.class.getName()).
-                buildFactory());
-        
-        configurator.bind(BuilderHelper.link(OrangeFactory.class).
-                to(Color.class).
-                qualifiedBy(Orange.class.getName()).
-                buildFactory());
-        
-        configurator.bind(BuilderHelper.link(PurpleFactory.class).
-                to(Color.class).
-                qualifiedBy(Purple.class.getName()).
-                buildFactory());
-        
-        // And the color wheel
-        configurator.bind(BuilderHelper.link(ColorWheel.class).build());
-        
-        // This is to test Inheritance of qualifiers
-        configurator.addActiveDescriptor(SpecifiedImplementation.class);
-    }
+    public String value();
 
 }

@@ -108,6 +108,24 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
+     * Gets the all the services from this locator that has the given
+     * qualifier or qualifiers
+     * <p>
+     * Use this method only if destroying the services is not important
+     * 
+     * @param qualifier May not be null, and is a qualifier that must
+     * match the service definition
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return A list of services implementing this contract
+     * or concrete implementation.  May not return null, but
+     * may return an empty list
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> List<T> getAllServices(Annotation qualifier,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
      * Gets the all the services from this locator that implements
      * this contract or has this implementation
      * <p>
@@ -176,6 +194,23 @@ public interface ServiceLocator {
      * @throws IllegalArgumentException if contractOrImpl is null
      */
     public List<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets service handles that can be used to get and destroy the returned
+     * services
+     * <p>
+     * 
+     * @param qualifier May not be null, and is a qualifier that must
+     * match the service definition
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return A non-null but possibly empty list of service handles matching
+     * the given criteria
+     * @throws MultiException if there was an error during service creation
+     * @throws IllegalArgumentException if contractOrImpl is null
+     */
+    public List<ServiceHandle<?>> getAllServiceHandles(Annotation qualifier,
             Annotation... qualifiers) throws MultiException;
     
     /**

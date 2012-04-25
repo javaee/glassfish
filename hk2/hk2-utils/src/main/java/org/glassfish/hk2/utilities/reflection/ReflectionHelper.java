@@ -41,9 +41,12 @@ package org.glassfish.hk2.utilities.reflection;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -342,27 +345,28 @@ public class ReflectionHelper {
     }
     
     /**
+     * Returns true if the given annotation is a qualifier
+     * @param anno The annotation to check
+     * @return true if this is an annotation
+     */
+    public static boolean isAnnotationAQualifier(Annotation anno) {
+        Class<? extends Annotation> annoType = anno.annotationType();
+        return annoType.isAnnotationPresent(Qualifier.class);
+    }
+    
+    /**
      * Gets all the qualifiers from the object
      * 
      * @param t The object to analyze
      * @return The set of qualifiers.  Will not return null but may return an empty set
      */
     public static Set<Annotation> getQualifiersFromObject(Object t) {
-        Set<Annotation> retVal = new LinkedHashSet<Annotation>();
-        if (t == null) return retVal;
+        if (t == null) return Collections.emptySet();
         
-        Class<?> oClass = t.getClass();
-        for (Annotation annotation : oClass.getAnnotations()) {
-            Class<? extends Annotation> annoClass = annotation.annotationType();
-            
-            if (annoClass.isAnnotationPresent(Qualifier.class)) {
-                retVal.add(annotation);
-            }
-            
-        }
-        
-        return retVal;
+        return getQualifierAnnotations(t.getClass());
     }
+    
+    
     
     /**
      * Gets all the qualifiers from the object
@@ -375,13 +379,71 @@ public class ReflectionHelper {
         if (clazz == null) return retVal;
         
         for (Annotation annotation : clazz.getAnnotations()) {
-            Class<? extends Annotation> annoClass = annotation.annotationType();
-            
-            if (annoClass.isAnnotationPresent(Qualifier.class)) {
+            if (isAnnotationAQualifier(annotation)) {
                 retVal.add(annotation.annotationType().getName());
             }
             
         }
+        
+        while (clazz != null) {
+            for (Class<?> iFace : clazz.getInterfaces()) {
+                for (Annotation annotation : iFace.getAnnotations()) {
+                    if (isAnnotationAQualifier(annotation)) {
+                        retVal.add(annotation.annotationType().getName());
+                    }
+                }
+            }
+            
+            clazz = clazz.getSuperclass();
+        }
+        
+        return retVal;
+    }
+    
+    private static Set<Annotation> internalGetQualifierAnnotations(AnnotatedElement annotatedGuy) {
+        Set<Annotation> retVal = new LinkedHashSet<Annotation>();
+        if (annotatedGuy == null) return retVal;
+        
+        for (Annotation annotation : annotatedGuy.getAnnotations()) {
+            if (isAnnotationAQualifier(annotation)) {
+                retVal.add(annotation);
+            }
+        }
+        
+        if (!(annotatedGuy instanceof Class)) return retVal;
+        
+        Class<?> clazz = (Class<?>) annotatedGuy;
+        while (clazz != null) {
+            for (Class<?> iFace : clazz.getInterfaces()) {
+                for (Annotation annotation : iFace.getAnnotations()) {
+                    if (isAnnotationAQualifier(annotation)) {
+                        retVal.add(annotation);
+                    }
+                }
+            }
+            
+            clazz = clazz.getSuperclass();
+        }
+        
+        return retVal;
+        
+    }
+    
+    /**
+     * Gets all the qualifier annotations from the object
+     * 
+     * @param annotatedGuy The thing to analyze
+     * @return The set of qualifiers.  Will not return null but may return an empty set
+     */
+    public static Set<Annotation> getQualifierAnnotations(final AnnotatedElement annotatedGuy) {
+        Set<Annotation> retVal = AccessController.doPrivileged(new PrivilegedAction<Set<Annotation>>() {
+
+            @Override
+            public Set<Annotation> run() {
+                return internalGetQualifierAnnotations(annotatedGuy);
+            }
+            
+        });
         
         return retVal;
     }

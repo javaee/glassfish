@@ -1057,4 +1057,22 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         delegate.preDestroy(preDestroyMe);
         
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.annotation.Annotation, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public <T> List<T> getAllServices(Annotation qualifier,
+            Annotation... qualifiers) throws MultiException {
+        return (List<T>) delegate.getAllServices(qualifier, qualifiers);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.annotation.Annotation, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public List<ServiceHandle<?>> getAllServiceHandles(Annotation qualifier,
+            Annotation... qualifiers) throws MultiException {
+        return (List<ServiceHandle<?>>) getAllServiceHandles(qualifier, qualifiers);
+    }
 }
