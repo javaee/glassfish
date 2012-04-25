@@ -54,8 +54,8 @@
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.ContractLocator;
 <a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.Provider;
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.Scope;
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.TypeLiteral;
-<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.TypeLiteral;
 <a class="jxr_linenumber" name="49" href="#49">49</a>  
 <a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> java.lang.annotation.Annotation;
 <a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> java.lang.reflect.Type;
@@ -80,23 +80,23 @@
 <a class="jxr_linenumber" name="70" href="#70">70</a>  
 <a class="jxr_linenumber" name="71" href="#71">71</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger logger = Logger.getLogger(ContractLocatorImpl.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="72" href="#72">72</a>  
-<a class="jxr_linenumber" name="73" href="#73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> ServiceLocator serviceLocator;
+<a class="jxr_linenumber" name="73" href="#73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../org/glassfish/hk2/ServiceLocator.html">ServiceLocator</a> serviceLocator;
 <a class="jxr_linenumber" name="74" href="#74">74</a>      <strong class="jxr_keyword">private</strong> String name;
 <a class="jxr_linenumber" name="75" href="#75">75</a>      <strong class="jxr_keyword">private</strong> Type type=<strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="76" href="#76">76</a>      <strong class="jxr_keyword">private</strong> String typeName=<strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="77" href="#77">77</a>      <strong class="jxr_keyword">private</strong> Collection&lt;Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt;&gt; qualifiers = <strong class="jxr_keyword">new</strong> ArrayList&lt;Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt;&gt;();
-<a class="jxr_linenumber" name="78" href="#78">78</a>      <strong class="jxr_keyword">private</strong> Scope scope;
+<a class="jxr_linenumber" name="78" href="#78">78</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../org/glassfish/hk2/Scope.html">Scope</a> scope;
 <a class="jxr_linenumber" name="79" href="#79">79</a>  
 <a class="jxr_linenumber" name="80" href="#80">80</a>      <em class="jxr_comment">// byContract, else byType</em>
 <a class="jxr_linenumber" name="81" href="#81">81</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">boolean</strong> byContract;
 <a class="jxr_linenumber" name="82" href="#82">82</a>  
-<a class="jxr_linenumber" name="83" href="#83">83</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/component/ContractLocatorImpl.html">ContractLocatorImpl</a>(ServiceLocator serviceLocator, Type clazz, <strong class="jxr_keyword">boolean</strong> byContract) {
+<a class="jxr_linenumber" name="83" href="#83">83</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/component/ContractLocatorImpl.html">ContractLocatorImpl</a>(<a href="../../../../org/glassfish/hk2/ServiceLocator.html">ServiceLocator</a> serviceLocator, Type clazz, <strong class="jxr_keyword">boolean</strong> byContract) {
 <a class="jxr_linenumber" name="84" href="#84">84</a>          <strong class="jxr_keyword">this</strong>.serviceLocator = serviceLocator;
 <a class="jxr_linenumber" name="85" href="#85">85</a>          <strong class="jxr_keyword">this</strong>.byContract = byContract;
 <a class="jxr_linenumber" name="86" href="#86">86</a>          <strong class="jxr_keyword">this</strong>.type=clazz;
 <a class="jxr_linenumber" name="87" href="#87">87</a>      }
 <a class="jxr_linenumber" name="88" href="#88">88</a>  
-<a class="jxr_linenumber" name="89" href="#89">89</a>      <a href="../../../../org/jvnet/hk2/component/ContractLocatorImpl.html">ContractLocatorImpl</a>(ServiceLocator serviceLocator, String clazzName, <strong class="jxr_keyword">boolean</strong> byContract) {
+<a class="jxr_linenumber" name="89" href="#89">89</a>      <a href="../../../../org/jvnet/hk2/component/ContractLocatorImpl.html">ContractLocatorImpl</a>(<a href="../../../../org/glassfish/hk2/ServiceLocator.html">ServiceLocator</a> serviceLocator, String clazzName, <strong class="jxr_keyword">boolean</strong> byContract) {
 <a class="jxr_linenumber" name="90" href="#90">90</a>          <strong class="jxr_keyword">this</strong>.serviceLocator = serviceLocator;
 <a class="jxr_linenumber" name="91" href="#91">91</a>          <strong class="jxr_keyword">this</strong>.byContract = byContract;
 <a class="jxr_linenumber" name="92" href="#92">92</a>          <strong class="jxr_keyword">this</strong>.typeName=clazzName;
@@ -126,7 +126,7 @@
 <a class="jxr_linenumber" name="116" href="#116">116</a>     }
 <a class="jxr_linenumber" name="117" href="#117">117</a> 
 <a class="jxr_linenumber" name="118" href="#118">118</a>     @Override
-<a class="jxr_linenumber" name="119" href="#119">119</a>     <strong class="jxr_keyword">public</strong> ContractLocator&lt;T&gt; in(Scope scope) {
+<a class="jxr_linenumber" name="119" href="#119">119</a>     <strong class="jxr_keyword">public</strong> ContractLocator&lt;T&gt; in(<a href="../../../../org/glassfish/hk2/Scope.html">Scope</a> scope) {
 <a class="jxr_linenumber" name="120" href="#120">120</a>         <strong class="jxr_keyword">this</strong>.scope = scope;
 <a class="jxr_linenumber" name="121" href="#121">121</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>;
 <a class="jxr_linenumber" name="122" href="#122">122</a>     }
