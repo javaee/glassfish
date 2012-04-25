@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.hk2.core.utilities;
+package org.glassfish.hk2.deprecated.utilities;
 
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -86,13 +86,12 @@ public class Utilities {
      * @param ofType   the type to check
      * @param contract the contract this type is allowed to handle
      *
-     * @return the type closure restricted to the contracts; null if the
+     * @return the type closure restricted to the contract; null if the
      *         given type does not implement the given contract
      */
     protected static Type getTypeClosure(Type ofType, String contract){
-        Set<Type> contractTypes =
-                ReflectionHelper.getTypeClosure(ofType,
-                        Collections.singleton(contract));
+        Set<Type> contractTypes = ReflectionHelper.getTypeClosure(
+                ofType, Collections.singleton(contract));
 
         Iterator<Type> iterator = contractTypes.iterator();
         return iterator.hasNext() ? iterator.next() : null;
