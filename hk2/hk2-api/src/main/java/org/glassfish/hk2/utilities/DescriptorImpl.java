@@ -75,6 +75,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
     private final static String QUALIFIER_KEY = "qualifier=";
     private final static String TYPE_KEY = "type=";
     private final static String METADATA_KEY = "metadata=";
+    private final static String RANKING_KEY = "rank=";
     private final static String FACTORY_DT = "FACTORY";
     private final static String START_START = "[";
     private final static String END_START = "]";
@@ -485,35 +486,48 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    return true;
 	}
 	
-	public synchronized String toString() {
-        StringBuffer sb = new StringBuffer("Descriptor(");
+	/**
+	 * Will pretty print a descriptor
+	 * 
+	 * @param sb The string buffer put the pretty print into
+	 * @param d The descriptor to write
+	 */
+	public static void pretty(StringBuffer sb, Descriptor d) {
+	    if (sb == null || d == null) return;
+	    
+        sb.append("\n\timplementation=" + d.getImplementation());
         
-        sb.append("\n\timplementation=" + getImplementation());
-        
-        if (getName() != null) {
-            sb.append("\n\tname=" + getName());
+        if (d.getName() != null) {
+            sb.append("\n\tname=" + d.getName());
         }
         
         sb.append("\n\tcontracts=");
-        sb.append(ReflectionHelper.writeSet(getAdvertisedContracts()));
+        sb.append(ReflectionHelper.writeSet(d.getAdvertisedContracts()));
         
-        sb.append("\n\tscope=" + getScope());
+        sb.append("\n\tscope=" + d.getScope());
         
         sb.append("\n\tqualifiers=");
-        sb.append(ReflectionHelper.writeSet(getQualifiers()));
+        sb.append(ReflectionHelper.writeSet(d.getQualifiers()));
         
-        sb.append("\n\tdescriptorType=" + getDescriptorType());
+        sb.append("\n\tdescriptorType=" + d.getDescriptorType());
         
         sb.append("\n\tmetadata=");
-        sb.append(ReflectionHelper.writeMetadata(getMetadata()));
+        sb.append(ReflectionHelper.writeMetadata(d.getMetadata()));
         
-        sb.append("\n\tloader=" + getLoader());
+        sb.append("\n\tloader=" + d.getLoader());
         
-        sb.append("\n\tid=" + getServiceId());
+        sb.append("\n\tid=" + d.getServiceId());
         
-        sb.append("\n\tlocatorId=" + getServiceId());
+        sb.append("\n\tlocatorId=" + d.getLocatorId());
         
-        sb.append("\n\tidentityHashCode=" + System.identityHashCode(this));
+        sb.append("\n\tidentityHashCode=" + System.identityHashCode(d));
+	    
+	}
+	
+	public synchronized String toString() {
+        StringBuffer sb = new StringBuffer("Descriptor(");
+        
+        pretty(sb, this);
         
         sb.append(")");
         
@@ -557,6 +571,10 @@ public class DescriptorImpl implements Descriptor, Serializable {
         
         if (descriptorType != null && descriptorType.equals(DescriptorType.FACTORY)) {
             out.println(TYPE_KEY + FACTORY_DT);
+        }
+        
+        if (rank != 0) {
+            out.println(RANKING_KEY + rank);
         }
         
         if (metadatas != null && !metadatas.isEmpty()) {
@@ -634,6 +652,9 @@ public class DescriptorImpl implements Descriptor, Serializable {
                         metadatas = new LinkedHashMap<String, List<String>>();
                         
                         ReflectionHelper.readMetadataMap(rightHandSide, metadatas);
+                    }
+                    else if (leftHandSide.equals(RANKING_KEY)) {
+                        rank = Integer.parseInt(rightHandSide);
                     }
                     
                     // Otherwise it is an unknown type, just forget it

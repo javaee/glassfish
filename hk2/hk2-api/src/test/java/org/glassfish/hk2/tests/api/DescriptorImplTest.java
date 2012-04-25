@@ -488,6 +488,7 @@ public class DescriptorImplTest {
         writeB.addMetadata(FullDescriptorImpl.FULL_KEY2, FullDescriptorImpl.FULL_VALUE1);
         writeB.addMetadata(KEY_WITH_ESCAPED_CHARACTERS, ESCAPED_VALUE);
         writeB.addMetadata(FullDescriptorImpl.FULL_KEY2, FullDescriptorImpl.FULL_VALUE2);
+        writeB.setRanking(13);
         DescriptorImpl writeC = new DescriptorImpl();  // Write out a completely empty one
         
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -523,6 +524,7 @@ public class DescriptorImplTest {
             else if (lcv == 1) {
                 Assert.assertEquals(writeB, di);
                 Assert.assertEquals(writeB.hashCode(), di.hashCode());
+                Assert.assertEquals(13, di.getRanking());  // Ranking is not considered in equals, but should have been written out
             }
             else if (lcv == 2) {
                 Assert.assertEquals(writeC, di);

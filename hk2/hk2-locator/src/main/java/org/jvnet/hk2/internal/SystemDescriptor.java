@@ -57,6 +57,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
@@ -486,8 +487,15 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     }
     
     public String toString() {
-        return "SystemDescriptor(" + getImplementation() + "," + Pretty.collection(getAdvertisedContracts()) + "," +
-          Pretty.collection(getQualifiers()) + "," + System.identityHashCode(this) + ")";
+        StringBuffer sb = new StringBuffer("SystemDescriptor(");
+        
+        DescriptorImpl.pretty(sb, this);
+        
+        sb.append("\n\treified=" + reified);
+        
+        sb.append(")");
+        
+        return sb.toString();
     }
 
      
