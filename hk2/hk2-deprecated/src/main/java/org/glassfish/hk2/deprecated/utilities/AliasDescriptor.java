@@ -218,16 +218,19 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     }
 
 
-    // ----- Utility methods ------------------------------------------------
+    // ----- accessors ------------------------------------------------
 
     /**
      * Get the descriptor being aliased.
      *
      * @return the descriptor
      */
-    protected ActiveDescriptor<T> getDescriptor() {
+    public ActiveDescriptor<T> getDescriptor() {
         return descriptor;
     }
+
+
+    // ----- Utility methods ------------------------------------------------
 
     /**
      * Ensure that this descriptor has been initialized.

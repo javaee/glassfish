@@ -46,6 +46,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -110,6 +111,31 @@ public class Utilities {
 
         config.addActiveDescriptor(new AliasDescriptor<T>(locator, descriptor, contract, name));
         config.commit();
+    }
+
+    /**
+     * Unbind the descriptor(s) found by the given filter from the given service
+     * locator.
+     *
+     * @param locator  the service locator
+     * @param filter   the filter used to find descriptor(s) that we are
+     *                 unbinding
+     *
+     * @return true if any descriptor(s) could be found using the given
+     *         filter; false otherwise
+     */
+    public static boolean remove(ServiceLocator locator, Filter filter) {
+
+        if (locator.getBestDescriptor(filter) == null) {
+            return false;
+        }
+
+        DynamicConfigurationService dcs    = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration        config = dcs.createDynamicConfiguration();
+
+        config.addUnbindFilter(filter);
+        config.commit();
+        return true;
     }
 
     /**
