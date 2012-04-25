@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,50 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
 
-import org.jvnet.hk2.annotations.Contract;
+package org.glassfish.hk2.inject;
 
-/**
- * This interface should be implemented in order to provide
- * a factory for another type.  This is useful when the type
- * has some reason that it cannot be a created in the usual way.
- * <p>
- * A factory may not have a TypeVariable or a Wildcard as its
- * actual type.  A factory may have any scope, and the scope
- * of the factory is independent of the scope of the type it
- * is providing.
- * <p>
- * The scope and qualifiers of the objects this factory is producing
- * must be placed on the provide method itself.  Objects created with
- * this method will be put into the scope on the provide method, and
- * will have the qualifiers of the provide method.
- * <p>
- * A factory is generally added with the {@link FactoryDescriptors} helper
- * class, though factories can also be registered independently.
- * 
- * @author jwells
- * @param <T> This must be the type of entity for which this is a factory.
- * For example, if this were a factory for Foo, then your factory
- * must implement Factory&lt;Foo&gt;.
- *
- */
-@Contract
-public interface Factory<T> {
-    /**
-     * This method will create instances of the type of this factory.  The provide
-     * method must be annotated with the desired scope and qualifiers.
-     * 
-     * @return The produces object
-     */
-    public T provide();
-    
-    /**
-     * This method will dispose of objects created with this scope.  This method should
-     * not be annotated, as it is naturally paired with the provide method
-     * 
-     * @param instance The instance to dispose of
-     */
-    public void dispose(T instance);
+public interface InjectionPoint {
 
 }
