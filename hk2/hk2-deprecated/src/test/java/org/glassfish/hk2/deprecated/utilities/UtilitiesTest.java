@@ -48,7 +48,6 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
-import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Singleton;
 
@@ -100,35 +99,5 @@ public class UtilitiesTest {
 
         assertNull(locator.getService(MyInterface3.class, ""));
         assertNull(locator.getService(MyInterface3.class, "foo"));
-    }
-
-
-    // ----- inner classes --------------------------------------------------
-
-    public interface MyInterface1 {
-        public void doSomething();
-    }
-
-    public interface MyInterface2 {
-        public void doSomethingElse();
-    }
-
-    public interface MyInterface3 {
-        public void doSomethingCompletelyDifferent();
-    }
-
-    @Service
-    public static class MyService implements MyInterface1, MyInterface2, MyInterface3{
-        @Override
-        public void doSomething() {
-        }
-
-        @Override
-        public void doSomethingElse() {
-        }
-
-        @Override
-        public void doSomethingCompletelyDifferent() {
-        }
     }
 }

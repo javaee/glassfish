@@ -64,6 +64,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Contract;
@@ -277,7 +278,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * See {@link Inhabitants} for typical ways to create {@link Inhabitant}s.
      */
     public void add(final Inhabitant<?> i) {
-        throw new UnsupportedOperationException("add(" + i + ") in Habitat");
+        Utilities.add(delegate, i);
     }
 
     /**
@@ -288,11 +289,29 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      *              the same index. Can be null for unnamed inhabitants.
      */
     public void addIndex(Inhabitant<?> i, String index, String name) {
-        throw new UnsupportedOperationException("addIndex(" + i + ","  + index + "," + name + ") in Habitat");
+        addIndex(i, index, name, true);
     }
 
     protected void addIndex(Inhabitant<?> i, String index, String name, boolean notify) {
-        throw new UnsupportedOperationException("addIndex(" + i + ","  + index + "," + name + "," + notify + ") in Habitat");
+
+        final Descriptor descriptor = i;
+        ActiveDescriptor<?> activeDescriptor = getBestDescriptor(new Filter(){
+            @Override
+            public boolean matches(Descriptor d) {
+                return descriptor.equals(d);
+            }
+        });
+
+        if (activeDescriptor == null) {
+            activeDescriptor = Utilities.add(delegate, descriptor);
+        }
+
+        Utilities.addIndex(delegate, activeDescriptor, index, name);
+
+        if (notify) {
+            // TODO : not currently supported
+//            notify(i, EventType.INHABITANT_INDEX_ADDED, index, name, null, null);
+        }
     }
 
     protected static Long getServiceRanking(Inhabitant<?> i, boolean wantNonNull) {

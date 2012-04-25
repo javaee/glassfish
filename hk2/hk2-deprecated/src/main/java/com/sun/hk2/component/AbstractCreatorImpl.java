@@ -67,11 +67,8 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
     private final Map<String, List<String>> metadata;
 
     public AbstractCreatorImpl(Class<? extends T> type, ServiceLocator serviceLocator, Map<String, List<String>> metadata) {
-        super(new DescriptorImpl());
-        
-        setImplementation(type.getName());
-        Utilities.fillInMetadata(metadata, this);
-        
+        super(org.glassfish.hk2.deprecated.utilities.Utilities.getDescriptor(type.getName(), null, metadata));
+
         this.type = type;
         this.serviceLocator = serviceLocator;
         
