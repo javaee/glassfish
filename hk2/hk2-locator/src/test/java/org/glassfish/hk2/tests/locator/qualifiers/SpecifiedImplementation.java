@@ -39,46 +39,10 @@
  */
 package org.glassfish.hk2.tests.locator.qualifiers;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-
 /**
  * @author jwells
  *
  */
-public class QualifierModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.bind(BuilderHelper.link(RedImpl.class).to(Color.class).qualifiedBy(Red.class.getName()).build());
-        configurator.bind(BuilderHelper.link(BlueImpl.class).to(Color.class).qualifiedBy(Blue.class.getName()).build());
-        configurator.bind(BuilderHelper.link(YellowImpl.class).to(Color.class).qualifiedBy(Yellow.class.getName()).build());
-        
-        // Now the factory pairs
-        configurator.bind(BuilderHelper.link(GreenFactory.class).
-                to(Color.class).
-                qualifiedBy(Green.class.getName()).
-                buildFactory());
-        
-        configurator.bind(BuilderHelper.link(OrangeFactory.class).
-                to(Color.class).
-                qualifiedBy(Orange.class.getName()).
-                buildFactory());
-        
-        configurator.bind(BuilderHelper.link(PurpleFactory.class).
-                to(Color.class).
-                qualifiedBy(Purple.class.getName()).
-                buildFactory());
-        
-        // And the color wheel
-        configurator.bind(BuilderHelper.link(ColorWheel.class).build());
-        
-        // This is to test Inheritance of qualifiers
-        configurator.addActiveDescriptor(SpecifiedImplementation.class);
-    }
+public class SpecifiedImplementation implements SpecifiedInterface, SpecifiedInterface2 {
 
 }

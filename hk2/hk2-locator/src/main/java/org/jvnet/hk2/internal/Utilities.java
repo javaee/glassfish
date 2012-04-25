@@ -66,7 +66,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.inject.Singleton;
 
@@ -368,7 +367,7 @@ public class Utilities {
         String name;
         
         // Qualifiers naming dance
-        qualifiers = getAllQualifiers(clazz);
+        qualifiers = ReflectionHelper.getQualifierAnnotations(clazz);
         name = getNameFromAllQualifiers(qualifiers, clazz);
         qualifiers = getAllQualifiers(clazz, name, collector);  // Fixes the @Named qualifier if it has no value
         
@@ -1068,11 +1067,6 @@ public class Utilities {
         }
     }
     
-    private static boolean isAnnotationAQualifier(Annotation anno) {
-        Class<? extends Annotation> annoType = anno.annotationType();
-        return annoType.isAnnotationPresent(Qualifier.class);
-    }
-    
     /**
      * Gets the name from the &46;Named qualifier in this set of qualifiers
      * 
@@ -1135,13 +1129,11 @@ public class Utilities {
             Collector collector) {
         
         Named namedQualifier = null;
-        HashSet<Annotation> retVal = new HashSet<Annotation>();
-        for (Annotation annotation : annotatedGuy.getAnnotations()) {
-            if (isAnnotationAQualifier(annotation)) {
-                retVal.add(annotation);
-                if (annotation instanceof Named) {
-                    namedQualifier = (Named) annotation;
-                }
+        Set<Annotation> retVal = ReflectionHelper.getQualifierAnnotations(annotatedGuy);
+        for (Annotation anno : retVal) {
+            if (anno instanceof Named) {
+                namedQualifier = (Named) anno;
+                break;
             }
         }
         
@@ -1175,25 +1167,13 @@ public class Utilities {
         return retVal;
     }
     
-    private static Set<Annotation> getAllQualifiers(
-            AnnotatedElement annotatedGuy) {
-        
-        LinkedHashSet<Annotation> retVal = new LinkedHashSet<Annotation>();
-        for (Annotation annotation : annotatedGuy.getAnnotations()) {
-            if (isAnnotationAQualifier(annotation)) {
-                retVal.add(annotation);
-            }
-        }
-        
-        return retVal;
-    }
     
     private static Set<Annotation> getAllQualifiers(
             Annotation memberAnnotations[]) {
         
         HashSet<Annotation> retVal = new HashSet<Annotation>();
         for (Annotation annotation : memberAnnotations) {
-            if (isAnnotationAQualifier(annotation)) {
+            if (ReflectionHelper.isAnnotationAQualifier(annotation)) {
                 retVal.add(annotation);
             }
         }
@@ -1266,7 +1246,7 @@ public class Utilities {
         List<Injectee> retVal = new LinkedList<Injectee>();
         
         retVal.add(new InjecteeImpl(f.getGenericType(),
-                getAllQualifiers(f),
+                ReflectionHelper.getQualifierAnnotations(f),
                 -1,
                 f,
                 isOptional(f.getAnnotations())));
@@ -1411,7 +1391,7 @@ public class Utilities {
         Set<String> dupChecker = new HashSet<String>();
         Named named = null;
         for (Annotation qualifier : qualifiers) {
-            if (!isAnnotationAQualifier(qualifier)) {
+            if (!ReflectionHelper.isAnnotationAQualifier(qualifier)) {
                 throw new IllegalArgumentException(Pretty.clazz(qualifier.annotationType()) + " is not a qualifier");
             }
             

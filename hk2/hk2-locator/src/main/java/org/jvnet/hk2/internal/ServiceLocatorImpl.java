@@ -406,6 +406,25 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         return retVal;
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.annotation.Annotation, java.lang.annotation.Annotation[])
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> List<T> getAllServices(Annotation qualifier,
+            Annotation... qualifiers) throws MultiException {
+        checkState();
+        
+        List<ServiceHandle<?>> services = getAllServiceHandles(qualifier, qualifiers);
+        
+        List<T> retVal = new LinkedList<T>();
+        for (ServiceHandle<?> service : services) {
+            retVal.add((T) service.getService());
+        }
+        
+        return retVal;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String)
@@ -642,6 +661,38 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         return new LinkedList<ServiceHandle<?>>(retVal);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.annotation.Annotation, java.lang.annotation.Annotation[])
+     */
+    @Override
+    public List<ServiceHandle<?>> getAllServiceHandles(Annotation qualifier,
+            Annotation... qualifiers) throws MultiException {
+        checkState();
+        
+        if (qualifier == null) throw new IllegalArgumentException("qualifier is null");
+        
+        final Set<String> allQualifiers = new LinkedHashSet<String>();
+        allQualifiers.add(qualifier.annotationType().getName());
+        
+        for (Annotation anno : qualifiers) {
+            String addMe = anno.annotationType().getName();
+            if (allQualifiers.contains(addMe)) {
+                throw new IllegalArgumentException("Multiple qualifiers with name " + addMe);
+            }
+            
+            allQualifiers.add(addMe);
+        }
+        
+        return getAllServiceHandles(new Filter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                return d.getQualifiers().containsAll(allQualifiers);
+            }
+            
+        });
     }
     
     private SortedSet<SystemDescriptor<?>> checkConfiguration(DynamicConfigurationImpl dci) {
@@ -972,5 +1023,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public String toString() {
         return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";
     }
+
+    
 
 }
