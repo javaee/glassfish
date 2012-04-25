@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,24 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+
 package org.jvnet.hk2.component;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Future;
 
 import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.ContractLocator;
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.DynamicBinderFactory;
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Filter;
@@ -64,14 +55,27 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.deprecated.utilities.AliasDescriptor;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
-import org.jvnet.hk2.deprecated.internal.ContractLocatorImpl;
+import org.glassfish.hk2.internal.IndexedFilterImpl;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.HabitatListener.EventType;
 import org.jvnet.hk2.component.InhabitantTracker.Callback;
+import org.jvnet.hk2.deprecated.internal.ContractLocatorImpl;
 import org.jvnet.hk2.deprecated.internal.QualifierFilter;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Future;
+
 
 /**
  * A set of templates that constitute a world of objects.
@@ -310,8 +314,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         Utilities.addIndex(delegate, activeDescriptor, index, name);
 
         if (notify) {
-            // TODO : not currently supported
-//            notify(i, EventType.INHABITANT_INDEX_ADDED, index, name, null, null);
+            // TODO : notify not currently supported
         }
     }
 
@@ -328,7 +331,17 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @param inhabitant inhabitant to be removed
      */
     public boolean remove(Inhabitant<?> inhabitant) {
-        throw new UnsupportedOperationException("remove(" + inhabitant + ") in Habitat");
+        final Descriptor descriptor = inhabitant;
+        final Filter filter = new Filter() {
+            @Override
+            public boolean matches(Descriptor d) {
+                return descriptor.equals(d);
+            }
+        };
+
+        // TODO : notify not currently supported
+
+        return Utilities.remove(delegate, filter);
     }
 
     /**
@@ -339,7 +352,9 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @return true if the removal was successful
      */
     public boolean removeIndex(String index, String name) {
-        throw new UnsupportedOperationException("removeIndex(" + index +"," + name + ") in Habitat");
+        // TODO : notify not currently supported
+
+        return Utilities.remove(delegate, new IndexedFilterImpl(index, name));
     }
 
     /**
@@ -349,7 +364,30 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @param serviceOrInhabitant the service instance, or an Inhabitant instance
      */
     public boolean removeIndex(String index, Object serviceOrInhabitant) {
-        throw new UnsupportedOperationException("removeIndex(" + index +"," + serviceOrInhabitant + ") in Habitat");
+        final Object o        = serviceOrInhabitant;
+        final String contract = index;
+        final Filter filter = new Filter() {
+            @Override
+            public boolean matches(Descriptor d) {
+                if (d.getAdvertisedContracts().contains(contract)) {
+                    Descriptor baseDescriptor = d.getBaseDescriptor();
+                    if (baseDescriptor instanceof AliasDescriptor<?>) {
+                        if (((AliasDescriptor<?>)baseDescriptor).getDescriptor().getBaseDescriptor().equals(o)) {
+                            return true;
+                        }
+                    }
+                    ActiveDescriptor<?> activeDescriptor = (ActiveDescriptor<?>)d;
+
+                    return (activeDescriptor.isReified() &&
+                            delegate.getServiceHandle(activeDescriptor).getService().equals(o));
+                }
+                return false;
+            }
+        };
+
+        // TODO : notify not currently supported
+
+        return Utilities.remove(delegate, filter);
     }
 
     protected boolean matches(Inhabitant<?> inhabitant,

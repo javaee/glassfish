@@ -130,4 +130,111 @@ public class HabitatTest {
         assertNull(habitat.getService(MyInterface3.class, ""));
         assertNull(habitat.getService(MyInterface3.class, "foo"));
     }
+
+    @Test
+    public void testRemove() {
+        Habitat habitat = new Habitat(null, "testRemove");
+        HK2Loader loader = new HolderHK2LoaderImpl(null);
+
+        assertNull(habitat.getService(MyService.class));
+
+        Inhabitant<MyService> inhabitant =
+                new LazyInhabitant<MyService>(habitat, loader, MyService.class.getName(), EMPTY_METADATA);
+
+        habitat.add(inhabitant);
+
+        MyService service = habitat.getService(MyService.class);
+        assertNotNull(service);
+
+        habitat.remove(inhabitant);
+
+        assertNull(habitat.getService(MyService.class));
+    }
+
+    @Test
+    public void testRemoveIndex() {
+        Habitat habitat = new Habitat(null, "testRemoveIndex");
+        HK2Loader loader = new HolderHK2LoaderImpl(null);
+
+        assertNull(habitat.getService(MyService.class));
+
+        Inhabitant<MyService> inhabitant =
+                new LazyInhabitant<MyService>(habitat, loader, MyService.class.getName(), EMPTY_METADATA);
+
+        habitat.add(inhabitant);
+
+        MyService s1 = habitat.getService(MyService.class);
+        assertNotNull(s1);
+
+        MyInterface1 s2 = habitat.getService(MyInterface2.class, "foo");
+        assertNull(s2);
+
+        habitat.addIndex(inhabitant, MyInterface2.class.getName(), "foo");
+
+        s2 = habitat.getService(MyInterface2.class, "foo");
+        assertSame(s1, s2);
+
+        habitat.removeIndex(MyInterface2.class.getName(), "foo");
+
+        s2 = habitat.getService(MyInterface2.class, "foo");
+        assertNull(s2);
+    }
+
+    @Test
+    public void testRemoveIndexWithService() {
+        Habitat habitat = new Habitat(null, "testRemoveIndexWithService");
+        HK2Loader loader = new HolderHK2LoaderImpl(null);
+
+        assertNull(habitat.getService(MyService.class));
+
+        Inhabitant<MyService> inhabitant =
+                new LazyInhabitant<MyService>(habitat, loader, MyService.class.getName(), EMPTY_METADATA);
+
+        habitat.add(inhabitant);
+
+        MyService s1 = habitat.getService(MyService.class);
+        assertNotNull(s1);
+
+        MyInterface1 s2 = habitat.getService(MyInterface2.class, "foo");
+        assertNull(s2);
+
+        habitat.addIndex(inhabitant, MyInterface2.class.getName(), "foo");
+
+        s2 = habitat.getService(MyInterface2.class, "foo");
+        assertSame(s1, s2);
+
+        habitat.removeIndex(MyInterface2.class.getName(), s1);
+
+        s2 = habitat.getService(MyInterface2.class, "foo");
+        assertNull(s2);
+    }
+
+    @Test
+    public void testRemoveIndexWithInhabitant() {
+        Habitat habitat = new Habitat(null, "testRemoveIndexWithInhabitant");
+        HK2Loader loader = new HolderHK2LoaderImpl(null);
+
+        assertNull(habitat.getService(MyService.class));
+
+        Inhabitant<MyService> inhabitant =
+                new LazyInhabitant<MyService>(habitat, loader, MyService.class.getName(), EMPTY_METADATA);
+
+        habitat.add(inhabitant);
+
+        MyService s1 = habitat.getService(MyService.class);
+        assertNotNull(s1);
+
+        MyInterface1 s2 = habitat.getService(MyInterface2.class, "foo");
+        assertNull(s2);
+
+        habitat.addIndex(inhabitant, MyInterface2.class.getName(), "foo");
+
+        s2 = habitat.getService(MyInterface2.class, "foo");
+        assertSame(s1, s2);
+
+        habitat.removeIndex(MyInterface2.class.getName(), inhabitant);
+
+        s2 = habitat.getService(MyInterface2.class, "foo");
+        assertNull(s2);
+    }
 }
