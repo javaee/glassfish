@@ -262,7 +262,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
     private Worker worker;
 
     // used for Async service types
-    private final AsyncWaiter waiter;
+//    private final AsyncWaiter waiter;
 
     @Inject
     private ServiceLocator serviceLocator;
@@ -308,12 +308,8 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
                     return activeThread;
                 }
             });
-            // waiter is now the responsibility of the activator
-            this.waiter = null;
         } else {
             this.exec = null;
-            // waiter is our responsibility
-            this.waiter = new AsyncWaiter();
         }
     }
 
@@ -387,24 +383,11 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
     @Override
     public void awaitCompletion()
             throws InterruptedException, ExecutionException, TimeoutException {
-        if (null != waiter) {
-            long start = System.currentTimeMillis();
-            logger.log(Level.FINER, "awaiting completion");
-            waiter.waitForDone();
-            logger.log(Level.FINER, "finished awaiting completion - {0} ms", System.currentTimeMillis() - start);
-        }
     }
 
     @Override
     public void awaitCompletion(long timeout, TimeUnit unit)
             throws InterruptedException, TimeoutException, ExecutionException {
-        if (null != waiter) {
-            long start = System.currentTimeMillis();
-            logger.log(Level.FINER, "awaiting completion");
-            boolean done = waiter.waitForDone(timeout, unit);
-            logger.log(Level.FINER, "finished awaiting completion - {0} ms; done = {1}",
-                    new Object[]{System.currentTimeMillis() - start, done});
-        }
     }
 
 
@@ -829,25 +812,14 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
 
                 Activator ia = getActivator();
 
-                // clear out the old set of watches
-                if (null != waiter) {
-                    waiter.clear();
-                }
-
                 for (ActiveDescriptor<?> descriptor : activations) {
                     if (logger.isLoggable(LEVEL)) {
                         logger.log(LEVEL, "activating {0} - "
                                 + getDescription(true), descriptor);
                     }
 
-                    ServiceHandle<?> serviceHandle = serviceLocator.getServiceHandle(descriptor);
                     try {
                         ia.activate(descriptor);
-
-                        if (null != waiter) {
-                            waiter.watchIfNecessary(serviceHandle);
-                        }
-
                         // an escape hatch if we've been interrupted in some way
                         checkInterrupt(null, descriptor, null);
                     } catch (Exception e) {
@@ -858,10 +830,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
                 try {
                     ia.awaitCompletion(DEFAULT_ASYNC_WAIT, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
-                    ActiveDescriptor<?> descriptor = (null == waiter) ?
-                            null :
-                            waiter.getLastDescriptorWorkingOn();
-                    checkInterrupt(e, descriptor, null);
+                    checkInterrupt(e, null, null);
                 }
             }
         }
