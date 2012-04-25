@@ -73,7 +73,7 @@
 <a class="jxr_linenumber" name="63" href="#63">63</a>      
 <a class="jxr_linenumber" name="64" href="#64">64</a>      @SuppressWarnings({ <span class="jxr_string">"unchecked"</span>, <span class="jxr_string">"rawtypes"</span> })
 <a class="jxr_linenumber" name="65" href="#65">65</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; Creator&lt;T&gt; create(Class&lt;T&gt; c, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, MultiMap&lt;String,String&gt; metadata) {
-<a class="jxr_linenumber" name="66" href="#66">66</a>          <a href="../../../../org/jvnet/hk2/component/Factory.html">Factory</a> f = c.getAnnotation(Factory.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="66" href="#66">66</a>          <a href="../../../../org/glassfish/hk2/Factory.html">Factory</a> f = c.getAnnotation(Factory.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="67" href="#67">67</a>          <strong class="jxr_keyword">if</strong> (f != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="68" href="#68">68</a>              <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> FactoryCreator&lt;T&gt;(c,f.value(),habitat,metadata);
 <a class="jxr_linenumber" name="69" href="#69">69</a>          }

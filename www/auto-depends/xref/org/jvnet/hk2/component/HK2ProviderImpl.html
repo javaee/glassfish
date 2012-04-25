@@ -54,8 +54,8 @@
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> com.sun.hk2.component.ExistingSingletonInhabitant;
 <a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> com.sun.hk2.component.ScopedInhabitant;
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.*;
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.spi.HK2Provider;
-<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.annotations.Service;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.annotations.Service;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.spi.HK2Provider;
 <a class="jxr_linenumber" name="49" href="#49">49</a>  
 <a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> java.util.ArrayList;
 <a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> java.util.List;
@@ -82,7 +82,7 @@
 <a class="jxr_linenumber" name="72" href="#72">72</a>                  }
 <a class="jxr_linenumber" name="73" href="#73">73</a>  
 <a class="jxr_linenumber" name="74" href="#74">74</a>                  @Override
-<a class="jxr_linenumber" name="75" href="#75">75</a>                  <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> newHabitat(Services parent, String name) <strong class="jxr_keyword">throws</strong> ComponentException {
+<a class="jxr_linenumber" name="75" href="#75">75</a>                  <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> newHabitat(<a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> parent, String name) <strong class="jxr_keyword">throws</strong> ComponentException {
 <a class="jxr_linenumber" name="76" href="#76">76</a>                      <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a>(parent, name);
 <a class="jxr_linenumber" name="77" href="#77">77</a>                  }
 <a class="jxr_linenumber" name="78" href="#78">78</a>              };
@@ -92,27 +92,27 @@
 <a class="jxr_linenumber" name="82" href="#82">82</a>      }
 <a class="jxr_linenumber" name="83" href="#83">83</a>      
 <a class="jxr_linenumber" name="84" href="#84">84</a>      @Override
-<a class="jxr_linenumber" name="85" href="#85">85</a>      <strong class="jxr_keyword">public</strong> Services create(Services parent, Class&lt;? <strong class="jxr_keyword">extends</strong> Module&gt;... moduleTypes) {
-<a class="jxr_linenumber" name="86" href="#86">86</a>          <strong class="jxr_keyword">final</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat = hFactory.newHabitat(parent, moduleTypes.length&gt;0?getModuleName(moduleTypes[0]):<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="85" href="#85">85</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> create(<a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> parent, Class&lt;? <strong class="jxr_keyword">extends</strong> Module&gt;... moduleTypes) {
+<a class="jxr_linenumber" name="86" href="#86">86</a>          <strong class="jxr_keyword">final</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat = hFactory.newHabitat((Habitat) parent, moduleTypes.length&gt;0?getModuleName(moduleTypes[0]):<strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="87" href="#87">87</a>          <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> == moduleTypes || 0 == moduleTypes.length) {
 <a class="jxr_linenumber" name="88" href="#88">88</a>              <strong class="jxr_keyword">return</strong> habitat;
 <a class="jxr_linenumber" name="89" href="#89">89</a>          }
 <a class="jxr_linenumber" name="90" href="#90">90</a>          
-<a class="jxr_linenumber" name="91" href="#91">91</a>          <strong class="jxr_keyword">final</strong> DynamicBinderFactory parentBinder = (parent==<strong class="jxr_keyword">null</strong>?<strong class="jxr_keyword">null</strong>:parent.bindDynamically());
+<a class="jxr_linenumber" name="91" href="#91">91</a>          <strong class="jxr_keyword">final</strong> <a href="../../../../org/glassfish/hk2/DynamicBinderFactory.html">DynamicBinderFactory</a> parentBinder = (parent==<strong class="jxr_keyword">null</strong>?<strong class="jxr_keyword">null</strong>:(((Habitat) parent).bindDynamically()));
 <a class="jxr_linenumber" name="92" href="#92">92</a>          <strong class="jxr_keyword">final</strong> <a href="../../../../org/jvnet/hk2/component/BinderFactoryImpl.html">BinderFactoryImpl</a> binderFactory = <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/BinderFactoryImpl.html">BinderFactoryImpl</a>(parentBinder);
 <a class="jxr_linenumber" name="93" href="#93">93</a>  
 <a class="jxr_linenumber" name="94" href="#94">94</a>          <em class="jxr_comment">// The trick in the code below is that when users request an instance of Services,</em>
 <a class="jxr_linenumber" name="95" href="#95">95</a>          <em class="jxr_comment">// we need to run the corresponding Module configuration.</em>
-<a class="jxr_linenumber" name="96" href="#96">96</a>          List&lt;Inhabitant&lt;Services&gt;&gt; inhabitants = <strong class="jxr_keyword">new</strong> ArrayList&lt;Inhabitant&lt;Services&gt;&gt;();
+<a class="jxr_linenumber" name="96" href="#96">96</a>          List&lt;Inhabitant&lt;Habitat&gt;&gt; inhabitants = <strong class="jxr_keyword">new</strong> ArrayList&lt;Inhabitant&lt;Habitat&gt;&gt;();
 <a class="jxr_linenumber" name="97" href="#97">97</a>  
 <a class="jxr_linenumber" name="98" href="#98">98</a>          <strong class="jxr_keyword">for</strong> (Class&lt;? <strong class="jxr_keyword">extends</strong> Module&gt; moduleType : moduleTypes) {
 <a class="jxr_linenumber" name="99" href="#99">99</a>  
 <a class="jxr_linenumber" name="100" href="#100">100</a>             <em class="jxr_comment">// We create an inhabitant for the Module service, this will allow us to use normal HK2</em>
 <a class="jxr_linenumber" name="101" href="#101">101</a>             <em class="jxr_comment">// dependency resolution between modules.</em>
 <a class="jxr_linenumber" name="102" href="#102">102</a>             ConstructorCreator&lt;Module&gt; inhabitant = <strong class="jxr_keyword">new</strong> ConstructorCreator&lt;Module&gt;(moduleType, habitat, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="103" href="#103">103</a>             <strong class="jxr_keyword">final</strong> ScopedInhabitant&lt;Module&gt; scopedInhabitant = <strong class="jxr_keyword">new</strong> ScopedInhabitant&lt;Module&gt;(inhabitant, <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/Scope.html">Scope</a>() {
+<a class="jxr_linenumber" name="103" href="#103">103</a>             <strong class="jxr_keyword">final</strong> ScopedInhabitant&lt;Module&gt; scopedInhabitant = <strong class="jxr_keyword">new</strong> ScopedInhabitant&lt;Module&gt;(inhabitant, <strong class="jxr_keyword">new</strong> <a href="../../../../org/glassfish/hk2/Scope.html">Scope</a>() {
 <a class="jxr_linenumber" name="104" href="#104">104</a>                 @Override
-<a class="jxr_linenumber" name="105" href="#105">105</a>                 <strong class="jxr_keyword">public</strong> ScopeInstance current() {
+<a class="jxr_linenumber" name="105" href="#105">105</a>                 <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/ScopeInstance.html">ScopeInstance</a> current() {
 <a class="jxr_linenumber" name="106" href="#106">106</a>                      <strong class="jxr_keyword">return</strong> habitat.singletonScope;
 <a class="jxr_linenumber" name="107" href="#107">107</a>                 }
 <a class="jxr_linenumber" name="108" href="#108">108</a>             });
@@ -125,12 +125,12 @@
 <a class="jxr_linenumber" name="115" href="#115">115</a>             <em class="jxr_comment">// At the end, all Services instances are the unique habitat, which is registered</em>
 <a class="jxr_linenumber" name="116" href="#116">116</a>             <em class="jxr_comment">// multiple times under each Services names (obtained from the Module's Service</em>
 <a class="jxr_linenumber" name="117" href="#117">117</a>             <em class="jxr_comment">// annotation)</em>
-<a class="jxr_linenumber" name="118" href="#118">118</a>             <strong class="jxr_keyword">final</strong> Inhabitant&lt;Services&gt; servicesInhabitant = <strong class="jxr_keyword">new</strong> ExistingSingletonInhabitant&lt;Services&gt;(habitat) {
+<a class="jxr_linenumber" name="118" href="#118">118</a>             <strong class="jxr_keyword">final</strong> Inhabitant&lt;Habitat&gt; servicesInhabitant = <strong class="jxr_keyword">new</strong> ExistingSingletonInhabitant&lt;Habitat&gt;(habitat) {
 <a class="jxr_linenumber" name="119" href="#119">119</a>                     @Override
-<a class="jxr_linenumber" name="120" href="#120">120</a>                     <strong class="jxr_keyword">public</strong> Services get(<a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) <strong class="jxr_keyword">throws</strong> ComponentException {
+<a class="jxr_linenumber" name="120" href="#120">120</a>                     <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> get(<a href="../../../../org/jvnet/hk2/component/Inhabitant.html">Inhabitant</a> onBehalfOf) <strong class="jxr_keyword">throws</strong> ComponentException {
 <a class="jxr_linenumber" name="121" href="#121">121</a>                         <strong class="jxr_keyword">if</strong> (!scopedInhabitant.isActive()) {
 <a class="jxr_linenumber" name="122" href="#122">122</a>                             <em class="jxr_comment">// time to get the module instance finally</em>
-<a class="jxr_linenumber" name="123" href="#123">123</a>                             Module module = scopedInhabitant.get(<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="123" href="#123">123</a>                             <a href="../../../../org/glassfish/hk2/Module.html">Module</a> module = scopedInhabitant.get(<strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="124" href="#124">124</a>                             <em class="jxr_comment">// run its configuration</em>
 <a class="jxr_linenumber" name="125" href="#125">125</a>                             module.configure(binderFactory);
 <a class="jxr_linenumber" name="126" href="#126">126</a>                             <em class="jxr_comment">// register all the bindings now.</em>
@@ -148,28 +148,28 @@
 <a class="jxr_linenumber" name="138" href="#138">138</a>             <em class="jxr_comment">// module instance</em>
 <a class="jxr_linenumber" name="139" href="#139">139</a>             <strong class="jxr_keyword">if</strong> (moduleName!=<strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="140" href="#140">140</a>                 habitat.addIndex(servicesInhabitant, Module.<strong class="jxr_keyword">class</strong>.getName(), moduleName);
-<a class="jxr_linenumber" name="141" href="#141">141</a>                 habitat.addIndex(servicesInhabitant, Services.<strong class="jxr_keyword">class</strong>.getName(), moduleName);
-<a class="jxr_linenumber" name="142" href="#142">142</a>             }
-<a class="jxr_linenumber" name="143" href="#143">143</a>             inhabitants.add(servicesInhabitant);
-<a class="jxr_linenumber" name="144" href="#144">144</a>         }
-<a class="jxr_linenumber" name="145" href="#145">145</a> 
-<a class="jxr_linenumber" name="146" href="#146">146</a>         <em class="jxr_comment">// all the modules inhabitants are added, this should take care of instantiating</em>
-<a class="jxr_linenumber" name="147" href="#147">147</a>         <em class="jxr_comment">// in the right order, as well as calling Module.configure at the same time the</em>
-<a class="jxr_linenumber" name="148" href="#148">148</a>         <em class="jxr_comment">// postConstruct is called</em>
-<a class="jxr_linenumber" name="149" href="#149">149</a>         <strong class="jxr_keyword">for</strong> (Inhabitant&lt;Services&gt; serviceInhabitant : inhabitants) {
-<a class="jxr_linenumber" name="150" href="#150">150</a>             serviceInhabitant.get();
-<a class="jxr_linenumber" name="151" href="#151">151</a>         }
-<a class="jxr_linenumber" name="152" href="#152">152</a> 
-<a class="jxr_linenumber" name="153" href="#153">153</a>         <strong class="jxr_keyword">return</strong> habitat;
-<a class="jxr_linenumber" name="154" href="#154">154</a>     }
-<a class="jxr_linenumber" name="155" href="#155">155</a> 
-<a class="jxr_linenumber" name="156" href="#156">156</a>     <strong class="jxr_keyword">public</strong> Services create(Services parent, Module... modules) {
-<a class="jxr_linenumber" name="157" href="#157">157</a>         <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat = hFactory.newHabitat(parent, modules.length&gt;0?getModuleName(modules[0].getClass()):<strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="141" href="#141">141</a>             }
+<a class="jxr_linenumber" name="142" href="#142">142</a>             inhabitants.add(servicesInhabitant);
+<a class="jxr_linenumber" name="143" href="#143">143</a>         }
+<a class="jxr_linenumber" name="144" href="#144">144</a> 
+<a class="jxr_linenumber" name="145" href="#145">145</a>         <em class="jxr_comment">// all the modules inhabitants are added, this should take care of instantiating</em>
+<a class="jxr_linenumber" name="146" href="#146">146</a>         <em class="jxr_comment">// in the right order, as well as calling Module.configure at the same time the</em>
+<a class="jxr_linenumber" name="147" href="#147">147</a>         <em class="jxr_comment">// postConstruct is called</em>
+<a class="jxr_linenumber" name="148" href="#148">148</a>         <strong class="jxr_keyword">for</strong> (Inhabitant&lt;Habitat&gt; serviceInhabitant : inhabitants) {
+<a class="jxr_linenumber" name="149" href="#149">149</a>             serviceInhabitant.get();
+<a class="jxr_linenumber" name="150" href="#150">150</a>         }
+<a class="jxr_linenumber" name="151" href="#151">151</a> 
+<a class="jxr_linenumber" name="152" href="#152">152</a>         <strong class="jxr_keyword">return</strong> habitat;
+<a class="jxr_linenumber" name="153" href="#153">153</a>     }
+<a class="jxr_linenumber" name="154" href="#154">154</a> 
+<a class="jxr_linenumber" name="155" href="#155">155</a>     @Override
+<a class="jxr_linenumber" name="156" href="#156">156</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> create(<a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> parent, Module... modules) {
+<a class="jxr_linenumber" name="157" href="#157">157</a>         <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat = hFactory.newHabitat((Habitat) parent, modules.length&gt;0?getModuleName(modules[0].getClass()):<strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="158" href="#158">158</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> == modules || 0 == modules.length) {
 <a class="jxr_linenumber" name="159" href="#159">159</a>             <strong class="jxr_keyword">return</strong> habitat;
 <a class="jxr_linenumber" name="160" href="#160">160</a>         }
 <a class="jxr_linenumber" name="161" href="#161">161</a>         
-<a class="jxr_linenumber" name="162" href="#162">162</a>         DynamicBinderFactory parentBinder = (parent==<strong class="jxr_keyword">null</strong>?<strong class="jxr_keyword">null</strong>:parent.bindDynamically());
+<a class="jxr_linenumber" name="162" href="#162">162</a>         <a href="../../../../org/glassfish/hk2/DynamicBinderFactory.html">DynamicBinderFactory</a> parentBinder = (parent==<strong class="jxr_keyword">null</strong>?<strong class="jxr_keyword">null</strong>:((Habitat) parent).bindDynamically());
 <a class="jxr_linenumber" name="163" href="#163">163</a>         <a href="../../../../org/jvnet/hk2/component/BinderFactoryImpl.html">BinderFactoryImpl</a> binderFactory = <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/BinderFactoryImpl.html">BinderFactoryImpl</a>(parentBinder);
 <a class="jxr_linenumber" name="164" href="#164">164</a> 
 <a class="jxr_linenumber" name="165" href="#165">165</a>         <strong class="jxr_keyword">for</strong> (Module module : modules) {

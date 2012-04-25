@@ -500,7 +500,7 @@
 <a class="jxr_linenumber" name="490" href="#490">490</a>         
 <a class="jxr_linenumber" name="491" href="#491">491</a>         <em class="jxr_comment">// avoid loading of the class until we have to ... at this point we have</em>
 <a class="jxr_linenumber" name="492" href="#492">492</a>         <em class="jxr_comment">// to</em>
-<a class="jxr_linenumber" name="493" href="#493">493</a>         RunLevel rl = i.getAnnotation(RunLevel.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="493" href="#493">493</a>         <a href="../../../../../../org/jvnet/hk2/annotations/RunLevel.html">RunLevel</a> rl = i.getAnnotation(RunLevel.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="494" href="#494">494</a>         <strong class="jxr_keyword">return</strong> (rl.value() == activeRunLevel &amp;&amp; rl.runLevelScope() == targetScope);
 <a class="jxr_linenumber" name="495" href="#495">495</a>     }
 <a class="jxr_linenumber" name="496" href="#496">496</a>     
@@ -735,7 +735,7 @@
 <a class="jxr_linenumber" name="725" href="#725">725</a>         <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">null</strong> != runlevel &amp;&amp; runlevel.length() &gt; 0) {
 <a class="jxr_linenumber" name="726" href="#726">726</a>             activeRunLevel = Integer.valueOf(runlevel);
 <a class="jxr_linenumber" name="727" href="#727">727</a>         } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="728" href="#728">728</a>             RunLevel rl = i.getAnnotation(RunLevel.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="728" href="#728">728</a>             <a href="../../../../../../org/jvnet/hk2/annotations/RunLevel.html">RunLevel</a> rl = i.getAnnotation(RunLevel.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="729" href="#729">729</a>             activeRunLevel = (<strong class="jxr_keyword">null</strong> == rl) ? <strong class="jxr_keyword">null</strong> : rl.value();
 <a class="jxr_linenumber" name="730" href="#730">730</a>         }
 <a class="jxr_linenumber" name="731" href="#731">731</a>         

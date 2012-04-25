@@ -53,20 +53,20 @@
 <a class="jxr_linenumber" name="43" href="#43">43</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.BinderFactory;
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.ComponentException;
 <a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.Factory;
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.HK2;
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.Module;
-<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.Provider;
-<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.Services;
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.TypeLiteral;
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.inject.Injector;
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.annotations.*;
-<a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.arbitrary.*;
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.contracts.*;
-<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.scopes.*;
-<a class="jxr_linenumber" name="56" href="#56">56</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.services.*;
-<a class="jxr_linenumber" name="57" href="#57">57</a>  
-<a class="jxr_linenumber" name="58" href="#58">58</a>  <strong class="jxr_keyword">import</strong> org.junit.BeforeClass;
-<a class="jxr_linenumber" name="59" href="#59">59</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.Module;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.Provider;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.TypeLiteral;
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.inject.Injector;
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.annotations.*;
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.arbitrary.*;
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.contracts.*;
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.scopes.*;
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.basic.services.*;
+<a class="jxr_linenumber" name="55" href="#55">55</a>  
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <strong class="jxr_keyword">import</strong> org.junit.BeforeClass;
+<a class="jxr_linenumber" name="57" href="#57">57</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.HK2;
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Habitat;
 <a class="jxr_linenumber" name="60" href="#60">60</a>  
 <a class="jxr_linenumber" name="61" href="#61">61</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.junit.Assert.*;
 <a class="jxr_linenumber" name="62" href="#62">62</a>  <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.glassfish.hk2.tests.basic.AssertionUtils.*;
@@ -153,11 +153,11 @@
 <a class="jxr_linenumber" name="143" href="#143">143</a>             binderFactory.bind().to(ConstructorInjectedFactoryBindingTestClass.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="144" href="#144">144</a>         }
 <a class="jxr_linenumber" name="145" href="#145">145</a>     }
-<a class="jxr_linenumber" name="146" href="#146">146</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Services services;
+<a class="jxr_linenumber" name="146" href="#146">146</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> Habitat services;
 <a class="jxr_linenumber" name="147" href="#147">147</a> 
 <a class="jxr_linenumber" name="148" href="#148">148</a>     @BeforeClass
 <a class="jxr_linenumber" name="149" href="#149">149</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> setup() {
-<a class="jxr_linenumber" name="150" href="#150">150</a>         services = HK2.get().create(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> ContextInjectionResolver.ContextInjectionModule(), <strong class="jxr_keyword">new</strong> BasicTestModule());
+<a class="jxr_linenumber" name="150" href="#150">150</a>         services = (Habitat) HK2.get().create(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">new</strong> ContextInjectionResolver.ContextInjectionModule(), <strong class="jxr_keyword">new</strong> BasicTestModule());
 <a class="jxr_linenumber" name="151" href="#151">151</a>     }
 <a class="jxr_linenumber" name="152" href="#152">152</a> 
 <a class="jxr_linenumber" name="153" href="#153">153</a>     @Test
@@ -177,7 +177,7 @@
 <a class="jxr_linenumber" name="167" href="#167">167</a> 
 <a class="jxr_linenumber" name="168" href="#168">168</a>     @Test
 <a class="jxr_linenumber" name="169" href="#169">169</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testTypeBindingConstructorInjection() {
-<a class="jxr_linenumber" name="170" href="#170">170</a>         Services s = HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
+<a class="jxr_linenumber" name="170" href="#170">170</a>         Habitat s = (Habitat) HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
 <a class="jxr_linenumber" name="171" href="#171">171</a> 
 <a class="jxr_linenumber" name="172" href="#172">172</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../org/glassfish/hk2/tests/basic/resolving/injected/ConstructorInjectedTypeBinidngTestClass.html">ConstructorInjectedTypeBinidngTestClass</a> ci = s.byType(ConstructorInjectedTypeBinidngTestClass.<strong class="jxr_keyword">class</strong>).get();
 <a class="jxr_linenumber" name="173" href="#173">173</a>         ci.assertInjection();
@@ -192,7 +192,7 @@
 <a class="jxr_linenumber" name="182" href="#182">182</a> 
 <a class="jxr_linenumber" name="183" href="#183">183</a>     @Test
 <a class="jxr_linenumber" name="184" href="#184">184</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInstanceBindingConstructorInjection() {
-<a class="jxr_linenumber" name="185" href="#185">185</a>         Services s = HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
+<a class="jxr_linenumber" name="185" href="#185">185</a>         Habitat s = (Habitat) HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
 <a class="jxr_linenumber" name="186" href="#186">186</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../org/glassfish/hk2/tests/basic/resolving/injected/ConstructorInjectedInstanceBindingTestClass.html">ConstructorInjectedInstanceBindingTestClass</a> ci = s.forContract(ConstructorInjectedInstanceBindingTestClass.<strong class="jxr_keyword">class</strong>).get();
 <a class="jxr_linenumber" name="187" href="#187">187</a>         ci.assertInjection();
 <a class="jxr_linenumber" name="188" href="#188">188</a>     }
@@ -243,7 +243,7 @@
 <a class="jxr_linenumber" name="233" href="#233">233</a> 
 <a class="jxr_linenumber" name="234" href="#234">234</a>     @Test
 <a class="jxr_linenumber" name="235" href="#235">235</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testFactoryProvidedContractConstructorInjection() {
-<a class="jxr_linenumber" name="236" href="#236">236</a>         Services s = HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
+<a class="jxr_linenumber" name="236" href="#236">236</a>         Habitat s = (Habitat) HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
 <a class="jxr_linenumber" name="237" href="#237">237</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../org/glassfish/hk2/tests/basic/resolving/injected/ConstructorInjectedFactoryBindingTestClass.html">ConstructorInjectedFactoryBindingTestClass</a> ci = s.byType(ConstructorInjectedFactoryBindingTestClass.<strong class="jxr_keyword">class</strong>).get();
 <a class="jxr_linenumber" name="238" href="#238">238</a>         ci.assertInjection();
 <a class="jxr_linenumber" name="239" href="#239">239</a> 
@@ -260,7 +260,7 @@
 <a class="jxr_linenumber" name="250" href="#250">250</a> 
 <a class="jxr_linenumber" name="251" href="#251">251</a>     @Test
 <a class="jxr_linenumber" name="252" href="#252">252</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testInjectorConstructorInjection() {
-<a class="jxr_linenumber" name="253" href="#253">253</a>         Services s = HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
+<a class="jxr_linenumber" name="253" href="#253">253</a>         Habitat s = (Habitat) HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
 <a class="jxr_linenumber" name="254" href="#254">254</a>         Injector injector = s.forContract(Injector.<strong class="jxr_keyword">class</strong>).get();
 <a class="jxr_linenumber" name="255" href="#255">255</a> 
 <a class="jxr_linenumber" name="256" href="#256">256</a>         <a href="../../../../../../org/glassfish/hk2/tests/basic/resolving/injected/ConstructorInjectedTypeBinidngTestClass.html">ConstructorInjectedTypeBinidngTestClass</a> ci = injector.inject(ConstructorInjectedTypeBinidngTestClass.<strong class="jxr_keyword">class</strong>);
@@ -269,7 +269,7 @@
 <a class="jxr_linenumber" name="259" href="#259">259</a> 
 <a class="jxr_linenumber" name="260" href="#260">260</a>     @Test
 <a class="jxr_linenumber" name="261" href="#261">261</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testConstructorBasedInjectionOnNonStaticInnerClass() {
-<a class="jxr_linenumber" name="262" href="#262">262</a>         Services s = HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
+<a class="jxr_linenumber" name="262" href="#262">262</a>         Habitat s = (Habitat) HK2.get().create(services, <strong class="jxr_keyword">new</strong> ConstructorInjectionTestModule());
 <a class="jxr_linenumber" name="263" href="#263">263</a>         Injector injector = s.forContract(Injector.<strong class="jxr_keyword">class</strong>).get();
 <a class="jxr_linenumber" name="264" href="#264">264</a>         <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/glassfish/hk2/tests/basic/resolving/CustomInjectionTest.html">TestClass</a> {
 <a class="jxr_linenumber" name="265" href="#265">265</a> 

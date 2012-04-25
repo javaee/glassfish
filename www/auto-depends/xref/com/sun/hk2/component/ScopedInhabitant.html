@@ -63,16 +63,16 @@
 <a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment"> * @author Kohsuke Kawaguchi</em>
 <a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment"> */</em>
 <a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> ScopedInhabitant&lt;T&gt; <strong class="jxr_keyword">extends</strong> AbstractCreatorInhabitantImpl&lt;T&gt; {
-<a class="jxr_linenumber" name="56" href="#56">56</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../org/jvnet/hk2/component/Scope.html">Scope</a> scope;
+<a class="jxr_linenumber" name="56" href="#56">56</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../org/glassfish/hk2/Scope.html">Scope</a> scope;
 <a class="jxr_linenumber" name="57" href="#57">57</a>  
-<a class="jxr_linenumber" name="58" href="#58">58</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../com/sun/hk2/component/ScopedInhabitant.html">ScopedInhabitant</a>(Creator&lt;T&gt; creator, <a href="../../../../org/jvnet/hk2/component/Scope.html">Scope</a> scope) {
+<a class="jxr_linenumber" name="58" href="#58">58</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../com/sun/hk2/component/ScopedInhabitant.html">ScopedInhabitant</a>(Creator&lt;T&gt; creator, <a href="../../../../org/glassfish/hk2/Scope.html">Scope</a> scope) {
 <a class="jxr_linenumber" name="59" href="#59">59</a>          <strong class="jxr_keyword">super</strong>(DescriptorImpl.createMerged(getDescriptorFor(creator),
 <a class="jxr_linenumber" name="60" href="#60">60</a>                  <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/DescriptorImpl.html">DescriptorImpl</a>(<strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, scope)),
 <a class="jxr_linenumber" name="61" href="#61">61</a>               creator);
 <a class="jxr_linenumber" name="62" href="#62">62</a>          <strong class="jxr_keyword">this</strong>.scope = scope;
 <a class="jxr_linenumber" name="63" href="#63">63</a>      }
 <a class="jxr_linenumber" name="64" href="#64">64</a>  
-<a class="jxr_linenumber" name="65" href="#65">65</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/component/Scope.html">Scope</a> getScope() {
+<a class="jxr_linenumber" name="65" href="#65">65</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/Scope.html">Scope</a> getScope() {
 <a class="jxr_linenumber" name="66" href="#66">66</a>          <strong class="jxr_keyword">return</strong> scope;
 <a class="jxr_linenumber" name="67" href="#67">67</a>      }
 <a class="jxr_linenumber" name="68" href="#68">68</a>  

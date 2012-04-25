@@ -80,7 +80,7 @@
 <a class="jxr_linenumber" name="70" href="#70">70</a>          <strong class="jxr_keyword">this</strong>.habitat = habitat;
 <a class="jxr_linenumber" name="71" href="#71">71</a>      }
 <a class="jxr_linenumber" name="72" href="#72">72</a>  
-<a class="jxr_linenumber" name="73" href="#73">73</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isOptional(AnnotatedElement element, Inject annotation) {
+<a class="jxr_linenumber" name="73" href="#73">73</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isOptional(AnnotatedElement element, <a href="../../../../org/jvnet/hk2/annotations/Inject.html">Inject</a> annotation) {
 <a class="jxr_linenumber" name="74" href="#74">74</a>          <strong class="jxr_keyword">return</strong> annotation.optional();
 <a class="jxr_linenumber" name="75" href="#75">75</a>      }
 <a class="jxr_linenumber" name="76" href="#76">76</a>  
@@ -93,7 +93,7 @@
 <a class="jxr_linenumber" name="83" href="#83">83</a>                            <strong class="jxr_keyword">final</strong> AnnotatedElement target,
 <a class="jxr_linenumber" name="84" href="#84">84</a>                            <strong class="jxr_keyword">final</strong> Type genericType,
 <a class="jxr_linenumber" name="85" href="#85">85</a>                            <strong class="jxr_keyword">final</strong> Class&lt;V&gt; type) <strong class="jxr_keyword">throws</strong> ComponentException {
-<a class="jxr_linenumber" name="86" href="#86">86</a>          <strong class="jxr_keyword">final</strong> Inject inject = target.getAnnotation(Inject.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="86" href="#86">86</a>          <strong class="jxr_keyword">final</strong> <a href="../../../../org/jvnet/hk2/annotations/Inject.html">Inject</a> inject = target.getAnnotation(Inject.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="87" href="#87">87</a>          <strong class="jxr_keyword">final</strong> Callable&lt;V&gt; callable = <strong class="jxr_keyword">new</strong> Callable&lt;V&gt;() {
 <a class="jxr_linenumber" name="88" href="#88">88</a>              @Override
 <a class="jxr_linenumber" name="89" href="#89">89</a>              <strong class="jxr_keyword">public</strong> V call() <strong class="jxr_keyword">throws</strong> ComponentException {
@@ -154,7 +154,7 @@
 <a class="jxr_linenumber" name="144" href="#144">144</a>             }
 <a class="jxr_linenumber" name="145" href="#145">145</a>         } <strong class="jxr_keyword">catch</strong> (Exception e) {
 <a class="jxr_linenumber" name="146" href="#146">146</a>             <strong class="jxr_keyword">if</strong> (e instanceof ComponentException) <strong class="jxr_keyword">throw</strong> ComponentException.<strong class="jxr_keyword">class</strong>.<strong class="jxr_keyword">cast</strong>(e);
-<a class="jxr_linenumber" name="147" href="#147">147</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(e);
+<a class="jxr_linenumber" name="147" href="#147">147</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/glassfish/hk2/ComponentException.html">ComponentException</a>(e);
 <a class="jxr_linenumber" name="148" href="#148">148</a>         }
 <a class="jxr_linenumber" name="149" href="#149">149</a>     }
 <a class="jxr_linenumber" name="150" href="#150">150</a> 
@@ -185,7 +185,7 @@
 <a class="jxr_linenumber" name="175" href="#175">175</a>                                          <strong class="jxr_keyword">final</strong> AnnotatedElement target,
 <a class="jxr_linenumber" name="176" href="#176">176</a>                                          <strong class="jxr_keyword">final</strong> Type genericType,
 <a class="jxr_linenumber" name="177" href="#177">177</a>                                          <strong class="jxr_keyword">final</strong> Class&lt;V&gt; type,
-<a class="jxr_linenumber" name="178" href="#178">178</a>                                          <strong class="jxr_keyword">final</strong> Inject inject) <strong class="jxr_keyword">throws</strong> ComponentException {
+<a class="jxr_linenumber" name="178" href="#178">178</a>                                          <strong class="jxr_keyword">final</strong> <a href="../../../../org/jvnet/hk2/annotations/Inject.html">Inject</a> inject) <strong class="jxr_keyword">throws</strong> ComponentException {
 <a class="jxr_linenumber" name="179" href="#179">179</a> 
 <a class="jxr_linenumber" name="180" href="#180">180</a>         <strong class="jxr_keyword">final</strong> Type t = Types.getTypeArgument(genericType, 0);
 <a class="jxr_linenumber" name="181" href="#181">181</a> 
@@ -211,8 +211,8 @@
 <a class="jxr_linenumber" name="201" href="#201">201</a>     }
 <a class="jxr_linenumber" name="202" href="#202">202</a> 
 <a class="jxr_linenumber" name="203" href="#203">203</a>     <strong class="jxr_keyword">protected</strong> &lt;V&gt; Provider&lt;V&gt; getProviderByContract(<a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat, Inhabitant&lt;?&gt; onBehalfOf,
-<a class="jxr_linenumber" name="204" href="#204">204</a>                                                   AnnotatedElement target, Type genericType, Inject inject)
-<a class="jxr_linenumber" name="205" href="#205">205</a>             <strong class="jxr_keyword">throws</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a> {
+<a class="jxr_linenumber" name="204" href="#204">204</a>                                                   AnnotatedElement target, Type genericType, <a href="../../../../org/jvnet/hk2/annotations/Inject.html">Inject</a> inject)
+<a class="jxr_linenumber" name="205" href="#205">205</a>             <strong class="jxr_keyword">throws</strong> <a href="../../../../org/glassfish/hk2/ComponentException.html">ComponentException</a> {
 <a class="jxr_linenumber" name="206" href="#206">206</a> 
 <a class="jxr_linenumber" name="207" href="#207">207</a> 
 <a class="jxr_linenumber" name="208" href="#208">208</a>         ContractLocatorImpl&lt;V&gt; contractLocator = <strong class="jxr_keyword">new</strong> ContractLocatorImpl&lt;V&gt;(habitat, genericType, <strong class="jxr_keyword">true</strong>);
@@ -279,7 +279,7 @@
 <a class="jxr_linenumber" name="269" href="#269">269</a>     }
 <a class="jxr_linenumber" name="270" href="#270">270</a> 
 <a class="jxr_linenumber" name="271" href="#271">271</a> 
-<a class="jxr_linenumber" name="272" href="#272">272</a>     <strong class="jxr_keyword">void</strong> populateContractLocator(ContractLocatorImpl&lt;?&gt; contractLocator, AnnotatedElement target, Inject inject) {
+<a class="jxr_linenumber" name="272" href="#272">272</a>     <strong class="jxr_keyword">void</strong> populateContractLocator(ContractLocatorImpl&lt;?&gt; contractLocator, AnnotatedElement target, <a href="../../../../org/jvnet/hk2/annotations/Inject.html">Inject</a> inject) {
 <a class="jxr_linenumber" name="273" href="#273">273</a>         Named named = target.getAnnotation(Named.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="274" href="#274">274</a>         String name = inject.name();
 <a class="jxr_linenumber" name="275" href="#275">275</a>         <strong class="jxr_keyword">if</strong> (named!=<strong class="jxr_keyword">null</strong> &amp;&amp; !inject.name().isEmpty()) {
