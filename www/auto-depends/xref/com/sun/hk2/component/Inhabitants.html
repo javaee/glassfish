@@ -129,7 +129,7 @@
 <a class="jxr_linenumber" name="119" href="#119">119</a> <em class="jxr_javadoccomment">   * Creates a {@link Inhabitant} by wrapping {@link Creator} to handle scoping right.</em>
 <a class="jxr_linenumber" name="120" href="#120">120</a> <em class="jxr_javadoccomment">   */</em>
 <a class="jxr_linenumber" name="121" href="#121">121</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; Inhabitant&lt;T&gt; wrapByScope(Class&lt;T&gt; c, Creator&lt;T&gt; creator, <a href="../../../../org/jvnet/hk2/component/Habitat.html">Habitat</a> habitat) {
-<a class="jxr_linenumber" name="122" href="#122">122</a>       Scoped scoped = c.getAnnotation(Scoped.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="122" href="#122">122</a>       <a href="../../../../org/jvnet/hk2/annotations/Scoped.html">Scoped</a> scoped = c.getAnnotation(Scoped.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="123" href="#123">123</a>       <strong class="jxr_keyword">if</strong> (scoped==<strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="124" href="#124">124</a>           <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> SingletonInhabitant&lt;T&gt;(creator); <em class="jxr_comment">// treated as singleton</em>
 <a class="jxr_linenumber" name="125" href="#125">125</a>       }
@@ -153,9 +153,9 @@
 <a class="jxr_linenumber" name="143" href="#143">143</a>       }
 <a class="jxr_linenumber" name="144" href="#144">144</a>   
 <a class="jxr_linenumber" name="145" href="#145">145</a>       <em class="jxr_comment">// other general case</em>
-<a class="jxr_linenumber" name="146" href="#146">146</a>       <a href="../../../../org/jvnet/hk2/component/Scope.html">Scope</a> scope = habitat.getByType(scopeClass);
+<a class="jxr_linenumber" name="146" href="#146">146</a>       <a href="../../../../org/glassfish/hk2/Scope.html">Scope</a> scope = habitat.getByType(scopeClass);
 <a class="jxr_linenumber" name="147" href="#147">147</a>       <strong class="jxr_keyword">if</strong> (scope==<strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="148" href="#148">148</a>           <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="jxr_string">"Failed to look up %s"</span>, scopeClass);
+<a class="jxr_linenumber" name="148" href="#148">148</a>           <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/glassfish/hk2/ComponentException.html">ComponentException</a>(<span class="jxr_string">"Failed to look up %s"</span>, scopeClass);
 <a class="jxr_linenumber" name="149" href="#149">149</a>       }
 <a class="jxr_linenumber" name="150" href="#150">150</a>   
 <a class="jxr_linenumber" name="151" href="#151">151</a>       <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ScopedInhabitant&lt;T&gt;(creator,scope);

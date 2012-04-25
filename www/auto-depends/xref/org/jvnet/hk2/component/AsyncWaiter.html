@@ -77,7 +77,7 @@
 <a class="jxr_linenumber" name="67" href="#67">67</a>      
 <a class="jxr_linenumber" name="68" href="#68">68</a>      <strong class="jxr_keyword">private</strong> Collection&lt;AsyncPostConstruct&gt; watches;
 <a class="jxr_linenumber" name="69" href="#69">69</a>      
-<a class="jxr_linenumber" name="70" href="#70">70</a>      <strong class="jxr_keyword">private</strong> AsyncPostConstruct workingOn;
+<a class="jxr_linenumber" name="70" href="#70">70</a>      <strong class="jxr_keyword">private</strong> <a href="../../../../org/glassfish/hk2/AsyncPostConstruct.html">AsyncPostConstruct</a> workingOn;
 <a class="jxr_linenumber" name="71" href="#71">71</a>      
 <a class="jxr_linenumber" name="72" href="#72">72</a>      
 <a class="jxr_linenumber" name="73" href="#73">73</a>      <em class="jxr_javadoccomment">/**</em>
@@ -205,7 +205,7 @@
 <a class="jxr_linenumber" name="195" href="#195">195</a>     }
 <a class="jxr_linenumber" name="196" href="#196">196</a>     
 <a class="jxr_linenumber" name="197" href="#197">197</a>     
-<a class="jxr_linenumber" name="198" href="#198">198</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/jvnet/hk2/component/AsyncWaiter.html">AsyncFuture</a> <strong class="jxr_keyword">implements</strong> AsyncPostConstruct {
+<a class="jxr_linenumber" name="198" href="#198">198</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/jvnet/hk2/component/AsyncWaiter.html">AsyncFuture</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../org/glassfish/hk2/AsyncPostConstruct.html">AsyncPostConstruct</a> {
 <a class="jxr_linenumber" name="199" href="#199">199</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Future&lt;?&gt; future;
 <a class="jxr_linenumber" name="200" href="#200">200</a>         
 <a class="jxr_linenumber" name="201" href="#201">201</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../org/jvnet/hk2/component/AsyncWaiter.html">AsyncFuture</a>(Future&lt;?&gt; future) {
@@ -238,9 +238,9 @@
 <a class="jxr_linenumber" name="228" href="#228">228</a>     }
 <a class="jxr_linenumber" name="229" href="#229">229</a> 
 <a class="jxr_linenumber" name="230" href="#230">230</a>     
-<a class="jxr_linenumber" name="231" href="#231">231</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/jvnet/hk2/component/AsyncWaiter.html">AsyncInhabitant</a> <strong class="jxr_keyword">implements</strong> AsyncPostConstruct {
+<a class="jxr_linenumber" name="231" href="#231">231</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/jvnet/hk2/component/AsyncWaiter.html">AsyncInhabitant</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../org/glassfish/hk2/AsyncPostConstruct.html">AsyncPostConstruct</a> {
 <a class="jxr_linenumber" name="232" href="#232">232</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> Inhabitant&lt;?&gt; inhabitant;
-<a class="jxr_linenumber" name="233" href="#233">233</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> AsyncPostConstruct service;
+<a class="jxr_linenumber" name="233" href="#233">233</a>         <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a href="../../../../org/glassfish/hk2/AsyncPostConstruct.html">AsyncPostConstruct</a> service;
 <a class="jxr_linenumber" name="234" href="#234">234</a> 
 <a class="jxr_linenumber" name="235" href="#235">235</a>         <strong class="jxr_keyword">private</strong> <a href="../../../../org/jvnet/hk2/component/AsyncWaiter.html">AsyncInhabitant</a>(Inhabitant&lt;?&gt; inhabitant) {
 <a class="jxr_linenumber" name="236" href="#236">236</a>             <strong class="jxr_keyword">this</strong>.inhabitant = inhabitant;
