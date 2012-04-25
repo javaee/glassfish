@@ -93,13 +93,6 @@
     </build>
 
     <dependencies>
-      	<dependency>
-            <groupId>org.jvnet</groupId>
-            <artifactId>tiger-types</artifactId>
-            <version>1.2</version>
-            <optional>true</optional>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>osgi-resource-locator</artifactId>
