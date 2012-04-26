@@ -93,7 +93,6 @@ grant codeBase "file:${build.dir}/../../external/cglib/target/-" {
 // we are not doing any specific security testing here.  It is the
 // classes directory that should have minimal grants, not the tests 
 grant codeBase "file:${build.dir}/test-classes/-" {
-  permission java.io.FilePermission "<<ALL FILES>>", "read";
 };
 
 // This is the grant that should contain the minimal grants necessary

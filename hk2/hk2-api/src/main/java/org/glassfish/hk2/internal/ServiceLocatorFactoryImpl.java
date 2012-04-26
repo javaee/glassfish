@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -65,7 +67,14 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
    * This will create a new set of name to locator mappings
    */
   public ServiceLocatorFactoryImpl() {
-      defaultGenerator = getGenerator();
+      defaultGenerator = AccessController.doPrivileged(new PrivilegedAction<ServiceLocatorGenerator>() {
+
+        @Override
+        public ServiceLocatorGenerator run() {
+            return getGenerator();
+        }
+          
+      });
   }
   
   private static ServiceLocatorGenerator getGenerator() {
