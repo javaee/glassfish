@@ -74,7 +74,13 @@ public class Pretty {
         return cn.substring(index + 1);
     }
     
-    private static String pType(ParameterizedType pType) {
+    /**
+     * Prints a pretty parameterized type
+     * 
+     * @param pType The parameterized type to print.  May not be null
+     * @return A pretty string version of the parameterized type
+     */
+    public static String pType(ParameterizedType pType) {
         StringBuffer sb = new StringBuffer();
         
         sb.append(clazz(ReflectionHelper.getRawClass(pType)) + "<");

@@ -41,6 +41,7 @@ package org.jvnet.hk2.internal;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 /**
  * @author jwells
@@ -89,13 +90,10 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     
     @Override
     public int hashCode() {
-        int code = rawType.hashCode();
-        
-        for (Type actual : actualTypeArguments) {
-            code ^= actual.hashCode();
-        }
-        
-        return code;
+        return
+                Arrays.hashCode(actualTypeArguments) ^
+                0 ^
+                (rawType == null   ? 0 : rawType.hashCode() );
     }
     
     @Override
@@ -123,29 +121,7 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     }
     
     public String toString() {
-        StringBuffer sb = new StringBuffer("<");
-        
-        boolean first = true;
-        for (Type actual : actualTypeArguments) {
-            if (first) {
-                sb.append(actual.toString());
-                first = false;
-            }
-            else {
-                sb.append("," + actual.toString());
-            }
-        }
-        sb.append(">");
-        
-        String betterClassName;
-        if (rawType instanceof Class) {
-            betterClassName = ((Class<?>) rawType).getName();
-        }
-        else {
-            betterClassName = rawType.toString();
-        }
-        
-        return betterClassName + sb.toString();
+        return Pretty.pType(this);
     }
 
 }
