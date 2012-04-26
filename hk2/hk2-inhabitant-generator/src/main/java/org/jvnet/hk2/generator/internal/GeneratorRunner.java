@@ -82,16 +82,19 @@ public class GeneratorRunner {
      * @param outjarName The name of the jar file to create (can be the fileOrDirectory)
      * @param locatorName The name of the locator these files should be put into
      * @param verbose true if this should print information about progress
+     * @param searchPath The path-separator delimited list of files or directories to search for
+     *   contracts and qualifiers and various other annotations
      */
     public GeneratorRunner(String fileOrDirectory,
             String outjarName,
             String locatorName,
-            boolean verbose) {
+            boolean verbose,
+            String searchPath) {
         this.fileOrDirectory = fileOrDirectory;
         this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
-        utilities = new Utilities(verbose);
+        utilities = new Utilities(verbose, searchPath);
     }
     
     /**

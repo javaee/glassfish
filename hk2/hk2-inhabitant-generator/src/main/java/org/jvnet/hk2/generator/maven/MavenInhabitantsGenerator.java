@@ -39,7 +39,14 @@
  */
 package org.jvnet.hk2.generator.maven;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.LinkedList;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -77,6 +84,11 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
      * @parameter
      */
     private boolean test = false;
+    
+    /**
+     * @parameter
+     */
+    private String classpath;
 
     /**
      * This method will compile the inhabitants file based on
@@ -111,6 +123,16 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
             arguments.add(locator);
         }
         
+        if (classpath != null) {
+            String classpathValue = getClasspathFromFile();
+            if (classpathValue == null) {
+                throw new MojoFailureException("Found the file, but it did not contain a line with the classpath");
+            }
+            
+            arguments.add(HabitatGenerator.SEARCHPATH_ARG);
+            arguments.add(classpathValue);
+        }
+        
         String argv[] = arguments.toArray(new String[arguments.size()]);
         
         int result = HabitatGenerator.embeddedMain(argv);
@@ -120,5 +142,29 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
                 (test ? testOutputDirectory : outputDirectory));
         }
     }
-
+    
+    private String getClasspathFromFile() throws MojoFailureException {
+        File classpathFile = new File(classpath);
+        if (!classpathFile.exists() || classpathFile.isDirectory() || !classpathFile.canRead()) {
+            throw new MojoFailureException("Could not find or read file " + classpathFile.getAbsolutePath());
+        }
+        
+        try {
+            InputStream is = new FileInputStream(classpathFile);
+            Reader reader = new InputStreamReader(is);
+            BufferedReader bis = new BufferedReader(reader);
+            
+            String line = bis.readLine();
+            
+            bis.close();
+            reader.close();
+            is.close();
+            
+            return line;
+        }
+        catch (IOException ioe) {
+            throw new MojoFailureException(ioe.getMessage());
+        }
+        
+    }
 }

@@ -74,7 +74,6 @@ import org.objectweb.asm.ClassReader;
  *
  */
 public class Utilities {
-    private final static String CLASS_PATH_PROPERTY = "java.class.path";
     private final static String DOT_CLASS = ".class";
     private final static String CONTRACT_WITH_SLASHES = "L" + Contract.class.getName().replace('.', '/') + ";";
     private final static String SCOPE_WITH_SLASHES = "L" + Scope.class.getName().replace('.', '/') + ";";
@@ -87,11 +86,13 @@ public class Utilities {
     private final Map<String, Set<String>> FOUND_INTERFACES = new HashMap<String, Set<String>>();
     
     private final boolean verbose;
+    private final String searchPath;
     
     private final String CONFIGURED_CONTRACT = "org.jvnet.hk2.config.Configured";
     
-    /* package */ Utilities(boolean verbose) {
+    /* package */ Utilities(boolean verbose, String searchPath) {
         this.verbose = verbose;
+        this.searchPath = searchPath;
         
         // We can pre-load the cache with some obvious ones and thus reduce searching quite a bit
         ISA_CONTRACT.put(Factory.class.getName(), true);
@@ -209,9 +210,8 @@ public class Utilities {
         if (!searchClassPath) return null;
         
         // Handle classpath
-        String classpath = System.getProperty(CLASS_PATH_PROPERTY);
+        String classpath = searchPath;
         if (classpath == null) return null;
-        
         
         StringTokenizer st = new StringTokenizer(classpath, File.pathSeparator);
         while (st.hasMoreTokens()) {

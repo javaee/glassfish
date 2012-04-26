@@ -82,6 +82,9 @@
                 <artifactId>hk2-inhabitant-generator</artifactId>
                 <executions>
                     <execution>
+                        <configuration>
+                            <classpath>${project.build.directory}/classpath.txt</classpath>
+                        </configuration>
                         <goals>
                             <goal>generateInhabitants</goal>
                         </goals>
@@ -90,7 +93,8 @@
                         <id>test</id>
                         <phase>process-test-classes</phase>
                         <configuration>
-                          <test>true</test>
+                            <test>true</test>
+                            <classpath>${project.build.directory}/classpath.txt</classpath>
                         </configuration>
                         <goals>
                             <goal>generateInhabitants</goal>
