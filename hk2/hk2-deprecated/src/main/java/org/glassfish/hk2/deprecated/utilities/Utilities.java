@@ -49,6 +49,7 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.internal.IndexedFilterImpl;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.component.Inhabitant;
@@ -80,12 +81,12 @@ public class Utilities {
     /**
      * Bind the given descriptor to the given service locator.
      *
-     * @param locator     the service locator to bind to
-     * @param descriptor  the descriptor that we are adding
+     * @param locator    the service locator to bind to
+     * @param descriptor the descriptor that we are adding
      */
     public static ActiveDescriptor<?> add(ServiceLocator locator, Descriptor descriptor) {
-        DynamicConfigurationService dcs    = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration        config = dcs.createDynamicConfiguration();
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
 
         ActiveDescriptor<?> activeDescriptor = config.bind(descriptor);
         config.commit();
@@ -96,18 +97,18 @@ public class Utilities {
     /**
      * Add an alternate index to look up the given descriptor.
      *
-     * @param locator     the service locator to associate this index with
-     * @param descriptor  the descriptor that we are adding the index for
-     * @param contract    the contract for the index
-     * @param name        the name for the index
-     * @param <T>         the descriptor type
+     * @param locator    the service locator to associate this index with
+     * @param descriptor the descriptor that we are adding the index for
+     * @param contract   the contract for the index
+     * @param name       the name for the index
+     * @param <T>        the descriptor type
      */
     public static <T> void addIndex(ServiceLocator locator,
                                     ActiveDescriptor<T> descriptor,
                                     String contract,
                                     String name) {
-        DynamicConfigurationService dcs    = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration        config = dcs.createDynamicConfiguration();
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
 
         config.addActiveDescriptor(new AliasDescriptor<T>(locator, descriptor, contract, name));
         config.commit();
@@ -117,10 +118,9 @@ public class Utilities {
      * Unbind the descriptor(s) found by the given filter from the given service
      * locator.
      *
-     * @param locator  the service locator
-     * @param filter   the filter used to find descriptor(s) that we are
-     *                 unbinding
-     *
+     * @param locator the service locator
+     * @param filter  the filter used to find descriptor(s) that we are
+     *                unbinding
      * @return true if any descriptor(s) could be found using the given
      *         filter; false otherwise
      */
@@ -130,8 +130,8 @@ public class Utilities {
             return false;
         }
 
-        DynamicConfigurationService dcs    = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration        config = dcs.createDynamicConfiguration();
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
 
         config.addUnbindFilter(filter);
         config.commit();
@@ -141,13 +141,13 @@ public class Utilities {
     /**
      * Create a descriptor from the given type name.
      *
-     * @param typeName  the type name
-     * @param cl        the loader
-     * @param metadata  the metadata
+     * @param typeName the type name
+     * @param cl       the loader
+     * @param metadata the metadata
      *
      * @return a new descriptor
      */
-    public static DescriptorImpl getDescriptor(
+    public static DescriptorImpl createDescriptor(
             String typeName,
             HK2Loader cl,
             Map<String, List<String>> metadata) {
@@ -171,33 +171,93 @@ public class Utilities {
      *
      * @param ofType   the type to check
      * @param contract the contract this type is allowed to handle
-     *
      * @return the type closure restricted to the contract; null if the
      *         given type does not implement the given contract
      */
-    protected static Type getTypeClosure(Type ofType, String contract){
+    protected static Type getTypeClosure(Type ofType, String contract) {
         Set<Type> contractTypes = ReflectionHelper.getTypeClosure(
                 ofType, Collections.singleton(contract));
 
         Iterator<Type> iterator = contractTypes.iterator();
         return iterator.hasNext() ? iterator.next() : null;
     }
-    
+
     /**
-     * Creates an Inhabitant from an ActiveDescriptor
-     * 
-     * @param fromMe The Descriptor to turn into an Inhabitant
-     * @param locator The locator to use for the inhabitant
-     * @return An Inhabitant
+     * Creates an {@link Inhabitant} from an {@link ActiveDescriptor}.
+     *
+     * @param fromMe  the {@link Descriptor} to turn into an {@link Inhabitant}
+     * @param locator the locator to use for the {@link Inhabitant}
+     *
+     * @return an {@link Inhabitant}
      */
-    public static <T> Inhabitant<T> getInhabitantFromActiveDescriptor(ActiveDescriptor<T> fromMe, ServiceLocator locator) {
+    public static <T> Inhabitant<T> getInhabitantFromActiveDescriptor(ActiveDescriptor<T> fromMe,
+                                                                      ServiceLocator locator) {
         if (fromMe == null) return null;
-        
+
         org.glassfish.hk2.api.Descriptor original = fromMe.getBaseDescriptor();
         if (original != null && (original instanceof Inhabitant)) {
             return (Inhabitant<T>) original;
         }
-        
+
         return new InhabitantImpl<T>(fromMe, locator);
+    }
+
+    /**
+     * Get the best descriptor for the given class and name.
+     *
+     * @param locator  the service locator
+     * @param type     the type
+     * @param name     the name
+     *
+     * @return a descriptor that matches the given type and name
+     */
+    public static Descriptor getDescriptor(ServiceLocator locator,
+                                           final Class type,
+                                           final String name) {
+        return locator.getBestDescriptor(
+                new IndexedFilterImpl(type.getName(), name));
+    }
+
+    /**
+     * Get all of the descriptors for the given contract type.
+     *
+     * @param locator  the service locator
+     * @param type     the contract type
+     *
+     * @return a list of descriptors for the given contract type
+     */
+    public static List<? extends Descriptor> getAllDescriptorsByContract(ServiceLocator locator,
+                                                                         final Class type) {
+        return locator.getDescriptors(new Filter() {
+            public boolean matches(final Descriptor d) {
+                return d.getAdvertisedContracts().contains(type.getName());
+            }
+        });
+    }
+
+    /**
+     * Get the service from the given service locator for the given descriptor.
+     *
+     * @param locator     the service locator
+     * @param descriptor  the descriptor
+     * @param <T>         the type of the service
+     *
+     * @return the service; null if no binding matching the given descriptor
+     *         can be found through the given service locator
+     */
+    public <T> T getService(ServiceLocator locator, final Descriptor descriptor) {
+        final Filter filter = new Filter() {
+            @Override
+            public boolean matches(Descriptor d) {
+                return descriptor.equals(d);
+            }
+        };
+
+        ActiveDescriptor<T> bestDescriptor =
+                (ActiveDescriptor<T>) locator.getBestDescriptor(filter);
+
+        return bestDescriptor == null ?
+                null :
+                locator.getServiceHandle(bestDescriptor).getService();
     }
 }

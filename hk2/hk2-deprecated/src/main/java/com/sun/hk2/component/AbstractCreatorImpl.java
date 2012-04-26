@@ -43,17 +43,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Creators;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.deprecated.internal.Utilities;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -67,7 +64,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
     private final Map<String, List<String>> metadata;
 
     public AbstractCreatorImpl(Class<? extends T> type, ServiceLocator serviceLocator, Map<String, List<String>> metadata) {
-        super(org.glassfish.hk2.deprecated.utilities.Utilities.getDescriptor(type.getName(), null, metadata));
+        super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(type.getName(), null, metadata));
 
         this.type = type;
         this.serviceLocator = serviceLocator;
