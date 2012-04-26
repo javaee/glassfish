@@ -53,6 +53,9 @@ import org.jvnet.hk2.generator.internal.GeneratorRunner;
  *
  */
 public class HabitatGenerator {
+    private final static String CLASS_PATH_PROP = "java.class.path";
+    private final static String CLASSPATH = System.getProperty(CLASS_PATH_PROP);;
+    
     /** The flag for the location of the file */
     public final static String FILE_ARG = "--file";
     /** The flag for the name of the locator */
@@ -61,20 +64,25 @@ public class HabitatGenerator {
     public final static String VERBOSE_ARG = "--verbose";
     /** The name of the JAR file to write to (defaults to input file, ignored if input file is directory) */
     public final static String OUTJAR_ARG = "--outjar";
+    /** The path-separator delimited list of files to search for contracts and qualifiers (defaults to classpath) */
+    public final static String SEARCHPATH_ARG = "--searchPath";
     
     private final String directoryOrFileToGenerateFor;
     private final String outjarName;
     private final String locatorName;
     private final boolean verbose;
+    private final String searchPath;
     
     private HabitatGenerator(String directoryOrFileToGenerateFor,
             String outjarName,
             String locatorName,
-            boolean verbose) {
+            boolean verbose,
+            String searchPath) {
         this.directoryOrFileToGenerateFor = directoryOrFileToGenerateFor;
         this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
+        this.searchPath = searchPath;
     }
     
     private void printThrowable(Throwable th) {
@@ -91,7 +99,7 @@ public class HabitatGenerator {
     
     private int go() {
         GeneratorRunner runner = new GeneratorRunner(directoryOrFileToGenerateFor,
-                outjarName, locatorName, verbose);
+                outjarName, locatorName, verbose, searchPath);
         
         try {
             runner.go();
@@ -120,17 +128,22 @@ public class HabitatGenerator {
     }
     
     private static void usage() {
-        System.out.println("java org.jvnet.hk2.generator.HabitatGenerator [--file jarFileOrDirectory] [--outjar jarFile] [--locator locatorName] [--verbose]");
+        System.out.println("java org.jvnet.hk2.generator.HabitatGenerator\n" +
+          "\t[--file jarFileOrDirectory]\n" +
+          "\t[--searchPath path-separator-delimited-classpath]\n" +
+          "\t[--outjar jarFile]\n" +
+          "\t[--locator locatorName]\n" +
+          "\t[--verbose]");
     }
     
-    private final static String CLASS_PATH_PROP = "java.class.path";
+    
     private final static String LOCATOR_DEFAULT = "default";
     
     /**
      * A utility to generate inhabitants files.  By default the first element of the classpath will be analyzed and
      * an inhabitants file will be put into the JAR or directory.  The arguments are as follows:
      * <p>
-     * HabitatGenerator [--file jarFileOrDirectory] [--outjar jarfile] [--locator locatorName] [--verbose]
+     * HabitatGenerator [--file jarFileOrDirectory] [--searchPath path-separator-delimited-classpath] [--outjar jarfile] [--locator locatorName] [--verbose]
      * </p>
      * If the input file is a directory then the output file will go into META-INF/locatorName in the
      * original directory
@@ -151,6 +164,7 @@ public class HabitatGenerator {
         String defaultLocatorName = LOCATOR_DEFAULT;
         boolean defaultVerbose = false;
         String outjarFile = null;
+        String searchPath = CLASSPATH;
         
         for (int lcv = 0; lcv < argv.length; lcv++) {
             if (VERBOSE_ARG.equals(argv[lcv])) {
@@ -183,13 +197,22 @@ public class HabitatGenerator {
                 
                 outjarFile = argv[lcv];
             }
+            else if (SEARCHPATH_ARG.equals(argv[lcv])) {
+                lcv++;
+                if (lcv >= argv.length) {
+                    usage();
+                    return 5;
+                }
+                
+                searchPath = argv[lcv];
+            }
             else {
                 System.err.println("Uknown argument: " + argv[lcv]);
             }
         }
         
         if (defaultFileToHandle == null) {
-            String cp = System.getProperty(CLASS_PATH_PROP);
+            String cp = CLASSPATH;
             
             int pathSep = cp.indexOf(File.pathSeparator);
             
@@ -207,7 +230,7 @@ public class HabitatGenerator {
         if (outjarFile == null) outjarFile = defaultFileToHandle;
         
         HabitatGenerator hg = new HabitatGenerator(defaultFileToHandle, outjarFile,
-                defaultLocatorName, defaultVerbose);
+                defaultLocatorName, defaultVerbose, searchPath);
         
         return hg.go();
     }
