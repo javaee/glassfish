@@ -185,10 +185,14 @@ public class HK2Runner {
                 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(urlStream));
                 
-                DescriptorImpl bindMe = new DescriptorImpl();
+                boolean goOn = true;
+                while (goOn) {
+                    DescriptorImpl bindMe = new DescriptorImpl();
                 
-                if (bindMe.readObject(reader)) {
-                    config.bind(bindMe);
+                    goOn = bindMe.readObject(reader);
+                    if (goOn == true) {
+                        config.bind(bindMe);
+                    }
                 }
                 
                 reader.close();
