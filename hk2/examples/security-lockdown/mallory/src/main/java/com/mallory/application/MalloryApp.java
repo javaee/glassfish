@@ -66,4 +66,13 @@ public class MalloryApp {
     public void doWorkOfEvil() {
         
     }
+    
+    /**
+     * Mallory is allowed to call the AliceApp
+     */
+    public void doAnApprovedOperation() {
+        alice.doAuditedService("Mallory");
+        
+        
+    }
 }

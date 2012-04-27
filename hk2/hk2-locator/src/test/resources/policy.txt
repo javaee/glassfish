@@ -89,9 +89,8 @@ grant codeBase "file:${build.dir}/../../external/cglib/target/-" {
 };
 
 // This is the grant that should contain the minimal grants necessary
-// for hk2-locator test classes.  These should have AllPermission, since
-// we are not doing any specific security testing here.  It is the
-// classes directory that should have minimal grants, not the tests 
+// for hk2-locator test classes.  These should have nothing in order
+// to ensure the underlying code is doing the proper set of doPriv calls.
 grant codeBase "file:${build.dir}/test-classes/-" {
 };
 

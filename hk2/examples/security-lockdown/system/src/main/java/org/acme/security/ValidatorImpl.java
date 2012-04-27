@@ -39,7 +39,6 @@
  */
 package org.acme.security;
 
-import java.io.File;
 import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.AllPermission;
@@ -57,7 +56,6 @@ import org.glassfish.hk2.api.Validator;
  * <p>
  * In order to bind or unbind services the caller must have AllPermission
  * <p>
- * TODO:  What is a good permission for lookup?
  * 
  * @author jwells
  *
@@ -82,7 +80,6 @@ public class ValidatorImpl implements Validator {
             if (!retVal) {
                 System.out.println("candidate " + candidate +
                         " LOOKUP FAILED the security check");
-                File hello = new File("policy.txt");
             }
             return retVal;
         }
