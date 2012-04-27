@@ -39,10 +39,9 @@
  */
 package org.jvnet.hk2.config;
 
+import com.sun.hk2.component.AbstractCreatorImpl;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
-
-import com.sun.hk2.component.AbstractCreatorImpl;
 
 import java.util.List;
 import java.util.Map;

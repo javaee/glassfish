@@ -143,19 +143,19 @@ public class DomDocument<T extends Dom> {
         if(i==null) return null;
         return buildModel(i);
     }
-    
+
     private static class InjectionTargetFilter
         implements Filter {
 
         String targetName;
-        
+
         InjectionTargetFilter(String targetName) {
-            this.targetName = targetName;    
+            this.targetName = targetName;
         }
-        
+
         @Override
         public boolean matches(Descriptor d) {
-            if (d.getQualifiers().contains(InjectionTarget.class.getName())) { 
+            if (d.getQualifiers().contains(InjectionTarget.class.getName())) {
                 List<String> list = d.getMetadata().get("target");
                 if (list != null && list.get(0).equals(targetName)) {
                     return true;

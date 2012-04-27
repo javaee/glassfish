@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,32 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config.model;
-
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-
-import java.util.List;
+package org.jvnet.hk2.component;
 
 /**
- * TopLevel test interface
+ * Services implementation may require access to the inhabitant object
+ * wrapping them. This is useful to access information and metadata associated
+ * with this service declaration.
+ *
+ * @author Jerome Dochez
  */
-@Configured
-// still using the ConfigBeanProxy, next step is to get rid of that...
-public interface TopLevel extends ConfigBeanProxy {
+public interface InhabitantRequested {
 
-    @Attribute
-    String getName();
-    void setName(String name);
-
-    @Element
-    Configs getConfigs();
-
-    @Element
-    Servers getServers();
-
-    @Element
-    VirtualServers getVirtualServers();
+    /**
+     * Sets the inhabitant instance wrapping this instance. Called after
+     * the object in constructed but before the postContruct call.
+     *
+     * @param inhabitant instance owning this service.
+     */
+    public void setInhabitant(Inhabitant inhabitant);
 }
