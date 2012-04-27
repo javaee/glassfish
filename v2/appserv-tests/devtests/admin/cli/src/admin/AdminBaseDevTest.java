@@ -115,6 +115,9 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         // and (2) there are tens of thousands of other files in this harness!!!
 
         // another issue is hacking off strings after a space.  Makes no sense to me!!
+        if(!success) {
+            int x = 5;  // a place to hang a breakpoint when debugging!!
+        }
         writeTimestamp(name, success);
         if (name.length() > MAX_LENGTH - 3)
             name = name.substring(0, MAX_LENGTH - 3);

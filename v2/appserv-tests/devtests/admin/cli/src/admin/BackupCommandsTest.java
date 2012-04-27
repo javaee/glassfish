@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package admin;
 
 import java.io.*;
@@ -45,12 +44,9 @@ import java.net.*;
 
 /*
  * Dev test for DAS recovery commands (backup-domain, restore-domain,
- * list-backups)
- * @author Yamini K B
- * @author Chris Kasso
+ * list-backups) @author Byron Nevins @author Yamini K B @author Chris Kasso
  */
 public class BackupCommandsTest extends AdminBaseDevTest {
-
     public BackupCommandsTest() {
         String host0 = null;
 
@@ -67,6 +63,11 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     }
 
     public static void main(String[] args) {
+        if (Boolean.getBoolean("HADAS"))
+            BACKUP_FILE = NEW_BACKUP_FILE;
+        else
+            BACKUP_FILE = OLD_BACKUP_FILE;
+
         new BackupCommandsTest().run();
     }
 
@@ -89,7 +90,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         testRestoreWithFileName();
         testCommandsWithNoDomains();
         testCommandsWithMultipleDomains();
-	stat.printSummary();
+        stat.printSummary();
     }
 
     private void testCommandsWithDASRunning() {
@@ -169,7 +170,7 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         File path = new File(BACKUP_DIR, DOMAIN1);
         File[] paths = path.listFiles();
         if (paths != null) {
-            for(File f : paths) {
+            for (File f : paths) {
                 f.delete();
             }
         }
@@ -191,8 +192,8 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         report("restore-domain-with-filename-3", asadmin("restore-domain", FILENAME_OPTION, BACKUP_FILE, FORCE_OPTION, "r-domain2"));
 
         //remove the domains
-        asadmin("delete-domain", "r-domain2");
-        asadmin("delete-domain", DOMAIN2);
+        report("delete-domain-r-domain2", asadmin("delete-domain", "r-domain2"));
+        report("delete-domain-domain2", asadmin("delete-domain", DOMAIN2));
     }
 
     private void testCommandsWithNoDomains() {
@@ -216,13 +217,13 @@ public class BackupCommandsTest extends AdminBaseDevTest {
     private void testCommandsWithMultipleDomains() {
 
         // create domain2
-        asadmin("create-domain", "--nopassword", DOMAIN2);
+        report("create-domain2-for-backup", asadmin("create-domain", "--nopassword", DOMAIN2));
 
         // perform a backup
         report("backup-domain-multiple-domains-in-domaindir", !asadmin("backup-domain"));
 
         // perform a backup
-        asadmin("backup-domain", DOMAIN1);
+        report("backup-domain1-multiple-explicit-arg", asadmin("backup-domain", DOMAIN1));
 
         // list backup
         report("list-backups-multiple-domains-in-domaindir", !asadmin("list-backups"));
@@ -233,24 +234,26 @@ public class BackupCommandsTest extends AdminBaseDevTest {
         // restore backup
         report("restore-domain-multiple-domains-in-domaindir", !asadmin("restore-domain", FORCE_OPTION));
 
-        asadmin("start-domain", DOMAIN1);
+        report("start-domain1-backup", asadmin("start-domain", DOMAIN1));
 
         // perform a backup on domain2 while domain1 is running (13463)
         report("backup-domain-multiple-domains-in-domaindir-13463", asadmin("backup-domain", DOMAIN2));
 
-        asadmin("stop-domain", DOMAIN1);
+        report("stop-domain1", asadmin("stop-domain", DOMAIN1));
 
         //delete domain2
-        asadmin("delete-domain", DOMAIN2);
+        report("delete-domain2", asadmin("delete-domain", DOMAIN2));
 
     }
     private final String host;
     private final File glassFishHome;
+    private static boolean HADAS = false;
     private static final String DOMAIN1 = "domain1";
     private static final String DOMAIN2 = "domain2";
     private static final String FORCE_OPTION = "--force";
     private static final String FILENAME_OPTION = "--filename";
-    private static final String BACKUP_FILE = "resources/backups/domain2_2010_07_19_v00001.zip";
+    private static String BACKUP_FILE;
+    private static final String NEW_BACKUP_FILE = "resources/backups/domain2_2012_04_26_v00001.zip";
+    private static final String OLD_BACKUP_FILE = "resources/backups/domain2_2010_07_19_v00001.zip";
     private static final String BACKUP_DIR = System.getenv("APS_HOME") + "/devtests/admin/cli/backupdir";
-
 }

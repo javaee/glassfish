@@ -110,16 +110,9 @@ public class ZombieTests extends AdminBaseDevTest {
         conn.getInputStream().close();
     }
 
-    private final File glassFishHome;
-    private final File zombieWarFile;
-    private static final String DOMAIN1 = "domain1";
-    private static final String DOMAIN2 = "domain2";
-    private static final String FORCE_OPTION = "--force";
-    private static final String FILENAME_OPTION = "--filename";
-    private static final String BACKUP_FILE = "resources/backups/domain2_2010_07_19_v00001.zip";
-    private static final String BACKUP_DIR = System.getenv("APS_HOME") + "devtests/admin/cli/backupdir";
-
     private void stopDomainForce() {
         report("forced-stop", asadmin("stop-domain", "--kill"));
     }
+    private final File glassFishHome;
+    private final File zombieWarFile;
 }

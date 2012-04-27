@@ -170,9 +170,10 @@
     </target>
 
     <target name="backup" depends="init, cleanAS">
-        <runtest classname="admin.BackupCommandsTest"/>
+        <runtest classname="admin.BackupCommandsTest">
+            <jvmarg value="-DHADAS=${hadas}"/>
+        </runtest>
     </target>
-
     <target name="tokens" depends="init">
         <runtest classname="admin.TokenTest"/>
     </target>
