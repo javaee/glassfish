@@ -47,6 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -150,7 +152,19 @@ public class HK2Runner {
         this.verbose = verbose;
     }
     
-    private void addServicesFromDefault(DynamicConfiguration config) {
+    private void addServicesFromDefault(final DynamicConfiguration config) {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+            @Override
+            public Object run() {
+                internalAddServicesFromDefault(config);
+                return null;
+            }
+            
+        });
+    }
+    
+    private void internalAddServicesFromDefault(DynamicConfiguration config) {
         ClassLoader loader = this.getClass().getClassLoader();
         
         Enumeration<URL> resources;
@@ -162,7 +176,6 @@ public class HK2Runner {
             
             return;
         }
-        
         
         while (resources.hasMoreElements()) {
             URL url = resources.nextElement();
@@ -189,7 +202,19 @@ public class HK2Runner {
         
     }
     
-    private void addServicesFromPackage(DynamicConfiguration config, List<String> packages) {
+    private void addServicesFromPackage(final DynamicConfiguration config, final List<String> packages) {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+            @Override
+            public Object run() {
+                internalAddServicesFromPackage(config, packages);
+                return null;
+            }
+            
+        });
+    }
+    
+    private void internalAddServicesFromPackage(DynamicConfiguration config, List<String> packages) {
         if (packages.isEmpty()) return;
         
         String classPath = System.getProperty(CLASS_PATH_PROP);

@@ -39,11 +39,8 @@
  */
 package org.glassfish.securitylockdown.test;
 
-import java.util.LinkedList;
-
 import junit.framework.Assert;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -56,25 +53,6 @@ import com.mallory.application.MalloryApp;
  *
  */
 public class SecurityLockdownTest extends HK2Runner {
-    private final static String SERVICE_DIRECTORIES[] = new String[] {
-        "com.mallory.application",
-        "com.alice.application",
-        "org.acme.security"
-    };
-    
-    /**
-     * Initializes the services
-     */
-    @Before
-    public void before() {
-        LinkedList<String> serviceDirectories = new LinkedList<String>();
-        for (String dir : SERVICE_DIRECTORIES) {
-            serviceDirectories.add(dir);
-        }
-        
-        // super.setVerbosity(true);
-        super.initialize("SecurityLockdownTest", serviceDirectories, null);
-    }
     
     /**
      * Tests that we can do a lookup of AliceApp

@@ -39,7 +39,6 @@
  */
 package org.acme.security;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Filter;
