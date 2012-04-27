@@ -1,0 +1,4 @@
+<simple-connector>
+    <ejb-container-availability/>
+    <web-container-availability/>
+</simple-connector>
