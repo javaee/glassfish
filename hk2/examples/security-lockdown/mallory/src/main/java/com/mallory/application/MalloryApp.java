@@ -41,7 +41,12 @@ package com.mallory.application;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Service;
 
 import com.alice.application.AliceApp;
@@ -72,7 +77,55 @@ public class MalloryApp {
      */
     public void doAnApprovedOperation() {
         alice.doAuditedService("Mallory");
+    }
+    
+    /**
+     * Mallory cannot however lookup the AuditService himself!
+     */
+    public void tryToGetTheAuditServiceMyself() {
+        Object auditService = locator.getBestDescriptor(BuilderHelper.createContractFilter("org.acme.security.AuditService"));
+        auditService.toString();  // This should NPE!
+    }
+    
+    /**
+     * Mallory cannot advertise the EvilService
+     */
+    public void tryToAdvertiseAService() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
         
+        config.addActiveDescriptor(EvilService.class);
         
+        config.commit();  // This will throw a MultiException
+    }
+    
+    /**
+     * Mallory cannot un-advertise ServiceLocator!
+     */
+    public void tryToUnAdvertiseAService() {
+        final Descriptor locatorService = locator.getBestDescriptor(BuilderHelper.createContractFilter(ServiceLocator.class.getName()));
+        
+        // This filter matches ServiceLocator itself!
+        Filter unbindFilter = new Filter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                if (d.getServiceId().equals(locatorService.getServiceId())) {
+                    if (d.getLocatorId().equals(locator.getLocatorId())) {
+                        return true;
+                    }
+                }
+                
+                return false;
+            }
+            
+        };
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addUnbindFilter(unbindFilter);
+        
+        config.commit();  // This will throw a MultiException
     }
 }

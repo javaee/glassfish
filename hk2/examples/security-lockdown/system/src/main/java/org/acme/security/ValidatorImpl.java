@@ -44,6 +44,8 @@ import java.security.AccessController;
 import java.security.AllPermission;
 import java.security.Permission;
 import java.security.ProtectionDomain;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
@@ -61,6 +63,8 @@ import org.glassfish.hk2.api.Validator;
  *
  */
 public class ValidatorImpl implements Validator {
+    private final static boolean VERBOSE = Boolean.parseBoolean(System.getProperty(
+            "org.jvnet.hk2.examples.securitylockdown.debug", "false"));
     private final static String ACCESS_IN_PACKAGE = "accessClassInPackage.";
     
     /**
@@ -76,12 +80,17 @@ public class ValidatorImpl implements Validator {
         if (injectee == null) {
             // This is a raw lookup, and hence we are on the stack.  Now we need to see
             // if the caller is allowed to see the given package
-            boolean retVal = checkPerm(getLookupPermission(candidate));
-            if (!retVal) {
-                System.out.println("candidate " + candidate +
-                        " LOOKUP FAILED the security check");
+            for (Permission p : getLookupPermissions(candidate)) {
+                if (!checkPerm(p)) {
+                    if (VERBOSE) {
+                        System.out.println("candidate " + candidate +
+                            " LOOKUP FAILED the security check for permission " + p);
+                    }
+                    return false;
+                }
             }
-            return retVal;
+            
+            return true;
         }
         
         // If this is an Inject, get the protection domain of the injectee
@@ -89,10 +98,13 @@ public class ValidatorImpl implements Validator {
         ProtectionDomain pd = injecteeClass.getProtectionDomain();
         Package p = injecteeClass.getPackage();
         
-        boolean retVal = pd.implies(getLookupPermission(p.getName()));
+        Permission permission = getLookupPermission(p.getName());
+        boolean retVal = pd.implies(permission);
         if (!retVal) {
-            System.out.println("candidate " + candidate + " injectee " + injectee +
+            if (VERBOSE) {
+                System.out.println("candidate " + candidate + " injectee " + injectee +
                     " LOOKUP FAILED the security check");
+            }
         }
         return retVal;
     }
@@ -120,11 +132,16 @@ public class ValidatorImpl implements Validator {
         return retVal;
     }
     
-    private static Permission getLookupPermission(ActiveDescriptor<?> ad) {
-        String fullImplClass = ad.getImplementation();
-        int index = fullImplClass.lastIndexOf('.');
-        String packName = fullImplClass.substring(0, index);
-        return getLookupPermission(packName);
+    private static List<Permission> getLookupPermissions(ActiveDescriptor<?> ad) {
+        LinkedList<Permission> retVal = new LinkedList<Permission>();
+        
+        for (String contract : ad.getAdvertisedContracts()) {
+            int index = contract.lastIndexOf('.');
+            String packName = contract.substring(0, index);
+            retVal.add(getLookupPermission(packName));
+        }
+        
+        return retVal;
     }
     
     private static boolean checkPerm(Permission p) {
