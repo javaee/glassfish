@@ -91,7 +91,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
       }
     
       Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).severe("Cannot find an implementation of the HK2 ServiceLocatorGenerator");
-      throw new IllegalStateException("Cannot find an implementation of the HK2 ServiceLocatorGenerator");
+      return null;
   }
 
   /* (non-Javadoc)
