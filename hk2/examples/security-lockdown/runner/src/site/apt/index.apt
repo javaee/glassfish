@@ -140,6 +140,7 @@ public class ValidationServiceImpl implements ValidationService {
  
 +---
 public class ValidatorImpl implements Validator {
+    ...
     
     @Override
     public boolean validate(Operation operation, ActiveDescriptor<?> candidate,
@@ -155,5 +156,46 @@ public class ValidatorImpl implements Validator {
         }
     }
     
+    ...
+    
 }
 +---
+
+ It is very important to understand the context in which these calls are made.  In that way it can be determined
+ how to check the permission being granted.  In the BIND, UNBIND and LOOKUP case that is *not* an injection (more
+ on that later) the java call frame will contain the operation being performed.  In the case of the
+ BIND and UNBIND operations this will include the code that called commit on the
+ {{{./apidocs/org/glassfish/hk2/api/DynamicConfiguration.html}DynamicConfiguration}}.  In the case of the
+ non-inject lookup, this will contain the user that ultimately attempted to look up a service.
+ 
+ Since the BIND and UNBIND cases are fairly strait-forward in our example, lets see how this permission
+ check is performed.  First, we make a checkPermission call that returns true or false depending on whether
+ or not the permission is granted or not.  Here it is:
+ 
++---
+
+    private static boolean checkPerm(Permission p) {
+        try {
+            AccessController.checkPermission(p);
+            return true;
+        }
+        catch (AccessControlException ace) {
+            return false;
+        }
+    }
++---
+
+ This converts any AccessControlException (an indication that the permission was NOT granted) into a simple
+ false value.  Otherwise, if the checkPermission call is successful this method will return true.  It should
+ be noted that using the checkPermission in this way will only work properly when the code to be checked is
+ on the call stack, and that every piece of code on the call-stack must have the permission being asked for.
+ For the BIND and UNBIND operations then, the check is easy, since the caller is on the stack and this method
+ is easy to use:
+
++---
+    private boolean validateBindAndUnbind() {
+        return checkPerm(new AllPermission());
+    }
++---
+
+ 

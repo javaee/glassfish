@@ -61,7 +61,12 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final Object lock = new Object();
     private boolean committed = false;
 
-    /* package */ DynamicConfigurationImpl(ServiceLocatorImpl locator) {
+    /**
+     * Created by the generator, and hence must be public
+     * 
+     * @param locator The locator for which this will be the configuration service
+     */
+    public DynamicConfigurationImpl(ServiceLocatorImpl locator) {
         this.locator = locator;
     }
 
