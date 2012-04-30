@@ -41,6 +41,7 @@ package org.glassfish.securitylockdown.test;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.MultiException;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -70,5 +71,67 @@ public class SecurityLockdownTest extends HK2Runner {
     public void testMalloryApp() {
         MalloryApp ma = testLocator.getService(MalloryApp.class);
         Assert.assertNotNull(ma);
+    }
+    
+    /**
+     * Tests that we can have Alice perform an operation on Mallory's behalf
+     */
+    @Test
+    public void testMalloryCanLegallyHaveAliceDoAnOperation() {
+        MalloryApp ma = testLocator.getService(MalloryApp.class);
+        Assert.assertNotNull(ma);
+        
+        ma.doAnApprovedOperation();
+    }
+    
+    /**
+     * Tests that we can have Alice perform an operation on Mallory's behalf
+     */
+    @Test
+    public void testMalloryCannotGetTheAuditServiceHimself() {
+        MalloryApp ma = testLocator.getService(MalloryApp.class);
+        Assert.assertNotNull(ma);
+        
+        try {
+            ma.tryToGetTheAuditServiceMyself();
+            Assert.fail("Mallory should not be able to get the audit service himself");
+        }
+        catch (NullPointerException npe) {
+            // Good, should have failed for him!
+        }
+    }
+    
+    /**
+     * Tests that Mallory cannot advertise a service
+     */
+    @Test
+    public void testMalloryCannotAdvertiseAService() {
+        MalloryApp ma = testLocator.getService(MalloryApp.class);
+        Assert.assertNotNull(ma);
+        
+        try {
+            ma.tryToAdvertiseAService();
+            Assert.fail("Mallory should not be able to advertise a service himself");
+        }
+        catch (MultiException multi) {
+            // Good, should have failed for him!
+        }
+    }
+    
+    /**
+     * Tests that Mallory cannot advertise a service
+     */
+    @Test
+    public void testMalloryCannotUnAdvertiseAService() {
+        MalloryApp ma = testLocator.getService(MalloryApp.class);
+        Assert.assertNotNull(ma);
+        
+        try {
+            ma.tryToUnAdvertiseAService();
+            Assert.fail("Mallory should not be able to unadvertise a service");
+        }
+        catch (MultiException multi) {
+            // Good, should have failed for him!
+        }
     }
 }

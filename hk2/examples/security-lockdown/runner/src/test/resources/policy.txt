@@ -95,13 +95,20 @@ grant codeBase "file:${build.dir}/../../system/target/-" {
 // This is the grant that should contain the minimal grants necessary
 // for security-lockdown runner to run under maven. 
 grant codeBase "file:${build.dir}/../../alice/target/-" {
-  permission java.security.AllPermission;
+  permission java.lang.RuntimePermission "accessClassInPackage.javax.inject";
+  permission java.lang.RuntimePermission "accessClassInPackage.com.alice.application";
+  permission java.lang.RuntimePermission "accessClassInPackage.org.jvnet.hk2.annotations";
+  permission java.lang.RuntimePermission "accessClassInPackage.org.acme.security";
 };
 
 // This is the grant that should contain the minimal grants necessary
 // for security-lockdown runner to run under maven. 
 grant codeBase "file:${build.dir}/../../mallory/target/-" {
-  permission java.security.AllPermission;
+  permission java.lang.RuntimePermission "accessClassInPackage.javax.inject";
+  permission java.lang.RuntimePermission "accessClassInPackage.com.mallory.application";
+  permission java.lang.RuntimePermission "accessClassInPackage.com.alice.application";
+  permission java.lang.RuntimePermission "accessClassInPackage.org.jvnet.hk2.annotations";
+  permission java.lang.RuntimePermission "accessClassInPackage.org.glassfish.hk2.api";
 };
 
 // This is the grant that should contain the minimal grants necessary

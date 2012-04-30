@@ -1,0 +1,159 @@
+Security Lockdown Example
+
+ In this example we will show how to check every injection, lookup, bind
+ and unbind operation against a set of J2SE security permissions.  In order
+ to do so we have constructed four projects who have a different set of
+ permissions in the system.  Lets take a brief glimpse of each project
+ in the example, to get an overview of what they do and how they interact
+ with the system.  
+ 
+ The first project is the runner project, which is nothing more than a set of
+ junit tests which run various scenarios, showing how security is either granted
+ or denied to the other projects.
+ 
+ The next project is the system project, which is considered to be secure and
+ trusted system code.  This code will receive AllPermission and therefor is able
+ to manipulate any object in the system and perform any action.  The system code
+ contains things like the security validation service itself, along with other
+ secure code such as security services.
+ 
+ Another project is called "Alice."  Alice is an application provider that is
+ able to access security services.  Alice will not attempt to do anything bad, but
+ will remain within the confines of the permissions granted her.  However, Alice
+ does not have AllPermission, and therefore could not perform some operations even
+ if she tried (however, she never tries to do anything she shouldn't).
+ 
+ Mallory is the last project.  Mallory is another application provider, who also
+ has some access to system resources.  In fact, Mallory has access to the Alice application.
+ Mallory usually sticks to the bounds of what he is allowed to do, but sometimes will attempt
+ to perform operations that he is not allowed to perform.  We shall see that when he attempts
+ to do so he is rebuffed by the security operations of the system.
+ 
+ Lets take a look in detail at how this total security lockdown of the system occurs.
+ 
+The System Project
+
+ The system project has some resources it would like to give out to some applications,
+ but not to others.  It would also like to be able to prevent applications from
+ binding or unbinding services from the service registry (embodied by the
+ {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}).
+ 
+ In order to do this, the system project must decide on a protection scheme.  Therefore the
+ decision is made that only code with java.lang.AllPermission shall be able to bind or unbind
+ services.  In order to protect lookup and injection services the decision is made to use
+ the java.lang.RuntimePermission called "accessClassInPackage".  This permission is used to allow
+ code to access classes in a particular package, and so seems appropriate for also protecting services
+ that are from that particular package.
+ 
+ It should be noted that the above decisions were made arbitrarily for this example, and real system
+ code can use whatever permission scheme it desires, including creating and using its own Permission
+ classes.
+ 
+ Lets first take a look at the resource that the system project would like to protect.  You will see
+ in the package "org.acme.security" that there is a service called AuditService.  AuditService is an
+ extremely simple secure auditing service.  The system code would like to allow some applications access
+ to this service, and other applications to NOT be allowed to directly use this service.  It should be noted
+ that the code that CAN access the service may be able to use that service on behalf of the callers of that
+ service.  That sort of thing will all work according to the normal J2SE security model.  Here is the AuditService,
+ a service that should be protected:
+ 
++---
+@Service @Singleton
+public class AuditService {
+    ...
+}
++---
+
+ The most important thing to notice about this service is that there is nothing at all special about it.  It is
+ not annotated with any sort of special annotation or indication that it is a secure or protected service.  This
+ is because in some environments this service may be protected, while in other environments it may not be protected.
+ It is up to the environment to decide which resources need to be protected, and which do not.  In this way the
+ burden of deciding which resources are to be protected and which are not are taken away from the developers of the
+ resource and put into the hands of the definition of the particular environment in which those resources run.  This
+ is a good thing, as it puts the burden of deciding which resources are to be protected into the hands of those who
+ can better make that decision.
+ 
+ But how *does* the environment decide which resources are protected, and which are not?  In HK2 the answer is a
+ system defined service called the {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}.
+ The {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} has two functions.  The first
+ function is to decide which resources should be protected.  The second is to provide code that must be run in
+ order to protect the resources which are protected.
+ 
+ In this example, the system has decided that every resource must be protected.  Hence the name "security-lockdown"
+ example.  Every injection point, lookup and bind will first run through a
+ {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}} to decide whether or not that operation should be allowed
+ to proceed.  But before the {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}} is run on anything first the
+ {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} must tell the system that all resources
+ are to be protected.
+ 
+ In order to do this the system project must implement the
+ {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}.  In doing so it must implement
+ the getLookupFilter API, which returns a {{{./apidocs/org/glassfish/hk2/api/Filter.html}Filter}} to
+ the system.  The system will use this filter to determine which resources are protected.  If the filter returns
+ true about any resource, then that resource will have the {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}}
+ run over it whenever it is looked up or injected.  Note that bind and unbind operations are always run through
+ all registered validators, as these operations are rare and can have serious effects on the state of the system.
+ 
+ In our example, where we want to protect every resource, we implement the getLookupFilter in this way:
+ 
++---
+@Service @Singleton
+public class ValidationServiceImpl implements ValidationService {
+    ...
+    
+    @Override
+    public Filter getLookupFilter() {
+        return BuilderHelper.allFilter();
+    }
+    
+    ...
+}
++---
+
+ The {{{./apidocs/org/glassfish/hk2/utilities/BuilderHelper.html}BuilderHelper}} allFilter method returns a
+ {{{./apidocs/org/glassfish/hk2/api/Filter.html}Filter}} that always returns true.  In this way we have assured
+ that every lookup and injection in the system will be run through the implementation of
+ {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}}, which is also returned by out implementation of
+ the {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}:
+ 
++---
+@Service @Singleton
+public class ValidationServiceImpl implements ValidationService {
+    private final ValidatorImpl validator = new ValidatorImpl();
+    
+    ...
+
+    @Override
+    public Validator getValidator() {
+        return validator;
+    }
+}
++---
+
+ Note that since the ValidationService is a Singleton service that the ValidatorImpl will only be created once,
+ and the same one will be returned to the system every time the getValidator method is called.
+ 
+ However, the most important thing about the system code is how it protects the resources it has been charged
+ to protect.  That is the job of the ValidatorImpl.  The ValidatorImpl is responsible for determining
+ how to validate the BIND, UNBIND and LOOKUP operations.  Here is the implementation of the
+ {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}} validate method:
+ 
++---
+public class ValidatorImpl implements Validator {
+    
+    @Override
+    public boolean validate(Operation operation, ActiveDescriptor<?> candidate,
+            Injectee injectee) {
+        switch(operation) {
+        case BIND:
+        case UNBIND:
+            return validateBindAndUnbind();
+        case LOOKUP:
+            return validateLookup(candidate, injectee);
+        default:
+            return false;
+        }
+    }
+    
+}
++---
