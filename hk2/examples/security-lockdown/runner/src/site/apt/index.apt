@@ -198,4 +198,14 @@ public class ValidatorImpl implements Validator {
     }
 +---
 
+ This is very simple and ensures that anyone who tries to BIND or UNBIND service descriptions into the system
+ must have AllPermission!
+ 
+ Now lets talk about the lookup case.  The lookup case can be broken down into two cases, the true lookup case
+ and the injection case.  Both are doing a lookup of a service.  However in the first case (pure lookup) the
+ caller is directly on the stack.  In the second case there may be no other software on the stack than the
+ system software.  Therefore in that case more information may be needed in order to perform our security check.
+ That extra information comes in the form of the
+ {{{./apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}
+
  
