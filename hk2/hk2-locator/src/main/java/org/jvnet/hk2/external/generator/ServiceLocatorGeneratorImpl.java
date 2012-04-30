@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.jvnet.hk2.external.generator;
 
 import javax.inject.Singleton;
 
@@ -45,6 +45,10 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.jvnet.hk2.internal.DynamicConfigurationImpl;
+import org.jvnet.hk2.internal.DynamicConfigurationServiceImpl;
+import org.jvnet.hk2.internal.ServiceLocatorImpl;
+import org.jvnet.hk2.internal.Utilities;
 
 /**
  * @author jwells

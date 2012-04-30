@@ -108,7 +108,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     private boolean shutdown = false;
     
-    /* package */ ServiceLocatorImpl(String name, ServiceLocator parent) {
+    /**
+     * Called by the Generator, and hence must be a public method
+     * 
+     * @param name The name of this locator
+     * @param parent The parent of this locator (may be null)
+     */
+    public ServiceLocatorImpl(String name, ServiceLocator parent) {
         locatorName = name;
         this.parent = parent;
         synchronized (sLock) {
