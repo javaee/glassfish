@@ -21,8 +21,6 @@ Extensibility of HK2
  
  * {{Custom Injection Resolvers}}
  
- * {{Foreign Active Descriptor implementations}}
- 
  * {{Validation}}
  
 * {Adding a Scope and Context to the system}
@@ -101,11 +99,14 @@ Extensibility of HK2
  This {{{../custom-resolver-example/index.html}example}} adds a custom injection resolver that customizes the default
  JSR-330 injection resolver.
  
-* {Foreign Active Descriptor implementations}
-
- Here an example of Foreign Active Descriptors
- 
 * {Validation}
 
- Here an example of a validating injection point
+ In this example we show how the
+ {{{./apidocs/org/jvnet/hk2/api/ValidationService.html}ValidationService}} can be used to do a complete
+ security lockdown of the system.  This example runs with the J2SE security manager turned on and
+ grants some privileges to some projects and other privileges to other projects to ensure that the
+ {{{./apidocs/org/jvnet/hk2/api/ValidationService.html}ValidationService}} can be used to define the
+ security of the system.
+ 
+ The example can be seen {{{../security-lockdown-example-runner/index.html}here}}.
  

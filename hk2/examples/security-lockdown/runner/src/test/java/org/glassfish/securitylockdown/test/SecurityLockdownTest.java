@@ -144,7 +144,7 @@ public class SecurityLockdownTest extends HK2Runner {
         Assert.assertNotNull(ma);
         
         try {
-            ma.doWorkOfEvil();
+            ma.tryToInstantiateAServiceWithABadInjectionPoint();
             Assert.fail("Mallory should not be able to inject a service it has no rights to");
         }
         catch (MultiException multi) {
