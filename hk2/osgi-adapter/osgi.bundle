@@ -40,5 +40,5 @@
 
 # Export nothing.
 -exportcontents:
-Bundle-Activator: org.jvnet.hk2.osgiadapter.HK2Main
+Bundle-Activator: org.jvnet.hk2.osgiadapter.ServiceLocatorActivator
 Import-Package: org.apache.felix.bundlerepository; resolution:=optional, *

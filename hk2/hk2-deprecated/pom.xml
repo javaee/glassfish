@@ -84,6 +84,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <instructions>
+                        <Fragment-Host>org.glassfish.hk2.api</Fragment-Host>
+                    </instructions>
+                </configuration>
             </plugin>
 
         </plugins>
