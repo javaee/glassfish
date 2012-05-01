@@ -66,17 +66,6 @@ public class MalloryApp {
     private ServiceLocator locator;
     
     /**
-     * This will do something bad, I'm sure
-     */
-    public void doWorkOfEvil() {
-        EvilInjectedService evilInjectedService =
-                locator.getService(EvilInjectedService.class);
-        
-        System.out.println("JRW(10) evilInjectedService=" + evilInjectedService);
-        
-    }
-    
-    /**
      * Mallory is allowed to call the AliceApp
      */
     public void doAnApprovedOperation() {
@@ -131,5 +120,12 @@ public class MalloryApp {
         config.addUnbindFilter(unbindFilter);
         
         config.commit();  // This will throw a MultiException
+    }
+    
+    /**
+     * Tries to instantiate a service with an illegal injection point
+     */
+    public void tryToInstantiateAServiceWithABadInjectionPoint() {
+        locator.getService(EvilInjectedService.class);  // Will throw MultiException
     }
 }
