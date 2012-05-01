@@ -110,13 +110,13 @@ public class ConfigSupport {
     public static <T extends ConfigBeanProxy> Object apply(final SingleConfigCode<T> code, T param)
         throws TransactionFailure {
         
-        ConfigBeanProxy[] objects = { param };
+        //ConfigBeanProxy[] objects = { param };
         return apply((new ConfigCode() {
             @SuppressWarnings("unchecked")
             public Object run(ConfigBeanProxy... objects) throws PropertyVetoException, TransactionFailure {
                 return code.run((T) objects[0]);
             }
-        }), objects);
+        }), param);
     }
     
     /**
