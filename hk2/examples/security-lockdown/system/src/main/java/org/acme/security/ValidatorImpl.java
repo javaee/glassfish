@@ -43,6 +43,7 @@ import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.AllPermission;
 import java.security.Permission;
+import java.security.PrivilegedAction;
 import java.security.ProtectionDomain;
 import java.util.LinkedList;
 import java.util.List;
@@ -76,37 +77,69 @@ public class ValidatorImpl implements Validator {
         return checkPerm(new AllPermission());
     }
     
-    private boolean validateLookup(ActiveDescriptor<?> candidate, Injectee injectee) {
-        if (injectee == null) {
-            // This is a raw lookup, and hence we are on the stack.  Now we need to see
-            // if the caller is allowed to see the given package
-            for (Permission p : getLookupPermissions(candidate)) {
-                if (!checkPerm(p)) {
-                    if (VERBOSE) {
-                        System.out.println("candidate " + candidate +
-                            " LOOKUP FAILED the security check for permission " + p);
-                    }
-                    return false;
+    private boolean validateLookupAPI(ActiveDescriptor<?> candidate) {
+        List<Permission> lookupPermissions = getLookupPermissions(candidate);
+     
+        for (Permission lookupPermission : lookupPermissions) {
+            if (!checkPerm(lookupPermission)) {
+                if (VERBOSE) {
+                    System.out.println("candidate " + candidate +
+                        " LOOKUP FAILED the security check for permission " + lookupPermission);
                 }
+                return false;
             }
-            
-            return true;
         }
+        
+        return true;
+        
+    }
+    
+    private boolean validateInjection(ActiveDescriptor<?> candidate, Injectee injectee) {
+        List<Permission> lookupPermissions = getLookupPermissions(candidate);
         
         // If this is an Inject, get the protection domain of the injectee
-        Class<?> injecteeClass = injectee.getInjecteeClass();
-        ProtectionDomain pd = injecteeClass.getProtectionDomain();
-        Package p = injecteeClass.getPackage();
+        final Class<?> injecteeClass = injectee.getInjecteeClass();
         
-        Permission permission = getLookupPermission(p.getName());
-        boolean retVal = pd.implies(permission);
-        if (!retVal) {
-            if (VERBOSE) {
-                System.out.println("candidate " + candidate + " injectee " + injectee +
-                    " LOOKUP FAILED the security check");
+        ProtectionDomain pd = AccessController.doPrivileged(new PrivilegedAction<ProtectionDomain>() {
+
+            @Override
+            public ProtectionDomain run() {
+                return injecteeClass.getProtectionDomain();
+            }
+            
+        });
+        
+        for (Permission lookupPermission : lookupPermissions) {
+            if (!pd.implies(lookupPermission)) {
+                if (VERBOSE) {
+                    System.out.println("candidate " + candidate + " injectee " + injectee +
+                        " LOOKUP FAILED the security check for " + lookupPermission);
+                }
+                
+                return false;
             }
         }
-        return retVal;
+        
+        return true;
+    }
+    
+    /**
+     * Validates the lookup operation, with the two sub-cases of someone
+     * calling the lookup API directly (injectee is null) or the lookup
+     * occuring on behalf of an injection point (injectee is not null)
+     * 
+     * @param candidate The descriptor that would be used to create the object
+     * to be injected or returned from the lookup
+     * @param injectee If not null the injection point that will be injected into
+     * @return true if the candidate can be looked up, false if the candidate should
+     * not be available for lookup
+     */
+    private boolean validateLookup(ActiveDescriptor<?> candidate, Injectee injectee) {
+        if (injectee == null) {
+            return validateLookupAPI(candidate);
+        }
+        
+        return validateInjection(candidate, injectee);
     }
 
     /* (non-Javadoc)

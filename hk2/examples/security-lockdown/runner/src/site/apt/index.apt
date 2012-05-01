@@ -206,6 +206,94 @@ public class ValidatorImpl implements Validator {
  caller is directly on the stack.  In the second case there may be no other software on the stack than the
  system software.  Therefore in that case more information may be needed in order to perform our security check.
  That extra information comes in the form of the
- {{{./apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}
-
+ {{{./apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}.  Using the combination of the candidate
+ {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}} and the
+ place that descriptor would be injecting into (the
+ {{{./apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}) a security decision can be made about the
+ injection point.
  
+ Lets look at the method that handles the lookup case:
+ 
++---
+    private boolean validateLookup(ActiveDescriptor<?> candidate, Injectee injectee) {
+        if (injectee == null) {
+            return validateLookupAPI(candidate);
+        }
+        
+        return validateInjection(candidate, injectee);
+    }
++---
+
+ As you can see from the above code, the lookup has been broken into two cases, the
+ lookup with the API case, and the lookup based on the injection point case.  The
+ lookup with the API case is similar to the BIND and UNBIND cases, since the permission
+ check simply goes against the current call stack.  However, before we look at how
+ validateLookupAPI is implemented,  lets look at how we create the set of permissions
+ that are necessary for the caller to be allowed to use the lookup API.
+ 
+ Firstly, we create a RuntimePermission for a particular package by calling this
+ method:
+ 
++---
+    private final static String ACCESS_IN_PACKAGE = "accessClassInPackage.";
+    
+    private static Permission getLookupPermission(String packName) {
+        RuntimePermission retVal = new RuntimePermission(ACCESS_IN_PACKAGE + packName);
+        
+        return retVal;
+    }
++---
+
+ The above code will create the Permission that needs to be checked to see if the
+ caller should have access to the passed in package.
+ 
+ When dealing with an {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}},
+ we want to be sure that the caller has the right to access all of the contracts which
+ that service advertises.  Hence we create a method that returns all of the permissions
+ that must be checked based on all of the contracts that the
+ {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}} advertises.
+ Here is the implementation of that method:
+ 
++---
+    private static List<Permission> getLookupPermissions(ActiveDescriptor<?> ad) {
+        LinkedList<Permission> retVal = new LinkedList<Permission>();
+        
+        for (String contract : ad.getAdvertisedContracts()) {
+            int index = contract.lastIndexOf('.');
+            String packName = contract.substring(0, index);
+            retVal.add(getLookupPermission(packName));
+        }
+        
+        return retVal;
+    }
++---
+
+ Forearmed with the above methods, we can now look at how the method which
+ checks whether or not the lookup should be authorized.  Here is the implementation
+ of validateLookupAPI:
+ 
++---
+    private boolean validateLookupAPI(ActiveDescriptor<?> candidate) {
+        List<Permission> lookupPermissions = getLookupPermissions(candidate);
+     
+        for (Permission lookupPermission : lookupPermissions) {
+            if (!checkPerm(lookupPermission)) {
+                if (VERBOSE) {
+                    System.out.println("candidate " + candidate +
+                        " LOOKUP FAILED the security check for permission " + lookupPermission);
+                }
+                return false;
+            }
+        }
+        
+        return true;
+    }
++---
+
+  This is a strait-forward implementation, simply ensuring with the checkPerm call that
+  the caller is allowed to access all of the contracts offered by the given candidate.
+  
+  That leaves us with the case of the lookup being performed on behalf of an injection
+  point.  This sort of lookup might be done because of some system code, or on the behalf
+  of a chain of instantiations being done due to the dependency chain.  Hence, it may
+  not be the case that the proper protection domain is on the calling stack.

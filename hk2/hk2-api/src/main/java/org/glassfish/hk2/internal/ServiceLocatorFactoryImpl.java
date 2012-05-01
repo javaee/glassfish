@@ -90,7 +90,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
           return providers.next();
       }
     
-      Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).severe("Cannot find an implementation of the HK2 ServiceLocatorGenerator");
+      Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).info("Cannot find a default implementation of the HK2 ServiceLocatorGenerator");
       return null;
   }
 
