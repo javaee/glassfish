@@ -51,7 +51,7 @@
 
     <groupId>org.glassfish.build</groupId>
     <artifactId>parent-build-pom</artifactId>
-    <version>3.2.3-SNAPSHOT</version>
+    <version>3.2.2</version>
     <packaging>pom</packaging>
     <name>GlassFish Build Utilities</name>
 
