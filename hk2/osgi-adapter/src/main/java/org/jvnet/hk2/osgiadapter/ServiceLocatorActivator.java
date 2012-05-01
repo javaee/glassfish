@@ -77,7 +77,7 @@ public class ServiceLocatorActivator implements BundleActivator,
 	private BundleContext bundleContext;
 
 	private ServiceLocator serviceLocator;
-	private ServiceRegistration habitatRegistration;
+	private ServiceRegistration serviceLocatorRegistration;
 
 	public ServiceLocatorActivator() {
 		
@@ -87,10 +87,10 @@ public class ServiceLocatorActivator implements BundleActivator,
 		this.bundleContext = bundleContext;
 	}
 	
-	private void destroyHabitat(ServiceLocator serviceLocator) {
+	private void destroyServiceLocator(ServiceLocator serviceLocator) {
 		ServiceLocatorFactory.getInstance().destroy(serviceLocator.getName());
 
-		habitatRegistration.unregister();
+		serviceLocatorRegistration.unregister();
 	}
 
 	public void start(BundleContext context) throws Exception {
@@ -102,7 +102,7 @@ public class ServiceLocatorActivator implements BundleActivator,
 		serviceLocator = ServiceLocatorFactory.getInstance().create(
 				DEFAULT_NAME, null, new ServiceLocatorGeneratorImpl());
 
-		habitatRegistration = bundleContext.registerService(ServiceLocator.class.getName(),
+		serviceLocatorRegistration = bundleContext.registerService(ServiceLocator.class.getName(),
 				serviceLocator, null);
 
 		context.addBundleListener(this);
@@ -130,7 +130,7 @@ public class ServiceLocatorActivator implements BundleActivator,
 							e);
 				}
 			}
-			destroyHabitat(serviceLocator);
+			destroyServiceLocator(serviceLocator);
 		}
 	}
 
