@@ -40,11 +40,10 @@
 package org.jvnet.hk2.config;
 
 import com.sun.hk2.component.LazyInhabitant;
-import org.glassfish.hk2.api.DescriptorType;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.*;
+import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.*;
 
 import javax.validation.constraints.NotNull;
@@ -81,6 +80,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     public final ConfigModel model;
 
     private final Dom parent;
+
+    private DomDescriptor domDescriptor;
 
     static abstract class Child {
         final String name;
@@ -167,32 +168,29 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         DynamicConfigurationService dcs = getHabitat().getService(DynamicConfigurationService.class);
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
 
+        //        habitat.add(this);
         Set ctrs = new HashSet();
         ctrs.add(type());
+        ctrs.add(ConfigBean.class);
+        DomDescriptor domDesc = new DomDescriptor(this, ctrs, PerLookup.class,
+                typeName(), new HashSet<Annotation>());
+        dc.addActiveDescriptor(domDesc);
 
-        String name = typeName();
 
-        DomProxyCreator proxyCreator =
-                new DomProxyCreator(type(), model.getMetadata(), this);
+        String key = getKey();
+        for (String contract : model.contracts) {
+            Utilities.addIndex(serviceLocator, domDesc, contract, key);
+        }
+        if (key!=null) {
+            Utilities.addIndex(serviceLocator, domDesc, model.targetTypeName, key);
+        }
 
-        ConfigBeanProxy theOne = proxyCreator.create(this);
-        dc.addActiveDescriptor(new MyDescriptor(theOne, name,
-                ctrs, PerLookup.class, new HashSet(), this));
-
-//        habitat.add(this);
-//        String key = getKey();
-//        for (String contract : model.contracts) {
-//            habitat.addIndex(this, contract, key);
-//        }
-//        if (key!=null) {
-//            habitat.addIndex(this, model.targetTypeName, key);
-//        }
         dc.commit();
     }
 
-
-    private class MyDescriptor
-            extends ConstantActiveDescriptor<ConfigBeanProxy> {
+    /*
+    private class MyDescriptor<T>
+            extends ConstantActiveDescriptor<Creator<T>> {
 
         Dom dom;
 
@@ -208,9 +206,16 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         public Class<?> getImplementationClass() {
             return type();
         }
+        
+        public Creator<T> create(ServiceHandle<?> handle) {
+            Class c = type();
+            return ConfigBeanProxy.class.isAssignableFrom(c)
+                    ? new DomProxyCreator(c, dom.getMetadata(), dom)
+                    : new ConfiguredCreator(dom.createCreator(c), dom);
+        }
 
     }
-
+     */
 
     /**
      * When a new Dom object is created, ensures that all @NotNull annotated
@@ -298,9 +303,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model) {
         this(habitat, document, parent, model, null);
     }
-    
-    /*package*/
-    Habitat getHabitat() {
+
+    public Habitat getHabitat() {
         return (Habitat) super.serviceLocator;
     }
 

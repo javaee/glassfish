@@ -76,6 +76,8 @@ public class DomDocument<T extends Dom> {
 
     /*package*/ T root;
 
+    private DomDecorator decorator;
+
     private final Map<String, DataType> validators = new HashMap<String, DataType>();
     
     /*package*/ static final List<String> PRIMS = Collections.unmodifiableList(Arrays.asList(
@@ -86,6 +88,8 @@ public class DomDocument<T extends Dom> {
         for (String prim : PRIMS) {
             validators.put(prim, new PrimitiveDataType(prim) );
         }
+
+        decorator = habitat.getService(DomDecorator.class);
     }
 
     public Dom getRoot() {
@@ -223,7 +227,9 @@ public class DomDocument<T extends Dom> {
     }
 
     public Dom make(Habitat habitat, XMLStreamReader in, T parent, ConfigModel model) {
-        return new Dom(habitat,this,parent,model,in);
+        return decorator != null
+            ? decorator.decorate(habitat, this, parent, model, in)
+            : new Dom(habitat,this,parent,model,in);
     }
 
     /**

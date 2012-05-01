@@ -50,7 +50,7 @@
         <relativePath>../kernel</relativePath>
     </parent>
     
-    <artifactId>config</artifactId>
+    <artifactId>hk2-config</artifactId>
     <name>HK2 configuration module</name>
 
     <description>${project.name}</description>

@@ -43,6 +43,7 @@ package org.jvnet.hk2.config.test;
 
 import org.glassfish.hk2.api.*;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -135,6 +136,7 @@ public class ConfigTest {
             System.out.println("[parseDomainXml] ==> Successfully parsed");
             assert(doc != null);
         } catch (Exception ex) {
+            ex.printStackTrace();
             assert(false);
         }
     }
@@ -186,6 +188,16 @@ public class ConfigTest {
     /********************
      *
      * THIS IS FAILING
+     */
+
+    @Test
+    public void testHabitatFromDom() {
+        SimpleConnector sc = habitat.getService(SimpleConnector.class);
+        EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
+
+        Dom ejbDom = Dom.unwrap(ejb);
+        assert(ejbDom.getHabitat() != null);
+    }
 
     @Test
     public void testDomTx() {
@@ -193,30 +205,86 @@ public class ConfigTest {
         EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
 
         Dom ejbDom = Dom.unwrap(ejb);
-        System.out.println("EJB DOM = " + ejbDom.getClass().getName());
-        System.out.println("EJB  = " + ejb.getClass().getName());
+        assert(ejbDom.getHabitat() != null);
 
-
+        String avEnabled = ejb.getAvailabilityEnabled();
         try {
             ConfigSupport.apply(new SingleConfigCode<EjbContainerAvailability>() {
                 @Override
-                public Object run(EjbContainerAvailability param) throws PropertyVetoException, TransactionFailure {
+                public Object run(EjbContainerAvailability param)
+                        throws PropertyVetoException, TransactionFailure {
                     param.setSfsbHaPersistenceType("coherence");
+                    param.setSfsbCheckpointEnabled("**MUST BE**");
                     return null;
                 }
-            }, habitat.getComponent(EjbContainerAvailability.class));
+            }, ejb);
 
-
-            assert(true);
+            //printEjb("AFTER CHANGES", ejb);
+            assert(ejb.getSfsbHaPersistenceType().equals("coherence")
+                    && ejb.getSfsbCheckpointEnabled().equals("**MUST BE**")
+                    && ejb.getAvailabilityEnabled().equals(avEnabled));
         } catch (Exception e) {
             e.printStackTrace();
-
             assert(false);
         }
-
-
     }
-    ***/
+    
+    @Test
+    public void testDomTxReadOnlyAttributes() {
+        SimpleConnector sc = habitat.getService(SimpleConnector.class);
+        final EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
+
+        Dom ejbDom = Dom.unwrap(ejb);
+        assert(ejbDom.getHabitat() != null);
+
+        String origAVEnabled = ejb.getAvailabilityEnabled();
+        final String origSFSBHaPersistenceType = ejb.getSfsbHaPersistenceType();
+        try {
+            ConfigSupport.apply(new SingleConfigCode<EjbContainerAvailability>() {
+                @Override
+                public Object run(EjbContainerAvailability param)
+                        throws PropertyVetoException, TransactionFailure {
+                    param.setSfsbHaPersistenceType("99999.999");
+                    param.setSfsbCheckpointEnabled("**MUST BE**");
+
+                    assert(origSFSBHaPersistenceType.equals(ejb.getSfsbHaPersistenceType()));
+                    assert(! ejb.getSfsbHaPersistenceType().equals(param.getSfsbHaPersistenceType()));
+                    return null;
+                }
+            }, ejb);
+
+            //printEjb("AFTER CHANGES", ejb);
+            assert(ejb.getSfsbHaPersistenceType().equals("99999.999")
+                    && ejb.getSfsbCheckpointEnabled().equals("**MUST BE**")
+                    && ejb.getAvailabilityEnabled().equals(origAVEnabled));
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
+        }
+    }
+
+    private static void printEjb(String message, EjbContainerAvailability ejb) {
+        StringBuilder sb = new StringBuilder(ejb.getClass().getName());
+        sb.append(" : " ).append(ejb.getAvailabilityEnabled())
+                .append("; ").append(ejb.getSfsbCheckpointEnabled())
+                .append("; ").append(ejb.getSfsbHaPersistenceType())
+                .append("; ").append(ejb.getSfsbQuickCheckpointEnabled())
+                .append(";").append(ejb.getSfsbStorePoolName());
+
+        System.out.println(message + " ==> " + sb.toString());
+    }
+
+    private static void printWeb(String message, WebContainerAvailability web) {
+        StringBuilder sb = new StringBuilder(web.getClass().getName());
+        sb.append(" : " ).append(web.getAvailabilityEnabled())
+                .append("; ").append(web.getDisableJreplica())
+                .append("; ").append(web.getPersistenceFrequency())
+                .append("; ").append(web.getPersistenceScope())
+                .append(";").append(web.getPersistenceType())
+                .append(";").append(web.getSsoFailoverEnabled());
+
+        System.out.println(message + " ==> " + sb.toString());
+    }
 
     private static class InjectionTargetFilter
             implements Filter {
