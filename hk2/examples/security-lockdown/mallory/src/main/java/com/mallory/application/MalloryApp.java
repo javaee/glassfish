@@ -69,6 +69,10 @@ public class MalloryApp {
      * This will do something bad, I'm sure
      */
     public void doWorkOfEvil() {
+        EvilInjectedService evilInjectedService =
+                locator.getService(EvilInjectedService.class);
+        
+        System.out.println("JRW(10) evilInjectedService=" + evilInjectedService);
         
     }
     

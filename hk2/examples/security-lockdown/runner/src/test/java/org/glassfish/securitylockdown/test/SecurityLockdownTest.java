@@ -134,4 +134,21 @@ public class SecurityLockdownTest extends HK2Runner {
             // Good, should have failed for him!
         }
     }
+    
+    /**
+     * Tests that Mallory cannot have a service that injects something it cannot
+     */
+    @Test
+    public void testMalloryCannotInjectAnUnAuthorizedThing() {
+        MalloryApp ma = testLocator.getService(MalloryApp.class);
+        Assert.assertNotNull(ma);
+        
+        try {
+            ma.doWorkOfEvil();
+            Assert.fail("Mallory should not be able to inject a service it has no rights to");
+        }
+        catch (MultiException multi) {
+            Assert.assertTrue(multi.getMessage().contains("There was no object available for injection at Injectee"));
+        }
+    }
 }
