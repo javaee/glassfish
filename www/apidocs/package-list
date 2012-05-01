@@ -48,6 +48,7 @@ org.jvnet.hk2.config.generator
 org.jvnet.hk2.config.provider
 org.jvnet.hk2.config.provider.internal
 org.jvnet.hk2.deprecated.internal
+org.jvnet.hk2.external.generator
 org.jvnet.hk2.generator
 org.jvnet.hk2.generator.eclipse
 org.jvnet.hk2.generator.internal
