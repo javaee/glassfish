@@ -153,7 +153,7 @@ public class ServiceLocatorHk2MainTest {
 		}
 	}
 
-	@Test
+	@Test @Ignore
 	public void testHK2OSGiAdapter() throws Throwable {
 
 		try {
