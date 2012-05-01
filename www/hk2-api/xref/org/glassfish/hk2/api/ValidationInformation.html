@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-<title>Validator xref</title>
+<title>ValidationInformation xref</title>
 <link type="text/css" rel="stylesheet" href="../../../../stylesheet.css" />
 </head>
 <body>
-<div id="overview"><a href="../../../../../apidocs/org/glassfish/hk2/api/Validator.html">View Javadoc</a></div><pre>
+<div id="overview"><a href="../../../../../apidocs/org/glassfish/hk2/api/ValidationInformation.html">View Javadoc</a></div><pre>
 
 <a class="jxr_linenumber" name="1" href="#1">1</a>   <em class="jxr_comment">/*</em>
 <a class="jxr_linenumber" name="2" href="#2">2</a>   <em class="jxr_comment"> * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.</em>
@@ -50,41 +50,52 @@
 <a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">package</strong> org.glassfish.hk2.api;
 <a class="jxr_linenumber" name="41" href="#41">41</a>  
 <a class="jxr_linenumber" name="42" href="#42">42</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * This method is called when it determined that a type that is</em>
-<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * annotated with a Validating annotation is to be injected into</em>
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * any other class.</em>
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <em class="jxr_javadoccomment"> * This object contains information about the validation</em>
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <em class="jxr_javadoccomment"> * point.  The values available may vary depending on</em>
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <em class="jxr_javadoccomment"> * the type of operation.</em>
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <em class="jxr_javadoccomment"> * </em>
 <a class="jxr_linenumber" name="47" href="#47">47</a>  <em class="jxr_javadoccomment"> * @author jwells</em>
 <a class="jxr_linenumber" name="48" href="#48">48</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="49" href="#49">49</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../../org/glassfish/hk2/api/Validator.html">Validator</a> {
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../../org/glassfish/hk2/api/ValidationInformation.html">ValidationInformation</a> {
 <a class="jxr_linenumber" name="51" href="#51">51</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment">     * This method is called whenever it has been determined that a validating</em>
-<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment">     * class is to be injected into an injection point, or when a descriptor</em>
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment">     * is being looked up explicitly with the API, or a descriptor is being</em>
-<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">     * bound or unbound into the registry.</em>
-<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">     * The candidate descriptor being passed in may not have yet been reified.  If</em>
-<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">     * possible, this method should do its work without reifying the descriptor.</em>
-<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">     * However, if it is necessary to reify the descriptor, it should be done with</em>
-<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">     * the ServiceLocator.reifyDescriptor method.</em>
-<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment">     * The operation will determine what operation is being performed.  In the</em>
-<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">     * BIND or UNBIND cases the Injectee will be null.  In the LOOKUP case</em>
-<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment">     * the Injectee will be non-null if this is being done as part of an</em>
-<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment">     * injection point.  In the LOOKUP case the Injectee will be null if this</em>
-<a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment">     * is being looked up directly from the {@link ServiceLocator} API, in which</em>
-<a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment">     * case the caller of the lookup method will be on the call frame.</em>
-<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment">     * @param info Information about the operation being performed</em>
-<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment">     * @return true if this injection should succeed, false if this candidate should not</em>
-<a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment">     * be returned</em>
-<a class="jxr_linenumber" name="72" href="#72">72</a>  <em class="jxr_javadoccomment">     * @throws RuntimeException Any exception from this method will also cause the candidate</em>
-<a class="jxr_linenumber" name="73" href="#73">73</a>  <em class="jxr_javadoccomment">     * to not be available.  However, the preferred method of indicating an validation failure</em>
-<a class="jxr_linenumber" name="74" href="#74">74</a>  <em class="jxr_javadoccomment">     * is to return null</em>
-<a class="jxr_linenumber" name="75" href="#75">75</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="76" href="#76">76</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> validate(<a href="../../../../org/glassfish/hk2/api/ValidationInformation.html">ValidationInformation</a> info);
-<a class="jxr_linenumber" name="77" href="#77">77</a>  }
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment">     * The operation that is to be performed, one of&lt;UL&gt;</em>
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment">     * &lt;LI&gt;BIND - The candidate descriptor is being added to the system&lt;/LI&gt;</em>
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment">     * &lt;LI&gt;UNBIND - The candidate descriptor is being removed from the system&lt;/LI&gt;</em>
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">     * &lt;LI&gt;LOOKUP - The candidate descriptor is being looked up&lt;/LI&gt;</em>
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment">     * &lt;/UL&gt;</em>
+<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">     * @return The operation being performed</em>
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/api/Operation.html">Operation</a> getOperation();
+<a class="jxr_linenumber" name="61" href="#61">61</a>      
+<a class="jxr_linenumber" name="62" href="#62">62</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">     * The candidate descriptor for this operation</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_javadoccomment">     * @return The candidate descriptor for the operation being performed</em>
+<a class="jxr_linenumber" name="66" href="#66">66</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="67" href="#67">67</a>      <strong class="jxr_keyword">public</strong> ActiveDescriptor&lt;?&gt; getCandidate();
+<a class="jxr_linenumber" name="68" href="#68">68</a>      
+<a class="jxr_linenumber" name="69" href="#69">69</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment">     * On a LOOKUP operation if the lookup is being performed due to an</em>
+<a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment">     * injection point (as opposed to a lookup via the API) then this</em>
+<a class="jxr_linenumber" name="72" href="#72">72</a>  <em class="jxr_javadoccomment">     * method will return a non-null {@link Injectee} that is the injection</em>
+<a class="jxr_linenumber" name="73" href="#73">73</a>  <em class="jxr_javadoccomment">     * point that would be injected into</em>
+<a class="jxr_linenumber" name="74" href="#74">74</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="75" href="#75">75</a>  <em class="jxr_javadoccomment">     * @return The injection point being injected into on a LOOKUP operation</em>
+<a class="jxr_linenumber" name="76" href="#76">76</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="77" href="#77">77</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/api/Injectee.html">Injectee</a> getInjectee();
+<a class="jxr_linenumber" name="78" href="#78">78</a>      
+<a class="jxr_linenumber" name="79" href="#79">79</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="80" href="#80">80</a>  <em class="jxr_javadoccomment">     * On a LOOKUP operation the {@link Filter} that was used in the</em>
+<a class="jxr_linenumber" name="81" href="#81">81</a>  <em class="jxr_javadoccomment">     * lookup operation.  This may give more information about what</em>
+<a class="jxr_linenumber" name="82" href="#82">82</a>  <em class="jxr_javadoccomment">     * exactly was being looked up by the caller</em>
+<a class="jxr_linenumber" name="83" href="#83">83</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="84" href="#84">84</a>  <em class="jxr_javadoccomment">     * @return The filter used in the lookup operation</em>
+<a class="jxr_linenumber" name="85" href="#85">85</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="86" href="#86">86</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/api/Filter.html">Filter</a> getFilter();
+<a class="jxr_linenumber" name="87" href="#87">87</a>  
+<a class="jxr_linenumber" name="88" href="#88">88</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
