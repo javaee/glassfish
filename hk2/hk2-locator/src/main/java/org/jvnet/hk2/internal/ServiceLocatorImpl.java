@@ -129,11 +129,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @param onBehalfOf The fella who is being validated (or null)
      * @return true if every validator returned true
      */
-    private boolean validate(SystemDescriptor<?> descriptor, Injectee onBehalfOf) {
+    private boolean validate(SystemDescriptor<?> descriptor, Injectee onBehalfOf, Filter filter) {
         for (ValidationService vs : allValidators) {
             if (!descriptor.isValidating(vs)) continue;
             
-            if (!vs.getValidator().validate(Operation.LOOKUP, descriptor, onBehalfOf)) {
+            if (!vs.getValidator().validate(new ValidationInformationImpl(
+                    Operation.LOOKUP, descriptor, onBehalfOf, filter))) {
                 return false;
             }
         }
@@ -192,7 +193,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
             
             for (SystemDescriptor<?> candidate : sortMeOut) {
-                if (!validate(candidate, onBehalfOf)) continue;
+                if (!validate(candidate, onBehalfOf, filter)) continue;
                 
                 if (filter.matches(candidate)) {
                     sorter.add(candidate);
@@ -713,7 +714,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 if (retVal.contains(candidate)) continue;
                 
                 for (ValidationService vs : allValidators) {
-                    if (!vs.getValidator().validate(Operation.UNBIND, candidate, null)) {
+                    if (!vs.getValidator().validate(new ValidationInformationImpl(
+                            Operation.UNBIND, candidate))) {
                         throw new MultiException(new IllegalArgumentException("Descriptor " +
                             candidate + " did not pass the UNBIND validation"));
                     }
@@ -760,7 +762,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
             
             for (ValidationService vs : allValidators) {
-                if (!vs.getValidator().validate(Operation.BIND, sd, null)) {
+                if (!vs.getValidator().validate(new ValidationInformationImpl(
+                        Operation.BIND, sd))) {
                     throw new MultiException(new IllegalArgumentException("Descriptor " + sd + " did not pass the BIND validation"));
                 }
             }

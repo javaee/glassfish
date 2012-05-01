@@ -44,11 +44,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.Operation;
+import org.glassfish.hk2.api.ValidationInformation;
 import org.glassfish.hk2.api.Validator;
 
 /**
@@ -85,16 +82,16 @@ public class SecretValidator implements Validator {
      * @see org.glassfish.hk2.api.InjectionPointValidator#validateInjectionPoint(java.lang.Class, org.glassfish.hk2.api.Injectee, java.lang.Class)
      */
     @Override
-    public boolean validate(Operation operation, ActiveDescriptor<?> resolution, Injectee injectee) {
-        switch (operation) {
+    public boolean validate(ValidationInformation info) {
+        switch (info.getOperation()) {
         case BIND:
         case UNBIND:
             return true;
         }
         
-        if (injectee == null) return false;  // No direct lookups!
+        if (info.getInjectee() == null) return false;  // No direct lookups!
         
-        return isSystemClass(getDeclaringClass(injectee));
+        return isSystemClass(getDeclaringClass(info.getInjectee()));
     }
 
 }

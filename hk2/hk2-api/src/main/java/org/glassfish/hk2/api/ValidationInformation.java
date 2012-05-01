@@ -37,54 +37,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.dynamicconfig;
-
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.ValidationInformation;
-import org.glassfish.hk2.api.ValidationService;
-import org.glassfish.hk2.api.Validator;
+package org.glassfish.hk2.api;
 
 /**
+ * This object contains information about the validation
+ * point.  The values available may vary depending on
+ * the type of operation.
+ * 
  * @author jwells
  *
  */
-@Singleton
-public class ValidationServiceImpl implements ValidationService {
-    private static final Filter FILTER = new Filter() {
-
-        @Override
-        public boolean matches(Descriptor d) {
-            return false;
-        }
-        
-    };
+public interface ValidationInformation {
+    /**
+     * The operation that is to be performed, one of<UL>
+     * <LI>BIND - The candidate descriptor is being added to the system</LI>
+     * <LI>UNBIND - The candidate descriptor is being removed from the system</LI>
+     * <LI>LOOKUP - The candidate descriptor is being looked up</LI>
+     * </UL>
+     * 
+     * @return The operation being performed
+     */
+    public Operation getOperation();
     
-    private static final Validator VALIDATOR = new Validator() {
-
-        @Override
-        public boolean validate(ValidationInformation info) {
-            return true;
-        }
-        
-    };
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
+    /**
+     * The candidate descriptor for this operation
+     * 
+     * @return The candidate descriptor for the operation being performed
      */
-    @Override
-    public Filter getLookupFilter() {
-        return FILTER;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getValidator()
+    public ActiveDescriptor<?> getCandidate();
+    
+    /**
+     * On a LOOKUP operation if the lookup is being performed due to an
+     * injection point (as opposed to a lookup via the API) then this
+     * method will return a non-null {@link Injectee} that is the injection
+     * point that would be injected into
+     * 
+     * @return The injection point being injected into on a LOOKUP operation
      */
-    @Override
-    public Validator getValidator() {
-        return VALIDATOR;
-    }
+    public Injectee getInjectee();
+    
+    /**
+     * On a LOOKUP operation the {@link Filter} that was used in the
+     * lookup operation.  This may give more information about what
+     * exactly was being looked up by the caller
+     * 
+     * @return The filter used in the lookup operation
+     */
+    public Filter getFilter();
 
 }
