@@ -39,9 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.validating;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.Operation;
+import org.glassfish.hk2.api.ValidationInformation;
 import org.glassfish.hk2.api.Validator;
 
 /**
@@ -54,16 +52,15 @@ public class BindValidator implements Validator {
      * @see org.glassfish.hk2.api.Validator#validate(org.glassfish.hk2.api.Operation, org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee)
      */
     @Override
-    public boolean validate(Operation operation, ActiveDescriptor<?> candidate,
-            Injectee injectee) {
-        switch (operation) {
+    public boolean validate(ValidationInformation info) {
+        switch (info.getOperation()) {
         case LOOKUP:
         case UNBIND:
             return true;
         
         }
         
-        if (candidate.getAdvertisedContracts().contains(NeverBindMeService.class.getName())) {
+        if (info.getCandidate().getAdvertisedContracts().contains(NeverBindMeService.class.getName())) {
             return false;
         }
         

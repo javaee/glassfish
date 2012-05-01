@@ -37,54 +37,88 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.dynamicconfig;
+package org.jvnet.hk2.internal;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Operation;
 import org.glassfish.hk2.api.ValidationInformation;
-import org.glassfish.hk2.api.ValidationService;
-import org.glassfish.hk2.api.Validator;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class ValidationServiceImpl implements ValidationService {
-    private static final Filter FILTER = new Filter() {
-
-        @Override
-        public boolean matches(Descriptor d) {
-            return false;
-        }
-        
-    };
+public class ValidationInformationImpl implements ValidationInformation {
+    private final Operation operation;
+    private final ActiveDescriptor<?> candidate;
+    private final Injectee injectee;
+    private final Filter filter;
     
-    private static final Validator VALIDATOR = new Validator() {
-
-        @Override
-        public boolean validate(ValidationInformation info) {
-            return true;
-        }
-        
-    };
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
+    /**
+     * Creates the validation information
+     * @param operation The operation to perform
+     * @param candidate The candidate to perform it on
+     * @param injectee The injecteee that may be involved
+     * @param filter The filter that may be involved in the lookup
      */
-    @Override
-    public Filter getLookupFilter() {
-        return FILTER;
+    public ValidationInformationImpl(Operation operation,
+            ActiveDescriptor<?> candidate,
+            Injectee injectee,
+            Filter filter) {
+        this.operation = operation;
+        this.candidate = candidate;
+        this.injectee = injectee;
+        this.filter = filter;
+    }
+    
+    /**
+     * Creates the validation information
+     * @param operation The operation to perform
+     * @param candidate The candidate to perform it on
+     */
+    public ValidationInformationImpl(Operation operation,
+            ActiveDescriptor<?> candidate) {
+        this(operation, candidate, null, null);
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getValidator()
+     * @see org.glassfish.hk2.api.ValidationInformation#getOperation()
      */
     @Override
-    public Validator getValidator() {
-        return VALIDATOR;
+    public Operation getOperation() {
+        return operation;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationInformation#getCandidate()
+     */
+    @Override
+    public ActiveDescriptor<?> getCandidate() {
+        return candidate;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationInformation#getInjectee()
+     */
+    @Override
+    public Injectee getInjectee() {
+        return injectee;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationInformation#getFilter()
+     */
+    @Override
+    public Filter getFilter() {
+        return filter;
+    }
+
+    public String toString() {
+        return "ValidationInformation(" + operation + "," +
+            candidate + "," +
+            injectee + "," +
+            filter + "," +
+            System.identityHashCode(this) + ")";
+    }
 }

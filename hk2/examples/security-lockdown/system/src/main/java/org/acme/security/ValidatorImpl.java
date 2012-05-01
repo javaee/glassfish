@@ -50,7 +50,7 @@ import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.Operation;
+import org.glassfish.hk2.api.ValidationInformation;
 import org.glassfish.hk2.api.Validator;
 
 /**
@@ -146,14 +146,13 @@ public class ValidatorImpl implements Validator {
      * @see org.glassfish.hk2.api.Validator#validate(org.glassfish.hk2.api.Operation, org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee)
      */
     @Override
-    public boolean validate(Operation operation, ActiveDescriptor<?> candidate,
-            Injectee injectee) {
-        switch(operation) {
+    public boolean validate(ValidationInformation info) {
+        switch(info.getOperation()) {
         case BIND:
         case UNBIND:
             return validateBindAndUnbind();
         case LOOKUP:
-            return validateLookup(candidate, injectee);
+            return validateLookup(info.getCandidate(), info.getInjectee());
         default:
             return false;
         }
