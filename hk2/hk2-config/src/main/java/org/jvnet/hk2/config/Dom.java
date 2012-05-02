@@ -174,8 +174,8 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         ctrs.add(ConfigBean.class);
         DomDescriptor domDesc = new DomDescriptor(this, ctrs, PerLookup.class,
                 typeName(), new HashSet<Annotation>());
+        domDesc.setLoader(this.model.injector.getLoader());
         dc.addActiveDescriptor(domDesc);
-
 
         String key = getKey();
         for (String contract : model.contracts) {

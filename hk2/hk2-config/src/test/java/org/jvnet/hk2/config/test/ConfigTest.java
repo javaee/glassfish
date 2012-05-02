@@ -335,7 +335,7 @@ public class ConfigTest {
         DummyPopulator pop = habitat.getService(Populator.class);
 
         ConfigurationPopulator confPopulator = habitat.getService(ConfigurationPopulator.class);
-        confPopulator.populateHabitat(habitat);
+        confPopulator.populateConfig((ServiceLocator) habitat);
 
         assert(pop.isPopulateCalled());
     }
