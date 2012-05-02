@@ -26,6 +26,7 @@ org.glassfish.hk2.tests.locator.primitives
 org.glassfish.hk2.tests.locator.provider
 org.glassfish.hk2.tests.locator.proxiable
 org.glassfish.hk2.tests.locator.qualifiers
+org.glassfish.hk2.tests.locator.selfdescriptor
 org.glassfish.hk2.tests.locator.shutdown
 org.glassfish.hk2.tests.locator.typesafety
 org.glassfish.hk2.tests.locator.utilities
