@@ -89,7 +89,6 @@
         <module>../hk2-inhabitant-generator</module>
         <module>../apt</module>
         <module>../hk2-maven</module>
-        <module>../hk2-maven-plugin</module>
         <module>../consolidatedbundle-maven-plugin</module>
     </modules>
 
