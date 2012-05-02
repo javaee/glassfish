@@ -56,5 +56,7 @@ import javax.xml.stream.XMLStreamException;
  */
 @Contract
 public interface Populator {
-    void run(ConfigParser parser) throws ConfigPopulatorException;
+
+    public void run(ConfigParser parser) throws ConfigPopulatorException;
+
 }

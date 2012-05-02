@@ -128,7 +128,7 @@
             <artifactId>tiger-types</artifactId>
             <version>1.4</version>
         </dependency>
-	<dependency>
+	    <dependency>
             <!-- 
                  This can't be a provided scope or optional dependency, 
                  because various modules like auto-depends-test/config-test
