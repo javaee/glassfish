@@ -50,7 +50,6 @@
 
     <artifactId>hk2-jsr330</artifactId>
     <name>JSR-330 support in Hk2</name>
-    <packaging>hk2-jar</packaging>
     <description>${project.name}</description>
 
     <build>
