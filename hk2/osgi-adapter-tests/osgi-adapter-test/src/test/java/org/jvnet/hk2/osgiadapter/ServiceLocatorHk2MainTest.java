@@ -59,7 +59,7 @@ public class ServiceLocatorHk2MainTest {
 				felix(),
 				systemPackage("sun.misc"),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
-				"hk2-utils")), provision(mavenBundle()
+				"hk2-utils").version(projectVersion)), provision(mavenBundle()
 				.groupId(GROUP_ID).artifactId("hk2-deprecated").version(projectVersion).startLevel(4)),
 
 				provision(mavenBundle().groupId(GROUP_ID).artifactId("core").version(projectVersion).startLevel(4)),
