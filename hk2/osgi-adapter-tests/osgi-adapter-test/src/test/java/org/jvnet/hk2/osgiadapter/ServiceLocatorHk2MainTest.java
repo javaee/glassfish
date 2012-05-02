@@ -60,26 +60,26 @@ public class ServiceLocatorHk2MainTest {
 				systemPackage("sun.misc"),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
 				"hk2-utils")), provision(mavenBundle()
-				.groupId(GROUP_ID).artifactId("hk2-deprecated").startLevel(4)),
+				.groupId(GROUP_ID).artifactId("hk2-deprecated").version(projectVersion).startLevel(4)),
 
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("core").startLevel(4)),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-api").startLevel(4)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("core").version(projectVersion).startLevel(4)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-api").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
-						"hk2-locator").startLevel(4)),
+						"hk2-locator").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
-						"javax.inject").startLevel(4)),
+						"javax.inject").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
-						"cglib").startLevel(4)),
+						"cglib").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
-						"asm-all-repackaged").startLevel(4)),
+						"asm-all-repackaged").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID)
 						.artifactId("osgi-resource-locator").version("1.0.1").startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
-						"class-model").startLevel(4)),
+						"class-model").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
-						"osgi-adapter").startLevel(1)),
+						"osgi-adapter").version(projectVersion).startLevel(1)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
-						"test-module-startup").startLevel(4)),
+						"test-module-startup").version(projectVersion).startLevel(4)),
 
 				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level")
 						.value("DEBUG"), logProfile(), cleanCaches()
