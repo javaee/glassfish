@@ -50,7 +50,7 @@ import org.jvnet.hk2.annotations.Contract;
  * lifecycle events (i.e., start levels) in Hk2.
  * <p>
  * Each run level service is responsible for a particular class of
- * {@link RunLevel} that is identified by a {@link RunLevelServiceIndicator}
+ * {@link RunLevel} that is identified by a {@link RunLevelControllerIndicator}
  * value.
  * <p>
  * Implementations of this service are responsible for orchestrating
@@ -60,25 +60,26 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jtrent, tbeerbower
  */
 @Contract
-public interface RunLevelService {
+public interface RunLevelController {
 
     // ----- Constants ------------------------------------------------------
 
     /**
      * The default run level service name.
      */
-    public static final String RUNLEVEL_SERVICE_DEFAULT_NAME = "__runLevelDefaultName";
+    public static final String RUNLEVEL_CONTROLLER_DEFAULT_NAME = "__runLevelControllerDefaultName";
 
 
     // ----- Methods --------------------------------------------------------
 
     /**
-     * Causes this RunLevelService to move to the specified run level for
-     * all {@link RunLevel} instances (identified by {@link RunLevelServiceIndicator}),
-     * orchestrating the appropriate lifecycle events.
+     * Causes this RunLevelController to move to the specified run level for
+     * all {@link RunLevel} instances (identified by
+     * {@link RunLevelControllerIndicator}), orchestrating the appropriate
+     * lifecycle events.
      * <p>
      * If the run level specified is the same as the current run level then
-     * the RunLevelService may return immediately.
+     * the RunLevelController may return immediately.
      * <p>
      * Note that the underlying implementation may perform this operation
      * asynchronously. Implementors who choose the asynchronous approach
@@ -91,7 +92,7 @@ public interface RunLevelService {
     void proceedTo(int runLevel);
 
     /**
-     * Causes this RunLevelService to attempt to stop any in-flight
+     * Causes this RunLevelController to attempt to stop any in-flight
      * proceedTo() operation.  This call will not have any effect if
      * there is no current proceedTo() operation in progress.
      */
@@ -99,7 +100,7 @@ public interface RunLevelService {
 
     /**
      * The current run level state.  This represents the last run level
-     * successfully achieved by the underlying RunLevelService responsible
+     * successfully achieved by the underlying RunLevelController responsible
      * for this scope.
      *
      * @return the current run level, or null if no run level has been
@@ -115,7 +116,7 @@ public interface RunLevelService {
     Integer getPlannedRunLevel();
 
     /**
-     * Get the name of this RunLevelService.
+     * Get the name of this RunLevelController.
      *
      * @return the name
      */

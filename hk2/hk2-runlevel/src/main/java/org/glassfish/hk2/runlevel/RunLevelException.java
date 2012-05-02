@@ -43,7 +43,7 @@ package org.glassfish.hk2.runlevel;
 
 
 /**
- * Exception related to the operations of the {@link RunLevelService}.
+ * Exception related to the operations of the {@link RunLevelController}.
  *
  * @author jtrent, tbeerbower
  */

@@ -37,20 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel.internal;
+package org.glassfish.hk2.runlevel.utilities;
 
 
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.Activator;
+import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelException;
 import org.glassfish.hk2.runlevel.RunLevelListener;
-import org.glassfish.hk2.runlevel.RunLevelService;
 import org.glassfish.hk2.runlevel.Sorter;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.runlevel.internal.RunLevelContext;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Service;
 
@@ -77,8 +78,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The default {@link org.glassfish.hk2.runlevel.RunLevelService} implementation for Hk2. See the
- * {@link org.glassfish.hk2.runlevel.RunLevelService} javadoc for general details regarding this service.
+ * The default {@link org.glassfish.hk2.runlevel.RunLevelController} implementation for Hk2. See the
+ * {@link org.glassfish.hk2.runlevel.RunLevelController} javadoc for general details regarding this service.
  * <p/>
  * Here is a brief example of the behavior of this service:<br>
  * <p/>
@@ -104,7 +105,7 @@ import java.util.logging.Logger;
  * }<br/>
  * </code>
  * <p/>
- * When the DefaultRunLevelService is asked to proceedTo(X), the expected start
+ * When the DefaultRunLevelController is asked to proceedTo(X), the expected start
  * order is: ServiceC, ServiceB, ServiceA, and the expected shutdown order is:
  * ServiceA, ServiceB, ServiceC
  * <p/>
@@ -164,9 +165,9 @@ import java.util.logging.Logger;
  * ~~~
  * <p/>
  * The implementation is written to support two modes of operation, asynchronous
- * / threaded, and synchronous / single threaded. The DefaultRunLevelService
+ * / threaded, and synchronous / single threaded. The DefaultRunLevelController
  * implementation mode is pre-configured to be synchronous. The
- * DefaultRunLevelService is thread safe.
+ * DefaultRunLevelController is thread safe.
  * <p/>
  * In the synchronous mode, calls can be made to proceedTo() to interrupt
  * processing of any currently executing proceedTo() operation. This might
@@ -185,7 +186,7 @@ import java.util.logging.Logger;
  * runLevel requested from the second thread's interrupt.
  * <p/>
  * For this reason, it is strongly advised that {@link InterruptedException} is
- * not swallowed by services that can be driven by the DefaultRunLevelService in
+ * not swallowed by services that can be driven by the DefaultRunLevelController in
  * synchronous mode.
  * <p/>
  * proceedTo invocations from a {@link javax.annotation.PostConstruct} callback are discouraged.
@@ -219,13 +220,13 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("deprecation")
 @Service
-public class RunLevelServiceImpl implements RunLevelService, Activator {
+public class RunLevelControllerImpl implements RunLevelController, Activator {
     /**
      * The default timeout in milliseconds (to wait for async service types).
      */
     public static final long DEFAULT_ASYNC_WAIT = 3000;
 
-    private static final Logger logger = Logger.getLogger(RunLevelServiceImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(RunLevelControllerImpl.class.getName());
     private static final Level LEVEL = Level.FINE;
 
     private final Object lock = new Object();
@@ -289,11 +290,11 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
 
     // ----- Constructors ----------------------------------------------------
 
-    public RunLevelServiceImpl() {
+    public RunLevelControllerImpl() {
         this(false);
     }
 
-    private RunLevelServiceImpl(boolean async) {
+    private RunLevelControllerImpl(boolean async) {
         this.asyncMode = async;
         if (asyncMode) {
             // we can't use a singleThreadExecutor because a thread could become
@@ -301,7 +302,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
             exec = Executors.newCachedThreadPool(new ThreadFactory() {
                 @Override
                 public Thread newThread(Runnable runnable) {
-                    Thread activeThread = new RunLevelServiceThread(runnable);
+                    Thread activeThread = new RunLevelControllerThread(runnable);
                     synchronized (lock) {
                         logger.log(Level.FINE, "new thread: {0}", activeThread);
                     }
@@ -319,11 +320,11 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
     @PostConstruct
     public void postConstruct() {
         Named named = getClass().getAnnotation(Named.class);
-        name = named == null ? RUNLEVEL_SERVICE_DEFAULT_NAME : named.value();
+        name = named == null ? RUNLEVEL_CONTROLLER_DEFAULT_NAME : named.value();
     }
 
 
-    // ----- RunLevelService ------------------------------------------------
+    // ----- RunLevelController ------------------------------------------------
 
     @Override
     public String getName() {
@@ -414,7 +415,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
         return b.toString();
     }
 
-    protected HashMap<Integer, Stack<ActiveDescriptor<?>>> getRecorders() {
+    public HashMap<Integer, Stack<ActiveDescriptor<?>>> getRecorders() {
         return recorders;
     }
 
@@ -426,12 +427,12 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
 
     /**
      * Returns true if the RunLevel for the given descriptor in question should
-     * be processed by this RunLevelService instance.
+     * be processed by this RunLevelController instance.
      *
      * @param descriptor     the descriptor
      * @param activeRunLevel the current runLevel
      * @return true if the RunLevel for the given descriptor in question should
-     *         be processed by this RunLevelService instance
+     *         be processed by this RunLevelController instance
      */
     protected boolean accept(ActiveDescriptor<?> descriptor, int activeRunLevel) {
         Integer runLevel = Utilities.getRunLevelValue(descriptor);
@@ -441,7 +442,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
             }
         }
 
-        return getName().equals(Utilities.getRunLevelServiceName(descriptor));
+        return getName().equals(Utilities.getRunLevelControllerName(descriptor));
     }
 
     private boolean isCancelled(Worker worker) {
@@ -583,7 +584,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
     protected synchronized Activator getActivator() {
         Collection<Activator> activators = new ArrayList<Activator>();
         for (ServiceHandle<Activator> serviceHandle : allActivators.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelServiceName(
+            if (name.equals(Utilities.getRunLevelControllerName(
                     serviceHandle.getActiveDescriptor()))) {
                 activators.add(serviceHandle.getService());
             }
@@ -599,7 +600,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
     protected synchronized Collection<RunLevelListener> getListeners() {
         Collection<RunLevelListener> listeners = new ArrayList<RunLevelListener>();
         for (ServiceHandle<RunLevelListener> serviceHandle : allRunLevelListeners.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelServiceName(
+            if (name.equals(Utilities.getRunLevelControllerName(
                     serviceHandle.getActiveDescriptor()))) {
                 listeners.add(serviceHandle.getService());
             }
@@ -615,7 +616,7 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
     protected synchronized Sorter getSorter() {
         Collection<Sorter> sorters = new ArrayList<Sorter>();
         for (ServiceHandle<Sorter> serviceHandle : allSorters.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelServiceName(
+            if (name.equals(Utilities.getRunLevelControllerName(
                     serviceHandle.getActiveDescriptor()))) {
                 sorters.add(serviceHandle.getService());
             }
@@ -1081,10 +1082,10 @@ public class RunLevelServiceImpl implements RunLevelService, Activator {
     }
 
 
-    // ----- inner class RunLevelServiceThread ------------------------------
+    // ----- inner class RunLevelControllerThread ------------------------------
 
-    private static class RunLevelServiceThread extends Thread {
-        private RunLevelServiceThread(Runnable r) {
+    private static class RunLevelControllerThread extends Thread {
+        private RunLevelControllerThread(Runnable r) {
             super(r);
             setDaemon(true);
             setName(getClass().getSimpleName() + "-"

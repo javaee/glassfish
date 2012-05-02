@@ -44,16 +44,16 @@ import org.jvnet.hk2.annotations.Contract;
 
 
 /**
- * Implementations of RunLevelService should use this contract for publishing
+ * Implementations of RunLevelController should use this contract for publishing
  * RunLevel events.
  * <p>
  * Instances of classes implementing this contract can be registered to be
- * informed of events of RunLevelServices.
+ * informed of events of RunLevelControllers.
  * <p>
- * Note that RunLevelService implementations may be asynchronous, so
+ * Note that RunLevelController implementations may be asynchronous, so
  * RunLevelListeners should be thread safe.  Additionally, you are
  * discouraged from performing lengthy operations in the listener since
- * that may impact the performance of the RunLevelService calling the
+ * that may impact the performance of the RunLevelController calling the
  * listener on the same thread.
  *
  * @author jtrent, tbeerbower
@@ -62,34 +62,33 @@ import org.jvnet.hk2.annotations.Contract;
 public interface RunLevelListener {
 
     /**
-     * Called when an RunLevelService implementation's proceedTo() operation
+     * Called when an RunLevelController implementation's proceedTo() operation
      * has been canceled for some reason.  This could be as a result of a
      * new proceedTo() call or an interrupt() for example.
      *
-     * @param service            the current and new planned service
+     * @param controller         the run level controller
      * @param previousProceedTo  the previousProceedTo service that is being
      *                           canceled
      * @param isInterrupt        set to true if the onCancelled even was as
      *                           a result of an explicit interrupt() call
      */
-    void onCancelled(RunLevelService service, int previousProceedTo, boolean isInterrupt);
+    void onCancelled(RunLevelController controller, int previousProceedTo, boolean isInterrupt);
 
     /**
      * Called when a service throws an exception during lifecycle
      * orchestration.
      *
-     * @param service       the current RunLevelService service successfully
-     *                      achieved
+     * @param controller    the run level controller
      * @param error         the error that was caught
-     * @param willContinue  the flag indicating whether or not the RunLevelService
+     * @param willContinue  the flag indicating whether or not the RunLevelController
      *                      plans to proceed thru to the planned RunLevel service
      */
-    void onError(RunLevelService service, Throwable error, boolean willContinue);
+    void onError(RunLevelController controller, Throwable error, boolean willContinue);
 
     /**
-     * Called when the RunLevelService advances in some tangible way.
+     * Called when the RunLevelController advances in some tangible way.
      *
-     * @param service  the RunLevelService's service
+     * @param controller  the run level controller
      */
-    void onProgress(RunLevelService service);
+    void onProgress(RunLevelController controller);
 }

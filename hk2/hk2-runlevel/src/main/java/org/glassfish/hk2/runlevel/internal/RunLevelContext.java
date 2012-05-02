@@ -41,12 +41,13 @@ package org.glassfish.hk2.runlevel.internal;
 
 
 import org.glassfish.hk2.runlevel.RunLevel;
+import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelException;
-import org.glassfish.hk2.runlevel.RunLevelService;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.runlevel.utilities.Utilities;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -70,10 +71,10 @@ public class RunLevelContext implements Context<RunLevel> {
             new HashMap<String, Map<ActiveDescriptor<?>, Object>>();
 
     /**
-     * The run level services.
+     * The run level controllers.
      */
     @Inject
-    private IterableProvider<RunLevelService> allRunLevelServices;
+    private IterableProvider<RunLevelController> allRunLevelControllers;
 
 
     // ----- Context --------------------------------------------------------
@@ -94,7 +95,7 @@ public class RunLevelContext implements Context<RunLevel> {
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
                               ServiceHandle<?> root) {
 
-        String rlsName = Utilities.getRunLevelServiceName(activeDescriptor);
+        String rlsName = Utilities.getRunLevelControllerName(activeDescriptor);
 
         Map<ActiveDescriptor<?>, Object> backingMap = getBackingMap(rlsName);
 
@@ -102,23 +103,23 @@ public class RunLevelContext implements Context<RunLevel> {
             return (T) backingMap.get(activeDescriptor);
         }
 
-        RunLevelService runLevelService = getRunLevelService(rlsName);
+        RunLevelController RunLevelController = getRunLevelController(rlsName);
 
-        if (runLevelService == null) {
+        if (RunLevelController == null) {
             return null;
         }
 
         RunLevel.Mode mode = Utilities.getRunLevelMode(activeDescriptor);
 
         if (mode == RunLevel.Mode.VALIDATING) {
-            validate(activeDescriptor, runLevelService);
+            validate(activeDescriptor, RunLevelController);
         }
 
         T service = activeDescriptor.create(root);
         backingMap.put(activeDescriptor, service);
 
         if (mode == RunLevel.Mode.VALIDATING) {
-            runLevelService.recordActivation(activeDescriptor);
+            RunLevelController.recordActivation(activeDescriptor);
         }
 
         return service;
@@ -131,7 +132,7 @@ public class RunLevelContext implements Context<RunLevel> {
     @Override
     public <T> T find(ActiveDescriptor<T> activeDescriptor) {
         Map<ActiveDescriptor<?>, Object> backingStore =
-                getBackingMap(Utilities.getRunLevelServiceName(activeDescriptor));
+                getBackingMap(Utilities.getRunLevelControllerName(activeDescriptor));
 
         return (T) backingStore.get(activeDescriptor);
     }
@@ -153,9 +154,9 @@ public class RunLevelContext implements Context<RunLevel> {
      * @param activeDescriptor  the descriptor
      * @param <T>               the descriptor type
      */
-    protected <T> void deactivate(ActiveDescriptor<T> activeDescriptor) {
+    public <T> void deactivate(ActiveDescriptor<T> activeDescriptor) {
         Map<ActiveDescriptor<?>, Object> backingStore =
-                getBackingMap(Utilities.getRunLevelServiceName(activeDescriptor));
+                getBackingMap(Utilities.getRunLevelControllerName(activeDescriptor));
 
         if (backingStore.containsKey(activeDescriptor)) {
             activeDescriptor.dispose((T) backingStore.get(activeDescriptor));
@@ -167,7 +168,7 @@ public class RunLevelContext implements Context<RunLevel> {
      * Verifies that the run level value of the {@link RunLevel} annotated
      * service described by the given descriptor is valid for activation.
      * Valid means that the run level value is less than or equal to the
-     * current or planned run level of the given {@link RunLevelService}.
+     * current or planned run level of the given {@link org.glassfish.hk2.runlevel.RunLevelController}.
      *
      * @param descriptor  the descriptor of the service being activated
      * @param service     the run level service
@@ -175,7 +176,7 @@ public class RunLevelContext implements Context<RunLevel> {
      * @throws RunLevelException if the validation fails
      */
     private void validate(ActiveDescriptor<?> descriptor,
-                          RunLevelService service)
+                          RunLevelController service)
             throws RunLevelException {
 
         Integer runLevel = Utilities.getRunLevelValue(descriptor);
@@ -207,19 +208,19 @@ public class RunLevelContext implements Context<RunLevel> {
     }
 
     /**
-     * Get the {@link RunLevelService} for the given name.
+     * Get the {@link org.glassfish.hk2.runlevel.RunLevelController} for the given name.
      *
      * @param name  the run level service name
-     * @param <T>   the {@link RunLevelService} type
+     * @param <T>   the {@link org.glassfish.hk2.runlevel.RunLevelController} type
      *
-     * @return the {@link RunLevelService} for the given name; null if none
+     * @return the {@link org.glassfish.hk2.runlevel.RunLevelController} for the given name; null if none
      *         exists
      */
-    private <T> RunLevelService getRunLevelService(String name) {
-        RunLevelService runLevelService =
-                allRunLevelServices.named(name).get();
+    private <T> RunLevelController getRunLevelController(String name) {
+        RunLevelController controller =
+                allRunLevelControllers.named(name).get();
 
-        return runLevelService == null ?
-                allRunLevelServices.get() : runLevelService;
+        return controller == null ?
+                allRunLevelControllers.get() : controller;
     }
 }
