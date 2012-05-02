@@ -64,30 +64,7 @@
         <module>introspection</module>
         <module>test-rls</module>
     </modules>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <version>${project.version}</version>
-                <extensions>true</extensions>
-                <executions>
-                    <!-- Run the code as a test -->
-                    <execution>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <skipId>${groupId}.${artifactId}</skipId>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
+   
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>

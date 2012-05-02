@@ -51,20 +51,6 @@
     <artifactId>test2</artifactId>
     <name>HK2 test2</name>
 
-  <build>
-    <plugins>
-      <plugin>
-          <groupId>org.glassfish.hk2</groupId>
-          <artifactId>hk2-maven-plugin</artifactId>
-          <version>${project.version}</version>
-          <configuration>
-              <!-- specify myself as the main module -->
-              <mainModule>${groupId}.${artifactId}</mainModule>
-          </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
   <dependencies>
     <dependency>
       <groupId>org.glassfish.hk2.auto-depends-test</groupId>
