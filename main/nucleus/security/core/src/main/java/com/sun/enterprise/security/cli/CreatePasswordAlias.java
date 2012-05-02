@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,9 +55,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.security.common.MasterPassword;
-import javax.inject.Inject;
-import javax.inject.Named;
-
+import org.jvnet.hk2.annotations.Inject;
 /**
  * Create Password Alias Command
  *
@@ -103,7 +101,7 @@ public class CreatePasswordAlias implements AdminCommand {
     @Param(name="aliaspassword", password=true)
     private String aliasPassword;
 
-    @Inject @Named("Security SSL Password Provider Service")
+    @Inject(name="Security SSL Password Provider Service")
     private MasterPassword masterPasswordHelper;
 
     /**

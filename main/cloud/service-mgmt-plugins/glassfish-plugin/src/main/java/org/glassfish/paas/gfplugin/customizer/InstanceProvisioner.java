@@ -47,9 +47,7 @@ import org.glassfish.paas.orchestrator.service.spi.ProvisionedService;
 import org.glassfish.virtualization.runtime.VirtualClusters;
 import org.glassfish.virtualization.spi.VirtualCluster;
 import org.glassfish.virtualization.spi.VirtualMachine;
-import javax.inject.Inject;
-
-import org.jvnet.hk2.annotations.Optional;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 
@@ -68,7 +66,7 @@ public class InstanceProvisioner implements GlassFishPluginConstants {
     @Inject
     private RemoteInstanceProvisioner remoteInstanceProvisioner;
 
-    @Inject @Optional
+    @Inject(optional = true)
     private VirtualClusters virtualClusters;
 
     public void provision(GlassFishProvisionedService das, ProvisionedService... instances) {

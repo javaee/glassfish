@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.virtualization.commands;
 
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.virtualization.runtime.VirtualMachineLifecycle;
-import org.glassfish.virtualization.spi.VirtException;
-import org.glassfish.virtualization.spi.VirtualMachine;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+
+package org.glassfish.internal.api;
+
+import java.security.Principal;
 
 /**
- * Start a stopped virtual machine.
- * @author Jerome Dochez
+ * 
+ * @author tjquinn
  */
-@Service(name="start-vm")
-@Scoped(PerLookup.class)
-public class StartVirtualMachine extends VirtualMachineMgt implements AdminCommand {
-    @Inject
-    VirtualMachineLifecycle vmLifecycle;
+public class JMXAdminPrincipal implements Principal {
 
-    @Override
-    void doWork(VirtualMachine vm) throws VirtException {
-        vmLifecycle.start(vm);
+    private final String user;
+    private final AdminAccessController.Access access;
+    
+    public JMXAdminPrincipal(final String user, final AdminAccessController.Access access) {
+        this.user = user;
+        this.access = access;
     }
+    
+    @Override
+    public String getName() {
+        return user;
+    }
+    
+    public AdminAccessController.Access access() {
+        return access;
+    }
+    
 }

@@ -44,7 +44,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
 
@@ -58,7 +57,7 @@ import org.glassfish.api.Startup.Lifecycle;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
-import javax.inject.Inject;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
@@ -101,7 +100,7 @@ public class SecurityLifecycle implements  PostConstruct, PreDestroy {
     @Inject
     private RealmsManager realmsManager;
 
-    @Inject @Optional
+    @Inject(optional=true)
     private ContainerSecurityLifecycle eeSecLifecycle;
 
     private EventListener listener = null;

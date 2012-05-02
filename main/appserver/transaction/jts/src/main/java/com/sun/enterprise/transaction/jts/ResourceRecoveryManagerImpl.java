@@ -43,7 +43,6 @@ package com.sun.enterprise.transaction.jts;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Named;
 import javax.transaction.xa.XAResource;
 
 import com.sun.enterprise.transaction.config.TransactionService;
@@ -75,7 +74,7 @@ import org.jvnet.hk2.component.PostConstruct;
 @Service
 public class ResourceRecoveryManagerImpl implements PostConstruct, ResourceRecoveryManager {
 
-    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject(name=ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private TransactionService txnService;
 
     @Inject 

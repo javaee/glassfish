@@ -40,7 +40,7 @@
 
 package org.glassfish.appclient.client.acc;
 
-import org.glassfish.appclient.common.ACCAppClientArchivist;
+import com.sun.enterprise.deployment.archivist.ACCAppClientArchivist;
 import com.sun.enterprise.deployment.deploy.shared.MultiReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.deploy.shared.FileArchive;

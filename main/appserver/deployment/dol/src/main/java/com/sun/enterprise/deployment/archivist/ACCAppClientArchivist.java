@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,18 +38,14 @@
  * holder.
  */
 
-package org.glassfish.appclient.common;
+package com.sun.enterprise.deployment.archivist;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
-import com.sun.enterprise.deployment.archivist.ExtensionsArchivist;
 import java.io.IOException;
-import java.util.ArrayList;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.PerLookup;
 import org.xml.sax.SAXParseException;
 
@@ -72,22 +68,10 @@ import org.xml.sax.SAXParseException;
  */
 @Service
 @Scoped(PerLookup.class)
-public class ACCAppClientArchivist extends AppClientArchivist implements PostConstruct {
-
-    @Inject(optional = true)
-    ExtensionsArchivist[] allExtensionArchivists;
+public class ACCAppClientArchivist extends AppClientArchivist {
 
     @Override
     public void readRuntimeDeploymentDescriptor(ReadableArchive archive, ApplicationClientDescriptor descriptor) throws IOException, SAXParseException {
         super.readRuntimeDeploymentDescriptor(archive, descriptor, false);
-    }
-
-    public void postConstruct() {
-        extensionsArchivists = new ArrayList<ExtensionsArchivist>();
-        for (ExtensionsArchivist extensionArchivist : allExtensionArchivists) {
-            if (extensionArchivist.supportsModuleType(getModuleType())) {
-                extensionsArchivists.add(extensionArchivist);    
-            }
-        }
     }
 }

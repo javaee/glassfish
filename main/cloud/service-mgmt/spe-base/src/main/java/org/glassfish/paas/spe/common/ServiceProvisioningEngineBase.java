@@ -73,9 +73,7 @@ import org.glassfish.virtualization.spi.VirtualCluster;
 import org.glassfish.virtualization.spi.VirtualMachine;
 import org.glassfish.virtualization.util.ServiceType;
 import org.glassfish.virtualization.util.SimpleSearchCriteria;
-import javax.inject.Inject;
-
-import org.jvnet.hk2.annotations.Optional;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.component.Habitat;
 
 import java.util.Collection;
@@ -92,19 +90,19 @@ public abstract class ServiceProvisioningEngineBase<T extends org.glassfish.paas
     private static final Logger logger = LogDomains.getLogger(
             ServiceProvisioningEngineBase.class, LogDomains.PAAS_LOGGER);
 
-    @Inject @Optional
+    @Inject(optional = true)
     private TemplateRepository templateRepository;
 
-    @Inject @Optional
+    @Inject(optional = true)
     private VirtualClusters virtualClusters;
 
-    @Inject @Optional
+    @Inject(optional = true)
     private IAAS iaas;
 
     @Inject
     private ServiceUtil serviceUtil;
 
-    @Inject @Optional
+    @Inject(optional = true)
     VirtualMachineLifecycle vmLifecycle;
 
     @Inject

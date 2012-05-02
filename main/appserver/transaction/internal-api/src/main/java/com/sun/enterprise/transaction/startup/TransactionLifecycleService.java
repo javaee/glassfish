@@ -49,9 +49,7 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.NamingObjectProxy;
-import javax.inject.Inject;
-
-import org.jvnet.hk2.annotations.Optional;
+import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
@@ -78,7 +76,7 @@ public class TransactionLifecycleService implements Startup, PostConstruct, PreD
     @Inject
     Events events;
 
-    @Inject @Optional
+    @Inject(optional=true)
     GlassfishNamingManager nm;
 
     static final String USER_TX_NO_JAVA_COMP = "UserTransaction";

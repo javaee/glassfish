@@ -47,7 +47,7 @@ import org.glassfish.virtualization.spi.PhysicalServerPool;
 
 import org.glassfish.virtualization.spi.VirtException;
 import org.glassfish.virtualization.util.RuntimeContext;
-import javax.inject.Inject;
+import org.jvnet.hk2.annotations.Inject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
