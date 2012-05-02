@@ -54,12 +54,12 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.bootstrap.ConfigPopulator;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.inhabitants.InhabitantsParserFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.ConfigParser;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -196,12 +196,10 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     }
 
     protected void populateConfig(ServiceLocator serviceLocator) throws BootException {
-//TODO: hook up config system here!    	    	
-//        	ConfigParser configParser = serviceLocator.getService(ConfigParser.class);
-//
-//            for (Object p : serviceLocator.getAllServices(Populator.class)) {
-//                 ((Populator)p).run(configParser);
-//            }
+        //Populate this serviceLocator with config data
+        for (ConfigPopulator populator : serviceLocator.<ConfigPopulator>getAllServices(ConfigPopulator.class)) {
+            populator.populateConfig(serviceLocator);
+        }
     }
 
     public abstract void parseInhabitants(Module module,
