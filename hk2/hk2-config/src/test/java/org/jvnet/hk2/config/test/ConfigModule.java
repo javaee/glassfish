@@ -48,11 +48,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.config.ConfigInjector;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.Transactions;
-import org.jvnet.hk2.config.DomDecorator;
-import org.jvnet.hk2.config.InjectionTarget;
+import org.jvnet.hk2.config.*;
 
 import java.util.*;
 
@@ -93,6 +89,12 @@ public class ConfigModule {
                 .build());
         configurator.bind(BuilderHelper.link(SimpleConfigBeanDomDecorator.class)
                 .to(DomDecorator.class).in(Singleton.class.getName())
+                .build());
+        configurator.bind(BuilderHelper.link(ConfigurationPopulator.class)
+                .in(Singleton.class.getName())
+                .build());
+        configurator.bind(BuilderHelper.link(DummyPopulator.class)
+                .to(Populator.class).in(Singleton.class.getName())
                 .build());
         bindInjector(configurator, "simple-connector", SimpleConnector.class, SimpleConnectorInjector.class);
         bindInjector(configurator, "ejb-container-availability", EjbContainerAvailability.class, EjbContainerAvailabilityInjector.class);
