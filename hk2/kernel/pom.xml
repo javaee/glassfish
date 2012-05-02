@@ -145,6 +145,7 @@
                <module>../osgi-adapter-tests</module>
                <module>../dependency-verifier</module>
                <module>../dependency-visualizer</module>
+               <module>../hk2-config</module>
                <module>../examples</module>
                <module>../hk2-testing</module>
                <module>../hk2-deprecated</module>

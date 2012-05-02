@@ -103,26 +103,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>auto-depends</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet</groupId>
-            <artifactId>tiger-types</artifactId>
-            <version>1.4</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>javax.inject</artifactId>
             <version>${project.version}</version>
-        </dependency>
-	<dependency>
-       	    <groupId>org.glassfish.hk2</groupId>
-            <artifactId>class-model</artifactId>
-            <version>${project.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -146,10 +129,9 @@
             <artifactId>hk2-locator</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>config</artifactId>
+            <artifactId>hk2-config</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
