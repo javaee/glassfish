@@ -1,0 +1,67 @@
+<settings>
+    <servers>
+        <server>
+                <id>glassfish-repository</id>
+                <username>sjavatx</username>
+        </server>
+        <server>
+                <id>rator.sfbay</id>
+                <username>hudson</username>
+                <password>hudson</password>
+        </server>
+        <server>
+                <id>gf-repository</id>
+                <username>sjavatx</username>
+        </server>
+<!--
+        <server>
+            <id>koori.sfbay</id>
+            <username>java_re</username>
+            <password>{8RDwNJKNgagH6UoqTzptUaylLWzNQoi+mwFDC9mWi5c=}</password>
+        </server>
+-->
+        <server>                                                                                      
+            <id>gf-internal-release</id>                                                              
+            <username>gf-deploy</username>                                                            
+            <password>glassfishdeploy</password>                                                      
+        </server>                                                                                      
+        <server>                                                                                      
+            <id>gf-internal-snapshot</id>                                                             
+            <username>gf-deploy</username>                                                            
+            <password>glassfishdeploy</password>                                                      
+        </server>  
+        <server>
+            <id>jvnet-nexus-snapshots</id>
+            <username>java_re</username>
+            <password>Duke1shere</password>
+        </server>
+        <server>
+            <id>jvnet-nexus-staging</id>
+            <username>java_re</username>
+            <password>Duke1shere</password>
+        </server>
+    </servers>
+   <!-- divert the traffic to internal nexus -->
+    <mirrors>
+        <mirror>
+            <id>internal-glassfish-nexus</id>
+<!--
+            <url>http://hit-s10-9.us.oracle.com/nexus/content/groups/internal-gf-nexus/</url>
+-->
+            <url>http://gf-maven.us.oracle.com/nexus/content/groups/internal-gf-nexus/</url>
+            <mirrorOf>*,!sdk-internal-repository,!glassfish-internal-repository</mirrorOf>   
+        </mirror>       
+   </mirrors>
+   <profiles>
+       <profile>
+            <id>release</id>
+            <properties>
+                <release.arguments>-Dhttps.proxyHost=inet-rmmc01.oracle.com -Dhttps.proxyPort=80 -Dg
+pg.passphrase=glassfish -Pjvnet-release</release.arguments>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
+</settings>
