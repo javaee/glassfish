@@ -45,14 +45,17 @@ import org.glassfish.hk2.api.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.*;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This runs a set of tests to test various habitat and Dom APIs
@@ -64,8 +67,8 @@ public class ConfigTest {
     private final static String TEST_NAME = "";
     private final static Habitat habitat = new Habitat(); //ServiceLocatorFactory.getInstance().create("");
 
-    @Before
-    public void before() {
+    @BeforeClass
+    public static void before() {
         DynamicConfigurationService dcs = habitat.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         new ConfigModule(habitat).configure(config);
@@ -80,7 +83,7 @@ public class ConfigTest {
                 WebContainerAvailabilityInjector.class.getName()
         };
         List<String> expectedInjectors = Arrays.asList(expected);
-        
+
         Collection<Inhabitant<? extends ConfigInjector>> inhabitants = habitat.getInhabitants(ConfigInjector.class);
         Set<String> inhabitantNames = new HashSet<String>();
         for (Inhabitant inh : inhabitants) {
@@ -185,11 +188,6 @@ public class ConfigTest {
                 && ConfigBeanProxy.class.isAssignableFrom(ejb.getClass()));
     }
 
-    /********************
-     *
-     * THIS IS FAILING
-     */
-
     @Test
     public void testHabitatFromDom() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
@@ -263,6 +261,85 @@ public class ConfigTest {
         }
     }
 
+    @Test
+    public void testGetImplAndAddListener() {
+        SimpleConnector sc = habitat.getService(SimpleConnector.class);
+        final EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
+        ObservableBean obean = (ObservableBean) ConfigSupport.getImpl(ejb);
+        EjbObservableBean ejbBean = new EjbObservableBean();
+
+        assert(ejbBean.getCount() == 0);
+        obean.addListener(ejbBean);
+        try {
+            ConfigSupport.apply(new SingleConfigCode<EjbContainerAvailability>() {
+                @Override
+                public Object run(EjbContainerAvailability param)
+                        throws PropertyVetoException, TransactionFailure {
+                    param.setSfsbHaPersistenceType("DynamicData");
+                    param.setSfsbCheckpointEnabled("**MUST BE**");
+                    assert(! ejb.getSfsbHaPersistenceType().equals(param.getSfsbHaPersistenceType()));
+                    return null;
+                }
+            }, ejb);
+
+            //printEjb("AFTER CHANGES", ejb);
+            assert(ejb.getSfsbHaPersistenceType().equals("DynamicData")
+                    && ejb.getSfsbCheckpointEnabled().equals("**MUST BE**"));
+
+            assert(ejbBean.getCount() == 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
+        }
+        try {
+            ConfigSupport.apply(new SingleConfigCode<EjbContainerAvailability>() {
+                @Override
+                public Object run(EjbContainerAvailability param)
+                        throws PropertyVetoException, TransactionFailure {
+                    param.setSfsbHaPersistenceType("DynamicData1");
+                    param.setSfsbCheckpointEnabled("**MUST BE**");
+                    assert(! ejb.getSfsbHaPersistenceType().equals(param.getSfsbHaPersistenceType()));
+                    return null;
+                }
+            }, ejb);
+
+            //printEjb("AFTER CHANGES", ejb);
+            assert(ejb.getSfsbHaPersistenceType().equals("DynamicData1")
+                    && ejb.getSfsbCheckpointEnabled().equals("**MUST BE**"));
+
+            assert(ejbBean.getCount() == 2);
+
+            System.out.println("getImpl(ejb) == > "
+                    + ConfigSupport.getImpl(ejb).getClass().getName());
+            System.out.println("getImpl(ejb).getMasterView() == > "
+                    + ConfigSupport.getImpl(ejb).getMasterView().getClass().getName());
+            System.out.println("getImpl(ejb).getProxyType() == > "
+                    + ConfigSupport.getImpl(ejb).getProxyType().getClass().getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
+        }
+    }
+
+    @Test
+    public void testGetConfigBean() {
+        SimpleConnector sc = habitat.getService(SimpleConnector.class);
+        final EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
+        ConfigBean ejbConfigBean = (ConfigBean) ConfigBean.unwrap(ejb);
+
+        assert(ejbConfigBean != null);
+    }
+    
+    @Test
+    public void testConfigurationPopulator() {
+        DummyPopulator pop = habitat.getService(Populator.class);
+
+        ConfigurationPopulator confPopulator = habitat.getService(ConfigurationPopulator.class);
+        confPopulator.populateHabitat(habitat);
+
+        assert(pop.isPopulateCalled());
+    }
+
     private static void printEjb(String message, EjbContainerAvailability ejb) {
         StringBuilder sb = new StringBuilder(ejb.getClass().getName());
         sb.append(" : " ).append(ejb.getAvailabilityEnabled())
@@ -305,6 +382,22 @@ public class ConfigTest {
             }
 
             return false;
+        }
+    }
+    
+    private static class EjbObservableBean
+        implements ConfigListener {
+
+        private AtomicInteger count = new AtomicInteger();
+        
+        @Override
+        public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+            System.out.println("** EjbContainerAvailability changed ==> " + count.incrementAndGet());
+            return null;
+        }
+        
+        public int getCount() {
+            return count.get();
         }
     }
 
