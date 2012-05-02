@@ -37,67 +37,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel.internal;
+package org.glassfish.hk2.runlevel;
 
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.runlevel.RunLevel;
-import org.glassfish.hk2.runlevel.RunLevelService;
-import org.glassfish.hk2.runlevel.RunLevelServiceIndicator;
 
-import java.util.List;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
+
 
 /**
- * Run level service related utilities.
+ * Identifies the {@link RunLevelController} target for the {@link RunLevel}
+ * annotated service.
  *
  * @author tbeerbower
  */
-public class Utilities {
-    /**
-     * Get the run level value from the metadata of the given descriptor.
-     *
-     * @param descriptor  the descriptor to get the run level for
-     *
-     * @return the run level
-     */
-    protected static Integer getRunLevelValue(Descriptor descriptor) {
-        List<String> list = descriptor.getBaseDescriptor().getMetadata().
-                get(RunLevel.RUNLEVEL_VAL_META_TAG);
-
-        return list == null ?
-                RunLevel.RUNLEVEL_VAL_IMMEDIATE :
-                Integer.valueOf(list.get(0));
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE })
+public @interface RunLevelControllerIndicator {
+    // ----- Constants ------------------------------------------------------
 
     /**
-     * Get the run level service name from the metadata of the given
-     * descriptor.
-     *
-     * @param descriptor  the descriptor
-     *
-     * @return the run level service name
+     * The metadata key for the target {@link RunLevelController} name.
      */
-    protected static String getRunLevelServiceName(Descriptor descriptor) {
-        List<String> list = descriptor.getBaseDescriptor().getMetadata().
-                get(RunLevelServiceIndicator.RUNLEVEL_SERVICE_NAME_META_TAG);
+    public static final String RUNLEVEL_CONTROLLER_NAME_META_TAG = "runLevelControllerName";
 
-        return list == null ?
-                RunLevelService.RUNLEVEL_SERVICE_DEFAULT_NAME :
-                list.get(0);
-    }
+
+    // ----- Elements -------------------------------------------------------
 
     /**
-     * Get the run level mode from the metadata of the given descriptor.
+     * Defines the run level scope in which this RunLevel applies.
+     * <p/>
      *
-     * @param descriptor  the descriptor
+     * The run level scope is any type used to segregate the
+     * application / system namespace.
+     * <p/>
      *
-     * @return the mode
+     * @return the run level scope type this annotation value applies
      */
-    protected static RunLevel.Mode getRunLevelMode(Descriptor descriptor) {
-        List<String> list = descriptor.getBaseDescriptor().getMetadata().
-                get(RunLevel.RUNLEVEL_MODE_META_TAG);
-
-        return list == null ?
-                RunLevel.Mode.VALIDATING :
-                RunLevel.Mode.valueOf(list.get(0));
-    }
+    //@InhabitantMetadata(RUNLEVEL_CONTROLLER_NAME_META_TAG)
+    public String value() default RunLevelController.RUNLEVEL_CONTROLLER_DEFAULT_NAME;
 }
