@@ -50,7 +50,6 @@
     </parent>
     
     <artifactId>test-inhabitant-generator</artifactId>
-    <packaging>hk2-jar</packaging>
     <name>HK2 Testing Jar for Inhabitant Generation (see apt tests for actual test)</name>
 
     <dependencies>

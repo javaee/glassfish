@@ -50,7 +50,6 @@
     </parent>
     
     <artifactId>introspection</artifactId>
-    <packaging>hk2-jar</packaging>
     <name>introspection verifier</name>
     <dependencies>
    		<dependency>

@@ -50,7 +50,6 @@
     </parent>
     
     <artifactId>test-rls</artifactId>
-    <packaging>hk2-jar</packaging>
     <name>HK2 Extended Testing for RunLevelService [RLS]</name>
 
     <properties>

@@ -51,7 +51,6 @@
 
     <artifactId>auto-depends-plugin-test</artifactId>
     <name>Inhabitants' index generator testing</name>
-    <packaging>hk2-jar</packaging>
     <description>${project.name}</description>
 
     <build>
