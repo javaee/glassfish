@@ -61,7 +61,7 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>config</artifactId>
+            <artifactId>hk2-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
