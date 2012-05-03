@@ -40,9 +40,7 @@
 package com.sun.enterprise.module.single;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.bootstrap.ArgumentManager;
 
-import java.io.File;
 import java.util.List;
 import java.util.Properties;
 
@@ -50,9 +48,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Inhabitants;
 
 /**
  * Implementation of the modules registry that use a single class loader to load
