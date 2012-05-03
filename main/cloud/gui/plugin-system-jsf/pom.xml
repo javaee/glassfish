@@ -52,7 +52,7 @@
     </parent>
     
     <artifactId>paas.console.plugin-system-jsf</artifactId>
-    <packaging>hk2-jar</packaging>
+    
     <name>PaaS Console Plugin System JSF Integration</name>
     
     <dependencies>

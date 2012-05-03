@@ -52,7 +52,7 @@
     </parent>
     <groupId>org.glassfish.main.admingui</groupId>
     <artifactId>console-common</artifactId>
-    <packaging>hk2-jar</packaging>
+    
     <name>Admin Console Common</name>
     <description>This bundle contains common code that may be shared across plugins.</description>
 

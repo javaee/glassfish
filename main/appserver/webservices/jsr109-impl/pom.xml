@@ -52,7 +52,7 @@
     </parent>
 
     <artifactId>jsr109-impl</artifactId>
-    <packaging>hk2-jar</packaging>
+    
     <name>JSR-109 implementation to deploy Metro</name>
 
     <build>
@@ -117,7 +117,7 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2</artifactId>
+            <artifactId>core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.cluster</groupId>
@@ -151,7 +151,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-core</artifactId>
+            <artifactId>core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.common</groupId>

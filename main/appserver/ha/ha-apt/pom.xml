@@ -52,7 +52,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>ha-apt</artifactId>
-    <packaging>hk2-jar</packaging>
+    
     <name>GlassFish High Availability Annotation Processors</name>
 
     <properties>

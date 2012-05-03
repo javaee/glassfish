@@ -51,7 +51,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>monitoring-cloudvm</artifactId>
-    <packaging>hk2-jar</packaging>
+    
     <version>4.0-SNAPSHOT</version>
     <name>Monitoring Cloud Virtual Manager</name>
 
@@ -63,7 +63,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2</artifactId>
+            <artifactId>core</artifactId>
         </dependency>
         <dependency>
            <groupId>org.glassfish.admin</groupId>

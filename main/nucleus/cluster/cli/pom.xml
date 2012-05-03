@@ -51,7 +51,7 @@
     </parent>
 
     <artifactId>cluster-cli</artifactId>
-    <packaging>hk2-jar</packaging>
+    
     <name>cluster-cli</name>
 
     <properties>

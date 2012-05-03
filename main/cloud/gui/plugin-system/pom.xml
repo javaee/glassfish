@@ -52,7 +52,7 @@
     
     <artifactId>paas.console.plugin-system</artifactId>
     <name>PaaS Console Plugin System</name>
-    <packaging>hk2-jar</packaging>
+    
 
     <dependencies>
         <dependency>

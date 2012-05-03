@@ -52,7 +52,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>admin-util</artifactId>
-    <packaging>hk2-jar</packaging>
+    
     <name>admin-util</name>
     <description>Admin Utilities</description>
 

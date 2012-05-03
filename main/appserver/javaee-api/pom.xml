@@ -103,7 +103,6 @@
                 <configuration>
                     <supportedProjectTypes>
                         <supportedProjectType>jar</supportedProjectType>
-                        <supportedProjectType>hk2-jar</supportedProjectType>
                         <supportedProjectType>bundle</supportedProjectType>
                     </supportedProjectTypes>
                     <instructions>

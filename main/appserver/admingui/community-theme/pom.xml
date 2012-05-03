@@ -51,7 +51,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>console-community-branding-plugin</artifactId>
-    <packaging>hk2-jar</packaging>
+    
     <name>Admin Console Community Edition Theme Plugin</name>
     <description>Custom Theme Plugin for GlassFish V3 Admin Console</description>
 
