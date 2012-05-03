@@ -40,6 +40,7 @@
 package org.jvnet.hk2.test.jsr330;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -86,7 +87,10 @@ public class Jsr330InjectTest {
     @Named("second")
     Provider<ITestService2> iTestService2Provider ;
 
-	@javax.inject.Inject
+    @javax.inject.Inject
+    ITestService3 testService3;
+
+    @javax.inject.Inject
 	@Q1
 	IQualified qual1;
 	
@@ -125,7 +129,17 @@ public class Jsr330InjectTest {
         assertTrue("Instances should be distinguished by name", testService1.getITestService2() != newTestService2);
 	}
 
-	@Test
+    @Test
+    public void testConstructorInject() {
+        assertNotNull(testService3);
+
+        assertEquals(testService1, testService3.getTestService1());
+        assertEquals(testService1.getITestService2(), testService3.getTestService2());
+        assertEquals(optionalWithServiceAvailable, testService3.getOptionalService1());
+        assertEquals(optionalWithNoServiceAvailable, testService3.getOptionalService2());
+    }
+
+    @Test
 	public void testQualifiers() {
 		assertNotNull(qual1);
 		assertNotNull(qual2);
@@ -238,7 +252,7 @@ public class Jsr330InjectTest {
 		}
 	}
 
-	@Service(name="first")
+    @Service(name="first")
 	public static class TestService2 implements ITestService2 {
 
 		public TestService2() {
@@ -251,7 +265,50 @@ public class Jsr330InjectTest {
 		
 	}
 
-	@Contract
+    @Service
+    public static class TestService3 implements ITestService3 {
+
+        TestService1 testService1;
+        TestService2 testService2;
+        OptionalContract1 optionalService1;
+        OptionalContract2 optionalService2;
+
+        @Inject
+        public TestService3(TestService1 testService1,
+                            @Named("first") TestService2 testService2,
+                            @Optional OptionalContract1 optionalService1,
+                            @Optional OptionalContract2 optionalService2) {
+
+            this.testService1 = testService1;
+            this.testService2 = testService2;
+            this.optionalService1 = optionalService1;
+            this.optionalService2 = optionalService2;
+        }
+
+        @Override
+        public TestService1 getTestService1() {
+            return testService1;
+        }
+
+        @Override
+        public TestService2 getTestService2() {
+            return testService2;
+        }
+
+        @Override
+        public OptionalContract1 getOptionalService1() {
+            return optionalService1;
+        }
+
+        @Override
+        public OptionalContract2 getOptionalService2() {
+            return optionalService2;
+        }
+
+    }
+
+
+    @Contract
 	public interface ITestService1 {
 		ITestService2 getITestService2();
 	}
@@ -259,8 +316,19 @@ public class Jsr330InjectTest {
 	@Contract
 	public interface ITestService2 {
 	}
-	
-	@Contract
+
+    @Contract
+    public interface ITestService3 {
+        public TestService1 getTestService1();
+
+        public TestService2 getTestService2();
+
+        public OptionalContract1 getOptionalService1();
+
+        public OptionalContract2 getOptionalService2();
+    }
+
+    @Contract
 	public interface IQualified {
 		
 	}
