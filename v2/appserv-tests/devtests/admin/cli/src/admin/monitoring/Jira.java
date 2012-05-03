@@ -56,7 +56,11 @@ public class Jira extends MonTest {
     void runTests(TestDriver driver) {
         setDriver(driver);
         report(true, "Hello from JIRA Tests!");
-        test14389();
+		/* turn off this intermittent test for now.
+
+                      test14389();
+		*/
+
         test16313();
         test15397();
         test15054();
