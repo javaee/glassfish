@@ -44,11 +44,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -88,89 +92,171 @@ public class Utilities {
     private final boolean verbose;
     private final String searchPath;
     
-    private final String CONFIGURED_CONTRACT = "org.jvnet.hk2.config.Configured";
+    private final static String CONFIGURED_CONTRACT = "org.jvnet.hk2.config.Configured";
+    
+    private final static List<KnownClassData> KNOWN_DATA = new LinkedList<KnownClassData>();
+    
+    static {
+        Set<String> empty = Collections.emptySet();
+        
+        // Factory
+        KNOWN_DATA.add(new KnownClassData(Factory.class.getName(),
+                true, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Context
+        KNOWN_DATA.add(new KnownClassData(Context.class.getName(),
+                true, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // ErrorService
+        KNOWN_DATA.add(new KnownClassData(ErrorService.class.getName(),
+                true, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Singleton
+        KNOWN_DATA.add(new KnownClassData(Singleton.class.getName(),
+                false, // isa_contract
+                true, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // PerLookup
+        KNOWN_DATA.add(new KnownClassData(PerLookup.class.getName(),
+                false, // isa_contract
+                true, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Named
+        KNOWN_DATA.add(new KnownClassData(Named.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                true, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Contract
+        KNOWN_DATA.add(new KnownClassData(Contract.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // @Configured
+        KNOWN_DATA.add(new KnownClassData(CONFIGURED_CONTRACT,
+                true, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Scope
+        KNOWN_DATA.add(new KnownClassData(Scope.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Target
+        KNOWN_DATA.add(new KnownClassData(Target.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Retention
+        KNOWN_DATA.add(new KnownClassData(Retention.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Proxiable
+        KNOWN_DATA.add(new KnownClassData(Proxiable.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Annotation
+        KNOWN_DATA.add(new KnownClassData(Annotation.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Qualifier
+        KNOWN_DATA.add(new KnownClassData(Qualifier.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Documented
+        KNOWN_DATA.add(new KnownClassData(Documented.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Inherited
+        KNOWN_DATA.add(new KnownClassData(Inherited.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+                
+    }
     
     /* package */ Utilities(boolean verbose, String searchPath) {
         this.verbose = verbose;
         this.searchPath = searchPath;
         
         // We can pre-load the cache with some obvious ones and thus reduce searching quite a bit
-        ISA_CONTRACT.put(Factory.class.getName(), true);
-        ISA_CONTRACT.put(Context.class.getName(), true);
-        ISA_CONTRACT.put(ErrorService.class.getName(), true);
-        ISA_CONTRACT.put(Singleton.class.getName(), false);
-        ISA_CONTRACT.put(PerLookup.class.getName(), false);
-        ISA_CONTRACT.put(Named.class.getName(), false);
-        ISA_CONTRACT.put(Contract.class.getName(), false);
-        ISA_CONTRACT.put(CONFIGURED_CONTRACT, true);
-        ISA_CONTRACT.put(Scope.class.getName(), false);
-        ISA_CONTRACT.put(Target.class.getName(), false);
-        ISA_CONTRACT.put(Retention.class.getName(), false);
-        ISA_CONTRACT.put(Proxiable.class.getName(), false);
-        ISA_CONTRACT.put(Annotation.class.getName(), false);
-        ISA_CONTRACT.put(Qualifier.class.getName(), false);
-        
-        ISA_SCOPE.put(Singleton.class.getName(), true);
-        ISA_SCOPE.put(PerLookup.class.getName(), true);
-        ISA_SCOPE.put(Factory.class.getName(), false);
-        ISA_SCOPE.put(Context.class.getName(), false);
-        ISA_SCOPE.put(ErrorService.class.getName(), false);
-        ISA_SCOPE.put(Named.class.getName(), false);
-        ISA_SCOPE.put(Contract.class.getName(), false);
-        ISA_SCOPE.put(CONFIGURED_CONTRACT, false);
-        ISA_SCOPE.put(Scope.class.getName(), false);
-        ISA_SCOPE.put(Target.class.getName(), false);
-        ISA_SCOPE.put(Retention.class.getName(), false);
-        ISA_SCOPE.put(Proxiable.class.getName(), false);
-        ISA_SCOPE.put(Annotation.class.getName(), false);
-        ISA_SCOPE.put(Qualifier.class.getName(), false);
-        
-        ISA_QUALIFIER.put(Named.class.getName(), true);
-        ISA_QUALIFIER.put(Singleton.class.getName(), false);
-        ISA_QUALIFIER.put(PerLookup.class.getName(), false);
-        ISA_QUALIFIER.put(Factory.class.getName(), false);
-        ISA_QUALIFIER.put(Context.class.getName(), false);
-        ISA_QUALIFIER.put(ErrorService.class.getName(), false);
-        ISA_QUALIFIER.put(Contract.class.getName(), false);
-        ISA_QUALIFIER.put(CONFIGURED_CONTRACT, false);
-        ISA_QUALIFIER.put(Scope.class.getName(), false);
-        ISA_QUALIFIER.put(Target.class.getName(), false);
-        ISA_QUALIFIER.put(Retention.class.getName(), false);
-        ISA_QUALIFIER.put(Proxiable.class.getName(), false);
-        ISA_QUALIFIER.put(Annotation.class.getName(), false);
-        ISA_QUALIFIER.put(Qualifier.class.getName(), false);
-        
-        FOUND_SUPERCLASS.put(Named.class.getName(), null);
-        FOUND_SUPERCLASS.put(Singleton.class.getName(), null);
-        FOUND_SUPERCLASS.put(PerLookup.class.getName(), null);
-        FOUND_SUPERCLASS.put(Factory.class.getName(), null);
-        FOUND_SUPERCLASS.put(Context.class.getName(), null);
-        FOUND_SUPERCLASS.put(ErrorService.class.getName(), null);
-        FOUND_SUPERCLASS.put(Contract.class.getName(), null);
-        FOUND_SUPERCLASS.put(CONFIGURED_CONTRACT, null);
-        FOUND_SUPERCLASS.put(Scope.class.getName(), null);
-        FOUND_SUPERCLASS.put(Target.class.getName(), null);
-        FOUND_SUPERCLASS.put(Retention.class.getName(), null);
-        FOUND_SUPERCLASS.put(Proxiable.class.getName(), null);
-        FOUND_SUPERCLASS.put(Annotation.class.getName(), null);
-        FOUND_SUPERCLASS.put(Qualifier.class.getName(), null);
-        
-        Set<String> empty = Collections.emptySet();
-        
-        FOUND_INTERFACES.put(Named.class.getName(), empty);
-        FOUND_INTERFACES.put(Singleton.class.getName(), empty);
-        FOUND_INTERFACES.put(PerLookup.class.getName(), empty);
-        FOUND_INTERFACES.put(Factory.class.getName(), empty);
-        FOUND_INTERFACES.put(Context.class.getName(), empty);
-        FOUND_INTERFACES.put(ErrorService.class.getName(), empty);
-        FOUND_INTERFACES.put(Contract.class.getName(), empty);
-        FOUND_INTERFACES.put(CONFIGURED_CONTRACT, empty);
-        FOUND_INTERFACES.put(Scope.class.getName(), empty);
-        FOUND_INTERFACES.put(Target.class.getName(), empty);
-        FOUND_INTERFACES.put(Retention.class.getName(), empty);
-        FOUND_INTERFACES.put(Proxiable.class.getName(), empty);
-        FOUND_INTERFACES.put(Annotation.class.getName(), empty);
-        FOUND_INTERFACES.put(Qualifier.class.getName(), empty);
+        for (KnownClassData kcd : KNOWN_DATA) {
+            ISA_CONTRACT.put(kcd.getClazz(), kcd.isIsa_contract());
+            ISA_SCOPE.put(kcd.getClazz(), kcd.isIsa_scope());
+            ISA_QUALIFIER.put(kcd.getClazz(), kcd.isIsa_qualifier());
+            FOUND_SUPERCLASS.put(kcd.getClazz(), kcd.getSuperclass());
+            FOUND_INTERFACES.put(kcd.getClazz(), kcd.getiFaces());
+        }
     }
     
     /**
@@ -512,6 +598,74 @@ public class Utilities {
         private String getDotDelimitedSuperclass() {
             return dotDelimitedSuperclass;
         }
+        
+    }
+    
+    private static class KnownClassData {
+        private final String clazz;
+        private final boolean isa_contract;
+        private final boolean isa_scope;
+        private final boolean isa_qualifier;
+        private final String superclass;
+        private final Set<String> iFaces;
+        
+        private KnownClassData(String clazz,
+                boolean isa_contract,
+                boolean isa_scope,
+                boolean isa_qualifier,
+                String superclass,
+                Set<String> iFaces) {
+            this.clazz = clazz;
+            this.isa_contract = isa_contract;
+            this.isa_scope = isa_scope;
+            this.isa_qualifier = isa_qualifier;
+            this.superclass = superclass;
+            this.iFaces = iFaces;
+        }
+
+        /**
+         * @return the clazz
+         */
+        String getClazz() {
+            return clazz;
+        }
+
+        /**
+         * @return the isa_contract
+         */
+        boolean isIsa_contract() {
+            return isa_contract;
+        }
+
+        /**
+         * @return the isa_scope
+         */
+        boolean isIsa_scope() {
+            return isa_scope;
+        }
+
+        /**
+         * @return the isa_qualifier
+         */
+        boolean isIsa_qualifier() {
+            return isa_qualifier;
+        }
+
+        /**
+         * @return the superclass
+         */
+        String getSuperclass() {
+            return superclass;
+        }
+
+        /**
+         * @return the iFaces
+         */
+        Set<String> getiFaces() {
+            return iFaces;
+        }
+        
+        
         
     }
 
