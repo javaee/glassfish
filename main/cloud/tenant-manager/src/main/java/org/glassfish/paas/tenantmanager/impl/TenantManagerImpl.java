@@ -39,7 +39,6 @@
  */
 package org.glassfish.paas.tenantmanager.impl;
 
-import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -64,7 +63,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
@@ -91,53 +89,9 @@ public class TenantManagerImpl implements TenantManagerEx {
      * {@inheritDoc}
      */
     @Override
-    public <T> T get(Class<T> config) {
+    public <T extends ConfigBeanProxy> T get(Class<T> config) {
         String name = getCurrentTenant();
         return get(config, name);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    // TODO: remove
-    public <T extends ConfigBeanProxy> Object executeUpdate(
-            final SingleConfigCode<T> code, T param) throws TransactionFailure {
-        ConfigBeanProxy[] objects = { param };
-        return excuteUpdate((new ConfigCode() {
-            @SuppressWarnings("unchecked")
-            public Object run(ConfigBeanProxy... objects) throws PropertyVetoException, TransactionFailure {
-                return code.run((T) objects[0]);
-            }
-        }), objects);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    // TODO: remove
-    public Object excuteUpdate(ConfigCode configCode, ConfigBeanProxy ... objects) throws TransactionFailure {
-        /*
-        // assume there is an object and all objects are for one document
-        ConfigBeanProxy source = objects[0];
-        TenantConfigBean configBean = (TenantConfigBean) Dom.unwrap(source);
-        Lock lock = configBean.getDocument().getLock();
-        try {
-            if (lock.tryLock(ConfigSupport.lockTimeOutInSeconds,
-                    TimeUnit.SECONDS)) {
-                try {
-                    return configSupport._apply(configCode, objects);
-                } finally {
-                    lock.unlock();
-                }
-            }
-        } catch (InterruptedException e) {
-            // ignore, will throw TransactionFailure
-        }
-        throw new TransactionFailure("Can't acquire global lock");
-        */
-        return configSupport._apply(configCode, objects);
     }
 
     /**
@@ -158,14 +112,45 @@ public class TenantManagerImpl implements TenantManagerEx {
      */
     @Override
     public void setCurrentTenant(String name) {
-        if (name != null) { // validate tenant exists sooner than later
-            String filePath = getTenantFilePath(name);
-            // TODO: i18n, better error
-            if (!new File(filePath).exists()) {
-                throw new IllegalArgumentException("Tenant does not exist");
-            }
+        if (name == null) {
+            throw new IllegalArgumentException("Tenant can not be null"); //TODO: i18n
+        }
+        // validate tenant exists sooner than later
+        String filePath = getTenantFilePath(name);
+        // TODO: i18n, better error
+        if (!new File(filePath).exists()) {
+            throw new IllegalArgumentException("Tenant does not exist");
         }
         currentTenant.set(name);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void resetCurrentTenant() {
+        if(getCurrentTenant() == null) {
+            throw new IllegalStateException("resetCurrentTenant() called while there is no current tenant");
+        }
+        currentTenant.set(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void lock() {
+        //TODO code to obtain lock goes here
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unlock() {
+        //TODO code to release lock goes here
+
     }
 
     private File getTenantFile(String name) {
@@ -221,15 +206,22 @@ public class TenantManagerImpl implements TenantManagerEx {
         return tenant;
     }
 
+    private void dispose(String name) {
+        Habitat h = null;
+        synchronized (habitats) {
+            h = habitats.remove(name);
+        }
+        if (h != null) {
+            h.release();
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void delete(String name) {
-        Habitat h = habitats.remove(name);
-        if (h != null) {
-            h.release();
-        }
+        dispose(name);
         // TODO: do we really want to delete file or just dispose habitat?
         // TODO: lock!!!
         FileUtils.deleteFileMaybe(getTenantFile(name));
@@ -265,10 +257,26 @@ public class TenantManagerImpl implements TenantManagerEx {
      *            Tenant name.
      * @return Config.
      */
-    private <T> T get(Class<T> config, String tenantName) {
+    private <T extends ConfigBeanProxy> T get(Class<T> config, String tenantName) {
         Habitat habitat = getHabitat(tenantName);
         // TODO: assert Tenant/Environment/Service is requested
-        return  habitat.getComponent(config);
+        synchronized(habitat) { // for re-read below, remove if not needed
+            T result =  habitat.getComponent(config);
+            if (result == null) {
+                return null;
+            }
+            // re-read tenant file if it was modified (tentative, subject for changes)
+            TenantConfigBean configBean = (TenantConfigBean) Dom.unwrap(result);
+            long myLastModified = configBean.getDocument().getLastModified();
+            long otherLastModified = new File(getTenantFilePath(tenantName)).lastModified();
+            if (otherLastModified > myLastModified) {
+                dispose(tenantName);
+                habitat = getHabitat(tenantName);
+                result = habitat.getComponent(config);
+            }
+            return result;
+        }
+        
         
     }
 
@@ -322,15 +330,17 @@ public class TenantManagerImpl implements TenantManagerEx {
         String filePath = getTenantFilePath(name);
         ConfigParser parser = new ConfigParser(habitat);
         URL fileUrl = null;
+        File f = new File(filePath);
+        long lastModified = f.lastModified();
         try {
-            fileUrl = new File(filePath).toURI().toURL();
+            fileUrl = f.toURI().toURL();
         } catch (MalformedURLException e) {
             // should not happen
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
         try {
-            return parser.parse(fileUrl, new TenantDocument(habitat, fileUrl));
+            return parser.parse(fileUrl, new TenantDocument(habitat, fileUrl, lastModified));
         } catch (ComponentException e) {
             // TODO: i18n, better error
             throw new IllegalArgumentException("Tenant '" + name + "' might be deleted", e);
@@ -368,6 +378,4 @@ public class TenantManagerImpl implements TenantManagerEx {
     @Inject
     private ModulesRegistry modulesRegistry;
 
-    @Inject
-    private ConfigSupport configSupport;
 }

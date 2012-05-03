@@ -150,7 +150,7 @@ public class TenantManagerTest extends ConfigApiTest {
             
         } finally {
             // Clean up context...
-            tenantManager.setCurrentTenant(null);
+            tenantManager.resetCurrentTenant();
         }
 
         // ... tenantManager.get(Tenant.class) will throw exception at this point.
@@ -183,7 +183,18 @@ public class TenantManagerTest extends ConfigApiTest {
             }, admin);
             assertConfigXml("Updated tenant xml", "tenant1", tenant);
         } finally {
-            tenantManager.setCurrentTenant(null);
+            tenantManager.resetCurrentTenant();
+        }
+        // verify tenant file is reready if updated by someone else
+        setupTest("tenant1");
+        try {
+            tenantManager.setCurrentTenant("tenant1");
+            Tenant tenant = tenantManager.get(Tenant.class);
+            TenantAdmin admin = tenant.getTenantAdmin();
+            Assert.assertEquals("Original name", "admin", admin.getName());         
+        } finally {
+            tenantManager.resetCurrentTenant();
+            
         }
     }
 
@@ -216,7 +227,7 @@ public class TenantManagerTest extends ConfigApiTest {
                 }
             }, admin);
         } finally {
-            tenantManager.setCurrentTenant(null);
+            tenantManager.resetCurrentTenant();
         }
     }
 
@@ -259,7 +270,7 @@ public class TenantManagerTest extends ConfigApiTest {
             // verify file is written with both changes!
             assertConfigXml("Updated tenant xml", "tenant1-nonlocking", tenant);
         } finally {
-            tenantManager.setCurrentTenant(null);
+            tenantManager.resetCurrentTenant();
         }
     }
 
@@ -329,7 +340,7 @@ public class TenantManagerTest extends ConfigApiTest {
             // verify file is written with both changes!
             assertConfigXml("Updated tenant xml", "tenant1-nonlocking", tenant);
         } finally {
-            tenantManager.setCurrentTenant(null);
+            tenantManager.resetCurrentTenant();
         }
     }
 
@@ -392,11 +403,12 @@ public class TenantManagerTest extends ConfigApiTest {
         } finally {
             // clean up
             try {
-                tenantManager.setCurrentTenant(null);
+                tenantManager.resetCurrentTenant();
                 tenantManager.delete("tenant3");
             } catch (Throwable e) {
                 // ignore
             }
         }
     }
+      
 }
