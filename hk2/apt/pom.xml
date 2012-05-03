@@ -72,7 +72,7 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>auto-depends</artifactId>
+            <artifactId>hk2-deprecated</artifactId>
             <version>${project.version}</version>
         </dependency>
    		<dependency>
