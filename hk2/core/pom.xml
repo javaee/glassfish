@@ -104,13 +104,8 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>class-model</artifactId>
+            <artifactId>hk2-deprecated</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-config</artifactId>
-            <version>${project.parent.version}</version>            
         </dependency>
     </dependencies>
     <profiles>
