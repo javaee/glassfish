@@ -58,7 +58,7 @@
     <properties>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <version.hk2>1.6.35</version.hk2>
+        <version.hk2>2.1.0</version.hk2>
         <version.javaee>6.0</version.javaee>
         <version.jsf>2.1</version.jsf>
         <version.junit>4.8.2</version.junit>
@@ -165,17 +165,6 @@
             <plugins>
                 <plugin>
                     <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>hk2-maven-plugin</artifactId>
-                    <version>${version.hk2}</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <archive>
-                            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                        </archive>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.glassfish.hk2</groupId>
                     <artifactId>osgiversion-maven-plugin</artifactId>
                     <version>${version.hk2}</version>
                 </plugin>
@@ -191,10 +180,6 @@
             </plugins>
         </pluginManagement>
         <plugins>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
