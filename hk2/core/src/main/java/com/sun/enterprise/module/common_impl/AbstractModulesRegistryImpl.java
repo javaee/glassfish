@@ -47,8 +47,6 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.bootstrap.Populator;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
