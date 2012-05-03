@@ -139,7 +139,6 @@
                <module>../class-model</module>
                <module>../auto-depends</module>
                <module>../core</module>
-               <module>../config</module>
                <module>../config-generator</module>
                <module>../osgi-adapter</module>
                <module>../osgi-adapter-tests</module>
