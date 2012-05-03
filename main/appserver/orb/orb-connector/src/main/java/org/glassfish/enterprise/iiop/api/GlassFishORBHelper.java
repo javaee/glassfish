@@ -57,7 +57,7 @@ import java.util.Properties;
 import java.rmi.Remote;
 import java.nio.channels.SelectableChannel;
 
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 import org.glassfish.api.event.Events;
 import org.glassfish.api.event.EventTypes;

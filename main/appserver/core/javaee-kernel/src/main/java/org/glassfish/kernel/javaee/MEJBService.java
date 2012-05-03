@@ -44,7 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.glassfish.internal.api.InitRunLevel;
 import org.glassfish.internal.api.Globals;

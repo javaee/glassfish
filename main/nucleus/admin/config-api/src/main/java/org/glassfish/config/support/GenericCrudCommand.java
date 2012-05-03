@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.Multiple;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InjectionManager;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 import org.jvnet.hk2.config.*;
 import org.jvnet.tiger_types.Types;
 

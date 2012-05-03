@@ -59,7 +59,7 @@ import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.universal.io.SmartFile;
 
 import org.jvnet.hk2.annotations.Optional;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 

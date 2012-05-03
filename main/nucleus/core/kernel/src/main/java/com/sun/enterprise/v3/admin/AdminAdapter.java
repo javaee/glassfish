@@ -62,7 +62,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
 import org.jvnet.hk2.annotations.Optional;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 import java.net.InetAddress;
 import java.net.URLDecoder;

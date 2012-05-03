@@ -47,8 +47,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.PostConstruct;
-import org.glassfish.hk2.PreDestroy;
+import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.PreDestroy;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Priority;
 import org.glassfish.hk2.runlevel.RunLevel;

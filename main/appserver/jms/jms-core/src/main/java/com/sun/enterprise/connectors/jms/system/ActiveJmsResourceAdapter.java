@@ -100,7 +100,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import javax.inject.Singleton;
 import org.jvnet.hk2.config.types.Property;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 //import com.sun.messaging.jmq.util.service.PortMapperClientHandler;
 

@@ -58,7 +58,7 @@ import java.util.logging.Logger;
  */
 @Service
 public class MetricGathererContainer
-    implements org.glassfish.hk2.PostConstruct {
+    implements org.glassfish.hk2.api.PostConstruct {
 
     private static final int MAX_DATA_HOLD_TIME_IN_SECONDS = 2 * 60 * 60 * 1000;
 

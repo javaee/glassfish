@@ -53,7 +53,7 @@ import org.glassfish.virtualization.util.ListenableFutureImpl;
 import org.glassfish.virtualization.util.RuntimeContext;
 import javax.inject.Inject;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

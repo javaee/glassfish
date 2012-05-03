@@ -47,8 +47,8 @@ import org.jvnet.hk2.annotations.ContractProvided;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
+import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.PreDestroy;
 import javax.inject.Singleton;
 
 import java.text.SimpleDateFormat;

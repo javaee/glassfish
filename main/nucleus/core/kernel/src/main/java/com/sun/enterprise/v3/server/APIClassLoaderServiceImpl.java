@@ -48,7 +48,7 @@ import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import com.sun.logging.LogDomains;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;

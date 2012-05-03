@@ -59,7 +59,7 @@ import org.glassfish.virtualization.util.RuntimeContext;
 import javax.inject.Inject;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.hk2.inject.Injector;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 import java.util.logging.Level;
 import org.glassfish.virtualization.config.MachineConfig;

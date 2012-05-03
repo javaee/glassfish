@@ -86,7 +86,7 @@ import java.util.HashMap;
 import javax.management.remote.JMXPrincipal;
 import javax.security.auth.x500.X500Principal;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 /** Implementation of {@link AdminAccessController} that delegates to LoginContextDriver.
  *  @author Kedar Mhaswade (km@dev.java.net)

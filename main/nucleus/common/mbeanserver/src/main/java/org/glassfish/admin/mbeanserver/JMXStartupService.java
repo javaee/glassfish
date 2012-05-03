@@ -54,7 +54,7 @@ import javax.management.ObjectName;
 
 import org.glassfish.external.amx.BootAMXMBean;
 
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 import org.jvnet.hk2.component.BaseServiceLocator;
 
 import java.util.List;

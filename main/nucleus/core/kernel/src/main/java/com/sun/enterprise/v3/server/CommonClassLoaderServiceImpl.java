@@ -44,7 +44,7 @@ import com.sun.logging.LogDomains;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.api.admin.ServerEnvironment;
 
 import java.io.File;

@@ -65,7 +65,7 @@ import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.security.auth.login.Configuration;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 
 /**
  *

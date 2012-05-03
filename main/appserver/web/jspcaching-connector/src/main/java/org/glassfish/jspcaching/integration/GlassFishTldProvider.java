@@ -53,7 +53,7 @@ import org.glassfish.web.config.serverbeans.WebContainer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.jvnet.hk2.component.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
 import javax.inject.Singleton;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.net.JarURIPattern;
