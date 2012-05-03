@@ -43,7 +43,6 @@ package com.sun.enterprise.module;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.HabitatFactory;
 
 import java.util.Collection;
 import java.util.List;

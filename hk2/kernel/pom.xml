@@ -137,7 +137,6 @@
                <module>../hk2-runlevel</module>
                <module>../hk2-locator</module>
                <module>../class-model</module>
-               <module>../auto-depends</module>
                <module>../core</module>
                <module>../config-generator</module>
                <module>../osgi-adapter</module>

@@ -109,7 +109,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
-            <artifactId>config</artifactId>
+            <artifactId>hk2-config</artifactId>
             <version>${project.parent.version}</version>            
         </dependency>
     </dependencies>
