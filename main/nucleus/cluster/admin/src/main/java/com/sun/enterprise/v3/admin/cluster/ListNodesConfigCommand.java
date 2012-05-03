@@ -59,7 +59,7 @@ import java.util.logging.Logger;
 import org.glassfish.api.admin.*;
 
 @Service(name = "list-nodes-config")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 @I18n("list.nodes.config.command")
 @RestEndpoints({

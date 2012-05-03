@@ -59,7 +59,7 @@ import org.glassfish.api.admin.RestEndpoint;
 import org.glassfish.api.admin.RestEndpoints;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * Dumps a sorted list of all registered Contract's in the Habitat
@@ -69,7 +69,7 @@ import org.jvnet.hk2.component.PerLookup;
  * @author Byron Nevins
  */
 @Service(name = "_get-habitat-info")
-@Scoped(PerLookup.class)
+@PerLookup
 @RestEndpoints({
     @RestEndpoint(configBean=Domain.class,
         opType=RestEndpoint.OpType.GET, 

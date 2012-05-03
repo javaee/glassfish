@@ -50,7 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 /**
  * Coordinates generation and consumption of very-limited-use authentication tokens.
@@ -90,7 +90,7 @@ import org.jvnet.hk2.component.Singleton;
  * @author Tim Quinn
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class AuthTokenManager {
 
     public static final String AUTH_TOKEN_OPTION_NAME = "_authtoken";

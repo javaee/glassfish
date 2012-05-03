@@ -57,7 +57,7 @@ import java.io.FileWriter;
  * @author Bhavanishankar S
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class RemoteInstanceProvisioner implements GlassFishPluginConstants {
 
     public void provision(GlassFishProvisionedService das, ProvisionedService... instances) {

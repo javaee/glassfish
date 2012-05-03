@@ -64,7 +64,7 @@ import org.glassfish.enterprise.iiop.api.ProtocolManager;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 
 /** 
@@ -74,7 +74,7 @@ import org.jvnet.hk2.component.Singleton;
  */
 
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class SecurityContextUtil implements PostConstruct {
     
     public static final int STATUS_PASSED = 0;

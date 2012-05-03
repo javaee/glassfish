@@ -54,7 +54,7 @@ import java.lang.reflect.Proxy;
 /**
  * @author Jagadish Ramu
  */
-@Scoped(Singleton.class)
+@Singleton
 @Service
 public class ResourceManagerFactory {
 

@@ -57,7 +57,7 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
@@ -76,7 +76,7 @@ import java.util.*;
  */
 @Service(name = "set")
 @ExecuteOn(RuntimeType.INSTANCE)
-@Scoped(PerLookup.class)
+@PerLookup
 @I18n("set")
 public class SetCommand extends V2DottedNameSupport implements AdminCommand, PostConstruct {
 

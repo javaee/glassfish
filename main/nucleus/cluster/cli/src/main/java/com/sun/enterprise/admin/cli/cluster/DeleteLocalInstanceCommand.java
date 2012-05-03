@@ -60,7 +60,7 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
  * @author Byron Nevins
  */
 @Service(name = "delete-local-instance")
-@Scoped(PerLookup.class)
+@PerLookup
 public class DeleteLocalInstanceCommand extends LocalInstanceCommand {
 
     @Param(name = "instance_name", primary = true, optional = true)

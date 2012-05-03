@@ -61,7 +61,7 @@ import org.jvnet.hk2.component.*;
  */
 @Service(name = "_create-node-implicit")
 @I18n("create.node.implicit")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Domain.class,

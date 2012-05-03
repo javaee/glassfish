@@ -55,7 +55,7 @@ import org.glassfish.connectors.config.ConnectorConnectionPool;
 import org.glassfish.resources.api.ResourceStatus;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
@@ -73,7 +73,7 @@ import javax.inject.Inject;
  */
 @ExecuteOn(RuntimeType.ALL)
 @Service(name="delete-connector-connection-pool")
-@Scoped(PerLookup.class)
+@PerLookup
 @I18n("delete.connector.connection.pool")
 public class DeleteConnectorConnectionPool implements AdminCommand {
     

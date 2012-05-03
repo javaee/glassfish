@@ -60,7 +60,7 @@ import java.lang.reflect.Proxy;
  *
  * @author Jerome Dochez
  */
-@Scoped(PerLookup.class)
+@PerLookup
 public class GenericDeleteCommand extends GenericCrudCommand implements AdminCommand {
 
     @Inject

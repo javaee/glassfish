@@ -68,7 +68,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
  *
  */
 @Service(name="enable-auto-scaling")
-@Scoped(PerLookup.class)
+@PerLookup
 public class EnableAutoScaling
 	implements AdminCommand {
 

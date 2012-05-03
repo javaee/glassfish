@@ -78,7 +78,7 @@ import org.glassfish.security.common.FileRealmHelper;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigCode;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -88,7 +88,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  * This is a local command that creates a domain.
  */
 @Service(name = "create-domain")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class CreateDomainCommand extends CLICommand {
     // constants for create-domain options
     private static final String ADMIN_PORT = "adminport";

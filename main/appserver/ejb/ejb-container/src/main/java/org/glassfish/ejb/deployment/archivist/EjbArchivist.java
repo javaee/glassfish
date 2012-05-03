@@ -57,7 +57,7 @@ import org.glassfish.ejb.deployment.io.EjbRuntimeDDFile;
 import org.glassfish.ejb.deployment.io.GFEjbRuntimeDDFile;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -69,7 +69,7 @@ import java.util.Set;
  * @author  Jerome Dochez
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 @ArchivistFor(org.glassfish.ejb.EjbType.ARCHIVE_TYPE)
 public class EjbArchivist extends Archivist<EjbBundleDescriptor> {
 

@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
@@ -67,7 +67,7 @@ import java.util.logging.Logger;
  * @author sanjeeb.sahoo@sun.com
  */
 @Service()
-@Scoped(PerLookup.class) // this is a PerLookup service
+@PerLookup // this is a PerLookup service
 @ContractProvided(org.glassfish.embeddable.CommandRunner.class)
 // bcos CommandRunner interface can't depend on HK2, we need ContractProvided here.
 

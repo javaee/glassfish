@@ -52,7 +52,7 @@ import org.glassfish.api.admin.*;
  * Validate DAS host, port, secure options.
  */
 @Service(name = "_validate-das-options")
-@Scoped(PerLookup.class)
+@PerLookup
 public class ValidateDasOptions extends LocalInstanceCommand {
 
     @Param(name = "instance_name", primary = true, optional = false)

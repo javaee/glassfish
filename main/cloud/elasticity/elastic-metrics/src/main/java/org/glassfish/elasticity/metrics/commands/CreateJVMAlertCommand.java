@@ -32,7 +32,7 @@ import org.glassfish.api.admin.RestEndpoints;
  */
 @Service(name = "create-jvm-alert")
 @I18n("create.jvm.alert")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({ @RestEndpoint(configBean = AlertConfig.class, opType = OpType.POST, path = "create-jvm-alert", description = "Create JVM alert") })
 public class CreateJVMAlertCommand implements AdminCommand{

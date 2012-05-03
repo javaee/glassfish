@@ -55,7 +55,7 @@ import org.glassfish.ejb.deployment.io.GFEjbInWarRuntimeDDFile;
 import org.glassfish.ejb.deployment.io.WLSEjbInWarRuntimeDDFile;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -65,7 +65,7 @@ import javax.inject.Provider;
  */
 
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 @ExtensionsArchivistFor("ejb")
 public class EjbInWarArchivist extends ExtensionsArchivist {
 

@@ -64,7 +64,7 @@ import java.util.logging.Logger;
  */
 @Service(name = "delete-node-config")
 @I18n("delete.node.config")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Nodes.class,

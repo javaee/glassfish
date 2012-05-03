@@ -50,7 +50,7 @@ import com.sun.enterprise.config.serverbeans.JavaConfig;
 import org.glassfish.api.admin.config.ConfigurationUpgrade;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -64,7 +64,7 @@ import javax.inject.Inject;
  */
 
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class V2ToV3ConfigUpgrade implements ConfigurationUpgrade, PostConstruct {
 
     @Inject

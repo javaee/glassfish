@@ -87,7 +87,7 @@ import org.glassfish.api.admin.CommandRunner.CommandInvocation;
   * @author Yamini K B
   */
 @Service(name = "create-http-lb")
-@Scoped(PerLookup.class)
+@PerLookup
 @I18n("create.http.lb")
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 @org.glassfish.api.admin.ExecuteOn({RuntimeType.DAS})

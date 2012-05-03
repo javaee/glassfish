@@ -65,7 +65,7 @@ import java.util.logging.Logger;
  * @author Byron Nevins
  */
 @Service(name = "update-node-dcom")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Node.class,

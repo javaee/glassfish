@@ -68,7 +68,7 @@ import org.glassfish.internal.api.Target;
  * @author Yamini K B
  */
 @Service(name = "enable-http-lb-server")
-@Scoped(PerLookup.class)
+@PerLookup
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER, CommandTarget.CLUSTERED_INSTANCE})
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 @RestEndpoints({

@@ -63,7 +63,7 @@ import java.util.logging.Level;
  * @author Bill Shannon
  */
 @Service(name = "version")
-@Scoped(PerLookup.class)
+@PerLookup
 public class VersionCommand extends CLICommand {
 
     @Param(optional = true, shortName = "v")

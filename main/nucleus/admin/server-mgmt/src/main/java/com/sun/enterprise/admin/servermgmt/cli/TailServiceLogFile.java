@@ -45,7 +45,7 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.CommandException;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,7 +60,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 @org.jvnet.hk2.annotations.Service(name = "tail-service-log-files")
-@Scoped(PerLookup.class)
+@PerLookup
 public class TailServiceLogFile extends CLICommand {
 
     private String commandName = "_hidden-tail-service-log-files";

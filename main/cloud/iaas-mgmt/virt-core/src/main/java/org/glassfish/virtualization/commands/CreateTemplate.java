@@ -72,7 +72,7 @@ import java.util.regex.Pattern;
  * @author Jerome Dochez
  */
 @Service(name="create-template")
-@Scoped(PerLookup.class)
+@PerLookup
 public class CreateTemplate implements AdminCommand {
 
     @Param(primary = true)

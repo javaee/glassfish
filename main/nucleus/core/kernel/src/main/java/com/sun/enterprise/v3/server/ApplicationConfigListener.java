@@ -48,7 +48,7 @@ import javax.inject.Named;
 
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.component.PostConstruct;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
@@ -79,7 +79,7 @@ import java.util.logging.Logger;
 import java.util.Calendar;
 
 @Service
-@Scoped(Singleton.class)
+@Singleton
 @PostStartupRunLevel
 public class ApplicationConfigListener implements TransactionListener, PostConstruct {
 

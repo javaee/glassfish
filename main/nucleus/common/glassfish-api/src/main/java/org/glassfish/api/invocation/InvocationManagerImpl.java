@@ -52,14 +52,14 @@ import org.glassfish.api.invocation.ComponentInvocation.ComponentInvocationType;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.BaseServiceLocator;
 
 import javax.inject.Inject;
 
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class InvocationManagerImpl
         implements InvocationManager {
 

@@ -68,7 +68,7 @@ import com.sun.enterprise.util.net.NetUtils;
  *
  */
 @Service(name = "_create-instance-filesystem")
-@Scoped(PerLookup.class)
+@PerLookup
 public class CreateLocalInstanceFilesystemCommand extends LocalInstanceCommand {
 
     @Param(name = "instance_name", primary = true)

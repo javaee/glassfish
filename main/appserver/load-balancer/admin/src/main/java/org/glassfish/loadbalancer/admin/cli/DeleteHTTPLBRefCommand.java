@@ -75,7 +75,7 @@ import org.glassfish.config.support.CommandTarget;
  * @author Yamini K B
  */
 @Service(name = "delete-http-lb-ref")
-@Scoped(PerLookup.class)
+@PerLookup
 @I18n("delete.http.lb.ref")
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)

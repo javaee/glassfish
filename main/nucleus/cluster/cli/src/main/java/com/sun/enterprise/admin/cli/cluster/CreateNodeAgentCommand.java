@@ -57,7 +57,7 @@ import com.sun.enterprise.util.SystemPropertyConstants;
  */
 // XXX - make this command disappear until we actually implement it
 //@Service(name = "create-node-agent")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class CreateNodeAgentCommand extends CLICommand {
 
     /*

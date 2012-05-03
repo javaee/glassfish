@@ -72,7 +72,7 @@ import org.glassfish.config.support.CommandTarget;
  * @author Yamini K B
  */
 @Service(name = "delete-http-health-checker")
-@Scoped(PerLookup.class)
+@PerLookup
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 @RestEndpoints({

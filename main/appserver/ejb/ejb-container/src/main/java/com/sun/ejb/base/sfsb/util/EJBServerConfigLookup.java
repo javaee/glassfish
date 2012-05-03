@@ -55,7 +55,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.ejb.config.EjbContainer;
 import org.glassfish.ejb.config.EjbContainerAvailability;
@@ -65,7 +65,7 @@ import org.glassfish.ejb.config.EjbContainerAvailability;
  * @author Mahesh Kannan
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public final class EJBServerConfigLookup {
    
     /**

@@ -53,7 +53,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "export")
-@Scoped(PerLookup.class)
+@PerLookup
 public class ExportCommand extends CLICommand {
 
     private static final LocalStringsImpl strings =

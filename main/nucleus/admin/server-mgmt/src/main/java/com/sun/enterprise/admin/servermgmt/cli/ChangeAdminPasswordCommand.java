@@ -80,7 +80,7 @@ import org.glassfish.security.common.FileRealmHelper;
  * @author Bill Shannon
  */
 @Service(name = "change-admin-password")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 public class ChangeAdminPasswordCommand extends LocalDomainCommand {
     private ParameterMap params;

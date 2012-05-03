@@ -53,13 +53,13 @@ import javax.security.auth.callback.CallbackHandler;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.annotations.Scoped;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class SecurityServicesUtil {
 
     //private static BaseServiceLocator habitat = Globals.getDefaultHabitat();

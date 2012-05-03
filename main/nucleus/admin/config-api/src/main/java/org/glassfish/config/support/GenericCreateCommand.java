@@ -67,7 +67,7 @@ import java.beans.PropertyVetoException;
  *
  * @author Jerome Dochez
  */
-@Scoped(PerLookup.class)
+@PerLookup
 public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand {
 
     @Inject

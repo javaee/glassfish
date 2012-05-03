@@ -82,7 +82,7 @@ import org.glassfish.deployment.versioning.VersioningUtils;
  * @author Bill Shannon
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public final class ServerSynchronizer implements PostConstruct {
 
     @Inject

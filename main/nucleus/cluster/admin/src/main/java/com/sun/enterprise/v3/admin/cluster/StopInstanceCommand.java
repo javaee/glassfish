@@ -75,7 +75,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.cluster.ssh.launcher.SSHLauncher;
 import org.glassfish.cluster.ssh.sftp.SFTPClient;
 import org.glassfish.cluster.ssh.util.DcomInfo;
@@ -90,7 +90,7 @@ import org.glassfish.cluster.ssh.util.DcomInfo;
  * @author Byron Nevins
  */
 @Service(name = "stop-instance")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE) // allow stop-instance always
 @I18n("stop.instance.command")
 @ExecuteOn(RuntimeType.DAS)

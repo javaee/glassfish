@@ -65,7 +65,7 @@ import com.sun.enterprise.admin.cli.remote.RemoteCommand;
  * Delete a local server instance.
  */
 @Service(name = "_delete-instance-filesystem")
-@Scoped(PerLookup.class)
+@PerLookup
 public class DeleteInstanceFilesystem extends LocalInstanceCommand {
 
     @Param(name = "instance_name", primary = true, optional = false)

@@ -71,7 +71,7 @@ import javax.inject.Inject;
  */
 @Service(name = "create-instance")
 @I18n("create.instance")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Domain.class,

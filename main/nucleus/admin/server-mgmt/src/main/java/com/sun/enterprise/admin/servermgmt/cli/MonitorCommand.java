@@ -59,7 +59,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "monitor")
-@Scoped(PerLookup.class)
+@PerLookup
 public class MonitorCommand extends CLICommand {
     @Param(optional = true, defaultValue = "30")
     private int interval = 30;	// default 30 seconds

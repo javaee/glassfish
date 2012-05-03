@@ -89,7 +89,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.config.types.Property;
 
 import javax.inject.Inject;
@@ -125,7 +125,7 @@ import java.util.logging.Logger;
  * @author Binod P.G, Srikanth P, Aditya Gore, Jagadish Ramu
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class ConnectorRuntime implements com.sun.appserv.connectors.internal.api.ConnectorRuntime,
         PostConstruct, PreDestroy {
 

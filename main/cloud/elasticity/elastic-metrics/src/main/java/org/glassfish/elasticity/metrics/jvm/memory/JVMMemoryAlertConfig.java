@@ -54,7 +54,7 @@ import java.beans.PropertyVetoException;
  * TODO: Must change this into a real ConfigBean
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class JVMMemoryAlertConfig
     implements AlertConfig {
 

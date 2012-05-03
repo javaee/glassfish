@@ -49,7 +49,7 @@ import com.sun.enterprise.deployment.util.BeanMethodCalculator;
 import com.sun.logging.LogDomains;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * Utility class to calculate the list of methods required  to have transaction
@@ -59,7 +59,7 @@ import org.jvnet.hk2.component.PerLookup;
  * @version 
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class BeanMethodCalculatorImpl implements BeanMethodCalculator {
     
     // TODO - change logger if/when other EJB deployment classes are changed

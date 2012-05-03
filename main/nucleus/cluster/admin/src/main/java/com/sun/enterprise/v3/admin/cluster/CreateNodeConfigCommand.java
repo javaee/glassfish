@@ -65,7 +65,7 @@ import javax.inject.Inject;
  */
 @Service(name = "create-node-config")
 @I18n("create.node.config")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Nodes.class,

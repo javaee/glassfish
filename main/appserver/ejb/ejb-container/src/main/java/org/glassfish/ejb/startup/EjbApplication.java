@@ -63,7 +63,7 @@ import org.glassfish.internal.data.ApplicationInfo;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import com.sun.enterprise.security.PolicyLoader;
 import com.sun.logging.LogDomains;
@@ -81,7 +81,7 @@ import org.glassfish.internal.deployment.ExtendedDeploymentContext;
  * @author Mahesh Kannan
  */
 @Service(name = "ejb")
-@Scoped(PerLookup.class)
+@PerLookup
 public class EjbApplication
         implements ApplicationContainer<Collection<EjbDescriptor>> {
 

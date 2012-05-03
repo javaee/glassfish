@@ -67,7 +67,7 @@ import javax.inject.Inject;
  * @author jasonlee
  */
 @Service(name="__resolve-tokens")
-@Scoped(PerLookup.class)
+@PerLookup
 @TargetType(value={CommandTarget.DAS,CommandTarget.DOMAIN, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE })
 @ExecuteOn(RuntimeType.DAS)
 @RestEndpoints({

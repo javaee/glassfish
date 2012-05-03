@@ -57,7 +57,7 @@ import org.jvnet.hk2.component.*;
  */
 @Service(name = "update-node-ssh")
 @I18n("update.node.ssh")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Node.class,

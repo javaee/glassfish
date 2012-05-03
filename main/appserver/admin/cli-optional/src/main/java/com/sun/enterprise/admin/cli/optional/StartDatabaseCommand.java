@@ -65,7 +65,7 @@ import java.util.Arrays;
  *  @author Bill Shannon
  */
 @Service(name = "start-database")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class StartDatabaseCommand extends DatabaseCommand {
     private final static String DATABASE_DIR_NAME = "databases";
 

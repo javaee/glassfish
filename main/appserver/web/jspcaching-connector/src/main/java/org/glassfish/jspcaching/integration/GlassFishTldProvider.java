@@ -54,7 +54,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.util.net.JarURIPattern;
 import com.sun.enterprise.module.Module;
@@ -67,7 +67,7 @@ import com.sun.appserv.web.taglibs.cache.CacheTag;
  */
 
 @Service(name="jspCachingTld")
-@Scoped(Singleton.class)
+@Singleton
 public class GlassFishTldProvider
         implements TldProvider, PostConstruct {
 

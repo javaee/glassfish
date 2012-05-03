@@ -59,7 +59,7 @@ import com.sun.enterprise.config.serverbeans.Domain;
 @Service(name = "start-cluster")
 @ExecuteOn(value={RuntimeType.DAS})
 @CommandLock(CommandLock.LockType.NONE) // don't prevent _synchronize-files
-@Scoped(PerLookup.class)
+@PerLookup
 @RestEndpoints({
     @RestEndpoint(configBean=Cluster.class,
         opType=RestEndpoint.OpType.POST, 

@@ -76,7 +76,7 @@ import org.jvnet.hk2.component.Habitat;
 
 
 @org.jvnet.hk2.annotations.Service
-@Scoped(Singleton.class)
+@Singleton
 public class ServiceOrchestratorImpl implements ServiceOrchestrator {
 
     @Inject

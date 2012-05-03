@@ -63,7 +63,7 @@ import java.beans.PropertyVetoException;
  * @author Jerome Dochez
  */
 @Service(name="create-ims-config-libvirt")
-@Scoped(PerLookup.class)
+@PerLookup
 public class CreateLibVirtVirtualization implements AdminCommand {
 
     @Param(optional=true, defaultValue = "/usr/bin/kvm")

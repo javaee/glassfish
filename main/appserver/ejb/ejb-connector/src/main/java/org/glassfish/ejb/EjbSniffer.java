@@ -52,7 +52,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.component.BaseServiceLocator;
 
 import java.io.IOException;
@@ -69,7 +69,7 @@ import java.lang.annotation.Annotation;
  * @author Mahesh Kannan
  */
 @Service(name="Ejb")
-@Scoped(Singleton.class)
+@Singleton
 public class EjbSniffer  extends GenericSniffer {
 
     @Inject

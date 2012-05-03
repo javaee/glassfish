@@ -50,7 +50,7 @@ import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.xml.sax.SAXParseException;
 
 /**
@@ -71,7 +71,7 @@ import org.xml.sax.SAXParseException;
  * @author Tim Quinn
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class ACCAppClientArchivist extends AppClientArchivist implements PostConstruct {
 
     @Inject(optional = true)

@@ -62,7 +62,7 @@ import static org.glassfish.api.ActionReport.ExitCode.SUCCESS;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.flashlight.MonitoringRuntimeDataRegistry;
 import org.jvnet.hk2.annotations.*;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import static com.sun.enterprise.util.SystemPropertyConstants.MONDOT;
 import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
 
@@ -79,7 +79,7 @@ import static com.sun.enterprise.util.SystemPropertyConstants.SLASH;
  * name:  org.glassfish.flashlight.datatree.TreeNode all over the place...
  */
 @Service(name = "MonitoringReporter")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS, RuntimeType.INSTANCE})
 public class MonitoringReporter extends V2DottedNameSupport {
 

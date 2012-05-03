@@ -68,7 +68,7 @@ import javax.inject.Provider;
  * startup, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
-@Scoped(Singleton.class)
+@Singleton
 @Service(name="ApplicationScopedResourcesManager")
 public class ApplicationScopedResourcesManager implements PostStartup, PostConstruct, PreDestroy, ConfigListener {
 

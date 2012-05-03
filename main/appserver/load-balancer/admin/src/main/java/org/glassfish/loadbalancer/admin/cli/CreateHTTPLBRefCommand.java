@@ -83,7 +83,7 @@ import org.glassfish.config.support.CommandTarget;
  * @author Yamini K B
  */
 @Service(name = "create-http-lb-ref")
-@Scoped(PerLookup.class)
+@PerLookup
 @I18n("create.http.lb.ref")
 @TargetType(value={CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTER})
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)

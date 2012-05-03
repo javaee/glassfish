@@ -82,7 +82,7 @@ import java.util.logging.Logger;
  * @author Jagadish Ramu
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class ConnectorResourceManagerLifecycleListener implements ResourceManagerLifecycleListener, ConfigListener {
 
     @Inject

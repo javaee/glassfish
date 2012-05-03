@@ -58,7 +58,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  *  This is a local command that deletes a domain.
  */
 @Service(name = "delete-domain")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class DeleteDomainCommand extends LocalDomainCommand {
 
     @Param(name = "domain_name", primary = true)

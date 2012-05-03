@@ -63,7 +63,7 @@ import org.glassfish.virtualization.util.SimpleSearchCriteria;
 import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -74,7 +74,7 @@ import java.util.Properties;
  * @author Shalini M
  */
 @Service(name = "create-derby-vm")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 public class CreateDerbyVM implements AdminCommand {
 

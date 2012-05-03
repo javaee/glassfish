@@ -48,13 +48,13 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.internal.deployment.GenericSniffer;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 /**
  * Implementation of the Sniffer for Weld.
  */
 @Service(name="weld")
-@Scoped(Singleton.class)
+@Singleton
 public class WeldSniffer extends GenericSniffer implements Sniffer {
 
     private static final String[] containers = { "org.glassfish.weld.WeldContainer" };

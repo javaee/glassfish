@@ -58,7 +58,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Bhavanishankar S
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class LocalInstanceProvisioner implements GlassFishPluginConstants {
 
     @Inject @Optional

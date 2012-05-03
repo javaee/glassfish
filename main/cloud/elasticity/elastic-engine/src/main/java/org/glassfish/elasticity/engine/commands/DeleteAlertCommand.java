@@ -61,7 +61,7 @@ import org.glassfish.api.admin.RestEndpoints;
 
 @Service(name = "delete-alert")
 @I18n("delete.alert")
-@Scoped(PerLookup.class)
+@PerLookup
 @RestEndpoints({ @RestEndpoint(configBean = AlertConfig.class, opType = OpType.POST, path = "delete-alert", description = "Delete alert") })
 public class DeleteAlertCommand implements AdminCommand{
 

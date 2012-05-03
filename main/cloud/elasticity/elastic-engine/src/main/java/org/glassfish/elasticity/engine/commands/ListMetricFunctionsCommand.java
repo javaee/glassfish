@@ -47,7 +47,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.elasticity.api.MetricFunction;
 
 import java.util.logging.Logger;
@@ -59,7 +59,7 @@ import java.util.logging.Logger;
  */
 @Service(name="list-metric-functions")
 @I18n("list.metric.functions")
-@Scoped(PerLookup.class)
+@PerLookup
 public class ListMetricFunctionsCommand implements AdminCommand{
 
     @Inject

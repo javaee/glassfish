@@ -65,7 +65,7 @@ import org.glassfish.resources.api.PoolInfo;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.glassfish.external.probe.provider.PluginPoint;
 import org.glassfish.external.probe.provider.StatsProviderManager;
 
@@ -85,7 +85,7 @@ import org.glassfish.external.probe.provider.StatsProviderManager;
  * @author Shalini M
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class ConnectionPoolStatsProviderBootstrap implements PostConstruct, 
         PoolLifeCycle {
 

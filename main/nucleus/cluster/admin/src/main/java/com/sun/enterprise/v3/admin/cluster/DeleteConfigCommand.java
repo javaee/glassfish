@@ -67,7 +67,7 @@ import com.sun.enterprise.config.serverbeans.*;
  * @author Bhakti Mehta
  */
 @Service(name = "delete-config")
-@Scoped(PerLookup.class)
+@PerLookup
 @I18n("delete.config.command")
 @RestEndpoints({
     @RestEndpoint(configBean=Config.class,

@@ -59,7 +59,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * 
  */
 @Service(name = "list-backups")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class ListBackupsCommand extends BackupCommands {
 
     private static final LocalStringsImpl strings =

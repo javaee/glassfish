@@ -48,7 +48,7 @@ import org.glassfish.virtualization.util.RuntimeContext;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyChangeEvent;
@@ -67,7 +67,7 @@ import java.util.logging.Logger;
  * Runtime representation of a group, with its members and such.
  */
 @Service(name="virtualbox")
-@Scoped(PerLookup.class)
+@PerLookup
 class VBoxGroup implements PhysicalServerPool, ConfigListener {
 
     final Injector injector;

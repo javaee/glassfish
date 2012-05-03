@@ -109,7 +109,7 @@ import org.glassfish.admin.payload.PayloadFilesManager.Perm;
  * instance_name  name of the server instance
  */
 @Service(name = "import-sync-bundle")
-@Scoped(PerLookup.class)
+@PerLookup
 public class ImportSyncBundleCommand extends LocalInstanceCommand {
     @Param(name = "file_name", primary = true)
     private String syncBundle;

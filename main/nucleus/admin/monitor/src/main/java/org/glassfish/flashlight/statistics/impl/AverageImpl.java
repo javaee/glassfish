@@ -54,14 +54,14 @@ import java.util.concurrent.atomic.AtomicLongArray;
 import org.glassfish.flashlight.datatree.impl.AbstractTreeNode;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  *
  * @author Harpreet Singh
  */
 @Service(name = "average")
-@Scoped(PerLookup.class)
+@PerLookup
 public class AverageImpl extends AbstractTreeNode implements Average {
 
     /** DEFAULT_UPPER_BOUND is maximum value Long can attain */

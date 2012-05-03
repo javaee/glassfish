@@ -49,7 +49,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -66,7 +66,7 @@ import java.util.logging.Logger;
  * @author Vijay Ramachandran
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 @StartupRunLevel
 public class InstanceStateServiceImpl implements InstanceStateService {
 

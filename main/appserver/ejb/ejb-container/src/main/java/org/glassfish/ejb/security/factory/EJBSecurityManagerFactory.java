@@ -64,7 +64,7 @@ import org.glassfish.ejb.security.application.EjbSecurityProbeProvider;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 /**
  * EJB Security Manager Factory Implementation
@@ -72,7 +72,7 @@ import org.jvnet.hk2.component.Singleton;
  * @author Harpreet Singh
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public final class EJBSecurityManagerFactory extends SecurityManagerFactory {
 
     private static Logger _logger = null;

@@ -62,7 +62,7 @@ import org.glassfish.api.admin.RestEndpoints;
 
 @Service(name = "describe-memory-alert")
 @I18n("describe.memory.alert")
-@Scoped(PerLookup.class)
+@PerLookup
 @RestEndpoints({ @RestEndpoint(configBean = ElasticServices.class, opType = OpType.GET, path = "describe-memory-alert", description = "Describe memory alert")})
 public class DescribeMemoryAlertCommand implements AdminCommand{
 

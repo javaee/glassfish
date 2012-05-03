@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 import org.glassfish.api.admin.*;
 
 @Service(name = "list-nodes-ssh")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 @I18n("list.nodes.ssh.command")
 @RestEndpoints({

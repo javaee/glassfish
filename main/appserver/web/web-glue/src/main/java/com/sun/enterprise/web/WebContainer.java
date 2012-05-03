@@ -108,7 +108,7 @@ import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Transactions;
 import org.jvnet.hk2.config.ObservableBean;
@@ -143,7 +143,7 @@ import org.glassfish.grizzly.http.util.MessageBytes;
  */
 @SuppressWarnings({"StringContatenationInLoop"})
 @Service(name = "com.sun.enterprise.web.WebContainer")
-@Scoped(Singleton.class)
+@Singleton
 public class WebContainer implements org.glassfish.api.container.Container, PostConstruct, PreDestroy, EventListener {
 
     // -------------------------------------------------- Constants

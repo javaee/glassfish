@@ -57,7 +57,7 @@ import javax.inject.Named;
 
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 /**
  * Loads the Default Policy File into the system.
@@ -67,7 +67,7 @@ import org.jvnet.hk2.component.Singleton;
  *
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class PolicyLoader{
     
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)

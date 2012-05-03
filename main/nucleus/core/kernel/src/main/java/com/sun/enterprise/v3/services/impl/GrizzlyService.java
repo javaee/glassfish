@@ -84,7 +84,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
@@ -99,7 +99,7 @@ import org.jvnet.hk2.config.Transactions;
  * @author Jerome Dochez
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct, PreDestroy, FutureProvider<Result<Thread>> {
 
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)

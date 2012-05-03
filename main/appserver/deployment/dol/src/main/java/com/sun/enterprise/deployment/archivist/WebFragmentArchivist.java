@@ -56,7 +56,7 @@ import java.util.Vector;
 /**
  * This module is responsible for reading and write web fragment
  * archive files (jar).
- * This is not a @Service, does not have @Scoped(PerLookup.class)
+ * This is not a @Service, does not have @PerLookup
  * and does not implements PrivateArchivist as it will not be
  * looked up through ArchivistFactory.
  *

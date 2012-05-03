@@ -65,7 +65,7 @@ import org.glassfish.api.admin.*;
  * @author Yamini K B
  */
 @Service(name = "configure-lb-weight")
-@Scoped(PerLookup.class)
+@PerLookup
 @I18n("configure.lb.weight")
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 @RestEndpoints({

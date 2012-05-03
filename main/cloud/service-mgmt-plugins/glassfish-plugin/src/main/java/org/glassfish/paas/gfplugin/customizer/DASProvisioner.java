@@ -66,7 +66,7 @@ import java.util.Properties;
  * @author Bhavanishankar S
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class DASProvisioner implements GlassFishPluginConstants {
 
     @Inject

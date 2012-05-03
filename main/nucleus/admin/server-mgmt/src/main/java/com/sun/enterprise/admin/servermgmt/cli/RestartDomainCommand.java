@@ -68,7 +68,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "restart-domain")
-@Scoped(PerLookup.class)
+@PerLookup
 public class RestartDomainCommand extends StopDomainCommand {
 
     @Param(name = "debug", optional = true)

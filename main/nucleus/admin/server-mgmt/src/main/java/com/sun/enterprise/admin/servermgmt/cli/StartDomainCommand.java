@@ -67,7 +67,7 @@ import org.glassfish.security.common.FileRealmHelper;
  * @author Bill Shannon
  */
 @Service(name = "start-domain")
-@Scoped(PerLookup.class)
+@PerLookup
 public class StartDomainCommand extends LocalDomainCommand implements StartServerCommand {
 
     private GFLauncherInfo info;

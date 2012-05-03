@@ -65,7 +65,7 @@ import org.glassfish.api.deployment.archive.ArchiveType;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.xml.sax.SAXParseException;
 
 import java.io.IOException;
@@ -88,7 +88,7 @@ import java.net.URL;
  * @version
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 //TODO change to WarType.ARCHIVE_TYPE once moved to web module
 @ArchivistFor("war")
 public class WebArchivist extends Archivist<WebBundleDescriptor> {

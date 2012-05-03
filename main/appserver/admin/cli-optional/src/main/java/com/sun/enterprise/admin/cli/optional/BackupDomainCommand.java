@@ -66,7 +66,7 @@ import org.jvnet.hk2.component.*;
  *  </ul>
  */
 @Service(name = "backup-domain")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class BackupDomainCommand extends BackupCommands {
 
     @Param(name = "description", optional = true)

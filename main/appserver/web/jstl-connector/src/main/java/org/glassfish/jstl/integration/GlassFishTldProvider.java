@@ -49,7 +49,7 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -71,7 +71,7 @@ import java.util.regex.Pattern;
  */
 
 @Service(name="jstlTld")
-@Scoped(Singleton.class)
+@Singleton
 public class GlassFishTldProvider implements TldProvider, PostConstruct {
 
     private static final Logger logger =

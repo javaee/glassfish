@@ -48,7 +48,7 @@ import org.jvnet.hk2.component.ComponentException;
 
 import javax.xml.stream.XMLInputFactory;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * Allow people to inject {@link XMLInputFactory} via {@link Inject}.
@@ -64,7 +64,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service
 @FactoryFor(XMLInputFactory.class)
-@Scoped(PerLookup.class)
+@PerLookup
 public class StAXParserFactory implements Factory {
     @Override
     public XMLInputFactory get() throws ComponentException {

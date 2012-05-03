@@ -47,7 +47,7 @@ import org.jvnet.hk2.annotations.Service;
 import java.util.Collection;
 
 @Service(name="any")
-@Scoped(PerLookup.class)
+@PerLookup
 public class Any
     implements MetricFunction<Number, Boolean>, BooleanConditionSupport<Number> {
 

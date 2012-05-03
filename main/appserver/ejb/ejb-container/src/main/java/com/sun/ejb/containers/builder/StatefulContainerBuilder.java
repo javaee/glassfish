@@ -87,7 +87,7 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Optional;
 import javax.inject.Named;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * A builder for StatefulSessionContainer. Takes care of
@@ -104,7 +104,7 @@ import org.jvnet.hk2.component.PerLookup;
  * @author Mahesh Kannan
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class StatefulContainerBuilder
         extends BaseContainerBuilder {
     private static final Level TRACE_LEVEL = Level.FINE;

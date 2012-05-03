@@ -63,7 +63,7 @@ import org.glassfish.cluster.ssh.util.SSHUtil;
  */
 @Service(name = "create-node-ssh")
 @I18n("create.node.ssh")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Nodes.class,

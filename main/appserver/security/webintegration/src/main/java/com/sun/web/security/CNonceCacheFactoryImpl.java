@@ -51,7 +51,7 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -62,7 +62,7 @@ import javax.inject.Provider;
  * @author vbkumarjayanti
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class CNonceCacheFactoryImpl implements CNonceCacheFactory, PostConstruct {
 
     @Inject

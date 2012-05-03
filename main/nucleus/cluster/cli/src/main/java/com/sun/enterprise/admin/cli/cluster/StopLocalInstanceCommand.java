@@ -61,7 +61,7 @@ import com.sun.enterprise.util.HostAndPort;
  * 
  */
 @Service(name = "stop-local-instance")
-@Scoped(PerLookup.class)
+@PerLookup
 public class StopLocalInstanceCommand extends LocalInstanceCommand {
     @Param(optional = true, defaultValue = "true")
     private Boolean force;

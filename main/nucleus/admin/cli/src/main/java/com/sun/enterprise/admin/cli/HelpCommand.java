@@ -53,7 +53,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * options
  */
 @Service(name = "help")
-@Scoped(PerLookup.class)
+@PerLookup
 public class HelpCommand extends CLICommand {
     @Inject
     private BaseServiceLocator habitat;

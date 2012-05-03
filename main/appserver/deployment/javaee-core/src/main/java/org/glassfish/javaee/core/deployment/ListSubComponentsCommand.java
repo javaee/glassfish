@@ -63,7 +63,7 @@ import org.jvnet.hk2.annotations.Service;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.jvnet.hk2.annotations.Scoped;
 import javax.inject.Inject;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import java.util.*;
 
@@ -75,7 +75,7 @@ import org.glassfish.deployment.versioning.VersioningSyntaxException;
  */
 @Service(name="list-sub-components")
 @I18n("list.sub.components")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn(value={RuntimeType.DAS})
 @RestEndpoints({

@@ -53,7 +53,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "unset")
-@Scoped(PerLookup.class)
+@PerLookup
 public class UnsetCommand extends CLICommand {
 
     @Param(name = "environment-variable", primary = true, multiple = true)

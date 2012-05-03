@@ -98,7 +98,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.component.PostConstruct;
 
@@ -116,7 +116,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author Satish Kumar
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl implements LazyServiceInitializer, PostConstruct {
 
     static Logger _logger = LogDomains.getLogger(ActiveJmsResourceAdapter.class,  LogDomains.JMS_LOGGER);

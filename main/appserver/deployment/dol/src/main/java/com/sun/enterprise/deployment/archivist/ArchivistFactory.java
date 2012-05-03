@@ -48,7 +48,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ import java.util.Set;
  * @author  Jerome Dochez
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class ArchivistFactory implements ContractProvider {
     @Inject
     BaseServiceLocator habitat;

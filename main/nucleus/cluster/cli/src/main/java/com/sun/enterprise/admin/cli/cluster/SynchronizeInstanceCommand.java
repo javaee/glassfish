@@ -64,7 +64,7 @@ import org.glassfish.common.util.admin.AuthTokenManager;
  * Synchronize a local server instance.
  */
 @Service(name = "_synchronize-instance")
-@Scoped(PerLookup.class)
+@PerLookup
 public class SynchronizeInstanceCommand extends LocalInstanceCommand {
 
     @Param(name = "instance_name", primary = true, optional = true)

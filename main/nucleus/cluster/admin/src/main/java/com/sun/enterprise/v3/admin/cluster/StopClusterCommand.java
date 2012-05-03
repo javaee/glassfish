@@ -56,7 +56,7 @@ import org.glassfish.api.admin.*;
 
 @I18n("stop.cluster.command")
 @Service(name="stop-cluster")
-@Scoped(PerLookup.class)
+@PerLookup
 @RestEndpoints({
     @RestEndpoint(configBean=Cluster.class,
         opType=RestEndpoint.OpType.POST, 

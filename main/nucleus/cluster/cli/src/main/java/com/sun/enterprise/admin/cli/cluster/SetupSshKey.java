@@ -59,7 +59,7 @@ import org.glassfish.cluster.ssh.util.SSHUtil;
  *
  */
 @Service(name = "setup-ssh")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 public final class SetupSshKey extends NativeRemoteCommandsBase {
     @Param(name = "sshuser", optional = true, defaultValue = "${user.name}")

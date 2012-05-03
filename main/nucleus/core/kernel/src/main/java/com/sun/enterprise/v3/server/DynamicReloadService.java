@@ -57,7 +57,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.UnprocessedChangeEvent;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
@@ -72,7 +72,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  * @author tjquinn
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 @PostStartupRunLevel
 public class DynamicReloadService implements ConfigListener, PostConstruct, PreDestroy {
 

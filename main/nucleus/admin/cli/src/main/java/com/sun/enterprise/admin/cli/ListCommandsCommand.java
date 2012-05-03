@@ -58,7 +58,7 @@ import static com.sun.enterprise.admin.cli.CLIConstants.EOL;
  * @author Bill Shannon
  */
 @Service(name = "list-commands")
-@Scoped(PerLookup.class)
+@PerLookup
 public class ListCommandsCommand extends CLICommand {
     @Inject
     private Habitat habitat;

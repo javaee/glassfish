@@ -44,7 +44,7 @@ import com.sun.enterprise.security.auth.realm.NoSuchRealmException;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 
@@ -72,7 +72,7 @@ import org.jvnet.hk2.component.PostConstruct;
  * @author kumar.jayanti
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class SecurityConfigListener implements ConfigListener, PostConstruct {
     
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)

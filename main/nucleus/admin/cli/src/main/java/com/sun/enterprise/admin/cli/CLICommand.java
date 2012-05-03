@@ -88,7 +88,7 @@ import com.sun.logging.LogDomains;
  * @author Bill Shannon
  */
 @Contract
-@Scoped(PerLookup.class)
+@PerLookup
 public abstract class CLICommand implements PostConstruct {
     public static final int ERROR = CLIConstants.ERROR;
     public static final int CONNECTION_ERROR = 2;

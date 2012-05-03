@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 
 @Service(name="test-upgrade", metadata="mode=debug")
-@Scoped(PerLookup.class)
+@PerLookup
 public class V2ToV3ConfigUpgradeTester  implements AdminCommand {
     @Inject
     BaseServiceLocator habitat;

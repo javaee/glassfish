@@ -57,7 +57,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
  * @author Bill Shannon
  */
 @Service(name = "multimode")
-@Scoped(PerLookup.class)
+@PerLookup
 public class MultimodeCommand extends CLICommand {
     @Inject
     private Habitat habitat;

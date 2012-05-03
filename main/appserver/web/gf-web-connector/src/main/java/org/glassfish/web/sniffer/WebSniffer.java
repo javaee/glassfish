@@ -48,7 +48,7 @@ import org.glassfish.internal.deployment.GenericSniffer;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +61,7 @@ import java.util.List;
  * @author Jerome Dochez
  */
 @Service(name="web")
-@Scoped(Singleton.class)
+@Singleton
 public class WebSniffer  extends GenericSniffer {
 
     public WebSniffer() {

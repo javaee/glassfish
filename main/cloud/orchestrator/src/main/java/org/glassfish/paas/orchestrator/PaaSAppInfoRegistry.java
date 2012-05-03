@@ -55,7 +55,7 @@ import java.util.*;
 /**
  * @author Jagadish Ramu
  */
-@Scoped(Singleton.class)
+@Singleton
 @org.jvnet.hk2.annotations.Service
 public class PaaSAppInfoRegistry {
 

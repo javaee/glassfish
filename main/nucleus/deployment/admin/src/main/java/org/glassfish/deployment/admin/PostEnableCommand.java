@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service(name="_postenable")
 @Supplemental(value="enable", ifFailure=FailurePolicy.Warn, on= Supplemental.Timing.AfterReplication)
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn(value={RuntimeType.DAS})
 
 public class PostEnableCommand extends PostStateCommand  {

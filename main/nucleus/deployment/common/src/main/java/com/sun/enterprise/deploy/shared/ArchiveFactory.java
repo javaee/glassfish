@@ -52,7 +52,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class ArchiveFactory implements ContractProvider {
 
     @Inject

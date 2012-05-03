@@ -49,7 +49,7 @@ import org.glassfish.logging.LogMessageInfo;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.omg.CORBA.ORB;
 
 import javax.inject.Inject;
@@ -68,7 +68,7 @@ import static com.sun.enterprise.naming.util.LogFacade.logger;
  */
 
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public final class  GlassfishNamingManagerImpl implements GlassfishNamingManager {
     @LogMessageInfo(message = "Error during CosNaming.unbind for name {0}: {1}")
     public static final String ERROR_COSNAMING_UNBIND = "AS-NAMING-00004";

@@ -51,7 +51,7 @@ import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
@@ -64,7 +64,7 @@ import java.util.Set;
  * @author Shing Wai Chan
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class SJSASFactory extends Factory implements ContractProvider, PostConstruct {
 
     @Inject

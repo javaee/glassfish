@@ -44,7 +44,7 @@ import org.glassfish.api.I18n;
 import org.glassfish.resources.api.Resource;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -56,7 +56,7 @@ import javax.inject.Provider;
  * Factory class which returns the appropriate ResourceManager
  */
 @Service(name="resource-factory")
-@Scoped(PerLookup.class)
+@PerLookup
 @I18n("add.resources")
 public class ResourceFactory {
 

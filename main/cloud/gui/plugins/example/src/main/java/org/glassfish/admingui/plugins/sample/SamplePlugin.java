@@ -48,7 +48,7 @@ import org.glassfish.admingui.plugins.annotations.NavNodes;
 import org.glassfish.admingui.plugins.annotations.ViewFragment;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 /**
  * Only one of these is needed, strictly speaking, per plugin module. You can
@@ -56,7 +56,7 @@ import org.jvnet.hk2.component.Singleton;
  * @author jasonlee
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class SamplePlugin implements ConsolePlugin {
 
     public int priority = 275;

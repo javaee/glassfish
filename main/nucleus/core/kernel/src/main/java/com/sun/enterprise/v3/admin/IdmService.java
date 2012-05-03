@@ -53,7 +53,7 @@ import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.io.*;
 import java.util.Arrays;
@@ -66,7 +66,7 @@ import java.util.logging.Logger;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 @Service(name="jks-based")
-@Scoped(Singleton.class)
+@Singleton
 @InitRunLevel
 public class IdmService implements PostConstruct/*, IdentityManagement*/ {
 

@@ -60,7 +60,7 @@ import org.jvnet.hk2.component.*;
  */
 @Service(name = "delete-node-ssh")
 @I18n("delete.node.ssh")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Nodes.class,

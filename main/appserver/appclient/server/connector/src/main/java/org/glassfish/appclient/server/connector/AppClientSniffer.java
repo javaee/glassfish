@@ -47,7 +47,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.io.IOException;
 import java.util.jar.Attributes;
@@ -55,7 +55,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 @Service(name = "AppClient")
-@Scoped(Singleton.class)
+@Singleton
 public class AppClientSniffer extends GenericSniffer {
     private static final String[] stigmas = {
         "META-INF/application-client.xml", "META-INF/sun-application-client.xml", "META-INF/glassfish-application-client.xml"

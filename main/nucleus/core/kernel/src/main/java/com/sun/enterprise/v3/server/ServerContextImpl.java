@@ -52,7 +52,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import javax.naming.InitialContext;
 import java.io.File;
@@ -64,7 +64,7 @@ import java.util.Map;
  * @author Jerome Dochez
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class ServerContextImpl implements ServerContext, PostConstruct {
 
     @Inject

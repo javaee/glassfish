@@ -61,7 +61,7 @@ import org.jvnet.hk2.component.Habitat;
 import javax.inject.Inject;
 
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class ElasticEnvironmentContainer
     implements ElasticEnvironment {
     

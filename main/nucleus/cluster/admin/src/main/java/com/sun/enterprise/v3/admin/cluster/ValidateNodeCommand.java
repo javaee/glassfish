@@ -79,7 +79,7 @@ import java.util.HashSet;
  */
 @Service(name = "_validate-node")
 @I18n("validate.node")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Domain.class,

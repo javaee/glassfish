@@ -49,7 +49,7 @@ import org.glassfish.deployment.common.DeploymentUtils;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -64,7 +64,7 @@ import javax.inject.Inject;
  * @author sanjeeb.sahoo@oracle.com
  */
 @Service(name = CarDetector.ARCHIVE_TYPE)
-@Scoped(Singleton.class)
+@Singleton
 public class CarDetector implements ArchiveDetector {
     public static final String CAR_DETECTOR_RANK_PROP = "glassfish.car.detector.rank";
     public static final int DEFAULT_CAR_DETECTOR_RANK = 500;

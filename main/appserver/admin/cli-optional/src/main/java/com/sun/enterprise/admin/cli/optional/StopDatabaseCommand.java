@@ -60,7 +60,7 @@ import com.sun.enterprise.util.OS;
  *  @author Bill Shannon
  */
 @Service(name = "stop-database")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class StopDatabaseCommand extends DatabaseCommand {
 
     @Param(name = "dbuser", optional = true)

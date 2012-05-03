@@ -57,7 +57,7 @@ import com.sun.enterprise.util.HostAndPort;
  * This is a local command that lists the domains.
  */
 @Service(name = "list-domains")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class ListDomainsCommand extends LocalDomainCommand {
     private static final LocalStringsImpl strings =
             new LocalStringsImpl(ListDomainsCommand.class);

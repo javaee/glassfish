@@ -73,7 +73,7 @@ import java.util.logging.Logger;
 
 
 @org.jvnet.hk2.annotations.Service
-@Scoped(Singleton.class)
+@Singleton
 public class ServiceUtil {
 
     private static ExecutorService threadPool = Executors.newCachedThreadPool();

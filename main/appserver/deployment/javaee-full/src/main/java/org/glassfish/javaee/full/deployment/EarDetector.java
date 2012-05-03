@@ -51,7 +51,7 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -64,7 +64,7 @@ import java.util.logging.Logger;
  * @author sanjeeb.sahoo@oracle.com
  */
 @Service(name = EarDetector.ARCHIVE_TYPE)
-@Scoped(Singleton.class)
+@Singleton
 public class EarDetector implements ArchiveDetector {
 
     public static final String EAR_DETECTOR_RANK_PROP = "glassfish.ear.detector.rank";

@@ -73,7 +73,7 @@ import java.util.logging.Logger;
  */
 @Service(name = "_update-node")
 @I18n("update.node")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Node.class,

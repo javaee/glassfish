@@ -49,7 +49,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.text.SimpleDateFormat;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -64,7 +64,7 @@ import java.util.logging.*;
  * To change this template use File | Settings | File Templates.
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 @ContractProvided(java.util.logging.Handler.class)
 public class SyslogHandler extends Handler implements PostConstruct, PreDestroy {
 

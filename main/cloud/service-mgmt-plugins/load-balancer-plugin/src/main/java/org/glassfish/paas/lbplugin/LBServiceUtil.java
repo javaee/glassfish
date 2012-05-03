@@ -51,7 +51,7 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 
 @org.jvnet.hk2.annotations.Service
-@Scoped(Singleton.class)
+@Singleton
 public class LBServiceUtil {
 
     @Inject

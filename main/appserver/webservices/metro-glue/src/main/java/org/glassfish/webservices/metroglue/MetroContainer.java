@@ -86,14 +86,14 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.config.types.Property;
 
 /**
  * @author Marek Potociar
  */
 @Service(name = "org.glassfish.webservices.metroglue.MetroContainer")
-@Scoped(Singleton.class)
+@Singleton
 public class MetroContainer implements PostConstruct, Container, WebServiceDeploymentListener {
 
     private static final Logger logger = LogDomains.getLogger(MetroContainer.class, LogDomains.WEBSERVICES_LOGGER);

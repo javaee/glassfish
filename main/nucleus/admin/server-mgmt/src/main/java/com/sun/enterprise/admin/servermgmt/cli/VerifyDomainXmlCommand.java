@@ -73,7 +73,7 @@ import org.jvnet.hk2.config.DomDocument;
  * @author Nandini Ektare
  */
 @Service(name = "verify-domain-xml")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class VerifyDomainXmlCommand extends LocalDomainCommand {
 
     @Param(name = "domain_name", primary = true, optional = true)

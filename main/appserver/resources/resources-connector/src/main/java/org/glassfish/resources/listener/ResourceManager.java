@@ -72,7 +72,7 @@ import javax.inject.Provider;
  * Resource manager to bind various resources during start-up, create/update/delete of resource/pool
  * @author Jagadish Ramu
  */
-@Scoped(Singleton.class)
+@Singleton
 @Service(name="ResourceManager") // this name is used in ApplicationLoaderService
 public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, ConfigListener {
 

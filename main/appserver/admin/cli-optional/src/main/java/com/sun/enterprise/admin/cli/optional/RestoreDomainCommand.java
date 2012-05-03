@@ -70,7 +70,7 @@ import org.jvnet.hk2.component.*;
  *  </ul>
  */
 @Service(name = "restore-domain")
-@Scoped(PerLookup.class)
+@PerLookup
 public final class RestoreDomainCommand extends BackupCommands {
 
     @Param(name = "filename", optional = true)

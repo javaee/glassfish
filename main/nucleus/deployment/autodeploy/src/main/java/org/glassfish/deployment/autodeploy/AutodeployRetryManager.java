@@ -57,7 +57,7 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 /**
  * Manages retrying of autodeployed files in case a file is copied slowly.
@@ -118,7 +118,7 @@ import org.jvnet.hk2.component.Singleton;
  * @author tjquinn
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class AutodeployRetryManager implements PostConstruct {
         
     /**

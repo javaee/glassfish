@@ -64,7 +64,7 @@ import java.util.ArrayList;
  */
 @Service(name = "delete-instance")
 @I18n("delete.instance")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({
     @RestEndpoint(configBean=Server.class,

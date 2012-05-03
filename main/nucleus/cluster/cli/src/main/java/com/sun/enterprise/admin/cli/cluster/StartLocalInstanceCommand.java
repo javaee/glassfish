@@ -68,7 +68,7 @@ import com.sun.enterprise.admin.servermgmt.cli.StartServerHelper;
  */
 @Service(name = "start-local-instance")
 @ExecuteOn(RuntimeType.DAS)
-@Scoped(PerLookup.class)
+@PerLookup
 public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
                                         implements StartServerCommand {
     @Param(optional = true, shortName = "v", defaultValue = "false")

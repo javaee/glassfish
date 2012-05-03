@@ -49,7 +49,7 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import javax.management.InstanceNotFoundException;
 import javax.naming.Context;
@@ -63,7 +63,7 @@ import java.util.ArrayList;
 import org.glassfish.api.admin.ServerEnvironment;
 
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class MbeanService implements Startup {
 
     @Inject

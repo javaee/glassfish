@@ -62,7 +62,7 @@ import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 
 import javax.inject.Inject;
 
@@ -73,7 +73,7 @@ import javax.inject.Inject;
 @TargetType(value={CommandTarget.DAS, CommandTarget.CLUSTER, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CLUSTERED_INSTANCE})
 @ExecuteOn(value={RuntimeType.DAS})
 @Service(name="list-resource-refs")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 @I18n("list.resource.refs")
 @RestEndpoints({

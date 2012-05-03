@@ -51,7 +51,7 @@ import org.glassfish.hk2.PostConstruct;
 import org.glassfish.hk2.PreDestroy;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Priority;
-import org.jvnet.hk2.annotations.RunLevel;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantActivator;

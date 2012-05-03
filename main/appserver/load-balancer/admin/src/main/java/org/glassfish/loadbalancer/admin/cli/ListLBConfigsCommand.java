@@ -72,7 +72,7 @@ import org.glassfish.api.admin.*;
  * @author Yamini K B
  */
 @Service(name = "list-http-lb-configs")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 @org.glassfish.api.admin.ExecuteOn(RuntimeType.DAS)
 @RestEndpoints({

@@ -72,7 +72,7 @@ import com.sun.enterprise.admin.util.RemoteInstanceCommandHelper;
 @Service(name = "list-instances")
 @CommandLock(CommandLock.LockType.NONE)
 @I18n("list.instances.command")
-@Scoped(PerLookup.class)
+@PerLookup
 @RestEndpoints({
     @RestEndpoint(configBean=Cluster.class,
         opType=RestEndpoint.OpType.GET, 

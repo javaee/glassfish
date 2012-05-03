@@ -65,7 +65,7 @@ import java.util.logging.Logger;
  */
 
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class NamingClusterInfoImpl implements NamingClusterInfo {
     //move up to some class in top orb module
     @LoggerInfo(subsystem = "orb", description = "logger for GlassFish appserver orb modules", publish = true)

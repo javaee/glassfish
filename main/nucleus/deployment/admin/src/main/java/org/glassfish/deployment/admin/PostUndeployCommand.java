@@ -64,7 +64,7 @@ import org.jvnet.hk2.component.BaseServiceLocator;
  */
 @Service(name="_postundeploy")
 @Supplemental(value="undeploy", ifFailure=FailurePolicy.Warn, on= Supplemental.Timing.AfterReplication)
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn(value={RuntimeType.DAS})
 
 public class PostUndeployCommand extends UndeployCommandParameters implements AdminCommand {

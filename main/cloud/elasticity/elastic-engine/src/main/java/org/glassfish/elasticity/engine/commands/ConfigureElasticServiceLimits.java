@@ -61,7 +61,7 @@ import org.glassfish.api.admin.RestEndpoints;
 
 @Service(name = "configure-elastic-service-limits")
 @I18n("configure.elastic.service.limits")
-@Scoped(PerLookup.class)
+@PerLookup
 @RestEndpoints({ @RestEndpoint(configBean = ElasticServiceConfig.class, opType = OpType.POST, path = "configure-elastic-service-limits", description = "Configure Elastic Service limits") })
 public class ConfigureElasticServiceLimits implements AdminCommand{
 

@@ -47,7 +47,7 @@ import org.glassfish.api.container.SecondarySniffer;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.util.Enumeration;
 import java.io.IOException;
@@ -59,7 +59,7 @@ import java.io.IOException;
  * @author Mitesh Meswani
  */
 @Service(name="jpa")
-@Scoped(Singleton.class)
+@Singleton
 public class JPASniffer  extends GenericSniffer implements  SecondarySniffer {
 
     private static final String[] containers = { "org.glassfish.persistence.jpa.JPAContainer" };

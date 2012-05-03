@@ -58,7 +58,7 @@ import org.jvnet.hk2.component.BaseServiceLocator;
  * @author Tim Quinn
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class PostStateCommand implements AdminCommand {
     
     @Inject

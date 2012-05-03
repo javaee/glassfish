@@ -59,7 +59,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Bhavanishankar S
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class InstanceProvisioner implements GlassFishPluginConstants {
 
     @Inject

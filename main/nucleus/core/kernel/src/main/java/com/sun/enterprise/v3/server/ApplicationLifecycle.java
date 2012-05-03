@@ -95,7 +95,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.component.PreDestroy;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -121,7 +121,7 @@ import java.net.URI;
  * @author Jerome Dochez, Sanjeeb Sahoo
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 public class ApplicationLifecycle implements Deployment, PostConstruct {
 
     private static final String[] UPLOADED_GENERATED_DIRS = new String [] {"policy", "xml", "ejb", "jsp"};

@@ -58,7 +58,7 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 
 import java.io.*;
 import java.text.FieldPosition;
@@ -80,7 +80,7 @@ import java.util.logging.*;
  * @AUTHOR: Carla Mott
  */
 @Service
-@Scoped(Singleton.class)
+@Singleton
 @ContractProvided(java.util.logging.Handler.class)
 public class GFFileHandler extends StreamHandler implements PostConstruct, PreDestroy {
 

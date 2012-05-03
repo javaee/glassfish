@@ -61,7 +61,7 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.PostConstruct;
 import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
+import javax.inject.Singleton;
 import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyChangeEvent;
@@ -72,7 +72,7 @@ import java.util.logging.Logger;
 /**
  * @author Jagadish Ramu
  */
-@Scoped(Singleton.class)
+@Singleton
 @org.jvnet.hk2.annotations.Service
 public class ServicesConfigListener implements ConfigListener, PostConstruct, PreDestroy, PostStartup {
 
