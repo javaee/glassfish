@@ -55,6 +55,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.PostStartupRunLevel;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
@@ -82,7 +83,7 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  */
 @Service
 @Singleton
-@PostStartupRunLevel
+@RunLevel(PostStartupRunLevel.VAL)
 public class AutoDeployService implements PostConstruct, PreDestroy, ConfigListener {
 
     @Inject

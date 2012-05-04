@@ -69,7 +69,6 @@ import org.junit.runner.RunWith;
 import javax.inject.Inject;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.HabitatFactory;
 import org.jvnet.hk2.component.InhabitantsParserFactory;
@@ -170,7 +169,7 @@ public class AppServerStartupTest {
     public void beforeTest() {
         mapPostConstructExceptions = new HashMap<Class, RuntimeException>();
         listFutures                = new LinkedList<TestFuture>();
-        results                    = new Results(as.rls);
+        results                    = new Results(as.runLevelController);
 
         as.events.register(results);
     }
@@ -180,7 +179,7 @@ public class AppServerStartupTest {
      */
     @After
     public void afterTest() {
-        if (as.rls.getState().getCurrentRunLevel() > 0) {
+        if (as.runLevelController.getState().getCurrentRunLevel() > 0) {
             // force a stop to ensure that the services are released
             as.env.setStatus(ServerEnvironment.Status.started);
             as.stop();
@@ -475,7 +474,7 @@ public class AppServerStartupTest {
      * Init service annotated with the new style {@link InitRunLevel} annotation.
      */
     @Service
-    @InitRunLevel
+    @RunLevel(InitRunLevel.VAL)
     public static class TestInitRunLevelService extends TestService  {
     }
 
@@ -499,7 +498,7 @@ public class AppServerStartupTest {
      * Startup service annotated with the new style {@link StartupRunLevel} annotation.
      */
     @Service
-    @StartupRunLevel
+    @RunLevel(StartupRunLevel.VAL)
     public static class TestStartupRunLevelService extends TestService {
     }
 
@@ -514,7 +513,7 @@ public class AppServerStartupTest {
      * Post-startup service annotated with the new style {@link PostStartupRunLevel} annotation.
      */
     @Service
-    @PostStartupRunLevel
+    @RunLevel(PostStartupRunLevel.VAL)
     public static class TestPostStartupRunLevelService extends TestService {
     }
 

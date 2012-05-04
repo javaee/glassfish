@@ -40,6 +40,7 @@
 
 package org.glassfish.admin.mbeanserver;
 
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Factory;
@@ -55,7 +56,7 @@ import org.glassfish.internal.api.PostStartupRunLevel;
  */
 @Service
 @FactoryFor(MBeanServer.class)
-@PostStartupRunLevel
+@RunLevel(PostStartupRunLevel.VAL)
 public final class MBeanServerFactory implements Factory {
     private static void debug( final String s ) { System.out.println(s); }
     

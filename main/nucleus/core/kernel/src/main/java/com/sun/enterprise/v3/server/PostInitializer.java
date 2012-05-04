@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.internal.api.*;
@@ -52,7 +53,7 @@ import org.glassfish.internal.deployment.*;
  *
  */
 @Service
-@PostStartupRunLevel
+@RunLevel(PostStartupRunLevel.VAL)
 public class PostInitializer implements PostConstruct {
 
 

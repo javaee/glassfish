@@ -47,6 +47,7 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
 
 import com.sun.logging.LogDomains;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.management.MBeanServer;
@@ -89,7 +90,7 @@ import org.glassfish.internal.api.PostStartupRunLevel;
  * which will initialize (boot) AMX when a connection arrives.
  */
 @Service
-@PostStartupRunLevel
+@RunLevel(PostStartupRunLevel.VAL)
 public final class JMXStartupService implements PostConstruct {
 
     private static void debug(final String s) {

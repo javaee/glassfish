@@ -47,6 +47,7 @@ import java.util.logging.Level;
 import org.glassfish.api.StartupRunLevel;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Singleton;
@@ -67,7 +68,7 @@ import java.util.logging.Logger;
  */
 @Service
 @Singleton
-@StartupRunLevel
+@RunLevel(StartupRunLevel.VAL)
 public class InstanceStateServiceImpl implements InstanceStateService {
 
     @Inject

@@ -105,7 +105,7 @@ import javax.inject.Named;
  *
  * @author Jerome Dochez
  */
-@Priority(8) // low priority , should be started last
+//@Priority(8) // low priority , should be started last
 @Service(name="ApplicationLoaderService")
 public class ApplicationLoaderService implements Startup, PreDestroy, PostConstruct {
 

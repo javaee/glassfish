@@ -42,6 +42,7 @@ package com.sun.enterprise.registration.glassfish;
 
 import java.util.logging.Level;
 
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import org.glassfish.hk2.api.PostConstruct;
@@ -60,7 +61,7 @@ import com.sun.appserv.server.util.Version;
 
 
 @Service(name = "PingService")
-@PostStartupRunLevel
+@RunLevel(PostStartupRunLevel.VAL)
 public class PingService implements PostConstruct {
 
     @Inject

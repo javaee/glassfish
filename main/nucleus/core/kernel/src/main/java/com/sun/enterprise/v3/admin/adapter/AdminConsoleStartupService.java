@@ -44,6 +44,7 @@ package com.sun.enterprise.v3.admin.adapter;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PostConstruct;
@@ -63,7 +64,7 @@ import org.glassfish.internal.api.PostStartupRunLevel;
 
 
 @Service(name = "AdminConsoleStartupService")
-@PostStartupRunLevel
+@RunLevel(PostStartupRunLevel.VAL)
 public class AdminConsoleStartupService implements  PostConstruct {
 
     @Inject

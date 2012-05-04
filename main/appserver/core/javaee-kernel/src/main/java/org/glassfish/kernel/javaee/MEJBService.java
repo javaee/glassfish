@@ -43,6 +43,7 @@ package org.glassfish.kernel.javaee;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PostConstruct;
 import org.jvnet.hk2.component.BaseServiceLocator;
@@ -60,7 +61,7 @@ import java.util.logging.Level;
  * start up time
  */
 @Service
-@InitRunLevel
+@RunLevel(InitRunLevel.VAL)
 public class MEJBService implements PostConstruct {
 
     // we need to inject Globals as it used by the naming manager and

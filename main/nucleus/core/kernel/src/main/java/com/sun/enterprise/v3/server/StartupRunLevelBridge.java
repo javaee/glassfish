@@ -44,6 +44,7 @@ import com.sun.enterprise.util.Result;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
 import org.glassfish.api.StartupRunLevel;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Priority;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
@@ -63,8 +64,8 @@ import java.util.concurrent.Future;
  * @author Tom Beerbower
  */
 @SuppressWarnings("deprecation")
-@Priority(2) // run early
-@StartupRunLevel
+//@Priority(2) // run early
+@RunLevel(StartupRunLevel.VAL)
 @Service
 public class StartupRunLevelBridge extends RunLevelBridge implements FutureProvider<Result<Thread>>{
 

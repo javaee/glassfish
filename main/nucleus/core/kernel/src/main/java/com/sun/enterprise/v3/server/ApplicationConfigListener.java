@@ -40,6 +40,7 @@
 
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.config.TransactionListener;
 import org.jvnet.hk2.config.Transactions;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
@@ -80,7 +81,7 @@ import java.util.Calendar;
 
 @Service
 @Singleton
-@PostStartupRunLevel
+@RunLevel(PostStartupRunLevel.VAL)
 public class ApplicationConfigListener implements TransactionListener, PostConstruct {
 
     final private static LocalStringManagerImpl localStrings = new LocalStringManagerImpl(ApplicationConfigListener.class);

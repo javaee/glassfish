@@ -41,6 +41,7 @@
 package com.sun.enterprise.naming;
 
 import org.glassfish.api.StartupRunLevel;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.logging.LogMessageInfo;
 import org.jvnet.hk2.annotations.Service;
@@ -78,7 +79,7 @@ import static com.sun.enterprise.naming.util.LogFacade.logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 @Service
-@StartupRunLevel
+@RunLevel(StartupRunLevel.VAL)
 public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, PostConstruct, PreDestroy
 {
     @LogMessageInfo(message = "Failed to load {0} using CommonClassLoader")

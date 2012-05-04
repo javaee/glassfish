@@ -66,7 +66,6 @@ import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Async;
 import org.glassfish.api.FutureProvider;
-import org.glassfish.api.StartupRunLevel;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.ProcessEnvironment;
@@ -74,7 +73,11 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
-import org.glassfish.hk2.RunLevelDefaultScope;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.runlevel.Activator;
+import org.glassfish.hk2.runlevel.RunLevelController;
+import org.glassfish.hk2.runlevel.RunLevelListener;
+import org.glassfish.api.StartupRunLevel;
 import org.glassfish.internal.api.InitRunLevel;
 import org.glassfish.internal.api.PostStartupRunLevel;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -82,11 +85,6 @@ import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.InhabitantActivator;
-import org.jvnet.hk2.component.RunLevelListener;
-import org.jvnet.hk2.component.RunLevelService;
-import org.jvnet.hk2.component.RunLevelState;
-import org.jvnet.hk2.component.ServiceContext;
 
 
 /**
@@ -137,7 +135,7 @@ public class AppServerStartup implements ModuleStartup {
     SystemTasks pidWriter;
     
     @Inject
-    RunLevelService<?> rls;
+    RunLevelController runLevelController;
 
     private long platformInitTime;
 
@@ -250,9 +248,9 @@ public class AppServerStartup implements ModuleStartup {
         }
 
         // activate the run level services
-        if (proceedTo(InitRunLevel.VAL, new InitInhabitantActivator())) {
-            if (proceedTo(StartupRunLevel.VAL, new StartupInhabitantActivator())) {
-                proceedTo(PostStartupRunLevel.VAL, new PostStartupInhabitantActivator());
+        if (proceedTo(InitRunLevel.VAL, new InitActivator())) {
+            if (proceedTo(StartupRunLevel.VAL, new StartupActivator())) {
+                proceedTo(PostStartupRunLevel.VAL, new PostStartupActivator());
             }
         }
     }
@@ -316,13 +314,13 @@ public class AppServerStartup implements ModuleStartup {
         events.send(new Event(EventTypes.PREPARE_SHUTDOWN), false);
 
         // deactivate the run level services
-        proceedTo(InitRunLevel.VAL, new AppServerInhabitantActivator());
+        proceedTo(InitRunLevel.VAL, new AppServerActivator());
 
         // first send the shutdown event synchronously
         env.setStatus(ServerEnvironment.Status.stopped);
         events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
 
-        rls.proceedTo(0);
+        runLevelController.proceedTo(0);
 
         logger.info(localStrings.getLocalString("shutdownfinished","Shutdown procedure finished"));
 
@@ -340,30 +338,30 @@ public class AppServerStartup implements ModuleStartup {
     }
 
     /**
-     * Proceed to the given run level using the given {@link AppServerInhabitantActivator}.
+     * Proceed to the given run level using the given {@link AppServerActivator}.
      *
      * @param runLevel   the run level to proceed to
-     * @param activator  an {@link AppServerInhabitantActivator activator} used to
+     * @param activator  an {@link AppServerActivator activator} used to
      *                   activate/deactivate the services
      * @return false if an error occurred that required server shutdown; true otherwise
      */
-    private boolean proceedTo(int runLevel, AppServerInhabitantActivator activator) {
+    private boolean proceedTo(int runLevel, AppServerActivator activator) {
 
         // set up the run level listener
         habitat.addIndex(new ExistingSingletonInhabitant<RunLevelListener>(activator),
                 RunLevelListener.class.getName(), null);
         try {
             // set up the activator
-            habitat.addIndex(new ExistingSingletonInhabitant<InhabitantActivator>(activator),
-                    InhabitantActivator.class.getName(), null);
+            habitat.addIndex(new ExistingSingletonInhabitant<Activator>(activator),
+                    Activator.class.getName(), null);
             try {
-                rls.proceedTo(runLevel);
+                runLevelController.proceedTo(runLevel);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Shutdown required", e);
                 shutdown();
                 return false;
             } finally {
-                habitat.removeIndex(InhabitantActivator.class.getName(), null);
+                habitat.removeIndex(Activator.class.getName(), null);
             }
         } finally {
             habitat.removeIndex(RunLevelListener.class.getName(), null);
@@ -372,16 +370,16 @@ public class AppServerStartup implements ModuleStartup {
     }
 
 
-    // ----- AppServerInhabitantActivator inner class ------------------------
+    // ----- AppServerActivator inner class ------------------------
 
     /**
-     * Implementation of {@link InhabitantActivator} used to activate/deactivate the application server
+     * Implementation of {@link Activator} used to activate/deactivate the application server
      * run level services.  Also implements {@link RunLevelListener} to receive notifications during
      * startup and shutdown.  If there are any problems (i.e., exceptions) during startup we set a
      * flag that the app server should shutdown.
      */
-    private class AppServerInhabitantActivator
-            implements InhabitantActivator, RunLevelListener {
+    private class AppServerActivator
+            implements Activator, RunLevelListener {
 
         // ----- data members --------------------------------------------
 
@@ -391,21 +389,21 @@ public class AppServerStartup implements ModuleStartup {
         protected boolean shutdown;
 
 
-        // ----- InhabitantActivator -------------------------------------
+        // ----- Activator -------------------------------------
 
         @Override
-        public void activate(Inhabitant<?> inhabitant) {
-            inhabitant.get();
+        public void activate(ActiveDescriptor<?> activeDescriptor) {
+            ((Activator)runLevelController).activate(activeDescriptor);
         }
 
         @Override
-        public void deactivate(Inhabitant<?> inhabitant) {
-            if (inhabitant.isActive()) {
+        public void deactivate(ActiveDescriptor<?> activeDescriptor) {
+            if (activeDescriptor.isReified()) {
                 try {
                     if (logger.isLoggable(level)) {
-                        logger.log(level, "Releasing services {0}", inhabitant.type());
+                        logger.log(level, "Releasing services {0}", activeDescriptor);
                     }
-                    inhabitant.release();
+                    ((Activator)runLevelController).deactivate(activeDescriptor);
                 } catch(Throwable e) {
                     e.printStackTrace();
                 }
@@ -426,28 +424,20 @@ public class AppServerStartup implements ModuleStartup {
         // ----- RunLevelListener ----------------------------------------
 
         @Override
-        public void onCancelled(RunLevelState<?> state, ServiceContext ctx,
-                                int previousProceedTo, boolean isInterrupt) {
-            if (RunLevelDefaultScope.class.getName().equals(state.getScopeName())) {
-                logger.log(Level.INFO, "shutdown requested");
-                forceShutdown();
-            }
+        public void onCancelled(RunLevelController controller, int previousProceedTo, boolean isInterrupt) {
+            logger.log(Level.INFO, "shutdown requested");
+            forceShutdown();
         }
 
         @Override
-        public void onError(RunLevelState<?> state, ServiceContext ctx,
-                            Throwable t, boolean willContinue) {
-            if (RunLevelDefaultScope.class.getName().equals(state.getScopeName())) {
-                logger.log(Level.INFO, "shutdown requested", t);
-                forceShutdown();
-            }
+        public void onError(RunLevelController controller, Throwable error, boolean willContinue) {
+            logger.log(Level.INFO, "shutdown requested", error);
+            forceShutdown();
         }
 
         @Override
-        public void onProgress(RunLevelState<?> state) {
-            if (RunLevelDefaultScope.class.getName().equals(state.getScopeName())) {
-                logger.log(level, "progress event: {0}", state);
-            }
+        public void onProgress(RunLevelController controller) {
+            logger.log(level, "progress event: {0}", controller);
         }
 
 
@@ -475,46 +465,44 @@ public class AppServerStartup implements ModuleStartup {
     }
 
 
-    // ----- InitInhabitantActivator inner class -----------------------------
+    // ----- InitActivator inner class -----------------------------
 
     /**
      * Inhabitant activator for the init services.
      */
-    private class InitInhabitantActivator extends AppServerInhabitantActivator {
+    private class InitActivator extends AppServerActivator {
 
         @Override
-        public void activate(Inhabitant<?> inhabitant) {
+        public void activate(ActiveDescriptor<?> activeDescriptor) {
             long start = System.currentTimeMillis();
 
-            inhabitant.get();
+            super.activate(activeDescriptor);
 
             if (logger.isLoggable(level)) {
-                Class<?> type = inhabitant.type();
-
                 long finish = System.currentTimeMillis();
-                logger.log(level, type + " Init done in " +
+                logger.log(level, activeDescriptor + " Init done in " +
                         (finish - context.getCreationTime()) + " ms");
-                servicesTiming.put(type, (finish - start));
+                servicesTiming.put(activeDescriptor.getImplementationClass(), (finish - start));
             }
         }
     }
 
 
-    // ----- StartupInhabitantActivator inner class --------------------------
+    // ----- StartupActivator inner class --------------------------
 
     /**
      * Inhabitant activator for the startup services.
      */
-    private class StartupInhabitantActivator extends AppServerInhabitantActivator {
+    private class StartupActivator extends AppServerActivator {
 
         /**
-         * List of {@link Future futures} for {@link AppServerInhabitantActivator#awaitCompletion}.
+         * List of {@link Future futures} for {@link AppServerActivator#awaitCompletion}.
          */
         private ArrayList<Future<Result<Thread>>> futures = new ArrayList<Future<Result<Thread>>>();
 
         @Override
-        public void activate(Inhabitant<?> inhabitant) {
-            Class<?> type = inhabitant.type();
+        public void activate(ActiveDescriptor<?> activeDescriptor) {
+            Class<?> type = activeDescriptor.getImplementationClass();
 
             if (type.getAnnotation(Async.class)==null) {
                 long start = System.currentTimeMillis();
@@ -523,7 +511,7 @@ public class AppServerStartup implements ModuleStartup {
                         logger.log(level, "Running Startup services " + type);
                     }
 
-                    Object startup = inhabitant.get();
+                    Object startup = habitat.getServiceHandle(activeDescriptor).getService();
 
                     if (logger.isLoggable(level)) {
                         logger.log(level, "Startup services finished" + startup);
@@ -537,7 +525,7 @@ public class AppServerStartup implements ModuleStartup {
                     logger.log(level, e.getMessage(), e);
                     logger.log(Level.SEVERE, localStrings.getLocalString("startupservicefailure",
                             "Startup service failed to start {0} due to {1} ",
-                            inhabitant.typeName(), e.getMessage()));
+                            activeDescriptor, e.getMessage()));
                     events.send(new Event(EventTypes.SERVER_SHUTDOWN), false);
                     forceShutdown();
                     return;
@@ -618,12 +606,12 @@ public class AppServerStartup implements ModuleStartup {
     }
 
 
-    // ----- PostStartupInhabitantActivator inner class ----------------------
+    // ----- PostStartupActivator inner class ----------------------
 
     /**
      * Inhabitant activator for the post startup services.
      */
-    private class PostStartupInhabitantActivator extends AppServerInhabitantActivator {
+    private class PostStartupActivator extends AppServerActivator {
 
         @Override
         public void awaitCompletion() throws ExecutionException, InterruptedException, TimeoutException {

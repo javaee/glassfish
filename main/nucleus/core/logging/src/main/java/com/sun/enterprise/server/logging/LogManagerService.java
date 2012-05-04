@@ -55,6 +55,7 @@ import org.glassfish.api.admin.FileMonitoring;
 import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.InitRunLevel;
 import org.glassfish.internal.config.UnprocessedConfigListener;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -87,7 +88,7 @@ import java.util.logging.*;
 
 @Service
 @javax.inject.Singleton
-@InitRunLevel
+@RunLevel(InitRunLevel.VAL)
 public class LogManagerService implements PostConstruct, PreDestroy, org.glassfish.internal.api.LogManager {
 
     @Inject

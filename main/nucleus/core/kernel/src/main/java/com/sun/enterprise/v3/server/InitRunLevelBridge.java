@@ -39,6 +39,7 @@
  */
 package com.sun.enterprise.v3.server;
 
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.InitRunLevel;
 import org.jvnet.hk2.annotations.Priority;
@@ -52,8 +53,8 @@ import org.jvnet.hk2.component.RunLevelService;
  * @author Jeff Trent
  */
 @SuppressWarnings("deprecation")
-@InitRunLevel
-@Priority(2) // we want to be one of the first ones to run
+@RunLevel(InitRunLevel.VAL)
+//@Priority(2) // we want to be one of the first ones to run
 @Service
 public class InitRunLevelBridge extends RunLevelBridge {
 

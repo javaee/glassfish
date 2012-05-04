@@ -43,6 +43,7 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.glassfish.bootstrap.StartupContextUtil;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.security.store.PasswordAdapter;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.InitRunLevel;
 import org.glassfish.security.common.MasterPassword;
 import org.glassfish.server.ServerEnvironmentImpl;
@@ -67,7 +68,7 @@ import java.util.logging.Logger;
  */
 @Service(name="jks-based")
 @Singleton
-@InitRunLevel
+@RunLevel(InitRunLevel.VAL)
 public class IdmService implements PostConstruct/*, IdentityManagement*/ {
 
     private final Logger logger = Logger.getAnonymousLogger();
