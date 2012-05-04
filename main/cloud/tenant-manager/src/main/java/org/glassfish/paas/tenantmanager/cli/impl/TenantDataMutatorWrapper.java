@@ -47,12 +47,15 @@ import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandWrapperImpl;
 import org.glassfish.paas.tenantmanager.api.TenantManager;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.RetryableException;
 import org.jvnet.hk2.config.Transaction;
 import org.jvnet.hk2.config.TransactionFailure;
 
 import javax.inject.Inject;
 import java.lang.annotation.Annotation;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Wraps a command annotated with @TenantDataMutator
@@ -76,9 +79,13 @@ public class TenantDataMutatorWrapper implements CommandWrapperImpl {
             @Override
             public void execute(final AdminCommandContext context) {
 
+                tm.setCurrentTenant(""); // FIXME: (IMPORTANT) obtain tenant from current context
+                Lock lock = tm.getLock();
                 try {
-                    tm.setCurrentTenant("");
-                    tm.lock();
+                    boolean locked = lock.tryLock(ConfigSupport.lockTimeOutInSeconds, TimeUnit.SECONDS);
+                    if (!locked) { // Make FindBugs happy
+                        throw new RuntimeException("Can't lock tenant");
+                    }
                     Transaction currentTransaction = new Transaction();
                     TenantDataMutatorAdminCommandContext mutatorAdminCommandContext = new TenantDataMutatorAdminCommandContext(currentTransaction, context);
                     command.execute(mutatorAdminCommandContext);
@@ -91,9 +98,14 @@ public class TenantDataMutatorWrapper implements CommandWrapperImpl {
                     } catch (TransactionFailure transactionFailure) {
                         throw new RuntimeException(transactionFailure);
                     }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 } finally {
-                    tm.unlock();
-                    tm.resetCurrentTenant();
+                    try {
+                        lock.unlock(); // safe to unlock if not locked
+                    } finally {
+                        tm.resetCurrentTenant();
+                    }
                 }
             }
         };

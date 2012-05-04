@@ -49,6 +49,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -72,6 +73,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
@@ -97,8 +99,7 @@ public class TenantManagerImpl implements TenantManagerEx {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public String getCurrentTenant() {
+    private String getCurrentTenant() {
         String name = currentTenant.get();
         if (name == null) {
             // TODO: logging, error handling, i18n
@@ -139,18 +140,10 @@ public class TenantManagerImpl implements TenantManagerEx {
      * {@inheritDoc}
      */
     @Override
-    public void lock() {
-        //TODO code to obtain lock goes here
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void unlock() {
-        //TODO code to release lock goes here
-
+    public Lock getLock() {
+        Tenant source = get(Tenant.class);
+        TenantConfigBean configBean = (TenantConfigBean) Dom.unwrap(source);
+        return configBean.getDocument().getLock();
     }
 
     private File getTenantFile(String name) {
@@ -298,6 +291,7 @@ public class TenantManagerImpl implements TenantManagerEx {
         Habitat habitat = modulesRegistry.newHabitat();
         InhabitantsParser parser = new InhabitantsParser(habitat); 
         habitat.add(new ExistingSingletonInhabitant<ModulesRegistry>(ModulesRegistry.class, modulesRegistry));
+        habitat.add(new ExistingSingletonInhabitant<StartupContext>(StartupContext.class, startupContext));
         final ClassLoader oldCL = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
             @Override
             public ClassLoader run() {
@@ -377,5 +371,8 @@ public class TenantManagerImpl implements TenantManagerEx {
 
     @Inject
     private ModulesRegistry modulesRegistry;
+
+    @Inject
+    private StartupContext startupContext;
 
 }
