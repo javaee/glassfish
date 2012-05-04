@@ -132,6 +132,16 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
         }
         return finalResult;
     }
+    
+    private static String getOne(String key, Map<String, List<String>> metadata) {
+    	if (key == null || metadata == null) return null;
+    	List<String> found = metadata.get(key);
+    	if (found == null) return null;
+    	
+    	if (found.isEmpty()) return null;
+    	
+    	return found.get(0);
+    }
 
     /**
      * Get list of all supplemental commands, map it to various commands and cache htis list
@@ -146,7 +156,7 @@ public class SupplementalCommandExecutorImpl implements SupplementalCommandExecu
                         Iterator<Inhabitant<? extends Supplemental>> iter = supplementals.iterator();
                         while(iter.hasNext()) {
                             Inhabitant<? extends Supplemental> inh = iter.next();
-                            String commandName = inh.metadata().getOne("target");
+                            String commandName = getOne("target", inh.metadata());
                             if(supplementalCommandsMap.containsKey(commandName)) {
                                 supplementalCommandsMap.get(commandName).add(inh);
                             } else {
