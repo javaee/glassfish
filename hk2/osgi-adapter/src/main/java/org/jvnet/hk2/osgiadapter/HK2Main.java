@@ -49,7 +49,6 @@ import java.net.URI;
 import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 
 import org.glassfish.hk2.api.Descriptor;
@@ -107,10 +106,11 @@ public class HK2Main extends Main implements
         private ServiceRegistration moduleStartupRegistration;
     }
 
-    public ServiceLocator createServiceLocator(ModulesRegistry registry, StartupContext context) throws BootException {
+    @Override
+    public ServiceLocator createServiceLocator(StartupContext context) throws BootException {
     	
         HabitatInfo habitatInfo = new HabitatInfo();
-        habitatInfo.serviceLocator = super.createServiceLocator(registry, context);
+        habitatInfo.serviceLocator = super.createServiceLocator(context);
         createHK2ServiceTracker(habitatInfo);
         // register ServiceLocator as an OSGi service
         habitatInfo.habitatRegistration = ctx.registerService(ServiceLocator.class.getName(), habitatInfo.serviceLocator, context.getArguments());
@@ -227,7 +227,7 @@ public class HK2Main extends Main implements
     }
 
     @Override
-    protected void setParentClassLoader(StartupContext context, ModulesRegistry mr) throws BootException {
+    protected void defineParentClassLoader() throws BootException {
         // OSGi doesn't have this feature, so ignore it for now.
     }
 

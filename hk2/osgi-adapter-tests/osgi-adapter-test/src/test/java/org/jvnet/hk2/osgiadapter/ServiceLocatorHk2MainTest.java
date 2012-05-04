@@ -114,7 +114,7 @@ public class ServiceLocatorHk2MainTest {
 			assertEquals("org.jvnet.hk2.osgiadapter.OSGiModulesRegistryImpl",
 					mr.getClass().getCanonicalName());
 
-			final ServiceLocator serviceLocator = main.createServiceLocator(mr,
+			final ServiceLocator serviceLocator = main.createServiceLocator(
 					startupContext);
 
 			ModulesRegistry mrFromServiceLocator = serviceLocator
@@ -136,8 +136,7 @@ public class ServiceLocatorHk2MainTest {
 							.getCanonicalName()));
 			assertEquals("Cannot find ModuleStartup", 1, startups.size());
 
-			final ModuleStartup moduleStartup = main.findStartupService(mr,
-					serviceLocator, null, startupContext);
+			final ModuleStartup moduleStartup = main.findStartupService(null, startupContext);
 
 			assertNotNull(
 					"Expected a ModuleStartup that was provisioned as part of this test",
