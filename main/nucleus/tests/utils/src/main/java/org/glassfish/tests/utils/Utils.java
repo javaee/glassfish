@@ -46,6 +46,12 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.impl.NullPopulatorPostProcessor;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
@@ -53,6 +59,7 @@ import org.jvnet.hk2.config.DomDocument;
 import java.net.URL;
 import java.util.logging.Logger;
 import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
@@ -115,6 +122,14 @@ public class Utils {
     }
 
     public static Habitat getNewHabitat() {
+    	ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(habitatName);
+    	
+    	try {
+			HK2Populator.populate(serviceLocator, new ClasspathDescriptorFileFinder(), new NullPopulatorPostProcessor());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	return new Habitat();
     }
 }
