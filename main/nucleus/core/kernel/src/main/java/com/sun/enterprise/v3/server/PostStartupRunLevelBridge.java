@@ -43,7 +43,6 @@ package com.sun.enterprise.v3.server;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.PostStartup;
 import org.glassfish.internal.api.PostStartupRunLevel;
-import org.jvnet.hk2.annotations.Priority;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.RunLevelService;
 

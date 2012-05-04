@@ -50,7 +50,6 @@ import java.util.logging.Logger;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Priority;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -190,9 +189,8 @@ abstract class RunLevelBridge implements PostConstruct, PreDestroy {
             // in this case we handle anything that doesn't have a RunLevel annotation on it
             return (!i.isActive() && null == rl);
         } else {
-            // in shutdown case we forcibly stop anything without a RunLevel OR anything that is
-            // not a "strict" type RunLevel - see javadoc and site documentation for details.
-            return (i.isActive() && (null == rl || !rl.strict()));
+            // in shutdown case we forcibly stop anything without a RunLevel annotation on it
+            return (i.isActive() && null == rl );
         }
     }
 
@@ -204,34 +202,8 @@ abstract class RunLevelBridge implements PostConstruct, PreDestroy {
      */
     @SuppressWarnings("unchecked")
     protected List<Inhabitant<?>> sort(Collection<Inhabitant<?>> coll) {
-        List<Inhabitant<?>> sorted = (List.class.isInstance(coll)) ?
+
+        return (List.class.isInstance(coll)) ?
                 List.class.cast(coll) : new ArrayList<Inhabitant<?>>(coll);
-
-        if (sorted.size() > 1) {
-            logger.log(level, "sorting {0},{1}", new Object[] {bridgeClass, additionalShutdownClass});
-            Collections.sort(sorted, getInhabitantComparator());
-        }
-        return sorted;
-    }
-
-    /**
-     * Get a comparator based on {@link Inhabitant} priority.
-     *
-     * @return a comparator
-     */
-    private static Comparator<Inhabitant<?>> getInhabitantComparator() {
-        return new Comparator<Inhabitant<?>>() {
-            public int compare(Inhabitant<?> o1, Inhabitant<?> o2) {
-                int o1level = (o1.type().getAnnotation(Priority.class)!=null?
-                        o1.type().getAnnotation(Priority.class).value():5);
-                int o2level = (o2.type().getAnnotation(Priority.class)!=null?
-                        o2.type().getAnnotation(Priority.class).value():5);
-                if (o1level==o2level) {
-                    return 0;
-                } else if (o1level<o2level) {
-                    return -1;
-                } else return 1;
-            }
-        };
     }
 }
