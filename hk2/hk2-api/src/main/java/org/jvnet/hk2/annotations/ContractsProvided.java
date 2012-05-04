@@ -37,59 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.generator.internal;
+package org.jvnet.hk2.annotations;
 
-import org.objectweb.asm.AnnotationVisitor;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * This just makes the main-line code less messy
+ * An explicit list of contracts provided.  Overrides and other
+ * contract metadata on subclasses or interfaces.
+ * <p>
+ * There are times when a service would like to either restrict 
+ * {@link Contract}s that it provides, or would like to add
+ * subclasses or interfaces that are not naturally marked
+ * {@link Contract} to be contracts that it provides.  In that
+ * case it should use ContractsProvided, which allows the service
+ * to explicitly say the contracts that it should provide.
  * 
  * @author jwells
  *
  */
-public abstract class AbstractAnnotationVisitorImpl implements AnnotationVisitor {
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+@Documented
+@Retention(RUNTIME)
+@Target({TYPE})
+public @interface ContractsProvided {
+    /**
+     * The set of contracts that should be explicitly provided
+     * by this service.
+     * 
+     * @return The set of contracts that should be provided
+     * by this service
      */
-    @Override
-    public void visit(String name, Object value) {
-        // TODO Auto-generated method stub
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
-     */
-    @Override
-    public AnnotationVisitor visitAnnotation(String arg0, String arg1) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
-     */
-    @Override
-    public AnnotationVisitor visitArray(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
-     */
-    @Override
-    public void visitEnd() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
-     */
-    @Override
-    public void visitEnum(String arg0, String arg1, String arg2) {
-        // TODO Auto-generated method stub
-
-    }
+    public Class<?>[] value();
 
 }
