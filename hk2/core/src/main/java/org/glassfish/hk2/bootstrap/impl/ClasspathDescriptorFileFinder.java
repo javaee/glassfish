@@ -14,8 +14,7 @@ public class ClasspathDescriptorFileFinder implements
 	@Override
 	public List<InputStream> findDescriptorFiles() throws IOException {
 		ArrayList<InputStream> returnList = new ArrayList<InputStream>();
-		Enumeration<URL> e = Thread.currentThread()
-				.getContextClassLoader()
+		Enumeration<URL> e = getClass().getClassLoader()
 				.getResources(RESOURCE_NAME);
 
 		for (; e.hasMoreElements();) {

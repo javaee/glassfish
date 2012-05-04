@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface DescriptorFileFinder {
 
-	public static final String RESOURCE_NAME="/META-INF/hk2-locator/default";
+	public static final String RESOURCE_NAME="META-INF/hk2-locator/default";
 	
 	List<InputStream> findDescriptorFiles() throws IOException;
 
