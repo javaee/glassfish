@@ -45,6 +45,7 @@ import org.glassfish.elasticity.engine.util.ElasticEngineThreadPool;
 import org.glassfish.elasticity.engine.util.EngineUtil;
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
@@ -72,7 +73,7 @@ public class MetricGathererContainer
     ElasticEngineThreadPool threadPool;
 
     @Inject @Optional
-    AbstractMetricGatherer[] metricGatherers;
+    IterableProvider<AbstractMetricGatherer> metricGatherers;
 
     private Logger logger;
 

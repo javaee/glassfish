@@ -65,6 +65,7 @@ import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.internal.api.ServerContext;
 import com.sun.enterprise.util.SystemPropertyConstants;
 
@@ -114,7 +115,7 @@ public class StopInstanceCommand extends StopServer implements AdminCommand, Pos
     @Inject
     private ServerEnvironment env;
     @Inject
-    Node[] nodeList;
+    IterableProvider<Node> nodeList;
     @Inject
     private ModulesRegistry registry;
     @Param(optional = true, defaultValue = "true")

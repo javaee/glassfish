@@ -41,6 +41,7 @@
 package org.glassfish.resources.admin.cli;
 
 import org.glassfish.api.I18n;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.resources.api.Resource;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -61,15 +62,14 @@ import javax.inject.Provider;
 public class ResourceFactory {
 
     @Inject
-    private Provider<ResourceManager>[] resourceManagers;
+    private IterableProvider<ResourceManager> resourceManagers;
 
     public ResourceManager getResourceManager(Resource resource) {
         String resourceType = resource.getType();
 
         ResourceManager resourceManager = null;
 
-        for (int i = 0; i < resourceManagers.length; i++) {
-            ResourceManager rm = resourceManagers[i].get();
+        for (ResourceManager rm : resourceManagers) {
             if ((rm.getResourceType()).equals(resourceType)) {
                 resourceManager = rm;
                 break;

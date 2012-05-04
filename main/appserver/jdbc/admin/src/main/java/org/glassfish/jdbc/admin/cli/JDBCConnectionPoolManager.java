@@ -318,7 +318,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         driverclassname = (String) attrList.get(DRIVER_CLASSNAME);
     }
 
-    public ResourceStatus delete(Server[] servers, Cluster[] clusters, final Resources resources, final String cascade,
+    public ResourceStatus delete(Iterable<Server> servers, Iterable<Cluster> clusters, final Resources resources, final String cascade,
                                  final String poolName) throws Exception {
 
         if (poolName == null) {
@@ -379,7 +379,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         return ConnectorsUtil.getResourceByName(resources, JdbcConnectionPool.class, poolName) != null;
     }
 
-    private Object deleteAssociatedResources(final Server[] servers, final Cluster[] clusters, Resources resources,
+    private Object deleteAssociatedResources(final Iterable<Server> servers, final Iterable<Cluster> clusters, Resources resources,
                                            final boolean cascade, final String poolName) throws TransactionFailure {
         if (cascade) {
             ConfigSupport.apply(new SingleConfigCode<Resources>() {
@@ -387,8 +387,8 @@ public class JDBCConnectionPoolManager implements ResourceManager {
                     Collection<BindableResource> referringResources = ConnectorsUtil.getResourcesOfPool(param, poolName);
                     for (BindableResource referringResource : referringResources) {
                         // delete resource-refs
-                        deleteResourceRefs(servers, referringResource.getJndiName());
-                        deleteResourceRefs(clusters, referringResource.getJndiName());
+                        deleteServerResourceRefs(servers, referringResource.getJndiName());
+                        deleteClusterResourceRefs(clusters, referringResource.getJndiName());
                         // remove the resource
                         param.getResources().remove(referringResource);
                     }
@@ -404,7 +404,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         return true; //no-op
     }
 
-    private void deleteResourceRefs(Server[] servers, final String refName)
+    private void deleteServerResourceRefs(Iterable<Server> servers, final String refName)
             throws TransactionFailure {
         if(servers != null){
             for (Server server : servers) {
@@ -413,7 +413,7 @@ public class JDBCConnectionPoolManager implements ResourceManager {
         }
     }
 
-    private void deleteResourceRefs(Cluster[] clusters, final String refName)
+    private void deleteClusterResourceRefs(Iterable<Cluster> clusters, final String refName)
             throws TransactionFailure {
         if(clusters != null){
             for (Cluster cluster : clusters) {

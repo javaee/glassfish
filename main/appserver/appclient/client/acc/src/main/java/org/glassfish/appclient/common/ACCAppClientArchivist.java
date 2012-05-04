@@ -46,10 +46,12 @@ import com.sun.enterprise.deployment.archivist.ExtensionsArchivist;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.PostConstruct;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 import org.glassfish.hk2.api.PerLookup;
 import org.xml.sax.SAXParseException;
 
@@ -74,8 +76,8 @@ import org.xml.sax.SAXParseException;
 @PerLookup
 public class ACCAppClientArchivist extends AppClientArchivist implements PostConstruct {
 
-    @Inject(optional = true)
-    ExtensionsArchivist[] allExtensionArchivists;
+    @Inject @Optional
+    IterableProvider<ExtensionsArchivist> allExtensionArchivists;
 
     @Override
     public void readRuntimeDeploymentDescriptor(ReadableArchive archive, ApplicationClientDescriptor descriptor) throws IOException, SAXParseException {

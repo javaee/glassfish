@@ -60,6 +60,7 @@ import org.glassfish.api.admin.RestEndpoints;
 import org.glassfish.api.admin.RuntimeType;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.Scoped;
 import org.glassfish.hk2.api.PerLookup;
@@ -90,7 +91,7 @@ public class ListResourceRefs implements AdminCommand {
     private String target = SystemPropertyConstants.DAS_SERVER_NAME;
 
     @Inject
-    private Server[] servers;
+    private IterableProvider<Server> servers;
 
     @Inject
     private Clusters clusters;

@@ -41,6 +41,7 @@
 package org.glassfish.resources.listener;
 
 import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.resources.api.ResourceDeployer;
 import org.glassfish.resources.api.ResourceInfo;
 import org.glassfish.resources.api.ResourcesBinder;
@@ -89,7 +90,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
     private BindableResourcesHelper bindableResourcesHelper;
 
     @Inject
-    private Provider<ResourceManagerLifecycleListener>[] resourceManagerLifecycleListenerProviders;
+    private IterableProvider<ResourceManagerLifecycleListener> resourceManagerLifecycleListenerProviders;
     
     @Inject
     private Provider<ResourceManagerFactory> resourceManagerFactoryProvider;
@@ -115,8 +116,7 @@ public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, 
     }
 
     private void notifyListeners(ResourceManagerLifecycleListener.EVENT event) {
-        for (int i = 0; i < resourceManagerLifecycleListenerProviders.length; i++) {
-            ResourceManagerLifecycleListener listener = resourceManagerLifecycleListenerProviders[i].get();
+        for (ResourceManagerLifecycleListener listener : resourceManagerLifecycleListenerProviders) {
             listener.resourceManagerLifecycleEvent(event);
         }
     }
