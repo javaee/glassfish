@@ -40,514 +40,315 @@
 
 package com.sun.enterprise.module.bootstrap;
 
-import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.InhabitantsDescriptor;
-import com.sun.enterprise.module.impl.HK2Factory;
-import com.sun.enterprise.module.Repository;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
-import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.common_impl.LogHelper;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ErrorService;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.inhabitants.InhabitantParser;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.jvnet.hk2.component.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.swing.text.AbstractDocument;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.impl.NullPopulatorPostProcessor;
+import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
+
+import com.sun.enterprise.module.ManifestConstants;
+import com.sun.enterprise.module.common_impl.LogHelper;
 
 /**
- * CLI entry point that will setup the module subsystem and delegate the
- * main execution to the first archive in its import list...
- *
+ * CLI entry point that will setup the module subsystem and delegate the main
+ * execution to the first archive in its import list...
+ * 
  * TODO: reusability of this class needs to be improved.
- *
+ * 
  * @author dochez
  */
 public class Main {
 
-    public static void main(final String[] args) {
-        (new Main()).run(args);       
-    }
+	private ServiceLocator serviceLocator;
 
-    public Main() {
-        HK2Factory.initialize();
-    }
+	private DescriptorFileFinder descriptorFileFinder = new ClasspathDescriptorFileFinder();
 
-    public void run(final String[] args) {
-        try {
-            final Main main = this;
-            Thread thread = new Thread() {
-                public void run() {
-                    try {
-                        main.start(args);
-                    } catch(BootException e) {
-                        e.printStackTrace();
-                    } catch (RuntimeException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            thread.start();
-            try {
-                thread.join();
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-        }
-    }
+	private PopulatorPostProcessor populatorPostProcessor = new NullPopulatorPostProcessor();
 
-    /**
-     *  We need to determine which jar file has been used to load this class
-     *  Using the getResourceURL we can get this information, after that, it
-     *  is just a bit of detective work to get the file path for the jar file.
-     *
-     * @return
-     *      the path to the jar file containing this class.
-     *      always returns non-null.
-     *
-     * @throws BootException
-     *      If failed to determine the bootstrap file name.
-     */
-    protected File getBootstrapFile() throws BootException {
-        try {
-            return Which.jarFile(getClass());
-        } catch (IOException e) {
-            throw new BootException("Failed to get bootstrap path",e);
-        }
-    }
+	private ClassLoader parentClassLoader;
 
-    /**
-     * Start the server from the command line
-     * @param args the command line arguments
-     */
-    public void start(String[] args) throws BootException {
-        
-        File bootstrap = this.getBootstrapFile();
-        File root = bootstrap.getAbsoluteFile().getParentFile();
+	public static final String DEFAULT_NAME = "_SERVICELOCATOR_DEFAULT";
 
-        // root is the directory in which this bootstrap.jar is located
-        // For most cases, this is the lib directory although this is completely
-        // dependent on the usage of this facility.
-        if (root==null) {
-            throw new BootException("Cannot find root installation from "+bootstrap);
-        }
+	public Main() {
+		createServiceLocator();
+	}
+	
+	public static void main(final String[] args) {
+		(new Main()).run(args);
+	}
 
-        String targetModule = findMainModuleName(bootstrap);
+	public void run(final String[] args) {
+		try {
+			final Main main = this;
+			Thread thread = new Thread() {
+				public void run() {
+					try {
+						main.start(args);
+					} catch (BootException e) {
+						e.printStackTrace();
+					} catch (RuntimeException e) {
+						e.printStackTrace();
+					}
+				}
+			};
+			thread.start();
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+	}
 
-        // get the ModuleStartup implementation.
-        ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
-        Manifest mf;
-        try {
-            mf = (new JarFile(bootstrap)).getManifest();
-        } catch (IOException e) {
-            throw new BootException("Failed to read manifest from "+bootstrap);
-        }
+	/**
+	 * We need to determine which jar file has been used to load this class
+	 * Using the getResourceURL we can get this information, after that, it is
+	 * just a bit of detective work to get the file path for the jar file.
+	 * 
+	 * @return the path to the jar file containing this class. always returns
+	 *         non-null.
+	 * 
+	 * @throws BootException
+	 *             If failed to determine the bootstrap file name.
+	 */
+	protected File getBootstrapFile() throws BootException {
+		try {
+			return Which.jarFile(getClass());
+		} catch (IOException e) {
+			throw new BootException("Failed to get bootstrap path", e);
+		}
+	}
 
-        createRepository(root,bootstrap,mf,mr);
+	/**
+	 * Start the server from the command line
+	 * 
+	 * @param args
+	 *            the command line arguments
+	 */
+	public void start(String[] args) throws BootException {
+		
+		File bootstrap = this.getBootstrapFile();
+		File root = bootstrap.getAbsoluteFile().getParentFile();
 
-        StartupContext context = new StartupContext(ArgumentManager.argsToMap(args));        
-        launch(mr, targetModule, context);
-    }
+		// root is the directory in which this bootstrap.jar is located
+		// For most cases, this is the lib directory although this is completely
+		// dependent on the usage of this facility.
+		if (root == null) {
+			throw new BootException("Cannot find root installation from "
+					+ bootstrap);
+		}
 
+		String targetModule = findMainModuleName(bootstrap);
 
-    protected void setParentClassLoader(StartupContext context, ModulesRegistry mr) throws BootException {
-        mr.setParentClassLoader(
-                AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                    @Override
-                    public ClassLoader run() {
-                        return Main.this.getClass().getClassLoader();
-                    }
-                }));
-    }
-    
-    /**
-     * Creates repositories needed for the launch and 
-     * adds the repositories to {@link ModulesRegistry}
-     *
-     * @param bootstrapJar
-     *      The file from which manifest entries are loaded. Used for error reporting
-     */
-    protected void createRepository(File root, File bootstrapJar, Manifest mf, ModulesRegistry mr) throws BootException {
-        String repos = mf.getMainAttributes().getValue(ManifestConstants.REPOSITORIES);
-        if (repos!=null) {
-            StringTokenizer st = new StringTokenizer(repos);
-            while (st.hasMoreTokens()) {
-                final String repoId = st.nextToken();
-                final String repoKey = "HK2-Repository-"+repoId;
-                final String repoInfo;
-                try {
-                    repoInfo = mf.getMainAttributes().getValue(repoKey);
-                } catch (Exception e) {
-                    throw new BootException("Invalid repository id " + repoId+" in "+bootstrapJar, e);
-                }
-                if (repoInfo!=null) {
-                    addRepo(root, repoId, repoInfo, mr);
-                }
-            }
-        } else {
-            // by default, adding the boot archive directory
-            addRepo(root, "lib", "uri=. type=directory", mr);
-        }
-    }
+		StartupContext context = new StartupContext(
+				ArgumentManager.argsToMap(args));
+		launch(targetModule, context);
+	}
 
-    private void addRepo(File root, String repoId, String repoInfo, ModulesRegistry mr) throws BootException {
+	protected void createServiceLocator() {
+		serviceLocator = ServiceLocatorFactory.getInstance().create(
+				Main.DEFAULT_NAME, null, new ServiceLocatorGeneratorImpl());
+	}
 
-        StringTokenizer st = new StringTokenizer(repoInfo);
-        Properties props = new Properties();
-        Pattern p = Pattern.compile("([^=]*)=(.*)");
-        
-        while(st.hasMoreTokens()) {
-            Matcher m = p.matcher(st.nextToken());
-            if (m.matches()) {
-                props.put(m.group(1), m.group(2));
-            }
-        }
-        
-        String uri = props.getProperty("uri");
-        if (uri==null) {
-            uri = ".";
-        }
-        String type = props.getProperty("type");
-        String weight = props.getProperty("weight");
+	protected void defineParentClassLoader() throws BootException {
+		parentClassLoader = AccessController
+				.doPrivileged(new PrivilegedAction<ClassLoader>() {
+					@Override
+					public ClassLoader run() {
+						return Main.this.getClass().getClassLoader();
+					}
+				});
+	}
 
-        // need a plugability layer here...
-        if ("directory".equalsIgnoreCase(type)) {
+	protected ClassLoader getParentClassLoader() {
+		return parentClassLoader;
+	}
 
-            File location = new File(uri);
-            if (!location.isAbsolute()) {
-                location = new File(root, uri);
-            }
-            if (!location.exists())
-                throw new BootException("Non-existent directory: "+location);
-        
-            /* bnevins 3/21/08
-             * location might be something like "/gf/modules/."
-             * The "." can cause all sorts of trouble later, so sanitize
-             * the name now!
-             * here's an example of the trouble:            
-             * new File("/foo/.").getParentFile().getPath() --> "/foo", not "/"
-             * JDK treats the dot as a file in the foo directory!!
-             */
-            
-            try {
-                location = location.getCanonicalFile();
-            }
-            catch(Exception e) {
-                // I've never seen this happen!
-                location = location.getAbsoluteFile();
-            }
-            
-            try {
-                Repository repo = new DirectoryBasedRepository(repoId, location);
-                addRepo(repo, mr, weight);
-            } catch (IOException e) {
-                throw new BootException("Exception while adding " + repoId + " repository", e);
+	/**
+	 * Launches the module system and hand over the execution to the
+	 * {@link ModuleStartup} implementation of the main module.
+	 * 
+	 * @param mainModuleName
+	 *            The module that will provide {@link ModuleStartup}. If null,
+	 *            one will be auto-discovered.
+	 * @param context
+	 *            startup context instance
+	 * @return The ModuleStartup service
+	 */
+	public ModuleStartup launch(String mainModuleName, StartupContext context)
+			throws BootException {
+		// now go figure out the start up service
+		ModuleStartup startupCode = findStartupService(mainModuleName, context);
+		launch(startupCode, context);
+		return startupCode;
+	}
 
-            }
-        } else {
-            throw new BootException("Invalid attributes for modules repository " + repoId + " : " + repoInfo);
-        }
-    }
+	/**
+	 * Return the ModuleStartup service configured to be used to start the
+	 * system.
+	 * 
+	 * @param registry
+	 * @param habitat
+	 * @param mainModuleName
+	 * @param context
+	 * @return
+	 * @throws BootException
+	 */
+	public ModuleStartup findStartupService(String mainModuleName,
+			StartupContext context) throws BootException {
+		ModuleStartup startupCode = null;
 
-    protected void addRepo(Repository repo, ModulesRegistry mr, String weight)
-        throws IOException {
-        
-        repo.initialize();
-        int iWeight=50;
-        if (weight!=null) {
-            try {
-                iWeight = Integer.parseInt(weight);
-            } catch (NumberFormatException e) {
-                // ignore
-            }
-        }
-        mr.addRepository(repo, iWeight);
-    }
+		try {
+			startupCode = serviceLocator.getService(ModuleStartup.class,
+					mainModuleName);
 
-    /**
-     * Launches the module system and hand over the execution to the {@link ModuleStartup}
-     * implementation of the main module.
-     *
-     * <p>
-     * This version of the method auto-discoveres the main module.
-     * If there's more than one {@link ModuleStartup} implementation, it is an error.
-     *
-     * <p>
-     * All the <tt>launch</tt> methods start additional threads and run GFv3,
-     * then return from the method. 
-     *
-     * @param context
-     *      startup context instance
-     *
-     * @return
-     *      the entry point to all the components in this newly launched GlassFish.
-     */
-    public ServiceLocator launch(ModulesRegistry registry, StartupContext context) throws BootException {
-        return launch(registry, null, context);
-    }
+			if (startupCode == null)
+				throw new BootException("Cannot find main module "
+						+ (mainModuleName == null ? "" : mainModuleName)
+						+ " : no such module");
+		} catch (ComponentException e) {
+			throw new BootException("Unable to load service", e);
+		}
+		return startupCode;
+	}
 
-    private static final String HABITAT_NAME = "default"; // TODO: take this as a parameter
+	public ServiceLocator createServiceLocator(StartupContext context)
+			throws BootException {
+		// set the parent class loader before we start loading modules
+		defineParentClassLoader();
 
-    public ServiceLocator launch(ModulesRegistry registry, String mainModuleName, StartupContext context) throws BootException {
-    	ServiceLocator serviceLocator = createServiceLocator(registry, context);
-        launch(registry, serviceLocator,mainModuleName,context);
-        return serviceLocator;
-    }
+		DynamicConfigurationService dcs = serviceLocator
+				.getService(DynamicConfigurationService.class);
+		DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-    /**
-     * Launches the module system and hand over the execution to the {@link ModuleStartup}
-     * implementation of the main module.
-     *
-     * @param mainModuleName
-     *      The module that will provide {@link ModuleStartup}. If null,
-     *      one will be auto-discovered.
-     * @param context
-     *      startup context instance
-     * @return The ModuleStartup service
-     */
-    public ModuleStartup launch(ModulesRegistry registry, ServiceLocator serviceLocator, String mainModuleName, StartupContext context) throws BootException {
-        // now go figure out the start up service
-        ModuleStartup startupCode = findStartupService(registry, serviceLocator, mainModuleName, context);
-        launch(startupCode, context);
-        return startupCode;
-    }
+		config.addActiveDescriptor(BuilderHelper
+				.createConstantDescriptor(serviceLocator));
+		config.commit();
+		config = dcs.createDynamicConfiguration();
+		config.addActiveDescriptor(BuilderHelper
+				.createConstantDescriptor(context));
+		config.commit();
+		config = dcs.createDynamicConfiguration();
+		config.addActiveDescriptor(BuilderHelper
+				.createConstantDescriptor(Logger.global));
+		config.commit();
+		config = dcs.createDynamicConfiguration();
 
-    /**
-     * Return the ModuleStartup service configured to be used to start the system.
-     * @param registry
-     * @param habitat
-     * @param mainModuleName
-     * @param context
-     * @return
-     * @throws BootException
-     */
-    public ModuleStartup findStartupService(ModulesRegistry registry, ServiceLocator serviceLocator, String mainModuleName, StartupContext context) throws BootException {
-        ModuleStartup startupCode=null;
-        final Module mainModule;
-        
-        if(mainModuleName!=null) {
-            // instantiate the main module, this is the entry point of the application
-            // code. it is supposed to have 1 ModuleStartup implementation.
-            Collection<Module> modules = registry.getModules(mainModuleName);
-            if (modules.size() != 1) {
-                if(registry.getModules().isEmpty())
-                    throw new BootException("Registry has no module at all");
-                else
-                    throw new BootException("Cannot find main module " + mainModuleName+" : no such module");
-            }
-            mainModule = modules.iterator().next();
-            String targetClassName = findModuleStartupClassName(mainModule,context.getPlatformMainServiceName(), HABITAT_NAME);
-            if (targetClassName==null) {
-                throw new BootException("Cannot find a ModuleStartup implementation in the META-INF/services/com.sun.enterprise.v3.ModuleStartup file, aborting");
-            }
+		config.commit();
+		config = dcs.createDynamicConfiguration();
 
-            Class<? extends ModuleStartup> targetClass=null;
-            final ClassLoader currentCL =
-                AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                    @Override
-                    public ClassLoader run() {
-                        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                        Thread.currentThread().setContextClassLoader(mainModule.getClassLoader());
-                        return cl;
-                    }
-                });
-            try {
-                ClassLoader moduleClassLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                    @Override
-                    public ClassLoader run() {
-                        return mainModule.getClassLoader();
-                    }
-                });
-                targetClass = moduleClassLoader.loadClass(targetClassName).asSubclass(ModuleStartup.class);
-                startupCode = serviceLocator.getService(targetClass);
-            } catch (ClassNotFoundException e) {
-                throw new BootException("Unable to load component of type " + targetClassName,e);
-            } catch (ComponentException e) {
-                throw new BootException("Unable to load component of type " + targetClassName,e);
-            } finally {
-                AccessController.doPrivileged(new PrivilegedAction<Object>() {
-                    @Override
-                    public Object run() {
-                        Thread.currentThread().setContextClassLoader(currentCL);
-                        return null;
-                    }
-                });
-            }
-        } else {
-           // Collection<Inhabitant<ModuleStartup>> startups = habitat.getInhabitantsByContract(ModuleStartup.class);
-        	List<ModuleStartup> startups = serviceLocator.getAllServices(ModuleStartup.class);
-        	
-            if(startups.isEmpty())
-                throw new BootException("No module has a ModuleStartup implementation");
-            if(startups.size()>1) {
-                // maybe the user specified a main
-                String mainServiceName = context.getPlatformMainServiceName();
- 
-                startupCode = serviceLocator.getService(ModuleStartup.class, mainServiceName);
-                
-                if (startupCode==null) {
-                    if (mainServiceName==null) {
-                        Iterator<ModuleStartup> itr = startups.iterator();
-                        ModuleStartup a = itr.next();
-                        ModuleStartup b = itr.next();
-                        Module am = registry.find(a.getClass());
-                        Module bm = registry.find(b.getClass());
-                        throw new BootException(String.format("Multiple ModuleStartup found: %s from %s and %s from %s",a,am,b,bm));
-                    } else {
-                        throw new BootException(String.format("Cannot find %s ModuleStartup", mainServiceName));
-                    }
-                }
-            } else {
-                startupCode = startups.iterator().next();
-            }
-            mainModule = registry.find(startupCode.getClass());
-        }
+		config.addActiveDescriptor(DefaultErrorService.class);
+		config.commit();
 
-        // TODO: What is this?
-        // habitat.addIndex(Inhabitants.create(startupCode),
-        //        ModuleStartup.class.getName(), habitat.DEFAULT_NAME);
-        mainModule.setSticky(true);
-        return startupCode;
-    }
+		final ClassLoader oldCL = AccessController
+				.doPrivileged(new PrivilegedAction<ClassLoader>() {
+					@Override
+					public ClassLoader run() {
+						ClassLoader cl = Thread.currentThread()
+								.getContextClassLoader();
+						Thread.currentThread().setContextClassLoader(
+								getClass().getClassLoader());
+						return cl;
+					}
+				});
 
-    public ServiceLocator createServiceLocator(ModulesRegistry registry, StartupContext context) throws BootException {
-        // set the parent class loader before we start loading modules
-        setParentClassLoader(context, registry);
+		try {
+			populate();
+		} catch (IOException ioe) {
+			throw new BootException(ioe);
+		} finally {
+			AccessController.doPrivileged(new PrivilegedAction<Object>() {
+				@Override
+				public Object run() {
+					Thread.currentThread().setContextClassLoader(oldCL);
+					return null;
+				}
+			});
+		}
+		return serviceLocator;
+	}
 
-        // create a habitat and initialize them
-        final ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(HABITAT_NAME);
-        
-        DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
+	/**
+	 * Creates {@link InhabitantsParser} to fill in {@link Habitat}. Override
+	 * for customizing the behavior.
+	 * 
+	 * @throws IOException
+	 */
+	protected void populate() throws IOException {
+		HK2Populator.populate(serviceLocator, descriptorFileFinder,
+				populatorPostProcessor);
+	}
 
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(serviceLocator));
-        config.commit();
-        config = dcs.createDynamicConfiguration();
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(context));
-        config.commit();
-        config = dcs.createDynamicConfiguration();
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(Logger.global));
-        config.commit();
-        config = dcs.createDynamicConfiguration();
-        // the root registry must be added as other components sometimes inject it
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(registry));
-        config.commit();
-        config = dcs.createDynamicConfiguration();
+	protected String findMainModuleName(File bootstrap) throws BootException {
+		String targetModule;
+		try {
+			JarFile jarFile = new JarFile(bootstrap);
+			Manifest manifest = jarFile.getManifest();
 
-        config.addActiveDescriptor(DefaultErrorService.class);
-        config.commit();
-        
-        final ClassLoader oldCL = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-            @Override
-            public ClassLoader run() {
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-                return cl;
-            }
-        });
+			Attributes attr = manifest.getMainAttributes();
+			targetModule = attr.getValue(ManifestConstants.MAIN_BUNDLE);
+			if (targetModule == null) {
+				LogHelper.getDefaultLogger().warning(
+						"No Main-Bundle module found in manifest of "
+								+ bootstrap.getAbsoluteFile());
+			}
+		} catch (IOException ioe) {
+			throw new BootException("Cannot get manifest from "
+					+ bootstrap.getAbsolutePath(), ioe);
+		}
+		return targetModule;
+	}
 
-        try {
-            registry.createServiceLocator(HABITAT_NAME, createInhabitantsParser(serviceLocator));
-        } finally {
-            AccessController.doPrivileged(new PrivilegedAction<Object>() {
-                @Override
-                public Object run() {
-                    Thread.currentThread().setContextClassLoader(oldCL);
-                    return null;
-                }
-            });
-        }
-        return serviceLocator;
-    }
+	protected void launch(ModuleStartup startupCode, StartupContext context)
+			throws BootException {
+		startupCode.setStartupContext(context);
+		startupCode.start();
+	}
 
-    /**
-     * Creates {@link InhabitantsParser} to fill in {@link Habitat}.
-     * Override for customizing the behavior.
-     */
-    protected InhabitantsParser createInhabitantsParser(ServiceLocator habitat) {
-        return new InhabitantsParser(habitat);
-    }
+	public ServiceLocator getServiceLocator() {
+		return serviceLocator;
+	}
 
-    protected String findMainModuleName(File bootstrap) throws BootException {
-        String targetModule;
-        try {
-            JarFile jarFile = new JarFile(bootstrap);
-            Manifest manifest = jarFile.getManifest();
-                          
-            Attributes attr = manifest.getMainAttributes();
-            targetModule = attr.getValue(ManifestConstants.MAIN_BUNDLE);
-            if (targetModule==null) {
-                LogHelper.getDefaultLogger().warning(
-                        "No Main-Bundle module found in manifest of " +
-                        bootstrap.getAbsoluteFile());
-            }
-        } catch(IOException ioe) {
-            throw new BootException("Cannot get manifest from " + bootstrap.getAbsolutePath(), ioe);
-        }
-        return targetModule;
-    }
+	protected void setServiceLocator(ServiceLocator serviceLocator) {
+		this.serviceLocator = serviceLocator;
+	}
 
-    protected void launch(ModuleStartup startupCode, StartupContext context) throws BootException {
-        startupCode.setStartupContext(context);
-        startupCode.start();
-    }
+	protected DescriptorFileFinder getDescriptorFileFinder() {
+		return descriptorFileFinder;
+	}
 
-    /**
-     * Finds {@link ModuleStartup} implementation class name to perform the launch.
-     *
-     * <p>
-     * This implementation does so by looking it up from services.
-     */
-    protected String findModuleStartupClassName(Module mainModule, String serviceName, String habitatName) throws BootException {
-        String index = (serviceName==null || serviceName.isEmpty()?ModuleStartup.class.getName():ModuleStartup.class.getName()+":"+serviceName);
-        for(InhabitantsDescriptor d : mainModule.getMetadata().getHabitats(habitatName)) {
-            try {
-                for (InhabitantParser parser : d.createScanner()) {
-                    for (String v : parser.getIndexes()) {
-                        if(v.equals(index)) {
-                            parser.rewind();
-                            return parser.getImplName();
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                throw new BootException("Failed to parse "+d.getSystemId(),e);
-            }
-        }
+	protected void setDescriptorFileFinder(
+			DescriptorFileFinder descriptorFileFinder) {
+		this.descriptorFileFinder = descriptorFileFinder;
+	}
 
-        throw new BootException("No "+ModuleStartup.class.getName()+" in "+mainModule);
-    }
+	protected PopulatorPostProcessor getPopulatorPostProcessor() {
+		return populatorPostProcessor;
+	}
+
+	protected void setPopulatorPostProcessor(
+			PopulatorPostProcessor populatorPostProcessor) {
+		this.populatorPostProcessor = populatorPostProcessor;
+	}
+
 }

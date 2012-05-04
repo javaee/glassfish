@@ -134,7 +134,7 @@ public class ServiceLocatorTest {
 		Main main = new Main();
 
 		ServiceLocator serviceLocator = main.createServiceLocator(
-				new ModulesRegistryImpl(null), new StartupContext());
+				 new StartupContext());
 
 		assertEquals("ServiceLocator should be bound", serviceLocator,
 				serviceLocator.getService(ServiceLocator.class));

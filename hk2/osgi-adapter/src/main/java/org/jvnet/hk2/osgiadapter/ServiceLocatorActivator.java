@@ -46,6 +46,7 @@ import static org.jvnet.hk2.osgiadapter.Logger.logger;
 import java.net.URL;
 import java.util.logging.Level;
 
+import com.sun.enterprise.module.bootstrap.Main;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -71,8 +72,6 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
  */
 public class ServiceLocatorActivator implements BundleActivator,
 		SynchronousBundleListener {
-
-	public final String DEFAULT_NAME = "_SERVICELOCATOR_DEFAULT";
 
 	private BundleContext bundleContext;
 
@@ -100,7 +99,7 @@ public class ServiceLocatorActivator implements BundleActivator,
 				new Object[] { context });
 
 		serviceLocator = ServiceLocatorFactory.getInstance().create(
-				DEFAULT_NAME, null, new ServiceLocatorGeneratorImpl());
+				Main.DEFAULT_NAME, null, new ServiceLocatorGeneratorImpl());
 
 		serviceLocatorRegistration = bundleContext.registerService(ServiceLocator.class.getName(),
 				serviceLocator, null);
@@ -156,7 +155,7 @@ public class ServiceLocatorActivator implements BundleActivator,
 
 					HK2Populator.populate(
 							ServiceLocatorFactory.getInstance().create(
-									DEFAULT_NAME, null,
+									Main.DEFAULT_NAME, null,
 									new ServiceLocatorGeneratorImpl()),
 							new URLDescriptorFileFinder(url),
 							new OsgiPopulatorPostProcessor(hk2Loader));
