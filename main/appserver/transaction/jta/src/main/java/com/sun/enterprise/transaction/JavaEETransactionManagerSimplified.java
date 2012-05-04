@@ -68,7 +68,7 @@ import com.sun.enterprise.util.i18n.StringManager;
 
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.glassfish.hk2.api.PostConstruct;
 
@@ -93,7 +93,7 @@ import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
  * @author Marina Vatkina
  */
 @Service
-@ContractProvided(TransactionManager.class)
+@ContractsProvided(TransactionManager.class)
 public class JavaEETransactionManagerSimplified 
         implements JavaEETransactionManager, PostConstruct {
 

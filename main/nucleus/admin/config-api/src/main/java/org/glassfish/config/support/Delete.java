@@ -97,7 +97,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target(ElementType.METHOD)
 @InhabitantAnnotation("default")
-@ContractProvided(AdminCommand.class)
+@ContractsProvided(AdminCommand.class)
 @ServiceProvider(GenericDeleteCommand.class)
 public @interface Delete {
 

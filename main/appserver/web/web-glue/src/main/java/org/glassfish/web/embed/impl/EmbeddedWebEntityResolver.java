@@ -64,7 +64,7 @@ import java.util.Map;
  * @see org.glassfish.web.WebEntityResolver#resolveEntity(String, String)
  */
 //@Service(name="web")
-//@ContractProvided(EntityResolver.class)
+//@ContractsProvided(EntityResolver.class)
 public class EmbeddedWebEntityResolver implements EntityResolver, PostConstruct {
 
     @Inject

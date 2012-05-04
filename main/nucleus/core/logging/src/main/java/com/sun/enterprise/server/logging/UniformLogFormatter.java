@@ -42,7 +42,7 @@ package com.sun.enterprise.server.logging;
 
 
 import com.sun.appserv.server.util.Version;
-import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PerLookup;
@@ -75,7 +75,7 @@ import java.util.logging.Formatter;
  *         distinguish key values with the message argument.
  */
 @Service()
-@ContractProvided(Formatter.class)
+@ContractsProvided(Formatter.class)
 @PerLookup
 public class UniformLogFormatter extends Formatter {
     // loggerResourceBundleTable caches references to all the ResourceBundle

@@ -43,7 +43,7 @@ package com.sun.enterprise.server.logging;
 import com.sun.logging.LogDomains;
 import org.glassfish.config.support.TranslatedConfigView;
 import org.glassfish.server.ServerEnvironmentImpl;
-import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.ContractsProvided;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -65,7 +65,7 @@ import java.util.logging.*;
  */
 @Service
 @Singleton
-@ContractProvided(java.util.logging.Handler.class)
+@ContractsProvided(java.util.logging.Handler.class)
 public class SyslogHandler extends Handler implements PostConstruct, PreDestroy {
 
     @Inject

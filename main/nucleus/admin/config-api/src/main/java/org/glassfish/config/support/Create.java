@@ -134,7 +134,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 @InhabitantAnnotation("default")
-@ContractProvided(AdminCommand.class)
+@ContractsProvided(AdminCommand.class)
 @ServiceProvider(GenericCreateCommand.class)
 public @interface Create {
 

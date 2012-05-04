@@ -50,7 +50,7 @@ import org.glassfish.api.logging.Task;
 import org.glassfish.config.support.TranslatedConfigView;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.server.ServerEnvironmentImpl;
-import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.ContractsProvided;
 import javax.inject.Inject;
 
 import org.jvnet.hk2.annotations.Optional;
@@ -81,7 +81,7 @@ import java.util.logging.*;
  */
 @Service
 @Singleton
-@ContractProvided(java.util.logging.Handler.class)
+@ContractsProvided(java.util.logging.Handler.class)
 public class GFFileHandler extends StreamHandler implements PostConstruct, PreDestroy {
 
 
