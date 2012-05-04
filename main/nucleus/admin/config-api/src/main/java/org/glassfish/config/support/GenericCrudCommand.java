@@ -90,6 +90,15 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     Method targetMethod;
     // default level of noise, useful for just swithching these classes in debugging.
     protected final Level level = Level.FINE;
+    
+    private static String getOne(String key, Map<String, List<String>> metadata) {
+    	if (key == null || metadata == null) return null;
+    	
+    	List<String> findInMe = metadata.get(key);
+    	if (findInMe == null) return null;
+    	
+    	return findInMe.get(0);
+    }
 
     public void postConstruct() {
         List<String> indexes = myself.metadata().get(InhabitantsFile.INDEX_KEY);
@@ -117,8 +126,8 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
             throw new ComponentException(msg);            
         }
         commandName = index.substring(index.indexOf(":")+1);
-        String parentTypeName = myself.metadata().getOne(InhabitantsFile.TARGET_TYPE);
-        String decoratedTypeName = myself.metadata().getOne(InhabitantsFile.DECORATED_TYPE);
+        String parentTypeName = getOne(InhabitantsFile.TARGET_TYPE, myself.metadata());
+        String decoratedTypeName = getOne(InhabitantsFile.DECORATED_TYPE, myself.metadata());
         if (logger.isLoggable(level)) {
             logger.log(level,"Generic method parent targeted type is " + parentTypeName);
         }
@@ -213,7 +222,7 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
                 }
             }
             // still not found, it may have been placed on the target type using a @Decorate.
-            String decoratedTypeName = myself.metadata().getOne(InhabitantsFile.TARGET_TYPE);
+            String decoratedTypeName = getOne(InhabitantsFile.TARGET_TYPE, myself.metadata());
             try {
                 if (decoratedTypeName!=null) {
                     Class decoratedType = myself.getClassLoader().loadClass(decoratedTypeName);
