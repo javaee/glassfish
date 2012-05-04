@@ -47,7 +47,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * An explicit list of contracts provided.  Overrides and other
+ * An explicit list of contracts provided.  Overrides any other
  * contract metadata on subclasses or interfaces.
  * <p>
  * There are times when a service would like to either restrict 
