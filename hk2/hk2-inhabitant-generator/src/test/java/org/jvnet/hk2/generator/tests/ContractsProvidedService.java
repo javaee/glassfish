@@ -37,59 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.generator.internal;
+package org.jvnet.hk2.generator.tests;
 
-import org.objectweb.asm.AnnotationVisitor;
+import org.jvnet.hk2.annotations.ContractsProvided;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This just makes the main-line code less messy
+ * This service uses the {@link ContractsProvided}
+ * annotation
  * 
  * @author jwells
  *
  */
-public abstract class AbstractAnnotationVisitorImpl implements AnnotationVisitor {
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
-     */
-    @Override
-    public void visit(String name, Object value) {
-        // TODO Auto-generated method stub
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
-     */
-    @Override
-    public AnnotationVisitor visitAnnotation(String arg0, String arg1) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
-     */
-    @Override
-    public AnnotationVisitor visitArray(String arg0) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
-     */
-    @Override
-    public void visitEnd() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
-     */
-    @Override
-    public void visitEnum(String arg0, String arg1, String arg2) {
-        // TODO Auto-generated method stub
-
-    }
+@Service @ContractsProvided(SimpleInterface.class)
+public class ContractsProvidedService implements SimpleContract, SimpleInterface {
 
 }

@@ -216,6 +216,16 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.add(di);
         }
+        
+        {
+            // This is a descriptor with a non-defaulted Name from @Service
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.generator.tests.ContractsProvidedService");
+            di.addAdvertisedContract("org.jvnet.hk2.generator.tests.SimpleInterface");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.add(di);
+        }
     }
     
     private File gendirDirectory;

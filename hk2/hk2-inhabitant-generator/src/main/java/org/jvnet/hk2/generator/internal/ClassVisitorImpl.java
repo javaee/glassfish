@@ -53,6 +53,7 @@ import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 
 /**
  * @author jwells
@@ -60,6 +61,7 @@ import org.objectweb.asm.MethodVisitor;
  */
 public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String SERVICE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Service;";
+    private final static String CONTRACTS_PROVIDED_CLASS_FORM = "Lorg/jvnet/hk2/annotations/ContractsProvided;";
     private final static String NAME = "name";
     private final static String METADATA = "metadata";
     private final static String VALUE = "value";
@@ -71,6 +73,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     
     private String implName;
     private final LinkedHashSet<String> iFaces = new LinkedHashSet<String>();
+    private LinkedHashSet<String> providedContracts;
     private String scopeClass;
     private final LinkedList<String> qualifiers = new LinkedList<String>();
     private boolean isAService = false;
@@ -84,6 +87,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     /**
      * Creates this with the config to add to if this is a service
      * 
+     * @param utilities The utilities class to use for this visitor (preserves cache)
      * @param verbose true if we should print out any service we are binding
      * @param searchHere if we cannot classload something directly, search for it here
      */
@@ -123,6 +127,12 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             isAService = true;
             
             return new ServiceAnnotationVisitor();
+        }
+        
+        if (CONTRACTS_PROVIDED_CLASS_FORM.equals(desc)) {
+            providedContracts = new LinkedHashSet<String>();
+            
+            return new ContractsProvidedAnnotationVisitor();
         }
         
         if (!desc.startsWith("L")) return null;
@@ -172,9 +182,17 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             generatedDescriptor.setScope(scopeClass);
         }
         
-        generatedDescriptor.addAdvertisedContract(implName);
-        for (String iFace : iFaces) {
-            generatedDescriptor.addAdvertisedContract(iFace);
+        if (providedContracts != null) {
+            for (String providedContract : providedContracts) {
+                generatedDescriptor.addAdvertisedContract(providedContract);
+            }
+            
+        }
+        else {
+            generatedDescriptor.addAdvertisedContract(implName);
+            for (String iFace : iFaces) {
+                generatedDescriptor.addAdvertisedContract(iFace);
+            }
         }
         
         for (String qualifier : qualifiers) {
@@ -352,6 +370,31 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
                 asAFactoryDI.setName(factoryName.getName());
             }
             
+        }        
+    }
+    
+    private class ContractsProvidedAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visit(String name, Object value) {
+            if (value == null) return;
+            if (!(value instanceof Type)) return;
+            
+            providedContracts.add(((Type) value).getClassName());
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visit(java.lang.String, java.lang.Object)
+         */
+        @Override
+        public AnnotationVisitor visitArray(String name) {
+            if (!VALUE.equals(name)) {
+                return null;
+            }
+            
+            return this;
         }        
     }
     
