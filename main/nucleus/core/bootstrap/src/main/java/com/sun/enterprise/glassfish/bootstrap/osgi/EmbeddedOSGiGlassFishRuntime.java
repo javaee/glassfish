@@ -41,25 +41,30 @@
 
 package com.sun.enterprise.glassfish.bootstrap.osgi;
 
-import com.sun.enterprise.glassfish.bootstrap.ASMainHelper;
-import com.sun.enterprise.glassfish.bootstrap.GlassFishImpl;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.bootstrap.BootException;
-import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import com.sun.enterprise.module.bootstrap.StartupContext;
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.osgi.framework.*;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-import java.io.File;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.enterprise.glassfish.bootstrap.ASMainHelper;
+import com.sun.enterprise.glassfish.bootstrap.GlassFishImpl;
+import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 
 /**
 * @author Sanjeeb.Sahoo@Sun.COM
@@ -86,10 +91,13 @@ public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
             hk2Tracker.open();
             final Main main = (Main) hk2Tracker.waitForService(0);
             hk2Tracker.close();
-            final ModulesRegistry mr = ModulesRegistry.class.cast(getBundleContext().getService(getBundleContext().getServiceReference(ModulesRegistry.class.getName())));
-            final BaseServiceLocator habitat = main.createHabitat(mr, startupContext);
-            final ModuleStartup gfKernel = main.findStartupService(mr, habitat, null, startupContext);
-            GlassFish glassFish = createGlassFish(gfKernel, habitat, gfProps.getProperties());
+           
+            org.glassfish.hk2.api.ServiceLocator serviceLocator = main.getServiceLocator();
+            
+            BaseServiceLocator baseServiceLocator = serviceLocator.getService(BaseServiceLocator.class);
+            
+            final ModuleStartup gfKernel = main.findStartupService(null, startupContext);
+            GlassFish glassFish = createGlassFish(gfKernel, baseServiceLocator, gfProps.getProperties());
             ServiceRegistration registration = getBundleContext().registerService(GlassFish.class.getName(), glassFish, gfProps.getProperties());
             gfs.put(glassFish,  registration);
             return glassFish;

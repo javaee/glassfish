@@ -115,11 +115,6 @@ public class Utils {
     }
 
     public static Habitat getNewHabitat() {
-
-        Properties p = new Properties();
-        p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_PROP_NAME, System.getProperty("java.io.tmpdir"));
-        p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTANCE_ROOT_PROP_NAME, System.getProperty("java.io.tmpdir"));
-        ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader(), new StartupContext(p));
-        return registry.createHabitat("default");
+    	return new Habitat();
     }
 }

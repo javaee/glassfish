@@ -91,8 +91,7 @@ public class Globals implements Init {
         if (defaultHabitat == null) {
             synchronized (staticLock) {
                 if (defaultHabitat == null) {
-                    ModulesRegistry registry = new StaticModulesRegistry(Globals.class.getClassLoader());
-                    defaultHabitat = registry.createHabitat("default");
+                    defaultHabitat = new Habitat();
                 }
             }
         }

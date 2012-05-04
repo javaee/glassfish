@@ -223,6 +223,16 @@
                             </execution>
                         </executions>
                     </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+          <addGroupIdToProjectName>true</addGroupIdToProjectName>
+        </configuration>
+      </plugin>
                 </plugins>
             </build>			
         </profile>
@@ -528,7 +538,16 @@
                     </execution>
                 </executions>
             </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.9</version>
+        <configuration>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+          <addGroupIdToProjectName>true</addGroupIdToProjectName>
+        </configuration>
+      </plugin>
             <!-- Configure maven-bundle-plugin to generate OSGi manifest.
                  Please note: we use the manifest goal only and not the bundle goal.
                   The bundle goal can lead to very surprising results if the

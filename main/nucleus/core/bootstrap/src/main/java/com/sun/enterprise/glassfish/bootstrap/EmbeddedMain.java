@@ -40,16 +40,8 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import java.util.ServiceLoader;
-
-import org.jvnet.hk2.component.Habitat;
-
-import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.hk2.component.InhabitantsParser;
-import com.sun.hk2.component.InhabitantsParserDecorator;
 
 /**
  * Main for embedded.
@@ -62,25 +54,13 @@ import com.sun.hk2.component.InhabitantsParserDecorator;
  */
 
 public class EmbeddedMain extends Main {
+	
 
     @Override
-    protected void setParentClassLoader(StartupContext context, ModulesRegistry mr)
-            throws BootException {
-        // deliberate no-op
-    }
-
-    @Override
-    protected InhabitantsParser createInhabitantsParser(Habitat habitat) {
-        InhabitantsParser parser = super.createInhabitantsParser(habitat);
-        ServiceLoader<InhabitantsParserDecorator> decorators = ServiceLoader.load(
-                InhabitantsParserDecorator.class, Thread.currentThread().getContextClassLoader());
-        for (InhabitantsParserDecorator decorator : decorators) {
-            if (decorator.getName().equalsIgnoreCase(getName())) {
-                decorator.decorate(parser);
-            }
-        }
-        return parser;
-    }
+	protected void defineParentClassLoader() throws BootException {
+    	  // deliberate no-op
+	}
+    
 
     public String getName() {
         return "Embedded";

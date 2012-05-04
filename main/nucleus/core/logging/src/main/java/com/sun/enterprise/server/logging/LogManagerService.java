@@ -82,7 +82,7 @@ import java.util.logging.*;
  */
 
 @Service
-@Singleton
+@javax.inject.Singleton
 @InitRunLevel
 public class LogManagerService implements PostConstruct, PreDestroy, org.glassfish.internal.api.LogManager {
 
