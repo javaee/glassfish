@@ -56,6 +56,8 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.config.ReferenceContainer;
+import org.glassfish.hk2.api.PerLookup;
+
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.config.serverbeans.*;
 

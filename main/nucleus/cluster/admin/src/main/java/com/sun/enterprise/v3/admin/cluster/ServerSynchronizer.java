@@ -70,6 +70,8 @@ import com.sun.enterprise.util.cluster.SyncRequest.ModTime;
 import com.sun.enterprise.security.auth.realm.file.FileRealm;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.versioning.VersioningUtils;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.PostConstruct;
 
 /**
  * The core server synchronization logic.  Given a request from

@@ -53,6 +53,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.ActionReport.ExitCode;
+import org.glassfish.hk2.api.PerLookup;
+
 import com.sun.enterprise.config.serverbeans.Domain;
 
 @I18n("start.cluster.command")

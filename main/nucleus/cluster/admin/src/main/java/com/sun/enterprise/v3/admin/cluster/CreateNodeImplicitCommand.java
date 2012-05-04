@@ -47,6 +47,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
 import org.glassfish.api.admin.CommandRunner.CommandInvocation;
+import org.glassfish.hk2.api.PerLookup;
+
 import javax.inject.Inject;
 
 import org.jvnet.hk2.annotations.Scoped;
