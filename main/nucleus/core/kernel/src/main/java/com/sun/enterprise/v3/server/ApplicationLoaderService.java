@@ -107,7 +107,7 @@ import javax.inject.Named;
  */
 //@Priority(8) // low priority , should be started last
 @Service(name="ApplicationLoaderService")
-public class ApplicationLoaderService implements Startup, PreDestroy, PostConstruct {
+public class ApplicationLoaderService implements Startup, org.glassfish.hk2.api.PreDestroy, org.glassfish.hk2.api.PostConstruct {
 
     final Logger logger = LogDomains.getLogger(AppServerStartup.class, LogDomains.CORE_LOGGER);
 
