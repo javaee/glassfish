@@ -147,6 +147,7 @@
                <module>../examples</module>
                <module>../hk2-testing</module>
                <module>../hk2-deprecated</module>
+               <module>../hk2</module>
           </modules>
        </profile>
        <profile>
