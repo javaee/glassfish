@@ -67,6 +67,7 @@ import org.glassfish.common.util.admin.AuthTokenManager;
 import org.glassfish.internal.api.*;
 import org.glassfish.security.common.Group;
 import org.jvnet.hk2.annotations.ContractProvided;
+import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
