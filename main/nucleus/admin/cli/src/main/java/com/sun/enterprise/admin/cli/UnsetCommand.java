@@ -45,6 +45,8 @@ import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.*;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.*;
+import org.glassfish.hk2.api.PerLookup;
+
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 
 /**

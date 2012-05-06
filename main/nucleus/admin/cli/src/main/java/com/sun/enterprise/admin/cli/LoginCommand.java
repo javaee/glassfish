@@ -56,6 +56,7 @@ import com.sun.enterprise.universal.i18n.LocalStringsImpl;
 import org.glassfish.api.Param;
 import org.glassfish.config.support.CommandTarget;
 import org.glassfish.config.support.TargetType;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * The asadmin login command.
