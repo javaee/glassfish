@@ -14,6 +14,8 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
+import com.sun.enterprise.module.bootstrap.BootException;
+
 public class HK2Populator {
 
 	public static ServiceLocator populate(final ServiceLocator serviceLocator,
@@ -58,6 +60,12 @@ public class HK2Populator {
 		}
 		
 		config.commit();
+		
+		try {
+			populateConfig(serviceLocator);
+		} catch (BootException e) {
+			e.printStackTrace();
+		}
 		return serviceLocator;
 	}
 
@@ -81,4 +89,10 @@ public class HK2Populator {
 		return populate(serviceLocator, new ClasspathDescriptorFileFinder());
 	}
 
+    private static void populateConfig(ServiceLocator serviceLocator) throws BootException {
+        //Populate this serviceLocator with config data
+        for (ConfigPopulator populator : serviceLocator.<ConfigPopulator>getAllServices(ConfigPopulator.class)) {
+            populator.populateConfig(serviceLocator);
+        }
+    }
 }
