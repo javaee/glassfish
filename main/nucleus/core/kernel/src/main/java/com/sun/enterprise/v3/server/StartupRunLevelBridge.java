@@ -47,7 +47,6 @@ import org.glassfish.api.StartupRunLevel;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.RunLevelService;
 
 import java.util.ArrayList;
 import java.util.List;

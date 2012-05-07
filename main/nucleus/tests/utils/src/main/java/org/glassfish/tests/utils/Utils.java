@@ -40,7 +40,7 @@
 
 package org.glassfish.tests.utils;
 
-import com.sun.enterprise.module.bootstrap.Populator;
+// import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
@@ -100,6 +100,7 @@ public class Utils {
 
         ConfigParser configParser = new ConfigParser(habitat);
 
+        /*
         (new Populator() {
 
             public void run(ConfigParser parser) {
@@ -118,6 +119,7 @@ public class Utils {
             }
             
         }).run(configParser);
+        */
         return habitat;
     }
 

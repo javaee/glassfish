@@ -43,7 +43,6 @@ import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.InitRunLevel;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.RunLevelService;
 
 /**
  * Provides a bridge from {@link Init} to the {@link RunLevelService} based

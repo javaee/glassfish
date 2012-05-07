@@ -55,7 +55,7 @@ import org.glassfish.hk2.api.PerLookup;
  * @author Harpreet Singh
  */
 @Service (name="timeStatsMillis")
-@Scoped (PerLookup.class)
+@PerLookup
 public class TimeStatsMillisImpl extends TimeStatsAbstractImpl
     implements TimeStatsMillis {
     

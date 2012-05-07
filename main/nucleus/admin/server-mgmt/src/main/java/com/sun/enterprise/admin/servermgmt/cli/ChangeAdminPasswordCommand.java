@@ -60,6 +60,7 @@ import com.sun.enterprise.util.net.NetUtils;
 import java.io.IOException;
 import java.net.ConnectException;
 import org.glassfish.api.Param;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.security.common.FileRealmHelper;
 
 /**
