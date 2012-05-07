@@ -26,30 +26,38 @@ public class HK2Populator {
 		DynamicConfigurationService dcs = serviceLocator
 				.getService(DynamicConfigurationService.class);
 
+		DynamicConfiguration config = dcs.createDynamicConfiguration();
+		
 		for (InputStream is : descriptorFileInputStreams) {
 			
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 			try {
 				DescriptorImpl descriptorImpl = new DescriptorImpl();
-				boolean readOne = descriptorImpl.readObject(br);
+				
+				boolean readOne = false;
+				
+				do {
+				    readOne = descriptorImpl.readObject(br);
 
-				if (readOne) {
-					List<DescriptorImpl> descriptorImpls = postProcessor
-							.process(descriptorImpl);
+					if (readOne) {
+						List<DescriptorImpl> descriptorImpls = postProcessor
+								.process(descriptorImpl);
 
-					for (Descriptor d : descriptorImpls) {
-						DynamicConfiguration config = dcs.createDynamicConfiguration();
-						config.bind(d);
-						config.commit();
+						for (Descriptor d : descriptorImpls) {
+							config.bind(d);
+						}
+					} else {
+						break;
 					}
-				}
+				} while (readOne);
+				
 			} finally {
 				br.close();
 			}
-
 		}
-
+		
+		config.commit();
 		return serviceLocator;
 	}
 
