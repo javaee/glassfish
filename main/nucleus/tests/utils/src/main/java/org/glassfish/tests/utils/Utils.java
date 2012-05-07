@@ -124,13 +124,18 @@ public class Utils {
     }
 
     public static Habitat getNewHabitat() {
-    	ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(habitatName);
-    	
-    	try {
-			HK2Populator.populate(serviceLocator, new ClasspathDescriptorFileFinder(), new NullPopulatorPostProcessor());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (ServiceLocatorFactory.getInstance().find(habitatName) == null) {
+			ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
+					.create(habitatName);
+
+			try {
+				HK2Populator.populate(serviceLocator,
+						new ClasspathDescriptorFileFinder(),
+						new NullPopulatorPostProcessor());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
     	return new Habitat();
     }
