@@ -45,7 +45,8 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
-import com.sun.enterprise.module.bootstrap.Populator;
+import org.jvnet.hk2.config.Populator;
+import org.jvnet.hk2.config.ConfigPopulatorException;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.universal.NanoDuration;
 import com.sun.enterprise.universal.i18n.LocalStringsImpl;
@@ -100,7 +101,7 @@ public abstract class DomainXml implements Populator {
             new LocalStringManagerImpl(DomainXml.class);    
 
     @Override
-    public void run(ConfigParser parser) throws BootException {
+    public void run(ConfigParser parser) throws ConfigPopulatorException {
         LogRecord lr = new LogRecord(Level.FINE, "Startup class : " + this.getClass().getName());
         lr.setLoggerName(getClass().getName());
         EarlyLogHandler.earlyMessages.add(lr);
@@ -111,7 +112,7 @@ public abstract class DomainXml implements Populator {
             parseDomainXml(parser, getDomainXml(env), env.getInstanceName());
         }
         catch (IOException e) {
-            throw new BootException(localStrings.getLocalString("ConfigParsingFailed","Failed to parse domain.xml"), e);
+            throw new ConfigPopulatorException(localStrings.getLocalString("ConfigParsingFailed","Failed to parse domain.xml"), e);
         }
 
         // run the upgrades...
