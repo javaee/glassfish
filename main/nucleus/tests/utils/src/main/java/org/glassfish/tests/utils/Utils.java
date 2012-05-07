@@ -124,19 +124,23 @@ public class Utils {
     }
 
     public static Habitat getNewHabitat() {
+    	Habitat habitat = null;
+    	
 		if (ServiceLocatorFactory.getInstance().find(habitatName) == null) {
 			ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
 					.create(habitatName);
 
+			habitat = new Habitat(); // implicitly binds in ServiceLocator
+	    	
 			try {
 				HK2Populator.populate(serviceLocator,
 						new ClasspathDescriptorFileFinder(),
 						new NullPopulatorPostProcessor());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-    	return new Habitat();
+		
+    	return (habitat != null) ? habitat : new Habitat();
     }
 }
