@@ -40,8 +40,6 @@
 package org.glassfish.virtualization.local;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.hk2.inject.Injector;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.virtualization.config.ServerPoolConfig;
 import org.glassfish.virtualization.spi.ServerPool;

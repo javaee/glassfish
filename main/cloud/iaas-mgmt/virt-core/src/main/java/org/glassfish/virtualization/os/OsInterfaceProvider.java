@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,68 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.virtualization.virtmgt.impl;
+package org.glassfish.virtualization.os;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.virtualization.spi.ServerPool;
-import org.glassfish.virtualization.spi.IAAS;
-import org.glassfish.virtualization.virtmgt.GroupAccess;
-import org.glassfish.virtualization.virtmgt.GroupsAccess;
-import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Service;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Iterator;
+import org.glassfish.virtualization.spi.OsInterface;
 
 /**
- * Gateway to serverPool access instances.
- * @author Jerome Dochez
+ * This interface is used to provide OsInterface implementations
+ * from OsInterface providers
+ * 
+ * @author jwells
+ *
  */
-@Service
-public class GroupsAccessImpl implements GroupsAccess {
-
-    final IAAS groupMgt;
-    final ServiceLocator injector;
-
-    @Inject
-    public GroupsAccessImpl(ServiceLocator injector, IAAS groupMgt) {
-        this.injector = injector;
-        this.groupMgt = groupMgt;
-    }
-
-    @Override
-    public Iterable<GroupAccess> groups() {
-
-        final Iterator<ServerPool> pools = groupMgt.iterator();
-
-        return  new Iterable<GroupAccess>() {
-            @Override
-            public Iterator<GroupAccess> iterator() {
-                return new Iterator<GroupAccess>() {
-
-                    @Override
-                    public boolean hasNext() {
-                        return pools.hasNext();
-                    }
-
-                    @Override
-                    public GroupAccess next() {
-                        return LocalGroupAccess.from(injector, pools.next());
-                    }
-
-                    @Override
-                    public void remove() {
-                        throw new RuntimeException("Not Implemented");
-                    }
-                };
-            }
-        };
-    }
-
-    @Override
-    public GroupAccess byName(String name) {
-        ServerPool serverPool = groupMgt.byName(name);
-        return LocalGroupAccess.from(injector, serverPool);
-    }
+public interface OsInterfaceProvider {
+	/**
+	 * Provide an implementation of OsInterface
+	 * 
+	 * @return The implementation of OsInterface
+	 */
+	public OsInterface provideOsInterface();
 
 }

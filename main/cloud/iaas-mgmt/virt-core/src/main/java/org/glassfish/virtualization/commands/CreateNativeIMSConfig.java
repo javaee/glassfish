@@ -41,7 +41,6 @@
 package org.glassfish.virtualization.commands;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
