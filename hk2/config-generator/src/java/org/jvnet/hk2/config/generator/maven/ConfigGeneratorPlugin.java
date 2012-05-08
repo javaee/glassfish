@@ -106,7 +106,6 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
     }
     
     private boolean getAllSources(LinkedList<String> args) throws MojoFailureException {
-        System.out.println("JRW(10) baseDir=" + basedir);
         File dotMe = new File(basedir);
         File src = new File(dotMe, "src");
         File main = new File(src, "main");
