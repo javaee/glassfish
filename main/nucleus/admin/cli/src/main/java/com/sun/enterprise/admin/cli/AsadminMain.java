@@ -61,6 +61,10 @@ import org.glassfish.api.admin.CommandValidationException;
 import org.glassfish.api.admin.InvalidCommandException;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.common.util.admin.AsadminInput;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 
@@ -243,8 +247,16 @@ public class AsadminMain {
         /*
          * Create a habitat that can load from the extension directory.
          */
-        ModulesRegistry registry = new StaticModulesRegistry(ecl);
-        habitat = registry.createHabitat("default");
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create("default");
+
+        habitat = new Habitat();
+        
+        try {
+        	HK2Populator.populate(serviceLocator, new ClasspathDescriptorFileFinder(ecl));
+        } catch (IOException e) {
+        	logger.log(Level.SEVERE, "Error initializing HK2", e);
+        }
+
 
         classPath =
                 SmartFile.sanitizePaths(System.getProperty("java.class.path"));
