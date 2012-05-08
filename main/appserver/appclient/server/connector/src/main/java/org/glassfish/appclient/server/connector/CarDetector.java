@@ -41,20 +41,19 @@
 
 package org.glassfish.appclient.server.connector;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.glassfish.api.deployment.archive.ArchiveDetector;
 import org.glassfish.api.deployment.archive.ArchiveHandler;
 import org.glassfish.api.deployment.archive.ArchiveType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import javax.inject.Singleton;
-
-import java.io.IOException;
-import java.util.logging.Logger;
-
-import javax.inject.Inject;
 
 /**
  * Detects client archive (car) type archives.
@@ -71,7 +70,7 @@ public class CarDetector implements ArchiveDetector {
     public static final String ARCHIVE_TYPE = CarType.ARCHIVE_TYPE;
 
     @Inject
-    private Habitat services;
+    private ServiceLocator serviceLocator;
     @Inject
     private AppClientSniffer sniffer;
     @Inject
@@ -99,7 +98,7 @@ public class CarDetector implements ArchiveDetector {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                archiveHandler = services.forContract(ArchiveHandler.class).named(ARCHIVE_TYPE).get();
+                archiveHandler = serviceLocator.getService(ArchiveHandler.class, ARCHIVE_TYPE);
             }
             return archiveHandler;
         }
