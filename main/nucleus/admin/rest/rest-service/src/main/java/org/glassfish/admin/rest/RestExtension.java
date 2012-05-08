@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,42 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.admin.rest;
 
-package org.glassfish.admin.monitor.cloudvm;
-
-import org.glassfish.api.Startup;
-import org.glassfish.api.monitoring.ContainerMonitoring;
-import org.glassfish.external.probe.provider.PluginPoint;
-import org.glassfish.external.probe.provider.StatsProviderManager;
-import org.jvnet.hk2.component.Habitat;
-import org.glassfish.hk2.api.PostConstruct;
-
-import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Service;
-
-
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  *
- * @author Srinivas Krishnan
+ * @author jdlee
  */
-@Service
-public class CloudVMStatsProviderBootstrap implements Startup, PostConstruct {
-
-    private TenantManagerStatsProvider tenantMgrStatsProvider = new TenantManagerStatsProvider();
-
-    @Inject
-    Habitat services;
-
-    @Override
-    public Lifecycle getLifecycle() {
-        return Lifecycle.SERVER;
-    }
-
-    @Override
-    public void postConstruct() {
-          StatsProviderManager.register("cloudvm-tenant-manager", PluginPoint.SERVER, "cloudvm/tenant-manager", 
-                  tenantMgrStatsProvider, ContainerMonitoring.LEVEL_LOW);
-    }
-  
+@Contract
+public interface RestExtension {
+    String getParent();
+    void get(Object data);
 }
