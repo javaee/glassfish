@@ -50,6 +50,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.RelativePathResolver;
 import org.glassfish.api.Param;
@@ -328,10 +332,17 @@ abstract class NativeRemoteCommandsBase extends CLICommand {
                                 }
                             }
                         );
+                 
+                    ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create("default");
 
-                    ModulesRegistry registry = new StaticModulesRegistry(cl);
-                    BaseServiceLocator habitat = registry.createHabitat("default");
-
+                    Habitat habitat = new Habitat();
+                    
+                    try {
+                    	HK2Populator.populate(serviceLocator, new ClasspathDescriptorFileFinder(cl));
+                    } catch (IOException e) {
+                    	logger.log(Level.SEVERE, "Error initializing HK2", e);
+                    }
+                    
                     ConfigParser parser = new ConfigParser((Habitat)habitat);
                     URL domainURL = domainXMLFile.toURI().toURL();
                     DomDocument doc = parser.parse(domainURL);
