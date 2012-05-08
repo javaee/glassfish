@@ -108,20 +108,21 @@ public class NamedNamingObjectManager {
 //            }
 //        }
         
-        for (Inhabitant<?> inhabitant : ((Habitat) getHabitat()).getInhabitants(NamespacePrefixes.class)) {
-            String prefix = inhabitant.getDescriptor().getName();
-            {
-                if (name.startsWith(prefix)) {
-                    proxy = (NamedNamingObjectProxy) inhabitant.get();
-                    if (logger.isLoggable(Level.FINE)) {
-                        logger.logp(Level.FINE, "NamedNamingObjectManager", "tryNamedProxies",
-                                "found a new proxy [{0}] for [{1}]", new Object[]{proxy, name});
-                    }
-                    cacheProxy(prefix, proxy);
-                    return proxy.handle(name);
-                }
-            }
-        }
+		for (Inhabitant<?> inhabitant : ((Habitat) getHabitat())
+				.getInhabitants(NamespacePrefixes.class)) {
+			String prefix = inhabitant.getDescriptor().getName();
+			if (name.startsWith(prefix)) {
+				proxy = (NamedNamingObjectProxy) inhabitant.get();
+				if (logger.isLoggable(Level.FINE)) {
+					logger.logp(Level.FINE, "NamedNamingObjectManager",
+							"tryNamedProxies",
+							"found a new proxy [{0}] for [{1}]", new Object[] {
+									proxy, name });
+				}
+				cacheProxy(prefix, proxy);
+				return proxy.handle(name);
+			}
+		}
 
         return null;
     }
