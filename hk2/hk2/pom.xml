@@ -64,6 +64,18 @@
                 </includes>
             </configuration>
           </plugin>            
+          <plugin>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <archive>
+               <manifest>
+                 <addClasspath>true</addClasspath>
+                 <classpathLayoutType>custom</classpathLayoutType>
+                 <customClasspathLayout>$${artifact.artifactId}.$${artifact.extension}</customClasspathLayout>
+               </manifest>
+             </archive>
+            </configuration>
+         </plugin>
         </plugins>
     </build>
     <dependencies>
