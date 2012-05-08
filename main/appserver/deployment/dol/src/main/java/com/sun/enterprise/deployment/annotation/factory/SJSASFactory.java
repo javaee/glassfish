@@ -55,6 +55,8 @@ import javax.inject.Singleton;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -85,13 +87,23 @@ public class SJSASFactory extends Factory implements ContractProvider, PostConst
         return (HashSet)((HashSet)annotationClassNames).clone();
     }
 
+    private static String getOne(Map<String, List<String>> metadata, String key) {
+    	if (metadata == null || key == null) return null;
+    	
+    	List<String> searchMe = metadata.get(key);
+    	if (searchMe == null) return null;
+    	
+    	if (searchMe.isEmpty()) return null;
+    	
+    	return searchMe.get(0);
+    }
 
     public void postConstruct() {
         if (systemProcessor == null) {
             // initialize our system annotation processor...            
             systemProcessor = new AnnotationProcessorImpl();
             for (final Inhabitant i : ((Habitat) habitat).getInhabitants(AnnotationHandlerFor.class)) {
-                String annotationTypeName = (String) i.metadata().get(AnnotationHandlerFor.class.getName()).get(0);
+            	String annotationTypeName = getOne(i.metadata(), AnnotationHandlerFor.class.getName());
                 systemProcessor.pushAnnotationHandler(annotationTypeName, new AnnotationHandler() {
                     @Override
                     public Class<? extends Annotation> getAnnotationType() {
