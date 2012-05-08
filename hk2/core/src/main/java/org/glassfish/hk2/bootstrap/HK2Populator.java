@@ -35,11 +35,11 @@ public class HK2Populator {
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 			try {
-				DescriptorImpl descriptorImpl = new DescriptorImpl();
-				
 				boolean readOne = false;
 				
 				do {
+					DescriptorImpl descriptorImpl = new DescriptorImpl();
+					
 				    readOne = descriptorImpl.readObject(br);
 
 					if (readOne) {
@@ -49,8 +49,6 @@ public class HK2Populator {
 						for (Descriptor d : descriptorImpls) {
 							config.bind(d);
 						}
-					} else {
-						break;
 					}
 				} while (readOne);
 				
