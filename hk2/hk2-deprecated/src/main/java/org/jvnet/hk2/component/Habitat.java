@@ -541,9 +541,24 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @throws ComponentException if the passed object is not an HK2 component or
      *                            injection/extraction failed.
      */
-    // TODO: mutating Habitat after it's created poses synchronization issue
     public <T> void addComponent(T component) throws ComponentException {
-        throw new UnsupportedOperationException("addComponent(" + component + ") in Habitat");
+        if (component == null) return;
+        
+        DynamicConfigurationService dcs = delegate.getService(DynamicConfigurationService.class);
+        if (dcs == null) {
+            throw new ComponentException("No DynamicConfigurationService available");
+        }
+        
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(component));
+        
+        try {
+            config.commit();
+        }
+        catch (MultiException me) {
+            throw new ComponentException(me);
+        }
     }
 
     /**
