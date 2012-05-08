@@ -42,6 +42,8 @@ package org.glassfish.resources.listener;
 
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.resources.api.ResourceDeployer;
 import org.glassfish.resources.api.ResourceInfo;
 import org.glassfish.resources.api.ResourcesBinder;
@@ -68,6 +70,7 @@ import org.jvnet.hk2.config.ObservableBean;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 /**
  * Resource manager to bind various resources during start-up, create/update/delete of resource/pool

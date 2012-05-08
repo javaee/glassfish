@@ -49,6 +49,8 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
+import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.internal.api.*;
 
 import java.beans.PropertyChangeEvent;
@@ -62,6 +64,7 @@ import org.jvnet.hk2.config.ObservableBean;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
 /**
  * Resource manager to bind various application or module scoped resources during

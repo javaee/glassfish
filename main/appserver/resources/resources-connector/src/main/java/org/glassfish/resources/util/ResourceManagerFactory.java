@@ -40,7 +40,6 @@
 
 package org.glassfish.resources.util;
 
-import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.resources.api.ResourceDeployer;
 import org.glassfish.resources.api.ResourceDeployerInfo;
 import org.jvnet.hk2.annotations.Scoped;
@@ -49,6 +48,8 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import java.lang.reflect.Proxy;
 
 /**
@@ -64,13 +65,13 @@ public class ResourceManagerFactory {
     public ResourceDeployer getResourceDeployer(Object resource){
         Inhabitant deployerInhabitant = null;
         for (Inhabitant<?> inhabitant : habitat.getInhabitants(ResourceDeployerInfo.class)) {
-            org.glassfish.hk2.Descriptor desc = inhabitant.getDescriptor();
+            org.glassfish.hk2.api.Descriptor desc = inhabitant.getDescriptor();
             if(desc != null){
-                if( desc.getNames() != null){
+                if( desc.getName() != null){
                     if(Proxy.isProxyClass(resource.getClass())){
                         if(resource.getClass().getInterfaces() != null){
                             for(Class clz : resource.getClass().getInterfaces()){
-                                if(desc.getNames().contains(clz.getName())){
+                                if(desc.getName().equals(clz.getName())){
                                     deployerInhabitant = inhabitant;
                                     break;
                                 }
@@ -80,7 +81,7 @@ public class ResourceManagerFactory {
                             }
                         }
                     }
-                    if(desc.getNames().contains(resource.getClass().getName())){
+                    if(desc.getName().equals(resource.getClass().getName())){
                         deployerInhabitant = inhabitant;
                         break;
                     }
@@ -88,7 +89,7 @@ public class ResourceManagerFactory {
                         //hack : for JdbcConnectionPool impl used by DataSourceDefinition.
                         //check whether the interfaces implemented by the class matches
                         for(Class clz : resource.getClass().getInterfaces()){
-                            if(desc.getNames().contains(clz.getName())){
+                            if(desc.getName().equals(clz.getName())){
                                 deployerInhabitant = inhabitant;
                                 break;
                             }
