@@ -108,26 +108,22 @@ public class Utils {
 
         ConfigParser configParser = new ConfigParser(habitat);
 
-        /*
-        (new Populator() {
-
-            public void run(ConfigParser parser) {
-                long now = System.currentTimeMillis();
-                URL url = getClass().getClassLoader().getResource(fileName + ".xml");
-                if (url != null) {
-                    try {
-                        DomDocument document = parser.parse(url,  test.getDocument(habitat));
-                        habitat.addComponent(document);
-                        test.decorate(habitat);
-                    } catch(Exception e) {
-                        e.printStackTrace();
-                    }
-                    Logger.getAnonymousLogger().fine("time to parse domain.xml : " + String.valueOf(System.currentTimeMillis() - now));
-                }
-            }
-            
-        }).run(configParser);
-        */
+		long now = System.currentTimeMillis();
+		URL url = Utils.class.getClassLoader().getResource(fileName + ".xml");
+		if (url != null) {
+			try {
+				DomDocument document = configParser.parse(url,
+						test.getDocument(habitat));
+				habitat.addComponent(document);
+				test.decorate(habitat);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Logger.getAnonymousLogger().fine(
+					"time to parse domain.xml : "
+							+ String.valueOf(System.currentTimeMillis() - now));
+		}
+        
         return habitat;
     }
 
