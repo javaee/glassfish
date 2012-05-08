@@ -107,8 +107,10 @@ public class NamedNamingObjectManager {
 //                }
 //            }
 //        }
+        
         for (Inhabitant<?> inhabitant : ((Habitat) getHabitat()).getInhabitants(NamespacePrefixes.class)) {
-            for (String prefix : inhabitant.getDescriptor().getNames()) {
+            String prefix = inhabitant.getDescriptor().getName();
+            {
                 if (name.startsWith(prefix)) {
                     proxy = (NamedNamingObjectProxy) inhabitant.get();
                     if (logger.isLoggable(Level.FINE)) {
