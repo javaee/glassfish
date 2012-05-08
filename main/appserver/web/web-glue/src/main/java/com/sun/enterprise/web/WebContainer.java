@@ -43,7 +43,6 @@ package com.sun.enterprise.web;
 import com.sun.appserv.server.util.Version;
 import com.sun.common.util.logging.LoggingConfigImpl;
 import com.sun.enterprise.config.serverbeans.*;
-import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.container.common.spi.JCDIService;
 import com.sun.enterprise.container.common.spi.util.ComponentEnvManager;
 import com.sun.enterprise.container.common.spi.util.InjectionManager;
@@ -51,9 +50,6 @@ import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 import com.sun.enterprise.deployment.archivist.WebArchivist;
-import com.sun.enterprise.deployment.runtime.web.ManagerProperties;
-import com.sun.enterprise.deployment.runtime.web.SessionManager;
-import com.sun.enterprise.deployment.runtime.web.StoreProperties;
 import com.sun.enterprise.deployment.runtime.web.*;
 import com.sun.enterprise.deployment.util.WebValidatorWithoutCL;
 import com.sun.enterprise.security.integration.RealmInitializer;
@@ -74,7 +70,6 @@ import org.glassfish.grizzly.config.dom.NetworkListeners;
 import com.sun.hk2.component.ConstructorCreator;
 import com.sun.logging.LogDomains;
 import org.apache.catalina.*;
-import org.apache.catalina.Engine;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
@@ -97,7 +92,6 @@ import org.glassfish.internal.deployment.Deployment;
 import org.glassfish.internal.grizzly.ContextMapper;
 import org.glassfish.web.admin.monitor.*;
 import org.glassfish.web.config.serverbeans.*;
-import org.glassfish.web.config.serverbeans.SessionProperties;
 import org.glassfish.web.valve.GlassFishValve;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Optional;
@@ -106,8 +100,12 @@ import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.hk2.api.ServiceLocator;
+
 import javax.inject.Singleton;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Transactions;
@@ -381,6 +379,19 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
             useDOLforDeployment = Boolean.valueOf(System.getProperty(DOL_DEPLOYMENT));
         }
     }
+    
+    private WebConfigListener addAndGetWebConfigListener() {
+    	ServiceLocator locator = (ServiceLocator) habitat;
+    	
+    	DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+    	DynamicConfiguration config = dcs.createDynamicConfiguration();
+    	
+    	config.addActiveDescriptor(WebConfigListener.class);
+    	
+    	config.commit();
+    	
+    	return locator.getService(WebConfigListener.class);
+    }
 
     public void postConstruct() {
 
@@ -514,12 +525,7 @@ public class WebContainer implements org.glassfish.api.container.Container, Post
 
         initInstanceSessionProperties();
 
-        ConstructorCreator<WebConfigListener> womb =
-                new ConstructorCreator<WebConfigListener>(
-                        WebConfigListener.class,
-                        (Habitat) habitat,
-                        null);
-        configListener = womb.get(null);
+        configListener = addAndGetWebConfigListener();
 
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(
                 serverConfig.getHttpService());
