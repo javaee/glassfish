@@ -148,13 +148,8 @@ abstract class MonTest {
         FileOutputStream outs = null;
 
         try {
-            File inlog = new File(installDir, "domains/" + DOMAIN_NAME + "/server/logs/server.log");
+            File inlog = new File(installDir, "domains/" + DOMAIN_NAME + "/logs/server.log");
             File outlog = new File(DOMAIN_NAME + "-server.log");
-
-            if(!inlog.exists()) {
-                report(false, "Logfile does not exist: " + inlog);
-                return;
-            }
             ins = new BufferedInputStream(new FileInputStream(inlog));
             outs = new FileOutputStream(outlog);
             ReadableByteChannel inChannel = Channels.newChannel(ins);
@@ -190,14 +185,11 @@ abstract class MonTest {
 
     final void createInstances() {
         verifyInstances(false);
-        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
-                "--domain", DOMAIN_NAME, CLUSTERED_INSTANCE_NAME1),
+        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME, CLUSTERED_INSTANCE_NAME1),
                 "created " + CLUSTERED_INSTANCE_NAME1);
-        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
-                "--domain", DOMAIN_NAME, CLUSTERED_INSTANCE_NAME2),
+        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME, CLUSTERED_INSTANCE_NAME2),
                 "created " + CLUSTERED_INSTANCE_NAME2);
-        report(asadmin("create-local-instance", "--domain", DOMAIN_NAME,
-                STAND_ALONE_INSTANCE_NAME),
+        report(asadmin("create-local-instance", STAND_ALONE_INSTANCE_NAME),
                 "created " + STAND_ALONE_INSTANCE_NAME);
         verifyInstances(true);
     }
@@ -219,8 +211,8 @@ abstract class MonTest {
         verifyInstances(true);
 
         for (String iname : INSTANCES) {
-            report(asadmin("start-local-instance", "--debug", "--domain", DOMAIN_NAME, iname),
-                    "start-local-instance --debug" + iname);
+            report(asadmin("start-local-instance", "--debug", iname),
+                    "start-instance --debug " + iname);
         }
     }
 
@@ -228,19 +220,17 @@ abstract class MonTest {
         verifyInstances(true);
 
         for (String iname : INSTANCES) {
-            report(asadmin("stop-local-instance", "--domain", DOMAIN_NAME, iname),
-                    "stop-local-instance " + iname);
+            report(asadmin("stop-local-instance", iname),
+                    "stop-instance " + iname);
         }
     }
 
     final void deleteInstances() {
         stopInstances();
-        // wen 18707 gets fixed this will naturally fail.  Atthat time remove the
-        // superfluous --domain arg
-        
+
         for (String iname : INSTANCES) {
-            report(asadmin("delete-local-instance", "--domain", DOMAIN_NAME, iname),
-                    "delete-local-instance " + iname);
+            report(asadmin("delete-local-instance", iname),
+                    "delete instance " + iname);
         }
     }
 
