@@ -39,11 +39,12 @@
  */
 package org.glassfish.paas.gfplugin.cli;
 
-import org.glassfish.hk2.scopes.Singleton;
-import org.jvnet.hk2.annotations.Scoped;
+import javax.inject.Singleton;
+
+import org.jvnet.hk2.annotations.Service;
 
 
-@org.jvnet.hk2.annotations.Service
+@Service
 @Singleton
 public class GlassFishServiceUtil{
 
