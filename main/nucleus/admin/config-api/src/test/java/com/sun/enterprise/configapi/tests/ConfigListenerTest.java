@@ -40,20 +40,19 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import com.sun.enterprise.config.serverbeans.Config;
-import java.beans.PropertyVetoException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.glassfish.grizzly.config.dom.NetworkListener;
-import com.sun.hk2.component.ConstructorWomb;
-import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
+
 import org.glassfish.config.support.ConfigConfigBeanListener;
 import org.glassfish.tests.utils.Utils;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -83,6 +82,22 @@ public class ConfigListenerTest extends ConfigApiTest {
         ConfigConfigBeanListener ccbl = i.get();
         assertTrue(ccbl != null);
     }
+    
+    private HttpListenerContainer registerAndCreateHttpListenerContainer(ServiceLocator locator) {
+        HttpListenerContainer retVal = locator.getService(HttpListenerContainer.class);
+        if (retVal != null) return retVal;
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        Assert.assertNotNull(dcs);
+        
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(HttpListenerContainer.class);
+        
+        config.commit();
+        
+        return locator.getService(HttpListenerContainer.class);
+    }
 
 
     @Test
@@ -90,8 +105,7 @@ public class ConfigListenerTest extends ConfigApiTest {
 
         Transactions transactions = getHabitat().getComponent(Transactions.class);
 
-        ConstructorWomb<HttpListenerContainer> womb = new ConstructorWomb<HttpListenerContainer>(HttpListenerContainer.class, habitat, null);
-        HttpListenerContainer container = womb.get(null);
+        HttpListenerContainer container = registerAndCreateHttpListenerContainer(habitat);
 
         ConfigSupport.apply(new SingleConfigCode<NetworkListener>() {
 
@@ -123,8 +137,7 @@ public class ConfigListenerTest extends ConfigApiTest {
 
         Transactions transactions = getHabitat().getComponent(Transactions.class);
         
-        ConstructorWomb<HttpListenerContainer> womb = new ConstructorWomb<HttpListenerContainer>(HttpListenerContainer.class, habitat, null);
-        HttpListenerContainer container = womb.get(null);
+        HttpListenerContainer container = registerAndCreateHttpListenerContainer(habitat);
 
         ObservableBean bean = (ObservableBean) ConfigSupport.getImpl(container.httpListener);
         bean.removeListener(container);

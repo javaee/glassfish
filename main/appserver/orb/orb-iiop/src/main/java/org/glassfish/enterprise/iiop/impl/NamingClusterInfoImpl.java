@@ -59,7 +59,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.Singleton;
+import javax.inject.Singleton;
 
 /**
  * This class is responsible for setting up naming load-balancing including RoundRobinPolicy.
