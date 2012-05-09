@@ -2,6 +2,7 @@ package test;
 
 import javax.ejb.*;
 import javax.naming.*;
+import java.util.Properties;
 
 @Singleton @Startup
 public class TestBean {
@@ -9,6 +10,13 @@ public class TestBean {
     
     public String hello() {
         return "Hello from " + this;
+    }
+
+    public <T> T lookupWithWLInitialContextFactory(String name, Class<T> clazz) throws NamingException {
+        Properties props = new Properties();
+        props.put(Context.INITIAL_CONTEXT_FACTORY, "weblogic.jndi.WLInitialContextFactory");
+        InitialContext ic = new InitialContext(props);
+        return (T) ic.lookup(name);
     }
     
     public NamingEnumeration<NameClassPair> listEmptyString() throws NamingException {

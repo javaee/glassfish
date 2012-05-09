@@ -1,14 +1,23 @@
 package test;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
+
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import org.junit.*;
-import org.junit.rules.TestName;
-import static org.junit.Assert.*;
+import javax.sql.DataSource;
+
+import static org.junit.Assert.assertNotNull;
 
 public class ContextTest {
     private static final String NL = System.getProperty("line.separator");
@@ -32,6 +41,13 @@ public class ContextTest {
 
     @After public void tearDown() {
         System.out.printf("%n================= Finishing test   ================================================%n%n");
+    }
+
+    @Test public void lookupWithWLInitialContextFactory() throws NamingException {
+        TestBean b = testBean.lookupWithWLInitialContextFactory("java:global/classes/TestBean", TestBean.class);
+        DataSource ds = testBean.lookupWithWLInitialContextFactory("jdbc/__default", DataSource.class);
+        System.out.println("TestBean from lookup: " + b);
+        System.out.println("DataSource from lookup: " + ds);
     }
     
     @Test public void listEmptyString2() throws NamingException {
