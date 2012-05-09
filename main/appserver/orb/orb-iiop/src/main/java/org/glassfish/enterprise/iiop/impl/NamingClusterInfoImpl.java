@@ -44,7 +44,6 @@ import com.sun.corba.ee.spi.folb.GroupInfoService;
 import org.glassfish.api.naming.NamingClusterInfo;
 import org.glassfish.api.naming.NamingObjectsProvider;
 import org.glassfish.hk2.Provider;
-import org.glassfish.hk2.scopes.Singleton;
 import org.glassfish.internal.api.ORBLocator;
 import org.glassfish.logging.LogMessageInfo;
 import org.glassfish.logging.LoggerInfo;
@@ -59,6 +58,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.ejb.Singleton;
 
 /**
  * This class is responsible for setting up naming load-balancing including RoundRobinPolicy.
