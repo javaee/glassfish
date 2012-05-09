@@ -76,7 +76,7 @@ public class ListMetricGatherersCommand  implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
         ActionReport report = context.getActionReport();
-        Logger logger= context.logger;
+        Logger logger= context.getLogger();
 
         // Look for the Metric Gatherer services and list them
         // Eventually want to list if they are running, for now they are

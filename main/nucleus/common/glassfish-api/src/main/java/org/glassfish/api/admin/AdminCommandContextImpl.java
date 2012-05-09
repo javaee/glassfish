@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,29 +38,73 @@
  * holder.
  */
 
-package org.glassfish.ejb.deployment;
+package org.glassfish.api.admin;
 
-import org.jvnet.hk2.annotations.Service;
-import org.glassfish.internal.deployment.AnnotationTypesProvider;
 
-import javax.ejb.MessageDriven;
-import javax.ejb.Stateful;
-import javax.ejb.Stateless;
-import javax.ejb.Singleton;
-import java.lang.annotation.Annotation;
+import org.glassfish.api.ActionReport;
+import org.glassfish.api.ExecutionContext;
+import java.util.logging.Logger;
+import javax.security.auth.Subject;
 
 /**
- * Provides the annotation types for the EJB Types
+ * Useful services for administrative commands implementation
  *
  * @author Jerome Dochez
  */
-@Service(name="EJB")
-public class EjbAnnotationTypesProvider implements AnnotationTypesProvider {
-    public Class<? extends Annotation>[] getAnnotationTypes() {
-        return new Class[] {
-                MessageDriven.class, Stateful.class, Stateless.class, Singleton.class };    }
+public class AdminCommandContextImpl implements  AdminCommandContext {
+    
+    private  ActionReport report;
+    private final Logger logger;
+    private final Payload.Inbound inboundPayload;
+    private final Payload.Outbound outboundPayload;
+    private Subject subject;
 
-    public Class getType(String typename) throws ClassNotFoundException {
-        return getClass().getClassLoader().loadClass(typename);
+    public AdminCommandContextImpl(Logger logger, ActionReport report) {
+        this(logger, report, null, null);
     }
+    
+    public AdminCommandContextImpl(Logger logger, ActionReport report,
+                                   final Payload.Inbound inboundPayload,
+                                   final Payload.Outbound outboundPayload) {
+        this.logger = logger;
+        this.report = report;
+        this.inboundPayload = inboundPayload;
+        this.outboundPayload = outboundPayload;
+    }
+    
+    @Override
+    public ActionReport getActionReport() {
+        return report;
+    }
+
+    @Override
+    public void setActionReport(ActionReport newReport) {
+        report = newReport;
+    }
+
+    @Override
+    public Logger getLogger() {
+        return logger;
+    }
+
+    @Override
+    public Payload.Inbound getInboundPayload() {
+        return inboundPayload;
+    }
+
+    @Override
+    public Payload.Outbound getOutboundPayload() {
+        return outboundPayload;
+    }
+
+    @Override
+    public Subject getSubject() {
+        return subject;
+    }
+
+    @Override
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
 }

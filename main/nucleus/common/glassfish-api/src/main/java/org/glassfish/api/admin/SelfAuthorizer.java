@@ -1,8 +1,8 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
- *
+ * 
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
@@ -11,20 +11,20 @@
  * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- *
+ * 
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
- *
+ * 
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
  * exception as provided by Oracle in the GPL Version 2 section of the License
  * file that accompanied this code.
- *
+ * 
  * Modifications:
  * If applicable, add the following below the License Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyright [year] [name of copyright owner]"
- *
+ * 
  * Contributor(s):
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
@@ -37,30 +37,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.api.admin;
 
-package org.glassfish.ejb.deployment;
-
-import org.jvnet.hk2.annotations.Service;
-import org.glassfish.internal.deployment.AnnotationTypesProvider;
-
-import javax.ejb.MessageDriven;
-import javax.ejb.Stateful;
-import javax.ejb.Stateless;
-import javax.ejb.Singleton;
-import java.lang.annotation.Annotation;
+import java.util.Map;
+import javax.security.auth.Subject;
 
 /**
- * Provides the annotation types for the EJB Types
- *
- * @author Jerome Dochez
+ * Represents the ability (and responsibility) of an AdminCommand implementation
+ * to provide its own authorization logic, instead of relying on the command
+ * framework and the AccessRequired annotation to do so.
+ * <p>
+ * Commands with complicated authorization requirements will implement this
+ * interface, in addition to the AdminCommand interface.
+ * 
+ * @author tjquinn
  */
-@Service(name="EJB")
-public class EjbAnnotationTypesProvider implements AnnotationTypesProvider {
-    public Class<? extends Annotation>[] getAnnotationTypes() {
-        return new Class[] {
-                MessageDriven.class, Stateful.class, Stateless.class, Singleton.class };    }
-
-    public Class getType(String typename) throws ClassNotFoundException {
-        return getClass().getClassLoader().loadClass(typename);
-    }
+public interface SelfAuthorizer {
+    
+    /**
+     * Tells whether the Subject is authorized to execute the AdminCommand
+     * which implements this interface.
+     * <p>
+     * Note that the command framework will have injected parameter values
+     * into fields annotated with @Param before invoking this method, so the
+     * logic in isAuthorized can use those parameters in making its decision.
+     * 
+     * @param ctx the AdminCommandContext for the current command execution
+     * @return true if the Subject (recorded in the command context) can run the command; false otherwise.
+     */
+    public void authorize(Subject s, Map<String,Object> env);
+    
 }
