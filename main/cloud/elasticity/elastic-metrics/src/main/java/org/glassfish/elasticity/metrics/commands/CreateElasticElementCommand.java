@@ -47,6 +47,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.elasticity.config.serverbeans.Elastic;
 import org.glassfish.elasticity.config.serverbeans.ElasticAlert;
 import org.glassfish.elasticity.config.serverbeans.ElasticAlerts;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.paas.tenantmanager.api.TenantManager;
 //import javax.inject.*;
 import org.glassfish.paas.tenantmanager.entity.Tenant;
