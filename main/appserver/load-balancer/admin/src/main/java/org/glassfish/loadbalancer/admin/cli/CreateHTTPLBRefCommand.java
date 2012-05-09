@@ -53,6 +53,8 @@ import org.glassfish.api.Param;
 import org.glassfish.api.I18n;
 import org.glassfish.api.ActionReport;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.internal.api.Target;
 
 import com.sun.enterprise.config.serverbeans.ApplicationRef;

@@ -55,6 +55,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.admin.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
+import org.glassfish.hk2.api.PerLookup;
 
 import javax.inject.Inject;
 

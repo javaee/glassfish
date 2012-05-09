@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import java.util.logging.Logger;
 import java.util.List;
 
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.internal.api.Target;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;

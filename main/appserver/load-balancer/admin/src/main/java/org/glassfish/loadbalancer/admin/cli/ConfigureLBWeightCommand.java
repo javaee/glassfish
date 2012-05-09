@@ -58,6 +58,7 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.config.serverbeans.Cluster;
 
 import org.glassfish.api.admin.*;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * This is a remote command that enables lb-enabled attribute of an application

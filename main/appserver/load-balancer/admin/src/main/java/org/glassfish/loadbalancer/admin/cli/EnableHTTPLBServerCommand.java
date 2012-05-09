@@ -61,6 +61,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.config.support.TargetType;
 import org.glassfish.config.support.CommandTarget;
 
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.internal.api.Target;
 
 import javax.inject.Inject;
