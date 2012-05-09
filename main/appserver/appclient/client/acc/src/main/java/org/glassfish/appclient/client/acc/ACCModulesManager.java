@@ -45,10 +45,18 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.naming.impl.ClientNamingConfiguratorImpl;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
+
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.logging.Level;
+
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.naming.ClientNamingConfigurator;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
@@ -140,11 +148,16 @@ public class ACCModulesManager /*implements ModuleStartup*/ {
      */
     private static Habitat prepareHabitat(
             final ClassLoader loader) {
-        /*
-         * Initialize the habitat.
-         */
-        ModulesRegistry registry = new StaticModulesRegistry(loader);
-        Habitat h = registry.createHabitat("default");
-        return h;
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create("default");
+
+        habitat = new Habitat();
+        
+        try {
+        	HK2Populator.populate(serviceLocator, new ClasspathDescriptorFileFinder(loader));
+        } catch (IOException e) {
+        	e.printStackTrace();
+        }
+  
+        return habitat;
     }
 }
