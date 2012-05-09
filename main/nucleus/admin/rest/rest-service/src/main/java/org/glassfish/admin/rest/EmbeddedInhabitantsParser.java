@@ -40,11 +40,14 @@
 
 package org.glassfish.admin.rest;
 
-import com.sun.hk2.component.InhabitantsParser;
-import com.sun.hk2.component.InhabitantsParserDecorator;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.glassfish.admin.restconnector.ProxyRestAdminAdapter;
 import org.glassfish.admin.restconnector.ProxyRestManagementAdapter;
 import org.glassfish.admin.restconnector.ProxyRestMonitoringAdapter;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.kohsuke.MetaInfServices;
 
 
@@ -54,15 +57,32 @@ import org.kohsuke.MetaInfServices;
  * @author Jerome Dochez
  */
 @MetaInfServices
-public class EmbeddedInhabitantsParser implements InhabitantsParserDecorator {
+public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
     public String getName() {
         return "Embedded";
     }
 
-    public void decorate(InhabitantsParser inhabitantsParser) {
-        inhabitantsParser.drop(RestService.class);
-        inhabitantsParser.drop(ProxyRestManagementAdapter.class);
-        inhabitantsParser.drop(ProxyRestMonitoringAdapter.class);
-        inhabitantsParser.drop(ProxyRestAdminAdapter.class);
-    }
+//    public void decorate(InhabitantsParser inhabitantsParser) {
+//        inhabitantsParser.drop(RestService.class);
+//        inhabitantsParser.drop(ProxyRestManagementAdapter.class);
+//        inhabitantsParser.drop(ProxyRestMonitoringAdapter.class);
+//        inhabitantsParser.drop(ProxyRestAdminAdapter.class);
+//    }
+
+	@Override
+	public List<DescriptorImpl> process(DescriptorImpl descriptorImpl) {
+		ArrayList<DescriptorImpl> returnList = new ArrayList<DescriptorImpl>();
+		
+		boolean skip = RestService.class.getCanonicalName().equals(descriptorImpl.getImplementation()) ||
+				ProxyRestManagementAdapter.class.getCanonicalName().equals(descriptorImpl.getImplementation()) ||
+				ProxyRestMonitoringAdapter.class.getCanonicalName().equals(descriptorImpl.getImplementation()) ||
+				ProxyRestAdminAdapter.class.getCanonicalName().equals(descriptorImpl.getImplementation());
+		
+		if (!skip) {
+			returnList.add(descriptorImpl);
+		}
+				
+		return returnList;
+
+	}
 }
