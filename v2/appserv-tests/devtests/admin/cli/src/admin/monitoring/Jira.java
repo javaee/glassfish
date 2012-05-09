@@ -318,6 +318,12 @@ public class Jira extends MonTest {
             final String prepend = "test13905::";
             listener = new LogListener(DOMAIN_NAME);
             File logfile = listener.getFile();
+
+            if(logfile == null) {
+                report(false, "LogListener.getFile() returned null");
+                return;
+            }
+            
             report(logfile.exists(), prepend + "logfile exists");
             report(logfile.isFile(), prepend + "logfile is-a-file");
             report(logfile.canRead(), prepend + "logfile is readable");

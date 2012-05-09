@@ -337,6 +337,8 @@
     <target name="monitoringverbose" depends="init,whacker,setup">
         <runtest classname="admin.monitoring.TestDriver">
             <jvmarg value="-Dverbose=true"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n"/>
         </runtest>
     </target>
 
@@ -359,6 +361,7 @@
     </target>
 
     <target name="setup" depends="startdb">
+        <runtest classname="admin.Reminders"/>
     </target>
 
     <target name="teardown" depends="stopdb">

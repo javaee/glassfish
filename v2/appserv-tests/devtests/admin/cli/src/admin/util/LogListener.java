@@ -85,7 +85,7 @@ public class LogListener {
 
         try {
             f = new File(new File(System.getenv("S1AS_HOME")),
-                    "domains/" + domainName + "/logs/server.log");
+                    "domains/" + domainName + "/server/logs/server.log");
             di = new RandomAccessFile(f, "rws");
             di.seek(f.length());
         }

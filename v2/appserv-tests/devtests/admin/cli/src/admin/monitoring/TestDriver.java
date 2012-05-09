@@ -71,6 +71,7 @@ public final class TestDriver extends AdminBaseDevTest {
         }
         catch (Exception e) {
             driver.report("GotException-" + e.getClass().getName(), false);
+            e.printStackTrace();
         }
         driver.stat.printSummary();
     }
