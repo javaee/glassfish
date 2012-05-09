@@ -131,8 +131,14 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
         
         //final ClassLoader cl = getClassLoader();
         try {
-            Class<T> c = (Class<T>) getLoader().loadClass(typeName);
+            final HK2Loader loader = getLoader();
+
+            Class<T> c = loader == null ?
+                        (Class<T>) getClass().getClassLoader().loadClass(typeName) :
+                        (Class<T>) loader.loadClass(typeName);
             return c;
+        } catch (ClassNotFoundException e) {
+            throw new ComponentException("Failed to load "+typeName+" from " + getLoader(), e);
         } catch (MultiException e) {
             throw new ComponentException("Failed to load "+typeName+" from " + getLoader(), e);
         }
