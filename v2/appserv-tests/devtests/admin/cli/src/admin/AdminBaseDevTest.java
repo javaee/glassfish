@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -100,6 +100,26 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         return this.getClass().getName();
     }
 
+    /**
+     * returns true if we are running on the HADAS branch.  I.e. if the special
+     * magic environmental variable is set.
+     * @return 
+     */
+    private static final boolean isHadas =
+                Boolean.getBoolean("HADAS") ||
+                Boolean.parseBoolean(System.getenv("hadas")) ||
+                Boolean.parseBoolean(System.getenv("HADAS"));
+
+    public static boolean isHadas() {
+        return isHadas;
+    }
+
+    public static File getLogFile(File installDir, String domainName) {
+        if(isHadas())
+            return new File(installDir, "domains/" + domainName + "/server/logs/server.log");
+        else
+            return new File(installDir, "domains/" + domainName + "/logs/server.log");
+    }
     public void report(boolean success, String name) {
         // WBN ==> sometimes I like it in this order!
         report(name, success);

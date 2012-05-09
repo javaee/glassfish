@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -318,6 +318,12 @@ public class Jira extends MonTest {
             final String prepend = "test13905::";
             listener = new LogListener(DOMAIN_NAME);
             File logfile = listener.getFile();
+
+            if(logfile == null) {
+                report(false, "LogListener.getFile() returned null");
+                return;
+            }
+            
             report(logfile.exists(), prepend + "logfile exists");
             report(logfile.isFile(), prepend + "logfile is-a-file");
             report(logfile.canRead(), prepend + "logfile is readable");

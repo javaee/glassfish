@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,9 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package admin.monitoring;
 
+import admin.AdminBaseDevTest;
 import com.sun.appserv.test.BaseDevTest.AsadminReturn;
 import java.io.*;
 import java.net.*;
@@ -50,9 +50,11 @@ import java.util.logging.Logger;
 
 /**
  * ALL Monitoring DevTests must implement this interface
+ *
  * @author Byron Nevins
  */
 abstract class MonTest {
+
     private static boolean stopWaiting = false;
     private static boolean waitedOnce;
 
@@ -78,8 +80,9 @@ abstract class MonTest {
         }
         driver.report(join(names), b);
 
-        if (!b)
+        if (!b) {
             handleBadTest();
+        }
     }
 
     final boolean asadmin(String... cmd) {
@@ -109,15 +112,18 @@ abstract class MonTest {
             copyDomainLog();
             report(asadmin("delete-domain", DOMAIN_NAME), "delete domain");
         }
-        else
+        else {
             report(true, "no need to delete domain");
+        }
     }
 
     final void verifyDomain(boolean exists) {
-        if (exists)
+        if (exists) {
             report(asadminHasString(DOMAIN_NAME, "list-domains"), DOMAIN_NAME + " exists");
-        else
+        }
+        else {
             report(!asadminHasString(DOMAIN_NAME, "list-domains"), DOMAIN_NAME + " doesn't exist");
+        }
     }
 
     final void verifyDomainIsRunning(boolean wantRunning) {
@@ -143,13 +149,19 @@ abstract class MonTest {
     final void stopDomain() {
         report(asadmin("stop-domain", DOMAIN_NAME), "stopped mon-domain");
     }
+
     final void copyDomainLog() {
         InputStream ins = null;
         FileOutputStream outs = null;
 
         try {
-            File inlog = new File(installDir, "domains/" + DOMAIN_NAME + "/logs/server.log");
+            File inlog = AdminBaseDevTest.getLogFile(installDir, DOMAIN_NAME);
             File outlog = new File(DOMAIN_NAME + "-server.log");
+
+            if (!inlog.exists()) {
+                report(false, "Logfile does not exist: " + inlog);
+                return;
+            }
             ins = new BufferedInputStream(new FileInputStream(inlog));
             outs = new FileOutputStream(outlog);
             ReadableByteChannel inChannel = Channels.newChannel(ins);
@@ -171,6 +183,7 @@ abstract class MonTest {
         }
 
     }
+
     final void createCluster() {
         verifyCluster(false);
         report(asadmin("create-cluster", CLUSTER_NAME), "created cluster");
@@ -183,15 +196,48 @@ abstract class MonTest {
         report(doesExist == wantToExist, CLUSTER_NAME + (doesExist ? " exists" : " doesn't exist"));
     }
 
+    /*
+     * TEMPORARY UNTIL das-branch is merged into trunk. These tests will
+     * naturally fail all over the place if you forget to fix them up.
+     */
     final void createInstances() {
         verifyInstances(false);
-        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME, CLUSTERED_INSTANCE_NAME1),
-                "created " + CLUSTERED_INSTANCE_NAME1);
-        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME, CLUSTERED_INSTANCE_NAME2),
-                "created " + CLUSTERED_INSTANCE_NAME2);
-        report(asadmin("create-local-instance", STAND_ALONE_INSTANCE_NAME),
-                "created " + STAND_ALONE_INSTANCE_NAME);
+
+        if (AdminBaseDevTest.isHadas()) {
+            createInstancesHadas();
+        }
+        else {
+            createInstancesTrunk();
+        }
+
         verifyInstances(true);
+    }
+
+    final void createInstancesHadas() {
+        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
+                "--domain", DOMAIN_NAME,
+                CLUSTERED_INSTANCE_NAME1),
+                "created " + CLUSTERED_INSTANCE_NAME1);
+        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
+                "--domain", DOMAIN_NAME,
+                CLUSTERED_INSTANCE_NAME2),
+                "created " + CLUSTERED_INSTANCE_NAME2);
+        report(asadmin("create-local-instance",
+                "--domain", DOMAIN_NAME,
+                STAND_ALONE_INSTANCE_NAME),
+                "created " + STAND_ALONE_INSTANCE_NAME);
+    }
+
+    final void createInstancesTrunk() {
+        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
+                CLUSTERED_INSTANCE_NAME1),
+                "created " + CLUSTERED_INSTANCE_NAME1);
+        report(asadmin("create-local-instance", "--cluster", CLUSTER_NAME,
+                CLUSTERED_INSTANCE_NAME2),
+                "created " + CLUSTERED_INSTANCE_NAME2);
+        report(asadmin("create-local-instance",
+                STAND_ALONE_INSTANCE_NAME),
+                "created " + STAND_ALONE_INSTANCE_NAME);
     }
 
     final void verifyInstances(boolean wantToExist) {
@@ -208,30 +254,66 @@ abstract class MonTest {
     }
 
     final void startInstances() {
+        // ugly fast and temporary
+        boolean hadas = AdminBaseDevTest.isHadas();
         verifyInstances(true);
 
         for (String iname : INSTANCES) {
-            report(asadmin("start-local-instance", "--debug", iname),
-                    "start-instance --debug " + iname);
+            if (hadas) {
+                report(asadmin("start-local-instance", "--debug",
+                        "--domain", DOMAIN_NAME,
+                        iname),
+                        "start-local-instance --debug" + iname);
+            }
+            else {
+                report(asadmin("start-local-instance", "--debug",
+                        iname),
+                        "start-local-instance --debug" + iname);
+            }
         }
     }
 
     final void stopInstances() {
+        // ugly fast and temporary
+        boolean hadas = AdminBaseDevTest.isHadas();
         verifyInstances(true);
 
         for (String iname : INSTANCES) {
-            report(asadmin("stop-local-instance", iname),
-                    "stop-instance " + iname);
+            if (hadas) {
+                report(asadmin("stop-local-instance",
+                        "--domain", DOMAIN_NAME,
+                        iname),
+                        "stop-local-instance " + iname);
+            }
+            else {
+                report(asadmin("stop-local-instance",
+                        iname),
+                        "stop-local-instance " + iname);
+            }
         }
     }
 
     final void deleteInstances() {
+        // ugly fast and temporary
+        boolean hadas = AdminBaseDevTest.isHadas();
         stopInstances();
+        // wen 18707 gets fixed this will naturally fail.  Atthat time remove the
+        // superfluous --domain arg
 
         for (String iname : INSTANCES) {
-            report(asadmin("delete-local-instance", iname),
-                    "delete instance " + iname);
+            if (hadas) {
+                report(asadmin("delete-local-instance",
+                        "--domain", DOMAIN_NAME,
+                        iname),
+                        "delete-local-instance " + iname);
+            }
+            else{
+                report(asadmin("delete-local-instance",
+                        iname),
+                        "delete-local-instance " + iname);
+            }
         }
+
     }
 
     static String createDottedAttribute(String serverOrClusterName, String attribName) {
@@ -251,8 +333,9 @@ abstract class MonTest {
     }
 
     static boolean matchString(String a, String b) {
-        if (!ok(a) || !ok(b))
+        if (!ok(a) || !ok(b)) {
             return false;
+        }
         // in case you forget the correct order of args
         return (b.indexOf(a) >= 0) || (a.indexOf(b) >= 0);
     }
@@ -273,8 +356,9 @@ abstract class MonTest {
     }
 
     final boolean checkForString(AsadminReturn r, String findme, int howMany) {
-        if (r.outAndErr == null)
+        if (r.outAndErr == null) {
             return false;
+        }
 
         if (howMany <= 0) {
             report(false, "Bad arg to checkForString");
@@ -283,26 +367,30 @@ abstract class MonTest {
 
         String output = r.outAndErr;
 
-        if (howMany == 1)
+        if (howMany == 1) {
             return output.indexOf(findme) >= 0;
+        }
 
         final int findmelength = findme.length();
 
         while (howMany-- > 0) {
             int index = output.indexOf(findme);
 
-            if (index < 0)
+            if (index < 0) {
                 return false;
+            }
 
             // got them at least the given number
-            if (howMany == 0)
+            if (howMany == 0) {
                 return true;
+            }
 
             index += findmelength;
 
             // moved past the end of the string -- not a match
-            if (index >= output.length())
+            if (index >= output.length()) {
                 return false;
+            }
 
             output = output.substring(index);
         }
@@ -318,21 +406,23 @@ abstract class MonTest {
     }
 
     final void deploy(String target, File f, String name) {
-         String prepend = f.getName() + " "; // if you send in a null pointer -- tough!!
-         report(f.isFile() && f.canRead(), prepend + "exists");
+        String prepend = f.getName() + " "; // if you send in a null pointer -- tough!!
+        report(f.isFile() && f.canRead(), prepend + "exists");
 
         boolean success;
 
-        if(name != null)
+        if (name != null) {
             success = asadmin("deploy", "--target", target, "--name", name, f.getAbsolutePath());
-        else
+        }
+        else {
             success = asadmin("deploy", "--target", target, f.getAbsolutePath());
+        }
 
         report(success, prepend + "deployed OK to " + target);
-     }
+    }
 
-     /*
-     * this implementaion sucks.  please improve it!
+    /*
+     * this implementaion sucks. please improve it!
      */
     static boolean wget(int port, String uri) {
         try {
@@ -353,8 +443,9 @@ abstract class MonTest {
     private String join(String[] names) {
         StringBuilder sb = new StringBuilder(name);
 
-        for (String name : names)
+        for (String name : names) {
             sb.append(SEP).append(name);
+        }
         return sb.toString();
     }
     private TestDriver driver;
@@ -365,8 +456,9 @@ abstract class MonTest {
         // note that we MUST be running with a debug port for this to work!
         // build.xml should have it set...
 
-        if (!WAIT || waitedOnce)
+        if (!WAIT || waitedOnce) {
             return;
+        }
 
         // only do this once!
         waitedOnce = true;
@@ -375,13 +467,15 @@ abstract class MonTest {
             System.out.print(s);
         }
         for (int i = 1; i < 600; i++) {
-            if (stopWaiting)
+            if (stopWaiting) {
                 break;
+            }
             try {
                 Thread.sleep(1000);
 
-                if (i % 10 == 0)
+                if (i % 10 == 0) {
                     System.out.println(i);
+                }
             }
             catch (InterruptedException ex) {
                 // don't care...
@@ -401,9 +495,8 @@ abstract class MonTest {
         "***************************************************************\n",
         "***************************************************************\n",
         "***************************************************************\n\n\n",};
-
     // you must set this env. variable or sys property to get the JIT debugging to work
     private static final boolean WAIT =
-            Boolean.getBoolean("APS_WAIT") ||
-            Boolean.parseBoolean(System.getenv("APS_WAIT"));
+            Boolean.getBoolean("APS_WAIT")
+            || Boolean.parseBoolean(System.getenv("APS_WAIT"));
 }
