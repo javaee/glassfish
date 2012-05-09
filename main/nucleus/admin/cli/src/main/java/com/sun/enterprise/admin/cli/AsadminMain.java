@@ -39,13 +39,6 @@
  */
 package com.sun.enterprise.admin.cli;
 
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.single.StaticModulesRegistry;
-import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
-import com.sun.enterprise.universal.i18n.LocalStringsImpl;
-import com.sun.enterprise.universal.io.SmartFile;
-import com.sun.enterprise.util.JDK;
-import com.sun.enterprise.util.SystemPropertyConstants;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -55,18 +48,33 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandValidationException;
 import org.glassfish.api.admin.InvalidCommandException;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.common.util.admin.AsadminInput;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
-import org.jvnet.hk2.component.BaseServiceLocator;
+import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
 import org.jvnet.hk2.component.Habitat;
+
+import com.sun.enterprise.module.bootstrap.DefaultErrorService;
+import com.sun.enterprise.universal.glassfish.ASenvPropertyReader;
+import com.sun.enterprise.universal.i18n.LocalStringsImpl;
+import com.sun.enterprise.universal.io.SmartFile;
+import com.sun.enterprise.util.JDK;
+import com.sun.enterprise.util.SystemPropertyConstants;
 
 /**
  * The asadmin main program.
@@ -244,19 +252,26 @@ public class AsadminMain {
          */
         Thread.currentThread().setContextClassLoader(ecl);
 
-        /*
-         * Create a habitat that can load from the extension directory.
-         */
-        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create("default");
+		/*
+		 * Create a habitat that can load from the extension directory.
+		 */
+		ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
+				.create("default");
+		DynamicConfigurationService dcs = serviceLocator
+				.getService(DynamicConfigurationService.class);
+		DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-        habitat = new Habitat();
-        
-        try {
-        	HK2Populator.populate(serviceLocator, new ClasspathDescriptorFileFinder(ecl));
-        } catch (IOException e) {
-        	logger.log(Level.SEVERE, "Error initializing HK2", e);
-        }
+		config.addActiveDescriptor(DefaultErrorService.class);
+		config.commit();
 
+		habitat = new Habitat();
+
+		try {
+			HK2Populator.populate(serviceLocator,
+					new ClasspathDescriptorFileFinder(ecl), new Hk2LoaderPopulatorPostProcessor(ecl));
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "Error initializing HK2", e);
+		}
 
         classPath =
                 SmartFile.sanitizePaths(System.getProperty("java.class.path"));
