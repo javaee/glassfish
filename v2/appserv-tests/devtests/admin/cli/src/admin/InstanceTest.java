@@ -78,10 +78,20 @@ public class InstanceTest extends AdminBaseDevTest {
         host = host0;
         System.out.println("Host= " + host);
         glassFishHome = getGlassFishHome();
-        domainHome = new File(glassFishHome, "domains/domain1");    // yes it is hard-coded!!
-        // it does NOT need to exist -- do not insist!
-        nodeDir = new File(glassFishHome, "nodes");
-        instancesHome = new File(nodeDir, host + "-domain1");
+        if (isHadas()) {
+            // NO MORE NODES DIR!
+            // gf/nodes/node1/i1 --->  gf/domains/domain1/i1
+            domainHome = new File(glassFishHome, "domains/domain1/server");
+            nodeDir = new File(glassFishHome, "domains/");
+            // it does NOT need to exist -- do not insist!
+            instancesHome = new File(nodeDir, "domain1");
+        }
+        else {
+            domainHome = new File(glassFishHome, "domains/domain1");
+            nodeDir = new File(glassFishHome, "nodes");
+            // it does NOT need to exist -- do not insist!
+            instancesHome = new File(nodeDir, host + "-domain1");
+        }
         printf("GF HOME = " + glassFishHome);
     }
 
@@ -112,7 +122,10 @@ public class InstanceTest extends AdminBaseDevTest {
 	testCreateInstanceConfigNode();
         testPortBase();
         invalidConfigRef();
-        deleteDirectory(nodeDir);
+        
+        if(!isHadas())
+            deleteDirectory(nodeDir);
+
         stopDomain();
         stat.printSummary();
     }
@@ -362,6 +375,13 @@ public class InstanceTest extends AdminBaseDevTest {
     }
 
     private void testNode() throws IOException {
+        if(isHadas())
+            testNodeHadas();
+        else
+            testNodeTrunk();
+    }
+
+    private void testNodeTrunk() throws IOException {
         String installdir = getGlassFishHome().getCanonicalPath();
         String nodedir = installdir + File.separator + "mynodes";
         String node = "n1";
@@ -398,7 +418,49 @@ public class InstanceTest extends AdminBaseDevTest {
 
         //clean up
         report("delete-node-config-n1", asadmin("delete-node-config", node ));
+
         deleteDirectory(new File(nodedir));
+    }
+    private void testNodeHadas() throws IOException {
+        String installdir = getGlassFishHome().getCanonicalPath();
+        String nodedir = installdir + "/domains";
+        String node = "domain1";
+        String instance = "i1";
+
+        report("create-local-instance-badparam", !asadmin("create-local-instance",
+            "--node", "bogus", "bogusinstance"));
+
+        report("create-local-instance-nosuchdomain", !asadmin("create-local-instance",
+            "--domain", "bogus", "bogusinstance"));
+
+        report("create-node-config-i1", asadmin("create-node-config",
+             node ));
+        report("create-local-instance-i1", asadmin("create-local-instance",
+            "--domaindir", nodedir , "--domain", node, instance ));
+
+        report("check-i1-dir", checkInstanceDir(instance, node, nodedir));
+        report("check-i1-dasprops", checkDasProperties(node, nodedir));
+
+        report("start-local-instance-i1", asadmin("start-local-instance",
+            "--domaindir", nodedir , "--domain", node, instance ));
+
+        report("list-instances-i1", asadmin("list-instances"));
+        report("check-list-instances-n1-run", isInstanceRunning(instance));
+
+        report("stop-local-instance-i1", asadmin("stop-local-instance",
+            "--domaindir", nodedir , "--domain", node, instance ));
+
+        report("list-instances-i1", asadmin("list-instances"));
+        report("check-list-instances-i1-notrun", !isInstanceRunning(instance));
+
+        report("delete-local-instance-i1", asadmin("delete-local-instance",
+            "--domaindir", nodedir , "--domain", node, instance ));
+        report("check-i1n1-dir-deleted", !checkInstanceDir(instance, node, nodedir));
+
+        report("verify-no-instances-i1n1", verifyNoInstances());
+
+        //clean up
+        report("delete-node-config-n1", asadmin("delete-node-config", node ));
     }
 
     private void testCreateInstanceConfigNode() {
@@ -496,7 +558,7 @@ public class InstanceTest extends AdminBaseDevTest {
     }
 
     private boolean checkDasProperties() {
-        File dasFile = new File(instancesHome, "agent" + File.separator + "config" + File.separator + "das.properties");
+        File dasFile = new File(instancesHome, "agent/config/das.properties");
         return dasFile.exists();
     }
 
@@ -507,7 +569,7 @@ public class InstanceTest extends AdminBaseDevTest {
     }
 
     private boolean checkDasProperties(String node, String nodedir) {
-        File dasFile = new File(nodedir + File.separator + node, "agent" + File.separator + "config" + File.separator + "das.properties");
+        File dasFile = new File(nodedir + File.separator + node, "agent/config/das.properties");
         return dasFile.exists();
     }
 
