@@ -517,7 +517,7 @@
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>config-generator</artifactId>
-                <version>2.1.1-SNAPSHOT</version>
+                <version>${hk2.plugin.version}</version>
                 <executions>
                     <execution>
                         <configuration>
