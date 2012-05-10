@@ -299,7 +299,7 @@ public class SerialContext implements Context {
 
         orb = orbFromEnv;
         if (services != null) { // can happen in test mode
-            ServerContext sc = services.forContract(ServerContext.class).get();
+            ServerContext sc = services.getService(ServerContext.class);
             if (sc != null) {
                 commonCL = sc.getCommonClassLoader();
             }
