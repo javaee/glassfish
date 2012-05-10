@@ -45,6 +45,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import javax.inject.Inject;
+
+import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PerLookup;
@@ -63,7 +65,7 @@ import java.util.logging.Logger;
 public class ListMetricFunctionsCommand implements AdminCommand{
 
     @Inject
-     MetricFunction[] metricFunctions;
+    IterableProvider<MetricFunction> metricFunctions;
 
     private static final String EOL = "\n";
 

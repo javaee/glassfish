@@ -49,6 +49,7 @@ import java.beans.PropertyVetoException;
 
 import org.glassfish.elasticity.api.ElasticEngine;
 import org.glassfish.elasticity.engine.container.ElasticEnvironmentContainer;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;

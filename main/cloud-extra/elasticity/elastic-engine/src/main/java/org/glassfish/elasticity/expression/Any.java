@@ -40,8 +40,7 @@
 package org.glassfish.elasticity.expression;
 
 import org.glassfish.elasticity.api.MetricFunction;
-import org.glassfish.hk2.scopes.PerLookup;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.Collection;

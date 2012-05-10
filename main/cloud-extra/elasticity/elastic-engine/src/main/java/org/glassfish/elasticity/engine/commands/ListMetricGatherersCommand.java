@@ -46,6 +46,8 @@ import org.glassfish.api.I18n;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import javax.inject.Inject;
+
+import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.api.Param;
@@ -64,7 +66,7 @@ import java.util.logging.Logger;
 public class ListMetricGatherersCommand  implements AdminCommand {
 
     @Inject
-    AbstractMetricGatherer[] metricGatherers;
+    IterableProvider<AbstractMetricGatherer> metricGatherers;
 
     @Param(name="service")
     String servicename;

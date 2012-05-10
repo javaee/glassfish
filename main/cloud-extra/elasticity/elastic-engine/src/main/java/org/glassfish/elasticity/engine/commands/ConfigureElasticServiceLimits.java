@@ -52,6 +52,7 @@ import java.beans.PropertyVetoException;
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.elasticity.engine.container.ElasticServiceContainer;
 import org.glassfish.elasticity.engine.container.ElasticEnvironmentContainer;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.api.admin.RestEndpoint;
 import org.glassfish.api.admin.RestEndpoint.OpType;
 import org.glassfish.api.admin.RestEndpoints;
