@@ -91,8 +91,6 @@ public class StartLocalInstanceCommand extends SynchronizeInstanceCommand
 
     private StartServerHelper helper;
 
-    private String localPassword;
-
     @Override
     public List<String> getLauncherArgs() {
         return launcher.getCommandLine();
