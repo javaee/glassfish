@@ -41,6 +41,8 @@ package org.glassfish.elasticity.metrics.commands;
 
 import org.glassfish.elasticity.api.ElasticEngine;
 import org.glassfish.elasticity.config.serverbeans.*;
+import org.glassfish.hk2.api.PerLookup;
+
 import com.sun.enterprise.config.serverbeans.Domain;
 
 import java.beans.PropertyVetoException;

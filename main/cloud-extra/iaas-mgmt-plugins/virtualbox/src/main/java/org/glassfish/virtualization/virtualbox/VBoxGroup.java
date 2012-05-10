@@ -39,16 +39,14 @@
  */
 package org.glassfish.virtualization.virtualbox;
 
-import org.glassfish.hk2.inject.Injector;
 import org.glassfish.virtualization.config.*;
-import org.glassfish.virtualization.spi.VirtualCluster;
 import org.glassfish.virtualization.spi.*;
-import org.glassfish.virtualization.spi.EventSource;
 import org.glassfish.virtualization.util.RuntimeContext;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyChangeEvent;
@@ -70,12 +68,12 @@ import java.util.logging.Logger;
 @PerLookup
 class VBoxGroup implements PhysicalServerPool, ConfigListener {
 
-    final Injector injector;
+    final ServiceLocator injector;
     final public ServerPoolConfig config;
     final ConcurrentMap<String, Machine> machines = new ConcurrentHashMap<String, Machine>();
     final AtomicInteger allocationCount = new AtomicInteger();
 
-    VBoxGroup(Injector injector, ServerPoolConfig config) {
+    VBoxGroup(ServiceLocator injector, ServerPoolConfig config) {
         this.injector = injector;
         this.config = config;
         Dom.unwrap(config).addListener(this);

@@ -40,6 +40,7 @@
 package org.glassfish.elasticity.metrics.commands;
 
 import org.glassfish.elasticity.config.serverbeans.*;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.I18n;
 import org.glassfish.api.Param;
