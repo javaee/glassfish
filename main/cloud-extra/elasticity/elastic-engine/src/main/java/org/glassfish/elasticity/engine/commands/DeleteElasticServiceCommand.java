@@ -63,7 +63,7 @@ import java.util.logging.Logger;
  */
 @Service(name = "_delete-elastic-service")
 @I18n("delete.ealastic.service")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 public class DeleteElasticServiceCommand implements AdminCommand {
 

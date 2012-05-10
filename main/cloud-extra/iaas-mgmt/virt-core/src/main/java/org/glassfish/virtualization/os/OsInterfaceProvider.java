@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,64 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.virtualization.os;
 
-package org.glassfish.elasticity.engine.commands;
-
-import org.glassfish.api.ActionReport;
-import org.glassfish.elasticity.api.AbstractMetricGatherer;
-import org.glassfish.api.I18n;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.AdminCommandContext;
-import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.annotations.Service;
-import org.glassfish.api.Param;
-import org.glassfish.hk2.api.PerLookup;
-
-import java.util.logging.Logger;
+import org.glassfish.virtualization.spi.OsInterface;
 
 /**
- * Created by IntelliJ IDEA.
- * User: cmott
- * Date: 9/27/11
+ * This interface is used to provide OsInterface implementations
+ * from OsInterface providers
+ * 
+ * @author jwells
+ *
  */
-@Service(name="list-metric-gatherers")
-@I18n("list.metric.gatherers")
-@PerLookup
-public class ListMetricGatherersCommand  implements AdminCommand {
+public interface OsInterfaceProvider {
+	/**
+	 * Provide an implementation of OsInterface
+	 * 
+	 * @return The implementation of OsInterface
+	 */
+	public OsInterface provideOsInterface();
 
-    @Inject
-    AbstractMetricGatherer[] metricGatherers;
-
-    @Param(name="service")
-    String servicename;
-
-    private static final String EOL = "\n";
-
-    @Override
-    public void execute(AdminCommandContext context) {
-        ActionReport report = context.getActionReport();
-        Logger logger= context.getLogger();
-
-        // Look for the Metric Gatherer services and list them
-        // Eventually want to list if they are running, for now they are
-        StringBuilder sb = new StringBuilder();
-        boolean firstName =true;
-
-        for (AbstractMetricGatherer mg : metricGatherers) {
-            String metricName = mg.getClass().getAnnotation(Service.class).toString();
-            if ( firstName)
-                firstName = false;
-             else
-                sb.append(EOL);
-             int nameIndex = metricName.indexOf("name=") + 5;
-            int endNameIndex = metricName.indexOf(",");
-            sb.append(metricName.substring(nameIndex, endNameIndex));
-
-        }
-
-        report.setMessage(sb.toString());
-        report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
-
-        }
 }

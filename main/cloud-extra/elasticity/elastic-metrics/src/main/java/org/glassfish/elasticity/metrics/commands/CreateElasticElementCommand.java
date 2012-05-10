@@ -67,7 +67,7 @@ import java.util.logging.Logger;
  * Time: 9:50 AM
  * To change this template use File | Settings | File Templates.
  */
-@Scoped(PerLookup.class)
+@PerLookup
 @Service (name="create-elastic-element")
 public class CreateElasticElementCommand implements AdminCommand{
 

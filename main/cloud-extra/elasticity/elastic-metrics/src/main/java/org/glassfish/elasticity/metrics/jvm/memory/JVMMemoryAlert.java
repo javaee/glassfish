@@ -57,7 +57,7 @@ import java.util.logging.Logger;
 import java.util.Date;
 
 @Service(name = "jvm_memory")
-@Scoped(PerLookup.class)
+@PerLookup
 public class JVMMemoryAlert
         extends AbstractAlert<JVMMemoryAlertConfig> {
 

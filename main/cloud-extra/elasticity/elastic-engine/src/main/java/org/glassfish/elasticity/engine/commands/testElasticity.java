@@ -59,7 +59,7 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 @Service(name = "test-alert")
-@Scoped(PerLookup.class)
+@PerLookup
 public class testElasticity implements AdminCommand {
 
 @Inject

@@ -66,7 +66,7 @@ import org.glassfish.api.admin.RestEndpoints;
  */
 @Service(name = "create-alert")
 @I18n("create.alert")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn({RuntimeType.DAS})
 @RestEndpoints({ @RestEndpoint(configBean = AlertConfig.class, opType = OpType.POST, path = "create-alert", description = "Create alert") })
 public class CreateAlertCommand implements AdminCommand {

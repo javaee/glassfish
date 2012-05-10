@@ -69,7 +69,7 @@ import org.glassfish.api.admin.CommandRunner.CommandInvocation;
  */
 @Service(name = "_create-elastic-service")
 @I18n("create.ealastic.service")
-@Scoped(PerLookup.class)
+@PerLookup
 @ExecuteOn(value={RuntimeType.ALL})
 @TargetType(value={CommandTarget.DOMAIN, CommandTarget.DAS, CommandTarget.STANDALONE_INSTANCE, CommandTarget.CONFIG})
 public class CreateElasticServiceCommand implements AdminCommand  {

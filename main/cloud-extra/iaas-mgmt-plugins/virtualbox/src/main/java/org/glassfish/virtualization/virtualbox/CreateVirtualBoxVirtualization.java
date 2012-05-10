@@ -61,7 +61,7 @@ import java.beans.PropertyVetoException;
  * Creates the default virtual box configuration.
  */
 @Service(name = "create-ims-config-virtualbox")
-@Scoped(PerLookup.class)
+@PerLookup
 public class CreateVirtualBoxVirtualization implements AdminCommand {
 
     @Param(optional=true)
