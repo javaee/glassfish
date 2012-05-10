@@ -72,27 +72,24 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <configuration>
-                    <generatedSourcesDirectory>generated-sources/src/main/java</generatedSourcesDirectory>
-                    <compilerArguments>
-                        <processor>org.glassfish.annotation.processing.LogMessageInfoAnnotationProcessor</processor>
-                        <!--
-                            Required parameter: Package where LogMessages.properties will be generated.
-                            It will typically be the top level package in the module.
-                        -->
-                        <A>-AresourceBundlePackage=org.glassfish.orb</A>
-                    </compilerArguments>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.glassfish.annotations</groupId>
-                        <artifactId>source-annotation-processor</artifactId>
-                        <version>1.0</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
+              <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <executions>
+                  <execution>
+                  <id>process</id>
+                  <goals>
+                    <goal>process</goal>
+                  </goals>
+                  <phase>process-classes</phase>
+                  <configuration>
+                    <compilerArguments>-AresourceBundlePackage=org.glassfish.orb</compilerArguments>
+                    <processors>
+                      <processor>org.glassfish.annotation.processing.LogMessageInfoAnnotationProcessor</processor>
+                    </processors>
+                  </configuration>
+               </execution>
+            </executions>
+          </plugin>
         </plugins>
     </build>
 
