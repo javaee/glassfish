@@ -56,7 +56,6 @@ import org.glassfish.api.event.EventTypes;
 import org.glassfish.hk2.ComponentException;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
-import org.glassfish.hk2.Services;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.InitRunLevel;
 import org.glassfish.internal.api.PostStartup;
@@ -66,15 +65,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import javax.inject.Inject;
 import org.glassfish.hk2.runlevel.RunLevel;
+import org.glassfish.hk2.runlevel.RunLevelController;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.HabitatFactory;
-import org.jvnet.hk2.component.InhabitantsParserFactory;
-import org.jvnet.hk2.component.RunLevelService;
-import org.jvnet.hk2.junit.Hk2Runner;
-import org.jvnet.hk2.junit.Hk2RunnerOptions;
+import org.jvnet.hk2.testing.junit.HK2Runner;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -98,18 +93,19 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Tom Beerbower
  */
+/*
 @RunWith(Hk2Runner.class)
 @Hk2RunnerOptions(classpathFilter          = AppServerStartupTest.TestFileFilter.class,
                   habitatFactory           = AppServerStartupTest.TestHabitatFactory.class,
                   inhabitantsParserFactory = AppServerStartupTest.TestInhabitantsParserFactory.class)
-public class AppServerStartupTest {
+                  */
+public class AppServerStartupTest extends HK2Runner {
 
     // ----- data members ----------------------------------------------------
 
     /**
      * The AppServerStartup instance to test.
      */
-    @Inject
     private AppServerStartup as;
 
     /**
@@ -167,6 +163,11 @@ public class AppServerStartupTest {
      */
     @Before
     public void beforeTest() {
+        before();
+        
+        as = testLocator.getService(AppServerStartup.class);
+        Assert.assertNotNull(as);
+        
         mapPostConstructExceptions = new HashMap<Class, RuntimeException>();
         listFutures                = new LinkedList<TestFuture>();
         results                    = new Results(as.runLevelController);
@@ -179,7 +180,7 @@ public class AppServerStartupTest {
      */
     @After
     public void afterTest() {
-        if (as.runLevelController.getState().getCurrentRunLevel() > 0) {
+        if (as.runLevelController.getCurrentRunLevel() > 0) {
             // force a stop to ensure that the services are released
             as.env.setStatus(ServerEnvironment.Status.started);
             as.stop();
@@ -396,18 +397,18 @@ public class AppServerStartupTest {
         /**
          * The run level service.
          */
-        private RunLevelService<?> rls;
+        private RunLevelController rls;
 
-        public Results(RunLevelService<?> rls) {
+        public Results(RunLevelController rls) {
             this.rls = rls;
         }
 
         public void recordConstruction(Class cl) {
-            mapConstructedLevels.put(cl, rls.getState().getPlannedRunLevel());
+            mapConstructedLevels.put(cl, rls.getPlannedRunLevel());
         }
 
         public void recordDestruction(Class cl) {
-            mapDestroyedLevels.put(cl, rls.getState().getCurrentRunLevel());
+            mapDestroyedLevels.put(cl, rls.getCurrentRunLevel());
         }
 
         public boolean isConstructed(Class cl) {
@@ -603,7 +604,7 @@ public class AppServerStartupTest {
 
     /**
      * Factory to create a {@link Habitat} for this test.
-     */
+     *
     public static class TestHabitatFactory implements HabitatFactory {
 
         @Override
@@ -639,6 +640,7 @@ public class AppServerStartupTest {
             return habitat;
         }
     }
+    */
 
     /**
      * Test {@link SystemTasks} implementation.
@@ -652,19 +654,20 @@ public class AppServerStartupTest {
 
     /**
      * Factory to create a new {@link InhabitantsParser} for this test.
-     */
+     *
     public static class TestInhabitantsParserFactory implements InhabitantsParserFactory {
         @Override
         public InhabitantsParser createInhabitantsParser(Habitat habitat) {
             return new TestInhabitantsParser(habitat);
         }
     }
+     */
 
     /**
      * Inhabitant parser used for this test.  Allows for the filtering
      * of non-required inhabitants and inhabitants for non-testable run
      * level services.
-     */
+     *
     public static class TestInhabitantsParser extends InhabitantsParser {
 
         public TestInhabitantsParser(Habitat habitat) {
@@ -697,7 +700,7 @@ public class AppServerStartupTest {
          * @param inhabitantParser  the inhabitant parser
          *
          * @return true iff the given inhabitant parser is for a run level service
-         */
+         *
         private boolean isRunLevelService(InhabitantParser inhabitantParser) {
 
             String runlevel = inhabitantParser.getMetaData().getOne(RunLevel.META_VAL_TAG);
@@ -715,5 +718,7 @@ public class AppServerStartupTest {
             }
             return false;
         }
+         
     }
+    */
 }
