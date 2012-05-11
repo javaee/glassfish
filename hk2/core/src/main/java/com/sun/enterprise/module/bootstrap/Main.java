@@ -84,7 +84,7 @@ public class Main {
 
 	private ClassLoader parentClassLoader;
 
-	public static final String DEFAULT_NAME = "_SERVICELOCATOR_DEFAULT";
+	public static final String DEFAULT_NAME = "default";
 
 	public Main() {
 		createServiceLocator();
