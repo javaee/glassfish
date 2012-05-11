@@ -40,14 +40,13 @@
 
 package com.sun.enterprise.v3.server;
 
-import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.jvnet.hk2.component.Factory;
-import org.jvnet.hk2.component.ComponentException;
+import javax.inject.Singleton;
 
 import javax.xml.stream.XMLInputFactory;
-import org.jvnet.hk2.annotations.Scoped;
+
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
 
 /**
@@ -63,11 +62,14 @@ import org.glassfish.hk2.api.PerLookup;
  * @author Kohsuke Kawaguchi
  */
 @Service
-@FactoryFor(XMLInputFactory.class)
-@PerLookup
-public class StAXParserFactory implements Factory {
-    @Override
-    public XMLInputFactory get() throws ComponentException {
+@Singleton
+public class StAXParserFactory implements Factory<XMLInputFactory> {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#provide()
+     */
+    @Override @PerLookup
+    public XMLInputFactory provide() {
         // In JDK 1.6, StAX is part of JRE, so we use no argument variant of
         // newInstance(), where as on JDK 1.5, we use two argument version of
         // newInstance() so that we can pass the classloader that loads
@@ -78,5 +80,13 @@ public class StAXParserFactory implements Factory {
                         XMLInputFactory.newInstance() :
                         XMLInputFactory.newInstance(XMLInputFactory.class.getName(),
                                 XMLInputFactory.class.getClassLoader());
-            }
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
+     */
+    @Override
+    public void dispose(XMLInputFactory instance) {
+        
+    }
 }
