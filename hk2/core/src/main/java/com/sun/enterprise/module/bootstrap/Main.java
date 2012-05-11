@@ -243,6 +243,12 @@ public class Main {
 		config.addActiveDescriptor(BuilderHelper
 				.createConstantDescriptor(serviceLocator));
 		config.commit();
+		
+		config = dcs.createDynamicConfiguration();
+		config.addActiveDescriptor(BuilderHelper
+				.createConstantDescriptor(new Habitat()));
+		config.commit();
+		
 		config = dcs.createDynamicConfiguration();
 		config.addActiveDescriptor(BuilderHelper
 				.createConstantDescriptor(context));
