@@ -41,36 +41,24 @@
 package org.glassfish.tests.utils;
 
 // import com.sun.enterprise.module.bootstrap.Populator;
-import com.sun.enterprise.module.bootstrap.DefaultErrorService;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.single.StaticModulesRegistry;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ErrorService;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
-import org.glassfish.hk2.bootstrap.impl.NullPopulatorPostProcessor;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
 
-import java.net.URL;
-import java.util.logging.Logger;
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
+import com.sun.enterprise.module.bootstrap.DefaultErrorService;
 
 /**
  * Utilities to create a configured Habitat and cache them
@@ -147,7 +135,7 @@ public class Utils {
 			try {
 				HK2Populator.populate(serviceLocator,
 						new ClasspathDescriptorFileFinder(),
-						new NullPopulatorPostProcessor());
+						new Hk2LoaderPopulatorPostProcessor(null));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

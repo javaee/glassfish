@@ -40,8 +40,14 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
+import java.io.IOException;
+
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
+
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 
 /**
  * Main for embedded.
@@ -66,4 +72,15 @@ public class EmbeddedMain extends Main {
         return "Embedded";
     }
 
+    public EmbeddedMain(ClassLoader cl) {
+    	setDescriptorFileFinder(new ClasspathDescriptorFileFinder(cl));
+    	setPopulatorPostProcessor(new Hk2LoaderPopulatorPostProcessor(cl));
+    	
+        try {
+			createServiceLocator(new StartupContext());
+		} catch (BootException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 }

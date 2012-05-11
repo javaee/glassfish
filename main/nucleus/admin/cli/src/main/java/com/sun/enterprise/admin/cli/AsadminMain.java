@@ -248,6 +248,7 @@ public class AsadminMain {
         }
 
         ClassLoader ecl = getExtensionClassLoader();
+        
         /*
          * Set the thread's context class laoder so that everyone can load from
          * our extension directory.
