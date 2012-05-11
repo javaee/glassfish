@@ -45,6 +45,8 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.EarlyLogHandler;
+
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.config.Populator;
 import org.jvnet.hk2.config.ConfigPopulatorException;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -88,8 +90,8 @@ public abstract class DomainXml implements Populator {
     StartupContext context;
     @Inject
     protected Habitat habitat;
-    @Inject
-    ModulesRegistry registry;
+    @Inject @Optional
+    private ModulesRegistry registry;
     @Inject
     XMLInputFactory xif;
     @Inject
@@ -106,7 +108,9 @@ public abstract class DomainXml implements Populator {
         lr.setLoggerName(getClass().getName());
         EarlyLogHandler.earlyMessages.add(lr);
 
-        habitat.addComponent(new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, registry.getParentClassLoader()));
+        ClassLoader parentClassLoader = (registry == null) ?
+                getClass().getClassLoader() : registry.getParentClassLoader() ;
+        habitat.addComponent(new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, parentClassLoader));
 
         try {
             parseDomainXml(parser, getDomainXml(env), env.getInstanceName());
