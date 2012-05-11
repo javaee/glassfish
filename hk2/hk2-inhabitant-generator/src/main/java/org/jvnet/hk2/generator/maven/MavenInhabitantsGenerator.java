@@ -95,8 +95,6 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
      * the classes just compiled
      */
     public void execute() throws MojoFailureException {
-        
-        
         File output;
         if (!test) {
             output = new File(outputDirectory);
@@ -106,7 +104,15 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
         }
         
         if (!output.exists()) {
+            if (verbose) {
+                System.out.println("Exiting hk2-inhabitant-generator because could not find output directory " +
+                  output.getAbsolutePath());
+            }
             return;
+        }
+        
+        if (verbose) {
+            System.out.println("hk2-inhabitant-generator generating into location " + output.getAbsolutePath());
         }
         
         LinkedList<String> arguments = new LinkedList<String>();
