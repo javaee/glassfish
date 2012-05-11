@@ -150,7 +150,7 @@ public class ServiceLocatorTest {
 		ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
 				.create("" + new Random().nextInt());
 
-		ServiceLocator serviceLocator2 = HK2Populator.populate(serviceLocator,
+		HK2Populator.populate(serviceLocator,
 				new DescriptorFileFinder() {
 
 					@Override
@@ -165,8 +165,6 @@ public class ServiceLocatorTest {
 					}
 
 				});
-
-		assertSame(serviceLocator, serviceLocator2);
 
 		List<ActiveDescriptor<?>> descriptors = serviceLocator
 				.getDescriptors(BuilderHelper
@@ -202,7 +200,7 @@ public class ServiceLocatorTest {
 		ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
 				.create("" + new Random().nextInt());
 
-		ServiceLocator serviceLocator2 = HK2Populator.populate(serviceLocator,
+		HK2Populator.populate(serviceLocator,
 				new DescriptorFileFinder() {
 
 					@Override
@@ -258,7 +256,7 @@ public class ServiceLocatorTest {
 		ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
 				.create("" + new Random().nextInt());
 
-		ServiceLocator serviceLocator2 = HK2Populator.populate(serviceLocator,
+		HK2Populator.populate(serviceLocator,
 				new DescriptorFileFinder() {
 
 					@Override
