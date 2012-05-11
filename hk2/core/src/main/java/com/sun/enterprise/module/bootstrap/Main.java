@@ -57,7 +57,6 @@ import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
-import org.glassfish.hk2.bootstrap.impl.NullPopulatorPostProcessor;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.ComponentException;
@@ -81,7 +80,7 @@ public class Main {
 
 	private DescriptorFileFinder descriptorFileFinder = new ClasspathDescriptorFileFinder();
 
-	private PopulatorPostProcessor populatorPostProcessor = new NullPopulatorPostProcessor();
+	private PopulatorPostProcessor populatorPostProcessor = null;
 
 	private ClassLoader parentClassLoader;
 
