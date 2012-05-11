@@ -60,6 +60,7 @@ import org.glassfish.api.admin.CommandValidationException;
 import org.glassfish.api.admin.InvalidCommandException;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.common.util.admin.AsadminInput;
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -67,6 +68,7 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.Habitat;
 
 import com.sun.enterprise.module.bootstrap.DefaultErrorService;
@@ -386,6 +388,12 @@ public class AsadminMain {
                             CLIUtil.getLocalCommands(habitat),
                             strings.get("ClosestMatchedLocalCommands"), logger);
                 } catch (InvalidCommandException e) {
+                    List<ActiveDescriptor<?>> allDescriptors = habitat.getDescriptors(BuilderHelper.allFilter());
+                    for (ActiveDescriptor<?> ad : allDescriptors) {
+                        System.out.println("JRW(10) AsadminMain for Hudson: " + ad);
+                        
+                    }
+                    System.out.println("JRW(20) AsadminMain for Hudson done printing all descriptors");
                     logger.info(
                             strings.get("InvalidRemoteCommand", command));
                 }
