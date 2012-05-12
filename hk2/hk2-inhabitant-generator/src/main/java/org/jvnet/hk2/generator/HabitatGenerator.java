@@ -66,23 +66,28 @@ public class HabitatGenerator {
     public final static String OUTJAR_ARG = "--outjar";
     /** The path-separator delimited list of files to search for contracts and qualifiers (defaults to classpath) */
     public final static String SEARCHPATH_ARG = "--searchPath";
+    /** This option will write files in-place, which is quicker but will remove existing files prior to writing new ones */
+    public final static String NOSWAP_ARG = "--noswap";
     
     private final String directoryOrFileToGenerateFor;
     private final String outjarName;
     private final String locatorName;
     private final boolean verbose;
     private final String searchPath;
+    private final boolean noSwap;
     
     private HabitatGenerator(String directoryOrFileToGenerateFor,
             String outjarName,
             String locatorName,
             boolean verbose,
-            String searchPath) {
+            String searchPath,
+            boolean noSwap) {
         this.directoryOrFileToGenerateFor = directoryOrFileToGenerateFor;
         this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
         this.searchPath = searchPath;
+        this.noSwap = noSwap;
     }
     
     private void printThrowable(Throwable th) {
@@ -99,7 +104,7 @@ public class HabitatGenerator {
     
     private int go() {
         GeneratorRunner runner = new GeneratorRunner(directoryOrFileToGenerateFor,
-                outjarName, locatorName, verbose, searchPath);
+                outjarName, locatorName, verbose, searchPath, noSwap);
         
         try {
             runner.go();
@@ -165,6 +170,7 @@ public class HabitatGenerator {
         boolean defaultVerbose = false;
         String outjarFile = null;
         String searchPath = CLASSPATH;
+        boolean userNoSwap = false;
         
         for (int lcv = 0; lcv < argv.length; lcv++) {
             if (VERBOSE_ARG.equals(argv[lcv])) {
@@ -206,6 +212,9 @@ public class HabitatGenerator {
                 
                 searchPath = argv[lcv];
             }
+            else if (NOSWAP_ARG.equals(argv[lcv])) {
+                userNoSwap = true;
+            }
             else {
                 System.err.println("Uknown argument: " + argv[lcv]);
             }
@@ -230,7 +239,7 @@ public class HabitatGenerator {
         if (outjarFile == null) outjarFile = defaultFileToHandle;
         
         HabitatGenerator hg = new HabitatGenerator(defaultFileToHandle, outjarFile,
-                defaultLocatorName, defaultVerbose, searchPath);
+                defaultLocatorName, defaultVerbose, searchPath, userNoSwap);
         
         return hg.go();
     }

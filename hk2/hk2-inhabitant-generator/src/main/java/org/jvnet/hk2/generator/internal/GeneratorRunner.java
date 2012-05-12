@@ -74,6 +74,7 @@ public class GeneratorRunner {
     private final String outjarName;
     private final String locatorName;
     private final boolean verbose;
+    private final boolean noSwap;
 
     /**
      * This initializes the GeneratorRunner with the values needed to run
@@ -89,11 +90,13 @@ public class GeneratorRunner {
             String outjarName,
             String locatorName,
             boolean verbose,
-            String searchPath) {
+            String searchPath,
+            boolean noSwap) {
         this.fileOrDirectory = fileOrDirectory;
         this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
+        this.noSwap = noSwap;
         utilities = new Utilities(verbose, searchPath);
     }
     
@@ -164,24 +167,48 @@ public class GeneratorRunner {
     private void writeToDirectory(File parent, List<DescriptorImpl> descriptors) throws IOException {
         File META_INF_dir = new File(parent, META_INF);
         File inhabitantsDir = new File(META_INF_dir, INHABITANTS);
+        File outputFile = new File(inhabitantsDir, locatorName);
         
         if (!inhabitantsDir.exists()) {
             inhabitantsDir.mkdirs();
         }
         
-        File writeMeFile = writeInhabitantsFile(descriptors);
-        
-        // OK, now swap it
-        File outputFile = new File(inhabitantsDir, locatorName);
-        if (outputFile.exists()) {
-            outputFile.delete();
+        File noSwapFile = null;
+        if (noSwap) {
+            if (outputFile.exists()) {
+                if (!outputFile.delete()) {
+                    throw new IOException("Could not delete existing inhabitant file " +
+                        outputFile.getAbsolutePath() + " in the noSwap case");
+                }
+            }
+            
+            noSwapFile = outputFile;
         }
         
-        writeMeFile.renameTo(outputFile);
+        File writeMeFile = writeInhabitantsFile(descriptors, noSwapFile);
+        
+        if (!noSwap) {
+            // OK, now swap it
+            if (outputFile.exists()) {
+                if (!outputFile.delete()) {
+                    throw new IOException("Could not delete existing inhabitant file " + outputFile.getAbsolutePath());
+                }
+            }
+        
+            String tmpFileAbsolutePath = writeMeFile.getAbsolutePath();
+            if (verbose) {
+                System.out.println("Swapping " + tmpFileAbsolutePath + " to " + outputFile.getAbsolutePath());
+            }
+            
+            if (!writeMeFile.renameTo(outputFile)) {
+                throw new IOException("Could not move generated inhabitant file " + tmpFileAbsolutePath +
+                        " to " + outputFile.getAbsolutePath());
+            }
+        }
     }
     
     private void writeToJar(File jarFile, List<DescriptorImpl> descriptors) throws IOException {
-        File writeMeFile = writeInhabitantsFile(descriptors);
+        File writeMeFile = writeInhabitantsFile(descriptors, null);
         writeMeFile.deleteOnExit();
         
         byte buffer[] = new byte[1024];
@@ -230,12 +257,30 @@ public class GeneratorRunner {
         zos.close();
         
         // All went well, replace the JAR file with the new and improved jar file
+        String tmpFileName = tmpJarFile.getAbsolutePath();
         File outjar = new File(outjarName);
-        tmpJarFile.renameTo(outjar);
+        
+        if (verbose) {
+            System.out.println("Swapping jar file " + tmpFileName + " to " + outjar.getAbsolutePath());
+        }
+        
+        if (!tmpJarFile.renameTo(outjar)) {
+            throw new IOException("Unable to swap generated JAR file " + tmpFileName + " to " + outjar.getAbsolutePath());
+        }
     }
     
-    private File writeInhabitantsFile(List<DescriptorImpl> descriptors) throws IOException {
-        File outFile = File.createTempFile(locatorName, ".tmp");
+    private File writeInhabitantsFile(List<DescriptorImpl> descriptors, File noSwapFile) throws IOException {
+        File outFile;
+        if (noSwapFile != null) {
+            outFile = noSwapFile;
+        }
+        else {
+            outFile = File.createTempFile(locatorName, ".tmp");
+        }
+        
+        if (verbose) {
+            System.out.println("Writing " + descriptors.size() + " entries to file " + outFile.getAbsolutePath());
+        }
         
         FileOutputStream fos = new FileOutputStream(outFile);
         
@@ -252,6 +297,10 @@ public class GeneratorRunner {
         
         pw.close();
         fos.close();
+        
+        if (verbose) {
+            System.out.println("Wrote " + descriptors.size() + " entries to inhabitant file " + outFile.getAbsolutePath());
+        }
         
         return outFile;
     }

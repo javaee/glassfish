@@ -39,7 +39,6 @@
  */
 package org.jvnet.hk2.generator.maven;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -89,6 +88,11 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
      * @parameter
      */
     private String classpath;
+    
+    /**
+     * @parameter
+     */
+    private boolean noswap;
 
     /**
      * This method will compile the inhabitants file based on
@@ -137,6 +141,10 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
             
             arguments.add(HabitatGenerator.SEARCHPATH_ARG);
             arguments.add(classpathValue);
+        }
+        
+        if (noswap) {
+            arguments.add(HabitatGenerator.NOSWAP_ARG);
         }
         
         String argv[] = arguments.toArray(new String[arguments.size()]);

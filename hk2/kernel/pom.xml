@@ -84,6 +84,7 @@
                 <executions>
                     <execution>
                         <configuration>
+                            <noswap>true</noswap>
                             <classpath>${project.build.directory}/classpath.txt</classpath>
                         </configuration>
                         <goals>
