@@ -72,6 +72,9 @@ import org.jvnet.hk2.generator.HabitatGenerator;
 public class InhabitantsGeneratorTest {
     private final static String FILE_ARGUMENT = "--file";
     private final static String OUTJAR_FILE_ARGUMENT = "--outjar";
+    private final static String VERBOSE_ARGUMENT = "--verbose";
+    private final static String NOSWAP_ARGUMENT = "--noswap";
+    private final static String LOCATOR_ARGUMENT = "--locator";
     private final static String CLASS_DIRECTORY = "gendir";
     private final static String JAR_FILE = "gendir.jar";
     private final static File OUTJAR_FILE = new File("outgendir.jar");
@@ -79,6 +82,7 @@ public class InhabitantsGeneratorTest {
     private final static String META_INF_NAME = "META-INF";
     private final static String INHABITANTS = "hk2-locator";
     private final static String DEFAULT = "default";
+    private final static String OTHER = "other";
     
     private final static String ZIP_FILE_INHABITANT_NAME = "META-INF/hk2-locator/default";
     
@@ -295,6 +299,46 @@ public class InhabitantsGeneratorTest {
         argv[1] = gendirDirectory.getAbsolutePath();
         
         File defaultOutput = new File(inhabitantsDirectory, DEFAULT);
+        if (defaultOutput.exists()) {
+            // Start with a clean plate
+            Assert.assertTrue(defaultOutput.delete());
+        }
+        
+        try {
+            int result = HabitatGenerator.embeddedMain(argv);
+            Assert.assertEquals("Got error code: " + result, 0, result);
+            
+            Assert.assertTrue("did not generate " + defaultOutput.getAbsolutePath(),
+                    defaultOutput.exists());
+            
+            Set<DescriptorImpl> generatedImpls = getAllDescriptorsFromInputStream(
+                    new FileInputStream(defaultOutput));
+            
+            checkDescriptors(generatedImpls);
+        }
+        finally {
+            // The test should be clean
+            defaultOutput.delete();
+        }
+    }
+    
+    /**
+     * Tests generating into a directory
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     */
+    @Test
+    public void testNonDefaultDirectoryGeneration() throws IOException {
+        String argv[] = new String[6];
+        
+        argv[0] = FILE_ARGUMENT;
+        argv[1] = gendirDirectory.getAbsolutePath();
+        argv[2] = VERBOSE_ARGUMENT;
+        argv[3] = NOSWAP_ARGUMENT;
+        argv[4] = LOCATOR_ARGUMENT;
+        argv[5] = OTHER;
+        
+        File defaultOutput = new File(inhabitantsDirectory, OTHER);
         if (defaultOutput.exists()) {
             // Start with a clean plate
             Assert.assertTrue(defaultOutput.delete());

@@ -370,6 +370,9 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
                 asAFactoryDI.setName(factoryName.getName());
             }
             
+            if (verbose) {
+                System.out.println("Adding a factory descriptor: " + asAFactoryDI);
+            }
         }        
     }
     
