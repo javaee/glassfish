@@ -38,7 +38,6 @@
  */
 package admin.util;
 
-import admin.AdminBaseDevTest;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -86,8 +85,13 @@ public class LogListener {
         File f = null;
 
         try {
-            f = AdminBaseDevTest.getLogFile(
-                    new File(System.getenv("S1AS_HOME")), domainName);
+            // for filelayout change
+            f = new File(new File(System.getenv("S1AS_HOME")),
+                    "domains/" + domainName + "/server/logs/server.log");
+            if(!f.exists())
+                f = new File(new File(System.getenv("S1AS_HOME")),
+                    "domains/" + domainName + "/logs/server.log");
+
             di = new RandomAccessFile(f, "rws");
             di.seek(f.length());
         }
