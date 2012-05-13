@@ -44,14 +44,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A simple class designed to check on new logged messages.
- * When you create it it automatically sets the file pointer to the end
- * of the log-file.  Then you can call the NON-BLOCKING method, getLatest() to see
- * the latest stuff written since your last check.
- * Created May 27, 2011
+ * A simple class designed to check on new logged messages. When you create it
+ * it automatically sets the file pointer to the end of the log-file. Then you
+ * can call the NON-BLOCKING method, getLatest() to see the latest stuff written
+ * since your last check. Created May 27, 2011
+ *
  * @author Byron Nevins
  */
 public class LogListener {
+
     public static void main(String[] args) {
         LogListener ll = new LogListener("domain1");
         System.out.println("LogListener Main");
@@ -107,15 +108,17 @@ public class LogListener {
             return "";
         }
     }
+
     public void close() {
         try {
-            if(reader != null)
+            if (reader != null)
                 reader.close();
         }
         catch (IOException ex) {
             // nothing to do
         }
     }
+
     public String getLatest() {
         try {
             long cur = length();
@@ -152,5 +155,4 @@ public class LogListener {
     }
     private final File logfile;
     private final RandomAccessFile reader;
-
 }
