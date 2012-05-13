@@ -129,10 +129,9 @@ public class OSGiModuleImpl implements Module {
                 state = ModuleState.NEW;
                 break;
             case Bundle.RESOLVED:
-                state = ModuleState.RESOLVED;
-                break;
             case Bundle.STARTING:
-                state = ModuleState.PREPARING;
+            case Bundle.STOPPING:
+                state = ModuleState.RESOLVED;
                 break;
             case Bundle.ACTIVE:
                 state = ModuleState.READY;
