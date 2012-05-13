@@ -134,11 +134,7 @@
     </target>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli_original" depends="setup, monitoring, zombie, ports, instance, cluster,
-                        configs, sync, domain, backup, tokens, validation, node,
-                        load-balancer, getset, misc-commands, manual-sync, upgrade,
-                        restart-domain, teardown"/>
-    <target name="cli" depends="setup, instance, cluster,
+    <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
                         configs, sync, domain, backup, tokens, validation, node,
                         load-balancer, getset, misc-commands, manual-sync, upgrade,
                         restart-domain, teardown"/>
