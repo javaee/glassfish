@@ -91,6 +91,11 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         // do nothing.
     }
 
+    @Override
+    public File getGlassFishHome() {
+        return Environment.getGlassFishHome();
+    }
+
     // Allow old-style and new-style simultaneously.  But prefer the latter.
     @Override
     public File getDASDomainDir() {
@@ -137,19 +142,10 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
     public String getTestName() {
         return this.getClass().getName();
     }
-    /**
-     * returns true if we are running on the HADAS branch. I.e. if the special
-     * magic environmental variable is set.
-     *
-     * @return
-     */
-    private static final boolean isHadas =
-            Boolean.getBoolean("HADAS")
-            || Boolean.parseBoolean(System.getenv("hadas"))
-            || Boolean.parseBoolean(System.getenv("HADAS"));
 
-    public static boolean isHadas() {
-        return isHadas;
+    // convenience method
+    static boolean isHadas() {
+        return Environment.isHadas();
     }
 
     public static File getLogFile(File installDir, String domainName) {
