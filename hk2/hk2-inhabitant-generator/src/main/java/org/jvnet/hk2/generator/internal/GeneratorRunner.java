@@ -174,7 +174,9 @@ public class GeneratorRunner {
         }
         
         File noSwapFile = null;
-        if (noSwap) {
+        boolean directWrite = false;
+        if (noSwap || !outputFile.exists()) {
+            directWrite = true;
             if (outputFile.exists()) {
                 if (!outputFile.delete()) {
                     throw new IOException("Could not delete existing inhabitant file " +
@@ -187,7 +189,7 @@ public class GeneratorRunner {
         
         File writeMeFile = writeInhabitantsFile(descriptors, noSwapFile);
         
-        if (!noSwap) {
+        if (!directWrite) {
             // OK, now swap it
             if (outputFile.exists()) {
                 if (!outputFile.delete()) {
