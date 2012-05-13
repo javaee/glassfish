@@ -65,6 +65,7 @@ public class Reminders extends AdminBaseDevTest {
         System.out.println("Test restart-local-instance");
         System.out.println("delete-local-instance - should NOT require --domain, JIRA 18707");
         System.out.println("HUGE Speedup ==>  use 'asadmin multimode -f cmds.txt' for the set/get commands");
+        System.out.println("WHy does delete-domain print 'null' for non-existent domain?");
         System.out.println("###################################################");
         System.out.println("###################################################");
         System.out.println("###################################################");
