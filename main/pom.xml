@@ -557,7 +557,6 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <verbose>true</verbose>
                             <noswap>true</noswap>
                             <classpath>${project.build.directory}/classpath.txt</classpath>
                         </configuration>
