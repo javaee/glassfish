@@ -141,7 +141,7 @@ public class DomainTest extends AdminBaseDevTest {
      * checks to see that the template we provided was used.
      */
     boolean checkDomain(String name) {
-        File domxml = new File(getGlassFishHome(), "domains/" + name + "/config/domain.xml");
+        File domxml = getDASDomainXML(name);
         String xpathExpr = "//@port";
         Object o = evalXPath(xpathExpr, domxml, XPathConstants.STRING);
         System.out.println("o=" + o.toString());

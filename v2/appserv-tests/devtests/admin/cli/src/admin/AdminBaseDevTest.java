@@ -57,10 +57,14 @@ import java.net.URLConnection;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import static admin.Constants.*;
+import javax.xml.namespace.QName;
 
 public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
-    static enum PasswordType { SSH_PASS, KEY_PASS, DCOM_PASS, ALIAS_PASS };
 
+    static enum PasswordType {
+
+        SSH_PASS, KEY_PASS, DCOM_PASS, ALIAS_PASS
+    };
 
     protected AdminBaseDevTest() {
         boolean verbose = false;
@@ -87,6 +91,40 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         // do nothing.
     }
 
+    // Allow old-style and new-style simultaneously.  But prefer the latter.
+    @Override
+    public File getDASDomainDir() {
+        return getDASDomainDir("domain1");
+    }
+
+    File getDASDomainDir(String domainName) {
+        File f = null;
+
+        if (isHadas())
+            f = new File(DOMAINS_DIR, domainName + "/server");
+        else
+            f = new File(DOMAINS_DIR, domainName);
+
+        if (!f.exists())
+            report(false, "Domain Directory does not exist: " + f);
+        
+        return f;
+    }
+
+     @Override
+    public File getDASDomainXML() {
+        return getDASDomainXML("domain1");
+    }
+
+    File getDASDomainXML(String domainName) {
+        return new File(new File(getDASDomainDir(domainName), "config"), "domain.xml");
+    }
+
+    @Override
+    public Object evalXPath(String expr, QName ret) {
+        return evalXPath(expr, getDASDomainXML(), ret);
+    }
+
     @Override
     public final void run() {
         System.out.println(getTestDescription());
@@ -99,27 +137,30 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
     public String getTestName() {
         return this.getClass().getName();
     }
-
     /**
-     * returns true if we are running on the HADAS branch.  I.e. if the special
+     * returns true if we are running on the HADAS branch. I.e. if the special
      * magic environmental variable is set.
-     * @return 
+     *
+     * @return
      */
     private static final boolean isHadas =
-                Boolean.getBoolean("HADAS") ||
-                Boolean.parseBoolean(System.getenv("hadas")) ||
-                Boolean.parseBoolean(System.getenv("HADAS"));
+            Boolean.getBoolean("HADAS")
+            || Boolean.parseBoolean(System.getenv("hadas"))
+            || Boolean.parseBoolean(System.getenv("HADAS"));
 
     public static boolean isHadas() {
         return isHadas;
     }
 
     public static File getLogFile(File installDir, String domainName) {
-        if(isHadas())
+        if (isHadas()) {
             return new File(installDir, "domains/" + domainName + "/server/logs/server.log");
-        else
+        }
+        else {
             return new File(installDir, "domains/" + domainName + "/logs/server.log");
+        }
     }
+
     public void report(boolean success, String name) {
         // WBN ==> sometimes I like it in this order!
         report(name, success);
@@ -135,12 +176,13 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         // and (2) there are tens of thousands of other files in this harness!!!
 
         // another issue is hacking off strings after a space.  Makes no sense to me!!
-        if(!success) {
+        if (!success) {
             int x = 5;  // a place to hang a breakpoint when debugging!!
         }
         writeTimestamp(name, success);
-        if (name.length() > MAX_LENGTH - 3)
+        if (name.length() > MAX_LENGTH - 3) {
             name = name.substring(0, MAX_LENGTH - 3);
+        }
         String name2 = name.replace(' ', '_');
         if (!name2.equals(name)) {
             name = name2;   // don't foul logic below!
@@ -159,13 +201,15 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
 
         int numpads = 60 - name2.length();
 
-        if (numpads > 0)
+        if (numpads > 0) {
             name2 += DASHES.substring(0, numpads);
+        }
 
         super.report(name2, success);
 
-        if (!success && !isVerbose())
+        if (!success && !isVerbose()) {
             writeFailure();
+        }
     }
 
     @Override
@@ -254,14 +298,18 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
     static {
         String name = System.getProperty("user.name");
 
-        if (name != null && name.equals("bnevins"))
+        if (name != null && name.equals("bnevins")) {
             DEBUG = true;
-        else if (isHudson)
+        }
+        else if (isHudson) {
             DEBUG = true;
-        else if (Boolean.parseBoolean(System.getenv("AS_DEBUG")))
+        }
+        else if (Boolean.parseBoolean(System.getenv("AS_DEBUG"))) {
             DEBUG = true;
-        else
+        }
+        else {
             DEBUG = false;
+        }
     }
 
     String generateInstanceName() {
@@ -283,14 +331,16 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         // and once for the output of the command.
 
         AsadminReturn ret = asadminWithOutput("get", what);
-        if (!ret.returnValue)
+        if (!ret.returnValue) {
             return null;
+        }
 
         int index = ret.outAndErr.lastIndexOf(what);
         int len = ret.outAndErr.length();
 
-        if (index < 0 || len - index <= 2)
+        if (index < 0 || len - index <= 2) {
             return null;
+        }
 
         // e.g. "asadmin blah foo=xyz  len==20, index==13,  start at index=17
         // which is index+lenofget-string+1
@@ -301,29 +351,34 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
     public final boolean doesGetMatch(String what, String match) {
         String ret = get(what);
 
-        if (!ok(match) && !ok(ret))
+        if (!ok(match) && !ok(ret)) {
             return true;
+        }
 
-        if (!ok(match) || !ok(ret))
+        if (!ok(match) || !ok(ret)) {
             return false;
+        }
 
         return (match.equals(ret));
     }
 
     /**
-     * returns true if there is anything in the config that matches.
-     * returns false if there is no such thing
+     * returns true if there is anything in the config that matches. returns
+     * false if there is no such thing
+     *
      * @param what
      * @return
      */
     public final boolean doesGetMatch(String what) {
         AsadminReturn ret = asadminWithOutput("get", what);
 
-        if (!ret.returnValue)
+        if (!ret.returnValue) {
             return false;
+        }
 
-        if (ret.err != null && ret.err.length() > 1)
+        if (ret.err != null && ret.err.length() > 1) {
             return false;
+        }
 
         return ret.out != null && ret.out.indexOf("=") >= 0;
     }
@@ -337,9 +392,8 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
     /**
      *
      * typical output as og 6/6/10
-    C:\glassfishv3\glassfish\nodeagents\vaio>asadmin list-instances
-    in_879669 not running
-    i20 running
+     * C:\glassfishv3\glassfish\nodeagents\vaio>asadmin list-instances in_879669
+     * not running i20 running
      */
     public boolean isInstanceRunning(String iname) {
         AsadminReturn ret = asadminWithOutput("list-instances");
@@ -352,8 +406,9 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         // echoing off later)
 
         for (String line : lines) {
-            if (line.indexOf("list-instances") >= 0)
+            if (line.indexOf("list-instances") >= 0) {
                 continue;
+            }
 
             if (line.indexOf(iname) >= 0) {
                 printf("Line from list-instances = " + line);
@@ -390,7 +445,8 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
     }
 
     /*
-     * Delete the directories for a local node (since delete-node-* doesn't do this
+     * Delete the directories for a local node (since delete-node-* doesn't do
+     * this
      */
     public boolean deleteNodeDirectory(String node) {
         return deleteDirectory(new File(new File(getGlassFishHome(), "nodes"), node));
@@ -410,18 +466,20 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         }
         return (path.delete());
     }
+
     /**
      * Add a password to the asadmin password file used by the test.
      *
-     * @param value     Password to use
-     * @param passType  SSH_PASS if you are setting ssh password.
-     *                  KEY_PASS if you are setting encryption key
+     * @param value Password to use
+     * @param passType SSH_PASS if you are setting ssh password. KEY_PASS if you
+     * are setting encryption key
      */
     void addPassword(String value, PasswordType passType) {
         BufferedWriter out = null;
 
-        if (value == null)
-            value="";
+        if (value == null) {
+            value = "";
+        }
         try {
             final File f = new File(pFile);
             out = new BufferedWriter(new FileWriter(f, true));
@@ -440,9 +498,10 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
                     out.write("AS_ADMIN_ALIASPASSWORD=" + value);
                     break;
                 default:
-                    //do nothing
+                //do nothing
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             //ignore
         }
         finally {
@@ -451,16 +510,17 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
                     out.flush();
                     out.close();
                 }
-            } catch(final Exception ignore){}
+            }
+            catch (final Exception ignore) {
+            }
         }
 
         return;
     }
 
-
     /**
-     * Remove SSH related passwords from the asadmin password file
-     * id == "SSH" or "DCOM"
+     * Remove SSH related passwords from the asadmin password file id == "SSH"
+     * or "DCOM"
      */
     void removePasswords(String id) {
         final File f = new File(pFile);
@@ -470,14 +530,15 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         BufferedWriter writer = null;
 
         try {
-            writer=new BufferedWriter(new FileWriter(tempFile));
+            writer = new BufferedWriter(new FileWriter(tempFile));
             reader = new BufferedReader(new FileReader(f));
 
             String currentLine;
 
-            while((currentLine = reader.readLine()) != null && !currentLine.trim().isEmpty()) {
-                if(currentLine.trim().startsWith("AS_ADMIN_" + id))
+            while ((currentLine = reader.readLine()) != null && !currentLine.trim().isEmpty()) {
+                if (currentLine.trim().startsWith("AS_ADMIN_" + id)) {
                     continue;
+                }
                 writer.write(currentLine);
                 writer.newLine();
             }
@@ -486,14 +547,15 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
             writer.close();
 
             //On Windows, rename will fail if destination file already exists
-            if(!f.delete()) {
+            if (!f.delete()) {
                 System.out.println("Failed to delete original file");
             }
 
-            if(!tempFile.renameTo(f)) {
+            if (!tempFile.renameTo(f)) {
                 System.out.println("Failed to restore password file.");
             }
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             //ignore
         }
         finally {
@@ -504,7 +566,9 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
                 if (writer != null) {
                     writer.close();
                 }
-            } catch(final Exception ignore){}
+            }
+            catch (final Exception ignore) {
+            }
         }
 
         return;
@@ -545,6 +609,8 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         }
     }
     private static final File TIMESTAMP_FILE = new File("timestamps.out").getAbsoluteFile();
+    private final File GF_HOME = getGlassFishHome();
+    private final File DOMAINS_DIR = new File(GF_HOME, "domains");
     private static long lastReportTime = 0;
     private static final int MAX_LENGTH = 101;
     private static final String DASHES =
