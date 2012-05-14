@@ -51,7 +51,7 @@ import java.io.IOException;
 public class SyncTest extends AdminBaseDevTest {
 
     SyncTest() {
-        instancesHome = new File(new File(getGlassFishHome(), "nodes"), "localhost-domain1");
+        instancesHome = TestEnv.getInstancesHome("localhost-domain1");
 
     }
     @Override
@@ -98,7 +98,7 @@ public class SyncTest extends AdminBaseDevTest {
                 "--name", "helloworld1", webapp.getAbsolutePath()));
         */
         // create a file in docroot
-        File foo = new File(getGlassFishHome(), "domains/domain1/docroot/foo.html");
+        File foo = new File(TestEnv.getDomainDocRoot(), "foo.html");
         try {
             FileWriter fw = new FileWriter(foo);
             fw.write("<html><body>Foo file</body></html>");
@@ -214,7 +214,8 @@ public class SyncTest extends AdminBaseDevTest {
                 "JMS_PROVIDER_PORT=18686:ASADMIN_LISTENER_PORT=14848", i1name));
 
         // create a file in docroot
-        File foo = new File(getGlassFishHome(), "domains/domain1/docroot/foo.html");
+        File foo = new File(TestEnv.getDomainDocRoot(), "foo.html");
+
         try {
             FileWriter fw = new FileWriter(foo);
             fw.write("<html><body>Foo file</body></html>");
@@ -271,8 +272,7 @@ public class SyncTest extends AdminBaseDevTest {
             asadmin("_synchronize-instance", i1name));
 
         // create a file in the config-specific docroot directory
-        File foo = new File(getGlassFishHome(), "domains/domain1/config/" +
-                                        i1name + "-config/docroot/foo.html");
+        File foo = new File(TestEnv.getConfigSpecificDocRoot(i1name), "foo.html");
         try {
             FileWriter fw = new FileWriter(foo, true);
             fw.write("<html><body>Foo file</body></html>");
@@ -283,8 +283,7 @@ public class SyncTest extends AdminBaseDevTest {
         }
 
         // touch domain.xml
-        File dxml = new File(getGlassFishHome(),
-                                "domains/domain1/config/domain.xml");
+        File dxml = TestEnv.getDomainXml();
         touch(dxml);
 
         // synchronize the instance without starting it
@@ -292,9 +291,8 @@ public class SyncTest extends AdminBaseDevTest {
             asadmin("_synchronize-instance", i1name));
 
         // is the file on the instance?
-        File fooOnInstance = new File(getGlassFishHome() +
-                        "/nodes/localhost-domain1/" + i1name + "/config/" +
-                        i1name + "-config/docroot/foo.html");
+        File fooOnInstance = new File(TestEnv.getInstanceDir("localhost-domain1", i1name),
+                "config/" + i1name + "-config/docroot/foo.html");
         report(tn + "instance-file-exists", fooOnInstance.exists());
 
         // now remove the file and make sure it disappears from the instance

@@ -38,7 +38,7 @@
  * holder.
  */
 /**
- * Environment -- static methods for figuring out directories, files, etc.
+ * TestEnv -- static methods for figuring out directories, files, etc.
  *
  *
  * @author Byron Nevins
@@ -47,19 +47,91 @@ package admin;
 
 import java.io.File;
 
-public final class Environment {
+public final class TestEnv {
+    private static final String DEFAULT_DOMAIN_NAME = "domain1";
+    private static final String DOCROOT = "docroot";
+    private static final String CONFIG = "config";
+    private static String DOMAIN_XML = "domain.xml";
     private static final boolean isHadas;
     private static final File gf_home;
+    private static final File domains_home;
 
     public static boolean isHadas() {
         return isHadas;
     }
-
     public static File getGlassFishHome() {
         return gf_home;
     }
+    public static File getDomainsHome() {
+        return domains_home;
+    }
+    public static File getDomainHome(String domainName) {
+        return new File(getDomainsHome(), domainName);
+    }
+    public static File getDomainServerHome(String domainName) {
+        if(isHadas())
+            return new File(getDomainHome(domainName), "server");
+        else
+            return getDomainHome(domainName);
+    }
+    public static File getDomainDocRoot(String domainName) {
+        return new File(getDomainServerHome(domainName), DOCROOT);
+    }
+    public static File getDomainConfigDir(String domainName) {
+        return new File(getDomainServerHome(domainName), CONFIG);
+    }
+    public static File getDomainXml(String domainName) {
+        return new File(getDomainConfigDir(domainName), DOMAIN_XML);
+    }
+    public static File getConfigSpecificConfigDir(String domainName, String instanceName) {
+        return new File(getDomainConfigDir(domainName), instanceName + "-config");
+    }
+    public static File getConfigSpecificDocRoot(String domainName, String instanceName) {
+        return new File(getConfigSpecificConfigDir(domainName, instanceName), DOCROOT);
+    }
+    public static File getInstancesHome(String domainName, String nodeName) {
+        if(isHadas())
+            return getDomainHome(domainName);
+        else
+            return new File(getGlassFishHome(), "nodes/" + nodeName);
+    }
+    public static File getInstanceDir(String domainName, String nodeName, String instanceName) {
+        return new File(getInstancesHome(domainName, nodeName), instanceName);
+    }
 
-    private Environment() {
+    // convenience methods that plug-in domain1
+    public static File getDomainHome() {
+        return getDomainHome(DEFAULT_DOMAIN_NAME);
+    }
+    public static File getDomainServerHome() {
+        return getDomainServerHome(DEFAULT_DOMAIN_NAME);
+    }
+    public static File getDomainDocRoot() {
+        return getDomainDocRoot(DEFAULT_DOMAIN_NAME);
+    }
+    public static File getDomainConfigDir() {
+        return getDomainConfigDir(DEFAULT_DOMAIN_NAME);
+    }
+    public static File getDomainXml() {
+        return getDomainXml(DEFAULT_DOMAIN_NAME);
+    }
+    public static File getConfigSpecificConfigDir(String instanceName) {
+        return getConfigSpecificConfigDir(DEFAULT_DOMAIN_NAME, instanceName);
+    }
+    public static File getConfigSpecificDocRoot(String instanceName) {
+        return getConfigSpecificDocRoot(DEFAULT_DOMAIN_NAME, instanceName);
+    }
+    public static File getInstancesHome(String nodeName) {
+        return getInstancesHome(DEFAULT_DOMAIN_NAME, nodeName);
+    }
+    public static File getInstanceDir(String nodeName, String instanceName) {
+        return getInstanceDir(DEFAULT_DOMAIN_NAME, nodeName, instanceName);
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    //  internal stuff below
+    //////////////////////////////////////////////////////////////////////
+    private TestEnv() {
         // no instances allowed!
     }
 
@@ -99,6 +171,7 @@ public final class Environment {
         }
         finally {
             gf_home = gf_homeNotFinal;
+            domains_home = new File(gf_home, "domains");
         }
     }
 }

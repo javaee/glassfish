@@ -93,7 +93,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
 
     @Override
     public File getGlassFishHome() {
-        return Environment.getGlassFishHome();
+        return TestEnv.getGlassFishHome();
     }
 
     // Allow old-style and new-style simultaneously.  But prefer the latter.
@@ -145,7 +145,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
 
     // convenience method
     static boolean isHadas() {
-        return Environment.isHadas();
+        return TestEnv.isHadas();
     }
 
     public static File getLogFile(File installDir, String domainName) {

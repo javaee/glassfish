@@ -40,7 +40,7 @@
 package admin.monitoring;
 
 import admin.AdminBaseDevTest;
-import admin.Environment;
+import admin.TestEnv;
 import com.sun.appserv.test.BaseDevTest.AsadminReturn;
 import java.io.*;
 import java.net.*;
@@ -204,7 +204,7 @@ abstract class MonTest {
     final void createInstances() {
         verifyInstances(false);
 
-        if (Environment.isHadas()) {
+        if (TestEnv.isHadas()) {
             createInstancesHadas();
         }
         else {
@@ -256,7 +256,7 @@ abstract class MonTest {
 
     final void startInstances() {
         // ugly fast and temporary
-        boolean hadas = Environment.isHadas();
+        boolean hadas = TestEnv.isHadas();
         verifyInstances(true);
 
         for (String iname : INSTANCES) {
@@ -276,7 +276,7 @@ abstract class MonTest {
 
     final void stopInstances() {
         // ugly fast and temporary
-        boolean hadas = Environment.isHadas();
+        boolean hadas = TestEnv.isHadas();
         verifyInstances(true);
 
         for (String iname : INSTANCES) {
@@ -296,7 +296,7 @@ abstract class MonTest {
 
     final void deleteInstances() {
         // ugly fast and temporary
-        boolean hadas = Environment.isHadas();
+        boolean hadas = TestEnv.isHadas();
         stopInstances();
         // wen 18707 gets fixed this will naturally fail.  Atthat time remove the
         // superfluous --domain arg
