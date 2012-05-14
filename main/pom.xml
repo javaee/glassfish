@@ -266,7 +266,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version> 2.0.1 </version>
+                    <version> 2.3.4 </version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -520,6 +520,20 @@
           <addGroupIdToProjectName>true</addGroupIdToProjectName>
         </configuration>
       </plugin>
+
+      <!-- This is needed so that the bundle generator can
+           operate on the manifest file
+        -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+
             <!-- Configure maven-bundle-plugin to generate OSGi manifest.
                  Please note: we use the manifest goal only and not the bundle goal.
                   The bundle goal can lead to very surprising results if the
@@ -532,13 +546,6 @@
                     <!-- By default, we don't export anything.
                     -->
                     <Export-Package></Export-Package>
-                    <!-- Since, we are in a top level pom and
-                         we we don't want it to be active for plain jar type artifacts,
-                         enable the plugin for hk2-jar and bundle packaging type only,
-                    -->
-                    <supportedProjectTypes>
-                        <supportedProjectType>bundle</supportedProjectType>
-                    </supportedProjectTypes>
                     <instructions>
                         <!-- Read all the configuration from osgi.bundle file, if it exists.
                              See Felix-699 to find out why we use ${basedir}.
