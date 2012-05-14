@@ -63,8 +63,16 @@ public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 	 * @param classLoader The classloader to use, may not be null
 	 */
 	public Hk2LoaderPopulatorPostProcessor(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+		if (classLoader != null) {
+           this.classLoader = classLoader;
+		} else {
+			this.classLoader = getClass().getClassLoader();
+		}
     }
+
+	public Hk2LoaderPopulatorPostProcessor() {
+		this(null);
+	}
 	
 	/**
 	 * Uses the given classloader to load the class from the descriptor
