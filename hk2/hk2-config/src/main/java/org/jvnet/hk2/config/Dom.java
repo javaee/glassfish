@@ -45,6 +45,7 @@ import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.stream.Location;
@@ -174,7 +175,7 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
         ctrs.add(ConfigBean.class);
         DomDescriptor domDesc = new DomDescriptor(this, ctrs, PerLookup.class,
                 typeName(), new HashSet<Annotation>());
-        domDesc.setLoader(this.model.injector.getLoader());
+        domDesc.setLoader(new HolderHK2LoaderImpl(this.model.classLoaderHolder));
         dc.addActiveDescriptor(domDesc);
 
         String key = getKey();
