@@ -153,7 +153,7 @@ public class NodeTest extends AdminBaseDevTest {
               "--sshuser", thisUser,
               "--sshkeyfile", "/any/old/path",
               "--sshport", "22",
-              "--nodedir", "/another/any/old/path",
+              "--domaindir", "/another/any/old/path",
               "--force", "true"},
         };
 

@@ -118,11 +118,11 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
 
      @Override
     public File getDASDomainXML() {
-        return getDASDomainXML("domain1");
+         return TestEnv.getDomainXml();
     }
 
     File getDASDomainXML(String domainName) {
-        return new File(new File(getDASDomainDir(domainName), "config"), "domain.xml");
+         return TestEnv.getDomainXml(domainName);
     }
 
     @Override
