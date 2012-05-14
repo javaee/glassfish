@@ -43,17 +43,20 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	
     <parent>
-        <groupId>org.glassfish</groupId>
-        <artifactId>glassfish-parent</artifactId>
-        <version>3.2-SNAPSHOT</version>
-    </parent>
+<groupId>net.java</groupId>
+<artifactId>jvnet-parent</artifactId>
+<version>3</version>
+</parent> 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.devtests</groupId>
+	<version>4.0-SNAPSHOT</version>
     <artifactId>report-builder</artifactId>
     <packaging>jar</packaging>
     <name>report-builder</name>
     <build>
+		<finalName>${artifactId}</finalName>
         <defaultGoal>install</defaultGoal>
         <plugins>
             <plugin>
@@ -81,15 +84,6 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>glassfish-nexus</id>
-            <url>http://maven.glassfish.org/content/groups/glassfish</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>
