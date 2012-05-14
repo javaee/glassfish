@@ -389,12 +389,6 @@ public class AsadminMain {
                             CLIUtil.getLocalCommands(habitat),
                             strings.get("ClosestMatchedLocalCommands"), logger);
                 } catch (InvalidCommandException e) {
-                    List<ActiveDescriptor<?>> allDescriptors = habitat.getDescriptors(BuilderHelper.allFilter());
-                    for (ActiveDescriptor<?> ad : allDescriptors) {
-                        System.out.println("JRW(10) AsadminMain for Hudson: " + ad);
-                        
-                    }
-                    System.out.println("JRW(20) AsadminMain for Hudson done printing all descriptors");
                     logger.info(
                             strings.get("InvalidRemoteCommand", command));
                 }
