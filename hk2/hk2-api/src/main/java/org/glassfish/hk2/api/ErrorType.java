@@ -37,27 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
-
-import org.glassfish.hk2.api.ErrorInformation;
-import org.glassfish.hk2.api.ErrorService;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.PerLookup;
+package org.glassfish.hk2.api;
 
 /**
+ * This enumeration describes the types of errors that might
+ * occur
+ * 
  * @author jwells
  *
  */
-@PerLookup
-public class BadErrorService implements ErrorService {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)
+public enum ErrorType {
+    /**
+     * This method is called if an ActiveDescriptor fails to reify properly during a lookup operation.
+     * To the caller of the lookup operation it will appear as though the passed descriptor does not
+     * exist.  The descriptor will not be automatically removed from the system.
      */
-    @Override
-    public void onFailure(ErrorInformation ei) throws MultiException {
-        throw new AssertionError("not called");
-
-    }
+    FAILURE_TO_REIFY
 
 }

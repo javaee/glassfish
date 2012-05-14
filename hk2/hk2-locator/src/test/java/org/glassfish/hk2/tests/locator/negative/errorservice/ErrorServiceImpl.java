@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.negative.errorservice;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ErrorInformation;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
@@ -63,11 +64,10 @@ public class ErrorServiceImpl implements ErrorService {
      * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)
      */
     @Override
-    public void failureToReify(ActiveDescriptor<?> descriptor,
-            Injectee injectee, MultiException me) {
-        this.descriptor = descriptor;
-        this.injectee = injectee;
-        this.me = me;
+    public void onFailure(ErrorInformation ei) {
+        this.descriptor = (ActiveDescriptor<?>) ei.getDescriptor();
+        this.injectee = ei.getInjectee();
+        this.me = ei.getAssociatedException();
 
         if (doThrow) {
             if (reThrow) {
