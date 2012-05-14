@@ -112,6 +112,7 @@
 	<ant dir="appbasedMonitoring" target="all"/>
 	<ant dir="jpa-dsd" target="all" />
 	<ant dir="jpa-dsd" target="all-appclient-exposed-dsd"/>
+	<ant dir="stmtCaching_hit_miss.fixed" target="all"/>
 
 	<!--<antcall target="all-oracle"/>-->
     </target>
