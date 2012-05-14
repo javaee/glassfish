@@ -1088,6 +1088,6 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     @Override
     public List<ServiceHandle<?>> getAllServiceHandles(Annotation qualifier,
             Annotation... qualifiers) throws MultiException {
-        return (List<ServiceHandle<?>>) getAllServiceHandles(qualifier, qualifiers);
+        return (List<ServiceHandle<?>>) delegate.getAllServiceHandles(qualifier, qualifiers);
     }
 }
