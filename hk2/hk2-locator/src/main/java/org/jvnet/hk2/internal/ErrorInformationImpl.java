@@ -37,27 +37,64 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
+package org.jvnet.hk2.internal;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.ErrorInformation;
-import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.PerLookup;
 
 /**
  * @author jwells
  *
  */
-@PerLookup
-public class BadErrorService implements ErrorService {
+public class ErrorInformationImpl implements ErrorInformation {
+    private final ErrorType errorType;
+    private final Descriptor descriptor;
+    private final Injectee injectee;
+    private final MultiException exception;
+    
+    /* package */ ErrorInformationImpl(ErrorType errorType,
+            Descriptor descriptor,
+            Injectee injectee,
+            MultiException exception) {
+        this.errorType = errorType;
+        this.descriptor = descriptor;
+        this.injectee = injectee;
+        this.exception = exception;
+    }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)
+     * @see org.glassfish.hk2.api.ErrorInformation#getErrorType()
      */
     @Override
-    public void onFailure(ErrorInformation ei) throws MultiException {
-        throw new AssertionError("not called");
+    public ErrorType getErrorType() {
+        return errorType;
+    }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ErrorInformation#getDescriptor()
+     */
+    @Override
+    public Descriptor getDescriptor() {
+        return descriptor;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ErrorInformation#getInjectee()
+     */
+    @Override
+    public Injectee getInjectee() {
+        return injectee;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ErrorInformation#getAssociatedException()
+     */
+    @Override
+    public MultiException getAssociatedException() {
+        return exception;
     }
 
 }

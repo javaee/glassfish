@@ -41,9 +41,8 @@ package org.jvnet.hk2.testing.junit.internal;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ErrorInformation;
 import org.glassfish.hk2.api.ErrorService;
-import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 
 /**
@@ -57,11 +56,10 @@ public class ErrorServiceImpl implements ErrorService {
      * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)
      */
     @Override
-    public void failureToReify(ActiveDescriptor<?> descriptor,
-            Injectee injectee, MultiException me) throws MultiException {
+    public void onFailure(ErrorInformation ei) throws MultiException {
         // This simple rethrows the given exception, so that any lookups that
         // possibly should have failed will fail due to classloader issues
-        throw me;
+        throw ei.getAssociatedException();
     }
 
 }

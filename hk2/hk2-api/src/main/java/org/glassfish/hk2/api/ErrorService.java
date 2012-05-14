@@ -56,21 +56,16 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface ErrorService {
     /**
-     * This method is called if an ActiveDescriptor fails to reify properly during a lookup operation.
-     * To the caller of the lookup operation it will appear as though the passed descriptor does not
-     * exist.  The descriptor will not be automatically removed from the system.  This method may
+     * This method is called when a failure occurs in the system.  This method may
      * use any {@link ServiceLocator} api.  For example, an implementation of this method might want
-     * to remove the offending descriptor from the registry if the error can be determined to be a
+     * to remove a descriptor from the registry if the error can be determined to be a
      * permanent failure.
      * 
-     * @param descriptor The descriptor that failed to reify.  Will not be null
-     * @param injectee The injectee on behalf of whom this descriptor was being searched.  May be
-     * null if there is no known injectee (for example, if this is being called from the API).
-     * @param me The failure (or set of failures) that caused this descriptor to not become reified
+     * @param errorInformation Information about the error that occurred
      * @throws MultiException if this method throws an exception that exception will be thrown back to
      * the caller wrapped in another MultiException
      */
-    public void failureToReify(ActiveDescriptor<?> descriptor, Injectee injectee, MultiException me)
+    public void onFailure(ErrorInformation errorInformation)
         throws MultiException;
 
 }

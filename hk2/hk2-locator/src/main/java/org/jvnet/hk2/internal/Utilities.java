@@ -71,6 +71,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
@@ -196,9 +197,11 @@ public class Utilities {
         for (ErrorResults errorResult : results.getErrors()) {
             for (ErrorService eService : callThese) {
                 try {
-                    eService.failureToReify(errorResult.getDescriptor(),
+                    eService.onFailure(new ErrorInformationImpl(
+                            ErrorType.FAILURE_TO_REIFY,
+                            errorResult.getDescriptor(),
                             errorResult.getInjectee(),
-                            errorResult.getMe());
+                            errorResult.getMe()));
                 }
                 catch (MultiException me) {
                     for (Throwable th : me.getErrors()) {

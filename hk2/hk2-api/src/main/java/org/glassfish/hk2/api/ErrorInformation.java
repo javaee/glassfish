@@ -37,27 +37,53 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
-
-import org.glassfish.hk2.api.ErrorInformation;
-import org.glassfish.hk2.api.ErrorService;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.PerLookup;
+package org.glassfish.hk2.api;
 
 /**
+ * This class has information in it about the error that
+ * has occurred
+ * 
  * @author jwells
  *
  */
-@PerLookup
-public class BadErrorService implements ErrorService {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)
+public interface ErrorInformation {
+    /**
+     * Gets the type of error that has occurred.  Code should be
+     * written such that future error types are handled appropriately.
+     * 
+     * @return At this time this will always be FAILURE_TO_REIFY
      */
-    @Override
-    public void onFailure(ErrorInformation ei) throws MultiException {
-        throw new AssertionError("not called");
-
-    }
-
+    public ErrorType getErrorType();
+    
+    /**
+     * This will contain the active descriptor that is associated
+     * with this failure.  In the case of FAILURE_TO_REIFY it will
+     * contain the descriptor that failed to reify.
+     * 
+     * @return The descriptor associated with this failure
+     */
+    public Descriptor getDescriptor();
+    
+    /**
+     * This will contain information about the Injectee that was being
+     * injected into when the error occurred.
+     * <p>
+     * In the case of FAILURE_TO_REIFY this will be the injectee that was
+     * being looked up to satisfy the injection point, or null if this lookup
+     * was due to an API call
+     * 
+     * @return The injectee associated with this failure
+     */
+    public Injectee getInjectee();
+    
+    /**
+     * This will contain the associated exception or exceptions that caused
+     * the failure.
+     * <p>
+     * In the case of FAILURE_TO_REIFY this will contain the exception that caused
+     * the reification process to fail
+     * 
+     * @return The exception associated with this failure
+     */
+    public MultiException getAssociatedException();
 }
