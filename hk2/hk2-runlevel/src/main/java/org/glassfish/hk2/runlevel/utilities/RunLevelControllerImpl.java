@@ -269,15 +269,6 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
     private ServiceLocator serviceLocator;
 
     @Inject
-    private IterableProvider<RunLevelListener> allRunLevelListeners;
-
-    @Inject
-    private IterableProvider<Activator> allActivators;
-
-    @Inject
-    private IterableProvider<Sorter> allSorters;
-
-    @Inject
     private Provider<RunLevelContext> contextProvider;
 
     // used for eventing an {@link RunLevelListener}s
@@ -583,10 +574,15 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
      */
     protected synchronized Activator getActivator() {
         Collection<Activator> activators = new ArrayList<Activator>();
-        for (ServiceHandle<Activator> serviceHandle : allActivators.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelControllerName(
-                    serviceHandle.getActiveDescriptor()))) {
-                activators.add(serviceHandle.getService());
+        List<ActiveDescriptor<?>> allActivators =
+                serviceLocator.getDescriptors(BuilderHelper.createContractFilter(Activator.class.getName()));
+
+        for (ActiveDescriptor<?> descriptor : allActivators) {
+            if (name.equals(Utilities.getRunLevelControllerName(descriptor))) {
+                final Activator activator = (Activator) serviceLocator.getServiceHandle(descriptor).getService();
+                if (activator != this) {
+                    activators.add(activator);
+                }
             }
         }
         return (activators.isEmpty()) ? this : activators.iterator().next();
@@ -599,10 +595,12 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
      */
     protected synchronized Collection<RunLevelListener> getListeners() {
         Collection<RunLevelListener> listeners = new ArrayList<RunLevelListener>();
-        for (ServiceHandle<RunLevelListener> serviceHandle : allRunLevelListeners.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelControllerName(
-                    serviceHandle.getActiveDescriptor()))) {
-                listeners.add(serviceHandle.getService());
+        List<ActiveDescriptor<?>> allRunLevelListeners =
+                serviceLocator.getDescriptors(BuilderHelper.createContractFilter(RunLevelListener.class.getName()));
+
+        for (ActiveDescriptor<?> descriptor : allRunLevelListeners) {
+            if (name.equals(Utilities.getRunLevelControllerName(descriptor))) {
+                listeners.add((RunLevelListener) serviceLocator.getServiceHandle(descriptor).getService());
             }
         }
         return listeners;
@@ -615,10 +613,12 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
      */
     protected synchronized Sorter getSorter() {
         Collection<Sorter> sorters = new ArrayList<Sorter>();
-        for (ServiceHandle<Sorter> serviceHandle : allSorters.handleIterator()) {
-            if (name.equals(Utilities.getRunLevelControllerName(
-                    serviceHandle.getActiveDescriptor()))) {
-                sorters.add(serviceHandle.getService());
+        List<ActiveDescriptor<?>> allSorters =
+                serviceLocator.getDescriptors(BuilderHelper.createContractFilter(Sorter.class.getName()));
+
+        for (ActiveDescriptor<?> descriptor : allSorters) {
+            if (name.equals(Utilities.getRunLevelControllerName(descriptor))) {
+                sorters.add((Sorter) serviceLocator.getServiceHandle(descriptor).getService());
             }
         }
         return (sorters.isEmpty()) ? null : sorters.iterator().next();
@@ -801,6 +801,8 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
                 }
             }
 
+            Activator ia = getActivator();
+
             if (!activations.isEmpty()) {
                 if (logger.isLoggable(LEVEL)) {
                     logger.log(LEVEL, "sorting {0}", activations);
@@ -810,8 +812,6 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
                 if (sorter != null) {
                     sorter.sort(activations);
                 }
-
-                Activator ia = getActivator();
 
                 for (ActiveDescriptor<?> descriptor : activations) {
                     if (logger.isLoggable(LEVEL)) {
@@ -827,12 +827,11 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
                         checkInterrupt(e, descriptor, null);
                     }
                 }
-
-                try {
-                    ia.awaitCompletion(DEFAULT_ASYNC_WAIT, TimeUnit.MILLISECONDS);
-                } catch (Exception e) {
-                    checkInterrupt(e, null, null);
-                }
+            }
+            try {
+                ia.awaitCompletion(DEFAULT_ASYNC_WAIT, TimeUnit.MILLISECONDS);
+            } catch (Exception e) {
+                checkInterrupt(e, null, null);
             }
         }
 
