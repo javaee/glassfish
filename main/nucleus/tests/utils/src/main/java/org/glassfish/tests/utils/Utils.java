@@ -59,6 +59,7 @@ import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.jvnet.hk2.component.Habitat;
@@ -143,7 +144,10 @@ public class Utils {
             logger.addHandler(new ConsoleHandler());
             logger.setLevel(Level.INFO);
             
-            config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(logger));
+            AbstractActiveDescriptor<Logger> loggerDescriptor = BuilderHelper.createConstantDescriptor(logger);
+            loggerDescriptor.addContractType(Logger.class);
+            
+			config.addActiveDescriptor(loggerDescriptor);
             
             config.commit();
 			
