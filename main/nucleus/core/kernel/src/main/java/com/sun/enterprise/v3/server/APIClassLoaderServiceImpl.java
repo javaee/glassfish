@@ -84,7 +84,8 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
      */
 
     private ClassLoader theAPIClassLoader;
-    @Inject
+    
+    //TODO: was @Inject
     ModulesRegistry mr;
     private static final String APIExporterModuleName =
             "GlassFish-Application-Common-Module"; // NOI18N
