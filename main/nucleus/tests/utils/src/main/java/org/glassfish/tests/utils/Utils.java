@@ -45,8 +45,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -54,6 +56,9 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
+import org.glassfish.hk2.internal.ConstantActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
@@ -127,11 +132,13 @@ public class Utils {
 			DynamicConfiguration config = dcs.createDynamicConfiguration();
 			
 			config.addActiveDescriptor(DefaultErrorService.class);
-			
-			config.commit();
+
+            config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new StartupContext(new Properties())));
+
+            config.commit();
 			
 			habitat = new Habitat(); // implicitly binds in ServiceLocator
-	    	
+
 			try {
 				HK2Populator.populate(serviceLocator,
 						new ClasspathDescriptorFileFinder(),
