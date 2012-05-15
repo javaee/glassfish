@@ -95,8 +95,7 @@ public class GetSetTest extends AdminBaseDevTest {
         String[] lines = rv.out.split("[\r\n]");
         if (!rv.returnValue) return;
 
-        lines[0] = ""; // erase the output from the --echo option
-        
+        filterJunk(lines);
         List<String> setlines = new ArrayList(lines.length);
         for (String line : lines) {
             line = filterSet(line);
@@ -126,7 +125,7 @@ public class GetSetTest extends AdminBaseDevTest {
             String[] lines = rv.out.split("[\r\n]");
             if (!rv.returnValue) continue;
 
-            lines[0] = ""; // erase the output from the --echo option
+            filterJunk(lines);
         
             for (String line : lines) {
                 line = filterSet(line);
@@ -188,7 +187,8 @@ public class GetSetTest extends AdminBaseDevTest {
         int cnt = 0;
         nvs[0] = "set";
         for (String line : reqs) {
-            if (line.trim().length() == 0) continue;
+            if (line.trim().length() == 0)
+                continue;
             nvs[nvi++ % nvs.length] = line;
             if (nvi % nvs.length == 0) {
                 boolean ret = asadmin(nvs);
@@ -208,6 +208,15 @@ public class GetSetTest extends AdminBaseDevTest {
         // run the last few by themselves
         for (int i = 1; i < nvi; i++) {
             report(tname + "set-end" + "-" + i, asadmin("set", nvs[i]));
+        }
+    }
+    private void filterJunk(String[] lines) {
+        // set junk to empty strings
+        for (int i = 0; i < lines.length; i++) {
+            if (lines[i].startsWith("configs"))
+                return;
+
+            lines[i] = "";
         }
     }
 }
