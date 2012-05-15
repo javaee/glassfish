@@ -247,21 +247,37 @@ public class ReflectionHelper {
             genericSuperclass = rawClass.getGenericSuperclass();
         }
         
+        Set<Class<?>> alreadyHandled = new HashSet<Class<?>>();
         while (originalRawClass != null) {
-            Type genericInterfaces[] = originalRawClass.getGenericInterfaces();
-            for (Type genericInterface : genericInterfaces) {
-                Class<?> rawClass = getRawClass(genericInterface);
-                if (rawClass == null) continue;
-            
-                if (rawClass.isAnnotationPresent(markerAnnotation)) {
-                    retVal.add(genericInterface);
-                }
-            }
+            getAllContractsFromInterfaces(originalRawClass,
+                markerAnnotation,
+                retVal,
+                alreadyHandled);
             
             originalRawClass = originalRawClass.getSuperclass();
         }
         
         return retVal;
+    }
+    
+    private static void getAllContractsFromInterfaces(Class<?> clazzOrInterface,
+            Class<? extends Annotation> markerAnnotation,
+            Set<Type> addToMe,
+            Set<Class<?>> alreadyHandled) {
+        Type interfacesAsType[] = clazzOrInterface.getGenericInterfaces();
+        
+        for (Type interfaceAsType : interfacesAsType) {
+            Class<?> interfaceAsClass = getRawClass(interfaceAsType);
+            if (interfaceAsClass == null) continue;
+            if (alreadyHandled.contains(interfaceAsClass)) continue;
+            alreadyHandled.add(interfaceAsClass);
+            
+            if (interfaceAsClass.isAnnotationPresent(markerAnnotation)) {
+                addToMe.add(interfaceAsType);
+            }
+            
+            getAllContractsFromInterfaces(interfaceAsClass, markerAnnotation, addToMe, alreadyHandled);
+        }
     }
     
     /**

@@ -58,7 +58,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  *
  */
 @Blue @Green @NotQualifierAnnotation @Red
-public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterface, MarkerInterface2 {
+public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterface, MarkerInterface2, MarkerInterface3 {
     private final static Set<String> FULL_CONTRACTS = new HashSet<String>();
     /** Given name */
     public final static String FULL_NAME = "Full";

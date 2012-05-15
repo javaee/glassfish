@@ -201,13 +201,15 @@ public class BuilderHelperTest {
         Assert.assertEquals(FullDescriptorImpl.class.getName(), cDesc.getImplementation());
         Assert.assertEquals(FullDescriptorImpl.class, cDesc.getImplementationClass());
         
-        Assert.assertEquals(2, cDesc.getAdvertisedContracts().size());
+        Assert.assertEquals(3, cDesc.getAdvertisedContracts().size());
         Assert.assertTrue(cDesc.getAdvertisedContracts().contains(FullDescriptorImpl.class.getName()));
         Assert.assertTrue(cDesc.getAdvertisedContracts().contains(MarkerInterface2.class.getName()));
+        Assert.assertTrue(cDesc.getAdvertisedContracts().contains(MarkerInterface4.class.getName()));
         
-        Assert.assertEquals(2, cDesc.getContractTypes().size());
+        Assert.assertEquals(3, cDesc.getContractTypes().size());
         Assert.assertTrue(cDesc.getContractTypes().contains(FullDescriptorImpl.class));
         Assert.assertTrue(cDesc.getContractTypes().contains(MarkerInterface2.class));
+        Assert.assertTrue(cDesc.getContractTypes().contains(MarkerInterface4.class));
         
         Assert.assertNull(cDesc.getName());
         
