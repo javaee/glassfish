@@ -44,18 +44,20 @@ package com.sun.enterprise.v3.server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.util.Result;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.hk2.component.InhabitantParser;
-import com.sun.hk2.component.InhabitantsParser;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
 import org.glassfish.api.StartupRunLevel;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
-import org.glassfish.hk2.ComponentException;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.hk2.runlevel.RunLevel;
+import org.glassfish.hk2.runlevel.RunLevelController;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.InitRunLevel;
 import org.glassfish.internal.api.PostStartup;
@@ -64,26 +66,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.glassfish.hk2.runlevel.RunLevel;
-import org.glassfish.hk2.runlevel.RunLevelController;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
-import java.io.File;
-import java.io.FileFilter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -93,12 +84,6 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Tom Beerbower
  */
-/*
-@RunWith(Hk2Runner.class)
-@Hk2RunnerOptions(classpathFilter          = AppServerStartupTest.TestFileFilter.class,
-                  habitatFactory           = AppServerStartupTest.TestHabitatFactory.class,
-                  inhabitantsParserFactory = AppServerStartupTest.TestInhabitantsParserFactory.class)
-                  */
 public class AppServerStartupTest extends HK2Runner {
 
     // ----- data members ----------------------------------------------------
@@ -113,17 +98,6 @@ public class AppServerStartupTest extends HK2Runner {
      */
     private static Results results;
 
-    /**
-     * Set of inhabitant type names that should be filtered out by the {@link TestInhabitantsParser}.
-     * Used to filter out unused inhabitants that result in unresolved dependencies.
-     */
-    private static final Set<String> setFilteredInhabitantTypeNames = new HashSet<String>();
-
-    /**
-     * Set of run level service type names that we allow to pass through the {@link TestInhabitantsParser}.
-     * Used to limit the run level services to those that are testable or required for testing.
-     */
-    private static final Set<String> setRunLevelServiceTypeNames = new HashSet<String>();
 
     /**
      * Map of exceptions to be thrown from the postConstruct.
@@ -135,25 +109,6 @@ public class AppServerStartupTest extends HK2Runner {
      * services during progression to the start up run level.
      */
     private static List<TestFuture> listFutures = null;
-
-    /**
-     * Initialize the static sets of type names for the {@link TestInhabitantsParser}.
-     */
-    static {
-        setFilteredInhabitantTypeNames.add("org.glassfish.internal.api.Globals");
-        setFilteredInhabitantTypeNames.add("com.sun.enterprise.v3.server.ApplicationLoaderService");
-        setFilteredInhabitantTypeNames.add("com.sun.enterprise.v3.admin.CommandRunnerImpl");
-
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.AppServerStartupTest$TestInitService");
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.AppServerStartupTest$TestInitRunLevelService");
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.AppServerStartupTest$TestStartupService");
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.AppServerStartupTest$TestStartupRunLevelService");
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.AppServerStartupTest$TestPostStartupService");
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.AppServerStartupTest$TestPostStartupRunLevelService");
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.InitRunLevelBridge");
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.StartupRunLevelBridge");
-        setRunLevelServiceTypeNames.add("com.sun.enterprise.v3.server.PostStartupRunLevelBridge");
-    }
 
 
     // ----- test initialization ---------------------------------------------
@@ -180,14 +135,15 @@ public class AppServerStartupTest extends HK2Runner {
      */
     @After
     public void afterTest() {
-        if (as.runLevelController.getCurrentRunLevel() > 0) {
-            // force a stop to ensure that the services are released
-            as.env.setStatus(ServerEnvironment.Status.started);
-            as.stop();
+        if (as != null) {
+            if (as.runLevelController.getCurrentRunLevel() > 0) {
+                // force a stop to ensure that the services are released
+                as.env.setStatus(ServerEnvironment.Status.started);
+                as.stop();
+            }
+
+            as.events.unregister(results);
         }
-
-        as.events.unregister(results);
-
         results                    = null;
         listFutures                = null;
         mapPostConstructExceptions = null;
@@ -361,6 +317,7 @@ public class AppServerStartupTest extends HK2Runner {
      *
      * @param badServiceClass  the service class that the exception will be thrown from
      */
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private void testRunLevelServicesWithException(Class badServiceClass) {
         // set an exception to be thrown from TestStartupService.postConstruct()
         mapPostConstructExceptions.put(badServiceClass,
@@ -573,152 +530,4 @@ public class AppServerStartupTest extends HK2Runner {
             return get();
         }
     }
-
-    // ----- Hk2RunnerOptions inner classes  ---------------------------------
-
-    /**
-     * Test file filter that only accepts the files that we need to populate
-     * a {@link Habitat} for this test.
-     */
-    public static class TestFileFilter implements FileFilter {
-
-        private static final String HK2_PATH                       = "hk2" + File.separator + "hk2";
-        private static final String GLASSFISH_API_PATH             = "glassfish-api";
-        private static final String INTERNAL_API_PATH              = "internal-api";
-        private static final String NUCLEUS_CORE_PATH              = "nucleus" + File.separator + "core" + File.separator +
-                                                                     "kernel" + File.separator + "target";
-        private static final String NUCLEUS_CORE_CLASSES_PATH      = NUCLEUS_CORE_PATH + File.separator + "classes";
-        private static final String NUCLEUS_CORE_TEST_CLASSES_PATH = NUCLEUS_CORE_PATH + File.separator + "test-classes";
-
-        @Override
-        public boolean accept(File file) {
-            String sFile = file.toString();
-
-            return (sFile.contains(HK2_PATH) ||
-                    sFile.contains(GLASSFISH_API_PATH) ||
-                    sFile.contains(INTERNAL_API_PATH) ||
-                    sFile.contains(NUCLEUS_CORE_CLASSES_PATH) ||
-                    sFile.contains(NUCLEUS_CORE_TEST_CLASSES_PATH));
-        }
-    }
-
-    /**
-     * Factory to create a {@link Habitat} for this test.
-     *
-    public static class TestHabitatFactory implements HabitatFactory {
-
-        @Override
-        public Habitat newHabitat() throws ComponentException {
-            return newHabitat(null, null);
-        }
-
-        @Override
-        public Habitat newHabitat(Services parent, String name) throws ComponentException {
-
-            Habitat habitat = new Habitat(parent, name);
-
-            ModulesRegistry registry = new StaticModulesRegistry(this.getClass().getClassLoader());
-            habitat.addIndex(new ExistingSingletonInhabitant<ModulesRegistry>(registry),
-                    ModulesRegistry.class.getName(), null);
-
-            ExecutorService service = new ThreadPoolExecutor(10, 100,
-                20, TimeUnit.SECONDS,
-                new SynchronousQueue(),
-                new ThreadPoolExecutor.CallerRunsPolicy());
-
-            habitat.addIndex(new ExistingSingletonInhabitant<ExecutorService>(service),
-                    ExecutorService.class.getName(), null);
-
-            CommonClassLoaderServiceImpl ccl = new CommonClassLoaderServiceImpl();
-            habitat.addIndex(new ExistingSingletonInhabitant<CommonClassLoaderServiceImpl>(ccl),
-                    CommonClassLoaderServiceImpl.class.getName(), null);
-
-            SystemTasks systemTasks = new TestSystemTasks();
-            habitat.addIndex(new ExistingSingletonInhabitant<SystemTasks>(systemTasks),
-                    SystemTasks.class.getName(), null);
-
-            return habitat;
-        }
-    }
-    */
-
-    /**
-     * Test {@link SystemTasks} implementation.
-     */
-    public static class TestSystemTasks extends SystemTasksImpl {
-        @Override
-        public void writePidFile() {
-            // do nothing.
-        }
-    }
-
-    /**
-     * Factory to create a new {@link InhabitantsParser} for this test.
-     *
-    public static class TestInhabitantsParserFactory implements InhabitantsParserFactory {
-        @Override
-        public InhabitantsParser createInhabitantsParser(Habitat habitat) {
-            return new TestInhabitantsParser(habitat);
-        }
-    }
-     */
-
-    /**
-     * Inhabitant parser used for this test.  Allows for the filtering
-     * of non-required inhabitants and inhabitants for non-testable run
-     * level services.
-     *
-    public static class TestInhabitantsParser extends InhabitantsParser {
-
-        public TestInhabitantsParser(Habitat habitat) {
-            super(habitat);
-        }
-
-        @Override
-        protected boolean isFilteredInhabitant(InhabitantParser inhabitantParser) {
-            if (isRunLevelService(inhabitantParser)) {
-                if (!setRunLevelServiceTypeNames.contains(inhabitantParser.getImplName())) {
-                    return true;
-                }
-            }
-
-            return super.isFilteredInhabitant(inhabitantParser);
-        }
-
-        @Override
-        protected boolean isFilteredInhabitant(String typeName) {
-
-            return setFilteredInhabitantTypeNames.contains(typeName) ||
-                    super.isFilteredInhabitant(typeName);
-        }
-
-        /**
-         * Determines whether or not the given inhabitant parser is for
-         * a run level service (annotated with {@link RunLevel} or implements
-         * {@link Init}, {@link Startup}, or {@link PostStartup}).
-         *
-         * @param inhabitantParser  the inhabitant parser
-         *
-         * @return true iff the given inhabitant parser is for a run level service
-         *
-        private boolean isRunLevelService(InhabitantParser inhabitantParser) {
-
-            String runlevel = inhabitantParser.getMetaData().getOne(RunLevel.META_VAL_TAG);
-            if (null != runlevel && runlevel.length() > 0) {
-                return true;
-            }
-
-            Iterable<String> indexes = inhabitantParser.getIndexes();
-            for (String index : indexes) {
-                if (index.equals("org.glassfish.internal.api.Init") ||
-                    index.equals("org.glassfish.api.Startup") ||
-                    index.equals("org.glassfish.internal.api.PostStartup")) {
-                    return true;
-                }
-            }
-            return false;
-        }
-         
-    }
-    */
 }

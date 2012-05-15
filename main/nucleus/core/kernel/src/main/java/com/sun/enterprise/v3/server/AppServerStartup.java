@@ -41,6 +41,41 @@
 package com.sun.enterprise.v3.server;
 
 
+import com.sun.appserv.server.util.Version;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleState;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.StartupContext;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.Result;
+import com.sun.enterprise.v3.common.DoNothingActionReporter;
+import com.sun.logging.LogDomains;
+import org.glassfish.api.Async;
+import org.glassfish.api.FutureProvider;
+import org.glassfish.api.StartupRunLevel;
+import org.glassfish.api.admin.CommandRunner;
+import org.glassfish.api.admin.ParameterMap;
+import org.glassfish.api.admin.ProcessEnvironment;
+import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.event.EventListener.Event;
+import org.glassfish.api.event.EventTypes;
+import org.glassfish.api.event.Events;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.runlevel.Activator;
+import org.glassfish.hk2.runlevel.RunLevelController;
+import org.glassfish.hk2.runlevel.RunLevelListener;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.internal.api.InitRunLevel;
+import org.glassfish.internal.api.PostStartupRunLevel;
+import org.glassfish.server.ServerEnvironmentImpl;
+import org.jvnet.hk2.annotations.Service;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,39 +87,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.sun.appserv.server.util.Version;
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModuleState;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.enterprise.util.Result;
-import com.sun.enterprise.v3.common.DoNothingActionReporter;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import com.sun.logging.LogDomains;
-import org.glassfish.api.Async;
-import org.glassfish.api.FutureProvider;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.ProcessEnvironment;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.event.EventListener.Event;
-import org.glassfish.api.event.EventTypes;
-import org.glassfish.api.event.Events;
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.runlevel.Activator;
-import org.glassfish.hk2.runlevel.RunLevelController;
-import org.glassfish.hk2.runlevel.RunLevelListener;
-import org.glassfish.api.StartupRunLevel;
-import org.glassfish.internal.api.InitRunLevel;
-import org.glassfish.internal.api.PostStartupRunLevel;
-import org.glassfish.server.ServerEnvironmentImpl;
-import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 
 
 /**
@@ -109,7 +111,7 @@ public class AppServerStartup implements ModuleStartup {
     ServerEnvironmentImpl env;
 
     @Inject
-    Habitat habitat;
+    ServiceLocator locator;
 
     @Inject
     ModulesRegistry systemRegistry;
@@ -131,7 +133,7 @@ public class AppServerStartup implements ModuleStartup {
     @org.jvnet.hk2.annotations.Inject
     CommonClassLoaderServiceImpl commonCLS;
 
-    @org.jvnet.hk2.annotations.Inject
+    @Inject
     SystemTasks pidWriter;
     
     @Inject
@@ -228,24 +230,20 @@ public class AppServerStartup implements ModuleStartup {
         }
 
         // prepare the global variables
-        habitat.addComponent(this);
-        habitat.addComponent(systemRegistry);
-        habitat.addComponent(logger);
-        Inhabitant<ProcessEnvironment> inh = habitat.getInhabitantByType(ProcessEnvironment.class);
-        if (inh!=null) {
-            habitat.remove(inh);
-        }
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-        // remove all existing inhabitant to n
-        habitat.removeAllByType(ProcessEnvironment.class);
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(this));
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(systemRegistry));
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(logger));
 
-        if (env.isEmbedded()) {
-            habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(ProcessEnvironment.class,
-                    new ProcessEnvironment(ProcessEnvironment.ProcessType.Embedded)));
-        } else {
-            habitat.add(new ExistingSingletonInhabitant<ProcessEnvironment>(ProcessEnvironment.class,
-                    new ProcessEnvironment(ProcessEnvironment.ProcessType.Server)));
-        }
+        config.addUnbindFilter(BuilderHelper.createContractFilter(ProcessEnvironment.class.getName()));
+
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(
+                env.isEmbedded() ?
+                new ProcessEnvironment(ProcessEnvironment.ProcessType.Embedded):
+                new ProcessEnvironment(ProcessEnvironment.ProcessType.Server)));
+        config.commit();
 
         // activate the run level services
         if (proceedTo(InitRunLevel.VAL, new InitActivator())) {
@@ -288,8 +286,9 @@ public class AppServerStartup implements ModuleStartup {
 
     // TODO(Sahoo): Revisit this method after discussing with Jerome.
     private void shutdown() {
+        ServiceHandle<CommandRunner> serviceHandle = locator.getServiceHandle(CommandRunner.class);
+        CommandRunner runner = serviceHandle.getService();
 
-        CommandRunner runner = habitat.getByContract(CommandRunner.class);
         if (runner!=null) {
            final ParameterMap params = new ParameterMap();
             if (context.getArguments().containsKey("--noforcedshutdown")) {
@@ -346,25 +345,24 @@ public class AppServerStartup implements ModuleStartup {
      * @return false if an error occurred that required server shutdown; true otherwise
      */
     private boolean proceedTo(int runLevel, AppServerActivator activator) {
+        // set up the run level listener and activator
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-        // set up the run level listener
-        habitat.addIndex(new ExistingSingletonInhabitant<RunLevelListener>(activator),
-                RunLevelListener.class.getName(), null);
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(activator));
+
+        config.commit();
+
         try {
-            // set up the activator
-            habitat.addIndex(new ExistingSingletonInhabitant<Activator>(activator),
-                    Activator.class.getName(), null);
-            try {
-                runLevelController.proceedTo(runLevel);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Shutdown required", e);
-                shutdown();
-                return false;
-            } finally {
-                habitat.removeIndex(Activator.class.getName(), null);
-            }
+            runLevelController.proceedTo(runLevel);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Shutdown required", e);
+            shutdown();
+            return false;
         } finally {
-            habitat.removeIndex(RunLevelListener.class.getName(), null);
+            config = dcs.createDynamicConfiguration();
+            config.addUnbindFilter(BuilderHelper.createContractFilter(Activator.class.getName()));
+            config.commit();
         }
         return !activator.isShutdown();
     }
@@ -511,7 +509,7 @@ public class AppServerStartup implements ModuleStartup {
                         logger.log(level, "Running Startup services " + type);
                     }
 
-                    Object startup = habitat.getServiceHandle(activeDescriptor).getService();
+                    Object startup = locator.getServiceHandle(activeDescriptor).getService();
 
                     if (logger.isLoggable(level)) {
                         logger.log(level, "Startup services finished" + startup);
