@@ -46,6 +46,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -135,6 +137,14 @@ public class Utils {
 
             config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new StartupContext(new Properties())));
 
+            // set up a Logger for tests
+            Logger logger = Logger.getLogger("");
+            
+            logger.addHandler(new ConsoleHandler());
+            logger.setLevel(Level.INFO);
+            
+            config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(logger));
+            
             config.commit();
 			
 			habitat = new Habitat(); // implicitly binds in ServiceLocator
