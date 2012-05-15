@@ -45,10 +45,12 @@ import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.ModuleLifecycleListener;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
+import com.sun.enterprise.module.single.SingleModulesRegistry;
 import com.sun.logging.LogDomains;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.main.core.apiexporter.APIExporter;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -85,8 +87,11 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
 
     private ClassLoader theAPIClassLoader;
     
-    //TODO: was @Inject
-    ModulesRegistry mr;
+    @Inject
+    private APIExporter apiExporter;
+    
+    ModulesRegistry mr = new SingleModulesRegistry(APIClassLoader.class.getClassLoader()); //TODO: placeholder
+    
     private static final String APIExporterModuleName =
             "GlassFish-Application-Common-Module"; // NOI18N
     private static final String MAILCAP = "META-INF/mailcap";
@@ -121,9 +126,8 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
     }
 
     private void createAPIClassLoader() throws IOException {
-        APIModule = mr.getModules(APIExporterModuleName).iterator().next();
-        assert (APIModule != null);
-        final ClassLoader apiModuleLoader = APIModule.getClassLoader();
+
+        final ClassLoader apiModuleLoader = apiExporter.getClass().getClassLoader();
         /*
          * We don't directly retrun APIModule's class loader, because
          * that class loader does not delegate to the parent. Instead, it
@@ -183,24 +187,25 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
             blacklist = new HashSet<String>();
 
             // add a listener to manage blacklist in APIClassLoader
-            mr.register(new ModuleLifecycleListener() {
-                public void moduleInstalled(Module module) {
-                    clearBlackList();
-                }
-
-                public void moduleResolved(Module module) {
-                }
-
-                public void moduleStarted(Module module) {
-                }
-
-                public void moduleStopped(Module module) {
-                }
-
-                public void moduleUpdated(Module module) {
-                    clearBlackList();
-                }
-            });
+            // TODO:
+//            mr.register(new ModuleLifecycleListener() {
+//                public void moduleInstalled(Module module) {
+//                    clearBlackList();
+//                }
+//
+//                public void moduleResolved(Module module) {
+//                }
+//
+//                public void moduleStarted(Module module) {
+//                }
+//
+//                public void moduleStopped(Module module) {
+//                }
+//
+//                public void moduleUpdated(Module module) {
+//                    clearBlackList();
+//                }
+//            });
 
         }
 

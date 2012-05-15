@@ -229,6 +229,11 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
+	<dependency>
+		<groupId>org.glassfish.main.core</groupId>
+		<artifactId>api-exporter</artifactId>
+		<version>${project.version}</version>
+	</dependency>
     </dependencies>
     <profiles>
         <profile>
