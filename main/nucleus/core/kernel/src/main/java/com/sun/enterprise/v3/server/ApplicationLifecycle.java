@@ -142,9 +142,6 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
     public ApplicationRegistry appRegistry;
 
     @Inject
-    ModulesRegistry modulesRegistry;
-
-    @Inject
     protected Applications applications;
 
     @Inject @Named( ServerEnvironment.DEFAULT_INSTANCE_NAME)
