@@ -124,7 +124,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("listener_id", "iiop_1");
         parameters.set("enabled", "true");
         parameters.set("securityenabled", "true");
-        CreateIiopListener command = services.byType(CreateIiopListener.class).get();
+        CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
@@ -155,7 +155,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("listeneraddress", "localhost");
         parameters.set("iiopport", "4440");
         parameters.set("listener_id", "iiop_1");
-        CreateIiopListener command = services.byType(CreateIiopListener.class).get();
+        CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
@@ -186,7 +186,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("listeneraddress", "localhost");
         parameters.set("iiopport", "4440");
         parameters.set("listener_id", "iiop_1");
-        CreateIiopListener command1 = services.byType(CreateIiopListener.class).get();
+        CreateIiopListener command1 = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command1);               
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
@@ -203,7 +203,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         assertTrue(isCreated);
         logger.fine("msg: " + context.getActionReport().getMessage());
 
-        CreateIiopListener command2 = services.byType(CreateIiopListener.class).get();
+        CreateIiopListener command2 = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command2);               
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
         int numDupRes = 0;
@@ -230,7 +230,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("listeneraddress", "localhost");
         parameters.set("iiopport", "4440");
         parameters.set("listener_id", "iiop_1");
-        CreateIiopListener command = services.byType(CreateIiopListener.class).get();
+        CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
@@ -268,7 +268,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("iiopport", "4440");
         parameters.set("listener_id", "iiop_1");
         parameters.set("enabled", "junk");
-        CreateIiopListener command = services.byType(CreateIiopListener.class).get();
+        CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
         assertEquals(ActionReport.ExitCode.FAILURE, context.getActionReport().getActionExitCode());
     }
@@ -284,7 +284,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("iiopport", "4440");
         parameters.set("listener_id", "iiop_1");
         parameters.set("enabled", "");
-        CreateIiopListener command = services.byType(CreateIiopListener.class).get();
+        CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
@@ -314,7 +314,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("iiopport", "4440");
         parameters.set("listener_id", "iiop_1");
         parameters.set("securityenabled", "");
-        CreateIiopListener command = services.byType(CreateIiopListener.class).get();
+        CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
         assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
         boolean isCreated = false;
