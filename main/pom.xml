@@ -461,6 +461,17 @@
                             <goal>generateInjectors</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>test-generation</id>
+                        <configuration>
+                            <classpath>${project.build.directory}/classpath.txt</classpath>
+                            <test>true</test>
+                        </configuration>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>generateInjectors</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -477,7 +488,19 @@
                   </goals>
                   <configuration>
                     <sources>
-                      <source>target/generated-sources/hk2-config-generator</source>
+                      <source>target/generated-sources/hk2-config-generator/src/main/java</source>
+                    </sources>
+                  </configuration>
+                </execution>
+                <execution>
+                  <id>add-test-source</id>
+                  <phase>generate-test-sources</phase>
+                  <goals>
+                    <goal>add-test-source</goal>
+                  </goals>
+                  <configuration>
+                    <sources>
+                      <source>target/generated-sources/hk2-config-generator/src/test/java</source>
                     </sources>
                   </configuration>
                 </execution>
