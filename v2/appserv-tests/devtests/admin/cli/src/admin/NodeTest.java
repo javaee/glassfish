@@ -140,6 +140,12 @@ public class NodeTest extends AdminBaseDevTest {
         final String testNamePrefixValidateDelete = "validateDeleteNodeSsh-";
         final String nodeNamePrefix = "n_ssh_";
 
+        // WBN File Layout May 2012
+        String paramName = "--domaindir";
+        
+        if (!TestEnv.isHadas())
+            paramName = "--nodedir";
+
         // List of CLI options to test create-node-ssh with.
         // Each row represents one test. We run create-node-ssh with the
         // options and then verify the results.
@@ -153,7 +159,7 @@ public class NodeTest extends AdminBaseDevTest {
               "--sshuser", thisUser,
               "--sshkeyfile", "/any/old/path",
               "--sshport", "22",
-              "--domaindir", "/another/any/old/path",
+              paramName, "/another/any/old/path",
               "--force", "true"},
         };
 
