@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,31 +38,34 @@
  * holder.
  */
 
-package com.sun.ejb.spi.container;
+package com.sun.gjc.spi.base.datastructure;
 
-import org.jvnet.hk2.annotations.Contract;
+import com.sun.gjc.spi.base.CacheObjectKey;
+import com.sun.gjc.spi.base.PreparedStatementWrapper;
+import org.glassfish.resources.api.PoolInfo;
 
-@Contract
-public interface DistributedEJBTimerService {
+/**
+ * This ia a FIXED size cache implementation.
+ * <p/>
+ * If the cache is full the statement is not added to the cache.
+ *
+ * @author Shalini M
+ */
 
-    public int migrateTimers( String serverId );
+public class FIXEDCacheImpl extends LRUCacheImpl {
 
-    public String[] listTimers( String[] serverIds );
+    public FIXEDCacheImpl(PoolInfo poolInfo, int maxSize) {
+        super(poolInfo, maxSize);
+    }
 
-    /*
-     * Since GMS is now dropped from 8.1, need a mechanism by which a canceltimer
-     * initiated on another server instance would be affected on the owner server
-     * instance. This would be done by reading the database before delivering the
-     * ejbTimeout call to ensure that the timer is still valid. Since this would
-     * lead to potential performance degradation also need to provide some user
-     * interaction to control this behavior.
-     *
-     * For SE/EE the default value if system property is not specified would be
-     * "true" (i.e. always read from DB before delivering a ejbTimeout for a timer)
-     *
-    */
-    public boolean getPerformDBReadBeforeTimeout();
-
-//    public void cancelTimerTask( Object timerId, String ownerServerId );
-
-} //DistributedEJBTimerService.java
+    @Override
+    public void addToCache(CacheObjectKey key, Object o, boolean force) {
+        if (getSize() >= getMaxSize()) {
+            if (o instanceof PreparedStatementWrapper) {
+                ((PreparedStatementWrapper) o).setCached(false);
+            }
+        } else {
+            super.addToCache(key, o, force);
+        }
+    }
+}
