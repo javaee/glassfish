@@ -65,6 +65,11 @@ import com.sun.tools.apt.Main;
 public class ConfigGeneratorPlugin extends AbstractMojo {
     private final static String GENERATED_SOURCES = "generated-sources";
     private final static String APT_GENERATED = "hk2-config-generator";
+    private final static String SRC_NAME = "src";
+    private final static String MAIN_NAME = "main";
+    private final static String TEST_NAME = "test";
+    private final static String JAVA_NAME = "java";
+    
     /**
      * @parameter expression="${basedir}"
      */
@@ -76,9 +81,19 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
     private String buildDirectory;
     
     /**
+     * @parameter expression="${project.build.outputDirectory}"
+     */
+    private String outputDirectory;
+    
+    /**
      * @parameter
      */
     private String classpath;
+    
+    /**
+     * @parameter
+     */
+    private boolean test;
     
     private void getAllJavaFiles(File directory, final LinkedList<String> foundFiles) {
         File allJavaFiles[] = directory.listFiles(new FileFilter() {
@@ -107,9 +122,9 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
     
     private boolean getAllSources(LinkedList<String> args) throws MojoFailureException {
         File dotMe = new File(basedir);
-        File src = new File(dotMe, "src");
-        File main = new File(src, "main");
-        File java = new File(main, "java");
+        File src = new File(dotMe, SRC_NAME);
+        File main = (test) ? new File(src, TEST_NAME) : new File(src, MAIN_NAME);
+        File java = new File(main, JAVA_NAME);
         
         if (!java.exists() && !java.isDirectory()) {
             return false;
@@ -137,6 +152,13 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
             reader.close();
             is.close();
             
+            if (test) {
+                File outputDirectoryFile = new File(outputDirectory);
+                
+                // Make sure to add in the directory that has been built
+                return outputDirectoryFile.getAbsolutePath() + File.pathSeparator + line;
+            }
+            
             return line;
         }
         catch (IOException ioe) {
@@ -149,11 +171,14 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
         File buildDirectoryFile = new File(buildDirectory);
         File generatedSources = new File(buildDirectoryFile, GENERATED_SOURCES);
         File aptGeneratedFile = new File(generatedSources, APT_GENERATED);
+        File srcGeneratedFile = new File(aptGeneratedFile, SRC_NAME);
+        File phaseGeneratedFile = (test) ? new File(srcGeneratedFile, TEST_NAME) : new File(srcGeneratedFile, MAIN_NAME);
+        File javaGeneratedFile = new File(phaseGeneratedFile, JAVA_NAME);
         
         aptGeneratedFile.mkdirs();
         
         args.add("-s");
-        args.add(aptGeneratedFile.getAbsolutePath());
+        args.add(javaGeneratedFile.getAbsolutePath());
     }
     
     private void generateMinusCPOption(LinkedList<String> args) throws MojoFailureException {

@@ -174,6 +174,13 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
             reader.close();
             is.close();
             
+            if (test) {
+                File buildDirectoryFile = new File(outputDirectory);
+                
+                // Make sure to add in the directory that has been built
+                return buildDirectoryFile.getAbsolutePath() + File.pathSeparator + line;
+            }
+            
             return line;
         }
         catch (IOException ioe) {
