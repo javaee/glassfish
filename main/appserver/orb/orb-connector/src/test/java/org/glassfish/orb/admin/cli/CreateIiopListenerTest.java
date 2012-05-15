@@ -84,12 +84,12 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
     @Before
     public void setUp() {
         services = getHabitat();
-        iiopService = services.forContract(IiopService.class).get();
+        iiopService = services.getService(IiopService.class);
         parameters = new ParameterMap();
         context = new AdminCommandContextImpl(
                 LogDomains.getLogger(CreateIiopListenerTest.class, LogDomains.ADMIN_LOGGER),
                 new PropsFileActionReporter());
-        cr = services.forContract(CommandRunner.class).get();
+        cr = services.getService(CommandRunner.class);
     }
 
     @After
