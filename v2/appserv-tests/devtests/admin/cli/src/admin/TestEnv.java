@@ -98,6 +98,12 @@ public final class TestEnv {
     public static File getInstanceDir(String domainName, String nodeName, String instanceName) {
         return new File(getInstancesHome(domainName, nodeName), instanceName);
     }
+    public static File getInstanceConfigDir(String domainName, String nodeName, String instanceName) {
+        return new File(getInstanceDir(domainName, nodeName, instanceName), CONFIG);
+    }
+    public static File getInstanceDomainXml(String domainName, String nodeName, String instanceName) {
+        return new File(getInstanceConfigDir(domainName, nodeName, instanceName), DOMAIN_XML);
+    }
 
     // convenience methods that plug-in domain1
     public static File getDomainHome() {
@@ -126,6 +132,12 @@ public final class TestEnv {
     }
     public static File getInstanceDir(String nodeName, String instanceName) {
         return getInstanceDir(DEFAULT_DOMAIN_NAME, nodeName, instanceName);
+    }
+    public static File getInstanceConfigDir(String nodeName, String instanceName) {
+        return getInstanceConfigDir(DEFAULT_DOMAIN_NAME, nodeName, instanceName);
+    }
+    public static File getInstanceDomainXml(String nodeName, String instanceName) {
+        return getInstanceDomainXml(DEFAULT_DOMAIN_NAME, nodeName, instanceName);
     }
 
     ///////////////////////////////////////////////////////////////////////
