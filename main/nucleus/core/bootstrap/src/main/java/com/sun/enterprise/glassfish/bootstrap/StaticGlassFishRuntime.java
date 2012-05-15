@@ -102,7 +102,7 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
 
             final StartupContext startupContext = new StartupContext(gfProps.getProperties());
 
-            ServiceLocator serviceLocator = main.getServiceLocator();
+            ServiceLocator serviceLocator = main.createServiceLocator(startupContext);
             
             final BaseServiceLocator habitat = serviceLocator.getService(BaseServiceLocator.class);
             

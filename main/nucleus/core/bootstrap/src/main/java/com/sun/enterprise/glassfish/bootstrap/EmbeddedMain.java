@@ -75,12 +75,5 @@ public class EmbeddedMain extends Main {
     public EmbeddedMain(ClassLoader cl) {
     	setDescriptorFileFinder(new ClasspathDescriptorFileFinder(cl));
     	setPopulatorPostProcessor(new Hk2LoaderPopulatorPostProcessor(cl));
-    	
-        try {
-			createServiceLocator(new StartupContext());
-		} catch (BootException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
 }
