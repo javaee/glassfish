@@ -37,80 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component;
-
-import java.util.Collection;
+package org.glassfish.hk2.tests.api;
 
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Provide a simple abstraction for getting services by contract or type.
+ * This interface is a contract and is extended by
+ * an interface that is NOT a contract
+ * 
+ * @author jwells
  *
- * @author Mason Taube
  */
 @Contract
-public interface BaseServiceLocator {
+public interface MarkerInterface4 {
 
-    /**
-     * Loads a component that implements the given contract and has the given
-     * name.
-     * 
-     * @param name
-     *            can be null, in which case it'll only match to the unnamed
-     *            component.
-     * @return null if no such service exists.
-     */
-    <T> T getComponent(Class<T> contract, String name) throws ComponentException;
-
-    /**
-     * Analogous to the following:
-     * <pre>
-     * getComponent(contractClass.getName(), name);
-     * </pre>
-
-     * @param fullQualifiedName the contract class name
-     * @param name
-     *            can be null, in which case it'll only match to the unnamed
-     *            component.
-     * @return null if no such service exists.
-     */
-    <T> T getComponent(String fullQualifiedName, String name);
-    
-    public <T> T getComponent(Class<T> clazz) throws ComponentException;
-    
-    /**
-     * Gets the object of the given type.
-     * 
-     * @return null if not found.
-     */
-    <T> T getByType(Class<T> implType);
-
-    /**
-     * Gets the object of the given type.
-     * 
-     * @return null if not found.
-     */
-    <T> T getByType(String implType);
-
-    /**
-     * Gets the object that has the given contract.
-     * <p/>
-     * <p/>
-     * If there are more than one of them, this method arbitrarily return one of
-     * them.
-     */
-    <T> T getByContract(Class<T> contractType);
-
-    <T> T getByContract(String contractType);
-    
-    /**
-     * Gets all the inhabitants registered under the given {@link Contract}.
-     * This is an example of heterogeneous type-safe container.
-     *
-     * @return can be empty but never null.
-     */
-    <T> Collection<T> getAllByContract(Class<T> contractType);
-
-    <T> Collection<T> getAllByContract(String contractType);
-    
 }
