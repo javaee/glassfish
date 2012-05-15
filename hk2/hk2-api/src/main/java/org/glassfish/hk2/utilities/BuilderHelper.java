@@ -183,13 +183,16 @@ public class BuilderHelper {
     /**
      * This creates a descriptor that will always return the given object.  The
      * set of types in the advertised contracts will contain the class of the
-     * constant and all interfaces implemented by the constant (including those
-     * not marked with &86;Contract).
+     * constant along with:<UL>
+     * <LI>Any superclass of the constant marked with {@link Contract}</LI>
+     * <LI>Any interface of the constant marked with {@link Contract}</LI>
+     * </UL>
      * 
      * @param constant The non-null constant that should always be returned from
      * the create method of this ActiveDescriptor.  
      * @return The descriptor returned can be used in calls to
      * DynamicConfiguration.addActiveDescriptor
+     * @throws IllegalArgumentException if constant is null
      */
     public static <T> AbstractActiveDescriptor<T> createConstantDescriptor(T constant) {
         if (constant == null) throw new IllegalArgumentException();
