@@ -97,7 +97,7 @@ public class Utils {
 
     public static synchronized Habitat getNewHabitat(final ConfigApiTest test) {
 
-        final Habitat habitat = getNewHabitat();
+        final Habitat habitat = getNewHabitat(test.getFileName());
 
         final String fileName = test.getFileName();
 
@@ -124,6 +124,10 @@ public class Utils {
     }
 
     public static Habitat getNewHabitat() {
+    	return getNewHabitat(habitatName);
+    }
+    
+    public static Habitat getNewHabitat(String habitatName) {
     	Habitat habitat = null;
     	
 		if (ServiceLocatorFactory.getInstance().find(habitatName) == null) {
@@ -151,7 +155,7 @@ public class Utils {
             
             config.commit();
 			
-			habitat = new Habitat(); // implicitly binds in ServiceLocator
+			habitat = new Habitat(null, habitatName); // implicitly binds in ServiceLocator
 
 			try {
 				HK2Populator.populate(serviceLocator,
@@ -162,6 +166,6 @@ public class Utils {
 			}
 		}
 		
-    	return (habitat != null) ? habitat : new Habitat();
+    	return (habitat != null) ? habitat : new Habitat(null, habitatName);
     }
 }
