@@ -42,6 +42,7 @@ package org.glassfish.hk2.deprecated.utilities;
 
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -54,6 +55,7 @@ import javax.inject.Singleton;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -65,7 +67,7 @@ public class UtilitiesTest {
 
     @Test
     public void testAddIndex() throws Exception {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testAddDescriptor");
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testAddIndex");
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
