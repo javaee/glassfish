@@ -47,6 +47,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
 
+import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
@@ -74,7 +75,7 @@ import java.util.regex.Pattern;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Dom extends LazyInhabitant implements InvocationHandler, ObservableBean {
+public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationHandler, ObservableBean {
     /**
      * Model drives the interpretation of this DOM.
      */
@@ -939,6 +940,46 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
     public <T extends ConfigBeanProxy> Class<T> getProxyType() {
         return model.getProxyType();
     }
+    
+    /**
+     * This ensures no-one tried to reify this descriptor, which has an impl class
+     * the interface
+     * 
+     * @return always true
+     */
+    public boolean isReified() {
+        return true;
+    }
+    
+    public Class<?> getImplementationClass() {
+        Class<?> retVal = (Class<?>) model.getProxyType();
+        return retVal;
+    }
+    
+    public Set<Type> getContractTypes() {
+        HashSet<Type> retVal = new HashSet<Type>();
+        
+        retVal.add(model.getProxyType());
+        
+        return retVal;
+    }
+    
+    public Class<? extends Annotation> getScopeAnnotation() {
+        String scope = getScope();
+        if (scope != null && scope.equals(Singleton.class.getName())) {
+            return Singleton.class;
+        }
+        
+        return PerLookup.class;
+    }
+    
+    public Set<Annotation> getQualifierAnnotations() {
+        return Collections.emptySet();
+    }
+    
+    public List<Injectee> getInjectees() {
+        return Collections.emptyList();
+    }
 
     /**
      * {@link InvocationHandler} implementation that allows strongly-typed access
@@ -1225,5 +1266,51 @@ public class Dom extends LazyInhabitant implements InvocationHandler, Observable
 
     Collection<ConfigListener> getListeners() {
         return listeners;
+    }
+    
+    private boolean isCacheSet = false;
+    private Object cache;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#getCache()
+     */
+    @Override
+    public Object getCache() {
+        return cache;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#isCacheSet()
+     */
+    @Override
+    public boolean isCacheSet() {
+        return isCacheSet;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#setCache(java.lang.Object)
+     */
+    @Override
+    public void setCache(Object cacheMe) {
+        cache = cacheMe;
+        isCacheSet = true;
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#releaseCache()
+     */
+    @Override
+    public void releaseCache() {
+        isCacheSet = false;
+        cache = null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public Object create(ServiceHandle root) {
+        return createProxy();
     }
 }

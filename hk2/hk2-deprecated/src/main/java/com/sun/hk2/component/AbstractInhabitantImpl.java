@@ -271,7 +271,7 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
 //      }
 //    }
 //
-    protected final void dispose(T object) {
+    public void dispose(Object object) {
       if (object instanceof PreDestroy) {
           logger.log(Level.FINER, "calling PreDestroy on {0}", object);
           ((PreDestroy)object).preDestroy();
