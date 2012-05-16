@@ -67,7 +67,7 @@ public class UtilitiesTest {
 
     @Test
     public void testAddIndex() throws Exception {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testAddIndex");
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("UtilitiesTest:testAddIndex");
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
