@@ -51,16 +51,15 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.LogHelper;
 import com.sun.enterprise.util.LocalStringManagerImpl;
+import com.sun.enterprise.util.uuid.UuidGenerator;
+import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.admin.payload.PayloadImpl;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.AdminCommand;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.Payload;
-import org.glassfish.api.admin.ServerEnvironment;
+import org.glassfish.api.admin.*;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
+import org.glassfish.grizzly.http.Cookie;
 import org.jvnet.hk2.annotations.Optional;
 import org.glassfish.hk2.api.PostConstruct;
 
@@ -99,7 +98,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.jvnet.hk2.component.BaseServiceLocator;
-
 /**
  * Listen to admin commands...
  * @author dochez
@@ -115,6 +113,9 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
     private static final GFBase64Decoder decoder = new GFBase64Decoder();
     private static final String BASIC = "Basic ";
 
+    private static final String SET_COOKIE2_HEADER = "Set-Cookie2";
+
+    public static final String SESSION_COOKIE_NAME = "JSESSIONID";
     private static final String QUERY_STRING_SEPARATOR = "&";
 
     private static final String[] authRelatedHeaderNames = {
@@ -161,6 +162,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
     private boolean isRegistered = false;
             
     CountDownLatch latch = new CountDownLatch(1);
+
 
     protected AdminAdapter(Class<? extends Privacy> privacyClass) {
         super((Set) null);
@@ -249,15 +251,73 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
             ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
             final Properties reportProps = new Properties();
             reportProps.setProperty("data-request-type", "report");
-            outboundPayload.addPart(0, report.getContentType(), "report", 
+            outboundPayload.addPart(0, report.getContentType(), "report",
                     reportProps, bais);
             res.setContentType(outboundPayload.getContentType());
+            String commandName = req.getRequestURI().substring(getContextRoot().length() + 1);
+            if (! hasCookieHeaders(req) && isSingleInstanceCommand(commandName)) {
+               res.addCookie(new Cookie(SESSION_COOKIE_NAME, getSessionID()));
+            }
             outboundPayload.writeTo(res.getOutputStream());
             res.getOutputStream().flush();
             res.finish();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * This method checks if the request has a Cookie header and
+     * if the instance name serving the request is the same as the
+     * jvmRoute information
+     * @param req Request to examine the Cookie header
+     * @return true if the Cookie header is set and the jvmRoute information is correct
+     *
+     */
+    public boolean hasCookieHeaders(Request req) {
+
+        for (String header : req.getHeaders("Cookie")){
+            int index = header.lastIndexOf('"');
+            if (header.contains(SESSION_COOKIE_NAME) &&
+               (header.substring((index+1),header.indexOf(';')-1).equals(server.getName()))) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * This method checks if this command has @ExecuteOn annotation with
+     * RuntimeType.SINGle_INSTANCE
+     * @param commandName  the command which is executed
+     * @return  true only if @ExecuteOn has RuntimeType.SINGLE_INSTANCE false for
+     * other cases
+     */
+    public boolean isSingleInstanceCommand(String commandName) {
+
+        CommandModel model = commandRunner.getModel(commandName,aalogger) ;
+        ExecuteOn executeOn = model.getClusteringAttributes();
+        if ((executeOn != null) && (executeOn.value().length ==1) &&
+                executeOn.value()[0].equals(RuntimeType.SINGLE_INSTANCE)) {
+            return true;
+
+        }
+        return false;
+    }
+
+    /**
+     * This will create a unique SessionId to be added to the Set-Cookie header
+     * @return JSESSIONID string
+     */
+    public String getSessionID() {
+        UuidGenerator uuidGenerator = new UuidGeneratorImpl();
+        String sessionId = uuidGenerator.generateUuid();
+        StringBuffer sb = new StringBuffer();
+        sb.append(sessionId).append(".").append(server.getName());
+
+        return sb.toString();
+
     }
 
     public AdminAccessController.Access authenticate(Request req) throws Exception {
@@ -442,10 +502,17 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
         }
 
         // wbn handle no command and no slash-suffix
-        String command = "";
-
+        String command ="";
         if (requestURI.length() > getContextRoot().length() + 1)
             command = requestURI.substring(getContextRoot().length() + 1);
+
+        // check for a command scope
+        String scope = null;
+        int ci = command.indexOf("/");
+        if (ci != -1) {
+            scope = command.substring(0, ci + 1);
+            command = command.substring(ci + 1);
+        }
         
         String qs = req.getQueryString();
         final ParameterMap parameters = extractParameters(qs);
@@ -460,7 +527,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
             if (aalogger.isLoggable(Level.FINE)) {
                 aalogger.log(Level.FINE, "***** AdminAdapter {0}  *****", req.getMethod());
             }
-            AdminCommand adminCommand = commandRunner.getCommand(command, report, aalogger);
+            AdminCommand adminCommand = commandRunner.getCommand(scope, command, report, aalogger);
             if (adminCommand==null) {
                 // maybe commandRunner already reported the failure?
                 if (report.getActionExitCode() == ActionReport.ExitCode.FAILURE)
@@ -477,7 +544,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
             if (validatePrivacy(adminCommand)) {
             //if (adminCommand.getClass().getAnnotation(Visibility.class).privacy().equals(visibility.privacy())) {
                 // todo : needs to be changed, we should reuse adminCommand
-                CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(command, report);
+                CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(scope, command, report);
                 inv.parameters(parameters).inbound(inboundPayload).outbound(outboundPayload).execute();
                 try {
                     // note it has become extraordinarily difficult to change the reporter!

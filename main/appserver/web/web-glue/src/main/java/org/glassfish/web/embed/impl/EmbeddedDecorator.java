@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,17 +42,13 @@ package org.glassfish.web.embed.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.kohsuke.MetaInfServices;
-
-import com.sun.enterprise.deployment.archivist.WebArchivist;
+import org.glassfish.web.deployment.archivist.WebArchivist;
 
 /**
  * @author Jerome Dochez
  */
-@MetaInfServices
 public class EmbeddedDecorator implements PopulatorPostProcessor {
 
     public String getName() {

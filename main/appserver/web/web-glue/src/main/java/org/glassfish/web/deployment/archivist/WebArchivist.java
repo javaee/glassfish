@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.archivist;
+package org.glassfish.web.deployment.archivist;
 
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.OrderingDescriptor;
@@ -49,23 +49,26 @@ import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 import com.sun.enterprise.deployment.annotation.impl.WarScanner;
+import com.sun.enterprise.deployment.archivist.Archivist;
+import com.sun.enterprise.deployment.archivist.ArchivistFor;
+import com.sun.enterprise.deployment.archivist.ExtensionsArchivist;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
-import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.runtime.WebRuntimeDDFile;
-import com.sun.enterprise.deployment.io.runtime.WLSWebRuntimeDDFile;
-import com.sun.enterprise.deployment.io.runtime.GFWebRuntimeDDFile;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.Archive;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.api.deployment.archive.ArchiveType;
-import org.jvnet.hk2.annotations.Scoped;
+import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.web.WarType;
+import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
+import org.glassfish.web.deployment.io.runtime.WebRuntimeDDFile;
+import org.glassfish.web.deployment.io.runtime.WLSWebRuntimeDDFile;
+import org.glassfish.web.deployment.io.runtime.GFWebRuntimeDDFile;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.glassfish.hk2.api.PerLookup;
 import org.xml.sax.SAXParseException;
 
 import java.io.IOException;
@@ -87,10 +90,8 @@ import java.net.URL;
  * @author  Jerome Dochez
  * @version
  */
-@Service
-@PerLookup
-//TODO change to WarType.ARCHIVE_TYPE once moved to web module
-@ArchivistFor("war")
+@Service @PerLookup
+@ArchivistFor(WarType.ARCHIVE_TYPE)
 public class WebArchivist extends Archivist<WebBundleDescriptor> {
 
 
@@ -102,7 +103,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
     /**
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
      */
-    DeploymentDescriptorFile standardDD = new WebDeploymentDescriptorFile();
+    DeploymentDescriptorFile<WebBundleDescriptor> standardDD = new WebDeploymentDescriptorFile();
 
     private WebBundleDescriptor defaultWebXmlBundleDescriptor = null;
 
@@ -322,13 +323,13 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
     /**
      * @return a list of libraries included in the archivist
      */
-    public Vector getLibraries(Archive archive) {
+    public Vector<String> getLibraries(Archive archive) {
 
         Enumeration<String> entries = archive.entries();
         if (entries==null)
             return null;
 
-        Vector libs = new Vector();
+        Vector<String> libs = new Vector<String>();
         while (entries.hasMoreElements()) {
 
             String entryName = entries.nextElement();
@@ -399,8 +400,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
 
             for (int i = 0; i < libs.size(); i++) {
                 String lib = (String)libs.get(i);
-                Archivist wfArchivist = new WebFragmentArchivist(habitat);
-                wfArchivist.initializeContext(this);
+                Archivist wfArchivist = new WebFragmentArchivist(this, habitat);
                 wfArchivist.setRuntimeXMLValidation(this.getRuntimeXMLValidation());
                 wfArchivist.setRuntimeXMLValidationLevel(
                         this.getRuntimeXMLValidationLevel());

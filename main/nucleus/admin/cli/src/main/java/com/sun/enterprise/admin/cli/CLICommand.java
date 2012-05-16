@@ -119,6 +119,8 @@ public abstract class CLICommand implements PostConstruct {
     // operates on its arguments, so we can share a single instance.
     private static final InjectionManager injectionMgr = new InjectionManager();
 
+    private static String commandScope = null;
+
     // tokens that are substituted in manual pages
     // the tokens are delimited with {}
     // the tokens and tokenValues arrays must be kept in sync.  See the 
@@ -184,7 +186,7 @@ public abstract class CLICommand implements PostConstruct {
      * Initialized by the initializeCommandPassword method.
      */
     protected Map<String, String> passwords;
-
+    
     static {
         Set<String> unsup = new HashSet<String>();
         file2Set(UNSUPPORTED_CMD_FILE_NAME, unsup);
@@ -291,6 +293,23 @@ public abstract class CLICommand implements PostConstruct {
      */
     public String getName() {
         return name;
+    }
+    
+    /*
+     * Return the command scope for this command.  The command scope is 
+     * a name space in which commands are defined. Command clients can specify a scope
+     * to use in looking up a command. Currently this is only used for remote
+     * commands. By default, the context is null.
+     */
+    public static String getCommandScope() {
+        return commandScope;
+    }
+
+    /*
+     * Set the command scope for this command.  
+     */
+    public static void setCommandScope(String ctx) {
+        commandScope = ctx;
     }
 
     /**

@@ -105,7 +105,7 @@
         <el-impl.version>2.2.3</el-impl.version>
         <jstl-impl.version>1.2.1</jstl-impl.version>
         <jstl-api.version>1.2.1</jstl-api.version>
-        <mojarra.version>2.2.0-m01</mojarra.version>
+        <mojarra.version>2.2.0-m02</mojarra.version>
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.10</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
@@ -141,7 +141,7 @@
 
         <javax-persistence-api.version>2.0.4.v201112200901</javax-persistence-api.version>
         <!-- Versions for EclipseLink artifacts -->
-        <eclipselink.version>2.4.0-M17.2</eclipselink.version>
+        <eclipselink.version>2.4.0-M19.1</eclipselink.version>
         <eclipselink.asm.version>3.3.1.v201107111215</eclipselink.asm.version>
         <eclipselink.antlr.version>3.2.0.v201107111232</eclipselink.antlr.version>
         <!-- End versions for EclipseLink artifacts -->
@@ -851,11 +851,6 @@
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa</artifactId>
-                <version>${eclipselink.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>org.eclipse.persistence.core.jpql</artifactId>
                 <version>${eclipselink.version}</version>
             </dependency>
             <dependency>

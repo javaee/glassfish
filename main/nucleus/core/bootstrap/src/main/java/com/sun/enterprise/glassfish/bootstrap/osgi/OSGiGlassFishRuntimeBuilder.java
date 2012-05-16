@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -248,7 +248,7 @@ public final class OSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
             // As a work around, we create a new framework instance with a clean cache.
             // uninstallOldBundles();
             logger.logp(Level.INFO, "OSGiGlassFishRuntimeBuilder", "reconfigure",
-                    "Provisioning options have changed, recreating the framework");
+                    "Provisioning options have changed, recreating the framework with a clean OSGi storage(aka cache)");
             framework.stop();
             framework.waitForStop(0);
             properties.setProperty(FRAMEWORK_STORAGE_CLEAN,

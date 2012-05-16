@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,22 +40,22 @@
 
 package org.glassfish.web.embed.impl;
 
-import org.glassfish.deployment.common.RootDeploymentDescriptor;
-import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.api.deployment.archive.ReadableArchive;
-import org.glassfish.internal.embedded.*;
 import org.glassfish.apf.ProcessingResult;
 import org.glassfish.apf.AnnotationProcessorException;
+import org.glassfish.deployment.common.RootDeploymentDescriptor;
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.internal.embedded.*;
+import org.glassfish.web.deployment.archivist.WebArchivist;
 
-import java.net.URL;
 import java.io.IOException;
 import java.io.File;
-import java.util.Set;
-import java.util.HashSet;
+import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
-import com.sun.enterprise.deployment.archivist.WebArchivist;
 import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 
 /**

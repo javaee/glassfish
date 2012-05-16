@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,25 +38,27 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.io;
+package org.glassfish.web.deployment.io;
 
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.WebFragmentDescriptor;
+import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
+import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.node.RootXMLNode;
-import com.sun.enterprise.deployment.node.web.WebBundleNode;
+import com.sun.enterprise.deployment.node.web.WebFragmentNode;
 
 /**
- * This class is responsible for handling Web DeploymentDescriptor files
+ * This class is responsible for handling WebFragment DeploymentDescriptor files
  *
- * @author Jerome Dochez
+ * @author Shing Wai Chan
  */
-public class WebDeploymentDescriptorFile extends DeploymentDescriptorFile<WebBundleDescriptor> {
+public class WebFragmentDeploymentDescriptorFile extends DeploymentDescriptorFile<WebFragmentDescriptor> {
 
     /**
      * @return the location of the DeploymentDescriptor file for a
      * particular type of J2EE Archive
      */
     public String getDeploymentDescriptorPath() {
-        return DescriptorConstants.WEB_JAR_ENTRY;        
+        return DescriptorConstants.WEB_FRAGMENT_JAR_ENTRY;        
     }
     
     /**
@@ -65,8 +67,8 @@ public class WebDeploymentDescriptorFile extends DeploymentDescriptorFile<WebBun
      *
      * @param descriptor descriptor for which we need the node
      */
-    public RootXMLNode<WebBundleDescriptor> getRootXMLNode(WebBundleDescriptor descriptor) {
-        return new WebBundleNode();        
+    public RootXMLNode<WebFragmentDescriptor> getRootXMLNode(WebFragmentDescriptor descriptor) {
+        return new WebFragmentNode();        
     }
     
 }
