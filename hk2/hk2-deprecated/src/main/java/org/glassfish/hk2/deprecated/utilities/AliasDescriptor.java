@@ -41,6 +41,7 @@
 package org.glassfish.hk2.deprecated.utilities;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -241,8 +242,17 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
             if (!descriptor.isReified()) {
                 locator.reifyDescriptor(descriptor);
             }
-            Class<?> implClass    = descriptor.getImplementationClass();
-            Type     contractType = Utilities.getTypeClosure(implClass, contract);
+
+            HK2Loader loader = descriptor.getLoader();
+
+            Type contractType = null;
+            try {
+                contractType = loader == null ?
+                        descriptor.getImplementationClass().getClassLoader().loadClass(contract) :
+                        loader.loadClass(contract);
+            } catch (ClassNotFoundException e) {
+                // do nothing
+            }
 
             super.addContractType(contractType);
 
