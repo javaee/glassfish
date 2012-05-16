@@ -114,23 +114,34 @@ public class AliasDescriptorTest {
 
     @Test
     public void testIsReified() throws Exception {
-        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor();
+        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor("testIsReified", "foo");
 
         assertTrue(aliasDescriptor.isReified());
     }
 
     @Test
     public void testGetImplementation() throws Exception {
-        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor();
+        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor("testGetImplementation", "foo");
 
         assertEquals(MyService.class.getName(), aliasDescriptor.getImplementation());
     }
 
     @Test
     public void testGetContractTypes() throws Exception {
-        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor();
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testGetContractTypes");
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-        final Set<Type> contractTypes = aliasDescriptor.getContractTypes();
+        ActiveDescriptor<MyService> descriptor =
+                (ActiveDescriptor<MyService>)config.bind(BuilderHelper.link(MyService.class).
+                        to(MyInterface1.class).in(Singleton.class.getName()).build());
+
+        config.commit();
+
+        AliasDescriptor<MyService> aliasDescriptor =
+                new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo");
+
+        Set<Type> contractTypes = aliasDescriptor.getContractTypes();
 
         assertEquals(1, contractTypes.size());
         assertEquals(MyInterface2.class, contractTypes.iterator().next());
@@ -138,14 +149,14 @@ public class AliasDescriptorTest {
 
     @Test
     public void testGetScopeAnnotation() throws Exception {
-        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor();
+        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor("testGetScopeAnnotation", "foo");
 
         assertEquals(Singleton.class, aliasDescriptor.getScopeAnnotation());
     }
 
     @Test
     public void testGetQualifierAnnotations() throws Exception {
-        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor();
+        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor("testGetQualifierAnnotations", "foo");
 
         final Set<Annotation> qualifierAnnotations = aliasDescriptor.getQualifierAnnotations();
 
@@ -157,7 +168,7 @@ public class AliasDescriptorTest {
 
     @Test
     public void testGetImplementationClass() throws Exception {
-        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor();
+        AliasDescriptor<MyService> aliasDescriptor = getAliasDescriptor("testGetImplementationClass", "foo");
 
         ActiveDescriptor<MyService> descriptor = aliasDescriptor.getDescriptor();
         assertFalse(descriptor.isReified());
@@ -169,7 +180,7 @@ public class AliasDescriptorTest {
 
     @Test
     public void testCreate() throws Exception {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testAddDescriptor");
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testCreate");
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
@@ -192,8 +203,8 @@ public class AliasDescriptorTest {
 
     // ----- Utility methods ------------------------------------------------
 
-    private AliasDescriptor<MyService> getAliasDescriptor() {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testAddDescriptor");
+    private AliasDescriptor<MyService> getAliasDescriptor(String locatorName, String aliasName) {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(locatorName);
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
@@ -203,6 +214,6 @@ public class AliasDescriptorTest {
 
         config.commit();
 
-        return new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo");
+        return new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), aliasName);
     }
 }
