@@ -141,28 +141,34 @@
 <a class="jxr_linenumber" name="131" href="#131">131</a>         
 <a class="jxr_linenumber" name="132" href="#132">132</a>         <em class="jxr_comment">//final ClassLoader cl = getClassLoader();</em>
 <a class="jxr_linenumber" name="133" href="#133">133</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="134" href="#134">134</a>             Class&lt;T&gt; c = (Class&lt;T&gt;) getLoader().loadClass(typeName);
-<a class="jxr_linenumber" name="135" href="#135">135</a>             <strong class="jxr_keyword">return</strong> c;
-<a class="jxr_linenumber" name="136" href="#136">136</a>         } <strong class="jxr_keyword">catch</strong> (MultiException e) {
-<a class="jxr_linenumber" name="137" href="#137">137</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="jxr_string">"Failed to load "</span>+typeName+<span class="jxr_string">" from "</span> + getLoader(), e);
-<a class="jxr_linenumber" name="138" href="#138">138</a>         }
-<a class="jxr_linenumber" name="139" href="#139">139</a>     }
-<a class="jxr_linenumber" name="140" href="#140">140</a> 
-<a class="jxr_linenumber" name="141" href="#141">141</a>     @Override
-<a class="jxr_linenumber" name="142" href="#142">142</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> release() {
-<a class="jxr_linenumber" name="143" href="#143">143</a>         <strong class="jxr_keyword">super</strong>.release();
-<a class="jxr_linenumber" name="144" href="#144">144</a>         real = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="134" href="#134">134</a>             <strong class="jxr_keyword">final</strong> HK2Loader loader = getLoader();
+<a class="jxr_linenumber" name="135" href="#135">135</a> 
+<a class="jxr_linenumber" name="136" href="#136">136</a>             Class&lt;T&gt; c = loader == <strong class="jxr_keyword">null</strong> ?
+<a class="jxr_linenumber" name="137" href="#137">137</a>                         (Class&lt;T&gt;) getClass().getClassLoader().loadClass(typeName) :
+<a class="jxr_linenumber" name="138" href="#138">138</a>                         (Class&lt;T&gt;) loader.loadClass(typeName);
+<a class="jxr_linenumber" name="139" href="#139">139</a>             <strong class="jxr_keyword">return</strong> c;
+<a class="jxr_linenumber" name="140" href="#140">140</a>         } <strong class="jxr_keyword">catch</strong> (ClassNotFoundException e) {
+<a class="jxr_linenumber" name="141" href="#141">141</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="jxr_string">"Failed to load "</span>+typeName+<span class="jxr_string">" from "</span> + getLoader(), e);
+<a class="jxr_linenumber" name="142" href="#142">142</a>         } <strong class="jxr_keyword">catch</strong> (MultiException e) {
+<a class="jxr_linenumber" name="143" href="#143">143</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/component/ComponentException.html">ComponentException</a>(<span class="jxr_string">"Failed to load "</span>+typeName+<span class="jxr_string">" from "</span> + getLoader(), e);
+<a class="jxr_linenumber" name="144" href="#144">144</a>         }
 <a class="jxr_linenumber" name="145" href="#145">145</a>     }
 <a class="jxr_linenumber" name="146" href="#146">146</a> 
-<a class="jxr_linenumber" name="147" href="#147">147</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">     * Creates {@link Creator} for instantiating objects.</em>
-<a class="jxr_linenumber" name="149" href="#149">149</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="150" href="#150">150</a>     <strong class="jxr_keyword">protected</strong> Creator&lt;T&gt; createCreator(Class&lt;T&gt; c) {
-<a class="jxr_linenumber" name="151" href="#151">151</a>         Map&lt;String, List&lt;String&gt;&gt; metadata = metadata();
-<a class="jxr_linenumber" name="152" href="#152">152</a>         <strong class="jxr_keyword">return</strong> Creators.create(c,serviceLocator,metadata);
-<a class="jxr_linenumber" name="153" href="#153">153</a>     }
-<a class="jxr_linenumber" name="154" href="#154">154</a> 
-<a class="jxr_linenumber" name="155" href="#155">155</a> }
+<a class="jxr_linenumber" name="147" href="#147">147</a>     @Override
+<a class="jxr_linenumber" name="148" href="#148">148</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> <strong class="jxr_keyword">void</strong> release() {
+<a class="jxr_linenumber" name="149" href="#149">149</a>         <strong class="jxr_keyword">super</strong>.release();
+<a class="jxr_linenumber" name="150" href="#150">150</a>         real = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="151" href="#151">151</a>     }
+<a class="jxr_linenumber" name="152" href="#152">152</a> 
+<a class="jxr_linenumber" name="153" href="#153">153</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="154" href="#154">154</a> <em class="jxr_javadoccomment">     * Creates {@link Creator} for instantiating objects.</em>
+<a class="jxr_linenumber" name="155" href="#155">155</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="156" href="#156">156</a>     <strong class="jxr_keyword">protected</strong> Creator&lt;T&gt; createCreator(Class&lt;T&gt; c) {
+<a class="jxr_linenumber" name="157" href="#157">157</a>         Map&lt;String, List&lt;String&gt;&gt; metadata = metadata();
+<a class="jxr_linenumber" name="158" href="#158">158</a>         <strong class="jxr_keyword">return</strong> Creators.create(c,serviceLocator,metadata);
+<a class="jxr_linenumber" name="159" href="#159">159</a>     }
+<a class="jxr_linenumber" name="160" href="#160">160</a> 
+<a class="jxr_linenumber" name="161" href="#161">161</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
