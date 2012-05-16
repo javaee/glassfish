@@ -82,12 +82,16 @@ public class ValidatingTest {
         catch (MultiException me) {
             List<Throwable> errors = me.getErrors();
             
-            Assert.assertEquals(me.toString(), 1, errors.size());
+            Assert.assertEquals(me.toString(), 2, errors.size());
             
-            Throwable underlyingCause = errors.get(0);
+            for (Throwable lookAtMe : errors) {
+                if (lookAtMe.getMessage().contains(EXCEPTION_STRING)) {
+                    // Success
+                    return;
+                }
+            }
             
-            Assert.assertTrue(underlyingCause instanceof IllegalStateException);
-            Assert.assertTrue(underlyingCause.getMessage().contains(EXCEPTION_STRING));
+            Assert.fail("None of the exceptions in the multi exception had the expected string " + me);
         }
     }
     
