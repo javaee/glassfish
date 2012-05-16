@@ -46,7 +46,7 @@ import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
+import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 
 import com.sun.enterprise.deployment.util.ApplicationValidator;

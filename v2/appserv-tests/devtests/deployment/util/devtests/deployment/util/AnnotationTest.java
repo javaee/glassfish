@@ -17,7 +17,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.WebDeploymentDescriptorFile;
+import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 
 import junit.extensions.TestSetup;
