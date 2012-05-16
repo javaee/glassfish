@@ -120,8 +120,13 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-            "(" + getDescriptor() + ")\n";
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName() + "-" + System.identityHashCode(this) + "(");
+        
+        DescriptorImpl.pretty(sb, descriptor);
+        
+        sb.append(")\n");
+        
+        return sb.toString();
     }
     
     @Override
