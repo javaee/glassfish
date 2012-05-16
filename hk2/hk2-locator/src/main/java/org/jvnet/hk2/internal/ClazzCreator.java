@@ -65,6 +65,7 @@ import org.glassfish.hk2.api.ServiceHandle;
  */
 public class ClazzCreator<T> implements Creator<T> {
     private final ServiceLocatorImpl locator;
+    private final Class<?> implClass;
     private final Set<ResolutionInfo> myInitializers = new HashSet<ResolutionInfo>();
     private final Set<ResolutionInfo> myFields = new HashSet<ResolutionInfo>();
     
@@ -76,6 +77,7 @@ public class ClazzCreator<T> implements Creator<T> {
     
     /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, Collector collector) {
         this.locator = locator;
+        this.implClass = implClass;
         List<Injectee> baseAllInjectees = new LinkedList<Injectee>();
         
         AnnotatedElement element;
@@ -127,26 +129,53 @@ public class ClazzCreator<T> implements Creator<T> {
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
     }
     
+    private static void resolve(Map<Injectee, Object> addToMe,
+            InjectionResolver<?> resolver,
+            Injectee injectee,
+            ServiceHandle<?> root,
+            Collector errorCollection) {
+        Object addIn = null;
+        try {
+            addIn = resolver.resolve(injectee, root);
+        }
+        catch (Throwable th) {
+            errorCollection.addThrowable(th);
+        }
+        
+        if (addIn != null) {
+            addToMe.put(injectee, addIn);
+        }
+    }
+    
     private Map<Injectee, Object> resolveAllDependencies(ServiceHandle<?> root) throws IllegalStateException {
+        Collector errorCollector = new Collector();
+        
         Map<Injectee, Object> retVal = new HashMap<Injectee, Object>();
         
         InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, myConstructor.baseElement);
         for (Injectee injectee : myConstructor.injectees) {
-            retVal.put(injectee, resolver.resolve(injectee, root));
+            resolve(retVal, resolver, injectee, root, errorCollector);
         }
         
         for (ResolutionInfo fieldRI : myFields) {
             resolver = Utilities.getInjectionResolver(locator, fieldRI.baseElement);
             for (Injectee injectee : fieldRI.injectees) {
-                retVal.put(injectee, resolver.resolve(injectee, root));
+                resolve(retVal, resolver, injectee, root, errorCollector);
             }
         }
         
         for (ResolutionInfo methodRI : myInitializers) {
             resolver = Utilities.getInjectionResolver(locator, methodRI.baseElement);
             for (Injectee injectee : methodRI.injectees) {
-                retVal.put(injectee, resolver.resolve(injectee, root));
+                resolve(retVal, resolver, injectee, root, errorCollector);
             }
+        }
+        
+        if (errorCollector.hasErrors()) {
+            errorCollector.addThrowable(new IllegalArgumentException("While attempting to resolve the dependencies of " +
+              implClass.getName() + " errors were found"));
+            
+            errorCollector.throwIfErrors();
         }
         
         return retVal;
