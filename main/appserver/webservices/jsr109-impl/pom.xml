@@ -95,22 +95,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <configuration>
-                    <compilerArguments>
-                        <bootclasspath>${project.build.directory}/endorsed/webservices-api-osgi-${webservices.version}.jar${path.separator}${project.build.directory}/endorsed/jaxb-api-osgi-${jaxb-api.version}.jar${path.separator}${java.home}/lib/rt.jar</bootclasspath>
-                    </compilerArguments>
-                    <fork>true</fork>
-                    <archive>
-                        <manifestEntries>
-                            <probe-provider-class-names>org.glassfish.webservices.JAXWSServlet</probe-provider-class-names>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 
