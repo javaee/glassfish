@@ -65,7 +65,12 @@ public final class TestDriver extends AdminBaseDevTest {
     public static void main(String[] args) {
         // top level try here!!
         TestDriver driver = new TestDriver();
-
+        System.out.printf("HADAS sysprop=%s, env var=%s, hadas sys prop=%s, env var=%s\n",
+                System.getProperty("HADAS"),
+                System.getenv("HADAS"),
+                System.getProperty("hadas"),
+                System.getenv("hadas")
+                );
         try {
             driver.runTests();
         }
