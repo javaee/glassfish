@@ -100,7 +100,8 @@
         <sequential>
             <java classname="@{classname}" fork="true" classpath="${test}">
                 <jvmarg value="${javaprops}"/>
-                <jvmarg value="-DHADAS=$(env.HADAS}"/>
+                <jvmarg value="-DHADAS=$(hadas}"/>
+                <jvmarg value="-DNUM_TESTS=${num_tests}"/>
                 <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
                 <env key="APS_HOME" value="${aps_home}"/>
                 <env key="S1AS_HOME" value="${s1as_home}"/>
