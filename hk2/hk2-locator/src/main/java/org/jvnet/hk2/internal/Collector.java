@@ -59,7 +59,12 @@ public class Collector {
      */
     public void addThrowable(Throwable th) {
         if (th == null) return;
-        throwables.add(th);
+        if (th instanceof MultiException) {
+            throwables.addAll(((MultiException) th).getErrors());
+        }
+        else {
+          throwables.add(th);
+        }
     }
     
     /**
