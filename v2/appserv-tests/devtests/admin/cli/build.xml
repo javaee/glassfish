@@ -61,7 +61,7 @@
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
     <property name="teststorun" value="cli"/>
     <property name="verbose" value="false"/>
-    <property name="javaprops" value="-Dverbose=${verbose} -DHADAS=${env.hadas}"/>
+    <property name="javaprops" value="-Dverbose=${verbose}"/>
     <property name="derbyhome" value="${env.S1AS_HOME}/../javadb"/>
     <property name="databases_dir" value="${env.S1AS_HOME}/databases"/>
     <property name="asinstall_dir" value="${env.S1AS_HOME}/../.."/>
@@ -100,6 +100,7 @@
         <sequential>
             <java classname="@{classname}" fork="true" classpath="${test}">
                 <jvmarg value="${javaprops}"/>
+                <jvmarg value="-DHADAS=$(env.HADAS}"/>
                 <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9010"/>
                 <env key="APS_HOME" value="${aps_home}"/>
                 <env key="S1AS_HOME" value="${s1as_home}"/>
