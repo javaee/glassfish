@@ -61,7 +61,7 @@
     <property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
     <property name="teststorun" value="cli"/>
     <property name="verbose" value="false"/>
-    <property name="javaprops" value="-Dverbose=${verbose}"/>
+    <property name="javaprops" value="-Dverbose=${verbose} -DHADAS=${env.hadas}"/>
     <property name="derbyhome" value="${env.S1AS_HOME}/../javadb"/>
     <property name="databases_dir" value="${env.S1AS_HOME}/databases"/>
     <property name="asinstall_dir" value="${env.S1AS_HOME}/../.."/>
@@ -171,7 +171,6 @@
 
     <target name="backup" depends="init, cleanAS">
         <runtest classname="admin.BackupCommandsTest">
-            <jvmarg value="-DHADAS=${hadas}"/>
         </runtest>
     </target>
     <target name="tokens" depends="init">

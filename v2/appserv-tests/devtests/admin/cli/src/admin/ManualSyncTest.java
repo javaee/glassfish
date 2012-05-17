@@ -254,7 +254,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("import-sync-bundle-" + i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
         String s = get("servers.server." + i + ".property.rendezvousOccurred");
         report("check-rendezvous-" + i, s != null && s.equals("true"));
-        report("check-domainxml-" + i, instDomainXml.exists()); // KABOOM
+        report("check-domainxml-" + i, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
         report("check-timestamp-" + i, dasDomainXmlTS == instDomainXmlTS);
 
@@ -265,72 +265,68 @@ public class ManualSyncTest extends AdminBaseDevTest {
     }
 
     private void testImportDasOffline() {
-        String i = "iimportdasoff";
-        String bundleName = i + "-sync-bundle.zip";
+        String testname = "iimportdasoff";
+        String bundleName = testname + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, i);
+        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, testname);
 
-        report("check-dasdomainxml-" + i, dasDomainXml.exists());
-        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("check-dasdomainxml-" + testname, dasDomainXml.exists());
+        report("create-instance-" + testname, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, testname));
         long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
-        report("check-bundle-" + i, bundle.isFile());
+        report("export-sync-bundle-" + testname, asadmin("export-sync-bundle", "--target", testname));
+        report("check-bundle-" + testname, bundle.isFile());
 
         /*
          * import bundle with DAS offline
          */
         stopDomain();
 
-        report("import-sync-bundle-" + i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
+        report("import-sync-bundle-" + testname, asadmin("import-sync-bundle", "--instance", testname, bundle.getPath()));
 
-        report("check-domainxml-" + i, instDomainXml.exists());
+        report("check-domainxml-" + testname, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-" + i, dasDomainXmlTS == instDomainXmlTS);
+        report("check-timestamp-" + testname, dasDomainXmlTS == instDomainXmlTS);
 
         startDomain();
 
-        String s = get("servers.server." + i + ".property.rendezvousOccurred");
-        report("check-rendezvous-" + i, s == null);
+        String s = get("servers.server." + testname + ".property.rendezvousOccurred");
+        report("check-rendezvous-" + testname, s == null);
 
         //cleanup
-        report("delete-instance-" + i, asadmin("delete-instance", i));
-        report("delete-bundle-" + i, bundle.delete());
-        report("delete-syncdir-" + i, syncDir.delete());
+        report("delete-instance-" + testname, asadmin("delete-instance", testname));
+        report("delete-bundle-" + testname, bundle.delete());
+        report("delete-syncdir-" + testname, syncDir.delete());
     }
 
     private void testImportNode() {
-        String i = "iimportnode";
+        String testname = "iimportnode";
         String node = "nodeimport";
-        String bundleName = i + "-sync-bundle.zip";
+        String bundleName = testname + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, i);
+        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, testname);
         File dasFile = TestEnv.getDasPropertiesFile(DEFAULT_LOCAL_NODE);
 
-        // DELETE me TODO wbn
-        //File nodeDirChild = new File(nodeDir, node);
-        //File dasFile = new File(nodeDirChild, "agent/config/das.properties");
-
-        report("check-dasdomainxml-" + i, dasDomainXml.exists());
-        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("check-dasdomainxml-" + testname, dasDomainXml.exists());
+        report("create-instance-" + testname, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, testname));
         long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
-        report("check-bundle-" + i, bundle.isFile());
+        report("export-sync-bundle-" + testname, asadmin("export-sync-bundle", "--target", testname));
+        report("check-bundle-" + testname, bundle.isFile());
 
-        report("import-sync-bundle-" + i, asadmin("import-sync-bundle", "--instance", i, "--node", node, bundle.getPath()));
+        report("import-sync-bundle-" + testname, asadmin("import-sync-bundle", "--instance", testname, "--node", node, bundle.getPath()));
 
-        report("check-domainxml-" + i, instDomainXml.exists());
+        report("check-domainxml-" + testname, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-" + i, dasDomainXmlTS == instDomainXmlTS);
+        report("check-timestamp-" + testname, dasDomainXmlTS == instDomainXmlTS);
 
-        report("check-das-properties-" + i, dasFile.exists());
+        report("check-das-properties-" + testname, dasFile.exists());
 
-        String s = get("servers.server." + i + ".property.rendezvousOccurred");
-        report("check-rendezvous-" + i, s.equals("true"));
+        String s = get("servers.server." + testname + ".property.rendezvousOccurred");
+        report("check-rendezvous-" + testname, s.equals("true"));
 
         //report("import-sync-bundle-specifynode", !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
 
         //cleanup
-        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-instance-" + testname, asadmin("delete-instance", testname));
         bundle.delete();
         syncDir.delete();
 
@@ -381,47 +377,49 @@ public class ManualSyncTest extends AdminBaseDevTest {
     }
 
     private void testEndtoEnd() {
-        String i = "iendtoend";
-        String bundleName = i + "-sync-bundle.zip";
+        String testname = "iendtoend";
+        String bundleName = testname + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, i);
+        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, testname);
 
         File webapp = new File("resources", "helloworld.war");
         final String i1url = "http://localhost:18080/";
 
-        report("check-dasdomainxml-" + i, dasDomainXml.exists());
-        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--systemproperties",
-                "HTTP_LISTENER_PORT=18080", i));
+        report("check-dasdomainxml-" + testname, dasDomainXml.exists());
+        report("create-instance-" + testname, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--systemproperties",
+                "HTTP_LISTENER_PORT=18080", testname));
 
-        report("deploy-" + i, asadmin("deploy", "--target", i, webapp.getAbsolutePath()));
+        report("deploy-" + testname, asadmin("deploy", "--target", testname, webapp.getAbsolutePath()));
 
         long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
-        report("check-domainxml-" + i, instDomainXml.exists());
+        report("export-sync-bundle-" + testname, asadmin("export-sync-bundle", "--target", testname));
+        
+        // TODO THIS IS BROKEN IN THE BRANCH WBN
+        report("check-domainxml-" + testname, instDomainXml.exists());
 
         stopDomain();
 
-        report("check-bundle-" + i, bundle.isFile());
-        report("import-sync-bundle-" + i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
+        report("check-bundle-" + testname, bundle.isFile());
+        report("import-sync-bundle-" + testname, asadmin("import-sync-bundle", "--instance", testname, bundle.getPath()));
 
         long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-" + i, dasDomainXmlTS == instDomainXmlTS);
+        report("check-timestamp-" + testname, dasDomainXmlTS == instDomainXmlTS);
 
-        report("start-local-instance-" + i, asadmin("start-local-instance", i));
+        report("start-local-instance-" + testname, asadmin("start-local-instance", testname));
 
         String urlStr = getURL(i1url + "helloworld/hi.jsp");
-        report("check-app-" + i, matchString("Hello", urlStr));
+        report("check-app-" + testname, matchString("Hello", urlStr));
 
         startDomain();
 
-        String s = get("servers.server." + i + ".property.rendezvousOccurred");
-        report("check-rendezvous-" + i, s == null);
+        String s = get("servers.server." + testname + ".property.rendezvousOccurred");
+        report("check-rendezvous-" + testname, s == null);
 
         //cleanup
-        report("undeploy-" + i, asadmin("undeploy", "--target", i, "helloworld"));
-        report("stop-local-instance-" + i, asadmin("stop-local-instance", i));
+        report("undeploy-" + testname, asadmin("undeploy", "--target", testname, "helloworld"));
+        report("stop-local-instance-" + testname, asadmin("stop-local-instance", testname));
         sleep(5);
-        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-instance-" + testname, asadmin("delete-instance", testname));
         bundle.delete();
         syncDir.delete();
     }
