@@ -48,16 +48,14 @@ package admin;
 import java.io.File;
 
 public final class TestEnv {
-    private static final String DEFAULT_DOMAIN_NAME = "domain1";
-    private static final String DOCROOT = "docroot";
-    private static final String CONFIG = "config";
-    private static String DOMAIN_XML = "domain.xml";
-    private static final boolean isHadas;
-    private static final File gf_home;
-    private static final File domains_home;
-
     public static boolean isHadas() {
         return isHadas;
+    }
+    public static boolean isV3Layout() {
+        return !isHadas();
+    }
+    public static boolean isV4Layout() {
+        return isHadas();
     }
     public static File getGlassFishHome() {
         return gf_home;
@@ -89,11 +87,25 @@ public final class TestEnv {
     public static File getConfigSpecificDocRoot(String domainName, String instanceName) {
         return new File(getConfigSpecificConfigDir(domainName, instanceName), DOCROOT);
     }
+    public static File getNodesHome() {
+        if(isHadas())
+            return getDomainsHome();
+        else
+            return new File(getGlassFishHome(), "nodes");
+    }
+    public static File getDasPropertiesFile(String nodeName) {
+        // it goes in one of these (both are the DEFAULT locations for illustration)
+        if (isHadas())
+            return new File(TestEnv.getDomainHome(), DAS_PROPS_PATH);
+        else
+            return new File(TestEnv.getInstancesHome(nodeName), DAS_PROPS_PATH);
+    }
+    
     public static File getInstancesHome(String domainName, String nodeName) {
         if(isHadas())
             return getDomainHome(domainName);
         else
-            return new File(getGlassFishHome(), "nodes/" + nodeName);
+            return new File(getNodesHome(), nodeName);
     }
     public static File getInstanceDir(String domainName, String nodeName, String instanceName) {
         return new File(getInstancesHome(domainName, nodeName), instanceName);
@@ -104,8 +116,14 @@ public final class TestEnv {
     public static File getInstanceDomainXml(String domainName, String nodeName, String instanceName) {
         return new File(getInstanceConfigDir(domainName, nodeName, instanceName), DOMAIN_XML);
     }
+    public static File getDomainLog(String domainName) {
+        return new File(getDomainServerHome(domainName), SERVER_LOG);
+    }
+    
+    // ***************************
+    // convenience methods that plug-in "domain1"
+    // ****************************/
 
-    // convenience methods that plug-in domain1
     public static File getDomainHome() {
         return getDomainHome(DEFAULT_DOMAIN_NAME);
     }
@@ -139,6 +157,9 @@ public final class TestEnv {
     public static File getInstanceDomainXml(String nodeName, String instanceName) {
         return getInstanceDomainXml(DEFAULT_DOMAIN_NAME, nodeName, instanceName);
     }
+    public static File getDomainLog() {
+        return new File(getDomainServerHome(), SERVER_LOG);
+    }
 
     ///////////////////////////////////////////////////////////////////////
     //  internal stuff below
@@ -146,6 +167,16 @@ public final class TestEnv {
     private TestEnv() {
         // no instances allowed!
     }
+
+    private static final boolean isHadas;
+    private static final File gf_home;
+    private static final File domains_home;
+    private static final String DEFAULT_DOMAIN_NAME = "domain1";
+    private static final String DOCROOT = "docroot";
+    private static final String CONFIG = "config";
+    private static String DOMAIN_XML = "domain.xml";
+    private static final String DAS_PROPS_PATH = "agent/config/das.properties";
+    private final static String SERVER_LOG = "logs/server.log";
 
     static {
         isHadas = Boolean.getBoolean("HADAS")

@@ -183,7 +183,7 @@ public class RestartDomainTest extends AdminBaseDevTest {
     private void startAndRestartAndStopPasswordDomain() {
         setCannedFrameworkArgs("--passwordfile " + pwFile2Name + " --user admin");
         report("start-passwordfile-domain", asadmin("start-domain", PW_DOMAIN_NAME));
-        setCannedFrameworkArgs("--passwordfile " + pwFile1Name + " --user admin");
+        setCannedFrameworkArgs("--passwordfile " + pwFile1Name + " --user adPW_DOMAIN_NAMEmin");
 
         String renamedFileName = pwFile2Name + "xxx";
         File renamedFile = new File(renamedFileName);
@@ -236,8 +236,8 @@ public class RestartDomainTest extends AdminBaseDevTest {
         "--nopassword=false",
         PW_DOMAIN_NAME
     };
-    private static final File GF_HOME = new File(System.getProperty("S1AS_HOME"));
-    private static final File PW_DOMAIN_LOGFILE_FROM = new File(GF_HOME, "domains/" + PW_DOMAIN_NAME + "/logs/server.log");
+    private static final File GF_HOME = TestEnv.getGlassFishHome();
+    private static final File PW_DOMAIN_LOGFILE_FROM = TestEnv.getDomainLog(PW_DOMAIN_NAME);
     private static final File PW_DOMAIN_LOGFILE_TO = new File(GF_HOME, PW_DOMAIN_NAME + ".log");
 }
 

@@ -37,10 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package admin;
 
-import java.io.*;
+import java.io.File;
 
 /**
  *
@@ -55,14 +54,17 @@ public class ManualSyncTest extends AdminBaseDevTest {
 
     public ManualSyncTest() {
         host = "localhost";
-        glassFishHome = getGlassFishHome();
-        domainHome = new File(glassFishHome, "domains/domain1");
-        // it does NOT need to exist -- do not insist!
-        nodeDir = new File(glassFishHome, "nodes");
-        instancesHome = new File(nodeDir, DEFAULT_LOCAL_NODE);
-        syncDir = new File(domainHome, "sync");
+        glassFishHome = TestEnv.getGlassFishHome();
+        dasDomainXml = TestEnv.getDomainXml();
+        nodeDir = TestEnv.getNodesHome();
+        instancesHome = TestEnv.getInstancesHome(DEFAULT_LOCAL_NODE);
         curDir = new File(System.getProperty("user.dir"));
 
+        // note that it is in /gf/domains/domain1  NOT /gf/domains/domain1/server
+        syncDir = new File(TestEnv.getDomainHome(), "sync");
+        // it does NOT need to exist -- do not insist!
+        //nodeDir = new File(glassFishHome, "nodes");
+        //instancesHome = new File(nodeDir, DEFAULT_LOCAL_NODE);
     }
 
     public static void main(String[] args) {
@@ -84,66 +86,75 @@ public class ManualSyncTest extends AdminBaseDevTest {
     }
 
     private void testExport() {
-        String i ="noinstance";
-        report("export-sync-bundle-"+i, !asadmin("export-sync-bundle", "--target", i));
+        String i = "noinstance";
+        report("export-sync-bundle-" + i, !asadmin("export-sync-bundle", "--target", i));
 
-        /*export default bundle*/
-        i ="iexportdefbun";
+        /*
+         * export default bundle
+         */
+        i = "iexportdefbun";
         String bundleName = i + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
-        report("check-bundle-"+i, bundle.isFile());
+
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
+        report("check-bundle-" + i, bundle.isFile());
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
-        report("delete-syncdir-"+i, syncDir.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete());
+        report("delete-syncdir-" + i, syncDir.delete());
 
-        /*export my bundle*/
-        i ="iexportmybun";
+        /*
+         * export my bundle
+         */
+        i = "iexportmybun";
         bundleName = i + "-my-bundle.zip";
         File mybundleDir = new File(glassFishHome, "mybundles");
         bundle = new File(mybundleDir, bundleName);
-        
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, bundle.getPath()));
-        report("check-bundle-"+i, bundle.isFile());
+
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i, bundle.getPath()));
+        report("check-bundle-" + i, bundle.isFile());
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
-        report("delete-mybundledir-"+i, mybundleDir.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete());
+        report("delete-mybundledir-" + i, mybundleDir.delete());
 
-        /*export default bundle to my dir*/
-        i ="iexportmydir";
+        /*
+         * export default bundle to my dir
+         */
+        i = "iexportmydir";
         bundleName = i + "-sync-bundle.zip";
         mybundleDir = new File(glassFishHome, "mybundles");
         mybundleDir.mkdir(); //mybundles directory must exist, otherwise it will be exported to a file called 'mybundles'
         bundle = new File(mybundleDir, bundleName);
 
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, mybundleDir.getPath()));
-        report("check-bundle-"+i, bundle.isFile());
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i, mybundleDir.getPath()));
+        report("check-bundle-" + i, bundle.isFile());
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
-        report("delete-mybundledir-"+i, mybundleDir.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete());
+        report("delete-mybundledir-" + i, mybundleDir.delete());
 
-        /*export default bundle to curr dir - happens to be domains/domain1/config for glassfish */
-        i ="iexportcurrdir";
+        /*
+         * export default bundle to curr dir - happens to be
+         * domains/domain1/config for glassfish
+         */
+        i = "iexportcurrdir";
         bundleName = i + "-my-bundle.zip";
-        bundle = new File(domainHome, "config/" + bundleName);
+        bundle = new File(TestEnv.getDomainConfigDir(), bundleName);
 
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, bundleName));
-        report("check-bundle-"+i, bundle.isFile());
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i, bundleName));
+        report("check-bundle-" + i, bundle.isFile()); // KABOOM
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete()); // KABOOM
 
         //AsadminReturn ret = asadminWithOutput("_get-host-and-port", "--virtualserver", "jenvs");
         //boolean success = ret.outAndErr.indexOf("1010") >= 0;
@@ -152,244 +163,270 @@ public class ManualSyncTest extends AdminBaseDevTest {
     }
 
     private void testRetrieve() {
-        String i ="iretrievecurrdir";
+        String i = "iretrievecurrdir";
         String bundleName = i + "-sync-bundle.zip";
         File bundle = new File(curDir, bundleName);
-        
-        /*retrieve bundle in current working directory */
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, "--retrieve", "true"));
-        report("check-bundle-"+i, bundle.isFile());
+
+        /*
+         * retrieve bundle in current working directory
+         */
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i, "--retrieve", "true"));
+        report("check-bundle-" + i, bundle.isFile());
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
-        
-        /*retrieve my bundle*/
-        i ="iretrievemybun";
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete());
+
+        /*
+         * retrieve my bundle
+         */
+        i = "iretrievemybun";
         bundleName = i + "-my-bundle.zip";
         bundle = new File(glassFishHome, bundleName); //parent dir must exist, if it doesn't exist will put in the next parent that exists
 
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, "--retrieve", "true", bundle.getPath()));
-        report("check-bundle-"+i, bundle.isFile());
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i, "--retrieve", "true", bundle.getPath()));
+        report("check-bundle-" + i, bundle.isFile());
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete());
 
-        /*export default bundle to my dir*/
-        i ="iretrievemydir";
+        /*
+         * export default bundle to my dir
+         */
+        i = "iretrievemydir";
         bundleName = i + "-sync-bundle.zip";
         bundle = new File(glassFishHome, bundleName);
 
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i, glassFishHome.getPath()));
-        report("check-bundle-"+i, bundle.isFile());
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i, glassFishHome.getPath()));
+        report("check-bundle-" + i, bundle.isFile());
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete());
 
     }
 
     private void testExportCluster() {
-        /*export using cluster target*/
-        String i ="iexport1";
+        /*
+         * export using cluster target
+         */
+        String i = "iexport1";
         String c = "cexport";
         String bundleName = c + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
 
-        report("create-cluster-"+c, asadmin("create-cluster", c));
-        report("export-sync-bundle-bad"+i, !asadmin("export-sync-bundle", "--target", c));
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--cluster", c, i));
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", c));
-        report("check-bundle-"+i, bundle.isFile());
+        report("create-cluster-" + c, asadmin("create-cluster", c));
+        report("export-sync-bundle-bad" + i, !asadmin("export-sync-bundle", "--target", c));
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--cluster", c, i));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", c));
+        report("check-bundle-" + i, bundle.isFile());
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-instance-"+c, asadmin("delete-cluster", c));
-        report("delete-bundle-"+c, bundle.delete());
-        report("delete-syncdir-"+c, syncDir.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-instance-" + c, asadmin("delete-cluster", c));
+        report("delete-bundle-" + c, bundle.delete());
+        report("delete-syncdir-" + c, syncDir.delete()); //KABOOM
     }
 
     private void testImport() {
-        String i ="iimportnobundle";
+        String i = "iimportnobundle";
         File bundle = new File("nosuchbundle");
-        report("import-sync-bundle-"+i, !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
+        report("import-sync-bundle-" + i, !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
 
-        /*import default bundle*/
-        i ="iimportdefbun";
+        /*
+         * import default bundle
+         */
+        i = "iimportdefbun";
         String bundleName = i + "-sync-bundle.zip";
         bundle = new File(syncDir, bundleName);
-        File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File instDomainXml = new File(glassFishHome, "nodes/"+DEFAULT_LOCAL_NODE+"/"+i+"/config/domain.xml");
 
-        report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, i);
+
+        report("check-dasdomainxml-" + i, dasDomainXml.exists()); // KABOOM
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
-        report("check-bundle-"+i, bundle.isFile());
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
-        String s = get("servers.server."+i+".property.rendezvousOccurred");
-        report("check-rendezvous-"+i, s != null && s.equals("true"));
-        report("check-domainxml-"+i, instDomainXml.exists());
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
+        report("check-bundle-" + i, bundle.isFile());
+        report("import-sync-bundle-" + i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
+        String s = get("servers.server." + i + ".property.rendezvousOccurred");
+        report("check-rendezvous-" + i, s != null && s.equals("true"));
+        report("check-domainxml-" + i, instDomainXml.exists()); // KABOOM
         long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
+        report("check-timestamp-" + i, dasDomainXmlTS == instDomainXmlTS);
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
-        report("delete-syncdir-"+i, syncDir.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete());
+        report("delete-syncdir-" + i, syncDir.delete());
     }
 
     private void testImportDasOffline() {
-        String i ="iimportdasoff";
+        String i = "iimportdasoff";
         String bundleName = i + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File instDomainXml = new File(glassFishHome, "nodes/"+DEFAULT_LOCAL_NODE+"/"+i+"/config/domain.xml");
+        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, i);
 
-        report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("check-dasdomainxml-" + i, dasDomainXml.exists());
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
-        report("check-bundle-"+i, bundle.isFile());
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
+        report("check-bundle-" + i, bundle.isFile());
 
-        /*import bundle with DAS offline */
+        /*
+         * import bundle with DAS offline
+         */
         stopDomain();
 
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
-        
-        report("check-domainxml-"+i, instDomainXml.exists());
+        report("import-sync-bundle-" + i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
+
+        report("check-domainxml-" + i, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
+        report("check-timestamp-" + i, dasDomainXmlTS == instDomainXmlTS);
 
         startDomain();
 
-        String s = get("servers.server."+i+".property.rendezvousOccurred");
-        report("check-rendezvous-"+i, s == null);
+        String s = get("servers.server." + i + ".property.rendezvousOccurred");
+        report("check-rendezvous-" + i, s == null);
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        report("delete-bundle-"+i, bundle.delete());
-        report("delete-syncdir-"+i, syncDir.delete());
+        report("delete-instance-" + i, asadmin("delete-instance", i));
+        report("delete-bundle-" + i, bundle.delete());
+        report("delete-syncdir-" + i, syncDir.delete());
     }
 
     private void testImportNode() {
-        String i ="iimportnode";
+        String i = "iimportnode";
         String node = "nodeimport";
         String bundleName = i + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File instDomainXml = new File(glassFishHome, "nodes/"+node+"/"+i+"/config/domain.xml");
-        File nodeDirChild = new File(nodeDir, node);
-        File dasFile = new File(nodeDirChild, "agent/config/das.properties");
+        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, i);
+        File dasFile = TestEnv.getDasPropertiesFile(DEFAULT_LOCAL_NODE);
 
-        report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        // DELETE me TODO wbn
+        //File nodeDirChild = new File(nodeDir, node);
+        //File dasFile = new File(nodeDirChild, "agent/config/das.properties");
+
+        report("check-dasdomainxml-" + i, dasDomainXml.exists());
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
-        report("check-bundle-"+i, bundle.isFile());
-        
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, "--node", node, bundle.getPath()));
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
+        report("check-bundle-" + i, bundle.isFile());
 
-        report("check-domainxml-"+i, instDomainXml.exists());
+        report("import-sync-bundle-" + i, asadmin("import-sync-bundle", "--instance", i, "--node", node, bundle.getPath()));
+
+        report("check-domainxml-" + i, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
+        report("check-timestamp-" + i, dasDomainXmlTS == instDomainXmlTS);
 
-        report("check-das-properties-"+i, dasFile.exists());
+        report("check-das-properties-" + i, dasFile.exists());
 
-        String s = get("servers.server."+i+".property.rendezvousOccurred");
-        report("check-rendezvous-"+i, s.equals("true"));
+        String s = get("servers.server." + i + ".property.rendezvousOccurred");
+        report("check-rendezvous-" + i, s.equals("true"));
 
         //report("import-sync-bundle-specifynode", !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
+        report("delete-instance-" + i, asadmin("delete-instance", i));
         bundle.delete();
         syncDir.delete();
-        deleteDirectory(nodeDirChild);
+
+        File domainHome = TestEnv.getDomainHome();
+        File nodeHome = TestEnv.getInstancesHome(node);
+
+        if (TestEnv.isV4Layout())
+            deleteDirectory(new File(domainHome, "agent"));
+        else
+            deleteDirectory(nodeHome);
     }
 
     private void testImportNodeDir() {
-        String i ="iimportnodedir";
+        String instance = "iimportnodedir";
         String node = "nodeimport";
         String myNodeDir = "mynodes";
-        String bundleName = i + "-sync-bundle.zip";
+        String bundleName = instance + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File nodeDirParent = new File(glassFishHome, myNodeDir);
-        File nodeDirChild = new File(nodeDirParent, node);
-        File instDomainXml = new File(nodeDirChild, i+"/config/domain.xml");
-        File dasFile = new File(nodeDirChild, "agent/config/das.properties");
+        File nodeDirParent = TestEnv.getNodesHome();
+        //File nodeDirParent = new File(glassFishHome, myNodeDir);
+        File nodeDirChild = TestEnv.getInstancesHome(node);
+        //File nodeDirChild = new File(nodeDirParent, node);
+        File instDomainXml = TestEnv.getInstanceDomainXml(node, instance);
+        //File instDomainXml = new File(nodeDirChild, i + "/config/domain.xml");
+        File dasFile = TestEnv.getDasPropertiesFile(DEFAULT_LOCAL_NODE);
+        //File dasFile = new File(nodeDirChild, "agent/config/das.properties");
 
-        report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
+        report("check-dasdomainxml-" + instance, dasDomainXml.exists());
+        report("create-instance-" + instance, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, instance));
         long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
-        report("check-bundle-"+i, bundle.isFile());
+        report("export-sync-bundle-" + instance, asadmin("export-sync-bundle", "--target", instance));
+        report("check-bundle-" + instance, bundle.isFile());
 
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, "--node", node, "--nodedir", nodeDirParent.getPath(), bundle.getPath()));
+        if (TestEnv.isHadas())
+            report("import-sync-bundle-" + instance, asadmin("import-sync-bundle", "--instance", instance, "--node", node, "--domaindir", nodeDirParent.getPath(), bundle.getPath()));
+        else
+            report("import-sync-bundle-" + instance, asadmin("import-sync-bundle", "--instance", instance, "--node", node, "--nodedir", nodeDirParent.getPath(), bundle.getPath()));
 
-        report("check-domainxml-"+i, instDomainXml.exists());
+        report("check-domainxml-" + instance, instDomainXml.exists());
         long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
+        report("check-timestamp-" + instance, dasDomainXmlTS == instDomainXmlTS);
 
-        report("check-das-properties-"+i, dasFile.exists());
+        report("check-das-properties-" + instance, dasFile.exists());
 
-        String s = get("servers.server."+i+".property.rendezvousOccurred");
-        report("check-rendezvous-"+i, s.equals("true"));
+        String s = get("servers.server." + instance + ".property.rendezvousOccurred");
+        report("check-rendezvous-" + instance, s != null && s.equals("true"));
 
         //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
+        report("delete-instance-" + instance, asadmin("delete-instance", instance));
         bundle.delete();
         syncDir.delete();
-        deleteDirectory(nodeDirParent);
+        //deleteDirectory(nodeDirParent);
     }
 
     private void testEndtoEnd() {
-        String i ="iendtoend";
+        String i = "iendtoend";
         String bundleName = i + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File instDomainXml = new File(glassFishHome, "nodes/"+DEFAULT_LOCAL_NODE+"/"+i+"/config/domain.xml");
+        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, i);
+
         File webapp = new File("resources", "helloworld.war");
         final String i1url = "http://localhost:18080/";
 
-        report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--systemproperties",
+        report("check-dasdomainxml-" + i, dasDomainXml.exists());
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--systemproperties",
                 "HTTP_LISTENER_PORT=18080", i));
 
-        report("deploy-"+i, asadmin("deploy", "--target", i, webapp.getAbsolutePath()));
-        
+        report("deploy-" + i, asadmin("deploy", "--target", i, webapp.getAbsolutePath()));
+
         long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
-        report("check-domainxml-"+i, instDomainXml.exists());
-        
+        report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
+        report("check-domainxml-" + i, instDomainXml.exists());
+
         stopDomain();
 
-        report("check-bundle-"+i, bundle.isFile());
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
-        
-        long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
+        report("check-bundle-" + i, bundle.isFile());
+        report("import-sync-bundle-" + i, asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
 
-        report("start-local-instance-"+i, asadmin("start-local-instance", i));
+        long instDomainXmlTS = instDomainXml.lastModified();
+        report("check-timestamp-" + i, dasDomainXmlTS == instDomainXmlTS);
+
+        report("start-local-instance-" + i, asadmin("start-local-instance", i));
 
         String urlStr = getURL(i1url + "helloworld/hi.jsp");
-        report("check-app-"+i, matchString("Hello", urlStr));
+        report("check-app-" + i, matchString("Hello", urlStr));
 
         startDomain();
 
-        String s = get("servers.server."+i+".property.rendezvousOccurred");
-        report("check-rendezvous-"+i, s == null);
+        String s = get("servers.server." + i + ".property.rendezvousOccurred");
+        report("check-rendezvous-" + i, s == null);
 
         //cleanup
-        report("undeploy-"+i, asadmin("undeploy", "--target", i, "helloworld"));
-        report("stop-local-instance-"+i, asadmin("stop-local-instance", i));
+        report("undeploy-" + i, asadmin("undeploy", "--target", i, "helloworld"));
+        report("stop-local-instance-" + i, asadmin("stop-local-instance", i));
         sleep(5);
-        report("delete-instance-"+i, asadmin("delete-instance", i));
+        report("delete-instance-" + i, asadmin("delete-instance", i));
         bundle.delete();
         syncDir.delete();
     }
@@ -400,7 +437,8 @@ public class ManualSyncTest extends AdminBaseDevTest {
             for (File f : files) {
                 if (f.isDirectory()) {
                     deleteDirectory(f);
-                } else {
+                }
+                else {
                     f.delete();
                 }
             }
@@ -412,17 +450,17 @@ public class ManualSyncTest extends AdminBaseDevTest {
         try {
             // Give instances time to come down
             Thread.sleep(n * 1000);
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
         }
 
     }
-
     private final String host;
     private final File glassFishHome;
     private final File nodeDir;
     private final File instancesHome;
-    private final File domainHome;
     private final File syncDir;
     private final File curDir;
+    private final File dasDomainXml;
     private final String DEFAULT_LOCAL_NODE = "localhost-domain1";
 }

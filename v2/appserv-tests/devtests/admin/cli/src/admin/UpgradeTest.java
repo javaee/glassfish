@@ -106,9 +106,14 @@ public class UpgradeTest extends AdminBaseDevTest {
         report("create-instance2", asadmin("create-local-instance", "in2"));
         report("start-cluster", asadmin("start-cluster", "clus1"));
         report("stop-cluster", asadmin("stop-cluster", "clus1"));
-        report("cleanup-nodes-dir", deleteDirectory(
-            new File(getGlassFishHome(), "nodes")));
 
+        if (TestEnv.isV4Layout()) {
+            report("cleanup-instance-dir-in1", deleteDirectory(TestEnv.getInstanceDir(null, "in1")));
+            report("cleanup-instance-dir-in2", deleteDirectory(TestEnv.getInstanceDir(null, "in2")));
+        }
+        else {
+            report("cleanup-nodes-dir", deleteDirectory(TestEnv.getNodesHome()));
+        }
         // stop server
         report("stop-post-upgrade-3_0_1", asadmin("stop-domain"));
     }
