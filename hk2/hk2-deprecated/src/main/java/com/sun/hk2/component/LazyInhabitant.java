@@ -58,12 +58,10 @@ import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
  */
 public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements ClassLoaderHolder {
     /**
-     * Lazy reference to {@link ClassLoader}.
+     * 
      */
-    // private final Holder<ClassLoader> classLoader;
-
-    protected final ServiceLocator serviceLocator;
-
+    private static final long serialVersionUID = 6404544098462796138L;
+    
     private final Inhabitant<?> lead;
 
     
@@ -72,9 +70,8 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     }
 
     public LazyInhabitant(ServiceLocator serviceLocator, HK2Loader cl, String typeName, Map<String, List<String>> metadata, Inhabitant<?> lead) {
-        super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(typeName, cl, metadata));
+        super(serviceLocator, org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(typeName, cl, metadata));
 
-        this.serviceLocator = serviceLocator;
         this.lead = lead;
     }
 
@@ -107,10 +104,11 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
         return getDescriptor().getMetadata();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected synchronized void fetch() {
         if (null == real) {
-            ActiveDescriptor<?> reified = serviceLocator.reifyDescriptor(this);
+            ActiveDescriptor<?> reified = getServiceLocator().reifyDescriptor(this);
             
             real = (Inhabitant<T>) reified.getBaseDescriptor();
         }
@@ -118,10 +116,6 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     
     public final ClassLoader getClassLoader() {
         return ((HolderHK2LoaderImpl) getLoader()).getClassLoader();
-    }
-
-    public final ServiceLocator getServiceLocator() {
-        return serviceLocator;
     }
     
     @SuppressWarnings("unchecked")
@@ -155,7 +149,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
      */
     protected Creator<T> createCreator(Class<T> c) {
         Map<String, List<String>> metadata = metadata();
-        return Creators.create(c,serviceLocator,metadata);
+        return Creators.create(c, getServiceLocator(), metadata);
     }
 
 }

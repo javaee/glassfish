@@ -30,7 +30,7 @@ import java.util.Map;
         ConfigByMetaInhabitant lead,
         ConfigByCreator managedServiceCreator,
         MultiMap<String, String> md) {
-    super((Descriptor) null); // TODO: handle descriptor
+    super(lead.getServiceLocator(), (Descriptor) null); // TODO: handle descriptor
     this.store = store;
     this.lead = lead;
     this.managedServiceCreator = managedServiceCreator;

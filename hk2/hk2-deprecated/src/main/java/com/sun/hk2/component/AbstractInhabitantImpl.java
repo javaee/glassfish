@@ -137,6 +137,8 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
             // we are a holder, so we need to allow for {@link RunLevelService} constraints
             // not properly being met --- in such cases return null
             logger.log(Level.FINER, "swallowing error", e);
+            System.out.println("JRW(10) AII failure in get: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

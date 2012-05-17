@@ -66,7 +66,7 @@ import com.sun.hk2.component.InjectionResolverQuery;
         Inhabitant delegate,
         ConfiguredBy configuredBy,
         Set<String> indicies) {
-    super(delegate);
+    super(h, delegate);
 
     this.h = h;
     this.configuredBeanClass = configuredBy.value();
