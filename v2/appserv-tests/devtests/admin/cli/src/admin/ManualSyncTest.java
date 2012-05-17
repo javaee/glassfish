@@ -346,17 +346,11 @@ public class ManualSyncTest extends AdminBaseDevTest {
     private void testImportNodeDir() {
         String instance = "iimportnodedir";
         String node = "nodeimport";
-        String myNodeDir = "mynodes";
         String bundleName = instance + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
         File nodeDirParent = TestEnv.getNodesHome();
-        //File nodeDirParent = new File(glassFishHome, myNodeDir);
-        File nodeDirChild = TestEnv.getInstancesHome(node);
-        //File nodeDirChild = new File(nodeDirParent, node);
         File instDomainXml = TestEnv.getInstanceDomainXml(node, instance);
-        //File instDomainXml = new File(nodeDirChild, i + "/config/domain.xml");
         File dasFile = TestEnv.getDasPropertiesFile(DEFAULT_LOCAL_NODE);
-        //File dasFile = new File(nodeDirChild, "agent/config/das.properties");
 
         report("check-dasdomainxml-" + instance, dasDomainXml.exists());
         report("create-instance-" + instance, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, instance));
@@ -364,7 +358,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("export-sync-bundle-" + instance, asadmin("export-sync-bundle", "--target", instance));
         report("check-bundle-" + instance, bundle.isFile());
 
-        if (TestEnv.isHadas())
+        if (TestEnv.isV4Layout())
             report("import-sync-bundle-" + instance, asadmin("import-sync-bundle", "--instance", instance, "--node", node, "--domaindir", nodeDirParent.getPath(), bundle.getPath()));
         else
             report("import-sync-bundle-" + instance, asadmin("import-sync-bundle", "--instance", instance, "--node", node, "--nodedir", nodeDirParent.getPath(), bundle.getPath()));
@@ -382,7 +376,8 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("delete-instance-" + instance, asadmin("delete-instance", instance));
         bundle.delete();
         syncDir.delete();
-        //deleteDirectory(nodeDirParent);
+        if(TestEnv.isV3Layout())
+            deleteDirectory(nodeDirParent);
     }
 
     private void testEndtoEnd() {
