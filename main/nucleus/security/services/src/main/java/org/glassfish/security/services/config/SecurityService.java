@@ -47,6 +47,7 @@ import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
 
 /**
@@ -78,4 +79,24 @@ public interface SecurityService extends ConfigBeanProxy, Injectable {
      */
     @Element("security-provider")
     List<SecurityProvider> getSecurityProviders();
+
+    /**
+     * Gets a named security provider.
+     */
+    @DuckTyped
+    SecurityProvider getSecurityProviderByName(String name);
+
+    class Duck {
+        /**
+         * Gets a named security provider.
+         */
+    	public static SecurityProvider getSecurityProviderByName(SecurityService service, String name) {
+            for (SecurityProvider config : service.getSecurityProviders()) {
+                if (config.getProviderName().equals(name)) {
+                    return config;
+                }
+            }
+            return null;
+        }
+    }
 }

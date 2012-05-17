@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,6 @@ import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.MethodNode;
 import com.sun.enterprise.deployment.node.XMLElement;
 import com.sun.enterprise.deployment.node.XMLNode;
-import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
 import com.sun.enterprise.deployment.runtime.common.MessageDescriptor;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
@@ -145,12 +144,12 @@ public class MessageNode extends DeploymentDescriptorNode {
         // Get the bundle descriptor of which this belongs
         BundleDescriptor bundleDesc = null;
         parentNode = parentNode.getParentNode().getParentNode();
-        if (parentNode instanceof WebBundleRuntimeNode) {
+        if (parentNode.getDescriptor() instanceof WebBundleDescriptor) {
             // In the cases of used in
             // 1. webservice-endpoint for web component
             // 2. port-info for web component
             bundleDesc = 
-                ((WebBundleRuntimeNode)parentNode).getWebBundleDescriptor(); 
+                (WebBundleDescriptor)parentNode.getDescriptor(); 
         } else if (parentNode.getDescriptor() instanceof BundleDescriptor) {
             // In the cases of used in port-info for app client
             bundleDesc = (BundleDescriptor)parentNode.getDescriptor(); 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,9 +42,9 @@ package com.sun.enterprise.deployment.node.runtime;
 
 import com.sun.enterprise.deployment.BundleDescriptor;
 import com.sun.enterprise.deployment.MessageDestinationDescriptor;
+import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.RuntimeTagNames;
 import org.w3c.dom.Node;
@@ -90,13 +90,7 @@ public class MessageDestinationRuntimeNode extends DeploymentDescriptorNode {
     public void setElementValue(XMLElement element, String value) {
         if (RuntimeTagNames.MESSAGE_DESTINATION_NAME.equals(element.getQName())) {
             // this is a hack but not much choice
-            Object parentNode = getParentNode();
-            Object parentDesc = null;
-            if (parentNode instanceof WebBundleRuntimeNode) {
-                parentDesc = ((WebBundleRuntimeNode) parentNode).getWebBundleDescriptor();
-            } else {
-                parentDesc = getParentNode().getDescriptor();
-            }
+            Object parentDesc = getParentNode().getDescriptor();
             
             if (parentDesc instanceof BundleDescriptor) {
                 try {

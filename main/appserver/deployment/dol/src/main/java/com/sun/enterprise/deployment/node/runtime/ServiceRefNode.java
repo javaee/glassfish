@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.node.DeploymentDescriptorNode;
 import com.sun.enterprise.deployment.node.NameValuePairNode;
 import com.sun.enterprise.deployment.node.XMLElement;
-import com.sun.enterprise.deployment.node.runtime.web.WebBundleRuntimeNode;
 import com.sun.enterprise.deployment.runtime.web.SunWebApp;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import com.sun.enterprise.deployment.xml.WebServicesTagNames;
@@ -122,8 +121,8 @@ public class ServiceRefNode extends DeploymentDescriptorNode {
             if (parentDesc instanceof JndiNameEnvironment) {
                 descriptor = ((JndiNameEnvironment) parentDesc).
                     getServiceReferenceByName(value);
-            } else if (parentDesc instanceof SunWebApp) {
-                WebBundleDescriptor desc = ((WebBundleRuntimeNode) getParentNode()).getWebBundleDescriptor();
+            } else if (parentDesc instanceof WebBundleDescriptor) {
+                WebBundleDescriptor desc = (WebBundleDescriptor)parentDesc;
                 descriptor = desc.getServiceReferenceByName(value);
             }
         } else if (WebServicesTagNames.NAMESPACE_URI.equals(name)) {

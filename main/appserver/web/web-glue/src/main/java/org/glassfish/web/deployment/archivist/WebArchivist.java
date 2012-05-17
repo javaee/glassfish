@@ -98,12 +98,18 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
     private static final String DEFAULT_WEB_XML = "default-web.xml";
 
     @Inject
-    ServerEnvironment env;
+    private ServerEnvironment env;
 
     /**
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
      */
-    DeploymentDescriptorFile<WebBundleDescriptor> standardDD = new WebDeploymentDescriptorFile();
+    private DeploymentDescriptorFile<WebBundleDescriptor> standardDD = null;
+
+    private WebRuntimeDDFile webRuntimeDDFile = null;
+
+    private GFWebRuntimeDDFile gfWebRuntimeDDFile = null;
+
+    private WLSWebRuntimeDDFile wlsWebRuntimeDDFile = null;
 
     private WebBundleDescriptor defaultWebXmlBundleDescriptor = null;
 
@@ -149,6 +155,9 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      */
     @Override
     public DeploymentDescriptorFile<WebBundleDescriptor> getStandardDDFile() {
+        if (standardDD == null) {
+            standardDD = new WebDeploymentDescriptorFile();
+        }
         return standardDD;
     }
 
@@ -158,7 +167,10 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      */
     @Override
     public DeploymentDescriptorFile getGFConfigurationDDFile() {
-        return new GFWebRuntimeDDFile();
+        if (gfWebRuntimeDDFile == null) {
+            gfWebRuntimeDDFile = new GFWebRuntimeDDFile();
+        }
+        return gfWebRuntimeDDFile;
     }
 
     /**
@@ -167,7 +179,10 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      */
     @Override
     public DeploymentDescriptorFile getSunConfigurationDDFile() {
-        return new WebRuntimeDDFile();
+        if (webRuntimeDDFile == null) {
+            webRuntimeDDFile = new WebRuntimeDDFile();
+        }
+        return webRuntimeDDFile;
     }
 
     /**
@@ -176,7 +191,10 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      */
     @Override
     public DeploymentDescriptorFile getWLSConfigurationDDFile() {
-        return new WLSWebRuntimeDDFile();
+        if (wlsWebRuntimeDDFile == null) {
+            wlsWebRuntimeDDFile = new WLSWebRuntimeDDFile();
+        }
+        return wlsWebRuntimeDDFile;
     }
 
     /**
