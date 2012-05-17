@@ -193,71 +193,74 @@
 <a class="jxr_linenumber" name="183" href="#183">183</a>     <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="184" href="#184">184</a> <em class="jxr_javadoccomment">     * This creates a descriptor that will always return the given object.  The</em>
 <a class="jxr_linenumber" name="185" href="#185">185</a> <em class="jxr_javadoccomment">     * set of types in the advertised contracts will contain the class of the</em>
-<a class="jxr_linenumber" name="186" href="#186">186</a> <em class="jxr_javadoccomment">     * constant and all interfaces implemented by the constant (including those</em>
-<a class="jxr_linenumber" name="187" href="#187">187</a> <em class="jxr_javadoccomment">     * not marked with &amp;86;Contract).</em>
-<a class="jxr_linenumber" name="188" href="#188">188</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="189" href="#189">189</a> <em class="jxr_javadoccomment">     * @param constant The non-null constant that should always be returned from</em>
-<a class="jxr_linenumber" name="190" href="#190">190</a> <em class="jxr_javadoccomment">     * the create method of this ActiveDescriptor.  </em>
-<a class="jxr_linenumber" name="191" href="#191">191</a> <em class="jxr_javadoccomment">     * @return The descriptor returned can be used in calls to</em>
-<a class="jxr_linenumber" name="192" href="#192">192</a> <em class="jxr_javadoccomment">     * DynamicConfiguration.addActiveDescriptor</em>
-<a class="jxr_linenumber" name="193" href="#193">193</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="194" href="#194">194</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; AbstractActiveDescriptor&lt;T&gt; createConstantDescriptor(T constant) {
-<a class="jxr_linenumber" name="195" href="#195">195</a>         <strong class="jxr_keyword">if</strong> (constant == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
-<a class="jxr_linenumber" name="196" href="#196">196</a>         
-<a class="jxr_linenumber" name="197" href="#197">197</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ConstantActiveDescriptor&lt;T&gt;(
-<a class="jxr_linenumber" name="198" href="#198">198</a>                 constant,
-<a class="jxr_linenumber" name="199" href="#199">199</a>                 ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.<strong class="jxr_keyword">class</strong>),
-<a class="jxr_linenumber" name="200" href="#200">200</a>                 ReflectionHelper.getScopeFromObject(constant, PerLookup.<strong class="jxr_keyword">class</strong>),
-<a class="jxr_linenumber" name="201" href="#201">201</a>                 ReflectionHelper.getName(constant.getClass()),
-<a class="jxr_linenumber" name="202" href="#202">202</a>                 ReflectionHelper.getQualifiersFromObject(constant));
-<a class="jxr_linenumber" name="203" href="#203">203</a>     }
-<a class="jxr_linenumber" name="204" href="#204">204</a>     
-<a class="jxr_linenumber" name="205" href="#205">205</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="206" href="#206">206</a> <em class="jxr_javadoccomment">     * This returns a DescriptorImpl based on the given class.  The returned</em>
-<a class="jxr_linenumber" name="207" href="#207">207</a> <em class="jxr_javadoccomment">     * descriptor will include the class itself as an advertised contract and</em>
-<a class="jxr_linenumber" name="208" href="#208">208</a> <em class="jxr_javadoccomment">     * all implemented interfaces that are marked &amp;#64;Contract</em>
-<a class="jxr_linenumber" name="209" href="#209">209</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="210" href="#210">210</a> <em class="jxr_javadoccomment">     * @param clazz The class to analyze</em>
-<a class="jxr_linenumber" name="211" href="#211">211</a> <em class="jxr_javadoccomment">     * @return The DescriptorImpl corresponding to this class</em>
-<a class="jxr_linenumber" name="212" href="#212">212</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="213" href="#213">213</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../org/glassfish/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a> createDescriptorFromClass(Class&lt;?&gt; clazz) {
-<a class="jxr_linenumber" name="214" href="#214">214</a>         <strong class="jxr_keyword">if</strong> (clazz == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="215" href="#215">215</a>         
-<a class="jxr_linenumber" name="216" href="#216">216</a>         Set&lt;String&gt; contracts = ReflectionHelper.getContractsFromClass(clazz, Contract.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="217" href="#217">217</a>         String name = ReflectionHelper.getName(clazz);
-<a class="jxr_linenumber" name="218" href="#218">218</a>         String scope = ReflectionHelper.getScopeFromClass(clazz, PerLookup.<strong class="jxr_keyword">class</strong>).getName();
-<a class="jxr_linenumber" name="219" href="#219">219</a>         Set&lt;String&gt; qualifiers = ReflectionHelper.getQualifiersFromClass(clazz);
-<a class="jxr_linenumber" name="220" href="#220">220</a>         <a href="../../../../org/glassfish/hk2/api/DescriptorType.html">DescriptorType</a> type = DescriptorType.CLASS;
-<a class="jxr_linenumber" name="221" href="#221">221</a>         <strong class="jxr_keyword">if</strong> (Factory.<strong class="jxr_keyword">class</strong>.isAssignableFrom(clazz)) {
-<a class="jxr_linenumber" name="222" href="#222">222</a>             type = DescriptorType.FACTORY;
-<a class="jxr_linenumber" name="223" href="#223">223</a>         }
-<a class="jxr_linenumber" name="224" href="#224">224</a>         
-<a class="jxr_linenumber" name="225" href="#225">225</a>         <em class="jxr_comment">// TODO:  Can we get metadata from @Service?</em>
-<a class="jxr_linenumber" name="226" href="#226">226</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/glassfish/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a>(
-<a class="jxr_linenumber" name="227" href="#227">227</a>                 contracts,
-<a class="jxr_linenumber" name="228" href="#228">228</a>                 name,
-<a class="jxr_linenumber" name="229" href="#229">229</a>                 scope,
-<a class="jxr_linenumber" name="230" href="#230">230</a>                 clazz.getName(),
-<a class="jxr_linenumber" name="231" href="#231">231</a>                 <strong class="jxr_keyword">new</strong> HashMap&lt;String, List&lt;String&gt;&gt;(),
-<a class="jxr_linenumber" name="232" href="#232">232</a>                 qualifiers,
-<a class="jxr_linenumber" name="233" href="#233">233</a>                 type,
-<a class="jxr_linenumber" name="234" href="#234">234</a>                 <strong class="jxr_keyword">null</strong>,
-<a class="jxr_linenumber" name="235" href="#235">235</a>                 0,
-<a class="jxr_linenumber" name="236" href="#236">236</a>                 <strong class="jxr_keyword">null</strong>,
+<a class="jxr_linenumber" name="186" href="#186">186</a> <em class="jxr_javadoccomment">     * constant along with:&lt;UL&gt;</em>
+<a class="jxr_linenumber" name="187" href="#187">187</a> <em class="jxr_javadoccomment">     * &lt;LI&gt;Any superclass of the constant marked with {@link Contract}&lt;/LI&gt;</em>
+<a class="jxr_linenumber" name="188" href="#188">188</a> <em class="jxr_javadoccomment">     * &lt;LI&gt;Any interface of the constant marked with {@link Contract}&lt;/LI&gt;</em>
+<a class="jxr_linenumber" name="189" href="#189">189</a> <em class="jxr_javadoccomment">     * &lt;/UL&gt;</em>
+<a class="jxr_linenumber" name="190" href="#190">190</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="191" href="#191">191</a> <em class="jxr_javadoccomment">     * @param constant The non-null constant that should always be returned from</em>
+<a class="jxr_linenumber" name="192" href="#192">192</a> <em class="jxr_javadoccomment">     * the create method of this ActiveDescriptor.  </em>
+<a class="jxr_linenumber" name="193" href="#193">193</a> <em class="jxr_javadoccomment">     * @return The descriptor returned can be used in calls to</em>
+<a class="jxr_linenumber" name="194" href="#194">194</a> <em class="jxr_javadoccomment">     * DynamicConfiguration.addActiveDescriptor</em>
+<a class="jxr_linenumber" name="195" href="#195">195</a> <em class="jxr_javadoccomment">     * @throws IllegalArgumentException if constant is null</em>
+<a class="jxr_linenumber" name="196" href="#196">196</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="197" href="#197">197</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> &lt;T&gt; AbstractActiveDescriptor&lt;T&gt; createConstantDescriptor(T constant) {
+<a class="jxr_linenumber" name="198" href="#198">198</a>         <strong class="jxr_keyword">if</strong> (constant == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="199" href="#199">199</a>         
+<a class="jxr_linenumber" name="200" href="#200">200</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> ConstantActiveDescriptor&lt;T&gt;(
+<a class="jxr_linenumber" name="201" href="#201">201</a>                 constant,
+<a class="jxr_linenumber" name="202" href="#202">202</a>                 ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.<strong class="jxr_keyword">class</strong>),
+<a class="jxr_linenumber" name="203" href="#203">203</a>                 ReflectionHelper.getScopeFromObject(constant, PerLookup.<strong class="jxr_keyword">class</strong>),
+<a class="jxr_linenumber" name="204" href="#204">204</a>                 ReflectionHelper.getName(constant.getClass()),
+<a class="jxr_linenumber" name="205" href="#205">205</a>                 ReflectionHelper.getQualifiersFromObject(constant));
+<a class="jxr_linenumber" name="206" href="#206">206</a>     }
+<a class="jxr_linenumber" name="207" href="#207">207</a>     
+<a class="jxr_linenumber" name="208" href="#208">208</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="209" href="#209">209</a> <em class="jxr_javadoccomment">     * This returns a DescriptorImpl based on the given class.  The returned</em>
+<a class="jxr_linenumber" name="210" href="#210">210</a> <em class="jxr_javadoccomment">     * descriptor will include the class itself as an advertised contract and</em>
+<a class="jxr_linenumber" name="211" href="#211">211</a> <em class="jxr_javadoccomment">     * all implemented interfaces that are marked &amp;#64;Contract</em>
+<a class="jxr_linenumber" name="212" href="#212">212</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="213" href="#213">213</a> <em class="jxr_javadoccomment">     * @param clazz The class to analyze</em>
+<a class="jxr_linenumber" name="214" href="#214">214</a> <em class="jxr_javadoccomment">     * @return The DescriptorImpl corresponding to this class</em>
+<a class="jxr_linenumber" name="215" href="#215">215</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="216" href="#216">216</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../org/glassfish/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a> createDescriptorFromClass(Class&lt;?&gt; clazz) {
+<a class="jxr_linenumber" name="217" href="#217">217</a>         <strong class="jxr_keyword">if</strong> (clazz == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="218" href="#218">218</a>         
+<a class="jxr_linenumber" name="219" href="#219">219</a>         Set&lt;String&gt; contracts = ReflectionHelper.getContractsFromClass(clazz, Contract.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="220" href="#220">220</a>         String name = ReflectionHelper.getName(clazz);
+<a class="jxr_linenumber" name="221" href="#221">221</a>         String scope = ReflectionHelper.getScopeFromClass(clazz, PerLookup.<strong class="jxr_keyword">class</strong>).getName();
+<a class="jxr_linenumber" name="222" href="#222">222</a>         Set&lt;String&gt; qualifiers = ReflectionHelper.getQualifiersFromClass(clazz);
+<a class="jxr_linenumber" name="223" href="#223">223</a>         <a href="../../../../org/glassfish/hk2/api/DescriptorType.html">DescriptorType</a> type = DescriptorType.CLASS;
+<a class="jxr_linenumber" name="224" href="#224">224</a>         <strong class="jxr_keyword">if</strong> (Factory.<strong class="jxr_keyword">class</strong>.isAssignableFrom(clazz)) {
+<a class="jxr_linenumber" name="225" href="#225">225</a>             type = DescriptorType.FACTORY;
+<a class="jxr_linenumber" name="226" href="#226">226</a>         }
+<a class="jxr_linenumber" name="227" href="#227">227</a>         
+<a class="jxr_linenumber" name="228" href="#228">228</a>         <em class="jxr_comment">// TODO:  Can we get metadata from @Service?</em>
+<a class="jxr_linenumber" name="229" href="#229">229</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/glassfish/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a>(
+<a class="jxr_linenumber" name="230" href="#230">230</a>                 contracts,
+<a class="jxr_linenumber" name="231" href="#231">231</a>                 name,
+<a class="jxr_linenumber" name="232" href="#232">232</a>                 scope,
+<a class="jxr_linenumber" name="233" href="#233">233</a>                 clazz.getName(),
+<a class="jxr_linenumber" name="234" href="#234">234</a>                 <strong class="jxr_keyword">new</strong> HashMap&lt;String, List&lt;String&gt;&gt;(),
+<a class="jxr_linenumber" name="235" href="#235">235</a>                 qualifiers,
+<a class="jxr_linenumber" name="236" href="#236">236</a>                 type,
 <a class="jxr_linenumber" name="237" href="#237">237</a>                 <strong class="jxr_keyword">null</strong>,
-<a class="jxr_linenumber" name="238" href="#238">238</a>                 <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="239" href="#239">239</a>     }
-<a class="jxr_linenumber" name="240" href="#240">240</a> 	
-<a class="jxr_linenumber" name="241" href="#241">241</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="242" href="#242">242</a> <em class="jxr_javadoccomment">     * Makes a deep copy of the incoming descriptor</em>
-<a class="jxr_linenumber" name="243" href="#243">243</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="244" href="#244">244</a> <em class="jxr_javadoccomment">     * @param copyMe The descriptor to copy</em>
-<a class="jxr_linenumber" name="245" href="#245">245</a> <em class="jxr_javadoccomment">     * @return A new descriptor with all fields copied</em>
-<a class="jxr_linenumber" name="246" href="#246">246</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="247" href="#247">247</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../org/glassfish/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a> deepCopyDescriptor(<a href="../../../../org/glassfish/hk2/api/Descriptor.html">Descriptor</a> copyMe) {
-<a class="jxr_linenumber" name="248" href="#248">248</a> 	    <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> DescriptorImpl(copyMe);
-<a class="jxr_linenumber" name="249" href="#249">249</a> 	}
-<a class="jxr_linenumber" name="250" href="#250">250</a> }
+<a class="jxr_linenumber" name="238" href="#238">238</a>                 0,
+<a class="jxr_linenumber" name="239" href="#239">239</a>                 <strong class="jxr_keyword">null</strong>,
+<a class="jxr_linenumber" name="240" href="#240">240</a>                 <strong class="jxr_keyword">null</strong>,
+<a class="jxr_linenumber" name="241" href="#241">241</a>                 <strong class="jxr_keyword">null</strong>);
+<a class="jxr_linenumber" name="242" href="#242">242</a>     }
+<a class="jxr_linenumber" name="243" href="#243">243</a> 	
+<a class="jxr_linenumber" name="244" href="#244">244</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="245" href="#245">245</a> <em class="jxr_javadoccomment">     * Makes a deep copy of the incoming descriptor</em>
+<a class="jxr_linenumber" name="246" href="#246">246</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="247" href="#247">247</a> <em class="jxr_javadoccomment">     * @param copyMe The descriptor to copy</em>
+<a class="jxr_linenumber" name="248" href="#248">248</a> <em class="jxr_javadoccomment">     * @return A new descriptor with all fields copied</em>
+<a class="jxr_linenumber" name="249" href="#249">249</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="250" href="#250">250</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <a href="../../../../org/glassfish/hk2/utilities/DescriptorImpl.html">DescriptorImpl</a> deepCopyDescriptor(<a href="../../../../org/glassfish/hk2/api/Descriptor.html">Descriptor</a> copyMe) {
+<a class="jxr_linenumber" name="251" href="#251">251</a> 	    <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">new</strong> DescriptorImpl(copyMe);
+<a class="jxr_linenumber" name="252" href="#252">252</a> 	}
+<a class="jxr_linenumber" name="253" href="#253">253</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
