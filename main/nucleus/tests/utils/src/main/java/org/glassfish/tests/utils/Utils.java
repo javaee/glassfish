@@ -168,4 +168,18 @@ public class Utils {
 		
     	return (habitat != null) ? habitat : new Habitat(null, habitatName);
     }
+
+	public void shutdownServiceLocator(
+			final ConfigApiTest test) {
+        final String fileName = test.getFileName();
+        // we cache the habitat per xml file
+
+        if (ServiceLocatorFactory.getInstance().find(fileName) != null) {
+        	ServiceLocatorFactory.getInstance().destroy(fileName);
+        }
+        
+        if (habitats.containsKey(fileName))  {
+        	habitats.remove(fileName);
+        }
+	}
 }
