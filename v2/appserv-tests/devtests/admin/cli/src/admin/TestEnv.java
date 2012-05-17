@@ -180,6 +180,7 @@ public final class TestEnv {
 
     static {
         isHadas = Boolean.getBoolean("HADAS")
+                || Boolean.getBoolean("hadas")
                 || Boolean.parseBoolean(System.getenv("hadas"))
                 || Boolean.parseBoolean(System.getenv("HADAS"));
 
