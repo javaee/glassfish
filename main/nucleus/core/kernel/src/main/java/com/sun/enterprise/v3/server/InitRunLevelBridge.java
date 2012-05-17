@@ -61,8 +61,4 @@ public class InitRunLevelBridge extends RunLevelBridge {
     public InitRunLevelBridge() {
         super(Init.class);
     }
-
-    public InitRunLevelBridge(Class bridgeClass, Class additionalShutdownClass) {
-        super(bridgeClass, additionalShutdownClass);
-    }
 }

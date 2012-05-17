@@ -44,6 +44,7 @@ import com.sun.enterprise.util.Result;
 import org.glassfish.api.FutureProvider;
 import org.glassfish.api.Startup;
 import org.glassfish.api.StartupRunLevel;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Inhabitant;
@@ -80,20 +81,17 @@ public class StartupRunLevelBridge extends RunLevelBridge implements FutureProvi
         super(Startup.class);
     }
 
-    public StartupRunLevelBridge(Class additionalShutdownClass) {
-        super(Startup.class, additionalShutdownClass);
-    }
-
 
     // ----- RunLevelBridge overrides ----------------------------------------
 
     @Override
-    protected void activate(Inhabitant<?> i) {
-        Object service = i.get();
+    protected Object activate(ServiceHandle<?> serviceHandle) {
+        Object service = super.activate(serviceHandle);
 
         if (service instanceof FutureProvider) {
             futures.addAll(((FutureProvider) service).getFutures());
         }
+        return service;
     }
 
 

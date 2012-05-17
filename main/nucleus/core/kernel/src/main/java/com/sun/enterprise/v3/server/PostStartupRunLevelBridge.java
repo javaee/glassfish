@@ -64,8 +64,4 @@ public class PostStartupRunLevelBridge extends RunLevelBridge {
     public PostStartupRunLevelBridge() {
         super(PostStartup.class);
     }
-
-    public PostStartupRunLevelBridge(Class additionalShutdownClass) {
-        super(PostStartup.class, additionalShutdownClass);
-    }
 }

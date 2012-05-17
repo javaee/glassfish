@@ -41,7 +41,9 @@
 package com.sun.enterprise.v3.server;
 
 
+import com.sun.appserv.server.util.Version;
 import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.util.Result;
 import org.glassfish.api.FutureProvider;
@@ -50,30 +52,42 @@ import org.glassfish.api.StartupRunLevel;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
+import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelController;
+import org.glassfish.hk2.runlevel.RunLevelControllerIndicator;
+import org.glassfish.hk2.runlevel.internal.RunLevelContext;
+import org.glassfish.hk2.runlevel.utilities.RunLevelControllerImpl;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.glassfish.internal.api.Init;
 import org.glassfish.internal.api.InitRunLevel;
 import org.glassfish.internal.api.PostStartup;
 import org.glassfish.internal.api.PostStartupRunLevel;
+import org.glassfish.kernel.event.EventsImpl;
+import org.glassfish.server.ServerEnvironmentImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.testing.junit.HK2Runner;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -84,7 +98,8 @@ import java.util.concurrent.TimeoutException;
  *
  * @author Tom Beerbower
  */
-public class AppServerStartupTest extends HK2Runner {
+@SuppressWarnings("deprecation")
+public class AppServerStartupTest {
 
     // ----- data members ----------------------------------------------------
 
@@ -113,19 +128,98 @@ public class AppServerStartupTest extends HK2Runner {
 
     // ----- test initialization ---------------------------------------------
 
+    private void initialize(ServiceLocator testLocator) {
+        DynamicConfigurationService dcs = testLocator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new TestSystemTasks()));
+
+        AbstractActiveDescriptor<?> descriptor = BuilderHelper.createConstantDescriptor(new TestModulesRegistry());
+        descriptor.addContractType(ModulesRegistry.class);
+        config.addActiveDescriptor(descriptor);
+
+        descriptor = BuilderHelper.createConstantDescriptor(new ExecutorServiceFactory().provide());
+        descriptor.addContractType(ExecutorService.class);
+        config.addActiveDescriptor(descriptor);
+
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new ServerEnvironmentImpl()));
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new EventsImpl()));
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new Version()));
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new StartupContext()));
+
+        config.bind(BuilderHelper.link(RunLevelControllerImpl.class).to(RunLevelController.class).build());
+
+        config.addUnbindFilter(BuilderHelper.createContractFilter(RunLevelContext.class.getName()));
+        config.bind(BuilderHelper.link(RunLevelContext.class).to(Context.class).in(Singleton.class).build());
+
+        config.bind(BuilderHelper.link(AppServerStartup.class).build());
+
+        descriptor = BuilderHelper.createConstantDescriptor(testLocator);
+        descriptor.addContractType(ServiceLocator.class);
+        config.addActiveDescriptor(descriptor);
+
+        bindService(config, InitRunLevelBridge.class);
+        bindService(config, StartupRunLevelBridge.class);
+        bindService(config, PostStartupRunLevelBridge.class);
+
+        bindService(config, TestInitService.class);
+        bindService(config, TestInitRunLevelService.class);
+        bindService(config, TestStartupService.class);
+        bindService(config, TestStartupRunLevelService.class);
+        bindService(config, TestPostStartupService.class);
+        bindService(config, TestPostStartupRunLevelService.class);
+
+        config.commit();
+    }
+
+    private void bindService(DynamicConfiguration configurator, Class<?> service) {
+        final DescriptorBuilder descriptorBuilder = BuilderHelper.link(service);
+
+        final RunLevel rla = service.getAnnotation(RunLevel.class);
+        if (rla != null) {
+            descriptorBuilder.to(RunLevel.class).
+                    has(RunLevel.RUNLEVEL_VAL_META_TAG, Collections.singletonList(((Integer) rla.value()).toString())).
+                    has(RunLevel.RUNLEVEL_MODE_META_TAG, Collections.singletonList(rla.mode().toString()));
+
+            descriptorBuilder.in(RunLevel.class);
+        }
+        Class clazz = service;
+        while (clazz != null) {
+            Class<?>[] interfaces = clazz.getInterfaces();
+            for (int j = 0; j < interfaces.length; j++) {
+                descriptorBuilder.to(interfaces[j]);
+            }
+            clazz = clazz.getSuperclass();
+        }
+
+        final RunLevelControllerIndicator runLevelControllerIndicator = service.getAnnotation(RunLevelControllerIndicator.class);
+        if (runLevelControllerIndicator != null) {
+            descriptorBuilder.has(RunLevelControllerIndicator.RUNLEVEL_CONTROLLER_NAME_META_TAG, runLevelControllerIndicator.value());
+        }
+
+        final Named named = service.getAnnotation(Named.class);
+        if (named != null) {
+            descriptorBuilder.named(named.value());
+        }
+
+        configurator.bind(descriptorBuilder.build());
+    }
+
+
     /**
      * Reset the results prior to each test.
      */
     @Before
     public void beforeTest() {
-        before();
-        
+        ServiceLocator testLocator = ServiceLocatorFactory.getInstance().create("AppServerStartupTest");
+        initialize(testLocator);
+
         as = testLocator.getService(AppServerStartup.class);
         Assert.assertNotNull(as);
-        
+
         mapPostConstructExceptions = new HashMap<Class, RuntimeException>();
-        listFutures                = new LinkedList<TestFuture>();
-        results                    = new Results(as.runLevelController);
+        listFutures = new LinkedList<TestFuture>();
+        results = new Results(as.runLevelController);
 
         as.events.register(results);
     }
@@ -144,8 +238,8 @@ public class AppServerStartupTest extends HK2Runner {
 
             as.events.unregister(results);
         }
-        results                    = null;
-        listFutures                = null;
+        results = null;
+        listFutures = null;
         mapPostConstructExceptions = null;
     }
 
@@ -315,7 +409,7 @@ public class AppServerStartupTest extends HK2Runner {
      * Helper method to call {@link AppServerStartup#run()}.  Sets up an exception
      * to be thrown from {@link PostConstruct#postConstruct()} of the given class.
      *
-     * @param badServiceClass  the service class that the exception will be thrown from
+     * @param badServiceClass the service class that the exception will be thrown from
      */
     @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
     private void testRunLevelServicesWithException(Class badServiceClass) {
@@ -433,12 +527,13 @@ public class AppServerStartupTest extends HK2Runner {
      */
     @Service
     @RunLevel(InitRunLevel.VAL)
-    public static class TestInitRunLevelService extends TestService  {
+    public static class TestInitRunLevelService extends TestService {
     }
 
     /**
      * Startup service that implements the old style {@link Startup} interface.
      */
+    @SuppressWarnings("deprecation")
     @Service
     public static class TestStartupService extends TestService implements Startup, FutureProvider {
         @Override
@@ -475,6 +570,33 @@ public class AppServerStartupTest extends HK2Runner {
     public static class TestPostStartupRunLevelService extends TestService {
     }
 
+
+    // ----- TestSystemTasks inner classes -----------------------------------
+
+    /**
+     * Test {@link SystemTasks} implementation.
+     */
+    public static class TestSystemTasks implements SystemTasks {
+        @Override
+        public void writePidFile() {
+            // do nothing.
+        }
+    }
+
+
+    // ----- TestModulesRegistry inner classes -------------------------------
+
+    /**
+     * Test {@link ModulesRegistry} implementation.
+     */
+    public static class TestModulesRegistry extends StaticModulesRegistry {
+
+        public TestModulesRegistry() {
+            super(TestModulesRegistry.class.getClassLoader());
+        }
+    }
+
+
     // ----- TestFuture inner classes ----------------------------------------
 
     /**
@@ -483,8 +605,8 @@ public class AppServerStartupTest extends HK2Runner {
      */
     public static class TestFuture implements Future<Result<Thread>> {
 
-        private boolean   canceled        = false;
-        private boolean   done            = false;
+        private boolean canceled = false;
+        private boolean done = false;
         private Exception resultException = null;
 
         public TestFuture() {
@@ -517,8 +639,8 @@ public class AppServerStartupTest extends HK2Runner {
         public Result<Thread> get() throws InterruptedException, ExecutionException {
 
             Result<Thread> result = resultException == null ?
-                            new Result<Thread>(Thread.currentThread()) :
-                            new Result<Thread>(resultException);
+                    new Result<Thread>(Thread.currentThread()) :
+                    new Result<Thread>(resultException);
             done = true;
 
             return result;

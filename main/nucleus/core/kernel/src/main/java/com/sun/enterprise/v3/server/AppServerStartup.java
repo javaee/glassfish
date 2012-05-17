@@ -64,7 +64,6 @@ import org.glassfish.api.event.Events;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.Activator;
 import org.glassfish.hk2.runlevel.RunLevelController;
@@ -76,6 +75,7 @@ import org.glassfish.server.ServerEnvironmentImpl;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -138,6 +138,9 @@ public class AppServerStartup implements ModuleStartup {
     
     @Inject
     RunLevelController runLevelController;
+
+    @Inject
+    Provider<CommandRunner> commandRunnerProvider;
 
     private long platformInitTime;
 
@@ -234,7 +237,7 @@ public class AppServerStartup implements ModuleStartup {
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
         config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(this));
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(systemRegistry));
+//        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(systemRegistry));
         config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(logger));
 
         config.addUnbindFilter(BuilderHelper.createContractFilter(ProcessEnvironment.class.getName()));
@@ -286,8 +289,7 @@ public class AppServerStartup implements ModuleStartup {
 
     // TODO(Sahoo): Revisit this method after discussing with Jerome.
     private void shutdown() {
-        ServiceHandle<CommandRunner> serviceHandle = locator.getServiceHandle(CommandRunner.class);
-        CommandRunner runner = serviceHandle.getService();
+        CommandRunner runner = commandRunnerProvider.get();
 
         if (runner!=null) {
            final ParameterMap params = new ParameterMap();
@@ -500,6 +502,8 @@ public class AppServerStartup implements ModuleStartup {
 
         @Override
         public void activate(ActiveDescriptor<?> activeDescriptor) {
+
+            locator.reifyDescriptor(activeDescriptor);
             Class<?> type = activeDescriptor.getImplementationClass();
 
             if (type.getAnnotation(Async.class)==null) {
@@ -543,7 +547,7 @@ public class AppServerStartup implements ModuleStartup {
         public void awaitCompletion(long timeout, TimeUnit unit)
                 throws ExecutionException, InterruptedException, TimeoutException {
 
-            if (isShutdown()) {
+            if (runLevelController.getCurrentRunLevel() < StartupRunLevel.VAL - 1 || isShutdown()) {
                 return;
             }
 
