@@ -181,10 +181,10 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
 
         String key = getKey();
         for (String contract : model.contracts) {
-            Utilities.addIndex(serviceLocator, domDesc, contract, key);
+            Utilities.addIndex(getServiceLocator(), domDesc, contract, key);
         }
         if (key!=null) {
-            Utilities.addIndex(serviceLocator, domDesc, model.targetTypeName, key);
+            Utilities.addIndex(getServiceLocator(), domDesc, model.targetTypeName, key);
         }
 
         dc.commit();
@@ -307,7 +307,7 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     }
 
     public Habitat getHabitat() {
-        return (Habitat) super.serviceLocator;
+        return (Habitat) super.getServiceLocator();
     }
 
     /**

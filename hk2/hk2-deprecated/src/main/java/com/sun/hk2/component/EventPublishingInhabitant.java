@@ -48,6 +48,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.MultiMap;
@@ -64,6 +65,11 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
    * Real {@link Inhabitant} object.
    */
   protected volatile Inhabitant<T> real;
+  
+  /**
+   * For use in getting services
+   */
+  private final ServiceLocator serviceLocator;
 
   /**
    * Those that will receive events
@@ -71,29 +77,27 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   private volatile CopyOnWriteArraySet<InhabitantListener> listeners;
 
   
-  public EventPublishingInhabitant(Descriptor descriptor) {
+  public EventPublishingInhabitant(ServiceLocator serviceLocator, Descriptor descriptor) {
       super(descriptor);
+      this.serviceLocator = serviceLocator;
       this.real = null;
   }
   
-  public EventPublishingInhabitant(Inhabitant<?> delegate) {
-      this(delegate, null);
+  public EventPublishingInhabitant(ServiceLocator serviceLocator, Inhabitant<?> delegate) {
+      this(serviceLocator, delegate, null);
   }
 
   @SuppressWarnings("unchecked")
-  public EventPublishingInhabitant(Inhabitant<?> delegate, InhabitantListener listener) {
+  public EventPublishingInhabitant(ServiceLocator serviceLocator, Inhabitant<?> delegate, InhabitantListener listener) {
       super(getDescriptorFor(delegate));
       this.real = (Inhabitant<T>) delegate;
+      this.serviceLocator = serviceLocator;
       if (null != listener) {
           addInhabitantListener(listener);
       }
   }
   
-  @Override
-  public String toString() {
-      return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-          "(" + typeName() + ", active: " + real + ")";
-  }
+  
 
   @Override
   public String typeName() {
@@ -198,5 +202,15 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
         }
       }
     }
+  }
+  
+  public ServiceLocator getServiceLocator() {
+      return serviceLocator;
+  }
+  
+  @Override
+  public String toString() {
+      return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
+          "(" + typeName() + ", active: " + real + ")";
   }
 }
