@@ -418,7 +418,12 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             }
         }
         
-        if (!collector.hasErrors()) reified = true;
+        if (!collector.hasErrors()) {
+            reified = true;
+        }
+        else {
+            collector.addThrowable(new IllegalArgumentException("Errors were discovered while reifying " + this));
+        }
     }
     
     @Override
