@@ -80,14 +80,14 @@ public abstract class ConfigApiTest extends org.glassfish.tests.utils.ConfigApiT
     public void decorate(Habitat habitat) {
         Server server = habitat.getComponent(Server.class, "server");
         if (server != null) {
-            habitat.addIndex(new ExistingSingletonInhabitant<Server>(server),
+            habitat.addIndex(new ExistingSingletonInhabitant<Server>(Server.class, server),
                 Server.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
 
             server.getConfig().addIndex(habitat, ServerEnvironment.DEFAULT_INSTANCE_NAME);
         
             Cluster c = server.getCluster();
             if (c != null) {
-                habitat.addIndex(new ExistingSingletonInhabitant<Cluster>(c),
+                habitat.addIndex(new ExistingSingletonInhabitant<Cluster>(Cluster.class, c),
                     Cluster.class.getName(), ServerEnvironment.DEFAULT_INSTANCE_NAME);
             }
         }
