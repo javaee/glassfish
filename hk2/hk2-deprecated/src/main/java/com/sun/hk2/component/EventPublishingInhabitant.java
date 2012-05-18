@@ -47,8 +47,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.MultiMap;
@@ -142,12 +145,26 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     if (null == real) {
       fetch();
     }
+    ActiveDescriptor<T> activeDescriptor;
+    if (real != null) {
+        activeDescriptor = (ActiveDescriptor<T>) real;
+    }
+    else {
+        activeDescriptor = (ActiveDescriptor<T>) serviceLocator.getBestDescriptor(
+                BuilderHelper.createNameAndContractFilter(getImplementation(), getName()));
+        if (activeDescriptor == null) {
+            throw new AssertionError("Could not find a registered descriptor for " +
+              getImplementation() + " with name " + getName());
+        }
+    }
     
-    final boolean wasActive = real.isActive();
-    T result = real.get(onBehalfOf);
-    Inhabitant<T> real = this.real;
-    if (!wasActive && null != real && real.isActive()) {
-      notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
+    ServiceHandle<T> handle = serviceLocator.getServiceHandle(activeDescriptor);
+    
+    boolean wasActive = handle.isActive();
+    T result = handle.getService();
+    
+    if (!wasActive) {
+        notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
     }
     
     return result;
