@@ -303,11 +303,11 @@ public class ManualSyncTest extends AdminBaseDevTest {
         String node = "nodeimport";
         String bundleName = testname + "-sync-bundle.zip";
         File bundle = new File(syncDir, bundleName);
-        File instDomainXml = TestEnv.getInstanceDomainXml(DEFAULT_LOCAL_NODE, testname);
-        File dasFile = TestEnv.getDasPropertiesFile(DEFAULT_LOCAL_NODE);
+        File instDomainXml = TestEnv.getInstanceDomainXml(node, testname);
+        File dasFile = TestEnv.getDasPropertiesFile(node);
 
         report("check-dasdomainxml-" + testname, dasDomainXml.exists());
-        report("create-instance-" + testname, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, testname));
+        report("create-instance-" + testname, asadmin("create-instance", "--node", node, testname));
         long dasDomainXmlTS = dasDomainXml.lastModified();
         report("export-sync-bundle-" + testname, asadmin("export-sync-bundle", "--target", testname));
         report("check-bundle-" + testname, bundle.isFile());
