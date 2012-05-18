@@ -38,22 +38,22 @@
  * holder.
  */
 
-package com.sun.enterprise.deployment.annotation.impl;
+package org.glassfish.web.deployment.annotation.impl;
 
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebFragmentDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
+import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 import com.sun.enterprise.deployment.web.AppListenerDescriptor;
 import com.sun.enterprise.deployment.web.ServletFilter;
 import org.glassfish.apf.impl.AnnotationUtils;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.classmodel.reflect.Parser;
 import org.glassfish.hk2.classmodel.reflect.ParsingContext;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.api.PerLookup;
 
 import java.io.File;
 import java.io.FileFilter;
