@@ -137,8 +137,6 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
             // we are a holder, so we need to allow for {@link RunLevelService} constraints
             // not properly being met --- in such cases return null
             logger.log(Level.FINER, "swallowing error", e);
-            System.out.println("JRW(10) AII failure in get: " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }
@@ -273,7 +271,7 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
 //      }
 //    }
 //
-    public void dispose(Object object) {
+    public void dispose(T object) {
       if (object instanceof PreDestroy) {
           logger.log(Level.FINER, "calling PreDestroy on {0}", object);
           ((PreDestroy)object).preDestroy();

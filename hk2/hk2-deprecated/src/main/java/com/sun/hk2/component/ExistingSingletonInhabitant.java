@@ -39,21 +39,36 @@
  */
 package com.sun.hk2.component;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Singleton;
 
 /**
  * {@link org.jvnet.hk2.component.Inhabitant} built around an object that already exists.
  *
  * @author Kohsuke Kawaguchi
  */
-public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
+public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> implements ActiveDescriptor<T> {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 7658190710958938371L;
+    
     private final T object;
     private final Class<T> type;
 
@@ -108,5 +123,113 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> {
         // we can't release its instance.
         // (technically it's possible to invoke PreDestroy,
         // not clear which is better --- you can argue both ways.)
+    }
+    
+    private boolean isCacheSet = false;
+    private T cache;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#getCache()
+     */
+    @Override
+    public T getCache() {
+        return cache;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#isCacheSet()
+     */
+    @Override
+    public boolean isCacheSet() {
+        return isCacheSet;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#setCache(java.lang.Object)
+     */
+    @Override
+    public void setCache(T cacheMe) {
+        cache = cacheMe;
+        isCacheSet = true;
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.SingleCache#releaseCache()
+     */
+    @Override
+    public void releaseCache() {
+        isCacheSet = false;
+        cache = null;
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
+     */
+    @Override
+    public boolean isReified() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     */
+    @Override
+    public Class<?> getImplementationClass() {
+        return type;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getContractTypes()
+     */
+    @Override
+    public Set<Type> getContractTypes() {
+        Set<Type> retVal = Collections.singleton((Type) type);
+        return retVal;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getScopeAnnotation()
+     */
+    @Override
+    public Class<? extends Annotation> getScopeAnnotation() {
+        if (getScope() == null || PerLookup.class.getName().equals(getScope())) {
+            return PerLookup.class;
+        }
+        
+        return Singleton.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getQualifierAnnotations()
+     */
+    @Override
+    public Set<Annotation> getQualifierAnnotations() {
+        return Collections.emptySet();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getInjectees()
+     */
+    @Override
+    public List<Injectee> getInjectees() {
+        return Collections.emptyList();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return object;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object)
+     */
+    @Override
+    public void dispose(T instance) {
+        
     }
 }
