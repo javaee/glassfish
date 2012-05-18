@@ -299,9 +299,10 @@ public class Main {
 	 * 
 	 * @throws IOException
 	 */
-	protected void populate() throws IOException {
+	protected void populate() throws BootException, IOException {
 		HK2Populator.populate(serviceLocator, descriptorFileFinder,
 				populatorPostProcessor);
+		HK2Populator.populateConfig(serviceLocator);
 	}
 
 	protected String findMainModuleName(File bootstrap) throws BootException {

@@ -38,6 +38,9 @@
 # holder.
 #
 
+-exportcontents: \
+			org.glassfish.hk2.runlevel
+
 Import-Package: \
                         org.jvnet.hk2.annotations; \
                         javax.inject; \

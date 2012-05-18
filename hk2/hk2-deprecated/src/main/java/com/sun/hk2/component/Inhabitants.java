@@ -43,7 +43,6 @@ import org.glassfish.hk2.Scope;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.component.InhabitantProviderInterceptor;
 import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
 
 import java.util.*;
@@ -156,7 +155,18 @@ public class Inhabitants {
    */
   // TODO: Does this really belong here?
   public static <T> Collection<String> getNamesFor(Inhabitant<T> i, String indexName) {
-      return new ArrayList<String>(i.metadata().get(indexName));
+    Map<String, List<String>> metadata = i.metadata();
+	List<String> list = null;
+	
+	if (metadata != null) {
+		list = metadata.get(indexName);
+	}
+	
+	if (list == null) {
+		list = new ArrayList<String>();
+	}
+	
+	return new ArrayList<String>(list);
   }
 
     /**

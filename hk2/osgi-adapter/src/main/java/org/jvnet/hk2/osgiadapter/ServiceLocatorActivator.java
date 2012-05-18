@@ -153,12 +153,14 @@ public class ServiceLocatorActivator implements BundleActivator,
 				try {
 					final HK2Loader hk2Loader = new OsgiHk2Loader(bundle);
 
+					ServiceLocator sl = ServiceLocatorFactory.getInstance().create(
+							Main.DEFAULT_NAME, null,
+							new ServiceLocatorGeneratorImpl());
 					HK2Populator.populate(
-							ServiceLocatorFactory.getInstance().create(
-									Main.DEFAULT_NAME, null,
-									new ServiceLocatorGeneratorImpl()),
+							sl,
 							new URLDescriptorFileFinder(url),
 							new OsgiPopulatorPostProcessor(hk2Loader));
+					HK2Populator.populateConfig(sl);
 				} catch (Exception e) {
 					logger.log(
 							Level.SEVERE,
