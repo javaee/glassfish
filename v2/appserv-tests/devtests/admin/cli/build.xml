@@ -136,7 +136,11 @@
     </target>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
+    <target name="cli" depends="setup,
+                        load-balancer, getset, misc-commands, manual-sync, upgrade,
+                        restart-domain, teardown"/>
+
+    <target name="clixx" depends="setup, monitoring, zombie, ports, instance, cluster,
                         configs, sync, domain, backup, tokens, validation, node,
                         load-balancer, getset, misc-commands, manual-sync, upgrade,
                         restart-domain, teardown"/>
@@ -196,7 +200,7 @@
     </target>
 
     <target name="manual-sync" depends="init">
-        <runtest classname="admin.ManualSyncTest"/>
+        <runtestsuspend classname="admin.ManualSyncTest"/>
     </target>
 
     <target name="sshnode" depends="init">
@@ -304,7 +308,7 @@
     </target>
 
     <target name="upgrade" depends="init">
-        <runtest classname="admin.UpgradeTest"/>
+        <runtestsuspend classname="admin.UpgradeTest"/>
     </target>
 
     <target name="zombie" depends="init">
