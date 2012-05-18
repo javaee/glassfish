@@ -78,7 +78,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         testExportCluster();
         testImport();
         testImportDasOffline();
-        testImportNode_old();
+        testImportNode_new();
         testImportNodeDir();
         testEndtoEnd();
         stopDomain();
@@ -298,7 +298,10 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("delete-syncdir-" + testname, syncDir.delete());
     }
 
-    private void testImportNode() {
+    /*
+     * WBN - yes this is VERY confusing!
+     */
+    private void testImportNode_new() {
         String i = "iimportnode";
         String node = "nodeimport";
         String bundleName = i + "-sync-bundle.zip";
