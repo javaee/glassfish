@@ -310,7 +310,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         File dasFile = TestEnv.getDasPropertiesFile(node);
 
         report("check-dasdomainxml-" + i, dasDomainXml.exists());
-        report("create-instance-" + i, asadmin("create-instance", "--node", node, i));
+        report("create-instance-" + i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
         long dasDomainXmlTS = dasDomainXml.lastModified();
         report("export-sync-bundle-" + i, asadmin("export-sync-bundle", "--target", i));
         report("check-bundle-" + i, bundle.isFile());
