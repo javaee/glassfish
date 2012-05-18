@@ -41,7 +41,7 @@ import org.glassfish.apf.impl.AnnotationUtils;
 import com.sun.enterprise.deployment.annotation.impl.AppClientScanner;
 import org.glassfish.apf.impl.DirectoryScanner;
 import org.glassfish.ejb.deployment.annotation.impl.EjbJarScanner;
-import com.sun.enterprise.deployment.annotation.impl.WarScanner;
+import org.glassfish.web.deployment.annotation.impl.WarScanner;
 import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
