@@ -78,7 +78,7 @@ public class ManualSyncTest extends AdminBaseDevTest {
         testExportCluster();
         testImport();
         testImportDasOffline();
-        testImportNode_new();
+        testImportNode();
         testImportNodeDir();
         testEndtoEnd();
         stopDomain();
@@ -300,8 +300,10 @@ public class ManualSyncTest extends AdminBaseDevTest {
 
     /*
      * WBN - yes this is VERY confusing!
+     * we create an instance in the default node
+     * we import to a different fake node, "nodeimport"
      */
-    private void testImportNode_new() {
+    private void testImportNode() {
         String i = "iimportnode";
         String node = "nodeimport";
         String bundleName = i + "-sync-bundle.zip";
@@ -322,18 +324,15 @@ public class ManualSyncTest extends AdminBaseDevTest {
         boolean same = (dasDomainXmlTS == instDomainXmlTS);
 
         if(!same) {
+            // troubleshooting info
             System.out.printf("XXXXXXXXXXXXXXXXXXXXXXXXXXX\ndas timestamp: %s\ninstance timestamp: %s\nXXXXXXXXXXXXXXX\n",
                     "" + dasDomainXmlTS, "" + instDomainXmlTS);
             System.out.printf("XXXXXXXXXXXXXX domxml=%s, instxml=%s\n", dasDomainXml, instDomainXml);
         }
         report("check-timestamp-" + i, same);
-
         report("check-das-properties-" + i, dasFile.exists());
-
         String s = get("servers.server." + i + ".property.rendezvousOccurred");
         report("check-rendezvous-" + i, s.equals("true"));
-
-        //report("import-sync-bundle-specifynode", !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
 
         //cleanup
         report("delete-instance-" + i, asadmin("delete-instance", i));

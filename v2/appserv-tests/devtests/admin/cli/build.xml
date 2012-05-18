@@ -136,11 +136,8 @@
     </target>
 
     <target name="debug-windows" depends="instance, cluster"/>
-    <target name="cli" depends="setup,
-                        manual-sync, upgrade,
-                        teardown"/>
 
-    <target name="clixx" depends="setup, monitoring, zombie, ports, instance, cluster,
+    <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
                         configs, sync, domain, backup, tokens, validation, node,
                         load-balancer, getset, misc-commands, manual-sync, upgrade,
                         restart-domain, teardown"/>
