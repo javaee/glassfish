@@ -113,6 +113,7 @@ public class HK2Populator {
 						        }
 						    }
 					    }
+					    System.out.println(descriptorImpl);
 					}
 				} while (readOne);
 				
@@ -122,12 +123,6 @@ public class HK2Populator {
 		}
 		
 		config.commit();
-		
-		try {
-			populateConfig(serviceLocator);
-		} catch (BootException e) {
-			e.printStackTrace();
-		}
 		
 	}
 
@@ -157,7 +152,7 @@ public class HK2Populator {
 		populate(serviceLocator, new ClasspathDescriptorFileFinder());
 	}
 
-    private static void populateConfig(ServiceLocator serviceLocator) throws BootException {
+    public static void populateConfig(ServiceLocator serviceLocator) throws BootException {
         //Populate this serviceLocator with config data
         for (ConfigPopulator populator : serviceLocator.<ConfigPopulator>getAllServices(ConfigPopulator.class)) {
             populator.populateConfig(serviceLocator);
