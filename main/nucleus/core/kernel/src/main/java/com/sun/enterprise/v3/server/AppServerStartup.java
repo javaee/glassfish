@@ -113,7 +113,6 @@ public class AppServerStartup implements ModuleStartup {
     @Inject
     ServiceLocator locator;
 
-    @Inject
     ModulesRegistry systemRegistry;
 
     @Inject
@@ -126,9 +125,6 @@ public class AppServerStartup implements ModuleStartup {
 
     @Inject
     Events events;
-
-    @Inject
-    Version version;
 
     @org.jvnet.hk2.annotations.Inject
     CommonClassLoaderServiceImpl commonCLS;
@@ -257,7 +253,8 @@ public class AppServerStartup implements ModuleStartup {
     }
 
     public static void printModuleStatus(ModulesRegistry registry, Level level) {
-        if (!logger.isLoggable(level)) {
+    	
+        if (!logger.isLoggable(level) || registry == null) {
             return;
         }
         
