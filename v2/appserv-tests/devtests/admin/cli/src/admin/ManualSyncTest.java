@@ -318,9 +318,11 @@ public class ManualSyncTest extends AdminBaseDevTest {
         long instDomainXmlTS = instDomainXml.lastModified();
         boolean same = (dasDomainXmlTS == instDomainXmlTS);
 
-        if(!same)
+        if(!same) {
             System.out.printf("XXXXXXXXXXXXXXXXXXXXXXXXXXX\ndas timestamp: %s\ninstance timestamp: %s\nXXXXXXXXXXXXXXX\n",
                     "" + dasDomainXmlTS, "" + instDomainXmlTS);
+            System.out.printf("XXXXXXXXXXXXXX domxml=%s, instxml=%s\n", dasDomainXml, instDomainXml);
+        }
         report("check-timestamp-" + testname, same);
 
         report("check-das-properties-" + testname, dasFile.exists());
