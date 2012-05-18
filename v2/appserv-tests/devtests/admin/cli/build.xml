@@ -200,7 +200,7 @@
     </target>
 
     <target name="manual-sync" depends="init">
-        <runtestsuspend classname="admin.ManualSyncTest"/>
+        <runtest classname="admin.ManualSyncTest"/>
     </target>
 
     <target name="sshnode" depends="init">
@@ -308,7 +308,7 @@
     </target>
 
     <target name="upgrade" depends="init">
-        <runtestsuspend classname="admin.UpgradeTest"/>
+        <runtest classname="admin.UpgradeTest"/>
     </target>
 
     <target name="zombie" depends="init">
