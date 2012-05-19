@@ -41,6 +41,8 @@ package org.jvnet.hk2.config;
 
 import java.beans.PropertyChangeEvent;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * Any object injected with Configured object and willing to receive notifications
  * of changes should implement this interface. The injection manager will hook up
@@ -59,6 +61,7 @@ import java.beans.PropertyChangeEvent;
  *
  * @author Jerome Dochez
  */
+@Contract
 public interface ConfigListener {
 
     /**

@@ -37,35 +37,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.jvnet.hk2.config.provider.internal;
 
 import java.util.Map;
 
-import org.jvnet.hk2.annotations.Contract;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InstanceLifecycleEvent;
+import org.glassfish.hk2.api.InstanceLifecycleEventType;
+import org.glassfish.hk2.api.InstanceLifecycleListener;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ObservableBean;
 
 /**
- * This processor is called for certain events in the lifecycle of an object managed
- * by the system
- * 
  * @author jwells
+ *
  */
-@Contract
-public interface InstanceLifecycleListener {
-    /**
-     * This returns a filter that tells the system whether a particular descriptor should be handled by this lifecycle
-     * listener.  The filter can be called at any time
-     * 
-     * @return The filter that tells the system if this listener applies to this descriptor.  If this returns null then
-     * this Listener will apply to ALL descriptors.
+@Service @Singleton
+public class ConfigInstanceListener implements InstanceLifecycleListener {
+    private final Filter filter = BuilderHelper.createContractFilter(ConfigListener.class.getName());
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InstanceLifecycleListener#getFilter()
      */
-    public Filter getFilter();
-    
-    /**
-     * This method will be called when any lifecycle event occurs.  The currently supported
-     * lifecycle events are POST_PRODUCTION and PRE_DESTRUCTION.  Code should be written to
-     * allow for future events to be generated.
-     * 
-     * @param lifecycleEvent The event that has occurred, will not be null
+    @Override
+    public Filter getFilter() {
+        return filter;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InstanceLifecycleListener#lifecycleEvent(org.glassfish.hk2.api.InstanceLifecycleEvent)
      */
-    public void lifecycleEvent(InstanceLifecycleEvent lifecycleEvent);
+    @Override
+    public void lifecycleEvent(InstanceLifecycleEvent lifecycleEvent) {
+        if (!lifecycleEvent.getEventType().equals(InstanceLifecycleEventType.POST_PRODUCTION)) {
+            return;
+        }
+        
+        Map<Injectee, Object> injectees = lifecycleEvent.getKnownInjectees();
+        if (injectees == null) return;
+        
+        ConfigListener listener = (ConfigListener) lifecycleEvent.getLifecycleObject();
+        for (Object injectee : injectees.values()) {
+            if (!(injectee instanceof ConfigBeanProxy)) continue;
+            
+            ConfigBeanProxy configBeanProxy = (ConfigBeanProxy) injectee;
+            Object impl = ConfigSupport.getImpl(configBeanProxy);
+            
+            if (!(impl instanceof ObservableBean)) continue;
+            
+            ObservableBean ob = (ObservableBean) impl;
+            
+            ob.addListener(listener);
+        }
+
+    }
+
 }
