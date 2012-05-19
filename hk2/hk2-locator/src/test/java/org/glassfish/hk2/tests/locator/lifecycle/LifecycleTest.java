@@ -61,7 +61,7 @@ public class LifecycleTest {
     /**
      * Tests basic lifecycle notification
      */
-    @Test @Ignore
+    @Test
     public void testBasicLifecycleNotification() {
         Notifier alice = locator.getService(Notifier.class, Notifier.DEFAULT_NAME);
         

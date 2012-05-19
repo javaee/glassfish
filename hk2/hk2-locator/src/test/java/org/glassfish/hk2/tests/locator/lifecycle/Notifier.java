@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.lifecycle;
 import java.util.HashSet;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * This guy notifies people of stuff
@@ -49,6 +50,7 @@ import javax.inject.Inject;
  * @author jwells
  *
  */
+@Singleton
 public class Notifier {
     public final static String DEFAULT_NAME = "Alice";
     

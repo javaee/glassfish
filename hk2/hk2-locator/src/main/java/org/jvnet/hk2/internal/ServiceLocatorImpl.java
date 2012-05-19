@@ -64,6 +64,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.Operation;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.IterableProvider;
@@ -728,7 +729,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
             boolean checkScope = false;
             if (sd.getAdvertisedContracts().contains(ValidationService.class.getName()) ||
-                sd.getAdvertisedContracts().contains(ErrorService.class.getName())) {
+                sd.getAdvertisedContracts().contains(ErrorService.class.getName()) ||
+                sd.getAdvertisedContracts().contains(InstanceLifecycleListener.class.getName())) {
                 // These gets reified right away
                 reifyDescriptor(sd);
                 
@@ -874,10 +876,20 @@ public class ServiceLocatorImpl implements ServiceLocator {
         errorHandlers.addAll(allErrorServices);
     }
     
+    private void reupInstanceListenersHandlers() {
+        List<InstanceLifecycleListener> allLifecycleListeners = protectedGetAllServices(InstanceLifecycleListener.class);
+        
+        for (SystemDescriptor<?> descriptor : allDescriptors) {
+            descriptor.reupInstanceListeners(allLifecycleListeners);
+        }
+    }
+    
     private void reup() {
         reupInjectionResolvers();
         
         reupErrorHandlers();
+        
+        reupInstanceListenersHandlers();
     }
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
