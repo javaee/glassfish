@@ -373,6 +373,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public void dispose(T instance) {
         checkState();
         
+        InstanceLifecycleEventImpl event = new InstanceLifecycleEventImpl(
+                InstanceLifecycleEventType.PRE_DESTRUCTION,
+                instance);
+        event.setActiveDescriptor(this);
+        
+        // invoke listeners BEFORE destroying the instance
+        invokeInstanceListeners(event);
+        
         if (activeDescriptor != null) {
             activeDescriptor.dispose(instance);
             return;
