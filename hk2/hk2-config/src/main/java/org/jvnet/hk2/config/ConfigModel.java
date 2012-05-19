@@ -883,7 +883,7 @@ public final class ConfigModel {
             if(v.startsWith(ELEMENT_NAME_PREFIX))
                 tagName = v.substring(ELEMENT_NAME_PREFIX.length());
         }
-        this.tagName = tagName;
+        this.tagName = tagName == null ? injector.getName() : tagName;
     }
 
     private static final String ELEMENT_NAME_PREFIX = ConfigInjector.class.getName() + ':';
