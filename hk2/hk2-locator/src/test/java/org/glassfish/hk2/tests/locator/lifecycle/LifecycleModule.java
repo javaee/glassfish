@@ -39,7 +39,10 @@
  */
 package org.glassfish.hk2.tests.locator.lifecycle;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
@@ -54,12 +57,27 @@ public class LifecycleModule implements TestModule {
      */
     @Override
     public void configure(DynamicConfiguration config) {
+        // This is the LifecycleListener itself
+        config.bind(BuilderHelper.link(
+                InstanceLifecycleListenerImpl.class).
+                to(InstanceLifecycleListener.class).
+                in(Singleton.class.getName()).
+                build());
+        
         // This is the default one, actually created by the system
-        config.bind(BuilderHelper.link(Notifier.class).named(Notifier.DEFAULT_NAME).build());
+        config.bind(BuilderHelper.link(
+                Notifier.class).
+                named(Notifier.DEFAULT_NAME).
+                in(Singleton.class.getName()).
+                build());
         
         
         // This is the receiver that gets it from the system created guy
-        config.bind(BuilderHelper.link(KnownInjecteeNotifyee.class).to(Notifyee.class).build());
+        config.bind(BuilderHelper.link(
+                KnownInjecteeNotifyee.class).
+                to(Notifyee.class).
+                in(Singleton.class.getName()).
+                build());
         
     }
 

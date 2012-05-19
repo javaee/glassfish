@@ -39,39 +39,75 @@
  */
 package org.jvnet.hk2.internal;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.Map;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.InstanceLifecycleEvent;
+import org.glassfish.hk2.api.InstanceLifecycleEventType;
 
 /**
- * An internal interface that allows us to have the
- * factory and class implementations
- * 
  * @author jwells
  *
  */
-public interface Creator<T> {
-    /**
-     * Returns all the injectees needed prior
-     * to creating this object
-     * 
-     * @return
-     */
-    public List<Injectee> getInjectees();
+public class InstanceLifecycleEventImpl implements InstanceLifecycleEvent {
+    private final InstanceLifecycleEventType eventType;
+    private ActiveDescriptor<?> descriptor;
+    private final Object lifecycleObject;
+    private final Map<Injectee, Object> knownInjectees;
     
-    /**
-     * Creates an instance of the given type
-     * 
-     * @return an instance of the given type
-     */
-    public InstanceLifecycleEventImpl create(ServiceHandle<?> root) throws MultiException;
+    /* package */ InstanceLifecycleEventImpl(InstanceLifecycleEventType eventType,
+            Object lifecycleObject, Map<Injectee,Object> knownInjectees) {
+        this.eventType = eventType;
+        this.lifecycleObject = lifecycleObject;
+        if (knownInjectees == null) {
+            this.knownInjectees = null;
+        }
+        else {
+            this.knownInjectees = Collections.unmodifiableMap(knownInjectees);
+        }
+    }
     
-    /**
-     * Disposes the given instance
-     * 
-     * @param instance removes the given instance
+    /* package */ InstanceLifecycleEventImpl(InstanceLifecycleEventType eventType,
+            Object lifecycleObject) {
+        this(eventType, lifecycleObject, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InstanceLifecycleEvent#getEventType()
      */
-    public void dispose(T instance);
+    @Override
+    public InstanceLifecycleEventType getEventType() {
+        return eventType;
+    }
+    
+    /* package */ void setActiveDescriptor(ActiveDescriptor<?> descriptor) {
+        this.descriptor = descriptor;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InstanceLifecycleEvent#getActiveDescriptor()
+     */
+    @Override
+    public ActiveDescriptor<?> getActiveDescriptor() {
+        return descriptor;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InstanceLifecycleEvent#getLifecycleObject()
+     */
+    @Override
+    public Object getLifecycleObject() {
+        return lifecycleObject;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InstanceLifecycleEvent#getKnownInjectees()
+     */
+    @Override
+    public Map<Injectee, Object> getKnownInjectees() {
+        return knownInjectees;
+    }
+
 }

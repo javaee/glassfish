@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InstanceLifecycleEventType;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -95,14 +96,15 @@ public class FactoryCreator<T> implements Creator<T> {
      * @see org.jvnet.hk2.internal.Creator#create(org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public T create(ServiceHandle<?> root) throws MultiException {
+    public InstanceLifecycleEventImpl create(ServiceHandle<?> root) throws MultiException {
         ServiceHandle<Factory<T>> handle = getFactoryHandle();
         
         Factory<T> retVal = handle.getService();
         
         handle.destroy();
         
-        return retVal.provide();
+        return new InstanceLifecycleEventImpl(
+                InstanceLifecycleEventType.POST_PRODUCTION, retVal.provide());
     }
 
     /* (non-Javadoc)

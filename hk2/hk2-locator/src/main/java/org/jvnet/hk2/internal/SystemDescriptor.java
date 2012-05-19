@@ -44,6 +44,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,8 +52,13 @@ import java.util.Set;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InstanceLifecycleEvent;
+import org.glassfish.hk2.api.InstanceLifecycleEventType;
+import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ValidationService;
@@ -85,6 +91,9 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     
     private final HashMap<ValidationService, Boolean> validationServiceCache =
             new HashMap<ValidationService, Boolean>();
+    
+    private final List<InstanceLifecycleListener> instanceListeners =
+            new LinkedList<InstanceLifecycleListener>();
     
     /* package */ @SuppressWarnings("unchecked")
     SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId) {
@@ -325,19 +334,36 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         
         return creator.getInjectees();
     }
+    
+    private void invokeInstanceListeners(InstanceLifecycleEvent event) {
+        for (InstanceLifecycleListener listener : instanceListeners) {
+            listener.lifecycleEvent(event);
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T create(ServiceHandle<?> root) {
         checkState();
         
+        InstanceLifecycleEventImpl event;
         if (activeDescriptor != null) {
-            return activeDescriptor.create(root);
+            event = new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
+                    activeDescriptor.create(root));
+        }
+        else {
+            event = creator.create(root);
         }
         
-        return creator.create(root);
+        event.setActiveDescriptor(this);
+        
+        // invoke the listeners
+        invokeInstanceListeners(event);
+        
+        return (T) event.getLifecycleObject();
     }
 
     /* (non-Javadoc)
@@ -489,6 +515,45 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         }
         
         return decision;
+    }
+    
+    private boolean filterMatches(Filter filter) {
+        if (filter == null) return true;
+        
+        if (filter instanceof IndexedFilter) {
+            IndexedFilter indexedFilter = (IndexedFilter) filter;
+            
+            String indexContract = indexedFilter.getAdvertisedContract();
+            if (indexContract != null) {
+                if (!baseDescriptor.getAdvertisedContracts().contains(indexContract)) {
+                    return false;
+                }
+            }
+            
+            String indexName = indexedFilter.getName();
+            if (indexName != null) {
+                if (baseDescriptor.getName() == null) return false;
+                
+                if (!indexName.equals(baseDescriptor.getName())) {
+                    return false;
+                }
+            }
+            
+            // After all that we can run the match method!
+        }
+        
+        return filter.matches(this);
+    }
+    
+    /* package */ void reupInstanceListeners(List<InstanceLifecycleListener> listeners) {
+        instanceListeners.clear();
+        
+        for (InstanceLifecycleListener listener : listeners) {
+            Filter filter = listener.getFilter();
+            if (filterMatches(filter)) {
+                instanceListeners.add(listener);
+            }
+        }
     }
     
     public String toString() {

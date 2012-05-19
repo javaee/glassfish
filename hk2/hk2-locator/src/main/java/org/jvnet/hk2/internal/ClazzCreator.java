@@ -53,6 +53,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.InstanceLifecycleEventType;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
@@ -262,7 +263,7 @@ public class ClazzCreator<T> implements Creator<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public T create(ServiceHandle<?> root) {
+    public InstanceLifecycleEventImpl create(ServiceHandle<?> root) {
         try {
             Map<Injectee, Object> allResolved = resolveAllDependencies(root);
             
@@ -274,7 +275,8 @@ public class ClazzCreator<T> implements Creator<T> {
             
             postConstructMe(retVal);
             
-            return retVal;
+            return new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
+                    retVal, allResolved);
         }
         catch (Throwable th) {
             if (th instanceof MultiException) {

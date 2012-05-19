@@ -44,11 +44,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @author jwells
  *
  */
+@Singleton
 public class KnownInjecteeNotifyee implements Notifyee {
     @SuppressWarnings("unused")
     @Inject @Named(Notifier.DEFAULT_NAME)

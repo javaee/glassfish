@@ -97,9 +97,10 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T create(ServiceHandle<?> root) {
-        return creator.create(root);
+        return (T) creator.create(root).getLifecycleObject();
     }
     
     /* (non-Javadoc)
