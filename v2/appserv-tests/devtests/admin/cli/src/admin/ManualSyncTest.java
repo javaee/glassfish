@@ -395,6 +395,17 @@ public class ManualSyncTest extends AdminBaseDevTest {
         final String i1url = "http://localhost:18080/";
 
         report("check-dasdomainxml-" + testname, dasDomainXml.exists());
+
+        // byron says this create-instance call is broken in das-branch.
+        // when you step over the next line in v4 trunk -- domain.xml exists
+        // in the branch, the iendtoend dir exists but is totally empty...
+        // the error shows up below in the check for domain.xml
+        // TODO THIS IS BROKEN IN THE BRANCH WBN
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
         report("create-instance-" + testname, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, "--systemproperties",
                 "HTTP_LISTENER_PORT=18080", testname));
 
@@ -403,11 +414,6 @@ public class ManualSyncTest extends AdminBaseDevTest {
         long dasDomainXmlTS = dasDomainXml.lastModified();
         report("export-sync-bundle-" + testname, asadmin("export-sync-bundle", "--target", testname));
         
-        // TODO THIS IS BROKEN IN THE BRANCH WBN
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         report("check-domainxml-" + testname, instDomainXml.exists());
 
         stopDomain();
