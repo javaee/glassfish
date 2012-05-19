@@ -43,9 +43,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -57,6 +57,7 @@ public class LifecycleTest {
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new LifecycleModule());
     
     private final static String MESSAGE_ONE = "One";
+    private final static String MESSAGE_TWO = "Two";
     
     /**
      * Tests basic lifecycle notification
@@ -68,7 +69,9 @@ public class LifecycleTest {
         // This notification should not be there, since the notifyee isn't instantiated yet
         alice.notify("NOT THERE");
         
-        KnownInjecteeNotifyee knownInjectee = locator.getService(KnownInjecteeNotifyee.class);
+        ServiceHandle<KnownInjecteeNotifyee> knownInjecteeHandle = locator.getServiceHandle(
+                KnownInjecteeNotifyee.class);
+        KnownInjecteeNotifyee knownInjectee = knownInjecteeHandle.getService();
         
         Assert.assertTrue(knownInjectee.getNotifications().isEmpty());
         
@@ -82,6 +85,19 @@ public class LifecycleTest {
         Assert.assertTrue("Unknown notification message: " + notification, notification.contains(Notifier.DEFAULT_NAME));
         Assert.assertTrue("Unknown notification message: " + notification, notification.contains(MESSAGE_ONE));
         
+        // Now destroy the known injectee, verify it no longer receives notifications
+        knownInjecteeHandle.destroy();
+        
+        alice.notify(MESSAGE_TWO);
+        
+        // should NOT have changed
+        notifications = knownInjectee.getNotifications();
+        Assert.assertEquals(1, notifications.size());
+        
+        notification = notifications.get(0);
+        
+        Assert.assertTrue("Unknown notification message: " + notification, notification.contains(Notifier.DEFAULT_NAME));
+        Assert.assertTrue("Unknown notification message: " + notification, notification.contains(MESSAGE_ONE)); 
     }
 
 }

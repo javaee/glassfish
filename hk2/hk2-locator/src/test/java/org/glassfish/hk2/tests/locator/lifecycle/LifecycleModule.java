@@ -43,6 +43,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
@@ -76,7 +77,7 @@ public class LifecycleModule implements TestModule {
         config.bind(BuilderHelper.link(
                 KnownInjecteeNotifyee.class).
                 to(Notifyee.class).
-                in(Singleton.class.getName()).
+                in(PerLookup.class.getName()).
                 build());
         
     }
