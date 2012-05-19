@@ -348,41 +348,6 @@ public class ManualSyncTest extends AdminBaseDevTest {
             deleteDirectory(nodeHome);
     }
 
- private void testImportNode_old() {
-        String i ="iimportnode";
-        String node = "nodeimport";
-        String bundleName = i + "-sync-bundle.zip";
-        File bundle = new File(syncDir, bundleName);
-        //File dasDomainXml = new File(domainHome, "config/domain.xml");
-        File instDomainXml = new File(glassFishHome, "nodes/"+node+"/"+i+"/config/domain.xml");
-        File nodeDirChild = new File(nodeDir, node);
-        File dasFile = new File(nodeDirChild, "agent/config/das.properties");
-
-        report("check-dasdomainxml-"+i, dasDomainXml.exists());
-        report("create-instance-"+i, asadmin("create-instance", "--node", DEFAULT_LOCAL_NODE, i));
-        long dasDomainXmlTS = dasDomainXml.lastModified();
-        report("export-sync-bundle-"+i, asadmin("export-sync-bundle", "--target", i));
-        report("check-bundle-"+i, bundle.isFile());
-
-        report("import-sync-bundle-"+i, asadmin("import-sync-bundle", "--instance", i, "--node", node, bundle.getPath()));
-
-        report("check-domainxml-"+i, instDomainXml.exists());
-        long instDomainXmlTS = instDomainXml.lastModified();
-        report("check-timestamp-"+i, dasDomainXmlTS == instDomainXmlTS);
-
-        report("check-das-properties-"+i, dasFile.exists());
-
-        String s = get("servers.server."+i+".property.rendezvousOccurred");
-        report("check-rendezvous-"+i, s.equals("true"));
-
-        //report("import-sync-bundle-specifynode", !asadmin("import-sync-bundle", "--instance", i, bundle.getPath()));
-
-        //cleanup
-        report("delete-instance-"+i, asadmin("delete-instance", i));
-        bundle.delete();
-        syncDir.delete();
-        deleteDirectory(nodeDirChild);
-    }
    private void testImportNodeDir() {
         String instance = "iimportnodedir";
         String node = "nodeimport";
@@ -439,6 +404,10 @@ public class ManualSyncTest extends AdminBaseDevTest {
         report("export-sync-bundle-" + testname, asadmin("export-sync-bundle", "--target", testname));
         
         // TODO THIS IS BROKEN IN THE BRANCH WBN
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
         report("check-domainxml-" + testname, instDomainXml.exists());
 
         stopDomain();
