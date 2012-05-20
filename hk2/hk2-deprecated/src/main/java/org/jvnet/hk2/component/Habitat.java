@@ -583,6 +583,8 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     @Override
     public <T> T getComponent(final Class<T> contract, String name)
             throws ComponentException {
+        if (name != null && name.length() <= 0) name = null;
+        
         return (T) delegate.getService(contract, name);
     }
 
@@ -593,6 +595,8 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
 
     @Override
     public <T> T getComponent(String fullQualifiedName, String name) {
+        if (name != null && name.length() <= 0) name = null;
+        
         ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(fullQualifiedName, name));
         if (best == null) return null;
         
