@@ -197,7 +197,7 @@
     </target>
 
     <target name="manual-sync" depends="init">
-        <runtestsuspend classname="admin.ManualSyncTest"/>
+        <runtest  classname="admin.ManualSyncTest"/>
     </target>
 
     <target name="sshnode" depends="init">
@@ -213,13 +213,13 @@
     </target>
 
     <target name="dcom" depends="init">
-        <runtestsuspend classname="admin.DcomTest">
+        <runtest  classname="admin.DcomTest">
             <jvmarg value="-Ddcom.host=${dcom.host}"/>
             <jvmarg value="-Ddcom.domain=${dcom.domain}"/>
             <jvmarg value="-Ddcom.user=${dcom.user}"/>
             <jvmarg value="-Ddcom.password=${dcom.password}"/>
             <jvmarg value="-Ddcom.installdir=${dcom.installdir}"/>
-        </runtestsuspend>
+        </runtest>
     </target>
 
     <target name="setup-ssh" depends="init">
