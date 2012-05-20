@@ -80,26 +80,12 @@ public class ParentConfigListenerTest extends ConfigApiTest {
         habitat = Utils.getNewHabitat(this);
     }
     
-    private static <T> T registerAndCreate(ServiceLocator locator, Class<T> registerMe) {
-        T retVal = locator.getService(registerMe);
-        if (retVal != null) return retVal;
-        
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        Assert.assertNotNull(dcs);
-        
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        config.addActiveDescriptor(registerMe);
-        
-        config.commit();
-        
-        return locator.getService(registerMe);
-    }
+    
 
 
     @Test
     public void addHttpListenerTest() throws TransactionFailure {
-        NetworkListenersContainer container = registerAndCreate(habitat, NetworkListenersContainer.class);
+        NetworkListenersContainer container = habitat.getService(NetworkListenersContainer.class);
 
         ConfigSupport.apply(new SingleConfigCode<NetworkListeners>() {
 
