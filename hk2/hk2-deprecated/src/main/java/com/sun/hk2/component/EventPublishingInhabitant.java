@@ -99,8 +99,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
           addInhabitantListener(listener);
       }
   }
-  
-  
 
   @Override
   public String typeName() {
@@ -146,16 +144,16 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
       fetch();
     }
     ActiveDescriptor<T> activeDescriptor;
-    if (real != null) {
+    if (real != null && (real instanceof ActiveDescriptor)) {
         activeDescriptor = (ActiveDescriptor<T>) real;
     }
     else {
         activeDescriptor = (ActiveDescriptor<T>) serviceLocator.getBestDescriptor(
                 BuilderHelper.createNameAndContractFilter(getImplementation(), getName()));
-        if (activeDescriptor == null) {
-            throw new AssertionError("Could not find a registered descriptor for " +
-              getImplementation() + " with name " + getName());
-        }
+    }
+    
+    if (activeDescriptor == null) {
+        return null;
     }
     
     ServiceHandle<T> handle = serviceLocator.getServiceHandle(activeDescriptor);
