@@ -63,6 +63,8 @@ import org.jvnet.hk2.config.TransactionFailure;
 import java.beans.PropertyVetoException;
 import java.util.List;
 
+import junit.framework.Assert;
+
 
 public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiTest {
 
@@ -71,6 +73,18 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
     private ParameterMap parameters;
     private AdminCommandContext context;
     private CommandRunner cr;
+    
+    public static void checkActionReport(ActionReport report) {
+        if (ActionReport.ExitCode.SUCCESS.equals(report.getActionExitCode())) {
+            return;
+        }
+        
+        Throwable reason = report.getFailureCause();
+        Assert.assertNotNull("Action failed with exit code " +
+            report.getActionExitCode() + " and message " +
+                report.getMessage(), reason);
+        throw new AssertionError(reason);
+    }
 
     @Override
     public String getFileName() {
@@ -111,6 +125,8 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         }, iiopService);
         parameters = new ParameterMap();
     }
+    
+    
 
     /**
      * Test of execute method, of class CreateIiopListener.
@@ -125,8 +141,8 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("enabled", "true");
         parameters.set("securityenabled", "true");
         CreateIiopListener command = services.getService(CreateIiopListener.class);
-        cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
-        assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
+        cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);
+        checkActionReport(context.getActionReport());
         boolean isCreated = false;
         List<IiopListener> listenerList = iiopService.getIiopListener();
         for (IiopListener listener : listenerList) {
@@ -157,7 +173,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("listener_id", "iiop_1");
         CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
-        assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
+        checkActionReport(context.getActionReport());
         boolean isCreated = false;
         List<IiopListener> listenerList = iiopService.getIiopListener();
         for (IiopListener listener : listenerList) {
@@ -187,8 +203,8 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("iiopport", "4440");
         parameters.set("listener_id", "iiop_1");
         CreateIiopListener command1 = services.getService(CreateIiopListener.class);
-        cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command1);               
-        assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
+        cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command1);
+        checkActionReport(context.getActionReport());
         boolean isCreated = false;
         List<IiopListener> listenerList = iiopService.getIiopListener();
         for (IiopListener listener : listenerList) {
@@ -232,7 +248,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("listener_id", "iiop_1");
         CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
-        assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
+        checkActionReport(context.getActionReport());
         boolean isCreated = false;
         List<IiopListener> listenerList = iiopService.getIiopListener();
         for (IiopListener listener : listenerList) {
@@ -286,7 +302,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("enabled", "");
         CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
-        assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
+        checkActionReport(context.getActionReport());
         boolean isCreated = false;
         List<IiopListener> listenerList = iiopService.getIiopListener();
         for (IiopListener listener : listenerList) {
@@ -316,7 +332,7 @@ public class CreateIiopListenerTest extends org.glassfish.tests.utils.ConfigApiT
         parameters.set("securityenabled", "");
         CreateIiopListener command = services.getService(CreateIiopListener.class);
         cr.getCommandInvocation("create-iiop-listener", context.getActionReport()).parameters(parameters).execute(command);               
-        assertEquals(ActionReport.ExitCode.SUCCESS, context.getActionReport().getActionExitCode());
+        checkActionReport(context.getActionReport());
         boolean isCreated = false;
         List<IiopListener> listenerList = iiopService.getIiopListener();
         for (IiopListener listener : listenerList) {

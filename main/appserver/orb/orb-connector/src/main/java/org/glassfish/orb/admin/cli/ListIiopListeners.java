@@ -109,7 +109,7 @@ public class ListIiopListeners implements AdminCommand {
     @Override
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
-        final Target targetUtil = services.byType(Target.class ).get() ;
+        final Target targetUtil = services.getService(Target.class ) ;
         final Config config = targetUtil.getConfig(target) ;
         final IiopService iiopService = config.getExtensionByType(IiopService.class);
 

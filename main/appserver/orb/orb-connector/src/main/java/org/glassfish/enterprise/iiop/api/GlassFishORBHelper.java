@@ -108,7 +108,7 @@ public class GlassFishORBHelper implements PostConstruct, ORBLocator {
     private GlassFishORBFactory orbFactory;
 
     public void postConstruct() {
-        orbFactory = services.forContract(GlassFishORBFactory.class).get();
+        orbFactory = services.getService(GlassFishORBFactory.class);
     }
 
 
