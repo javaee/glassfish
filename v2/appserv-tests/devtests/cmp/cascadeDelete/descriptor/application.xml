@@ -8,7 +8,7 @@
   </module>
   <module>
     <web>
-      <web-uri>CascadeDelete-cdclient.war</web-uri>
+      <web-uri>CascadeDelete-web.war</web-uri>
       <context-root>/cd</context-root>
     </web>
   </module>
