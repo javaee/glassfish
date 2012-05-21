@@ -3,7 +3,7 @@
 <description>Application description</description>
 <display-name>OrderApp</display-name>
 <module>
-<java>app-client-ic.jar</java>
+<java>OrderAppAppClient.jar</java>
 </module>
 <module>
 <ejb>ejb-jar-ic.jar</ejb>
