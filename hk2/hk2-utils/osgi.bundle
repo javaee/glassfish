@@ -39,4 +39,5 @@
  */
 
 -exportcontents: \
-                            org.glassfish.hk2.utilities,*; version=${project.osgi.version}
+               org.glassfish.hk2.utilities.reflection; \
+               version=${project.osgi.version}
