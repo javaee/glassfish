@@ -1,40 +1,35 @@
 package org.jvnet.hk2.osgiadapter;
 
-import static org.junit.Assert.*;
-import static org.ops4j.pax.exam.CoreOptions.*;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.*;
 
-import java.io.BufferedWriter;
+import static org.ops4j.pax.exam.CoreOptions.felix;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.provision;
+import static org.ops4j.pax.exam.CoreOptions.systemPackage;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.cleanCaches;
+
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.osgi.framework.*;
-import org.osgi.util.tracker.ServiceTracker;
 
 @RunWith(org.ops4j.pax.exam.junit.JUnit4TestRunner.class)
 public class ServiceLocatorHk2MainTest {
@@ -94,7 +89,7 @@ public class ServiceLocatorHk2MainTest {
 	public void testHK2Main() throws Throwable {
 
 		try {
-			assertNotNull("OSGi did not properly boot", this.bundleContext);
+			Assert.assertNotNull("OSGi did not properly boot", this.bundleContext);
 
 			final StartupContext startupContext = new StartupContext();
 			final ServiceTracker hk2Tracker = new ServiceTracker(
@@ -103,7 +98,7 @@ public class ServiceLocatorHk2MainTest {
 			final Main main = (Main) hk2Tracker.waitForService(0);
 
 			// Expect correct subclass of Main to be registered as OSGi service
-			assertEquals("org.jvnet.hk2.osgiadapter.HK2Main", main.getClass()
+			Assert.assertEquals("org.jvnet.hk2.osgiadapter.HK2Main", main.getClass()
 					.getCanonicalName());
 			hk2Tracker.close();
 			final ModulesRegistry mr = ModulesRegistry.class.cast(bundleContext
@@ -111,7 +106,7 @@ public class ServiceLocatorHk2MainTest {
 							.getServiceReference(ModulesRegistry.class
 									.getName())));
 
-			assertEquals("org.jvnet.hk2.osgiadapter.OSGiModulesRegistryImpl",
+			Assert.assertEquals("org.jvnet.hk2.osgiadapter.OSGiModulesRegistryImpl",
 					mr.getClass().getCanonicalName());
 
 			final ServiceLocator serviceLocator = main.createServiceLocator(
@@ -119,7 +114,7 @@ public class ServiceLocatorHk2MainTest {
 
 			ModulesRegistry mrFromServiceLocator = serviceLocator
 					.getService(ModulesRegistry.class);
-			assertEquals(mr, mrFromServiceLocator);
+			Assert.assertEquals(mr, mrFromServiceLocator);
 
 			// serviceLocator should have been registered as an OSGi service
 			checkServiceLocatorOSGiRegistration(serviceLocator);
@@ -129,16 +124,16 @@ public class ServiceLocatorHk2MainTest {
 					.getAllServices(BuilderHelper
 							.createContractFilter("org.osgi.service.startlevel.StartLevel"));
 
-			assertEquals(1, startLevelServices.size());
+			Assert.assertEquals(1, startLevelServices.size());
 
 			List<?> startups = serviceLocator.getAllServices(BuilderHelper
 					.createContractFilter(ModuleStartup.class
 							.getCanonicalName()));
-			assertEquals("Cannot find ModuleStartup", 1, startups.size());
+			Assert.assertEquals("Cannot find ModuleStartup", 1, startups.size());
 
 			final ModuleStartup moduleStartup = main.findStartupService(null, startupContext);
 
-			assertNotNull(
+			Assert.assertNotNull(
 					"Expected a ModuleStartup that was provisioned as part of this test",
 					moduleStartup);
 
@@ -156,21 +151,21 @@ public class ServiceLocatorHk2MainTest {
 	public void testHK2OSGiAdapter() throws Throwable {
 
 		try {
-			assertNotNull("OSGi did not properly boot", this.bundleContext);
+			Assert.assertNotNull("OSGi did not properly boot", this.bundleContext);
 
 			ServiceReference serviceLocatorRef = bundleContext
 					.getServiceReference(ServiceLocator.class.getName());
 
-			assertNotNull(serviceLocatorRef);
+			Assert.assertNotNull(serviceLocatorRef);
 			ServiceLocator serviceLocator = (ServiceLocator) bundleContext
 					.getService(serviceLocatorRef);
 
-			assertNotNull(serviceLocator);
+			Assert.assertNotNull(serviceLocator);
 
 			List<ModuleStartup> startups = (List<ModuleStartup>) serviceLocator.getAllServices(BuilderHelper
 					.createContractFilter(ModuleStartup.class
 							.getCanonicalName()));
-			assertEquals("Cannot find ModuleStartup", 1, startups.size());
+			Assert.assertEquals("Cannot find ModuleStartup", 1, startups.size());
 
 			startups.iterator().next().start();
 			
@@ -190,9 +185,9 @@ public class ServiceLocatorHk2MainTest {
 		ServiceLocator serviceLocatorFromOSGi = (ServiceLocator) bundleContext
 				.getService(serviceLocatorRef);
 
-		assertNotNull("Expected ServiceLocator to be registed in OSGi",
+		Assert.assertNotNull("Expected ServiceLocator to be registed in OSGi",
 				serviceLocatorFromOSGi);
-		assertEquals(
+		Assert.assertEquals(
 				"Expected same ServiceLocator in OSGi as the one passed in",
 				serviceLocator, serviceLocatorFromOSGi);
 	}
