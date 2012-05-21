@@ -39,6 +39,10 @@
  */
 
 -exportcontents: \
-                            org.glassfish.hk2.api,*; version=${project.osgi.version}
+               org.glassfish.hk2.api; \
+               org.glassfish.hk2.extension; \
+               org.glassfish.hk2.utilities; \
+               org.jvnet.hk2.annotations; \
+               version=${project.osgi.version}
 
 
