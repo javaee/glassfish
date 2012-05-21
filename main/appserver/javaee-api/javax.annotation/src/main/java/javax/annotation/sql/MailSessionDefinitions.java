@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,7 +38,7 @@
  * holder.
  */
 
-package javax.annotation.sql;
+package javax.annotation.mail;
 
 import java.lang.annotation.Target;
 import java.lang.annotation.Retention;
@@ -46,14 +46,22 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Declares one or more <code>DataSourceDefinition</code> annotations.
- * 
- * @see javax.annotation.sql.DataSourceDefinition
+ * Created by IntelliJ IDEA.
+ * User: naman mehta
+ * Date: 17/4/12
+ * Time: 5:11 PM
+ * To change this template use File | Settings | File Templates.
+ */
+
+/**
+ * Declares one or more <code>MailSessionDefinition</code> annotations.
+ *
+ * @see javax.annotation.mail.MailSessionDefinition
  * @since Common Annotations 1.1
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DataSourceDefinitions {
-    DataSourceDefinition[] value ();
+public @interface MailSessionDefinitions {
+    MailSessionDefinition[] value();
 
 }
