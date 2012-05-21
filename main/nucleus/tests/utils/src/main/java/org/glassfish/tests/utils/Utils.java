@@ -128,45 +128,48 @@ public class Utils {
     }
     
     public static Habitat getNewHabitat(String habitatName) {
-    	Habitat habitat = null;
-    	
-		if (ServiceLocatorFactory.getInstance().find(habitatName) == null) {
-			ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
-					.create(habitatName);
+    	Habitat habitat;
+
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().find(habitatName);
+        if ( serviceLocator != null) {
+            ServiceLocatorFactory.getInstance().destroy(habitatName);
+        }
+	    serviceLocator = ServiceLocatorFactory.getInstance().create(habitatName);
 
 			
-			DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
-			DynamicConfiguration config = dcs.createDynamicConfiguration();
-			
-			config.addActiveDescriptor(DefaultErrorService.class);
+        DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-            config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new StartupContext(new Properties())));
+        config.addActiveDescriptor(DefaultErrorService.class);
 
-            // set up a Logger for tests
-            Logger logger = Logger.getLogger("");
-            
-            logger.addHandler(new ConsoleHandler());
-            logger.setLevel(Level.INFO);
-            
-            AbstractActiveDescriptor<Logger> loggerDescriptor = BuilderHelper.createConstantDescriptor(logger);
-            loggerDescriptor.addContractType(Logger.class);
-            
-			config.addActiveDescriptor(loggerDescriptor);
-            
-            config.commit();
-			
-			habitat = new Habitat(null, habitatName); // implicitly binds in ServiceLocator
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new StartupContext(new Properties())));
 
-			try {
-				HK2Populator.populate(serviceLocator,
-						new ClasspathDescriptorFileFinder(),
-						new Hk2LoaderPopulatorPostProcessor(null));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-    	return (habitat != null) ? habitat : new Habitat(null, habitatName);
+        // set up a Logger for tests
+        Logger logger = Logger.getLogger("");
+
+        logger.addHandler(new ConsoleHandler());
+        logger.setLevel(Level.INFO);
+
+        AbstractActiveDescriptor<Logger> loggerDescriptor = BuilderHelper.createConstantDescriptor(logger);
+        loggerDescriptor.addContractType(Logger.class);
+
+        config.addActiveDescriptor(loggerDescriptor);
+
+        config.commit();
+
+        habitat = new Habitat(null, habitatName); // implicitly binds in ServiceLocator
+
+        try {
+            HK2Populator.populate(serviceLocator,
+                    new ClasspathDescriptorFileFinder(),
+                    new Hk2LoaderPopulatorPostProcessor(null));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        instance.habitats.put(habitatName, habitat);
+
+        return habitat;
     }
 
 	public void shutdownServiceLocator(
