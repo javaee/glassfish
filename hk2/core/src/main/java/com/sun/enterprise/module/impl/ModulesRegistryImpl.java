@@ -85,9 +85,9 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
     }
 
     public void parseInhabitants(
-            Module module, String name, InhabitantsParser inhabitantsParser)
+            Module module, String name)
             throws IOException {
-        ModuleImpl.class.cast(module).parseInhabitants(name, inhabitantsParser);
+        ((ModuleImpl)module).parseInhabitants(name);
     }
 
     /**

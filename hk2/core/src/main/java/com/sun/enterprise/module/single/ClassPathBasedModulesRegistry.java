@@ -132,7 +132,7 @@ public class ClassPathBasedModulesRegistry extends ModulesRegistryImpl {
     }
 
     @Override
-    public void parseInhabitants(Module module, String name, InhabitantsParser inhabitantsParser)
+    public void parseInhabitants(Module module, String name)
             throws IOException {
 
         HK2Loader loader = new HK2Loader() {
@@ -148,12 +148,12 @@ public class ClassPathBasedModulesRegistry extends ModulesRegistryImpl {
         	
         };
         
-        for (Module m : modules) {
-            // each module can have a different way of representing the inhabitant meta-data
-            // some may use the inhabitant file, others may rely on introspection 
-            for (InhabitantsDescriptor d :m.getMetadata().getHabitats(name))
-                inhabitantsParser.parse(d.createScanner(), loader);
-        }
+//        for (Module m : modules) {
+//            // each module can have a different way of representing the inhabitant meta-data
+//            // some may use the inhabitant file, others may rely on introspection 
+//            for (InhabitantsDescriptor d :m.getMetadata().getHabitats(name))
+//                inhabitantsParser.parse(d.createScanner(), loader);
+//        }
     }
 
 }

@@ -93,22 +93,6 @@ public interface ModulesRegistry extends ModuleChangeListener {
     ServiceLocator createServiceLocator(String name, ServiceLocator h) throws ComponentException;
 
     /**
-     * Creates a {@link Habitat} from all the modules in this registry,
-     * by using the given {@link InhabitantsParser}.
-     *
-     * @param name
-     *      Determines which inhabitants descriptors are loaded.
-     *      (so that different parallel habitats can be
-     *      created over the same modules registry.)
-     * @param parser
-     *      Parser to load inhabitants file. Sub types can be used
-     *      to customize the parsing behavior, like ignoring some inhabitants deliberately.
-     *
-     * @return initialized Habitat
-     */
-    ServiceLocator createServiceLocator(String name, InhabitantsParser parser) throws ComponentException;
-
-    /**
      * Add a new <code>Repository</code> to this registry. From now on
      * the repository will be used to procure requested module not yet registered
      * in this registry instance. Repository can be searched in a particular

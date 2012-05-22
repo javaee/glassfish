@@ -97,9 +97,9 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
     }
 
     public void parseInhabitants(
-            Module module, String name, InhabitantsParser inhabitantsParser)
+            Module module, String name)
             throws IOException, BootException {
-        OSGiModuleImpl.class.cast(module).parseInhabitants(name, inhabitantsParser);
+        ((OSGiModuleImpl)module).parseInhabitants(name);
     }
 
     public ModulesRegistry createChild() {
