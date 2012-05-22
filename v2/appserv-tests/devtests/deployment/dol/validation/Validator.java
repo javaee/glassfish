@@ -13,6 +13,7 @@ import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+import org.glassfish.internal.api.Globals;
 
 
 public class Validator {
@@ -22,6 +23,14 @@ public class Validator {
     public static void main(String args[]) {
         String fileName = args[0];
         String ext = getExtension(fileName);
+        String archiveType = ext.substring(1);
+        if ("jar".equals(archiveType)) {
+          if (fileName.contains("car")) {
+            archiveType = "car";
+          } else {
+            archiveType = "ejb";
+          }
+        }
 
         String outputFileName = fileName + "1" + ext;
         String outputFileName2 = fileName + "2" + ext;
@@ -36,8 +45,7 @@ public class Validator {
             File archiveFile = new File(fileName);
             ReadableArchive archive = archiveFactory.openArchive(
                 archiveFile);
-            Archivist archivist = 
-                archivistFactory.getArchivist(archive, null);
+            Archivist archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(fileName);
 	    archivist.setXMLValidation(true);
@@ -61,8 +69,7 @@ public class Validator {
             File archiveFile = new File(outputFileName);
             ReadableArchive archive = archiveFactory.openArchive(
                 archiveFile);
-            Archivist archivist = 
-                archivistFactory.getArchivist(archive, null);
+            Archivist archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(outputFileName);
             archivist.setXMLValidation(true);
@@ -86,8 +93,7 @@ public class Validator {
             File archiveFile = new File(outputFileName2);
             ReadableArchive archive = archiveFactory.openArchive(
                 archiveFile);
-            Archivist archivist =
-                archivistFactory.getArchivist(archive, null);
+            Archivist archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(outputFileName2);
             archivist.setXMLValidation(true);
@@ -134,6 +140,7 @@ public class Validator {
             habitat.add(new ExistingSingletonInhabitant(startupContext));
 
             habitat.addComponent(new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+            Globals.setDefaultHabitat(habitat);
         }
     }
 
