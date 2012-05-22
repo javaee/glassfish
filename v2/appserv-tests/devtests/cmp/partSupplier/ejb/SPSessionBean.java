@@ -83,6 +83,7 @@ public class SPSessionBean implements javax.ejb.SessionBean {
         try {
             parts = partsHome.findAll();
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new EJBException(ex.getMessage());
         }
         return parts.size();
@@ -94,6 +95,7 @@ public class SPSessionBean implements javax.ejb.SessionBean {
         try {
             suppliers = suppliersHome.findAll();
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new EJBException(ex.getMessage());
         }
         return suppliers.size();
@@ -131,12 +133,13 @@ public class SPSessionBean implements javax.ejb.SessionBean {
             parts.remove();
         } catch (Exception ex) {
             System.out.println("inside removePart exception");
+            ex.printStackTrace();
             throw new EJBException(ex.getMessage());
         }
     }
     
     public void removeSupplier(java.lang.Integer partid, java.lang.Integer supplierid) {
-        System.out.println("Debug: SPSession removePart");
+        System.out.println("Debug: SPSession removeSupplier");
         try {
             SuppliersKey key = new SuppliersKey();
             key.partid = partid;
@@ -145,6 +148,7 @@ public class SPSessionBean implements javax.ejb.SessionBean {
             supplier.remove();
         } catch (Exception ex) {
             System.out.println("inside removeSupplier exception");
+            ex.printStackTrace();
             throw new EJBException(ex.getMessage());
         }
     }

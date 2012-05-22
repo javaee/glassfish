@@ -51,7 +51,7 @@ public abstract class SuppliersBean implements javax.ejb.EntityBean {
         } else {
             System.out.println(" for Part: " + part.getName());
         }
-        part0.testInCascadeDelete();
+        //part0.testInCascadeDelete();
     }
     
     
