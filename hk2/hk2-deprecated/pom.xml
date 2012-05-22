@@ -57,6 +57,31 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.2</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.jvnet</groupId>
+                                    <artifactId>tiger-types</artifactId>
+                                    <version>1.4</version>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
                 <version>${project.version}</version>
@@ -87,7 +112,7 @@
                 </executions>
                 <configuration>
                     <instructions>
-			<Export-Package>com.sun.hk2.component,org.jvnet.hk2.component,org.jvnet.hk2.tracing,org.glassfish.hk2,org.glassfish.hk2.deprecated.utilities,org.glassfish.hk2.inject,org.jvnet.hk2.component.concurrent,org.jvnet.hk2.deprecated.internal</Export-Package>
+			<Export-Package>com.sun.hk2.component,org.jvnet.hk2.component,org.jvnet.hk2.tracing,org.glassfish.hk2,org.glassfish.hk2.deprecated.utilities,org.glassfish.hk2.inject,org.jvnet.hk2.component.concurrent,org.jvnet.hk2.deprecated.internal,org.jvnet.tiger_types</Export-Package>
                         <Fragment-Host>org.glassfish.hk2.api</Fragment-Host>
 			<Private-Package>org.glassfish.hk2.internal</Private-Package>
                     </instructions>
