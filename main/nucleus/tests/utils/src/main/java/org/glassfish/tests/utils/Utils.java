@@ -78,7 +78,7 @@ public class Utils {
     final static String habitatName = "default";
     final static String inhabitantPath = "META-INF/inhabitants";
 
-    Map<String, Habitat> habitats = new HashMap<String, Habitat>();
+    private static Map<String, Habitat> habitats = new HashMap<String, Habitat>();
     public static final Utils instance = new Utils();
 
     public synchronized Habitat getHabitat(ConfigApiTest test) {
@@ -91,7 +91,6 @@ public class Utils {
         }
 
         Habitat habitat = getNewHabitat(test);
-        habitats.put(fileName, habitat);
         return habitat;
     }
 
@@ -167,8 +166,7 @@ public class Utils {
             e.printStackTrace();
         }
 
-        instance.habitats.put(habitatName, habitat);
-
+        habitats.put(habitatName, habitat);
         return habitat;
     }
 
