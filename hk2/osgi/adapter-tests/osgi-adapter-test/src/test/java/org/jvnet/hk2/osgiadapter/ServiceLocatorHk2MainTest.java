@@ -56,10 +56,13 @@ public class ServiceLocatorHk2MainTest {
 				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-deprecated").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-runlevel").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId("core").version(projectVersion).startLevel(4)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-config").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
 						"hk2-locator").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
 						"javax.inject").version(projectVersion).startLevel(4)),
+ 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
+                                                "bean-validator").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
 						"cglib").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
