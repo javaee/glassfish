@@ -148,34 +148,27 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     }
 
     /**
-     * Creates a {@link Habitat} from all the modules in this registry
+     * Creates a {@link ServiceLocator} from all the modules in this registry
      *
      * @param name
-     *      Determines which inhabitants descriptors are loaded.
-     *      (so that different parallel habitats can be
-     *      created over the same modules registry.)
+     *      Determines which descriptors are loaded.
      */
-    public ServiceLocator createServiceLocator(String name) throws ComponentException {
-        ServiceLocator h = newServiceLocator();
-        return createServiceLocator(name, h);
-    }
-
-    public ServiceLocator createServiceLocator(String name, ServiceLocator h) throws ComponentException {
+     public ServiceLocator createServiceLocator(String name, ServiceLocator h) throws ComponentException {
         if (h==null) {
             h = newServiceLocator();
         }
         
         // TODO: should get the inhabitantsParser out of Main instead since
         // this could have been overridden
-        return createServiceLocator(name, createInhabitantsParser(h));
+        return createServiceLocator(name);
     }
 
-    public ServiceLocator createServiceLocator(String name, InhabitantsParser parser) throws ComponentException {
+    public ServiceLocator createServiceLocator(String name) throws ComponentException {
         try {
-            ServiceLocator serviceLocator = parser.serviceLocator;
+            ServiceLocator serviceLocator = newServiceLocator();
             
             for (final Module module : getModules()) {
-                parseInhabitants(module, name,parser);
+                parseInhabitants(module, name);
             }
                 
             populateConfig(serviceLocator);
@@ -202,8 +195,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     }
 
     public abstract void parseInhabitants(Module module,
-                                  String name,
-                                  InhabitantsParser inhabitantsParser)
+                                  String name)
             throws IOException, BootException;
 
     /**
@@ -396,7 +388,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             {
                 // TODO: should get the inhabitantsParser out of Main instead since
                 // this could have been overridden
-                parseInhabitants(newModule, name, createInhabitantsParser(h));
+                parseInhabitants(newModule, name);
             }
             catch (Exception e)
             {

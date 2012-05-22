@@ -290,7 +290,7 @@ public final class ModuleImpl implements Module {
     /**
      * Parses all the inhabitants descriptors of the given name in this module.
      */
-    void parseInhabitants(String name,InhabitantsParser parser) throws IOException {
+    void parseInhabitants(String name) throws IOException {
         
         HK2Loader loader = new HK2Loader() {
 
@@ -305,8 +305,8 @@ public final class ModuleImpl implements Module {
         	
         };
 
-        for (InhabitantsDescriptor d : getMetadata().getHabitats(name))
-            parser.parse(d.createScanner(),loader);
+//        for (InhabitantsDescriptor d : getMetadata().getHabitats(name))
+//            parser.parse(d.createScanner(),loader);
     }
 
     /**

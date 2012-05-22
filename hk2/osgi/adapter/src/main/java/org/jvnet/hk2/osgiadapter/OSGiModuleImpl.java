@@ -351,7 +351,7 @@ public class OSGiModuleImpl implements Module {
     /**
      * Parses all the inhabitants descriptors of the given name in this module.
      */
-    /* package */ void parseInhabitants(String name, InhabitantsParser parser) throws IOException, BootException {   	
+    /* package */ void parseInhabitants(String name) throws IOException, BootException {   	
  
         HK2Loader hk2Loader = new HK2Loader() {
 

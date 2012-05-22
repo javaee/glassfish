@@ -115,7 +115,7 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
     }
 
     @Override
-    public void parseInhabitants(Module module, String name, InhabitantsParser inhabitantsParser)
+    public void parseInhabitants(Module module, String name)
             throws IOException {
 
         HK2Loader loader = new HK2Loader() {
@@ -131,8 +131,8 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
         
         };
         
-        for (InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
-            inhabitantsParser.parse(d.createScanner(), loader);
+//        for (InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
+//            inhabitantsParser.parse(d.createScanner(), loader);
     }
 
 }
