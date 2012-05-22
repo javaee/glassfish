@@ -100,7 +100,7 @@ public abstract class AbstractEjbHandler extends AbstractHandler {
     public AbstractEjbHandler() {
         Habitat h = Globals.getDefaultHabitat();
         if( h != null ) {
-            provider = h.forContract(AnnotationTypesProvider.class).named("EJB").get();
+            provider = h.getService(AnnotationTypesProvider.class, "EJB");
         }
     }
     /**

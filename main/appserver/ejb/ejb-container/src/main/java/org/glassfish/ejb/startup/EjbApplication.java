@@ -123,9 +123,9 @@ public class EjbApplication
         this.ejbAppClassLoader = cl;
         this.dc = dc;
         this.services = services;
-        this.ejbContainerFactory = services.forContract(ContainerFactory.class).get();
+        this.ejbContainerFactory = services.getService(ContainerFactory.class);
         this.ejbSMF = ejbSecMgrFactory;
-        this.policyLoader = services.byType(PolicyLoader.class).get();
+        this.policyLoader = services.getService(PolicyLoader.class);
 
         Application app = ejbBundle.getApplication();
         initializeInOrder = (app != null) && (app.isInitializeInOrder());
@@ -281,7 +281,7 @@ public class EjbApplication
             // EjbDeployer.clean().  A different instance of DeploymentContext
             // is passed to EjbDeployer.clean so we cannot use anything in DC (e.g.
             // appProps, transientData) to store keepstate.
-            ApplicationRegistry appRegistry = services.byType(ApplicationRegistry.class).get();
+            ApplicationRegistry appRegistry = services.getService(ApplicationRegistry.class);
             ApplicationInfo appInfo = appRegistry.get(params.name());
             appInfo.addTransientAppMetaData(KEEP_STATE, keepState);
 

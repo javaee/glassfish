@@ -287,7 +287,7 @@ public class StatefulContainerBuilder
         
         BackingStoreFactory factory = null;
         try {
-            factory = services.forContract(BackingStoreFactory.class).named(persistenceStoreType).get();
+            factory = services.getService(BackingStoreFactory.class, persistenceStoreType);
         } catch (Exception ex) {
             _logger.log(Level.WARNING, "ejb.sfsb_builder_instantiate_backing_store_exception", persistenceStoreType);
             _logger.log(Level.WARNING, "", ex);
@@ -295,7 +295,7 @@ public class StatefulContainerBuilder
 
         try {
             if (factory == null) {
-                factory = services.forContract(BackingStoreFactory.class).named("noop").get();
+                factory = services.getService(BackingStoreFactory.class, "noop");
             }
             this.backingStore = factory.createBackingStore(conf);
         } catch (Exception ex) {

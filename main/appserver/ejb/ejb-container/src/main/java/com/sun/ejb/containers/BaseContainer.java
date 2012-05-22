@@ -1167,8 +1167,8 @@ public abstract class BaseContainer
                         new EjbEndpointFacadeImpl(this, ejbContainerUtilImpl);
 
 
-            wsejbEndpointRegistry = Globals.getDefaultHabitat().byType(
-                    WSEjbEndpointRegistry.class).get();
+            wsejbEndpointRegistry = Globals.getDefaultHabitat().getService(
+                    WSEjbEndpointRegistry.class);
             if (wsejbEndpointRegistry != null ) {
                 wsejbEndpointRegistry.registerEndpoint(webServiceEndpoint,endpointFacade,servant,tieClass);
             } else {
@@ -1608,7 +1608,7 @@ public abstract class BaseContainer
 
         Habitat services = ejbContainerUtilImpl.getServices();
 
-        JCDIService jcdiService = services.forContract(JCDIService.class).get();
+        JCDIService jcdiService = services.getService(JCDIService.class);
 
         EjbBundleDescriptor ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
 
@@ -1660,7 +1660,7 @@ public abstract class BaseContainer
         
         Habitat services = ejbContainerUtilImpl.getServices();
 
-        JCDIService jcdiService = services.forContract(JCDIService.class).get();
+        JCDIService jcdiService = services.getService(JCDIService.class);
 
         EjbBundleDescriptor ejbBundle = ejbDescriptor.getEjbBundleDescriptor();
 

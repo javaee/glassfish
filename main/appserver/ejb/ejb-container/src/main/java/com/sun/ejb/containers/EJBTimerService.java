@@ -206,7 +206,7 @@ public class EJBTimerService
                 rescheduleFailedTimer = Boolean.valueOf(ejbt.getPropertyValue(RESCHEDULE_FAILED_TIMER));
 
                 // Load confing listener
-                ejbContainerUtil.getServices().byType(EJBTimerServiceConfigListener.class).get();
+                ejbContainerUtil.getServices().getService(EJBTimerServiceConfigListener.class);
             }
 
         } catch(Exception e) {

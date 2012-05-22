@@ -255,7 +255,7 @@ public class ReplicationWebEventPersistentManager<T extends Storeable> extends R
         if (_logger.isLoggable(Level.FINE)) {
             _logger.fine("Create backing store invoked with persistence type " + persistenceType + " and store name " + storeName);
         }
-        BackingStoreFactory factory = services.forContract(BackingStoreFactory.class).named(persistenceType).get();
+        BackingStoreFactory factory = services.getService(BackingStoreFactory.class, persistenceType);
         BackingStoreConfiguration<String, T> conf = new BackingStoreConfiguration<String, T>();
 
         if(gmsAdapterService.isGmsEnabled()) {

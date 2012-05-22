@@ -147,7 +147,7 @@ public class PersistenceEJBTimerService extends EJBTimerService
         // load DistributedEJBTimerService if available and adjust performDBReadBeforeTimeout
         // if it is not set explicitly
         DistributedEJBTimerService dts = ejbContainerUtil.getServices().
-                forContract(DistributedEJBTimerService.class).get();
+                getService(DistributedEJBTimerService.class);
 
         boolean doDBReadBeforeTimeout = ((dts == null)? !ejbContainerUtil.isDas() : 
                 dts.getPerformDBReadBeforeTimeout());
@@ -1343,7 +1343,7 @@ public class PersistenceEJBTimerService extends EJBTimerService
 
     private void lookupTimerResource() throws Exception {
         String resource_name = getTimerResource();
-        ConnectorRuntime connectorRuntime = ejbContainerUtil.getServices().forContract(ConnectorRuntime.class).get();
+        ConnectorRuntime connectorRuntime = ejbContainerUtil.getServices().getService(ConnectorRuntime.class);
         timerDataSource = DataSource.class.cast(connectorRuntime.lookupNonTxResource(resource_name, false));
     }
 
@@ -1452,7 +1452,7 @@ public class PersistenceEJBTimerService extends EJBTimerService
                 params.target = _ejbContainerUtil.getServerEnvironment().getInstanceName();
 
                 ActionReport report = _ejbContainerUtil.getServices().
-                        forContract(ActionReport.class).named("plain").get();
+                        getService(ActionReport.class, "plain");
                 Deployment deployment = _ejbContainerUtil.getDeployment();
                 ExtendedDeploymentContext dc = deployment.getBuilder(
                         logger, params, report).source(app).build();

@@ -101,7 +101,7 @@ public class OSGiArchiveDetector implements ArchiveDetector {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                archiveHandler = services.forContract(ArchiveHandler.class).named(OSGI_ARCHIVE_TYPE).get();
+                archiveHandler = services.getService(ArchiveHandler.class, OSGI_ARCHIVE_TYPE);
             }
             return archiveHandler;
         }

@@ -428,7 +428,7 @@ public class WeldDeployer extends SimpleDeployer<WeldContainer, WeldApplicationC
             // injection instead of the per-dependency-type InjectionPoint approach.
             // Each InjectionServicesImpl instance knows its associated GlassFish bundle.
 
-            InjectionManager injectionMgr = services.forContract(InjectionManager.class).get();
+            InjectionManager injectionMgr = services.getService(InjectionManager.class);
             InjectionServices injectionServices = new InjectionServicesImpl(injectionMgr, bundle);
 
             if(_logger.isLoggable(Level.FINE)) {
