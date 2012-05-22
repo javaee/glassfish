@@ -3,7 +3,7 @@
 FILE=$APS_HOME/test_resultsValid.xml
 echo "input file=$FILE"
 
-TOTAL=20
+TOTAL=18
 
 PASSED=`grep "status value" $FILE | grep "pass" | wc -l`
 FAILED=`grep "status value" $FILE | grep "fail" | wc -l`
