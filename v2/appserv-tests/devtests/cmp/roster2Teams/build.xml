@@ -130,7 +130,6 @@
 	  <include name="*.jar"/>
 	  <include name="*.war"/>
 	</fileset>
-        <fileset dir="${TEMPDIR}" />
 
 	<fileset dir="${env.APS_HOME}/lib" includes="reporter.jar"/>
       </ear>
