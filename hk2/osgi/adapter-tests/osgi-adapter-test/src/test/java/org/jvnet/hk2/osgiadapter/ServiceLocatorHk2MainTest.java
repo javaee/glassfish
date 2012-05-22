@@ -7,14 +7,15 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.cleanCaches;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
 
 import java.io.File;
 import java.util.List;
 
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -27,9 +28,6 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 @RunWith(org.ops4j.pax.exam.junit.JUnit4TestRunner.class)
 public class ServiceLocatorHk2MainTest {
@@ -53,12 +51,11 @@ public class ServiceLocatorHk2MainTest {
 		return options(
 				felix(),
 				systemPackage("sun.misc"),
-				provision(mavenBundle().groupId(GROUP_ID).artifactId(
-				"hk2-utils").version(projectVersion)), provision(mavenBundle()
-				.groupId(GROUP_ID).artifactId("hk2-deprecated").version(projectVersion).startLevel(4)),
-
-				provision(mavenBundle().groupId(GROUP_ID).artifactId("core").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-api").version(projectVersion).startLevel(4)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-utils").version(projectVersion).startLevel(4)), 
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-deprecated").version(projectVersion).startLevel(4)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-runlevel").version(projectVersion).startLevel(4)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId("core").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
 						"hk2-locator").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
@@ -85,7 +82,6 @@ public class ServiceLocatorHk2MainTest {
 	}
 
 	@Test
-	@Ignore
 	public void testHK2Main() throws Throwable {
 
 		try {
@@ -125,7 +121,7 @@ public class ServiceLocatorHk2MainTest {
 							.createContractFilter("org.osgi.service.startlevel.StartLevel"));
 
 			Assert.assertEquals(1, startLevelServices.size());
-
+			
 			List<?> startups = serviceLocator.getAllServices(BuilderHelper
 					.createContractFilter(ModuleStartup.class
 							.getCanonicalName()));
@@ -139,36 +135,6 @@ public class ServiceLocatorHk2MainTest {
 
 			moduleStartup.start();
 
-		} catch (Exception ex) {
-			if (ex.getCause() != null)
-				throw ex.getCause();
-
-			throw ex;
-		}
-	}
-
-	@Test @Ignore
-	public void testHK2OSGiAdapter() throws Throwable {
-
-		try {
-			Assert.assertNotNull("OSGi did not properly boot", this.bundleContext);
-
-			ServiceReference serviceLocatorRef = bundleContext
-					.getServiceReference(ServiceLocator.class.getName());
-
-			Assert.assertNotNull(serviceLocatorRef);
-			ServiceLocator serviceLocator = (ServiceLocator) bundleContext
-					.getService(serviceLocatorRef);
-
-			Assert.assertNotNull(serviceLocator);
-
-			List<ModuleStartup> startups = (List<ModuleStartup>) serviceLocator.getAllServices(BuilderHelper
-					.createContractFilter(ModuleStartup.class
-							.getCanonicalName()));
-			Assert.assertEquals("Cannot find ModuleStartup", 1, startups.size());
-
-			startups.iterator().next().start();
-			
 		} catch (Exception ex) {
 			if (ex.getCause() != null)
 				throw ex.getCause();

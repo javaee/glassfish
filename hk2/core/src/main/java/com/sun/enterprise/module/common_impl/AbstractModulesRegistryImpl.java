@@ -173,10 +173,11 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     public ServiceLocator createServiceLocator(String name, InhabitantsParser parser) throws ComponentException {
         try {
             ServiceLocator serviceLocator = parser.serviceLocator;
-
-            for (final Module module : getModules())
+            
+            for (final Module module : getModules()) {
                 parseInhabitants(module, name,parser);
-
+            }
+                
             populateConfig(serviceLocator);
 
             // default modules registry is the one that created the habitat
@@ -203,7 +204,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     public abstract void parseInhabitants(Module module,
                                   String name,
                                   InhabitantsParser inhabitantsParser)
-            throws IOException;
+            throws IOException, BootException;
 
     /**
      * Add a new <code>Repository</code> to this registry. From now on
@@ -371,7 +372,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * @param newModule the new module
      */
     protected void add(Module newModule) {
-        //if (Utils.isLoggable(Level.INFO)) {
+    	//if (Utils.isLoggable(Level.INFO)) {
         //    Utils.getDefaultLogger().info("New module " + newModule);
         //}
         assert newModule.getRegistry()==this;
@@ -387,6 +388,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             for( String name : spi.providerNames )
                 providers.put(name,newModule);
         }
+        
         for (Map.Entry<String, ServiceLocator> entry : habitats.entrySet()) {
             String name = entry.getKey();
             ServiceLocator h = entry.getValue();
@@ -396,7 +398,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
                 // this could have been overridden
                 parseInhabitants(newModule, name, createInhabitantsParser(h));
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 throw new RuntimeException("Not able to parse inhabitants information");
             }

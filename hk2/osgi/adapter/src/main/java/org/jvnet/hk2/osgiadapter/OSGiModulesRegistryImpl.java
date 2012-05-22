@@ -160,7 +160,9 @@ public class OSGiModulesRegistryImpl
     // Factory method
     private OSGiModuleImpl makeModule(Bundle bundle) throws IOException, URISyntaxException {
         final OSGiModuleDefinition md = makeModuleDef(bundle);
+
         OSGiModuleImpl m = new OSGiModuleImpl(this, bundle, md);
+
         return m;
     }
 
@@ -253,6 +255,8 @@ public class OSGiModulesRegistryImpl
 
     @Override
     protected synchronized void add(Module newModule) {
+    	System.out.println(">>>> OSGiModulesRegistry add " + newModule);
+    	
         // It is overridden to make it synchronized as it is called from
         // BundleListener.
         super.add(newModule);

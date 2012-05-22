@@ -41,6 +41,31 @@
 
 package org.jvnet.hk2.osgiadapter;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+import java.util.logging.Level;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleReference;
+import org.osgi.framework.Constants;
+
 import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
@@ -48,21 +73,6 @@ import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
 import com.sun.enterprise.module.common_impl.Jar;
 import com.sun.enterprise.module.common_impl.LogHelper;
-import com.sun.hk2.component.InhabitantsFile;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.Constants;
-
-import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.*;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-import java.util.logging.Level;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -249,7 +259,8 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
                 }
             }
             */
-            final URL url = b.getEntry(InhabitantsFile.PATH + "/default");
+            final URL url = b.getEntry("META-INF/hk2-locator/default");
+            
             if (url==null) return;
             try {
                 result.addHabitat("default",
