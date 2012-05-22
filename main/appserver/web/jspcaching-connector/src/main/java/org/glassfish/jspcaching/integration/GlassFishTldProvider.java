@@ -114,8 +114,8 @@ public class GlassFishTldProvider
         /*
          * Check whether JSP caching has been enabled
          */        
-        Config cfg = serverContext.getDefaultServices().forContract(
-            Config.class).named(ServerEnvironment.DEFAULT_INSTANCE_NAME).get();
+        Config cfg = serverContext.getDefaultServices().getService(
+            Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
         WebContainer webContainer = cfg.getExtensionByType(WebContainer.class);
         if (webContainer == null) {
             return;

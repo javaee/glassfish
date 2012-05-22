@@ -126,6 +126,8 @@ public class ReferenceConstrainTest extends ConfigApiTest {
         JdbcResource jdbc = null;
         while (iterator.hasNext()) {
             JdbcResource res = iterator.next();
+            System.out.println("JRW(10) We do have one named " +
+              res.getPoolName());
             if ("__TimerPool".equals(res.getPoolName())) {
                 jdbc = res;
                 break;

@@ -92,7 +92,7 @@ public class WarDetector implements ArchiveDetector {
             if (archiveHandler == null) {
                 try {
                     sniffer.setup(null, logger);
-                    archiveHandler = services.forContract(ArchiveHandler.class).named(ARCHIVE_TYPE).get();
+                    archiveHandler = services.getService(ArchiveHandler.class, ARCHIVE_TYPE);
                 } catch (IOException e) {
                     throw new RuntimeException(e); // TODO(Sahoo): Proper Exception Handling
                 }

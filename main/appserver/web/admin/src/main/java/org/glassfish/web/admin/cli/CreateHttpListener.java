@@ -140,7 +140,7 @@ public class CreateHttpListener implements AdminCommand {
         if(!validateInputs(report)) {
             return;
         }
-        Target targetUtil = services.byType(Target.class).get();
+        Target targetUtil = services.getService(Target.class);
         Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;
@@ -233,7 +233,7 @@ public class CreateHttpListener implements AdminCommand {
                 return newListener;
             }
         }, networkConfig.getNetworkListeners());
-        services.byType(Transactions.class).get().waitForDrain();
+        services.<Transactions>getService(Transactions.class).waitForDrain();
         return true;
     }
 

@@ -256,7 +256,7 @@ public class SerialContext implements Context {
         if( testMode ) {
             processType = ProcessType.Server;
         } else {
-            ProcessEnvironment processEnv = services.byType(ProcessEnvironment.class).get();
+            ProcessEnvironment processEnv = services.getService(ProcessEnvironment.class);
             processType = processEnv.getProcessType();
         }
 
@@ -339,7 +339,7 @@ public class SerialContext implements Context {
     }
 
     private ORB getORB() {
-        ORBLocator orbHelper = services.forContract(ORBLocator.class).get();
+        ORBLocator orbHelper = services.getService(ORBLocator.class);
         if (orb == null) {
             orb = orbHelper.getORB() ;
         }

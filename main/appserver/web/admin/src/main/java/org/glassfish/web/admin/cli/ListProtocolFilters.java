@@ -92,7 +92,7 @@ public class ListProtocolFilters implements AdminCommand {
     Habitat services;
 
     public void execute(AdminCommandContext context) {
-        Target targetUtil = services.byType(Target.class).get();
+        Target targetUtil = services.getService(Target.class);
         Config newConfig = targetUtil.getConfig(target);
         if (newConfig!=null) {
             config = newConfig;

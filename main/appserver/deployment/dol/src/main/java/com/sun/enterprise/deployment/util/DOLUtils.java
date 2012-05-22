@@ -237,11 +237,7 @@ public class DOLUtils {
         ArchiveType result = null;
         // This method is called without HK2 being setup when dol unit tests are run, so protect against NPE.
         if(services != null) {
-            final ContractLocator<ArchiveType> provider =
-                    services.forContract(ArchiveType.class).named(moduleType);
-            if (provider!=null) {
-                result = provider.get();
-            }
+            result = services.getService(ArchiveType.class, moduleType);
         }
         return result;
     }

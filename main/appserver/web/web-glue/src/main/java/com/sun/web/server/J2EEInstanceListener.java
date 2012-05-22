@@ -127,12 +127,12 @@ public final class J2EEInstanceListener implements InstanceListener {
             throw new IllegalStateException(msg);
         }
         Habitat services = serverContext.getDefaultServices();
-        im = services.forContract(InvocationManager.class).get();
+        im = services.getService(InvocationManager.class);
         tm = getJavaEETransactionManager(services);
-        injectionMgr = services.forContract(InjectionManager.class).get();
+        injectionMgr = services.getService(InjectionManager.class);
         initialized = true;
 
-        securityContext = serverContext.getDefaultServices().forContract(AppServSecurityContext.class).get();
+        securityContext = serverContext.getDefaultServices().getService(AppServSecurityContext.class);
         if (securityContext != null) {
             if (_logger.isLoggable(Level.FINE)) {
                 _logger.log(Level.FINE, "Obtained securityContext implementation class " + securityContext);

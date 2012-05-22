@@ -143,7 +143,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     
     private void initMonitoringLevel() {
         try{
-            Config cfg = services.forContract(Config.class).named(ServerEnvironment.DEFAULT_INSTANCE_NAME).get();
+            Config cfg = services.getService(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
             
             MonitoringLevel monitoringLevel = MonitoringLevel.OFF; // default per DTD
 
@@ -174,7 +174,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
     
     
     public void registerMonitoringLevelEvents() {
-        MonitoringRegistry monitoringRegistry = services.forContract(MonitoringRegistry.class).get();
+        MonitoringRegistry monitoringRegistry = services.getService(MonitoringRegistry.class);
         if (monitoringRegistry!=null) {
             monitoringRegistry.registerMonitoringLevelListener(
                 this, MonitoredObjectType.HTTP_LISTENER);
@@ -183,7 +183,7 @@ public class GrizzlyConfig implements MonitoringLevelListener{
 
     
     private void unregisterMonitoringLevelEvents() {
-        MonitoringRegistry monitoringRegistry = services.forContract(MonitoringRegistry.class).get();
+        MonitoringRegistry monitoringRegistry = services.getService(MonitoringRegistry.class);
         if (monitoringRegistry!=null) {
             monitoringRegistry.unregisterMonitoringLevelListener(this);
         }

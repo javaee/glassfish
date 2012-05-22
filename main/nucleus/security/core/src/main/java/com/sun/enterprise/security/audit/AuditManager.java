@@ -122,8 +122,8 @@ public final class AuditManager {
      */
     public void loadAuditModules() {
         try {
-            SecurityService securityBean = serverContext.getDefaultServices().forContract(SecurityService.class)
-                    .named(ServerEnvironment.DEFAULT_INSTANCE_NAME).get();
+            SecurityService securityBean = serverContext.getDefaultServices().getService(SecurityService.class,
+                    ServerEnvironment.DEFAULT_INSTANCE_NAME);
             
             assert(securityBean != null);
             // @todo will be removed to incorporate the new structure.

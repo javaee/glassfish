@@ -98,7 +98,7 @@ public class RarDetector implements ArchiveDetector {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                archiveHandler = services.forContract(ArchiveHandler.class).named(ARCHIVE_TYPE).get();
+                archiveHandler = services.getService(ArchiveHandler.class, ARCHIVE_TYPE);
             }
             return archiveHandler;
         }

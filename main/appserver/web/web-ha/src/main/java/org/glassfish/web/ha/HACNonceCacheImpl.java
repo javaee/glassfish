@@ -236,7 +236,7 @@ public class HACNonceCacheImpl  implements CNonceCache {
                     setInstanceName(props.get(CNonceCacheFactory.INSTANCE_NAME_PROP)).
                     setStoreName(storeName).setKeyClazz(String.class)
                     .setValueClazz(NonceInfo.class);
-            BackingStoreFactory bsFactory = services.forContract(BackingStoreFactory.class).named(BS_TYPE_REPLICATED).get();
+            BackingStoreFactory bsFactory = services.getService(BackingStoreFactory.class, BS_TYPE_REPLICATED);
             backingStore = bsFactory.createBackingStore(bsConfig);
         } catch (BackingStoreException ex) {
             logger.log(Level.WARNING, null, ex);
