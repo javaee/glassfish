@@ -113,7 +113,7 @@ public class HK2Populator {
 						        }
 						    }
 					    }
-					    System.out.println(descriptorImpl);
+					  
 					}
 				} while (readOne);
 				
