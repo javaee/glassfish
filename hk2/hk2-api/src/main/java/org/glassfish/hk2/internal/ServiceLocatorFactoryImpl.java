@@ -71,7 +71,14 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
 
         @Override
         public ServiceLocatorGenerator run() {
-            return getGenerator();
+            try {
+                return getGenerator();
+            }
+            catch (Throwable th) {
+                Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).severe("Error finding implementation of hk2: " + th.getMessage());
+                Thread.dumpStack();
+                return null;
+            }
         }
           
       });
