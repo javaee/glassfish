@@ -100,14 +100,6 @@
 
       <property name="TEMPDIR" value="${assemble.dir}/TEMPDIR" />
 
-       	<mkdir dir="${TEMPDIR}/src" />
-        <copy todir="${TEMPDIR}/src" >
-            <fileset dir="${basedir}/ejb" />
-        </copy>
-       	<mkdir dir="${TEMPDIR}/src/client" />
-        <copy todir="${TEMPDIR}/src/client" file="${basedir}/client/RosterClient.java" />
-        <copy todir="${TEMPDIR}/src/client" file="${basedir}/servlet/RosterServlet.java" />
-
 	<copy file="${basedir}/descriptor/INDEX.LIST" todir="${TEMPDIR}/META-INF" failonerror="false"/>
 
       <ear earfile="${assemble.dir}/${appname}App.ear" appxml="${application.xml}">
@@ -115,7 +107,6 @@
 	  <include name="*.jar"/>
 	  <include name="*.war"/>
 	</fileset>
-        <fileset dir="${TEMPDIR}" />
 
 	<fileset dir="${env.APS_HOME}/lib" includes="reporter.jar"/>
       </ear>

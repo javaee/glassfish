@@ -16,7 +16,7 @@
   </module>
   <module>
     <web>
-      <web-uri>rosterext-web.war</web-uri>
+      <web-uri>rosterGenDBSchema-web.war</web-uri>
       <context-root>rosterext</context-root>
     </web>
   </module>
