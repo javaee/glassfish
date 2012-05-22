@@ -39,6 +39,7 @@
  */
 
 -exportcontents: \
+               com.sun.hk2.component; \
                org.glassfish.hk2.api; \
                org.glassfish.hk2.extension; \
                org.glassfish.hk2.utilities; \

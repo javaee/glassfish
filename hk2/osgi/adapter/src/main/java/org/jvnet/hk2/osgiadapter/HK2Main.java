@@ -87,7 +87,7 @@ public class HK2Main extends Main implements
         SynchronousBundleListener {
 
 	// Not sure where this belongs now:
-	public final String DEFAULT_NAME = "_HABITAT_DEFAULT";
+	public final String DEFAULT_NAME = "default";
 	 
     // TODO(Sahoo): Change to use ServiceTracker for all ServiceRegistrations
 
@@ -110,6 +110,7 @@ public class HK2Main extends Main implements
     public ServiceLocator createServiceLocator(StartupContext context) throws BootException {
     	
         HabitatInfo habitatInfo = new HabitatInfo();
+        
         habitatInfo.serviceLocator = super.createServiceLocator(context);
         createHK2ServiceTracker(habitatInfo);
         // register ServiceLocator as an OSGi service
@@ -204,7 +205,9 @@ public class HK2Main extends Main implements
     protected ModulesRegistry createModulesRegistry() throws Exception {
         assert (mrReg == null);
         ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
+
         String hk2RepositoryUris = ctx.getProperty(Constants.HK2_REPOSITORIES);
+
         if (hk2RepositoryUris != null) {
             for (String s : hk2RepositoryUris.split("\\s")) {
                 URI repoURI = URI.create(s);
@@ -223,6 +226,8 @@ public class HK2Main extends Main implements
         }
         mr.dumpState(System.out);
         mrReg = ctx.registerService(ModulesRegistry.class.getName(), mr, null);
+        
+        mr.createServiceLocator("default");
         return mr;
     }
 
@@ -384,7 +389,10 @@ public class HK2Main extends Main implements
             	
             }
         }
-
     }
+    
+	public HK2Main() {
+		super();
+	}
 
 }

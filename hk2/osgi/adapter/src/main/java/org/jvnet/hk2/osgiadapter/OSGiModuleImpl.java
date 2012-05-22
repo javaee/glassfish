@@ -45,12 +45,17 @@ import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.impl.URLDescriptorFileFinder;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
 import com.sun.hk2.component.Holder;
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.bootstrap.BootException;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -346,53 +351,8 @@ public class OSGiModuleImpl implements Module {
     /**
      * Parses all the inhabitants descriptors of the given name in this module.
      */
-    /* package */ void parseInhabitants(String name, InhabitantsParser parser) throws IOException {
-    	/*
-        Holder<ClassLoader> holder = new Holder<ClassLoader>() {
-            public ClassLoader get() {
-                //doprivileged needed for running with SecurityManager
-                ClassLoader ret = (ClassLoader) AccessController.doPrivileged(new PrivilegedAction() {
-                    public java.lang.Object run() {
-                        return new ClassLoader() {
-                            @Override
-                            public synchronized Class<?> loadClass(
-                                    final String name) throws ClassNotFoundException {
-                                if (logger.isLoggable(Level.FINE)) {
-                                    logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass", "Loading {0} from bundle: {1}",
-                                            new Object[]{name, bundle});
-                                }
-                                start();
-                                try {
-                                    final Class aClass = (Class)
-                                           AccessController.doPrivileged(new PrivilegedAction() {
-                                        public java.lang.Object run() {
-                                            try {
-                                                return bundle.loadClass(name);
-                                            } catch (Throwable e) {
-                                                logger.logp(Level.SEVERE, "OSGiModuleImpl", "loadClass", "Exception in module " + bundle.toString() + " : " + e.toString());
-                                                throw new RuntimeException(e);
-                                            }
-                                        }
-                                    });
-                                    if (logger.isLoggable(Level.FINE)) {
-                                        logger.logp(Level.FINE, "OSGiModuleImpl", "loadClass",
-                                                name + ".class.getClassLoader() = {0}",
-                                                aClass.getClassLoader());
-                                    }
-                                    return aClass;
-                                } catch (RuntimeException e) {
-                                    logger.logp(Level.SEVERE, "OSGiModuleImpl", "loadClass", "Exception in module " + bundle.toString() + " : " + e.toString());
-                                    throw new ClassNotFoundException(e.getCause().getMessage(), e.getCause());
-                                }
-                            }
-                        };
-                    }
-                });
-                return ret;
-            }
-        };
-        */
-    	
+    /* package */ void parseInhabitants(String name, InhabitantsParser parser) throws IOException, BootException {   	
+ 
         HK2Loader hk2Loader = new HK2Loader() {
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -418,8 +378,13 @@ public class OSGiModuleImpl implements Module {
         	
         };
         
-        for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name))
-            parser.parse(d.createScanner(),hk2Loader);
+        for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name)) {
+
+        	final ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().find("default");
+			HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(bundle.getEntry("META-INF/hk2-locator/default")),
+        			 new OsgiPopulatorPostProcessor(hk2Loader));
+        	HK2Populator.populateConfig(serviceLocator);
+        }
     }
 
     /**

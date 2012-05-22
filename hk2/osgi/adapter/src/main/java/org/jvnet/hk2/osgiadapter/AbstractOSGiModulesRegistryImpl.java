@@ -42,6 +42,7 @@
 package org.jvnet.hk2.osgiadapter;
 
 import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
@@ -97,7 +98,7 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
 
     public void parseInhabitants(
             Module module, String name, InhabitantsParser inhabitantsParser)
-            throws IOException {
+            throws IOException, BootException {
         OSGiModuleImpl.class.cast(module).parseInhabitants(name, inhabitantsParser);
     }
 

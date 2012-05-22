@@ -143,17 +143,18 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
     @Override
     public ServiceLocator create(String name, ServiceLocator parent,
             ServiceLocatorGenerator generator) {
-        if (generator == null) {
-            if (defaultGenerator == null) {
-                throw new IllegalStateException("No generator was provided and there is no default generator registered");
-            }
-            
-            generator = defaultGenerator;
-        }
-        
+ 
         synchronized (lock) {
             ServiceLocator retVal = serviceLocators.get(name);
             if (retVal != null) return retVal;
+ 
+            if (generator == null) {
+                if (defaultGenerator == null) {
+                    throw new IllegalStateException("No generator was provided and there is no default generator registered");
+                }
+                
+                generator = defaultGenerator;
+            }
             
             retVal = generator.create(name, parent);
             

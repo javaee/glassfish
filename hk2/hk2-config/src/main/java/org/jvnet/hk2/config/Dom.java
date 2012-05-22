@@ -42,7 +42,6 @@ package org.jvnet.hk2.config;
 import com.sun.hk2.component.LazyInhabitant;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
-import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;

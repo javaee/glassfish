@@ -87,7 +87,9 @@
                 </executions>
                 <configuration>
                     <instructions>
+			<Export-Package>com.sun.hk2.component,org.jvnet.hk2.component,org.jvnet.hk2.tracing,org.glassfish.hk2,org.glassfish.hk2.deprecated.utilities,org.glassfish.hk2.inject,org.jvnet.hk2.component.concurrent,org.jvnet.hk2.deprecated.internal</Export-Package>
                         <Fragment-Host>org.glassfish.hk2.api</Fragment-Host>
+			<Private-Package>org.glassfish.hk2.internal</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
