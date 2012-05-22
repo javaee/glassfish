@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,30 +38,32 @@
  * holder.
  */
 
-package javax.annotation.mail;
+package org.glassfish.persistence.ejb.entitybean.container.distributed;
 
-import java.lang.annotation.Target;
-import java.lang.annotation.Retention;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.RetentionPolicy;
+public class DistributedEJBServiceFactory
+    implements DistributedEJBService 
+{
 
-/**
- * Created by IntelliJ IDEA.
- * User: naman mehta
- * Date: 17/4/12
- * Time: 5:11 PM
- * To change this template use File | Settings | File Templates.
- */
+    protected static DistributedEJBService distributedEJBService = null;
 
-/**
- * Declares one or more <code>MailSessionDefinition</code> annotations.
- *
- * @see javax.annotation.mail.MailSessionDefinition
- * @since Common Annotations 1.1
- */
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
-public @interface MailSessionDefinitions {
-    MailSessionDefinition[] value();
+    private static DistributedReadOnlyBeanService _distributedReadOnlyBeanService
+        = new DistributedReadOnlyBeanServiceImpl();
+    public static DistributedEJBService getDistributedEJBService() {
+        if(distributedEJBService == null) {
+            distributedEJBService = new DistributedEJBServiceFactory();
+        } 
 
-}
+        return distributedEJBService;
+    }
+
+    protected DistributedEJBServiceFactory() {
+        distributedEJBService = this;
+    }
+
+
+    public DistributedReadOnlyBeanService getDistributedReadOnlyBeanService() {
+        return _distributedReadOnlyBeanService;
+    }
+
+} //DistributedEJBServiceFactory.java
+
