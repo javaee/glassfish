@@ -40,7 +40,7 @@
 <a class="jxr_linenumber" name="30" href="#30">30</a>          <a href="../../../../../../org/jvnet/hk2/config/provider/internal/ConfigByMetaInhabitant.html">ConfigByMetaInhabitant</a> lead,
 <a class="jxr_linenumber" name="31" href="#31">31</a>          <a href="../../../../../../org/jvnet/hk2/config/provider/internal/ConfigByCreator.html">ConfigByCreator</a> managedServiceCreator,
 <a class="jxr_linenumber" name="32" href="#32">32</a>          MultiMap&lt;String, String&gt; md) {
-<a class="jxr_linenumber" name="33" href="#33">33</a>      <strong class="jxr_keyword">super</strong>((Descriptor) <strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// TODO: handle descriptor</em>
+<a class="jxr_linenumber" name="33" href="#33">33</a>      <strong class="jxr_keyword">super</strong>(lead.getServiceLocator(), (Descriptor) <strong class="jxr_keyword">null</strong>); <em class="jxr_comment">// TODO: handle descriptor</em>
 <a class="jxr_linenumber" name="34" href="#34">34</a>      <strong class="jxr_keyword">this</strong>.store = store;
 <a class="jxr_linenumber" name="35" href="#35">35</a>      <strong class="jxr_keyword">this</strong>.lead = lead;
 <a class="jxr_linenumber" name="36" href="#36">36</a>      <strong class="jxr_keyword">this</strong>.managedServiceCreator = managedServiceCreator;
