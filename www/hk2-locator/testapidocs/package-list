@@ -8,6 +8,7 @@ org.glassfish.hk2.tests.locator.inheritance
 org.glassfish.hk2.tests.locator.initialization
 org.glassfish.hk2.tests.locator.injector
 org.glassfish.hk2.tests.locator.justintime
+org.glassfish.hk2.tests.locator.lifecycle
 org.glassfish.hk2.tests.locator.locator
 org.glassfish.hk2.tests.locator.named
 org.glassfish.hk2.tests.locator.negative.api

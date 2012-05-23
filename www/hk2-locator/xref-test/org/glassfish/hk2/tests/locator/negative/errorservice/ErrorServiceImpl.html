@@ -52,32 +52,32 @@
 <a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> javax.inject.Singleton;
 <a class="jxr_linenumber" name="43" href="#43">43</a>  
 <a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ActiveDescriptor;
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ErrorService;
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Injectee;
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.MultiException;
-<a class="jxr_linenumber" name="48" href="#48">48</a>  
-<a class="jxr_linenumber" name="49" href="#49">49</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment"> * @author jwells</em>
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="53" href="#53">53</a>  @Singleton
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> <strong class="jxr_keyword">implements</strong> ErrorService {
-<a class="jxr_linenumber" name="55" href="#55">55</a>      <strong class="jxr_keyword">private</strong> ActiveDescriptor&lt;?&gt; descriptor;
-<a class="jxr_linenumber" name="56" href="#56">56</a>      <strong class="jxr_keyword">private</strong> Injectee injectee;
-<a class="jxr_linenumber" name="57" href="#57">57</a>      <strong class="jxr_keyword">private</strong> MultiException me;
-<a class="jxr_linenumber" name="58" href="#58">58</a>      
-<a class="jxr_linenumber" name="59" href="#59">59</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> doThrow = false;
-<a class="jxr_linenumber" name="60" href="#60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> reThrow = false;
-<a class="jxr_linenumber" name="61" href="#61">61</a>  
-<a class="jxr_linenumber" name="62" href="#62">62</a>      <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
-<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_comment">     * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)</em>
-<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_comment">     */</em>
-<a class="jxr_linenumber" name="65" href="#65">65</a>      @Override
-<a class="jxr_linenumber" name="66" href="#66">66</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> failureToReify(ActiveDescriptor&lt;?&gt; descriptor,
-<a class="jxr_linenumber" name="67" href="#67">67</a>              Injectee injectee, MultiException me) {
-<a class="jxr_linenumber" name="68" href="#68">68</a>          <strong class="jxr_keyword">this</strong>.descriptor = descriptor;
-<a class="jxr_linenumber" name="69" href="#69">69</a>          <strong class="jxr_keyword">this</strong>.injectee = injectee;
-<a class="jxr_linenumber" name="70" href="#70">70</a>          <strong class="jxr_keyword">this</strong>.me = me;
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ErrorInformation;
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ErrorService;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Injectee;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.MultiException;
+<a class="jxr_linenumber" name="49" href="#49">49</a>  
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment"> * @author jwells</em>
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="54" href="#54">54</a>  @Singleton
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> <strong class="jxr_keyword">implements</strong> ErrorService {
+<a class="jxr_linenumber" name="56" href="#56">56</a>      <strong class="jxr_keyword">private</strong> ActiveDescriptor&lt;?&gt; descriptor;
+<a class="jxr_linenumber" name="57" href="#57">57</a>      <strong class="jxr_keyword">private</strong> Injectee injectee;
+<a class="jxr_linenumber" name="58" href="#58">58</a>      <strong class="jxr_keyword">private</strong> MultiException me;
+<a class="jxr_linenumber" name="59" href="#59">59</a>      
+<a class="jxr_linenumber" name="60" href="#60">60</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> doThrow = false;
+<a class="jxr_linenumber" name="61" href="#61">61</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> reThrow = false;
+<a class="jxr_linenumber" name="62" href="#62">62</a>  
+<a class="jxr_linenumber" name="63" href="#63">63</a>      <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <em class="jxr_comment">     * @see org.glassfish.hk2.api.ErrorService#failureToReify(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.MultiException)</em>
+<a class="jxr_linenumber" name="65" href="#65">65</a>  <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="66" href="#66">66</a>      @Override
+<a class="jxr_linenumber" name="67" href="#67">67</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> onFailure(ErrorInformation ei) {
+<a class="jxr_linenumber" name="68" href="#68">68</a>          <strong class="jxr_keyword">this</strong>.descriptor = (ActiveDescriptor&lt;?&gt;) ei.getDescriptor();
+<a class="jxr_linenumber" name="69" href="#69">69</a>          <strong class="jxr_keyword">this</strong>.injectee = ei.getInjectee();
+<a class="jxr_linenumber" name="70" href="#70">70</a>          <strong class="jxr_keyword">this</strong>.me = ei.getAssociatedException();
 <a class="jxr_linenumber" name="71" href="#71">71</a>  
 <a class="jxr_linenumber" name="72" href="#72">72</a>          <strong class="jxr_keyword">if</strong> (doThrow) {
 <a class="jxr_linenumber" name="73" href="#73">73</a>              <strong class="jxr_keyword">if</strong> (reThrow) {
