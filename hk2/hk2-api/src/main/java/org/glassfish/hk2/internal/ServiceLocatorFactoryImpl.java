@@ -75,8 +75,8 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
                 return getGenerator();
             }
             catch (Throwable th) {
-                Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).severe("Error finding implementation of hk2: " + th.getMessage());
-                Thread.dumpStack();
+                Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).warning("Error finding implementation of hk2: " + th.getMessage());
+                // Thread.dumpStack();
                 return null;
             }
         }
