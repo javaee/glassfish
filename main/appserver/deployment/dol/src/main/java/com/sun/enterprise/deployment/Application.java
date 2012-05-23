@@ -52,6 +52,7 @@ import com.sun.enterprise.deployment.util.*;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.deployment.common.*;
 import org.glassfish.security.common.Role;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 
 import javax.inject.Inject;
@@ -62,6 +63,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.deployment.versioning.VersioningUtils;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.internal.api.Globals;
 
 /**
@@ -70,7 +72,7 @@ import org.glassfish.internal.api.Globals;
  *
  * @author Danny Coward
  */
-
+@Service @PerLookup
 public class Application extends BundleDescriptor
         implements RoleMappingContainer, WritableJndiNameEnvironment, 
             EjbReferenceContainer, ResourceEnvReferenceContainer,
