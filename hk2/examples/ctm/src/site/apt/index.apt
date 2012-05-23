@@ -202,7 +202,7 @@ public class EnvironmentFactory implements Factory<Environment> {
     public Environment provide() {...}
 +----------
 
- In this example, we are going to use other ServiceLocator registries in order to create the specific Environment objects that we need.
+ In this example, we are going to use other ServiceLocator registry's in order to create the specific Environment objects that we need.
  We will have a new ServiceLocator registry for each tenant, and that new ServiceLocator will be responsible for instantiating
  and providing the Environment implementations that we require.
  

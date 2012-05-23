@@ -44,8 +44,11 @@ import java.util.Map;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This processor is called for certain events in the lifecycle of an object managed
- * by the system
+ * This processor is called for certain events in the lifecycle of instances
+ * of services.
+ * <p>
+ * This listener is concerned with instances of services, whereas the
+ * {@link ValidationService} is concerned with the descriptors for services.
  * 
  * @author jwells
  */

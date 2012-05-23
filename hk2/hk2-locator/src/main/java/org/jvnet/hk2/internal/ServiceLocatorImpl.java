@@ -703,8 +703,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
         });
     }
     
-    private SortedSet<SystemDescriptor<?>> checkConfiguration(DynamicConfigurationImpl dci) {
+    /**
+     * Checks the configuration operation before anything happens to the internal data structures.
+     * 
+     * @param dci The configuration that contains the proposed modifications
+     * @return A set of descriptors that is being removed fromthe configuration
+     */
+    private CheckConfigurationData checkConfiguration(DynamicConfigurationImpl dci) {
         TreeSet<SystemDescriptor<?>> retVal = new TreeSet<SystemDescriptor<?>>(DESCRIPTOR_COMPARATOR);
+        boolean addOrRemoveOfInstanceListener = false;
+        boolean addOrRemoveOfInjectionResolver = false;
+        boolean addOrRemoveOfErrorHandler = false;
         
         for (Filter unbindFilter : dci.getUnbindFilters()) {
             List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false);
@@ -722,6 +731,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     }
                 }
                 
+                if (candidate.getAdvertisedContracts().contains(InstanceLifecycleListener.class.getName())) {
+                    addOrRemoveOfInstanceListener = true;
+                }
+                if (candidate.getAdvertisedContracts().contains(InjectionResolver.class.getName())) {
+                    addOrRemoveOfInjectionResolver = true;
+                }
+                if (candidate.getAdvertisedContracts().contains(ErrorService.class.getName())) {
+                    addOrRemoveOfErrorHandler = true;
+                }
+                
                 retVal.add(candidate);
             }
         }
@@ -735,6 +754,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 reifyDescriptor(sd);
                 
                 checkScope = true;
+                
+                if (sd.getAdvertisedContracts().contains(ErrorService.class.getName())) {
+                    addOrRemoveOfErrorHandler = true;
+                }
+                if (sd.getAdvertisedContracts().contains(InstanceLifecycleListener.class.getName())) {
+                    addOrRemoveOfInstanceListener = true;
+                }
             }
             
             if (sd.getAdvertisedContracts().contains(InjectionResolver.class.getName())) {
@@ -748,6 +774,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                             "An implementation of InjectionResolver must be a parameterized type and the actual type" +
                             " must be an annotation"));
                 }
+                
+                addOrRemoveOfInjectionResolver = true;
             }
             
             if (sd.getAdvertisedContracts().contains(Context.class.getName())) {
@@ -771,7 +799,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
         }
         
-        return retVal;
+        return new CheckConfigurationData(retVal,
+                addOrRemoveOfInstanceListener,
+                addOrRemoveOfInjectionResolver,
+                addOrRemoveOfErrorHandler);
     }
     
     @SuppressWarnings("unchecked")
@@ -811,8 +842,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     @SuppressWarnings("unchecked")
-    private void addConfigurationInternal(DynamicConfigurationImpl dci) {
+    private List<SystemDescriptor<?>> addConfigurationInternal(DynamicConfigurationImpl dci) {
+        List<SystemDescriptor<?>> thingsAdded = new LinkedList<SystemDescriptor<?>>();
+        
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
+            thingsAdded.add(sd);
             allDescriptors.add(sd);
             
             for (String advertisedContract : sd.getAdvertisedContracts()) {
@@ -843,6 +877,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 allValidators.add(vs);
             }
         }
+        
+        return thingsAdded;
     }
     
     private void reupInjectionResolvers() {
@@ -876,32 +912,47 @@ public class ServiceLocatorImpl implements ServiceLocator {
         errorHandlers.addAll(allErrorServices);
     }
     
-    private void reupInstanceListenersHandlers() {
+    private void reupInstanceListenersHandlers(List<SystemDescriptor<?>> checkList) {
         List<InstanceLifecycleListener> allLifecycleListeners = protectedGetAllServices(InstanceLifecycleListener.class);
         
-        for (SystemDescriptor<?> descriptor : allDescriptors) {
+        for (SystemDescriptor<?> descriptor : checkList) {
             descriptor.reupInstanceListeners(allLifecycleListeners);
         }
     }
     
-    private void reup() {
-        reupInjectionResolvers();
+    private void reup(List<SystemDescriptor<?>> thingsAdded,
+            boolean instanceListenersModified,
+            boolean injectionResolversModified,
+            boolean errorHandlersModified) {
+        if (injectionResolversModified) {
+            reupInjectionResolvers();
+        }
         
-        reupErrorHandlers();
+        if (errorHandlersModified) {
+            reupErrorHandlers();
+        }
         
-        reupInstanceListenersHandlers();
+        if (instanceListenersModified) {
+            reupInstanceListenersHandlers(allDescriptors);
+        }
+        else {
+            reupInstanceListenersHandlers(thingsAdded);
+        }
     }
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
         synchronized (lock) {
-            SortedSet<SystemDescriptor<?>> unbinds =
+            CheckConfigurationData checkData =
                     checkConfiguration(dci);  // Does as much preliminary checking as possible
             
-            removeConfigurationInternal(unbinds);
+            removeConfigurationInternal(checkData.getUnbinds());
             
-            addConfigurationInternal(dci);
+            List<SystemDescriptor<?>> thingsAdded = addConfigurationInternal(dci);
             
-            reup();
+            reup(thingsAdded,
+                    checkData.getInstanceLifecycleModificationsMade(),
+                    checkData.getInjectionResolverModificationMade(),
+                    checkData.getErrorHandlerModificationMade());
         }
     }
     
@@ -1041,10 +1092,40 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (shutdown) throw new IllegalStateException(this + " has been shut down");
     }
     
+    private static class CheckConfigurationData {
+        private final SortedSet<SystemDescriptor<?>> unbinds;
+        private final boolean instanceLifeycleModificationMade;
+        private final boolean injectionResolverModificationMade;
+        private final boolean errorHandlerModificationMade;
+        
+        private CheckConfigurationData(SortedSet<SystemDescriptor<?>> unbinds,
+                boolean instanceLifecycleModificationMade,
+                boolean injectionResolverModificationMade,
+                boolean errorHandlerModificationMade) {
+            this.unbinds = unbinds;
+            this.instanceLifeycleModificationMade = instanceLifecycleModificationMade;
+            this.injectionResolverModificationMade = injectionResolverModificationMade;
+            this.errorHandlerModificationMade = errorHandlerModificationMade;
+        }
+        
+        private SortedSet<SystemDescriptor<?>> getUnbinds() {
+            return unbinds;
+        }
+        
+        private boolean getInstanceLifecycleModificationsMade() {
+            return instanceLifeycleModificationMade;
+        }
+        
+        private boolean getInjectionResolverModificationMade() {
+            return injectionResolverModificationMade;
+        }
+        
+        private boolean getErrorHandlerModificationMade() {
+            return errorHandlerModificationMade;
+        }
+    }
+    
     public String toString() {
         return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";
     }
-
-    
-
 }
