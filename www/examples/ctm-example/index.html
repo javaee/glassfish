@@ -105,7 +105,7 @@ public class EnvironmentFactory implements Factory&lt;Environment&gt; {
     
     ...
 }</pre></div><p>It is interesting to notice that the factory itself is a service in the Singleton scope, and hence can be injected with the TenantManager. However, that does not mean that the EnvironmentFactory is producing objects into the Singleton scope, only that the factory itself is in the Singleton scope. We tell the system that this factory is producing items for the TenantScope by annotating the produce method, like this:</p><div class="source"><pre>    @TenantScoped
-    public Environment provide() {...}</pre></div><p>In this example, we are going to use other ServiceLocator registries in order to create the specific Environment objects that we need. We will have a new ServiceLocator registry for each tenant, and that new ServiceLocator will be responsible for instantiating and providing the Environment implementations that we require.</p><p>TBD here we would need some words about how the separate ServiceLocators will create the EnvironmentImpls based on a particular backing XML file, using the configuration subsystem of hk2.</p><p>Thus the job of the EnvironmentFactory is to keep a map from tenants to their backing ServiceLocator registries. Here is the mapping and the code that associates a particular ServiceLocator with the current tenant:</p><div class="source"><pre>    private final HashMap&lt;String, ServiceLocator&gt; backingLocators = new HashMap&lt;String, ServiceLocator&gt;();
+    public Environment provide() {...}</pre></div><p>In this example, we are going to use other ServiceLocator registry's in order to create the specific Environment objects that we need. We will have a new ServiceLocator registry for each tenant, and that new ServiceLocator will be responsible for instantiating and providing the Environment implementations that we require.</p><p>TBD here we would need some words about how the separate ServiceLocators will create the EnvironmentImpls based on a particular backing XML file, using the configuration subsystem of hk2.</p><p>Thus the job of the EnvironmentFactory is to keep a map from tenants to their backing ServiceLocator registries. Here is the mapping and the code that associates a particular ServiceLocator with the current tenant:</p><div class="source"><pre>    private final HashMap&lt;String, ServiceLocator&gt; backingLocators = new HashMap&lt;String, ServiceLocator&gt;();
     private final TenantLocatorGenerator generator = new TenantLocatorGenerator();
     
     private ServiceLocator getCurrentLocator() {
@@ -152,7 +152,7 @@ public class EnvironmentFactory implements Factory&lt;Environment&gt; {
 
   
   
-  &nbsp;| Last Published: 05/16/2012
+  &nbsp;| Last Published: 05/23/2012
   &nbsp;| Version: 2.1.4-SNAPSHOT
 </div>
       <div class="clear">
