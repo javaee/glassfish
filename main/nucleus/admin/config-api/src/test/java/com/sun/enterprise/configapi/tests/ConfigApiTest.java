@@ -44,9 +44,15 @@ import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import org.glassfish.config.support.GlassFishDocument;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.tests.utils.Utils;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.DomDocument;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 
 import java.util.concurrent.Executors;
@@ -59,7 +65,7 @@ import org.glassfish.api.admin.ServerEnvironment;
  * Time: 12:38:30 PM
  */
 public abstract class ConfigApiTest extends org.glassfish.tests.utils.ConfigApiTest {
-
+	
     public DomDocument getDocument(Habitat habitat) {
         DomDocument doc = habitat.getByType(GlassFishDocument.class);
         if (doc==null) {

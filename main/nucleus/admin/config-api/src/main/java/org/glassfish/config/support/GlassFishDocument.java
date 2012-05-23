@@ -80,7 +80,9 @@ public class GlassFishDocument extends DomDocument<GlassFishConfigBean> {
 
         final DomDocument doc = this;
         
-        habitat.getComponent(Transactions.class).addTransactionsListener(new TransactionListener() {
+        Transactions transactions = habitat.getComponent(Transactions.class);
+        
+        transactions.addTransactionsListener(new TransactionListener() {
             public void transactionCommited(List<PropertyChangeEvent> changes) {
                 for (ConfigurationPersistence pers : habitat.getAllByContract(ConfigurationPersistence.class)) {
                     try {

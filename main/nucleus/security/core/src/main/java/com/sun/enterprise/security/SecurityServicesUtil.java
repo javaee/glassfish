@@ -57,15 +57,16 @@ import javax.inject.Singleton;
 import org.jvnet.hk2.annotations.Scoped;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
+import org.glassfish.internal.api.Globals;
 
 @Service
 @Singleton
 public class SecurityServicesUtil {
 
-    //private static BaseServiceLocator habitat = Globals.getDefaultHabitat();
-    @Inject
-    private static BaseServiceLocator habitat;
-    
+    private static BaseServiceLocator habitat = Globals.getDefaultHabitat();
+//    @Inject
+//    private BaseServiceLocator habitat;
+//    
     private static final LocalStringManagerImpl _localStrings =
             new LocalStringManagerImpl(SecurityServicesUtil.class);
     private static final Logger _logger = LogDomains.getLogger(SecurityServicesUtil.class, LogDomains.SECURITY_LOGGER);

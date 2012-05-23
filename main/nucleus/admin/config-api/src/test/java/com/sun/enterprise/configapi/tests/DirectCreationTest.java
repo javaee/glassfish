@@ -46,7 +46,7 @@ import com.sun.enterprise.config.serverbeans.Profiler;
 import com.sun.enterprise.config.serverbeans.AdminService;
 
 import org.glassfish.tests.utils.Utils;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
@@ -104,7 +104,10 @@ public class DirectCreationTest extends ConfigPersistence {
 
         ConfigSupport support = getBaseServiceLocator().getComponent(ConfigSupport.class);
 
+        assertNotNull("ConfigSupport not found", support);
+        
         for (Class<?> subType : subTypes) {
+        	
             // TODO:  JL force compilation error to mark this probably edit point for grizzly config
             if (subType.getName().endsWith("DasConfig")) {
                 Map<String, String> configChanges = new HashMap<String, String>();

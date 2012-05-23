@@ -40,27 +40,28 @@
 
 package com.sun.enterprise.admin.cli.embeddable;
 
-import com.sun.enterprise.admin.cli.CLIUtil;
-import com.sun.enterprise.admin.cli.Parser;
-import com.sun.enterprise.admin.cli.ProgramOptions;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandException;
 import org.glassfish.api.admin.CommandModel;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.embeddable.CommandResult;
+import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.annotations.ContractsProvided;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
-import org.glassfish.hk2.api.PerLookup;
 
-import javax.inject.Inject;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
+import com.sun.enterprise.admin.cli.CLIUtil;
+import com.sun.enterprise.admin.cli.Parser;
+import com.sun.enterprise.admin.cli.ProgramOptions;
 
 /**
  * @author bhavanishankar@dev.java.net
@@ -68,7 +69,7 @@ import java.util.logging.Logger;
  */
 @Service()
 @PerLookup // this is a PerLookup service
-@ContractsProvided(org.glassfish.embeddable.CommandRunner.class)
+@ContractsProvided({org.glassfish.embeddable.CommandRunner.class, CommandExecutorImpl.class})
 // bcos CommandRunner interface can't depend on HK2, we need ContractProvided here.
 
 public class CommandExecutorImpl implements org.glassfish.embeddable.CommandRunner {

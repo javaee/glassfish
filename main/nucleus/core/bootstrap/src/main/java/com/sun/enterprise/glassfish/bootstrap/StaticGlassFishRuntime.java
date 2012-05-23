@@ -44,12 +44,18 @@ import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.impl.ModulesRegistryImpl;
+
 import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.BaseServiceLocator;
 
 import java.io.File;
@@ -105,6 +111,16 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
             ServiceLocator serviceLocator = main.createServiceLocator(startupContext);
             
             final BaseServiceLocator habitat = serviceLocator.getService(BaseServiceLocator.class);
+            
+            DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+            DynamicConfiguration config = dcs.createDynamicConfiguration();
+            
+            AbstractActiveDescriptor<ModulesRegistryImpl> modulesRegistryDescriptor = BuilderHelper.createConstantDescriptor(new ModulesRegistryImpl(null));
+			
+            modulesRegistryDescriptor.addAdvertisedContract(ModulesRegistry.class.getCanonicalName());
+            config.addActiveDescriptor(modulesRegistryDescriptor);
+            
+            config.commit();
             
             final ModuleStartup gfKernel = main.findStartupService(null, startupContext);
             // create a new GlassFish instance

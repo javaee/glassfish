@@ -93,7 +93,7 @@ import com.sun.enterprise.config.serverbeans.ModuleMonitoringLevels;
  * @author Marina Vatkina
  */
 @Service
-@ContractsProvided(TransactionManager.class)
+@ContractsProvided({TransactionManager.class, JavaEETransactionManager.class})
 public class JavaEETransactionManagerSimplified 
         implements JavaEETransactionManager, PostConstruct {
 

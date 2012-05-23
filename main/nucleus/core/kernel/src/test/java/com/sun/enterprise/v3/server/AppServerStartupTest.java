@@ -72,6 +72,8 @@ import org.glassfish.internal.api.InitRunLevel;
 import org.glassfish.internal.api.PostStartup;
 import org.glassfish.internal.api.PostStartupRunLevel;
 import org.glassfish.kernel.event.EventsImpl;
+import org.glassfish.main.core.apiexporter.APIExporter;
+import org.glassfish.main.core.apiexporter.APIExporterImpl;
 import org.glassfish.server.ServerEnvironmentImpl;
 import org.junit.After;
 import org.junit.Assert;
@@ -169,6 +171,10 @@ public class AppServerStartupTest {
         bindService(config, TestPostStartupService.class);
         bindService(config, TestPostStartupRunLevelService.class);
 
+        bindService(config, CommonClassLoaderServiceImpl.class);
+        bindService(config, APIClassLoaderServiceImpl.class);
+
+        bindService(config, APIExporterImpl.class);
         config.commit();
     }
 

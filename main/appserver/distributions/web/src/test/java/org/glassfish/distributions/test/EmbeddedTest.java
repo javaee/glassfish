@@ -117,6 +117,8 @@ public class EmbeddedTest {
     public void testEjb() throws GlassFishException {
         Deployer deployer = glassfish.getDeployer();
 
+        System.out.println(">>>>>>> deployer: " + deployer.getClass().getCanonicalName());
+        
         URL source = SampleEjb.class.getClassLoader().getResource(
                 "org/glassfish/distributions/test/ejb/SampleEjb.class");
         String p = source.getPath().substring(0, source.getPath().length() -
@@ -124,6 +126,9 @@ public class EmbeddedTest {
 
         String appName = deployer.deploy(new File(p).toURI(), "--name=sample");
 
+        
+        System.out.println(">>>>>>> appName: " + appName);
+        
         // ok now let's look up the EJB...
         try {
             InitialContext ic = new InitialContext();

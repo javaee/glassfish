@@ -126,7 +126,7 @@ public class AppServerStartup implements ModuleStartup {
     @Inject
     Events events;
 
-    @org.jvnet.hk2.annotations.Inject
+    @Inject
     CommonClassLoaderServiceImpl commonCLS;
 
     @Inject
