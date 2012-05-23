@@ -83,6 +83,7 @@ import org.glassfish.api.admin.*;
 import org.glassfish.api.event.EventListener;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
+import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.PostStartupRunLevel;
 
 /**
@@ -109,7 +110,7 @@ public final class JMXStartupService implements PostConstruct {
     @Inject
     Events mEvents;
     @Inject
-    volatile static BaseServiceLocator habitat;
+    static BaseServiceLocator habitat = Globals.getDefaultBaseServiceLocator();
     
     @Inject
     private static ServerEnvironment serverEnv;
