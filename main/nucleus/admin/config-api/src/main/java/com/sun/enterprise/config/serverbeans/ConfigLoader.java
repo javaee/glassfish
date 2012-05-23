@@ -37,52 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.config.serverbeans;
 
-package com.sun.ejb.containers;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.DuckTyped;
 
 /**
- * Implementation of the EJBHome interface.
- * This class is also the base class for all generated concrete ReadOnly
- * EJBHome implementations.
- * At deployment time, one instance of ReadOnlyEJBHomeImpl is created 
- * for each EJB class in a JAR that has a remote home. 
+ * This is a marker interface to mark the interfaces which are involved in managing parts of the domain.xml.
+ * For example Each one of the Domain, Config and Application interfaces manages one part of the domain.xml.
  *
- * @author Mahesh Kannan
+ * @author Masoud Kalali
  */
-
-public abstract class ReadOnlyEJBHomeImpl
-    extends EJBHomeImpl
-    implements ReadOnlyEJBHome
-{
-    private ReadOnlyBeanContainer robContainer;
-
-    public ReadOnlyEJBHomeImpl()
-        throws java.rmi.RemoteException
-    {
-        super();
-    }
-
-    /** 
-     * Called from ReadOnlyBeanContainer only.
-     */
-    final void setReadOnlyBeanContainer(ReadOnlyBeanContainer container) {
-        this.robContainer = container;
-    }
+public interface ConfigLoader {
 
 
-    /***********************************************/
-    /** Implementation of ReadOnlyEJBHome methods **/
-    /***********************************************/
-
-    public void _refresh_com_sun_ejb_containers_read_only_bean_(Object primaryKey)
-        throws java.rmi.RemoteException
-    {
-        robContainer.setRefreshFlag(primaryKey);
-    }
-
-    public void _refresh_All() throws java.rmi.RemoteException
-    {
-        robContainer.refreshAll();
-    }
 }
-

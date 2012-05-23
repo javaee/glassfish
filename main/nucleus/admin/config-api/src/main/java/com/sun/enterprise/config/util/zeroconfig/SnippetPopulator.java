@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,66 +38,38 @@
  * holder.
  */
 
-package com.sun.ejb.containers;
+package com.sun.enterprise.config.util.zeroconfig;
 
-import com.sun.ejb.EjbInvocation;
-import com.sun.enterprise.deployment.EjbDescriptor;
+import com.sun.enterprise.config.serverbeans.Config;
+//import com.sun.enterprise.module.bootstrap.Populator;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
 
- /*
-  * This class implements the Commit-Option C as described in
-  * the EJB Specification.
-  *
-  * The CommitOptionC Container extends Entity Container and
-  * hence all the life cycle management is still in Entitycontainer
-  *
-  * @author Mahesh Kannan
-  */
+import java.net.URL;
 
-public class CommitCEntityContainer
-    extends EntityContainer
-{
-    /**
-     * This constructor is called from the JarManager when a Jar is deployed.
-     * @exception Exception on error
-     */
-    protected CommitCEntityContainer(EjbDescriptor desc, ClassLoader loader)
-        throws Exception
-    {
-        super(desc, loader);
+/**
+ * populate the a DomDocument from the given configuration snippet file containing a config bean configuration.
+ * @author Bhakti Mehta
+ * @author Masoud Kalali
+ */
+public class SnippetPopulator /* implements Populator */ {
+    private URL snippetUrl;
+    private DomDocument doc;
+    Config loader;
+
+    public SnippetPopulator(URL snippetUrl, DomDocument doc, Config loader) {
+        this.snippetUrl = snippetUrl;
+        this.doc = doc;
+        this.loader = loader;
     }
-    
-    protected EntityContextImpl getReadyEJB(EjbInvocation inv) {
-        Object primaryKey = inv.ejbObject.getKey();
-        return activateEJBFromPool(primaryKey, inv);
+    public void run(org.jvnet.hk2.config.ConfigParser parser) {
+        if (snippetUrl != null) {
+            try {
+                DomDocument newElement = parser.parse(snippetUrl, doc, Dom.unwrap(loader));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
     }
-    
-    protected void createReadyStore(int cacheSize, int numberOfVictimsToSelect,
-            float loadFactor, long idleTimeout)
-    {
-        readyStore = null;
-    }
-    
-    protected void createEJBObjectStores(int cacheSize,
-            int numberOfVictimsToSelect, long idleTimeout) throws Exception
-    {
-        super.defaultCacheEJBO = false;
-        super.createEJBObjectStores(cacheSize, numberOfVictimsToSelect, idleTimeout);
-    }
-    
-    // called from releaseContext, afterCompletion
-    protected void addReadyEJB(EntityContextImpl context) {
-        passivateAndPoolEJB(context);
-    }
-    
-    protected void destroyReadyStoreOnUndeploy() {
-        readyStore = null;
-    }
-    
-    protected void removeContextFromReadyStore(Object primaryKey,
-            EntityContextImpl context)
-    {
-        // There is nothing to remove as we don't have a readyStore
-    }
-    
 }
-

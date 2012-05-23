@@ -430,7 +430,7 @@ public class AsadminMain {
      * ProgramOptions.
      */
     private void printUsage() {
-        logger.severe(strings.get("Asadmin.usage", getCommandName()));
+        logger.severe(strings.get("Usage.full", getCommandName()));
     }
 
     private static boolean ok(String s) {
