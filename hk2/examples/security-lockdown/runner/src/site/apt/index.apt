@@ -36,7 +36,7 @@ The System Project
  The system project has some resources it would like to give out to some applications,
  but not to others.  It would also like to be able to prevent applications from
  binding or unbinding services from the service registry (embodied by the
- {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}).
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}).
  
  In order to do this, the system project must decide on a protection scheme.  Therefore the
  decision is made that only code with java.lang.AllPermission shall be able to bind or unbind
@@ -74,23 +74,23 @@ public class AuditService {
  can better make that decision.
  
  But how *does* the environment decide which resources are protected, and which are not?  In HK2 the answer is a
- system defined service called the {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}.
- The {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} has two functions.  The first
+ system defined service called the {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}.
+ The {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} has two functions.  The first
  function is to decide which resources should be protected.  The second is to provide code that must be run in
  order to protect the resources which are protected.
  
  In this example, the system has decided that every resource must be protected.  Hence the name "security-lockdown"
  example.  Every injection point, lookup and bind will first run through a
- {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}} to decide whether or not that operation should be allowed
- to proceed.  But before the {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}} is run on anything first the
- {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} must tell the system that all resources
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Validator.html}Validator}} to decide whether or not that operation should be allowed
+ to proceed.  But before the {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Validator.html}Validator}} is run on anything first the
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} must tell the system that all resources
  are to be protected.
  
  In order to do this the system project must implement the
- {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}.  In doing so it must implement
- the getLookupFilter API, which returns a {{{./apidocs/org/glassfish/hk2/api/Filter.html}Filter}} to
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}.  In doing so it must implement
+ the getLookupFilter API, which returns a {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Filter.html}Filter}} to
  the system.  The system will use this filter to determine which resources are protected.  If the filter returns
- true about any resource, then that resource will have the {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}}
+ true about any resource, then that resource will have the {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Validator.html}Validator}}
  run over it whenever it is looked up or injected.  Note that bind and unbind operations are always run through
  all registered validators, as these operations are rare and can have serious effects on the state of the system.
  
@@ -110,11 +110,11 @@ public class ValidationServiceImpl implements ValidationService {
 }
 +---
 
- The {{{./apidocs/org/glassfish/hk2/utilities/BuilderHelper.html}BuilderHelper}} allFilter method returns a
- {{{./apidocs/org/glassfish/hk2/api/Filter.html}Filter}} that always returns true.  In this way we have assured
+ The {{{../../../hk2-api/apidocs/org/glassfish/hk2/utilities/BuilderHelper.html}BuilderHelper}} allFilter method returns a
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Filter.html}Filter}} that always returns true.  In this way we have assured
  that every lookup and injection in the system will be run through the implementation of
- {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}}, which is also returned by out implementation of
- the {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}:
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Validator.html}Validator}}, which is also returned by out implementation of
+ the {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}:
  
 +---
 @Service @Singleton
@@ -136,7 +136,7 @@ public class ValidationServiceImpl implements ValidationService {
  However, the most important thing about the system code is how it protects the resources it has been charged
  to protect.  That is the job of the ValidatorImpl.  The ValidatorImpl is responsible for determining
  how to validate the BIND, UNBIND and LOOKUP operations.  Here is the implementation of the
- {{{./apidocs/org/glassfish/hk2/api/Validator.html}Validator}} validate method:
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Validator.html}Validator}} validate method:
  
 +---
 public class ValidatorImpl implements Validator {
@@ -164,7 +164,7 @@ public class ValidatorImpl implements Validator {
  how to check the permission being granted.  In the BIND, UNBIND, and in any LOOKUP that is *not* an injection
  the call frame will be the Java protection domain to check.  In the case of the
  BIND and UNBIND operations this will include the code that called commit on the
- {{{./apidocs/org/glassfish/hk2/api/DynamicConfiguration.html}DynamicConfiguration}}.  In the case of the
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/DynamicConfiguration.html}DynamicConfiguration}}.  In the case of the
  non-inject lookup, this will contain the user that is attempting to look up a service.
  
  Since the BIND and UNBIND cases are fairly strait-forward in our example, lets see how this permission
@@ -204,10 +204,10 @@ public class ValidatorImpl implements Validator {
  caller is directly on the stack.  In the second case there may be no other software on the stack other than the
  system software.  Therefore in that case more information may be needed in order to perform our security check.
  That extra information comes in the form of the
- {{{./apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}.  Using the combination of the candidate
- {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}} and the
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}.  Using the combination of the candidate
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}} and the
  place that descriptor would be injecting into (the
- {{{./apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}) a security decision can be made about the
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}}) a security decision can be made about the
  injection point.
  
  Lets look at the method that handles the both LOOKUP cases:
@@ -245,13 +245,13 @@ public class ValidatorImpl implements Validator {
  The above code will create the Permission that needs to be checked to see if the
  caller should have access to the passed in package.
  
- When dealing with an {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}},
+ When dealing with an {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}},
  we want to be sure that the caller has the right to access all of the contracts which
  that service advertises.  Hence we create a method that returns all of the permissions
  that must be checked based on all of the contracts that the
- {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}} advertises.
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}} advertises.
  Here is the implementation of a method that returns a list of all permissions that
- must be allowed in order to access that {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}}:
+ must be allowed in order to access that {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}}:
  
 +---
     private static List<Permission> getLookupPermissions(ActiveDescriptor<?> ad) {
@@ -291,7 +291,7 @@ public class ValidatorImpl implements Validator {
 
   This is a strait-forward implementation, simply ensuring with the checkPerm call that
   the caller is allowed to access all of the contracts offered by the given candidate
-  {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}}.
+  {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}}.
   
   That leaves us with the case of the lookup being performed on behalf of an injection
   point.  This sort of lookup might be done because of some system code, or on the behalf
@@ -342,9 +342,9 @@ public class ValidatorImpl implements Validator {
  system software are checked when getting the protection domain.
  
  The code then runs through the list of permissions that the ProtectionDomain of the
- {{{./apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}} must have in order for
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/Injectee.html}Injectee}} must have in order for
  the injection to use an object produced by the
- {{{./apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}}.
+ {{{../../../hk2-api/apidocs/org/glassfish/hk2/api/ActiveDescriptor.html}ActiveDescriptor}}.
  
  This is the entire implementation of the security-lockdown validator, which will ensure that
  only those that have the rights to specific packages will be able to inject or lookup

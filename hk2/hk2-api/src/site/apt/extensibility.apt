@@ -23,11 +23,13 @@ Extensibility of HK2
  
  * {{Validation}}
  
+ * {{Instance Lifecycle}}
+ 
 * {Adding a Scope and Context to the system}
 
- In HK2 a {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} is a class that is used to control the lifecycle of service instances.  A
+ In HK2 a {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is a class that is used to control the lifecycle of service instances.  A
  {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} is an annotation that is put onto another
- annotation that is used to associate any service with a particular {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}}.  All services
+ annotation that is used to associate any service with a particular {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}}.  All services
  in HK2 are associated with a single scope.
  
  There are two system provided scope/context pairs.  The default {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}}
@@ -37,26 +39,26 @@ Extensibility of HK2
  never destroyed.
  
  The default {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} for services bound with
- the {{{./apidocs/org/jvnet/hk2/api/DynamicConfiguration.html}DynamicConfiguration}} bind call is
- {{{./apidocs/org/jvnet/hk2/api/PerLookup.html}PerLookup}}.  Service
- instances in the {{{./apidocs/org/jvnet/hk2/api/PerLookup.html}PerLookup}} scope are created every time that
+ the {{{./apidocs/org/glassfish/hk2/api/DynamicConfiguration.html}DynamicConfiguration}} bind call is
+ {{{./apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}}.  Service
+ instances in the {{{./apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}} scope are created every time that
  the service is injected or looked up via the API.  These instances are destroyed when the
- {{{http://docs.oracle.com/javaee/6/api/javax/inject/ServiceHandle.html}ServiceHandle}} destroy method is called
- on any service that has injected a {{{./apidocs/org/jvnet/hk2/api/PerLookup.html}PerLookup}} object.
+ {{{./apidocs/org/glassfish/hk2/api/ServiceHandle.html}ServiceHandle}} destroy method is called
+ on any service that has injected a {{{./apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}} object.
  
  Any number of other scope/context pairs can be added to the system.  In order to do so, the user must write
- an implementation of {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} where the parameterized type
- of the {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} is the annotation annotated with
+ an implementation of {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} where the parameterized type
+ of the {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is the annotation annotated with
  {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} that the
- {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} is handling.  This implementation of
- {{{./apidocs/org/jvnet/hk2/api/Context.html}Context}} is then bound into the
- {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
+ {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is handling.  This implementation of
+ {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is then bound into the
+ {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
  
  To make this more clear, we have two examples of user scope/context pairs:
  
- [[1]] This {{{../ctm-example/index.html}example}} adds a context that is based on the current running tenant.
+ [[1]] This {{{../examples/ctm-example/index.html}example}} adds a context that is based on the current running tenant.
  
- [[2]] This {{{../custom-resolver-example/index.html}example}} adds a request scoped context.
+ [[2]] This {{{../examples/custom-resolver-example/index.html}example}} adds a request scoped context.
  
 * {Dealing with ClassLoading issues}
 
@@ -90,23 +92,32 @@ Extensibility of HK2
  a user would like to customize the JSR-330 resolution in some manner, or provide their
  own injection points based on a different annotation.
  
- In order to do so, the user implements {{{./apidocs/org/jvnet/hk2/api/InjectionResolver.html}InjectionResolver}}.  The
- parameterized type of the {{{./apidocs/org/jvnet/hk2/api/InjectionResolver.html}InjectionResolver}} must be the injection
+ In order to do so, the user implements {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}}.  The
+ parameterized type of the {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} must be the injection
  annotation that they will resolve.  The user implementation of
- {{{./apidocs/org/jvnet/hk2/api/InjectionResolver.html}InjectionResolver}} is then bound into a
- {{{./apidocs/org/jvnet/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
+ {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} is then bound into a
+ {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
 
- This {{{../custom-resolver-example/index.html}example}} adds a custom injection resolver that customizes the default
+ This {{{../examples/custom-resolver-example/index.html}example}} adds a custom injection resolver that customizes the default
  JSR-330 injection resolver.
  
 * {Validation}
 
  In this example we show how the
- {{{./apidocs/org/jvnet/hk2/api/ValidationService.html}ValidationService}} can be used to do a complete
+ {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} can be used to do a complete
  security lockdown of the system.  This example runs with the J2SE security manager turned on and
  grants some privileges to some projects and other privileges to other projects to ensure that the
- {{{./apidocs/org/jvnet/hk2/api/ValidationService.html}ValidationService}} can be used to define the
+ {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} can be used to define the
  security of the system.
  
- The example can be seen {{{../security-lockdown-example-runner/index.html}here}}.
+ The example can be seen {{{../examples/security-lockdown-example/security-lockdown-example-runner/index.html}here}}.
+ 
+* {Instance Lifecycle}
+
+ A user may register an implementation of {{{./apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html}InstanceLifecycleListener}}
+ to be notified whenver an instance of a service is created.  Unlike the
+ {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}, which deals only with the metadata of a service,
+ the {{{./apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html}InstanceLifecycleListener}} is notified whenever an instance
+ of a service is created or destroyed.  This is a useful facility for tracing or for scenarios where a service wishes to become
+ an automatic listener for anything that it is injected into.
  
