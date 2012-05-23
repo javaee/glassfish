@@ -893,7 +893,7 @@
 <a class="jxr_linenumber" name="883" href="#883">883</a>             <strong class="jxr_keyword">if</strong>(v.startsWith(ELEMENT_NAME_PREFIX))
 <a class="jxr_linenumber" name="884" href="#884">884</a>                 tagName = v.substring(ELEMENT_NAME_PREFIX.length());
 <a class="jxr_linenumber" name="885" href="#885">885</a>         }
-<a class="jxr_linenumber" name="886" href="#886">886</a>         <strong class="jxr_keyword">this</strong>.tagName = tagName;
+<a class="jxr_linenumber" name="886" href="#886">886</a>         <strong class="jxr_keyword">this</strong>.tagName = tagName == <strong class="jxr_keyword">null</strong> ? injector.getName() : tagName;
 <a class="jxr_linenumber" name="887" href="#887">887</a>     }
 <a class="jxr_linenumber" name="888" href="#888">888</a> 
 <a class="jxr_linenumber" name="889" href="#889">889</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String ELEMENT_NAME_PREFIX = ConfigInjector.<strong class="jxr_keyword">class</strong>.getName() + ':';
