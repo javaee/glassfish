@@ -142,7 +142,7 @@
 <a class="jxr_linenumber" name="132" href="#132">132</a>     }
 <a class="jxr_linenumber" name="133" href="#133">133</a> 
 <a class="jxr_linenumber" name="134" href="#134">134</a>     @Override
-<a class="jxr_linenumber" name="135" href="#135">135</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> parseInhabitants(<a href="../../../../../com/sun/enterprise/module/Module.html">Module</a> module, String name, <a href="../../../../../org/glassfish/hk2/inhabitants/InhabitantsParser.html">InhabitantsParser</a> inhabitantsParser)
+<a class="jxr_linenumber" name="135" href="#135">135</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> parseInhabitants(<a href="../../../../../com/sun/enterprise/module/Module.html">Module</a> module, String name)
 <a class="jxr_linenumber" name="136" href="#136">136</a>             <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="137" href="#137">137</a> 
 <a class="jxr_linenumber" name="138" href="#138">138</a>         HK2Loader loader = <strong class="jxr_keyword">new</strong> HK2Loader() {
@@ -158,12 +158,12 @@
 <a class="jxr_linenumber" name="148" href="#148">148</a>         	
 <a class="jxr_linenumber" name="149" href="#149">149</a>         };
 <a class="jxr_linenumber" name="150" href="#150">150</a>         
-<a class="jxr_linenumber" name="151" href="#151">151</a>         <strong class="jxr_keyword">for</strong> (Module m : modules) {
-<a class="jxr_linenumber" name="152" href="#152">152</a>             <em class="jxr_comment">// each module can have a different way of representing the inhabitant meta-data</em>
-<a class="jxr_linenumber" name="153" href="#153">153</a>             <em class="jxr_comment">// some may use the inhabitant file, others may rely on introspection </em>
-<a class="jxr_linenumber" name="154" href="#154">154</a>             <strong class="jxr_keyword">for</strong> (InhabitantsDescriptor d :m.getMetadata().getHabitats(name))
-<a class="jxr_linenumber" name="155" href="#155">155</a>                 inhabitantsParser.parse(d.createScanner(), loader);
-<a class="jxr_linenumber" name="156" href="#156">156</a>         }
+<a class="jxr_linenumber" name="151" href="#151">151</a> <em class="jxr_comment">//        for (Module m : modules) {</em>
+<a class="jxr_linenumber" name="152" href="#152">152</a> <em class="jxr_comment">//            // each module can have a different way of representing the inhabitant meta-data</em>
+<a class="jxr_linenumber" name="153" href="#153">153</a> <em class="jxr_comment">//            // some may use the inhabitant file, others may rely on introspection </em>
+<a class="jxr_linenumber" name="154" href="#154">154</a> <em class="jxr_comment">//            for (InhabitantsDescriptor d :m.getMetadata().getHabitats(name))</em>
+<a class="jxr_linenumber" name="155" href="#155">155</a> <em class="jxr_comment">//                inhabitantsParser.parse(d.createScanner(), loader);</em>
+<a class="jxr_linenumber" name="156" href="#156">156</a> <em class="jxr_comment">//        }</em>
 <a class="jxr_linenumber" name="157" href="#157">157</a>     }
 <a class="jxr_linenumber" name="158" href="#158">158</a> 
 <a class="jxr_linenumber" name="159" href="#159">159</a> }
