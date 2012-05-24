@@ -514,6 +514,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
         sb.append("\n\tmetadata=");
         sb.append(ReflectionHelper.writeMetadata(d.getMetadata()));
         
+        sb.append("\n\trank=" + d.getRanking());
+        
         sb.append("\n\tloader=" + d.getLoader());
         
         sb.append("\n\tid=" + d.getServiceId());

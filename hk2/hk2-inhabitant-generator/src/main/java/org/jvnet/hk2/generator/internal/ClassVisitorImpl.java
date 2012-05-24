@@ -62,6 +62,7 @@ import org.objectweb.asm.Type;
 public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String SERVICE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Service;";
     private final static String CONTRACTS_PROVIDED_CLASS_FORM = "Lorg/jvnet/hk2/annotations/ContractsProvided;";
+    private final static String RANK_CLASS_FORM = "Lorg/glassfish/hk2/api/Rank;";
     private final static String NAME = "name";
     private final static String METADATA = "metadata";
     private final static String VALUE = "value";
@@ -79,6 +80,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private boolean isAService = false;
     private NamedAnnotationVisitor baseName;
     private String metadataString = null;
+    private Integer rank = null;
     
     private final LinkedList<DescriptorImpl> generatedDescriptors = new LinkedList<DescriptorImpl>();
     private boolean isFactory = false;
@@ -133,6 +135,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             providedContracts = new LinkedHashSet<String>();
             
             return new ContractsProvidedAnnotationVisitor();
+        }
+        
+        if (RANK_CLASS_FORM.equals(desc)) {
+            return new RankAnnotationVisitor();
         }
         
         if (!desc.startsWith("L")) return null;
@@ -219,6 +225,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
                 
                 generatedDescriptor.addMetadata(key, value);
             }
+        }
+        
+        if (rank != null) {
+            generatedDescriptor.setRanking(rank.intValue());
         }
         
         if (verbose) {
@@ -357,6 +367,9 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
                     return factoryName;
                 }
             }
+            else if (desc.equals(RANK_CLASS_FORM)) {
+                return new MethodRankAnnotationVisitor(asAFactoryDI);
+            }
             
             return null;
         }
@@ -399,6 +412,32 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             
             return this;
         }        
+    }
+    
+    private class RankAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visit(String name, Object value) {
+            rank = (Integer) value;
+        }      
+    }
+    
+    private class MethodRankAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        private final DescriptorImpl di;
+        
+        private MethodRankAnnotationVisitor(DescriptorImpl di) {
+            this.di = di;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visit(String name, Object value) {
+            di.setRanking(((Integer) value).intValue());
+        }      
     }
     
     /**
