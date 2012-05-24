@@ -49,8 +49,13 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
@@ -59,7 +64,6 @@ import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
 
@@ -213,22 +217,24 @@ public class Main {
 	 * @return
 	 * @throws BootException
 	 */
-	public ModuleStartup findStartupService(String mainModuleName,
+    @SuppressWarnings("unchecked")
+    public ModuleStartup findStartupService(String mainModuleName,
 			StartupContext context) throws BootException {
-		ModuleStartup startupCode = null;
-
 		try {
-			startupCode = serviceLocator.getService(ModuleStartup.class,
-					mainModuleName);
-
-			if (startupCode == null)
-				throw new BootException("Cannot find main module "
-						+ (mainModuleName == null ? "" : mainModuleName)
-						+ " : no such module");
-		} catch (ComponentException e) {
+		    ActiveDescriptor<?> best = serviceLocator.getBestDescriptor(new MainFilter(mainModuleName));
+		    if (best == null) {
+		        throw new BootException("Cannot find main module "
+                        + (mainModuleName == null ? "" : mainModuleName)
+                        + " : no such module");
+		        
+		    }
+		    
+		    ServiceHandle<ModuleStartup> handle = (ServiceHandle<ModuleStartup>) serviceLocator.getServiceHandle(best);
+		    ModuleStartup retVal = handle.getService();
+		    return retVal;
+		} catch (MultiException e) {
 			throw new BootException("Unable to load service", e);
 		}
-		return startupCode;
 	}
 
 	public ServiceLocator createServiceLocator(StartupContext context)
@@ -355,6 +361,61 @@ public class Main {
 	protected void setPopulatorPostProcessor(
 			PopulatorPostProcessor populatorPostProcessor) {
 		this.populatorPostProcessor = populatorPostProcessor;
+	}
+	
+	/**
+	 * This filter matches against the name, including only
+	 * matching a ModuleStartup with no name if name is
+	 * null (unlike a normal "null" returned from name, which
+	 * acts as a wildcard for the name)
+	 * 
+	 * @author jwells
+	 *
+	 */
+	private static class MainFilter implements IndexedFilter {
+	    private final String name;
+	    
+	    /**
+	     * The name given here will match the ModuleStartup
+	     * 
+	     * @param name The name of the ModuleStartup to find.  If
+	     * null this Filter will only match ModuleStartups with
+	     * no name
+	     */
+	    private MainFilter(String name) {
+	        this.name = name;
+	    }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
+         */
+        @Override
+        public boolean matches(Descriptor d) {
+            if (name == null) {
+                if (d.getName() == null) return true;
+                
+                return false;
+            }
+            
+            return true;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
+         */
+        @Override
+        public String getAdvertisedContract() {
+            return ModuleStartup.class.getName();
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getName()
+         */
+        @Override
+        public String getName() {
+            return name;
+        }
+	    
 	}
 
 }
