@@ -42,10 +42,12 @@
 package com.sun.enterprise.glassfish.bootstrap.osgi;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,6 +55,11 @@ import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishProperties;
 import org.glassfish.embeddable.GlassFishRuntime;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -79,6 +86,23 @@ public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
 
     public EmbeddedOSGiGlassFishRuntime() {
     }
+    
+    private void addStartupContext(ServiceLocator locator, StartupContext addMe) {
+        AbstractActiveDescriptor<StartupContext> descriptor = BuilderHelper.createConstantDescriptor(addMe);
+        
+        Set<Type> contractTypes = new HashSet<Type> (descriptor.getContractTypes());
+        for (Type type : contractTypes) {
+            descriptor.removeContractType(type);
+        }
+        descriptor.addContractType(StartupContext.class);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(descriptor);
+        
+        config.commit();
+    }
 
     @Override
     public synchronized GlassFish newGlassFish(GlassFishProperties gfProps) throws GlassFishException {
@@ -92,7 +116,9 @@ public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
             final Main main = (Main) hk2Tracker.waitForService(0);
             hk2Tracker.close();
            
-            org.glassfish.hk2.api.ServiceLocator serviceLocator = main.getServiceLocator();
+            ServiceLocator serviceLocator = main.getServiceLocator();
+            
+            addStartupContext(serviceLocator, startupContext);
             
             BaseServiceLocator baseServiceLocator = serviceLocator.getService(BaseServiceLocator.class);
             
