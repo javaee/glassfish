@@ -334,6 +334,14 @@
         </plugins>
     </reporting>
 
+    <repositories>
+        <repository>
+            <id>springsource-repo</id>
+            <name>Springsource Repo</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+    </repositories>
+
     <pluginRepositories>
         <!-- search SNAPSHOT plugin artifacts in maven.java.net -->
         <pluginRepository>
