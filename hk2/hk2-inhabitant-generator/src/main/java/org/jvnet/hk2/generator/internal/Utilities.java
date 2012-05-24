@@ -69,6 +69,7 @@ import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
+import org.glassfish.hk2.api.Rank;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractsProvided;
 import org.objectweb.asm.AnnotationVisitor;
@@ -246,6 +247,15 @@ public class Utilities {
         
         // Inherited
         KNOWN_DATA.add(new KnownClassData(ContractsProvided.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Rank
+        KNOWN_DATA.add(new KnownClassData(Rank.class.getName(),
                 false, // isa_contract
                 false, // isa_scope
                 false, // isa_qualifier

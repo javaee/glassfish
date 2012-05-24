@@ -46,7 +46,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -97,7 +99,13 @@ public class InhabitantsGeneratorTest {
     /** The name for non-defaulted things */
     public final static String NON_DEFAULT_NAME = "non-default-name";
     
-    private final static Set<DescriptorImpl> EXPECTED_DESCRIPTORS = new HashSet<DescriptorImpl>();
+    /** The rank to use when testing for rank */
+    public final static int RANK = 13;
+    
+    /** The rank to use when testing for rank on factory method */
+    public final static int FACTORY_METHOD_RANK = -1;
+    
+    private final static Map<DescriptorImpl, Integer> EXPECTED_DESCRIPTORS = new HashMap<DescriptorImpl, Integer>();
     
     static {
         {
@@ -108,7 +116,7 @@ public class InhabitantsGeneratorTest {
             envFactory.addAdvertisedContract("org.glassfish.hk2.api.Factory");
             envFactory.setScope(Singleton.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(envFactory);
+            EXPECTED_DESCRIPTORS.put(envFactory, 0);
         }
         
         {
@@ -119,7 +127,7 @@ public class InhabitantsGeneratorTest {
             envItself.setScope("org.glassfish.examples.ctm.TenantScoped");
             envItself.setDescriptorType(DescriptorType.FACTORY);
         
-            EXPECTED_DESCRIPTORS.add(envItself);
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
         
         {
@@ -130,7 +138,7 @@ public class InhabitantsGeneratorTest {
             di.addAdvertisedContract("org.glassfish.hk2.api.Context");
             di.setScope(Singleton.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
         }
         
         {
@@ -140,7 +148,7 @@ public class InhabitantsGeneratorTest {
             di.addAdvertisedContract("org.glassfish.examples.ctm.ServiceProviderEngine");
             di.setScope(Singleton.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
         }
         
         {
@@ -150,7 +158,7 @@ public class InhabitantsGeneratorTest {
             di.addAdvertisedContract("org.glassfish.examples.ctm.TenantManager");
             di.setScope(Singleton.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
         }
         
         {
@@ -164,7 +172,7 @@ public class InhabitantsGeneratorTest {
             di.addMetadata(KEY1, VALUE1);
             di.addMetadata(KEY2, VALUE2);
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
         }
         
         {
@@ -176,7 +184,7 @@ public class InhabitantsGeneratorTest {
             di.addQualifier(Named.class.getName());
             di.setScope(Singleton.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
         }
         
         {
@@ -187,7 +195,7 @@ public class InhabitantsGeneratorTest {
             di.setName(NON_DEFAULT_NAME);
             di.setScope(Singleton.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
         }
         
         {
@@ -200,7 +208,7 @@ public class InhabitantsGeneratorTest {
             di.setScope(Singleton.class.getName());
             di.addQualifier(Named.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
         }
         
         {
@@ -218,7 +226,7 @@ public class InhabitantsGeneratorTest {
             di.addQualifier(Blue.class.getName());
             di.addQualifier(Named.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
         }
         
         {
@@ -228,7 +236,41 @@ public class InhabitantsGeneratorTest {
             di.addAdvertisedContract("org.jvnet.hk2.generator.tests.SimpleInterface");
             di.setScope(Singleton.class.getName());
         
-            EXPECTED_DESCRIPTORS.add(di);
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This is a service with a rank
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(ServiceWithRank.class.getName());
+            di.addAdvertisedContract(ServiceWithRank.class.getName());
+            di.setScope(Singleton.class.getName());
+            di.setRanking(RANK);
+        
+            EXPECTED_DESCRIPTORS.put(di, RANK);
+        }
+        
+        {
+            // This is the Factory that should be generated
+            DescriptorImpl envFactory = new DescriptorImpl();
+            envFactory.setImplementation(FactoryWithRanks.class.getName());
+            envFactory.addAdvertisedContract(FactoryWithRanks.class.getName());
+            envFactory.addAdvertisedContract(Factory.class.getName());
+            envFactory.setScope(Singleton.class.getName());
+            envFactory.setRanking(RANK);
+        
+            EXPECTED_DESCRIPTORS.put(envFactory, RANK);
+        }
+        
+        {
+            // This is a factory with a rank
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(FactoryWithRanks.class.getName());
+            envItself.addAdvertisedContract(SimpleInterface.class.getName());
+            envItself.setRanking(FACTORY_METHOD_RANK);
+            envItself.setDescriptorType(DescriptorType.FACTORY);
+        
+            EXPECTED_DESCRIPTORS.put(envItself, FACTORY_METHOD_RANK);
         }
     }
     
@@ -278,9 +320,14 @@ public class InhabitantsGeneratorTest {
     
     private void checkDescriptors(Set<DescriptorImpl> dis) {
         for (DescriptorImpl di : dis) {
-            Assert.assertTrue("Did not find " + di + " in the expected descriptors", EXPECTED_DESCRIPTORS.contains(di));
+            Assert.assertTrue("Did not find " + di + " in the expected descriptors", EXPECTED_DESCRIPTORS.containsKey(di));
+            
+            // The rank is not part of the calculated equals or hash code (since it can change
+            // over the course of the lifeycle of the object) and hence must be checked
+            // separately from the containsKey above
+            int expectedRank = EXPECTED_DESCRIPTORS.get(di);
+            Assert.assertEquals(expectedRank, di.getRanking());
         }
-        
         
         Assert.assertEquals("Expecting " + EXPECTED_DESCRIPTORS.size() + " descriptors, but only got " + dis.size(),
                 EXPECTED_DESCRIPTORS.size(), dis.size());
