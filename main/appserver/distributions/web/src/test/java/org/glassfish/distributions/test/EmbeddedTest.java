@@ -125,7 +125,8 @@ public class EmbeddedTest {
                 "org/glassfish/distributions/test/ejb/SimpleEjb.class".length());
 
         String appName = deployer.deploy(new File(p).toURI(), "--name=sample");
-
+        Assert.assertNotNull("AppName is null from deployer of type " + deployer.getClass().getName(),
+                appName);
         
         System.out.println(">>>>>>> appName: " + appName);
         

@@ -61,9 +61,11 @@ import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.event.EventListener.Event;
 import org.glassfish.api.event.EventTypes;
 import org.glassfish.api.event.Events;
+import org.glassfish.common.util.Constants;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.Activator;
 import org.glassfish.hk2.runlevel.RunLevelController;
@@ -98,7 +100,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez, sahoo@sun.com
  */
 @Service
-// TODO(jtrent) - ModuleStartup should probably be replaced by a kernel level RunLevel --- discuss with Jerome
+@Rank(Constants.DEFAULT_IMPLEMENTATION_RANK) // This should be the default impl if no name is specified
 public class AppServerStartup implements ModuleStartup {
     
     StartupContext context;
