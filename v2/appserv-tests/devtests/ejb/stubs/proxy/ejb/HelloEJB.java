@@ -82,7 +82,7 @@ public class HelloEJB implements SessionBean {
 	    ut = context.getUserTransaction();
 
 	} catch (Exception ex) {
-	    System.out.println("couldn't get sful bean");
+	    System.out.println("couldn't get all beans");
 	    ex.printStackTrace();
 	}
     }
