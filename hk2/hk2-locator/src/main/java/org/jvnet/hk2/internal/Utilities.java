@@ -581,12 +581,12 @@ public class Utilities {
      * @param clazz The class to inspect
      * @return A set of all the fields on this class
      */
-    private static Set<Field> getAllFields(Class<?> clazz) {
+    private static Set<Field> getAllFields(Class<?> clazz, Collector collector) {
         HashSet<Field> retVal = new HashSet<Field>();
         
         HashSet<MemberKey> keys = new HashSet<MemberKey>();
         
-        getAllFieldKeys(clazz, keys);
+        getAllFieldKeys(clazz, keys, collector);
         
         for (MemberKey key : keys) {
             retVal.add((Field) key.getBackingMember());
@@ -595,15 +595,21 @@ public class Utilities {
         return retVal;
     }
     
-    private static void getAllFieldKeys(Class<?> clazz, Set<MemberKey> currentFields) {
+    private static void getAllFieldKeys(Class<?> clazz, Set<MemberKey> currentFields, Collector collector) {
         if (clazz == null) return;
         
         // Do superclasses first, so that inherited methods are
         // overriden in the set
-        getAllFieldKeys(clazz.getSuperclass(), currentFields);
+        getAllFieldKeys(clazz.getSuperclass(), currentFields, collector);
         
-        for (Field field : getDeclaredFields(clazz)) {
-            currentFields.add(new MemberKey(field));
+        try {
+            for (Field field : getDeclaredFields(clazz)) {
+                currentFields.add(new MemberKey(field));
+            }
+        }
+        catch (Throwable th) {
+            collector.addThrowable(new IllegalStateException("Error while getting fields of class " + clazz.getName()));
+            collector.addThrowable(th);
         }
         
     }
@@ -848,7 +854,7 @@ public class Utilities {
             Collector errorCollector) {
         HashSet<Field> retVal = new HashSet<Field>();
         
-        for (Field field : getAllFields(annotatedType)) {
+        for (Field field : getAllFields(annotatedType, errorCollector)) {
             if (getInjectAnnotation(locator, field) == null) {
                 // Not an initializer field
                 continue;
