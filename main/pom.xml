@@ -177,6 +177,7 @@
         <glassfishbuild.version>3.2.3</glassfishbuild.version>
         <websocket.version>0.2</websocket.version>
         <source-annotation-processor.version>1.0</source-annotation-processor.version>
+        <logging-annotation-processor.version>1.0</logging-annotation-processor.version>
     </properties>
 
     <modules>
@@ -1483,6 +1484,11 @@
                 <artifactId>maven-processor-plugin</artifactId>
                 <version>2.0.4</version>
             </dependency>
+          <dependency>
+            <groupId>org.glassfish.annotations</groupId>
+            <artifactId>logging-annotation-processor</artifactId>
+            <version>${logging-annotation-processor.version}</version>
+          </dependency>
         </dependencies>
     </dependencyManagement>
 
