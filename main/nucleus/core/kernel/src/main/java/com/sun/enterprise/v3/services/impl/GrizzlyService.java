@@ -80,12 +80,10 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.glassfish.hk2.runlevel.RunLevel;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
-import javax.inject.Singleton;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
@@ -100,7 +98,6 @@ import org.jvnet.hk2.config.Transactions;
  * @author Jerome Dochez
  */
 @Service
-@Singleton
 @RunLevel(value = StartupRunLevel.VAL)
 public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDestroy, FutureProvider<Result<Thread>> {
 
