@@ -170,8 +170,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             for (final Module module : getModules()) {
                 parseInhabitants(module, name);
             }
-                
-            populateConfig(serviceLocator);
 
             // default modules registry is the one that created the habitat
             DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
@@ -184,13 +182,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             return serviceLocator;
         } catch (Exception e) {
             throw new ComponentException("Failed to create a habitat",e);
-        }
-    }
-
-    protected void populateConfig(ServiceLocator serviceLocator) throws BootException {
-        //Populate this serviceLocator with config data
-        for (ConfigPopulator populator : serviceLocator.<ConfigPopulator>getAllServices(ConfigPopulator.class)) {
-            populator.populateConfig(serviceLocator);
         }
     }
 

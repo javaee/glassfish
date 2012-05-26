@@ -43,6 +43,7 @@ package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -50,6 +51,7 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.URLDescriptorFileFinder;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
@@ -378,12 +380,10 @@ public class OSGiModuleImpl implements Module {
         	
         };
         
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().find("default");
         for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name)) {
-
-        	final ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().find("default");
 			HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(bundle.getEntry("META-INF/hk2-locator/default")),
         			 new OsgiPopulatorPostProcessor(hk2Loader));
-        	HK2Populator.populateConfig(serviceLocator);
         }
     }
 
