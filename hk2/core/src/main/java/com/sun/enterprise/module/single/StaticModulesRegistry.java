@@ -77,11 +77,6 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
         this.startupContext = startupContext;
     }
 
-    @Override
-    protected void populateConfig(ServiceLocator habitat) {
-        // do nothing...
-    }
-
     @Override                         
     public ServiceLocator createServiceLocator(String name) throws ComponentException {
 
