@@ -43,12 +43,11 @@ package org.glassfish.persistence.ejb.entitybean.container;
 import java.lang.reflect.Method;
 
 import org.glassfish.persistence.ejb.entitybean.container.spi.ReadOnlyEJBHome;
-import com.sun.ejb.containers.EJBHomeInvocationHandler;
 import com.sun.ejb.containers.util.MethodMap;
 import com.sun.enterprise.deployment.EjbDescriptor;
 
 /**
- * Implementation of the EJBHome interface.
+ * Implementation of the EJBHome interface for ReadOnly Entity Beans.
  * This class is also the base class for all generated concrete ReadOnly
  * EJBHome implementations.
  * At deployment time, one instance of ReadOnlyEJBHomeImpl is created 
@@ -58,7 +57,7 @@ import com.sun.enterprise.deployment.EjbDescriptor;
  */
 
 public final class ReadOnlyEJBHomeImpl
-    extends EJBHomeInvocationHandler
+    extends EntityBeanHomeImpl
     implements ReadOnlyEJBHome
 {
     private ReadOnlyBeanContainer robContainer;

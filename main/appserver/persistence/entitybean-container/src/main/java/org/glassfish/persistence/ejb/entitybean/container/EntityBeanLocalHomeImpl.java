@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,35 +38,50 @@
  * holder.
  */
 
-package com.sun.enterprise.tools.verifier.tests.ejb.ejb30;
+package org.glassfish.persistence.ejb.entitybean.container;
 
-import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
-import org.glassfish.ejb.deployment.descriptor.EjbSessionDescriptor;
+import java.lang.reflect.Method;
 
-import com.sun.enterprise.tools.verifier.Result;
-import com.sun.enterprise.tools.verifier.tests.ComponentNameConstructor;
-import com.sun.enterprise.tools.verifier.tests.ejb.EjbTest;
+import com.sun.ejb.Container;
+import com.sun.ejb.EjbInvocation;
+import com.sun.ejb.InvocationInfo;
+import com.sun.ejb.containers.BaseContainer;
+import com.sun.ejb.containers.EJBLocalObjectImpl;
+import com.sun.ejb.containers.EJBLocalHomeInvocationHandler;
+import com.sun.enterprise.deployment.EjbDescriptor;
 
 /**
- * Base class for EJB 3.0 session bean tests.
- * @author Vikas Awasthi
+ * Implementation of the EJBLocalHome interface for Entity Beans.
+ * At deployment time, one instance of this class is created 
+ * for each EntityBean class in a JAR that has a local home. 
+ *
+ * @author mvatkina
  */
-public abstract class SessionBeanTest extends EjbTest {
-    
-    public abstract Result check(EjbSessionDescriptor descriptor) ;
-    protected ComponentNameConstructor compName = null;
-    protected Result result = null;
-    
-    public Result check(EjbDescriptor descriptor) {
-        result = getInitializedResult();
-        compName = getVerifierContext().getComponentNameConstructor(); 
-        if (descriptor instanceof EjbSessionDescriptor) 
-            return check((EjbSessionDescriptor) descriptor);
-        
-        addNaDetails(result, compName);
-        result.notApplicable(smh.getLocalString
-                ("com.sun.enterprise.tools.verifier.tests.ejb.ejb30.SessionBeanTest.notApplicable",
-                "Test apply only to Session Bean components"));
-        return result;
+
+public class EntityBeanLocalHomeImpl
+    extends EJBLocalHomeInvocationHandler
+{
+    protected EntityBeanLocalHomeImpl(EjbDescriptor ejbDescriptor,
+                                  Class localHomeIntf) throws Exception {
+        super(ejbDescriptor, localHomeIntf);
     }
+
+    /**
+     * EJBLocalObjectImpl is created directly by the container, not by this call
+     */
+    @Override
+    public EJBLocalObjectImpl createEJBLocalObjectImpl() {
+        return null;
+    }
+
+    @Override
+    protected void postCreate(Container container, EjbInvocation inv,
+            InvocationInfo invInfo, Object primaryKey, Object[] args)
+            throws Throwable {
+        container.postCreate(inv, primaryKey);
+        invokeTargetBeanMethod((BaseContainer)container, invInfo.targetMethod2,
+                 inv, inv.ejb, args);
+
+    }
+
 }
