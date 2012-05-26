@@ -58,6 +58,7 @@ import org.glassfish.embeddable.GlassFishRuntime;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.ConfigPopulator;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.BaseServiceLocator;
@@ -103,6 +104,13 @@ public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
         
         config.commit();
     }
+    
+    private void populateConfig(ServiceLocator serviceLocator) throws BootException {
+        //Populate this serviceLocator with config data
+        for (ConfigPopulator populator : serviceLocator.<ConfigPopulator>getAllServices(ConfigPopulator.class)) {
+            populator.populateConfig(serviceLocator);
+        }
+    }
 
     @Override
     public synchronized GlassFish newGlassFish(GlassFishProperties gfProps) throws GlassFishException {
@@ -119,6 +127,10 @@ public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
             ServiceLocator serviceLocator = main.getServiceLocator();
             
             addStartupContext(serviceLocator, startupContext);
+            
+            // Config population must happen after
+            // the startup context is available
+            populateConfig(serviceLocator);
             
             BaseServiceLocator baseServiceLocator = serviceLocator.getService(BaseServiceLocator.class);
             
