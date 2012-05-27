@@ -140,6 +140,7 @@
         <module>core-l10n</module>
     </modules>
 
+<!--
     <build>
         <plugins>
             <plugin>
@@ -158,6 +159,8 @@
             </plugin>
         </plugins>
     </build>
+ -->
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
