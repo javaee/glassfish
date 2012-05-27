@@ -42,18 +42,16 @@ package com.sun.enterprise.module.maven;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.model.Dependency;
 import org.apache.maven.artifact.Artifact;
 
-import java.io.*;
-
-import java.util.*;
-import java.util.jar.*;
-
-import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.common_impl.Jar;
-
-import com.sun.hk2.component.InhabitantsFile;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 /**
  * Generates a consolidated OSGI bundle with a consolidated 
@@ -69,6 +67,12 @@ import com.sun.hk2.component.InhabitantsFile;
 /* We use prepare-package as the phase as we need to perform this consolidation before the maven-bundle-plugin's bundle goal gets executed in the package phase.*/
 
 public class HK2GenerateMojo extends AbstractMojo {
+    private final static String META_INF = "META-INF";
+    private final static String HK2_LOCATOR = "hk2-locator";
+    private final static String DEFAULT = "default";
+    
+    private final static String JAR_ENTRY = "META-INF/hk2-locator/default";
+    private final static int BUFFER_SIZE = 4096;
 
 	/**
 	 * Directory where the manifest will be written
@@ -87,93 +91,80 @@ public class HK2GenerateMojo extends AbstractMojo {
 	 */
 	protected MavenProject project;
 
-	public void execute() throws MojoExecutionException {
-		if (project.getDependencyArtifacts() != null) {
-			List<String> consolidatedInhabitants = new ArrayList<String>();
-
-			// Create the consolidated inhabitant file contents by
-			// going through all dependency artifacts
-			for (Artifact a : (Set<Artifact>) project.getDependencyArtifacts()) {
-				if (a.getScope() != null && a.getScope().equals("test"))
-					continue;
-				getLog().info("Dependency Artifact: " + a.getFile().toString());
-
-				try {
-					JarFile jf = new JarFile(a.getFile());
-					JarEntry je = jf.getJarEntry(InhabitantsFile.PATH);
-					if (je == null)
-						continue;
-					getLog().debug("Dependency Artifact " + a + " has Inhabitants File: " + je);
-
-					Enumeration<JarEntry> entries = jf.entries();
-					while (entries.hasMoreElements()) {
-						JarEntry entry = entries.nextElement();
-						if (!entry.isDirectory()
-								&& entry.getName().startsWith(
-										InhabitantsFile.PATH)) {
-							getLog().info("Entry: " + entry.getName());
-							consolidatedInhabitants.addAll(loadInhabitants(jf,
-									entry));
-						}
-					}
-				} catch (IOException iex) {
-					iex.printStackTrace();
-				}
-			}
-
-		    writeToFile(consolidatedInhabitants);
+	@SuppressWarnings("unchecked")
+    public void execute() throws MojoExecutionException {
+	    Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
+	    if (dependencyArtifacts == null) return;
+	    
+	    try {
+	        OutputStream catStream = getCatOutputStream();
+	    
+	        // Create the consolidated inhabitant file contents by
+	        // catting all the dependency artifacts together
+            for (Artifact a : (Set<Artifact>) project.getDependencyArtifacts()) {
+                if (a.getScope() != null && a.getScope().equals("test")) {
+                    continue;
+                }
+                getLog().info("Dependency Artifact: " + a.getFile().toString());
+            
+                JarFile jf = new JarFile(a.getFile());
+                JarEntry je = jf.getJarEntry(JAR_ENTRY);
+                if (je == null) {
+                    continue;
+                }
+                
+                getLog().debug("Dependency Artifact " + a + " has Inhabitants File: " + je);
+                
+                catJarEntry(jf, je, catStream);
+			} 
 		}
+	    catch (IOException ioe) {
+            throw new MojoExecutionException(ioe.getMessage(), ioe);
+        }
 	}
 
-	private List<String> loadInhabitants(JarFile jf, JarEntry e)
-			throws IOException {
-		List<String> l = new ArrayList<String>();
-
-		BufferedReader reader = null;
-		try {
-			DataInputStream in = new DataInputStream(jf.getInputStream(e));
-			reader = new BufferedReader(new InputStreamReader(in));
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				l.add(line);
-			}
-
-		} catch (IOException iex) {
-			iex.printStackTrace();
-		} finally {
-			reader.close();
-		}
-		return l;
+    private void catJarEntry(JarFile jf, JarEntry e, OutputStream catStream)
+        throws IOException {
+        byte buf[] = new byte[BUFFER_SIZE];
+        
+        InputStream is = jf.getInputStream(e);
+        int readLength;
+        while ((readLength = is.read(buf)) > 0) {
+            catStream.write(buf, 0, readLength);
+        }
+    }
+	
+	private OutputStream getCatOutputStream() throws MojoExecutionException, IOException {
+	    String inhabitantsDir = "" + manifestLocation + File.separatorChar
+	            + META_INF + File.separatorChar + HK2_LOCATOR;
+	    
+	    File inhabitantsDirFile = new File(inhabitantsDir);
+	    
+	    if (inhabitantsDirFile.exists()) {
+	        if (!inhabitantsDirFile.isDirectory()) {
+	            throw new MojoExecutionException("File " +
+	                inhabitantsDirFile.getAbsolutePath() + " is not a directory");
+	        }
+	    }
+	    else {
+	        boolean success = inhabitantsDirFile.mkdirs();
+	        if (!success) {
+	            throw new MojoExecutionException("Unable to created directory " +
+	                inhabitantsDirFile.getAbsolutePath());
+	        }
+	    }
+	    
+	    File defaultFile = new File(inhabitantsDirFile, DEFAULT);
+	    
+	    if (defaultFile.exists()) {
+	        if (!defaultFile.delete()) {
+	            throw new MojoExecutionException("The file " +
+	                defaultFile.getAbsolutePath() +
+	                " already exists and cannot be removed");
+	        }
+	    }
+	    
+	    FileOutputStream fos = new FileOutputStream(defaultFile);
+	    return fos;
 	}
-
-	private void writeToFile(List<String> consolidatedInhabitants) {
-		// Write the consolidated inhabitant file contents
-		// to manifestLocation
-		
-		//Create Manifest directory. 
-		String inhabitantsDir = "" + manifestLocation + File.separatorChar
-		+ "META-INF" + File.separatorChar + "inhabitants";
-		boolean success = (new File(inhabitantsDir)).mkdirs();
-		
-		String fileLocation = inhabitantsDir + File.separatorChar + "default";
-		getLog().info("Writing consolidated inhabitants to: " + fileLocation);
-
-		BufferedWriter out = null;
-		try {
-			out = new BufferedWriter(new FileWriter(fileLocation));
-			for (String s : consolidatedInhabitants) {
-				out.write(s);
-				out.newLine();
-			}
-		} catch (IOException iex) {
-			iex.printStackTrace();
-		} finally {
-			try {
-				out.close();
-			} catch (IOException iex) {
-				//ignore
-			}
-		}
-	}
-
 }
