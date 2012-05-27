@@ -552,7 +552,7 @@ public final class CreateDomainCommand extends CLICommand {
         try {
             modifyInitialDomainXml(domainConfig);
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             logger.warning(
                     strings.get("CustomizationFailed", e.getMessage()));
         }
@@ -593,7 +593,7 @@ public final class CreateDomainCommand extends CLICommand {
             logger.info(strings.get("LoginInfoStoredCreateDomain",
                     user, dn, store.getName()));
         }
-        catch (final Exception e) {
+        catch (final Throwable e) {
             logger.warning(
                     strings.get("LoginInfoNotStoredCreateDomain", user, dn));
             printExceptionStackTrace(e);
