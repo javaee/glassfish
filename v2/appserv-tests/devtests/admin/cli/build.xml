@@ -139,7 +139,7 @@
 
     <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
                         configs, sync, domain, backup, tokens, validation, node,
-                        load-balancer, getset, misc-commands, manual-sync, upgrade,
+                        load-balancer, getset, misc-commands, all-jms, manual-sync, upgrade,
                         restart-domain, teardown"/>
 
     <target name="cluster" depends="init">
@@ -319,6 +319,24 @@
 
     <target name="whacker" depends="init">
         <runtest classname="admin.Whacker"/>
+    </target>
+
+    <target name="create-jms-resource" depends="init">
+        <runtest classname="admin.CreateJmsResourceTest"/>
+    </target>
+
+    <target name="create-jms-host" depends="init">
+        <runtest classname="admin.CreateJmsHostTest"/>
+    </target>
+
+    <target name="create-jms-dest" depends="init">
+        <runtest classname="admin.CreateJmsDestTest"/>
+    </target>
+
+    <target name="all-jms">
+        <antcall target="create-jms-resource"/>
+        <antcall target="create-jms-host"/>
+        <antcall target="create-jms-dest"/>
     </target>
 
     <target name="all-resources">
