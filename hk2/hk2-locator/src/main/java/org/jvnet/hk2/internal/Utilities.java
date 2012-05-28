@@ -916,6 +916,18 @@ public class Utilities {
     }
     
     /**
+     * Returns true if the underlying member is private
+     * 
+     * @param member The non-null member to test
+     * @return true if the member is private
+     */
+    public static boolean isPrivate(Member member) {
+        int modifiers = member.getModifiers();
+        
+        return ((modifiers & Modifier.PRIVATE) != 0);
+    }
+    
+    /**
      * Returns true if the underlying member is abstract
      * 
      * @param member The non-null member to test
@@ -1490,6 +1502,16 @@ public class Utilities {
             
             Member oMember = omk.backingMember;
             
+            if (oMember.equals(backingMember)) {
+                // If they are the same, they are the same!
+                return true;
+            }
+            
+            if ((backingMember instanceof Field) || (oMember instanceof Field)) {
+                // Fields do not inherit
+                return false;
+            }
+            
             if ((backingMember instanceof Method) && !(oMember instanceof Method)) {
                 return false;
             }
@@ -1497,7 +1519,14 @@ public class Utilities {
                 return false;
             }
             
-            if (!oMember.getName().equals(backingMember.getName())) return false;
+            if (!oMember.getName().equals(backingMember.getName())) {
+                return false;
+            }
+            
+            if (isPrivate(backingMember) || isPrivate(oMember)) {
+                // If either are private, they are not the same
+                return false;
+            }
             
             Class<?> oParams[];
             Class<?> bParams[];
