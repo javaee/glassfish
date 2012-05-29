@@ -67,14 +67,14 @@ public class HK2Populator {
      * 
      * @param serviceLocator The service locator to populate.  May not be null.
      * @param fileFinder An object that finds files in the environment.  May not be null.
-     * @param postProcessor A post-processor that allows the environment to modify the set
+     * @param postProcessors A post-processor that allows the environment to modify the set
      * of descriptors that are added to the system.  May be null, in which case the descriptors
      * read in are those that are used to populate the serviceLocator
      * @throws IOException In case of an error
      */
 	public static void populate(final ServiceLocator serviceLocator,
 			final DescriptorFileFinder fileFinder,
-			final PopulatorPostProcessor postProcessor) throws IOException {
+			final PopulatorPostProcessor... postProcessors) throws IOException {
 
 		List<InputStream> descriptorFileInputStreams = fileFinder
 				.findDescriptorFiles();
@@ -83,60 +83,51 @@ public class HK2Populator {
 				.getService(DynamicConfigurationService.class);
 
 		DynamicConfiguration config = dcs.createDynamicConfiguration();
-		
+
 		for (InputStream is : descriptorFileInputStreams) {
-			
+
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
 			try {
 				boolean readOne = false;
-				
+
 				do {
 					DescriptorImpl descriptorImpl = new DescriptorImpl();
-					
-				    readOne = descriptorImpl.readObject(br);
+
+					readOne = descriptorImpl.readObject(br);
 
 					if (readOne) {
-					    if (postProcessor == null) {
-					        config.bind(descriptorImpl);
-					    }
-					    else {
-						    List<DescriptorImpl> descriptorImpls = postProcessor
-								.process(descriptorImpl);
-						
-						    if (descriptorImpls == null) {
-						        config.bind(descriptorImpl);
-						    }
-						    else {
-						        for (Descriptor d : descriptorImpls) {
-							        config.bind(d);
-						        }
-						    }
-					    }
-					  
+						if (postProcessors == null || postProcessors.length == 0) {
+							config.bind(descriptorImpl);
+						} else {
+
+							if (postProcessors != null) {
+								for (PopulatorPostProcessor pp : postProcessors) {
+									
+									List<DescriptorImpl> descriptorImpls = pp
+											.process(descriptorImpl);
+
+									if (descriptorImpls == null) {
+										config.bind(descriptorImpl);
+									} else {
+										for (Descriptor d : descriptorImpls) {
+											config.bind(d);
+										}
+									}
+								}
+							}
+						}
+
 					}
 				} while (readOne);
-				
+
 			} finally {
 				br.close();
 			}
 		}
-		
-		config.commit();
-		
-	}
 
-	/**
-     * This method can be used to populate the service locator with files that
-     * have been written out using the {@link DescriptorImpl} writeObject method.
-     * 
-     * @param serviceLocator The service locator to populate.  May not be null.
-     * @param fileFinder An object that finds files in the environment.  May not be null.
-     * @throws IOException In case of an error
-     */
-	public static void populate(final ServiceLocator serviceLocator,
-			final DescriptorFileFinder fileFinder) throws IOException {
-		populate(serviceLocator, fileFinder, null);
+		config.commit();
+
 	}
 
 	/**

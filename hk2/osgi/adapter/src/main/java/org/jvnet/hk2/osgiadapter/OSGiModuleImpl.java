@@ -43,33 +43,45 @@ package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.URI;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.logging.Level;
+
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.bootstrap.impl.URLDescriptorFileFinder;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.osgi.framework.*;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
-import com.sun.hk2.component.Holder;
-import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.bootstrap.BootException;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.File;
-import java.util.logging.Level;
-import java.util.*;
-import java.net.URL;
-import java.net.URI;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedExceptionAction;
-import java.security.PrivilegedActionException;
+import com.sun.enterprise.module.InhabitantsDescriptor;
+import com.sun.enterprise.module.LifecyclePolicy;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleChangeListener;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModuleDependency;
+import com.sun.enterprise.module.ModuleMetadata;
+import com.sun.enterprise.module.ModuleState;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.bootstrap.BootException;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -381,9 +393,17 @@ public class OSGiModuleImpl implements Module {
         };
         
         ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().find("default");
+        
+        List<PopulatorPostProcessor> registeredPostProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
+        
+        LinkedList<PopulatorPostProcessor> postProcessors = new LinkedList<PopulatorPostProcessor>();
+        
+		postProcessors.add(new OsgiPopulatorPostProcessor(hk2Loader));
+		postProcessors.addAll(registeredPostProcessors);
+		
         for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name)) {
 			HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(bundle.getEntry("META-INF/hk2-locator/default")),
-        			 new OsgiPopulatorPostProcessor(hk2Loader));
+					postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
         }
     }
 

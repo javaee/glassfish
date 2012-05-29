@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -83,8 +84,6 @@ public class Main {
 	private ServiceLocator serviceLocator;
 
 	private DescriptorFileFinder descriptorFileFinder = new ClasspathDescriptorFileFinder();
-
-	private PopulatorPostProcessor populatorPostProcessor = null;
 
 	private ClassLoader parentClassLoader;
 
@@ -306,8 +305,10 @@ public class Main {
 	 * @throws IOException
 	 */
 	protected void populate() throws BootException, IOException {
+		List<PopulatorPostProcessor> populatorPostProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
+
 		HK2Populator.populate(serviceLocator, descriptorFileFinder,
-				populatorPostProcessor);
+				populatorPostProcessors.toArray(new PopulatorPostProcessor[populatorPostProcessors.size()]));
 		HK2Populator.populateConfig(serviceLocator);
 	}
 
@@ -354,13 +355,14 @@ public class Main {
 		this.descriptorFileFinder = descriptorFileFinder;
 	}
 
-	protected PopulatorPostProcessor getPopulatorPostProcessor() {
-		return populatorPostProcessor;
-	}
-
-	protected void setPopulatorPostProcessor(
+	protected void addPopulatorPostProcessor(
 			PopulatorPostProcessor populatorPostProcessor) {
-		this.populatorPostProcessor = populatorPostProcessor;
+		DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+		DynamicConfiguration config = dcs.createDynamicConfiguration();
+		
+		config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(populatorPostProcessor));
+		
+		config.commit();
 	}
 	
 	/**
