@@ -268,7 +268,7 @@ public class Application extends BundleDescriptor
     public static Application createVirtualApplication(String name, ModuleDescriptor<BundleDescriptor> newModule) {
     	
         // create a new empty application
-        Application application = habitat.getComponent(Application.class); // new Application();
+        Application application = createApplication();
         
         application.setVirtual(true);
         if (name == null && newModule != null && newModule.getDescriptor() != null) {
