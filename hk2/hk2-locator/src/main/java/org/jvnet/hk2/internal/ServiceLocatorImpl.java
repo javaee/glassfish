@@ -70,6 +70,8 @@ import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ValidationService;
@@ -520,7 +522,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public void postConstruct(Object postConstructMe) {
         checkState();
         
-        Utilities.justPostConstruct(postConstructMe);
+        if (postConstructMe == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (postConstructMe instanceof PostConstruct) {
+            ((PostConstruct) postConstructMe).postConstruct();
+        }
+        else {
+            Utilities.justPostConstruct(postConstructMe);
+        }
 
     }
 
@@ -531,8 +542,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public void preDestroy(Object preDestroyMe) {
         checkState();
         
-        Utilities.justPreDestroy(preDestroyMe);
-
+        if (preDestroyMe == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        if (preDestroyMe instanceof PreDestroy) {
+            ((PreDestroy) preDestroyMe).preDestroy();
+        }
+        else {
+            Utilities.justPreDestroy(preDestroyMe);
+        }
     }
     
     @SuppressWarnings("unchecked")

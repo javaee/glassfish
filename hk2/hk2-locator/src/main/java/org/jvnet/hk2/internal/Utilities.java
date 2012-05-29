@@ -405,6 +405,8 @@ public class Utilities {
         
         collector.throwIfErrors();
         
+        if (preDestroy == null) return;
+        
         setAccessible(preDestroy);
         
         try {
@@ -429,6 +431,8 @@ public class Utilities {
         Method postConstruct = findPostConstruct(baseClass, collector);
         
         collector.throwIfErrors();
+        
+        if (postConstruct == null) return;
         
         setAccessible(postConstruct);
         
