@@ -154,10 +154,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      *      Determines which descriptors are loaded.
      */
      public ServiceLocator createServiceLocator(String name, ServiceLocator h) throws ComponentException {
-        if (h==null) {
-            h = newServiceLocator();
-        }
-        
         // TODO: should get the inhabitantsParser out of Main instead since
         // this could have been overridden
         return createServiceLocator(name);
