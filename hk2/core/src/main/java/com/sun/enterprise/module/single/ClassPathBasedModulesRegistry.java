@@ -135,18 +135,18 @@ public class ClassPathBasedModulesRegistry extends ModulesRegistryImpl {
     public void parseInhabitants(Module module, String name)
             throws IOException {
 
-        HK2Loader loader = new HK2Loader() {
-
-			@Override
-			public Class<?> loadClass(String className) throws MultiException {
-				try {
-				  return cLoader.loadClass(className);
-				} catch (ClassNotFoundException cnfe) {
-					throw new MultiException(cnfe);
-				}
-			}
-        	
-        };
+//        HK2Loader loader = new HK2Loader() {
+//
+//			@Override
+//			public Class<?> loadClass(String className) throws MultiException {
+//				try {
+//				  return cLoader.loadClass(className);
+//				} catch (ClassNotFoundException cnfe) {
+//					throw new MultiException(cnfe);
+//				}
+//			}
+//        	
+//        };
         
 //        for (Module m : modules) {
 //            // each module can have a different way of representing the inhabitant meta-data

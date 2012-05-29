@@ -118,18 +118,18 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
     public void parseInhabitants(Module module, String name)
             throws IOException {
 
-        HK2Loader loader = new HK2Loader() {
-
-			@Override
-			public Class<?> loadClass(String className) throws MultiException {
-				try {
-				  return proxyMod[0].getClassLoader().loadClass(className);
-				} catch (ClassNotFoundException cnfe) {
-					throw new MultiException(cnfe);
-				}
-			}
-        
-        };
+//        HK2Loader loader = new HK2Loader() {
+//
+//			@Override
+//			public Class<?> loadClass(String className) throws MultiException {
+//				try {
+//				  return proxyMod[0].getClassLoader().loadClass(className);
+//				} catch (ClassNotFoundException cnfe) {
+//					throw new MultiException(cnfe);
+//				}
+//			}
+//        
+//        };
         
 //        for (InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
 //            inhabitantsParser.parse(d.createScanner(), loader);
