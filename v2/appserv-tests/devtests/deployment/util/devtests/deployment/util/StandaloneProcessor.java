@@ -23,7 +23,7 @@ import javax.enterprise.deploy.shared.ModuleType;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 
@@ -52,7 +52,7 @@ import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.AppClientVisitor;
 import com.sun.enterprise.deployment.util.AppClientValidator;
-import org.glassfish.ejb.deployment.util.EjbBundleValidator;
+import com.sun.enterprise.deployment.util.EjbBundleValidator;
 import com.sun.enterprise.deployment.util.EjbBundleVisitor;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
 import com.sun.enterprise.deployment.util.WebBundleValidator;

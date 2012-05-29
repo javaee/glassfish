@@ -11,7 +11,7 @@ import javax.enterprise.deploy.shared.ModuleType;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptor;
+import com.sun.enterprise.deployment.EjbBundleDescriptor;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
