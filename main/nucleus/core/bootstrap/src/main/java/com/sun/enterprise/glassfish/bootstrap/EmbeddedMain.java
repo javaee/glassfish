@@ -74,6 +74,6 @@ public class EmbeddedMain extends Main {
 
     public EmbeddedMain(ClassLoader cl) {
     	setDescriptorFileFinder(new ClasspathDescriptorFileFinder(cl));
-    	setPopulatorPostProcessor(new Hk2LoaderPopulatorPostProcessor(cl));
+    	addPopulatorPostProcessor(new Hk2LoaderPopulatorPostProcessor(cl));
     }
 }
