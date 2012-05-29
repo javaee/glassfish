@@ -97,7 +97,7 @@ import org.jvnet.hk2.component.BaseServiceLocator;
  *
  * @author Danny Coward
  */
-@Service @PerLookup
+
 public class Application extends BundleDescriptor
         implements RoleMappingContainer, WritableJndiNameEnvironment, 
             EjbReferenceContainer, ResourceEnvReferenceContainer,
