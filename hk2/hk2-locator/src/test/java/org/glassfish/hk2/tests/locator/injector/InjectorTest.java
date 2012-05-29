@@ -115,4 +115,33 @@ public class InjectorTest {
         Assert.assertTrue(dmm.isPostConstructCalled());
         Assert.assertTrue(dmm.isPreDestroyCalled());
     }
+    
+    /**
+     * This creates, injects and post constructs the object
+     */
+    @Test
+    public void testNoPostConstructOrPreDestroy() {
+        NoPostConstruct npc = locator.create(NoPostConstruct.class);
+        locator.inject(npc);  // Nothing to inject, should work anyway
+        locator.postConstruct(npc);  // No postConstruct, should work anyway
+        locator.preDestroy(npc);  // No preDestroy, should work anyway
+    }
+    
+    /**
+     * This creates, injects and post constructs the object
+     */
+    @Test
+    public void testImplementsLifecycleAPI() {
+        ImplementsLifecycleInterfaces lii = locator.create(ImplementsLifecycleInterfaces.class);
+        Assert.assertFalse(lii.isPostCalled());
+        Assert.assertFalse(lii.isPreCalled());
+        
+        locator.postConstruct(lii);
+        Assert.assertTrue(lii.isPostCalled());
+        Assert.assertFalse(lii.isPreCalled());
+        
+        locator.preDestroy(lii);
+        Assert.assertTrue(lii.isPostCalled());
+        Assert.assertTrue(lii.isPreCalled());
+    }
 }
