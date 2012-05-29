@@ -40,12 +40,11 @@
 
 package com.sun.enterprise.deployment.archivist;
 
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Index;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -54,13 +53,13 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * and this annotation must be placed on a class that extends
  * {@link com.sun.enterprise.deployment.archivist.Archivist}.
  */
-@Contract
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
+@Qualifier
 public @interface ArchivistFor {
     /**
      * see {@link org.glassfish.api.deployment.archive.ArchiveType} and its
      * implementation classes for valid string values.
      */
-    @Index String value();
+    String value();
 }

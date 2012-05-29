@@ -37,29 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package com.sun.enterprise.deployment.archivist;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.inject.Qualifier;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
- * Normally goes with {@link org.jvnet.hk2.annotations.Service} annotation,
- * and this annotation must be placed on a class that extends
- * {@link com.sun.enterprise.deployment.archivist.ExtensionsArchivist}.
+ * This is the implementation of this annotaiton for use when looking up specific
+ * instances
+ * 
+ * @author jwells
+ *
  */
-@Retention(RUNTIME)
-@Target(ElementType.TYPE)
-@Qualifier
-public @interface ExtensionsArchivistFor {
+public class ArchivistForImpl extends AnnotationLiteral<ArchivistFor> implements ArchivistFor {
     /**
-     * see {@link org.glassfish.api.container.Sniffer.getModuleType} and its
-     * implementation classes for valid string values.
+     * For serialization
      */
-    String value();
+    private static final long serialVersionUID = 3433484663020804655L;
+    
+    private final String value;
+    
+    public ArchivistForImpl(String value) {
+        this.value = value;
+    }
+
+    /* (non-Javadoc)
+     * @see com.sun.enterprise.deployment.archivist.ArchivistFor#value()
+     */
+    @Override
+    public String value() {
+        return value;
+    }
+
 }

@@ -90,6 +90,7 @@ import org.glassfish.internal.api.Globals;
 import org.glassfish.security.common.Role;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * Objects of this type encapsulate the data and behaviour of a J2EE
@@ -231,7 +232,7 @@ public class Application extends BundleDescriptor
     private Set<ApplicationParam> applicationParams = 
             new HashSet<ApplicationParam>();
 
-    private static final BaseServiceLocator habitat = Globals.getDefaultHabitat();
+    private static final Habitat habitat = Globals.getDefaultHabitat();
     
     private Application() {
         super("", localStrings.getLocalString(
@@ -296,7 +297,11 @@ public class Application extends BundleDescriptor
     
     public static Application createApplication() {
         // create a new empty application
-        return habitat.getComponent(Application.class); // new Application();
+        Application retVal = habitat.create(Application.class);
+        habitat.inject(retVal);
+        habitat.postConstruct(retVal);
+        
+        return retVal; // new Application();
     }
 
     /**
