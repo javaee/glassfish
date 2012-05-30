@@ -58,6 +58,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * @author jwells
@@ -226,7 +227,7 @@ public class ClazzCreator<T> implements Creator<T> {
             
             Utilities.setAccessible(m);
             
-            Utilities.invoke(t, m, args);
+            ReflectionHelper.invoke(t, m, args);
         }
     }
     
@@ -241,7 +242,7 @@ public class ClazzCreator<T> implements Creator<T> {
         if (postConstructMethod == null) return;
         
         Utilities.setAccessible(postConstructMethod);
-        Utilities.invoke(t, postConstructMethod, new Object[0]);
+        ReflectionHelper.invoke(t, postConstructMethod, new Object[0]);
     }
     
     private void preDestroyMe(T t) throws Throwable {
@@ -255,7 +256,7 @@ public class ClazzCreator<T> implements Creator<T> {
         if (preDestroyMethod == null) return;
         
         Utilities.setAccessible(preDestroyMethod);
-        Utilities.invoke(t, preDestroyMethod, new Object[0]);
+        ReflectionHelper.invoke(t, preDestroyMethod, new Object[0]);
     }
 
     /* (non-Javadoc)

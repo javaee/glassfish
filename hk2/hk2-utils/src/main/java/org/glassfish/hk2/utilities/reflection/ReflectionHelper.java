@@ -43,6 +43,10 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.AccessController;
@@ -333,6 +337,40 @@ public class ReflectionHelper {
      * @param annoDefault The default that this should have if no scope could be found
      * @return The class of the scope annotation
      */
+    public static Annotation getScopeAnnotationFromObject(Object t) {
+        if (t == null) throw new IllegalArgumentException();
+        
+        
+        return getScopeAnnotationFromClass(t.getClass());
+    }
+    
+    /**
+     * Gets the scope annotation from the object
+     * @param clazz The class to analyze
+     * @param annoDefault The scope that should be returned if no scope could be found
+     * @return The class of the scope annotation
+     */
+    public static Annotation getScopeAnnotationFromClass(Class<?> clazz) {
+        if (clazz == null) throw new IllegalArgumentException();
+        
+        for (Annotation annotation : clazz.getAnnotations()) {
+            Class<? extends Annotation> annoClass = annotation.annotationType();
+            
+            if (annoClass.isAnnotationPresent(Scope.class)) {
+                return annotation;
+            }
+            
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Gets the scope annotation from the object
+     * @param t The object to analyze
+     * @param annoDefault The default that this should have if no scope could be found
+     * @return The class of the scope annotation
+     */
     public static Class<? extends Annotation> getScopeFromObject(Object t, Class<? extends Annotation> annoDefault) {
         if (t == null) return annoDefault;
         
@@ -381,8 +419,6 @@ public class ReflectionHelper {
         
         return getQualifierAnnotations(t.getClass());
     }
-    
-    
     
     /**
      * Gets all the qualifiers from the object
@@ -802,6 +838,65 @@ public class ReflectionHelper {
         }
         
         return retVal;
+    }
+    
+    /**
+     * This version of invoke is CCL neutral (it will return with the
+     * same CCL as what it went in with)
+     * 
+     * @param m the method to invoke
+     * @param o the object on which to invoke it
+     * @param args The arguments to invoke (may not be null)
+     * @return The return from the invocation
+     * @throws Throwable The unwrapped throwable thrown by the method
+     */
+    public static Object invoke(Object o, Method m, Object args[])
+            throws Throwable {
+        if (isStatic(m)) {
+            o = null;
+        }
+        
+        ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
+        
+        try {
+            return m.invoke(o, args);
+        }
+        catch (InvocationTargetException ite) {
+            throw ite.getTargetException();
+        }
+        finally {
+            setContextClassLoader(Thread.currentThread(), currentCCL);
+        }
+    }
+    
+    /**
+     * Returns true if the underlying member is static
+     * 
+     * @param member The non-null member to test
+     * @return true if the member is static
+     */
+    public static boolean isStatic(Member member) {
+        int modifiers = member.getModifiers();
+        
+        return ((modifiers & Modifier.STATIC) != 0);
+    }
+    
+    /**
+     * Sets the context classloader under the privileged of this class
+     * @param t The thread on which to set the classloader
+     * @param l The classloader to set
+     */
+    public static void setContextClassLoader(final Thread t, final ClassLoader l) {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+            @Override
+            public Object run() {
+                t.setContextClassLoader(l);
+                return null;
+            }
+            
+        });
+        
     }
 
 }

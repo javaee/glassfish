@@ -53,6 +53,11 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
  *
  */
 public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6841153780662164886L;
+    
     private final Class<?> implClass;
 
     /**
@@ -68,7 +73,7 @@ public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Set<Annotation> qualifiers, DescriptorType descriptorType,
             int ranking,
             Class<?> implClass) {
-        super(advertisedContracts, scope, name, qualifiers, descriptorType, ranking);
+        super(advertisedContracts, scope, name, qualifiers, descriptorType, ranking, null);
         
         this.implClass = implClass;
     }

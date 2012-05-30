@@ -56,10 +56,12 @@ import java.lang.reflect.WildcardType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -80,6 +82,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.annotations.Contract;
@@ -108,18 +111,6 @@ public class Utilities {
             @Override
             public Boolean run() {
                 return candidateAnnotations.containsAll(requiredAnnotations);
-            }
-            
-        });
-        
-    }
-    private static void setContextClassLoader(final Thread t, final ClassLoader l) {
-        AccessController.doPrivileged(new PrivilegedAction<Object>() {
-
-            @Override
-            public Object run() {
-                t.setContextClassLoader(l);
-                return null;
             }
             
         });
@@ -375,11 +366,21 @@ public class Utilities {
         qualifiers = getAllQualifiers(clazz, name, collector);  // Fixes the @Named qualifier if it has no value
         
         contracts = getAutoAdvertisedTypes(clazz);
-        scope = getScopeAnnotationType(clazz, collector);
+        ScopeInfo scopeInfo = getScopeInfo(clazz, collector);
+        scope = scopeInfo.getAnnoType();
             
         creator = new ClazzCreator<T>(locator, clazz, collector);
         
         collector.throwIfErrors();
+        
+        Map<String, List<String>> metadata = new HashMap<String, List<String>>();
+        if (scopeInfo.getScope() != null) {
+            BuilderHelper.getMetadataValues(scopeInfo.getScope(), metadata);
+        }
+        
+        for (Annotation qualifier : qualifiers) {
+            BuilderHelper.getMetadataValues(qualifier, metadata);
+        }
         
         return new AutoActiveDescriptor<T>(
                 clazz,
@@ -388,7 +389,8 @@ public class Utilities {
                 scope,
                 name,
                 qualifiers,
-                0);
+                0,
+                metadata);
     }
     /**
      * Pre Destroys the given object
@@ -410,7 +412,7 @@ public class Utilities {
         setAccessible(preDestroy);
         
         try {
-            invoke(preMe, preDestroy, new Object[0]);
+            ReflectionHelper.invoke(preMe, preDestroy, new Object[0]);
         }
         catch (Throwable e) {
             throw new MultiException(e);
@@ -437,7 +439,7 @@ public class Utilities {
         setAccessible(postConstruct);
         
         try {
-            invoke(postMe, postConstruct, new Object[0]);
+            ReflectionHelper.invoke(postMe, postConstruct, new Object[0]);
         }
         catch (Throwable e) {
             throw new MultiException(e);
@@ -492,7 +494,7 @@ public class Utilities {
             setAccessible(method);
             
             try {
-                invoke(injectMe, method, args);
+                ReflectionHelper.invoke(injectMe, method, args);
             }
             catch (Throwable e) {
                 throw new MultiException(e);
@@ -638,7 +640,8 @@ public class Utilities {
                 null,
                 qualifiers,
                 0,
-                locator.getLocatorId());
+                locator.getLocatorId(),
+                null);
         
         return retVal;
     }
@@ -671,7 +674,8 @@ public class Utilities {
                         InjectionResolver.SYSTEM_RESOLVER_NAME,
                         qualifiers,
                         0,
-                        locator.getLocatorId());
+                        locator.getLocatorId(),
+                        null);
         
         return retVal;
     }
@@ -894,29 +898,17 @@ public class Utilities {
     }
     
     private static boolean hasCorrectInitializerMethodModifiers(Method member) {
-        if (isStatic(member)) return false;
+        if (ReflectionHelper.isStatic(member)) return false;
         if (isAbstract(member)) return false;
         
         return true;
     }
     
     private static boolean hasCorrectInitializerFieldModifiers(Field field) {
-        if (isStatic(field)) return false;
+        if (ReflectionHelper.isStatic(field)) return false;
         if (isFinal(field)) return false;
         
         return true;
-    }
-    
-    /**
-     * Returns true if the underlying member is static
-     * 
-     * @param member The non-null member to test
-     * @return true if the member is static
-     */
-    public static boolean isStatic(Member member) {
-        int modifiers = member.getModifiers();
-        
-        return ((modifiers & Modifier.STATIC) != 0);
     }
     
     /**
@@ -955,15 +947,7 @@ public class Utilities {
         return ((modifiers & Modifier.FINAL) != 0);
     }
     
-    /**
-     * Returns the scope of this thing
-     * 
-     * @param annotatedGuy The annotated class or producer method
-     * @param collector The error collector
-     * @return The scope of this class or producer method.  If no scope is
-     * found will return the dependent scope
-     */
-    public static Class<? extends Annotation> getScopeAnnotationType(
+    private static ScopeInfo getScopeInfo(
             AnnotatedElement annotatedGuy,
             Collector collector) {
         AnnotatedElement topLevelElement = annotatedGuy;
@@ -1010,13 +994,31 @@ public class Utilities {
             }
         }
         
-        if (winnerScope != null) return winnerScope.annotationType();
+        if (winnerScope != null) {
+            return new ScopeInfo(winnerScope, winnerScope.annotationType());
+        }
         
         if (topLevelElement.isAnnotationPresent(Service.class)) {
-            return Singleton.class;
+            return new ScopeInfo(null, Singleton.class);
         }
             
-        return PerLookup.class;
+        return new ScopeInfo(null, PerLookup.class);
+        
+    }
+    
+    /**
+     * Returns the scope of this thing
+     * 
+     * @param annotatedGuy The annotated class or producer method
+     * @param collector The error collector
+     * @return The scope of this class or producer method.  If no scope is
+     * found will return the dependent scope
+     */
+    public static Class<? extends Annotation> getScopeAnnotationType(
+            AnnotatedElement annotatedGuy,
+            Collector collector) {
+        ScopeInfo si = getScopeInfo(annotatedGuy, collector);
+        return si.getAnnoType();
     }
     
     /**
@@ -1366,36 +1368,7 @@ public class Utilities {
             throw ite.getTargetException();
         }
         finally {
-            setContextClassLoader(Thread.currentThread(), currentCCL);
-        }
-    }
-    
-    /**
-     * This version of invoke is CCL neutral (it will return with the
-     * same CCL as what it went in with)
-     * 
-     * @param m the method to invoke
-     * @param o the object on which to invoke it
-     * @param args The arguments to invoke (may not be null)
-     * @return The return from the invocation
-     * @throws Throwable The unwrapped throwable thrown by the method
-     */
-    public static Object invoke(Object o, Method m, Object args[])
-            throws Throwable {
-        if (isStatic(m)) {
-            o = null;
-        }
-        
-        ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
-        
-        try {
-            return m.invoke(o, args);
-        }
-        catch (InvocationTargetException ite) {
-            throw ite.getTargetException();
-        }
-        finally {
-            setContextClassLoader(Thread.currentThread(), currentCCL);
+            ReflectionHelper.setContextClassLoader(Thread.currentThread(), currentCCL);
         }
     }
     
@@ -1553,6 +1526,22 @@ public class Utilities {
             }
             
             return true;
+        }
+    }
+    
+    private static class ScopeInfo {
+        private final Annotation scope;
+        private final Class<? extends Annotation> annoType;
+        
+        private ScopeInfo(Annotation scope, Class<? extends Annotation> annoType) {
+            this.scope = scope;
+            this.annoType = annoType;
+        }
+        
+        private Annotation getScope() { return scope; }
+        
+        private Class<? extends Annotation> getAnnoType() {
+            return annoType;
         }
     }
 }

@@ -37,50 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.dynamicconfig;
 
-import java.lang.reflect.Method;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import javax.inject.Qualifier;
+
+import org.glassfish.hk2.api.Metadata;
 
 /**
  * @author jwells
  *
  */
-public class MethodInterceptorImpl implements MethodInterceptor {
-    private final static String PROXY_MORE_METHOD_NAME = "__make";
-    
-    private final ServiceLocatorImpl locator;
-    private final ActiveDescriptor<?> descriptor;
-    private final ServiceHandle<?> root;
-    
-    /* package */ MethodInterceptorImpl(ServiceLocatorImpl sli, ActiveDescriptor<?> descriptor, ServiceHandle<?> root) {
-        this.locator = sli;
-        this.descriptor = descriptor;
-        this.root = root;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.cglib.proxy.MethodInterceptor#intercept(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], net.sf.cglib.proxy.MethodProxy)
-     */
-    @Override
-    public Object intercept(Object arg0, Method arg1, Object[] arg2,
-            MethodProxy arg3) throws Throwable {
-        Context<?> context = locator.resolveContext(descriptor.getScopeAnnotation());
-        Object service = context.findOrCreate(descriptor, root);
-        
-        if (arg1.getName().equals(PROXY_MORE_METHOD_NAME)) {
-            // We did what we came here to do
-            return null;
-        }
-        
-        return ReflectionHelper.invoke(service, arg1, arg2);
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target({TYPE})
+public @interface QualifierWithMetadata {
+    @Metadata(DynamicConfigTest.METADATA_KEY2)
+    public String value() default "";
 
 }

@@ -42,6 +42,7 @@ package org.jvnet.hk2.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DescriptorType;
@@ -55,6 +56,10 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
  *
  */
 public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = -7921574114250721537L;
     private final Class<?> implClass;
     private final Creator<T> creator;
     private final String implClassString;
@@ -78,8 +83,9 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Creator<T> creator,
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope, String name,
-            Set<Annotation> qualifiers, int ranking) {
-        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, ranking);
+            Set<Annotation> qualifiers, int ranking,
+            Map<String, List<String>> metadata) {
+        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, ranking, metadata);
         
         implClass = clazz;
         this.creator = creator;

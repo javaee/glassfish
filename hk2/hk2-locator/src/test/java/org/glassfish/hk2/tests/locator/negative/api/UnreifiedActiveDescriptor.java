@@ -63,7 +63,8 @@ public class UnreifiedActiveDescriptor extends AbstractActiveDescriptor<Object> 
                 null,
                 new HashSet<Annotation>(),
                 DescriptorType.CLASS,
-                0);
+                0,
+                null);
         
     }
     
