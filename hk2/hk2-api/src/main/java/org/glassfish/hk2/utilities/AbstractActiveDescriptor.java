@@ -45,6 +45,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -94,6 +95,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      * be null, but may be empty)
      * @param ranking The ranking for this descriptor
      * @param locatorId The id of the locator for this descriptor
+     * @param metadata Metadata to add to this descriptor
      */
     protected AbstractActiveDescriptor(
             Set<Type> advertisedContracts,
@@ -101,7 +103,8 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
             String name,
             Set<Annotation> qualifiers,
             DescriptorType descriptorType,
-            int ranking) {
+            int ranking,
+            Map<String, List<String>> metadata) {
         super();
         
         this.scope = scope;
@@ -125,6 +128,17 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         
         for (Annotation q : qualifiers) {
             addQualifier(q.annotationType().getName());
+        }
+        
+        if (metadata == null) return;
+        
+        for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
+            String key = entry.getKey();
+            List<String> values = entry.getValue();
+            
+            for (String value : values) {
+                addMetadata(key, value);
+            }
         }
     }
 

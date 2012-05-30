@@ -72,6 +72,9 @@ public class DynamicConfigTest {
     /** The name of the named service */
     public final static String SERVICE_NAME = "Fred";
     
+    public final static String METADATA_KEY1 = "key1";
+    public final static String METADATA_KEY2 = "key2";
+    
     /**
      * Tests that things can be dynamically added to the system
      */
@@ -384,6 +387,38 @@ public class DynamicConfigTest {
                 
                 lcv++;
             }
+        }
+        
+    }
+    
+    /**
+     * This test ensures that metadata is properly added to a descriptor
+     * from a direct class
+     */
+    @Test
+    public void testAutoMetadata() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        ActiveDescriptor<ServiceWithMetadata> ad =
+                config.addActiveDescriptor(ServiceWithMetadata.class);
+        
+        Map<String, List<String>> metadata = ad.getMetadata();
+        
+        Assert.assertEquals(metadata.toString(), 2, metadata.size());
+        
+        {
+            List<String> values1 = metadata.get(METADATA_KEY1);
+            Assert.assertEquals(values1.toString(), 1, values1.size());
+            
+            Assert.assertTrue(values1.contains(DynamicConfigTest.class.getName()));
+        }
+        
+        {
+            List<String> values2 = metadata.get(METADATA_KEY2);
+            Assert.assertEquals(values2.toString(), 1, values2.size());
+            
+            Assert.assertTrue(values2.contains(""));
         }
         
     }

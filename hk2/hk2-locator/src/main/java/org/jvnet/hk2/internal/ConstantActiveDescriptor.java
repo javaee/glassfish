@@ -42,6 +42,8 @@ package org.jvnet.hk2.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DescriptorType;
@@ -55,6 +57,11 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
  *
  */
 public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = 3663054975929743877L;
+    
     private final T theOne;
     private final Long locatorId;
     
@@ -66,7 +73,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      */
     public ConstantActiveDescriptor(T theOne, long locatorId) {
         super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(),
-                DescriptorType.CLASS, 0);
+                DescriptorType.CLASS, 0, null);
         
         this.theOne = theOne;
         this.locatorId = new Long(locatorId);
@@ -89,9 +96,10 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             String name,
             Set<Annotation> qualifiers,
             int ranking,
-            long locatorId) {
+            long locatorId,
+            Map<String, List<String>> metadata) {
         super(advertisedContracts, scope, name, qualifiers,
-                DescriptorType.CLASS, ranking);
+                DescriptorType.CLASS, ranking, metadata);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;

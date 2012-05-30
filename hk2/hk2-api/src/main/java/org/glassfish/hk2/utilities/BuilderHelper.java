@@ -39,8 +39,11 @@
  */
 package org.glassfish.hk2.utilities;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
@@ -48,6 +51,8 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.Metadata;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
@@ -197,12 +202,30 @@ public class BuilderHelper {
     public static <T> AbstractActiveDescriptor<T> createConstantDescriptor(T constant) {
         if (constant == null) throw new IllegalArgumentException();
         
+        Annotation scope =
+                ReflectionHelper.getScopeAnnotationFromObject(constant);
+        Class<? extends Annotation> scopeClass = (scope == null) ? PerLookup.class :
+            scope.annotationType();
+        
+        Set<Annotation> qualifiers =
+                ReflectionHelper.getQualifiersFromObject(constant);
+        
+        Map<String, List<String>> metadata = new HashMap<String, List<String>>();
+        if (scope != null) {
+            getMetadataValues(scope, metadata);
+        }
+        
+        for (Annotation qualifier : qualifiers) {
+            getMetadataValues(qualifier, metadata);
+        }
+        
         return new ConstantActiveDescriptor<T>(
                 constant,
                 ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.class),
-                ReflectionHelper.getScopeFromObject(constant, PerLookup.class),
+                scopeClass,
                 ReflectionHelper.getName(constant.getClass()),
-                ReflectionHelper.getQualifiersFromObject(constant));
+                qualifiers,
+                metadata);
     }
     
     /**
@@ -249,5 +272,51 @@ public class BuilderHelper {
      */
 	public static DescriptorImpl deepCopyDescriptor(Descriptor copyMe) {
 	    return new DescriptorImpl(copyMe);
+	}
+	
+	/**
+	 * This is a helper method that gets the metadata values from the
+	 * {@link Metadata} annotations found in an annotation.
+	 *  
+	 * @param annotation The annotation to find {@link Metadata} values
+	 * from.  May not be null.
+	 * @param metadata A non-null metadata map.  The values found in the
+	 * annotation will be added to this metadata map
+	 * @throws IllegalArgumentException if annotation or metadata is null
+	 * @throws MultiException if there was an error invoking the methods of the annotation
+	 */
+	public static void getMetadataValues(Annotation annotation, Map<String, List<String>> metadata) {
+	    if (annotation == null || metadata == null) {
+	        throw new IllegalArgumentException();
+	    }
+	    
+	    Class<? extends Annotation> annotationClass = annotation.annotationType();
+	    Method annotationMethods[] = annotationClass.getDeclaredMethods();
+	    for (Method annotationMethod : annotationMethods) {
+	        Metadata metadataAnno = annotationMethod.getAnnotation(Metadata.class);
+	        if (metadataAnno == null) continue;
+	        
+	        String key = metadataAnno.value();
+	        
+	        Object addMe;
+	        try {
+	            addMe = ReflectionHelper.invoke(annotation, annotationMethod, new Object[0]);
+	        }
+	        catch (Throwable th) {
+	            throw new MultiException(th);
+	        }
+	        
+	        if (addMe == null) continue;
+	        
+	        String addMeString;
+	        if (addMe instanceof Class) {
+	            addMeString = ((Class<?>) addMe).getName();
+	        }
+	        else {
+	            addMeString = addMe.toString();
+	        }
+	        
+	        ReflectionHelper.addMetadata(metadata, key, addMeString);
+	    }
 	}
 }

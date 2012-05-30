@@ -73,6 +73,13 @@ import org.junit.Test;
 public class BuilderHelperTest {
 	private final static String NAME = "hello";
 	
+	public final static String METAKEY1 = "metakey1";
+	public final static String METAKEY2 = "metakey2";
+	
+	public final static String SCOPE_DATA = "scopeData";
+	public final static String QUALIFIER_VALUE = "qualValue";
+	public final static int QUALIFIER_ANOTHER_VALUE = -1;
+	
 	/**
 	 * This predicate will only have an implementation and a contract
 	 */
@@ -379,5 +386,39 @@ public class BuilderHelperTest {
             
             lcv++;
         }
+    }
+    
+    /**
+     * Tests that the metadata is properly added to automaticaly generated descriptors
+     */
+    @Test
+    public void testAutoMetadata() {
+        ServiceWithAutoMetadata obj = new ServiceWithAutoMetadata();
+        
+        AbstractActiveDescriptor<?> ad = BuilderHelper.createConstantDescriptor(obj);
+        
+        Map<String, List<String>> metadata = ad.getMetadata();
+        
+        Assert.assertEquals(metadata.toString(), 2, metadata.size());
+        
+        {
+            List<String> metadata1Values = metadata.get(METAKEY1);
+            Assert.assertEquals(metadata1Values.toString(), 3, metadata1Values.size());
+        
+            Assert.assertTrue(metadata1Values.contains(SCOPE_DATA));
+            Assert.assertTrue(metadata1Values.contains(QUALIFIER_VALUE));
+        
+            String findMe = QualifierWithMetadata.Mode.VALIDATING.toString();
+        
+            Assert.assertTrue(metadata1Values.contains(findMe));
+        }
+        
+        {
+            List<String> metadata2Values = metadata.get(METAKEY2);
+            Assert.assertEquals(metadata2Values.toString(), 1, metadata2Values.size());
+        
+            Assert.assertTrue(metadata2Values.contains("-1"));
+        }
+        
     }
 }

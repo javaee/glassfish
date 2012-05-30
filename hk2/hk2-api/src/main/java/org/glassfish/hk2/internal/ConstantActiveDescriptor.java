@@ -41,6 +41,8 @@ package org.glassfish.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DescriptorType;
@@ -80,8 +82,9 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope,
             String name,
-            Set<Annotation> qualifiers) {
-        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0);
+            Set<Annotation> qualifiers,
+            Map<String, List<String>> metadata) {
+        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0, metadata);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;
