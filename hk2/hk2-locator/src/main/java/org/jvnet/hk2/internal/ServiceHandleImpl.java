@@ -50,6 +50,7 @@ import net.sf.cglib.proxy.Enhancer;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 
@@ -121,7 +122,14 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
                 return proxy;
             }
         
-            Context<?> context = locator.resolveContext(root.getScopeAnnotation());
+            Context<?> context;
+            try {
+                context = locator.resolveContext(root.getScopeAnnotation());
+            }
+            catch (Throwable th) {
+                throw new MultiException(th);
+            }
+            
             service = context.findOrCreate(root, this);
         
             serviceSet = true;

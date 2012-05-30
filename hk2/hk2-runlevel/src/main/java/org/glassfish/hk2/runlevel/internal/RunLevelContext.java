@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.runlevel.utilities.Utilities;
+import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -61,7 +62,7 @@ import java.util.Map;
  *
  * @author tbeerbower
  */
-@Singleton
+@Service @Singleton
 public class RunLevelContext implements Context<RunLevel> {
 
     /**

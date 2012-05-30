@@ -83,5 +83,23 @@ public class NegativeScopeTest {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains("The scope name given in the descriptor ("));
         }
     }
+    
+    /**
+     * This tests a service in a scope with no cooresponding
+     * implementation of Context
+     */
+    @Test
+    public void testNoContextScope() {
+        try {
+            locator.getService(NoContextService.class);
+            Assert.fail("The service has no Context and cannot be created");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(),
+                    me.getMessage().contains("Could not find an active context for "));
+            
+        }
+        
+    }
 
 }

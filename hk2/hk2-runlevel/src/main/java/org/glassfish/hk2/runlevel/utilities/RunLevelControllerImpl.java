@@ -218,7 +218,6 @@ import java.util.logging.Logger;
  *
  * @author jtrent, tbeerbower
  */
-@SuppressWarnings("deprecation")
 @Service
 public class RunLevelControllerImpl implements RunLevelController, Activator {
     /**
