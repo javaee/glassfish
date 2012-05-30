@@ -40,8 +40,11 @@
 package org.jvnet.hk2.generator.internal;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -51,6 +54,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
@@ -81,6 +85,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private NamedAnnotationVisitor baseName;
     private String metadataString = null;
     private Integer rank = null;
+    private final Map<String, List<String>> metadata = new HashMap<String, List<String>>();
     
     private final LinkedList<DescriptorImpl> generatedDescriptors = new LinkedList<DescriptorImpl>();
     private boolean isFactory = false;
@@ -146,14 +151,19 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
         if (utilities.isClassAScope(searchHere, loadQualifierName)) {
             scopeClass = loadQualifierName;
+            
+            return new MetadataAnnotationVisitor(loadQualifierName);
         }
-        else if (utilities.isClassAQualifier(searchHere, loadQualifierName)) {
+        
+        if (utilities.isClassAQualifier(searchHere, loadQualifierName)) {
             qualifiers.add(loadQualifierName);
             
             if (Named.class.getName().equals(loadQualifierName)) {
                 baseName = new NamedAnnotationVisitor(getDefaultName(), null);
                 return baseName;
             }
+            
+            return new MetadataAnnotationVisitor(loadQualifierName);
         }
         
         return null;
@@ -229,6 +239,17 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
         if (rank != null) {
             generatedDescriptor.setRanking(rank.intValue());
+        }
+        
+        if (!metadata.isEmpty()) {
+            for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
+                String key = entry.getKey();
+                List<String> values = entry.getValue();
+                
+                for (String value : values) {
+                    generatedDescriptor.addMetadata(key, value);
+                }
+            }
         }
         
         if (verbose) {
@@ -438,6 +459,33 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         public void visit(String name, Object value) {
             di.setRanking(((Integer) value).intValue());
         }      
+    }
+    
+    private class MetadataAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        private final String scopeOrQualifierName;
+        
+        private MetadataAnnotationVisitor(String scopeOrQualifierName) {
+            this.scopeOrQualifierName = scopeOrQualifierName;
+        }
+        
+        @Override
+        public void visit(String name, Object value) {
+            String metadataKey = utilities.getMetadataKey(scopeOrQualifierName, name);
+            
+            if (metadataKey != null) {
+                String valueString;
+                if (value instanceof Type) {
+                    Type type = (Type) value;
+                    
+                    valueString = type.getClassName();
+                }
+                else {
+                    valueString = value.toString();
+                }
+                
+                ReflectionHelper.addMetadata(metadata, metadataKey, valueString);
+            }
+        }  
     }
     
     /**
