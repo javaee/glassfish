@@ -58,6 +58,8 @@ public class NegativeScopeModule implements TestModule {
         config.bind(BuilderHelper.link(TwoScopeService.class).build());
         config.bind(BuilderHelper.link(WrongScopeService.class).
                 in(PerLookup.class.getName()).build());
+        config.bind(BuilderHelper.link(NoContextService.class).
+                in(NoContextScope.class.getName()).build());
 
     }
 

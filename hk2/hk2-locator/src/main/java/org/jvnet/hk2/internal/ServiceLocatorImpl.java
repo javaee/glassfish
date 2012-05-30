@@ -1012,6 +1012,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 retVal = context;
             }
             
+            if (retVal == null) {
+                throw new IllegalStateException("Could not find an active context for " + scope.getName());
+            }
             return retVal;
         }
         finally {
