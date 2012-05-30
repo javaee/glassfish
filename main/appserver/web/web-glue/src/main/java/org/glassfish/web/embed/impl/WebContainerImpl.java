@@ -62,6 +62,10 @@ import org.glassfish.grizzly.config.dom.Protocols;
 import org.glassfish.grizzly.config.dom.ThreadPool;
 import org.glassfish.grizzly.config.dom.Transport;
 import org.glassfish.grizzly.config.dom.Transports;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 import org.glassfish.api.container.Sniffer;
 import org.glassfish.embeddable.web.config.SslConfig;
@@ -82,7 +86,6 @@ import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 
@@ -105,24 +108,24 @@ import org.glassfish.api.admin.ServerEnvironment;
 public class WebContainerImpl implements WebContainer {
 
 
-    Inhabitant<? extends org.glassfish.api.container.Container> container;
+    private ServiceHandle<org.glassfish.api.container.Container> container;
 
-    Inhabitant<?> embeddedInhabitant;
+    private ServiceHandle<?> embeddedInhabitant;
 
     @Inject
-    Habitat habitat;
+    private ServiceLocator habitat;
 
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    HttpService httpService;
+    private HttpService httpService;
 
     private static Logger log =
             Logger.getLogger(WebContainerImpl.class.getName());
 
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    NetworkConfig networkConfig;
+    private NetworkConfig networkConfig;
 
     @Inject
-    ServerContext serverContext;
+    private ServerContext serverContext;
 
 
     // ----------------------------------------------------- Instance Variables
@@ -159,23 +162,25 @@ public class WebContainerImpl implements WebContainer {
             config = new WebContainerConfig();
         }
 
-        container = habitat.getInhabitant(org.glassfish.api.container.Container.class,
+        container = habitat.getServiceHandle(org.glassfish.api.container.Container.class,
                 "com.sun.enterprise.web.WebContainer");
         if (container == null) {
             log.severe("Cannot find webcontainer implementation");
             return;
         }
 
-        embeddedInhabitant = habitat.getInhabitantByType("com.sun.enterprise.web.EmbeddedWebContainer");
-        if (embeddedInhabitant == null) {
+        ActiveDescriptor<?> activeDescriptor = habitat.getBestDescriptor(
+                BuilderHelper.createContractFilter("com.sun.enterprise.web.EmbeddedWebContainer"));
+        if (activeDescriptor == null) {
             log.severe("Cannot find embedded implementation");
             return;
         }
+        embeddedInhabitant = habitat.getServiceHandle(activeDescriptor);
 
         try {
 
-            webContainer = (com.sun.enterprise.web.WebContainer) container.get();
-            embedded = (EmbeddedWebContainer) embeddedInhabitant.get();
+            webContainer = (com.sun.enterprise.web.WebContainer) container.getService();
+            embedded = (EmbeddedWebContainer) embeddedInhabitant.getService();
 
             if ((webContainer == null) || (embedded == null)) {
                 log.severe("Cannot find webcontainer implementation");
@@ -901,7 +906,7 @@ public class WebContainerImpl implements WebContainer {
      */    
     public VirtualServer createVirtualServer(String id, File docRoot) {
 
-        return new VirtualServerFacade(id, docRoot, null);
+        return new VirtualServerFacade(id, docRoot, (WebListener[]) null);
 
     }
 

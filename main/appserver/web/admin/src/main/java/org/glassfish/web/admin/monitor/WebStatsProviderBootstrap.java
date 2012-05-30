@@ -75,7 +75,7 @@ public class WebStatsProviderBootstrap implements PostConstruct {
     private static final String NODE_SEPARATOR = "/";
 
     @Inject
-    private static Domain domain;
+    private Domain domain;
 
     // Map of apps and its StatsProvider list
     private ConcurrentMap<String, ConcurrentMap<String, Queue<Object>>> vsNameToStatsProviderMap =
