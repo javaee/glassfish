@@ -75,7 +75,7 @@ public interface Context<T> {
      * @param activeDescriptor The descriptor to use when creating instances
      * @param root The extended provider for the outermost parent being created
      * 
-     * @return A context instance (which may be null)
+     * @return A context instance.  This value may NOT be null
      */
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor, ServiceHandle<?> root);
     

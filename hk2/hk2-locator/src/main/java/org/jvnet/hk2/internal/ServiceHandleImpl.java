@@ -131,6 +131,11 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             }
             
             service = context.findOrCreate(root, this);
+            if (service == null) {
+                throw new MultiException(new IllegalStateException("Context " +
+                    context + " findOrCreate returned a null for descriptor " + root +
+                    " and handle " + this));
+            }
         
             serviceSet = true;
         

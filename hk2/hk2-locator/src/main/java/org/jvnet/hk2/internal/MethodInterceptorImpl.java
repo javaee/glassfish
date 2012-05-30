@@ -43,6 +43,7 @@ import java.lang.reflect.Method;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -74,6 +75,11 @@ public class MethodInterceptorImpl implements MethodInterceptor {
             MethodProxy arg3) throws Throwable {
         Context<?> context = locator.resolveContext(descriptor.getScopeAnnotation());
         Object service = context.findOrCreate(descriptor, root);
+        if (service == null) {
+            throw new MultiException(new IllegalStateException("Proxiable context " +
+                    context + " findOrCreate returned a null for descriptor " + descriptor +
+                    " and handle " + root));
+        }
         
         if (arg1.getName().equals(PROXY_MORE_METHOD_NAME)) {
             // We did what we came here to do
