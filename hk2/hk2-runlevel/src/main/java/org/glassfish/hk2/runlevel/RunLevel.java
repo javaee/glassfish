@@ -40,6 +40,7 @@
 package org.glassfish.hk2.runlevel;
 
 
+import org.glassfish.hk2.api.Metadata;
 import org.jvnet.hk2.annotations.Contract;
 
 import javax.inject.Scope;
@@ -122,7 +123,7 @@ public @interface RunLevel {
      *
      * @return the run level
      */
-    //@InhabitantMetadata(RUNLEVEL_VAL_META_TAG)
+    @Metadata(RUNLEVEL_VAL_META_TAG)
     public int value() default 0;
 
     /**
@@ -130,6 +131,6 @@ public @interface RunLevel {
      *
      * @return the mode
      */
-    //@InhabitantMetadata(RUNLEVEL_MODE_META_TAG)
+    @Metadata(RUNLEVEL_MODE_META_TAG)
     public Mode mode() default Mode.VALIDATING;
 }
