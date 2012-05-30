@@ -51,7 +51,7 @@ import org.junit.Test;
 public class AdminCacheWeakReferenceTest extends AdminCacheTstBase {
     
     public AdminCacheWeakReferenceTest() {
-        super(AdminCacheWeakReference.SERVICE_NAME);
+        super(AdminCacheWeakReference.getInstance());
     }
     
     @Test

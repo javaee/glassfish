@@ -109,7 +109,7 @@
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.10</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>2.2.7</grizzly.version>
+        <grizzly.version>2.2.9</grizzly.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <saaj-api.version>1.3.4</saaj-api.version>
         <hk2.version>2.1.5</hk2.version>
@@ -208,7 +208,12 @@
                 RE profile for release purposes.
             -->
             <id>release-phase2</id>
-
+            <activation>
+                <property>
+                    <name>release-phase-all</name>
+                    <value>true</value>
+                </property>
+            </activation>
             <modules>
                 <module>repo-import</module>
             </modules>
@@ -371,16 +376,11 @@
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>2.3</version>
                 </plugin>
-                <!--
-                    Require the maven archiver release 2.4 which has enhancements needed in
-                    appclient/client/acc-standalone.  For consistency, use the
-                    same release throughout the build.
-                -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-		    <version>2.4</version>
-                </plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>                
             </plugins>
         </pluginManagement>
 

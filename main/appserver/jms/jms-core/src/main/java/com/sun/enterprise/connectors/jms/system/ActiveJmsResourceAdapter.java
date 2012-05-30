@@ -40,81 +40,68 @@
 
 package com.sun.enterprise.connectors.jms.system;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.nio.channels.SelectableChannel;
-import java.nio.channels.SocketChannel;
-import java.rmi.Naming;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Provider;
-import javax.resource.spi.ActivationSpec;
-import javax.resource.spi.BootstrapContext;
-import javax.resource.spi.ManagedConnectionFactory;
-import javax.resource.spi.ResourceAdapterInternalException;
-
-import com.sun.appserv.connectors.internal.api.ConnectorConstants;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
-import com.sun.appserv.connectors.internal.api.ConnectorRuntimeException;
-import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
-import com.sun.appserv.server.util.Version;
-import com.sun.enterprise.config.serverbeans.AdminService;
-import com.sun.enterprise.config.serverbeans.AvailabilityService;
-import com.sun.enterprise.config.serverbeans.Clusters;
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.config.serverbeans.JavaConfig;
-import com.sun.enterprise.config.serverbeans.JmxConnector;
-import com.sun.enterprise.config.serverbeans.Server;
-import com.sun.enterprise.config.serverbeans.Servers;
-import com.sun.enterprise.connectors.inbound.ActiveInboundResourceAdapterImpl;
 import com.sun.enterprise.connectors.jms.config.JmsAvailability;
-import com.sun.enterprise.connectors.jms.config.JmsHost;
 import com.sun.enterprise.connectors.jms.config.JmsService;
-import com.sun.enterprise.connectors.jms.inflow.MdbContainerProps;
-import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
-import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
+import com.sun.enterprise.connectors.jms.config.JmsHost;
 import com.sun.enterprise.connectors.util.ResourcesUtil;
-import com.sun.enterprise.connectors.util.SetMethodAction;
-import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.enterprise.deployment.ConnectorDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.EjbMessageBeanDescriptor;
+import com.sun.enterprise.deployment.ConnectorConfigProperty;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.MessageDestinationDescriptor;
 import com.sun.enterprise.deployment.runtime.BeanPoolDescriptor;
+import com.sun.appserv.connectors.internal.api.*;
+import com.sun.appserv.server.util.Version;
+import com.sun.enterprise.connectors.jms.util.JmsRaUtil;
+
+import com.sun.appserv.connectors.internal.api.ConnectorRuntime;
+import com.sun.enterprise.connectors.jms.inflow.*;
+import com.sun.enterprise.connectors.util.SetMethodAction;
+import com.sun.logging.LogDomains;
+import com.sun.enterprise.connectors.inbound.ActiveInboundResourceAdapterImpl;
+import com.sun.enterprise.connectors.service.ConnectorAdminServiceUtils;
+
+import com.sun.enterprise.config.serverbeans.*;
 import com.sun.enterprise.util.SystemPropertyConstants;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.v3.services.impl.DummyNetworkListener;
 import com.sun.enterprise.v3.services.impl.GrizzlyService;
-import com.sun.logging.LogDomains;
+
+import java.rmi.Naming;
+import java.util.*;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.security.PrivilegedActionException;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SocketChannel;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+import javax.resource.spi.*;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.api.naming.GlassfishNamingManager;
+
 import org.glassfish.connectors.config.AdminObjectResource;
+import org.glassfish.internal.api.ServerContext;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.grizzly.LazyServiceInitializer;
+import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.connectors.config.ConnectorConnectionPool;
 import org.glassfish.connectors.config.ConnectorResource;
 import org.glassfish.connectors.config.ResourceAdapterConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
-import org.glassfish.internal.api.Globals;
-import org.glassfish.internal.api.ServerContext;
-import org.glassfish.internal.grizzly.LazyServiceInitializer;
 import org.glassfish.server.ServerEnvironmentImpl;
-import org.jvnet.hk2.annotations.Scoped;
+
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.api.PostConstruct;
-import javax.inject.Singleton;
+import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.config.types.Property;
+import org.glassfish.hk2.api.PostConstruct;
 
 //import com.sun.messaging.jmq.util.service.PortMapperClientHandler;
 
@@ -291,7 +278,6 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     @Inject
     private Provider<Servers> serversProvider;
     
-    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Provider<JmsService> jmsServiceProvider;
     
     @Inject
@@ -299,6 +285,9 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     
     @Inject
     private Provider<ConnectorRuntime> connectorRuntimeProvider;
+
+    @Inject
+     private BaseServiceLocator habitat;
     
     /**
      * Constructor for an active Jms Adapter.
@@ -2027,7 +2016,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
 
         String mdbCF = null;
     try {
-        mdbCF = descriptor_.getMdbConnectionFactoryJndiName();
+        mdbCF = descriptor_.getIASEjbExtraDescriptors().
+                    getMdbConnectionFactory().getJndiName();
     } catch(NullPointerException ne ) {
         // Dont process connection factory.
     }
@@ -2128,7 +2118,7 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
      * @return
      * @throws Exception
      */
-    private String getMDBIdentifier(EjbDescriptor descriptor_) throws Exception {
+    private String getMDBIdentifier(EjbMessageBeanDescriptor descriptor_) throws Exception {
         return getDomainName() + SEPARATOR + getClusterName() + SEPARATOR + descriptor_.getUniqueId() ;
     }
 
@@ -2247,7 +2237,8 @@ public class ActiveJmsResourceAdapter extends ActiveInboundResourceAdapterImpl i
     }
 
     private JmsService getJmsService(){
-        return jmsServiceProvider.get();
+        Config c = habitat.getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
+                return c.getExtensionByType(JmsService.class);
     }
 
     private ServerContext getServerContext(){
