@@ -91,10 +91,14 @@ public class InhabitantsGeneratorTest {
     private final static String MAVEN_CLASSES_DIR = "test-classes";
     
     // metadata constants
-    private final static String KEY1 = "key1";
-    private final static String VALUE1 = "value1";
-    private final static String KEY2 = "key2";
-    private final static String VALUE2 = "value2";
+    public final static String KEY1 = "key1";
+    public final static String VALUE1 = "value1";
+    public final static String KEY2 = "key2";
+    public final static String VALUE2 = "value2";
+    public final static String KEY3 = "key3";
+    public final static String VALUE3 = "3";
+    public final static String KEY4 = "key4";
+    public final static String VALUE4 = InhabitantsGeneratorTest.class.getName();
     
     /** The name for non-defaulted things */
     public final static String NON_DEFAULT_NAME = "non-default-name";
@@ -272,6 +276,21 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.put(envItself, FACTORY_METHOD_RANK);
         }
+        
+        {
+            // This is a service with automatic metadata
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(ServiceWithMetadata.class.getName());
+            envItself.addAdvertisedContract(ServiceWithMetadata.class.getName());
+            envItself.setScope(ScopeWithMetadata.class.getName());
+            envItself.addQualifier(QualifierWithMetadata.class.getName());
+            envItself.addMetadata(KEY1, VALUE1);
+            envItself.addMetadata(KEY2, VALUE2);
+            envItself.addMetadata(KEY3, VALUE3);
+            envItself.addMetadata(KEY4, VALUE4);
+        
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
     }
     
     private File gendirDirectory;
@@ -320,7 +339,8 @@ public class InhabitantsGeneratorTest {
     
     private void checkDescriptors(Set<DescriptorImpl> dis) {
         for (DescriptorImpl di : dis) {
-            Assert.assertTrue("Did not find " + di + " in the expected descriptors", EXPECTED_DESCRIPTORS.containsKey(di));
+            Assert.assertTrue("Did not find " + di + " in the expected descriptors <<<" +
+              EXPECTED_DESCRIPTORS + ">>>", EXPECTED_DESCRIPTORS.containsKey(di));
             
             // The rank is not part of the calculated equals or hash code (since it can change
             // over the course of the lifeycle of the object) and hence must be checked

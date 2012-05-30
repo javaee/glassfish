@@ -67,6 +67,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.Rank;
@@ -74,6 +75,7 @@ import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractsProvided;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.MethodVisitor;
 
 /**
  * @author jwells
@@ -85,11 +87,17 @@ public class Utilities {
     private final static String SCOPE_WITH_SLASHES = "L" + Scope.class.getName().replace('.', '/') + ";";
     private final static String QUALIFIER_WITH_SLASHES = "L" + Qualifier.class.getName().replace('.', '/') + ";";
     
+    private final static String METADATA_DESC = "Lorg/glassfish/hk2/api/Metadata;";
+    
     private final Map<String, Boolean> ISA_CONTRACT = new HashMap<String, Boolean>();
     private final Map<String, Boolean> ISA_SCOPE = new HashMap<String, Boolean>();
     private final Map<String, Boolean> ISA_QUALIFIER = new HashMap<String, Boolean>();
     private final Map<String, String> FOUND_SUPERCLASS = new HashMap<String, String>();  // Terminal is null
     private final Map<String, Set<String>> FOUND_INTERFACES = new HashMap<String, Set<String>>();
+    
+    // Map from scope or qualifier name to method name to metadata key value
+    private final Map<String, Map<String, String>> METADATA =
+            new HashMap<String, Map<String, String>>();
     
     private final boolean verbose;
     private final String searchPath;
@@ -256,6 +264,15 @@ public class Utilities {
         
         // Rank
         KNOWN_DATA.add(new KnownClassData(Rank.class.getName(),
+                false, // isa_contract
+                false, // isa_scope
+                false, // isa_qualifier
+                null,  // superclass
+                empty  // interfaces
+                ));
+        
+        // Metadata
+        KNOWN_DATA.add(new KnownClassData(Metadata.class.getName(),
                 false, // isa_contract
                 false, // isa_scope
                 false, // isa_qualifier
@@ -532,6 +549,9 @@ public class Utilities {
         private final String cacheKey;
         private final String lookForMe;
         
+        private final Map<String, String> methodNameToMetadataKey =
+                new HashMap<String, String>();
+        
         private boolean isLookedFor = false;
         
         private boolean isContract = false;
@@ -605,10 +625,23 @@ public class Utilities {
             return null;
         }
         
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+         */
+        @Override
+        public MethodVisitor visitMethod(int arg0, String name, String arg2,
+                String arg3, String[] arg4) {
+            return new ContractMethodVisitor(this, name);
+        }
+        
         public void visitEnd() {
             ISA_CONTRACT.put(cacheKey, isContract);
             ISA_SCOPE.put(cacheKey, isScope);
             ISA_QUALIFIER.put(cacheKey, isQualifier);
+            
+            if ((isScope || isQualifier) && !methodNameToMetadataKey.isEmpty()) {
+                METADATA.put(cacheKey, methodNameToMetadataKey);
+            }
         }
         
         private boolean isALookedForThing() {
@@ -618,6 +651,66 @@ public class Utilities {
         private String getDotDelimitedSuperclass() {
             return dotDelimitedSuperclass;
         }
+        
+        private void associateMethodNameWithMetadataKey(
+                String methodName,
+                String metadataKey) {
+            methodNameToMetadataKey.put(methodName, metadataKey);
+        }
+        
+    }
+    
+    private static class ContractMethodVisitor extends AbstractMethodVisitorImpl {
+        private final ContractClassVisitor parent;
+        private final String methodName;
+        private String metadataKey; 
+        
+        private ContractMethodVisitor(ContractClassVisitor parent, String methodName) {
+            this.parent = parent;
+            this.methodName = methodName;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.MethodVisitor#visitAnnotation(java.lang.String, boolean)
+         */
+        @Override
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            if (!METADATA_DESC.equals(desc)) return null;
+            
+            return new MetadataAnnotationVisitor(this);
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.MethodVisitor#visitEnd()
+         */
+        @Override
+        public void visitEnd() {
+            if (metadataKey != null) {
+                parent.associateMethodNameWithMetadataKey(methodName, metadataKey); 
+            }
+            
+        }
+        
+        private void setMetadataKey(String key) {
+            metadataKey = key;
+        }
+    }
+    
+    private static class MetadataAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        private final ContractMethodVisitor parent;
+        
+        private MetadataAnnotationVisitor(ContractMethodVisitor parent) {
+            this.parent = parent;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visit(String name, Object value) {
+            parent.setMetadataKey((String) value);
+        }
+        
         
     }
     
@@ -684,8 +777,12 @@ public class Utilities {
         Set<String> getiFaces() {
             return iFaces;
         }
+    }
+    
+    public String getMetadataKey(String scopeOrQualifier, String methodName) {
+        Map<String, String> methodToKey = METADATA.get(scopeOrQualifier);
+        if (methodToKey == null) return null;
         
-        
-        
+        return methodToKey.get(methodName);
     }
 }
