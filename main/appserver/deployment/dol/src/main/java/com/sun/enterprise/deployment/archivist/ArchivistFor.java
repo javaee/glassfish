@@ -46,6 +46,8 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+import org.glassfish.hk2.api.Metadata;
+
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
@@ -61,5 +63,6 @@ public @interface ArchivistFor {
      * see {@link org.glassfish.api.deployment.archive.ArchiveType} and its
      * implementation classes for valid string values.
      */
+    @Metadata(ArchivistFactory.ARCHIVE_TYPE)
     String value();
 }

@@ -52,11 +52,11 @@ import javax.inject.Singleton;
 
 import javax.inject.Inject;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -67,6 +67,9 @@ import java.util.Set;
 @Service
 @Singleton
 public class ArchivistFactory {
+    public final static String ARCHIVE_TYPE = "archiveType";
+    public final static String EXTENSION_ARCHIVE_TYPE = "extensionArchiveType";
+    
     @Inject
     ServiceLocator habitat;
 
@@ -78,11 +81,13 @@ public class ArchivistFactory {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     public Archivist getArchivist(String archiveType) {
-        ArchivistForImpl archivistFor = new ArchivistForImpl(archiveType);
+        ActiveDescriptor<Archivist> best = (ActiveDescriptor<Archivist>)
+                habitat.getBestDescriptor(new ArchivistFilter(archiveType));
+        if (best == null) return null;
         
-        Archivist<?> retVal = habitat.getService(Archivist.class, archivistFor);
-        return retVal;
+        return habitat.getServiceHandle(best).getService();
     }
 
     public Archivist getArchivist(ArchiveType moduleType) {
@@ -99,7 +104,7 @@ public class ArchivistFactory {
         for (String containerType : containerTypes) {
             ActiveDescriptor<ExtensionsArchivist> descriptor = (ActiveDescriptor<ExtensionsArchivist>)
                     habitat.getBestDescriptor(
-                    new ExtensionsArchivistFilter(habitat, containerType));
+                    new ExtensionsArchivistFilter(containerType));
             if (descriptor == null) continue;
             
             ServiceHandle<ExtensionsArchivist> handle = habitat.getServiceHandle(descriptor);
@@ -112,11 +117,9 @@ public class ArchivistFactory {
     }
     
     private static class ExtensionsArchivistFilter implements IndexedFilter {
-        private final ServiceLocator locator;
         private final String containerType;
         
-        private ExtensionsArchivistFilter(ServiceLocator locator, String mustEndWith) {
-            this.locator = locator;
+        private ExtensionsArchivistFilter(String mustEndWith) {
             this.containerType = mustEndWith;
         }
 
@@ -125,33 +128,20 @@ public class ArchivistFactory {
          */
         @Override
         public boolean matches(Descriptor d) {
-            if (!(d instanceof ActiveDescriptor)) return false;
+            Map<String, List<String>> metadata = d.getMetadata();
             
-            ActiveDescriptor<?> ad = (ActiveDescriptor<?>) d;
-            
-            if (!ad.getQualifiers().contains(ExtensionsArchivistFor.class.getName())) {
-                // Must have the qualifier to check for
+            List<String> values = metadata.get(EXTENSION_ARCHIVE_TYPE);
+            if (values == null) {
                 return false;
             }
             
-            if (!ad.isReified()) {
-                // Must do this to get the qualifier
-                ad = locator.reifyDescriptor(ad);
-            }
-            
-            Set<Annotation> qualifiers = ad.getQualifierAnnotations();
-            
-            ExtensionsArchivistFor eaf = null;
-            for (Annotation qualifier : qualifiers) {
-                if (qualifier.annotationType().equals(ExtensionsArchivistFor.class)) {
-                    eaf = (ExtensionsArchivistFor) qualifier;
-                    break;
+            for (String value : values) {
+                if (value.endsWith(containerType)) {
+                    return true;
                 }
             }
             
-            if (eaf == null) return false;
-            
-            return eaf.value().endsWith(containerType);
+            return false;
         }
 
         /* (non-Javadoc)
@@ -171,4 +161,46 @@ public class ArchivistFactory {
         }
         
     }
+    
+    private static class ArchivistFilter implements IndexedFilter {
+        private final String archiveType;
+        
+        private ArchivistFilter(String archiveType) {
+            this.archiveType = archiveType;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
+         */
+        @Override
+        public boolean matches(Descriptor d) {
+            Map<String, List<String>> metadata = d.getMetadata();
+            
+            List<String> values = metadata.get(ARCHIVE_TYPE);
+            if (values == null) {
+                return false;
+            }
+            
+            return values.contains(archiveType);
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
+         */
+        @Override
+        public String getAdvertisedContract() {
+            return Archivist.class.getName();
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getName()
+         */
+        @Override
+        public String getName() {
+            return null;
+        }
+        
+    }
+    
+    
 }
