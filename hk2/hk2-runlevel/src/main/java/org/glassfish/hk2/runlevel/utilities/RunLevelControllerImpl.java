@@ -40,6 +40,7 @@
 package org.glassfish.hk2.runlevel.utilities;
 
 
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.Activator;
 import org.glassfish.hk2.runlevel.RunLevelController;
@@ -788,7 +789,12 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
         private void activateRunLevel() {
             List<ActiveDescriptor<?>> activations = new ArrayList<ActiveDescriptor<?>>();
 
-            final Filter filter = BuilderHelper.createContractFilter(RunLevel.class.getName());
+            final Filter filter = new Filter() {
+                @Override
+                public boolean matches(Descriptor d) {
+                    return RunLevel.class.getName().equals(d.getScope());
+                }
+            };
 
             // TODO: we could cache this in top-level proceedTo()
             List<ActiveDescriptor<?>> descriptors =
