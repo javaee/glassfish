@@ -94,9 +94,6 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
     @Inject @Optional
     Agent agent;
 
-    @Inject
-    Version version;
-
     // This is a OutputStream to keep track of number of bytes
     // written out to the stream
     private MeteredStream meter;
@@ -251,7 +248,7 @@ public class GFFileHandler extends StreamHandler implements PostConstruct, PreDe
         };
         pump.setDaemon(true);
         pump.start();
-        LogRecord lr = new LogRecord(Level.INFO, "Running GlassFish Version: " + version.getFullVersion());
+        LogRecord lr = new LogRecord(Level.INFO, "Running GlassFish Version: " + Version.getFullVersion());
         lr.setThreadID((int) Thread.currentThread().getId());
         lr.setLoggerName(getClass().getName());
         EarlyLogHandler.earlyMessages.add(lr);
