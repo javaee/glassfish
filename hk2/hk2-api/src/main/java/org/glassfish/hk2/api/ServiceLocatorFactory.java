@@ -67,8 +67,7 @@ public abstract class ServiceLocatorFactory {
    * name then this method will return null.
    * 
    * @param name The name of this service locator.  May not be null
-   * @return The newly created named ServiceLocator or null
-   * if there was already a ServiceLocator with this name.
+   * @return The created or found named ServiceLocator
    */
   public abstract ServiceLocator create(String name);
   
