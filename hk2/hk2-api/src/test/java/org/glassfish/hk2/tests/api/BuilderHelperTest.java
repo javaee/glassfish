@@ -421,4 +421,35 @@ public class BuilderHelperTest {
         }
         
     }
+    
+    /**
+     * Tests that the metadata is properly added to automaticaly generated descriptors
+     */
+    @Test
+    public void testSpecificFilter() {
+        SimpleService simpleService = new SimpleService();
+        
+        AbstractActiveDescriptor<SimpleService> aad1 = BuilderHelper.createConstantDescriptor(simpleService);
+        AbstractActiveDescriptor<SimpleService> aad2 = BuilderHelper.createConstantDescriptor(simpleService);
+        AbstractActiveDescriptor<SimpleService> aad3 = BuilderHelper.createConstantDescriptor(simpleService);
+        
+        aad1.setServiceId(new Long(1));
+        aad1.setLocatorId(new Long(0));
+        
+        aad2.setServiceId(new Long(2));
+        aad2.setLocatorId(new Long(0));
+        
+        aad3.setServiceId(new Long(1));
+        aad3.setLocatorId(new Long(1));
+        
+        IndexedFilter specificFilter = BuilderHelper.createSpecificDescriptorFilter(aad1);
+        
+        Assert.assertEquals(SimpleService.class.getName(), specificFilter.getAdvertisedContract());
+        Assert.assertNull(specificFilter.getName());
+        
+        Assert.assertTrue(specificFilter.matches(aad1));
+        Assert.assertFalse(specificFilter.matches(aad2));
+        Assert.assertFalse(specificFilter.matches(aad3));
+        
+    }
 }

@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
@@ -57,6 +58,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
+import org.glassfish.hk2.internal.SpecificFilterImpl;
 import org.glassfish.hk2.internal.StarFilter;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.annotations.Contract;
@@ -98,6 +100,39 @@ public class BuilderHelper {
      */
     public static IndexedFilter createNameAndContractFilter(String contract, String name) {
         return new IndexedFilterImpl(contract, name);
+    }
+    
+    /**
+     * This method creates a filter that will match one and only one descriptor.  The passed
+     * in descriptor must have both its serviceID and locatorId filled in, or else this
+     * method will throw an IllegalArgumentException
+     * 
+     * @param descriptor The descriptor from which to create a filter
+     * @return A filter to use that will match this descriptor exactly
+     */
+    public static IndexedFilter createSpecificDescriptorFilter(ActiveDescriptor<?> descriptor) {
+        Set<String> contracts = descriptor.getAdvertisedContracts();
+        
+        String contract = null;
+        for (String candidate : contracts) {
+            contract = candidate;
+            break;
+        }
+        
+        String name = descriptor.getName();
+        
+        if (descriptor.getServiceId() == null) {
+            throw new IllegalArgumentException("The descriptor must have a specific service ID");
+        }
+        
+        if (descriptor.getLocatorId() == null) {
+            throw new IllegalArgumentException("The descriptor must have a specific locator ID");
+        }
+        
+        return new SpecificFilterImpl(contract, name,
+                descriptor.getServiceId(),
+                descriptor.getLocatorId());
+        
     }
     
     /**
