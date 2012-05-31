@@ -243,31 +243,20 @@ public class Main {
 
 		DynamicConfigurationService dcs = serviceLocator
 				.getService(DynamicConfigurationService.class);
+		
+		new Habitat();  // This will add the Habitat into the registry
+		
 		DynamicConfiguration config = dcs.createDynamicConfiguration();
-
-		config.addActiveDescriptor(BuilderHelper
-				.createConstantDescriptor(serviceLocator));
-		config.commit();
-		
 		config = dcs.createDynamicConfiguration();
-		config.addActiveDescriptor(BuilderHelper
-				.createConstantDescriptor(new Habitat()));
-		config.commit();
 		
-		config = dcs.createDynamicConfiguration();
 		config.addActiveDescriptor(BuilderHelper
 				.createConstantDescriptor(context));
-		config.commit();
-		config = dcs.createDynamicConfiguration();
+		
 		config.addActiveDescriptor(BuilderHelper
 				.createConstantDescriptor(Logger.global));
-		config.commit();
-		config = dcs.createDynamicConfiguration();
-
-		config.commit();
-		config = dcs.createDynamicConfiguration();
 
 		config.addActiveDescriptor(DefaultErrorService.class);
+		
 		config.commit();
 
 		final ClassLoader oldCL = AccessController
