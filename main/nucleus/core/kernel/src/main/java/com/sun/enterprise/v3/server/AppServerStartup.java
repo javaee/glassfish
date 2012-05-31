@@ -350,7 +350,7 @@ public class AppServerStartup implements ModuleStartup {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(activator));
+        ActiveDescriptor<?> activatorDescriptor = config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(activator));
 
         config.commit();
 
@@ -362,7 +362,7 @@ public class AppServerStartup implements ModuleStartup {
             return false;
         } finally {
             config = dcs.createDynamicConfiguration();
-            config.addUnbindFilter(BuilderHelper.createContractFilter(Activator.class.getName()));
+            config.addUnbindFilter(BuilderHelper.createSpecificDescriptorFilter(activatorDescriptor));
             config.commit();
         }
         return !activator.isShutdown();
