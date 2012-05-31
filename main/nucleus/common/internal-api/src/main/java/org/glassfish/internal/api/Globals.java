@@ -58,14 +58,20 @@ import javax.inject.Inject;
 @Service(name = "globals")
 public class Globals implements Init {
 
-    @Inject
-    static volatile Habitat defaultHabitat;
+    private static volatile Habitat defaultHabitat;
 
     private static Object staticLock = new Object();
     
     // dochez : remove this once we can get rid of ConfigBeanUtilities class
     @Inject
-    ConfigBeansUtilities utilities;
+    private ConfigBeansUtilities utilities;
+    
+    @Inject
+    private Globals(Habitat habitat) {
+        if (defaultHabitat != null) {
+            defaultHabitat = habitat;
+        }
+    }
 
     public static BaseServiceLocator getDefaultBaseServiceLocator() {
     	return getDefaultHabitat();
