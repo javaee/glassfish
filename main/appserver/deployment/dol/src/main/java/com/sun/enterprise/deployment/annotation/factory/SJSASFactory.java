@@ -45,18 +45,14 @@ import org.glassfish.apf.factory.Factory;
 import org.glassfish.apf.impl.AnnotationProcessorImpl;
 import org.glassfish.api.ContractProvider;
 import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.ServiceLocator;
+
 import javax.inject.Singleton;
 
 import java.lang.annotation.Annotation;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -70,7 +66,7 @@ import java.util.Set;
 public class SJSASFactory extends Factory implements ContractProvider, PostConstruct {
 
     @Inject
-    BaseServiceLocator habitat;
+    ServiceLocator habitat;
 
     private Set<String> annotationClassNames = new HashSet<String>();
 
@@ -83,43 +79,43 @@ public class SJSASFactory extends Factory implements ContractProvider, PostConst
         return processor;
     }
 
+    @SuppressWarnings("unchecked")
     public Set<String> getAnnotations() {
-        return (HashSet)((HashSet)annotationClassNames).clone();
+        return (HashSet<String>)((HashSet<String>)annotationClassNames).clone();
     }
-
-    private static String getOne(Map<String, List<String>> metadata, String key) {
-    	if (metadata == null || key == null) return null;
-    	
-    	List<String> searchMe = metadata.get(key);
-    	if (searchMe == null) return null;
-    	
-    	if (searchMe.isEmpty()) return null;
-    	
-    	return searchMe.get(0);
+    
+    public static String getAnnotationHandlerForStringValue(Class<?> onMe) {
+        AnnotationHandlerFor ahf = onMe.getAnnotation(AnnotationHandlerFor.class);
+        if (ahf == null) return null;
+        
+        return ahf.value().getName();
     }
 
     public void postConstruct() {
         if (systemProcessor == null) {
             // initialize our system annotation processor...            
             systemProcessor = new AnnotationProcessorImpl();
-            for (final Inhabitant i : ((Habitat) habitat).getInhabitants(AnnotationHandlerFor.class)) {
-            	String annotationTypeName = getOne(i.metadata(), AnnotationHandlerFor.class.getName());
+            for (final AnnotationHandler i : habitat.<AnnotationHandler>getAllServices(AnnotationHandler.class)) {
+                
+                String annotationTypeName = getAnnotationHandlerForStringValue(i.getClass());
+                if (annotationTypeName == null) continue;
+                
                 systemProcessor.pushAnnotationHandler(annotationTypeName, new AnnotationHandler() {
                     @Override
                     public Class<? extends Annotation> getAnnotationType() {
-                        final AnnotationHandler realHandler = (AnnotationHandler) i.get();
+                        final AnnotationHandler realHandler = i;
                         return realHandler.getAnnotationType();
                     }
 
                     @Override
                     public HandlerProcessingResult processAnnotation(AnnotationInfo element) throws AnnotationProcessorException {
-                        final AnnotationHandler realHandler = (AnnotationHandler) i.get();
+                        final AnnotationHandler realHandler = i;
                         return realHandler.processAnnotation(element);
                     }
 
                     @Override
                     public Class<? extends Annotation>[] getTypeDependencies() {
-                        final AnnotationHandler realHandler = (AnnotationHandler) i.get();
+                        final AnnotationHandler realHandler = i;
                         return realHandler.getTypeDependencies();
                     }
                 });
