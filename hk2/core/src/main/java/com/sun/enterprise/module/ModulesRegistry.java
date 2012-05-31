@@ -42,6 +42,7 @@ package com.sun.enterprise.module;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.ComponentException;
 
 import java.util.Collection;
@@ -53,6 +54,7 @@ import java.net.URL;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
+@Contract
 public interface ModulesRegistry extends ModuleChangeListener {
     /**
      * Creates a new child {@link ModulesRegistry} in this {@link ModulesRegistry}.
