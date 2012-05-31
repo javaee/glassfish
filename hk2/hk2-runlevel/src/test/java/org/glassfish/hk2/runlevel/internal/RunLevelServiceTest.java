@@ -41,6 +41,8 @@
 package org.glassfish.hk2.runlevel.internal;
 
 
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelControllerIndicator;
@@ -154,8 +156,15 @@ public class RunLevelServiceTest {
 
         RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
 
-        List<ActiveDescriptor<?>> descriptors =
-                locator.getDescriptors(BuilderHelper.createContractFilter(RunLevel.class.getName()));
+
+        final Filter filter = new Filter() {
+            @Override
+            public boolean matches(Descriptor d) {
+                return RunLevel.class.getName().equals(d.getScope());
+            }
+        };
+
+        List<ActiveDescriptor<?>> descriptors = locator.getDescriptors(filter);
 
         assertNotNull(descriptors);
         int count = 0;
@@ -685,7 +694,7 @@ public class RunLevelServiceTest {
 
             final RunLevel rla = service.getAnnotation(RunLevel.class);
             if (rla != null) {
-                descriptorBuilder.to(RunLevel.class).
+                descriptorBuilder.//to(RunLevel.class).
                         has(RunLevel.RUNLEVEL_VAL_META_TAG, Collections.singletonList(((Integer) rla.value()).toString())).
                         has(RunLevel.RUNLEVEL_MODE_META_TAG, Collections.singletonList(rla.mode().toString()));
 
