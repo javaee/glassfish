@@ -63,7 +63,6 @@ import java.util.concurrent.Future;
  * @author Tom Beerbower
  */
 @SuppressWarnings("deprecation")
-//@Priority(2) // run early
 @RunLevel(StartupRunLevel.VAL)
 @Service
 public class StartupRunLevelBridge extends RunLevelBridge implements FutureProvider<Result<Thread>>{

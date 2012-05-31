@@ -67,7 +67,6 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  * @author Tim Quinn
  */
 @Service
-@Singleton
 @RunLevel(PostStartupRunLevel.VAL)
 public class SecureAdminConfigMonitor implements ConfigListener {
 

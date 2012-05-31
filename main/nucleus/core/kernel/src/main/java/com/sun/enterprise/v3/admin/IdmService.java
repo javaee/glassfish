@@ -67,7 +67,6 @@ import java.util.logging.Logger;
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  */
 @Service(name="jks-based")
-@Singleton
 @RunLevel(InitRunLevel.VAL)
 public class IdmService implements PostConstruct/*, IdentityManagement*/ {
 

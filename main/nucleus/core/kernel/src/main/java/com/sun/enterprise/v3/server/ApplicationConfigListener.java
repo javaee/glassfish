@@ -80,7 +80,6 @@ import java.util.logging.Logger;
 import java.util.Calendar;
 
 @Service
-@Singleton
 @RunLevel(PostStartupRunLevel.VAL)
 public class ApplicationConfigListener implements TransactionListener, PostConstruct {
 

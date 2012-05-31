@@ -74,7 +74,6 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  * @author tjquinn
  */
 @Service
-@Singleton
 @RunLevel(PostStartupRunLevel.VAL)
 public class DynamicReloadService implements ConfigListener, PostConstruct, PreDestroy {
 

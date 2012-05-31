@@ -113,7 +113,6 @@ import javax.inject.Named;
  * @author abbagani
  */
 @Service
-@Singleton
 @RunLevel(InitRunLevel.VAL)
 public class MonitoringBootstrap implements PostConstruct, PreDestroy, EventListener, ModuleLifecycleListener, ConfigListener {
     @Inject

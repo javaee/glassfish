@@ -65,7 +65,6 @@ import com.sun.logging.LogDomains;
  * @author Bill Shannon
  */
 @Service
-@Singleton        // only want one local password
 @RunLevel(InitRunLevel.VAL)
 public class LocalPasswordImpl implements PostConstruct, LocalPassword {
 

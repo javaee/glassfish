@@ -67,7 +67,6 @@ import java.util.logging.Logger;
  * @author Vijay Ramachandran
  */
 @Service
-@Singleton
 @RunLevel(StartupRunLevel.VAL)
 public class InstanceStateServiceImpl implements InstanceStateService {
 
