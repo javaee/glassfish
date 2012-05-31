@@ -279,7 +279,7 @@ public class DeployCommand extends DeployCommandParameters implements AdminComma
             }
 
             // needs to be fixed in hk2, we don't generate the right innerclass index. it should use $
-            Collection<Interceptor> interceptors = habitat.getAllByContract("org.glassfish.deployment.admin.DeployCommand.Interceptor");
+            Collection<Interceptor> interceptors = habitat.getAllByContract(Interceptor.class);
             if (interceptors!=null) {
                 for (Interceptor interceptor : interceptors) {
                     interceptor.intercept(this, initialContext);
