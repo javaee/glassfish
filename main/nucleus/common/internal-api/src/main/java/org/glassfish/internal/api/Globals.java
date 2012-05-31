@@ -68,7 +68,7 @@ public class Globals implements Init {
     
     @Inject
     private Globals(Habitat habitat) {
-        if (defaultHabitat != null) {
+        if (defaultHabitat == null) {
             defaultHabitat = habitat;
         }
     }
