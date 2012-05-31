@@ -49,6 +49,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells, mason.taube@oracle.com
  *
  */
+@Contract
 public interface PopulatorPostProcessor {
 
     /**

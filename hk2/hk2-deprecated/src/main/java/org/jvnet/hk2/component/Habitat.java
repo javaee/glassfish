@@ -108,6 +108,9 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         
         delegate = ServiceLocatorFactory.getInstance().create(name);
         
+        ActiveDescriptor<?> foundDescriptor = delegate.getBestDescriptor(BuilderHelper.createContractFilter(Habitat.class.getName()));
+        if (foundDescriptor != null) return;
+        
         // Add this habitat in, so it can be looked up!
         AbstractActiveDescriptor<Habitat> habitatDescriptor = BuilderHelper.createConstantDescriptor(this);
         habitatDescriptor.removeContractType(ServiceLocator.class);

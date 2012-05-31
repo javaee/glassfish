@@ -96,5 +96,13 @@ public class ErrorInformationImpl implements ErrorInformation {
     public MultiException getAssociatedException() {
         return exception;
     }
+    
+    public String toString() {
+        return "ErrorInformation(" + errorType + "," +
+            descriptor + "," +
+            injectee + "," +
+            exception + "," +
+            System.identityHashCode(this) + ")";
+    }
 
 }
