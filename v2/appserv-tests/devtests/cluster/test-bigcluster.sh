@@ -12,13 +12,13 @@ mkdir $TESTHOME/logs
 
 start_instances() {
   echo Starting instances...
-  asadmin list-instances --terse | egrep 'no response|requires restart|not running' | awk '{print $1}' |
+  asadmin --terse list-instances | egrep 'no response|requires restart|not running' | awk '{print $1}' |
     (time xargs -t -n 1 -P 0 asadmin --terse start-instance)
 }
 
 stop_instances() {
   echo Stopping instances...
-  asadmin list-instances --terse | grep running | grep -v 'not running' | awk '{print $1}' |
+  asadmin --terse list-instances | grep running | grep -v 'not running' | awk '{print $1}' |
     (time xargs -t -n 1 -P 0 asadmin --terse stop-instance)
 }
 
@@ -194,24 +194,24 @@ cmd_on_hosted_nodes() {
 
 delete_hosted_nodes() {
   echo Deleting SSH nodes...
-  asadmin list-nodes --terse | egrep -v '^[ \t]*$' | grep n-ssh- |
+  asadmin --terse list-nodes | egrep -v '^[ \t]*$' | grep n-ssh- |
     xargs -n 1 echo delete-node-ssh | 
     asadmin || return 1
 }
 
 delete_clusters() {
   echo Deleting clusters and instances...
-  asadmin list-instances --terse | grep 'not running' | awk '{print $1}' |
+  asadmin --terse list-instances | grep 'not running' | awk '{print $1}' |
     xargs -n 1 echo delete-instance |
     asadmin || return 1
-  asadmin list-clusters --terse | grep 'not running' | awk '{print $1}' |
+  asadmin --terse list-clusters | grep 'not running' | awk '{print $1}' |
     xargs -n 1 echo delete-cluster |
     asadmin || return 1
 }
 
 delete_nodes() {
   echo Deleting nodes...
-  asadmin list-nodes --terse | egrep -v '^[ \t]*$' | grep -v localhost |
+  asadmin --terse list-nodes | egrep -v '^[ \t]*$' | grep -v localhost |
     xargs -n 1 echo delete-node-config |
     asadmin || return 1
 }
@@ -221,7 +221,7 @@ deploy_app_to_clusters() {
   file=$2
   echo Deploying an app to all clusters and instances...
   asadmin deploy --name $name $file
-  asadmin list-clusters --terse | egrep -v '^[ \t]*$' | awk '{print $1}' |
+  asadmin --terse list-clusters | egrep -v '^[ \t]*$' | awk '{print $1}' |
   while read cname 
   do
     echo "create-application-ref --target $cname $name"
