@@ -185,7 +185,7 @@ public class AppServerStartupTest {
         if (rla != null) {
             descriptorBuilder.to(RunLevel.class).
                     has(RunLevel.RUNLEVEL_VAL_META_TAG, Collections.singletonList(((Integer) rla.value()).toString())).
-                    has(RunLevel.RUNLEVEL_MODE_META_TAG, Collections.singletonList(rla.mode().toString()));
+                    has(RunLevel.RUNLEVEL_MODE_META_TAG, Collections.singletonList(((Integer) rla.mode()).toString()));
 
             descriptorBuilder.in(RunLevel.class);
         }

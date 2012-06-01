@@ -80,7 +80,7 @@ import static com.sun.enterprise.naming.util.LogFacade.logger;
  * @author Sanjeeb.Sahoo@Sun.COM
  */
 @Service
-@RunLevel(StartupRunLevel.VAL)
+@RunLevel(value = StartupRunLevel.VAL, mode = RunLevel.RUNLEVEL_MODE_NON_VALIDATING)
 public class GlassFishNamingBuilder implements InitialContextFactoryBuilder, PostConstruct, PreDestroy
 {
     @LogMessageInfo(message = "Failed to load {0} using CommonClassLoader")
