@@ -40,9 +40,6 @@
 
 package com.sun.enterprise.glassfish.bootstrap;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
@@ -86,9 +83,8 @@ public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
 //    }
 
 	@Override
-	public List<DescriptorImpl> process(DescriptorImpl descriptorImpl) {
+	public DescriptorImpl process(DescriptorImpl descriptorImpl) {
 
-		ArrayList<DescriptorImpl> returnList = new ArrayList<DescriptorImpl>();
 		// we don't want to reconfigure the loggers.
 
 		boolean skip = false;
@@ -123,9 +119,9 @@ public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
 		}
 
 		if (!skip) {
-			returnList.add(descriptorImpl);
+			return descriptorImpl;
 		}
-		return returnList;
+		return null;
 	}
 }
 

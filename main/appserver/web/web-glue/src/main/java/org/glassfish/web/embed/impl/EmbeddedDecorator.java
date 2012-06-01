@@ -40,8 +40,6 @@
 
 package org.glassfish.web.embed.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.web.deployment.archivist.WebArchivist;
@@ -64,8 +62,7 @@ public class EmbeddedDecorator implements PopulatorPostProcessor {
 //    }
 
 	@Override
-	public List<DescriptorImpl> process(DescriptorImpl descriptorImpl) {
-		List<DescriptorImpl> returnList = new ArrayList<DescriptorImpl>();
+	public DescriptorImpl process(DescriptorImpl descriptorImpl) {
 		
 		if (WebArchivist.class.getCanonicalName().equals(descriptorImpl.getImplementation())) {
 			descriptorImpl.setImplementation(EmbeddedWebArchivist.class.getCanonicalName());
@@ -76,7 +73,6 @@ public class EmbeddedDecorator implements PopulatorPostProcessor {
 		
 	
 		
-		returnList.add(descriptorImpl);
-		return returnList;
+		return descriptorImpl;
 	}
 }

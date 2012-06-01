@@ -40,9 +40,6 @@
 
 package org.glassfish.admin.rest;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.glassfish.admin.restconnector.ProxyRestAdminAdapter;
 import org.glassfish.admin.restconnector.ProxyRestManagementAdapter;
 import org.glassfish.admin.restconnector.ProxyRestMonitoringAdapter;
@@ -70,8 +67,7 @@ public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
 //    }
 
 	@Override
-	public List<DescriptorImpl> process(DescriptorImpl descriptorImpl) {
-		ArrayList<DescriptorImpl> returnList = new ArrayList<DescriptorImpl>();
+	public DescriptorImpl process(DescriptorImpl descriptorImpl) {
 		
 		boolean skip = RestService.class.getCanonicalName().equals(descriptorImpl.getImplementation()) ||
 				ProxyRestManagementAdapter.class.getCanonicalName().equals(descriptorImpl.getImplementation()) ||
@@ -79,10 +75,10 @@ public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
 				ProxyRestAdminAdapter.class.getCanonicalName().equals(descriptorImpl.getImplementation());
 		
 		if (!skip) {
-			returnList.add(descriptorImpl);
-		}
+			return descriptorImpl;
+	    }
 				
-		return returnList;
+		return null;
 
 	}
 }
