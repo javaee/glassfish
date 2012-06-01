@@ -116,6 +116,7 @@ public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
 		if ("com.sun.enterprise.v3.server.DomainXmlPersistence".equals(
 				descriptorImpl.getImplementation())) {
 			descriptorImpl.setImplementation("org.glassfish.kernel.embedded.EmbeddedDomainPersistence");
+			descriptorImpl.setScope(PerLookup.class.getCanonicalName());
 		}
 
 		if (!skip) {
