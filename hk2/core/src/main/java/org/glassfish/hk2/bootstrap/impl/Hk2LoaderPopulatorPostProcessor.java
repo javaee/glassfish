@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.bootstrap.impl;
 
-import java.util.List;
-
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
@@ -78,7 +76,7 @@ public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 	 * Uses the given classloader to load the class from the descriptor
 	 */
 	@Override
-	public List<DescriptorImpl> process(DescriptorImpl descriptorImpl) {
+	public DescriptorImpl process(DescriptorImpl descriptorImpl) {
 		descriptorImpl.setLoader(new HK2Loader() {
 			
 			@Override
@@ -91,7 +89,7 @@ public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 		    }
 		});
 		
-		return null;
+		return descriptorImpl;
 	}
 
 	

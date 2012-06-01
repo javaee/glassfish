@@ -1,5 +1,9 @@
 package org.glassfish.hk2.bootstrap.impl;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,11 +12,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.SortedSet;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
@@ -31,16 +33,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.bootstrap.ArgumentManager;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.impl.ModulesRegistryImpl;
-import com.sun.hk2.component.Holder;
-
-import static org.junit.Assert.*;
 
 public class ServiceLocatorTest {
 
@@ -217,7 +212,7 @@ public class ServiceLocatorTest {
 				}, new PopulatorPostProcessor() {
 
 					@Override
-					public List<DescriptorImpl> process(DescriptorImpl d) {
+					public DescriptorImpl process(DescriptorImpl d) {
 						postProcessorWasCalled = true;
 
 						assertEquals(
@@ -233,7 +228,7 @@ public class ServiceLocatorTest {
 						assertTrue(advertisedContracts
 								.contains("org.jvnet.hk2.config.provider.internal.ConfigTransactionImpl"));
 
-						return new ArrayList<DescriptorImpl>();
+						return null;
 					}
 				});
 
@@ -273,13 +268,12 @@ public class ServiceLocatorTest {
 				}, new PopulatorPostProcessor() {
 
 					@Override
-					public List<DescriptorImpl> process(DescriptorImpl d) {
+					public DescriptorImpl process(DescriptorImpl d) {
 						postProcessorWasCalled = true;
-						ArrayList<DescriptorImpl> list = new ArrayList<DescriptorImpl>();
 
 						d.setImplementation("OVERRIDDEN");
-						list.add(d);
-						return list;
+						
+						return d;
 					}
 				});
 

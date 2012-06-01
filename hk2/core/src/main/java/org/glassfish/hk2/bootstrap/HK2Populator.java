@@ -50,6 +50,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
+import org.glassfish.hk2.runlevel.internal.RunLevelContext;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
 import com.sun.enterprise.module.bootstrap.BootException;
@@ -97,24 +98,17 @@ public class HK2Populator {
 					readOne = descriptorImpl.readObject(br);
 
 					if (readOne) {
-						if (postProcessors == null || postProcessors.length == 0) {
-							config.bind(descriptorImpl);
-						} else {
 
-							if (postProcessors != null) {
-								for (PopulatorPostProcessor pp : postProcessors) {
-									
-									List<DescriptorImpl> descriptorImpls = pp
-											.process(descriptorImpl);
+						if (postProcessors != null) {
+							for (PopulatorPostProcessor pp : postProcessors) {
+								descriptorImpl = pp.process(descriptorImpl);
 
-									if (descriptorImpls == null) {
-										config.bind(descriptorImpl);
-									} else {
-										for (Descriptor d : descriptorImpls) {
-											config.bind(d);
-										}
-									}
+								if (descriptorImpl == null) {
+									break;
 								}
+							}
+							if (descriptorImpl != null) {
+								config.bind(descriptorImpl);
 							}
 						}
 
