@@ -11,7 +11,7 @@ import javax.enterprise.deploy.shared.ModuleType;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
 import com.sun.enterprise.deployment.EjbDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
@@ -123,8 +123,8 @@ public class AnnotationTest extends TestCase {
             throw new IllegalStateException(ex);
         }
 
-        BundleDescriptor[] bundleDescs = { new EjbBundleDescriptor(),
-                new EjbBundleDescriptor() };
+        BundleDescriptor[] bundleDescs = { new EjbBundleDescriptorImpl(),
+                new EjbBundleDescriptorImpl() };
         bundleDescs = loadDescriptorFiles(bundleDescs[0], bundleDescs[1],
                 new EjbDeploymentDescriptorFile(),
                 new EjbDeploymentDescriptorFile(),

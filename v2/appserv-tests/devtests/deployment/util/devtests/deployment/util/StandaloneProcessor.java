@@ -23,7 +23,7 @@ import javax.enterprise.deploy.shared.ModuleType;
 
 import com.sun.enterprise.deployment.ApplicationClientDescriptor;
 import com.sun.enterprise.deployment.BundleDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
+import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.WebComponentDescriptor;
 
@@ -52,7 +52,7 @@ import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.ApplicationValidator;
 import com.sun.enterprise.deployment.util.AppClientVisitor;
 import com.sun.enterprise.deployment.util.AppClientValidator;
-import com.sun.enterprise.deployment.util.EjbBundleValidator;
+import org.glassfish.ejb.deployment.util.EjbBundleValidator;
 import com.sun.enterprise.deployment.util.EjbBundleVisitor;
 import com.sun.enterprise.deployment.util.WebBundleVisitor;
 import com.sun.enterprise.deployment.util.WebBundleValidator;
@@ -87,9 +87,8 @@ public class StandaloneProcessor {
     public StandaloneProcessor(ModuleType type) {
         this.type = type;
         if (ModuleType.EJB.equals(type)) {
-            bundleDescriptor = new EjbBundleDescriptor();
-            aeHandler = new EjbBundleContext(
-                    (EjbBundleDescriptor)bundleDescriptor);
+            bundleDescriptor = new EjbBundleDescriptorImpl();
+            aeHandler = new EjbBundleContext((EjbBundleDescriptorImpl) bundleDescriptor);
            
         } else if (ModuleType.WAR.equals(type)) {
             bundleDescriptor = new WebBundleDescriptor();
@@ -141,8 +140,8 @@ public class StandaloneProcessor {
                     ModuleScanner scanner = null;
 
                     if (ModuleType.EJB.equals(type)) {
-                        EjbBundleDescriptor ejbBundleDesc =
-                                (EjbBundleDescriptor)bundleDescriptor;
+                        EjbBundleDescriptorImpl ejbBundleDesc =
+                                (EjbBundleDescriptorImpl)bundleDescriptor;
                         scanner = habitat.getComponent(EjbJarScanner.class);
                         scanner.process(archive, ejbBundleDesc, classLoader, null);
                         
@@ -185,7 +184,7 @@ public class StandaloneProcessor {
                     ctx.pushHandler(aeHandler);
                     ProcessingResult result = ap.process(ctx);
                     if (ModuleType.EJB.equals(type)) {
-                        EjbBundleDescriptor ebd = (EjbBundleDescriptor)bundleDescriptor;
+                        EjbBundleDescriptorImpl ebd = (EjbBundleDescriptorImpl)bundleDescriptor;
                         ebd.visit(new EjbBundleValidator());
                     } else if (ModuleType.WAR.equals(type)) {
                         WebBundleDescriptor wbd = (WebBundleDescriptor)bundleDescriptor;
