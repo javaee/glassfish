@@ -76,7 +76,7 @@ public class MbeanService implements Startup {
     private static BaseServiceLocator habitat = Globals.getDefaultBaseServiceLocator();
 
     @Inject
-    private static ServerEnvironment env;
+    private ServerEnvironment env;
 
     @Override
     public Lifecycle getLifecycle() {
