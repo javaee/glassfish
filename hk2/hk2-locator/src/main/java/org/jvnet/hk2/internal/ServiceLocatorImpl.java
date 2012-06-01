@@ -75,6 +75,7 @@ import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -811,6 +812,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
             
             for (ValidationService vs : allValidators) {
+                Validator validator = vs.getValidator();
+                if (validator == null) {
+                    throw new MultiException(new IllegalArgumentException("Validator was null from validation service" + vs));
+                }
+                
                 if (!vs.getValidator().validate(new ValidationInformationImpl(
                         Operation.BIND, sd))) {
                     throw new MultiException(new IllegalArgumentException("Descriptor " + sd + " did not pass the BIND validation"));
@@ -1032,7 +1038,23 @@ public class ServiceLocatorImpl implements ServiceLocator {
             return Utilities.loadClass(descriptor.getImplementation(), injectee);
         }
         
-        return loader.loadClass(descriptor.getImplementation());
+        Class<?> retVal;
+        try {
+            retVal = loader.loadClass(descriptor.getImplementation());
+        }
+        catch (MultiException me) {
+            me.addError(new IllegalStateException("Could not load descriptor " + descriptor));
+            
+            throw me;
+        }
+        catch (Throwable th) {
+            MultiException me = new MultiException(th);
+            me.addError(new IllegalStateException("Could not load descriptor " + descriptor));
+            
+            throw me;
+        }
+        
+        return retVal;
     }
 
     private NarrowResults narrow(List<ActiveDescriptor<?>> candidates,

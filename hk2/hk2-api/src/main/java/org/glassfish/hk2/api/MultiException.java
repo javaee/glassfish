@@ -102,6 +102,15 @@ public class MultiException extends RuntimeException {
         return Collections.unmodifiableList(throwables);
     }
     
+    /**
+     * Adds an error to an existing exception
+     * 
+     * @param error The exception to add
+     */
+    public void addError(Throwable error) {
+        throwables.add(error);
+    }
+    
     public String toString() {
         StringBuffer sb = new StringBuffer("MultiException(");
         
