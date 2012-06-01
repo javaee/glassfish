@@ -44,7 +44,7 @@ import com.sun.enterprise.naming.impl.SerialInitContextFactory;
 import org.glassfish.api.StartupRunLevel;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.ServerContext;
-import org.glassfish.logging.LogMessageInfo;
+import org.glassfish.logging.annotation.LogMessageInfo;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
