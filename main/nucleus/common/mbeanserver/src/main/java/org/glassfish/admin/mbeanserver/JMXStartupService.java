@@ -109,11 +109,11 @@ public final class JMXStartupService implements PostConstruct {
     private BaseServiceLocator mHabitat;
     @Inject
     Events mEvents;
-    @Inject
+     
     static BaseServiceLocator habitat = Globals.getDefaultBaseServiceLocator();
     
     @Inject
-    private static ServerEnvironment serverEnv;
+    private ServerEnvironment serverEnv;
     
     private volatile BootAMX mBootAMX;
     private volatile JMXConnectorsStarterThread mConnectorsStarterThread;
