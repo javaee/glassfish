@@ -39,9 +39,14 @@
  */
 package org.jvnet.hk2.osgiadapter;
 
-import java.util.List;
+import static org.jvnet.hk2.osgiadapter.Logger.logger;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.logging.Level;
 
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
@@ -53,15 +58,42 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  */
 public class OsgiPopulatorPostProcessor implements
 		PopulatorPostProcessor {
-	private final HK2Loader hk2Loader;
+	
+	private final OSGiModuleImpl osgiModule;
 
-	OsgiPopulatorPostProcessor(HK2Loader hk2Loader) {
-		this.hk2Loader = hk2Loader;
+	OsgiPopulatorPostProcessor(OSGiModuleImpl osgiModule) {
+		this.osgiModule = osgiModule;	
 	}
 
 	@Override
-	public List<DescriptorImpl> process(DescriptorImpl descriptorImpl) {
+	public DescriptorImpl process(DescriptorImpl descriptorImpl) {
+        HK2Loader hk2Loader = new HK2Loader() {
+
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			@Override
+			public Class<?> loadClass(final String className)
+					throws MultiException {
+                osgiModule.start();
+				return (Class<?>) AccessController.doPrivileged(new PrivilegedAction() {
+					public java.lang.Object run() {
+						try {
+							return osgiModule.getBundle().loadClass(className);
+						} catch (Throwable e) {
+							logger.logp(Level.SEVERE, "OSGiModuleImpl",
+									"loadClass",
+									"Exception in module " + osgiModule.getBundle().toString()
+											+ " : " + e.toString());
+							throw new MultiException(e);
+						}
+					}
+				});
+
+			}
+        	
+        };
 		descriptorImpl.setLoader(hk2Loader);
-		return null;
+		return descriptorImpl;
 	}
+	
+	
 }

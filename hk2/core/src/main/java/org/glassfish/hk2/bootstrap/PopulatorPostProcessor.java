@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.bootstrap;
 
-import java.util.List;
-
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -64,11 +62,10 @@ public interface PopulatorPostProcessor {
      * @param descriptorImpl The descriptorImpl read from some external source.  This
      * processor can modify this descriptor fully.
      * 
-     * @return A list of descriptors to be added to the system.  If this returns non-null
-     * only the descriptors from this list will be added to the system (hence returning
-     * an empty list effectively drops the incoming descriptor).  If this returns null
-     * then the incoming descriptor will be added to the system.
+     * @return A descriptors to be added to the system.  If this returns non-null
+     * the descriptor will be added to the system 
+     * If this returns null then no descriptor will be added to the system.
      */
-	List<DescriptorImpl> process(DescriptorImpl descriptorImpl);
+	DescriptorImpl process(DescriptorImpl descriptorImpl);
 
 }

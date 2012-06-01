@@ -59,8 +59,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 
-import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
@@ -366,39 +364,14 @@ public class OSGiModuleImpl implements Module {
      * Parses all the inhabitants descriptors of the given name in this module.
      */
     /* package */ void parseInhabitants(String name) throws IOException, BootException {   	
- 
-        HK2Loader hk2Loader = new HK2Loader() {
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public Class<?> loadClass(final String className)
-					throws MultiException {
-                start();
-				return (Class<?>) AccessController.doPrivileged(new PrivilegedAction() {
-					public java.lang.Object run() {
-						try {
-							return bundle.loadClass(className);
-						} catch (Throwable e) {
-							logger.logp(Level.SEVERE, "OSGiModuleImpl",
-									"loadClass",
-									"Exception in module " + bundle.toString()
-											+ " : " + e.toString());
-							throw new MultiException(e);
-						}
-					}
-				});
-
-			}
-        	
-        };
-        
+         
         ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().find("default");
         
         List<PopulatorPostProcessor> registeredPostProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
         
         LinkedList<PopulatorPostProcessor> postProcessors = new LinkedList<PopulatorPostProcessor>();
         
-		postProcessors.add(new OsgiPopulatorPostProcessor(hk2Loader));
+		postProcessors.add(new OsgiPopulatorPostProcessor(this));
 		postProcessors.addAll(registeredPostProcessors);
 		
         for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name)) {
