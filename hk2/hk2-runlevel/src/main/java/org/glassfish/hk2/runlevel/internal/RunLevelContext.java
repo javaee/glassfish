@@ -105,9 +105,9 @@ public class RunLevelContext implements Context<RunLevel> {
         }
 
 
-        RunLevel.Mode mode = Utilities.getRunLevelMode(activeDescriptor);
+        int mode = Utilities.getRunLevelMode(activeDescriptor);
 
-        if (mode == RunLevel.Mode.VALIDATING) {
+        if (mode == RunLevel.RUNLEVEL_MODE_VALIDATING) {
             RunLevelController RunLevelController = getRunLevelController(rlsName);
 
             if (RunLevelController == null) {

@@ -89,31 +89,26 @@ public @interface RunLevel {
      */
     public static final int RUNLEVEL_VAL_IMMEDIATE = -1;
 
+    /**
+     * Services set to have a non-validating run level mode will be
+     * activated by their associated run level service or through
+     * injection into another service.  These services will not be
+     * checked during activation which means that the service can be
+     * activated prior to the run level service reaching the run level.
+     * The run level serves only as a fail safe for activation.  These
+     * services will not be deactivated by the run level service.
+     */
+    public static final int RUNLEVEL_MODE_NON_VALIDATING = 0;
 
-    // ----- Mode enum ------------------------------------------------------
-
-    public enum Mode {
-        /**
-         * Services set to have a validating run level mode will be activated
-         * and deactivated by their associated run level service but may also
-         * be activated through injection into another service.  The current
-         * run level of the associated run level service will be checked
-         * during activation of these services to ensure that the service
-         * is being activated in at an appropriate run level.
-         */
-        VALIDATING,
-
-        /**
-         * Services set to have a non-validating run level mode will be
-         * activated by their associated run level service or through
-         * injection into another service.  These services will not be
-         * checked during activation which means that the service can be
-         * activated prior to the run level service reaching the run level.
-         * The run level serves only as a fail safe for activation.  These
-         * services will not be deactivated by the run level service.
-         */
-        NON_VALIDATING
-    }
+    /**
+     * Services set to have a validating run level mode will be activated
+     * and deactivated by their associated run level service but may also
+     * be activated through injection into another service.  The current
+     * run level of the associated run level service will be checked
+     * during activation of these services to ensure that the service
+     * is being activated in at an appropriate run level.
+     */
+    public static final int RUNLEVEL_MODE_VALIDATING = 1;
 
 
     // ----- Elements -------------------------------------------------------
@@ -132,5 +127,5 @@ public @interface RunLevel {
      * @return the mode
      */
     @Metadata(RUNLEVEL_MODE_META_TAG)
-    public Mode mode() default Mode.VALIDATING;
+    public int mode() default RUNLEVEL_MODE_VALIDATING;
 }
