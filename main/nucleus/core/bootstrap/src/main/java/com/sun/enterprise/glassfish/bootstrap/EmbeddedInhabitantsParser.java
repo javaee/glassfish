@@ -43,6 +43,7 @@ package com.sun.enterprise.glassfish.bootstrap;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -113,6 +114,7 @@ public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
 		if ("com.sun.enterprise.v3.server.GFDomainXml".equals(
 				descriptorImpl.getImplementation())) {
 			descriptorImpl.setImplementation("org.glassfish.kernel.embedded.EmbeddedDomainXml");
+			descriptorImpl.setScope(PerLookup.class.getCanonicalName());
 		}
 
 		if ("com.sun.enterprise.v3.server.DomainXmlPersistence".equals(
