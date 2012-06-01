@@ -97,11 +97,11 @@ abstract class RunLevelBridge implements PostConstruct, PreDestroy {
                 activate(serviceHandle);
             } catch (RuntimeException e) {
                 logger.log(Level.SEVERE, "problem starting {0}: {1}", new Object[] {serviceHandle, e.getMessage()});
-                logger.log(level, "nested error", e);
+                logger.log(Level.SEVERE, "nested error", e);
                 throw e;
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "problem starting {0}: {1}", new Object[] {serviceHandle, e.getMessage()});
-                logger.log(level, "nested error", e);
+                logger.log(Level.SEVERE, "nested error", e);
             }
             if (logger.isLoggable(level)) {
                 logger.log(level, "start of " + serviceHandle + " done in "
