@@ -92,12 +92,12 @@ public class Utilities {
      *
      * @return the mode
      */
-    public static RunLevel.Mode getRunLevelMode(Descriptor descriptor) {
+    public static int getRunLevelMode(Descriptor descriptor) {
         List<String> list = descriptor.getBaseDescriptor().getMetadata().
                 get(RunLevel.RUNLEVEL_MODE_META_TAG);
 
         return list == null ?
-                RunLevel.Mode.VALIDATING :
-                RunLevel.Mode.valueOf(list.get(0));
+                RunLevel.RUNLEVEL_MODE_VALIDATING :
+                Integer.valueOf(list.get(0));
     }
 }

@@ -696,7 +696,7 @@ public class RunLevelServiceTest {
             if (rla != null) {
                 descriptorBuilder.//to(RunLevel.class).
                         has(RunLevel.RUNLEVEL_VAL_META_TAG, Collections.singletonList(((Integer) rla.value()).toString())).
-                        has(RunLevel.RUNLEVEL_MODE_META_TAG, Collections.singletonList(rla.mode().toString()));
+                        has(RunLevel.RUNLEVEL_MODE_META_TAG, Collections.singletonList(((Integer) rla.mode()).toString()));
 
                 descriptorBuilder.in(RunLevel.class);
             }
@@ -861,7 +861,7 @@ public class RunLevelServiceTest {
         public void doSomething();
     }
 
-    @RunLevel(value = 10, mode = RunLevel.Mode.NON_VALIDATING)
+    @RunLevel(value = 10, mode = RunLevel.RUNLEVEL_MODE_NON_VALIDATING)
     @Service
     public static class RunLevelControllerNonValidating extends TestService implements ServiceD {
         @Override
