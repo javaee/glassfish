@@ -110,6 +110,8 @@ public abstract class DomainXml implements Populator {
 
         ClassLoader parentClassLoader = (registry == null) ?
                 getClass().getClassLoader() : registry.getParentClassLoader() ;
+        if (parentClassLoader == null) parentClassLoader = getClass().getClassLoader();
+        
         habitat.addComponent(new ExistingSingletonInhabitant<ClassLoader>(ClassLoader.class, parentClassLoader));
 
         try {
