@@ -159,6 +159,8 @@ public class GetSetTest extends AdminBaseDevTest {
         if (line.contains("secure-admin-principal")) return null;
         // cannot set applications
         if (line.contains("applications.application")) return null;
+        // new security config has keys - cannot set them
+        if (line.contains("security-configurations")) return null;
 
         // escape the "." in some property names
         final String[] dottedprops = { 
