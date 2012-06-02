@@ -82,6 +82,7 @@ import com.sun.enterprise.module.common_impl.LogHelper;
 public class Main {
 
 	private ServiceLocator serviceLocator;
+	private boolean created = false;
 
 	private DescriptorFileFinder descriptorFileFinder = new ClasspathDescriptorFileFinder();
 
@@ -168,8 +169,14 @@ public class Main {
 	}
 
 	protected void createServiceLocator() {
-		serviceLocator = ServiceLocatorFactory.getInstance().create(
+	    ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+	    serviceLocator = factory.find(Main.DEFAULT_NAME);
+	    
+	    if (serviceLocator == null) {
+		    serviceLocator = ServiceLocatorFactory.getInstance().create(
 				Main.DEFAULT_NAME, null, new ServiceLocatorGeneratorImpl());
+		    created = true;
+	    }
 	}
 
 	protected void defineParentClassLoader() throws BootException {
@@ -240,7 +247,9 @@ public class Main {
 			throws BootException {
 		// set the parent class loader before we start loading modules
 		defineParentClassLoader();
-
+		
+		if (!created) return serviceLocator;
+		
 		DynamicConfigurationService dcs = serviceLocator
 				.getService(DynamicConfigurationService.class);
 		
@@ -331,10 +340,6 @@ public class Main {
 		return serviceLocator;
 	}
 
-	protected void setServiceLocator(ServiceLocator serviceLocator) {
-		this.serviceLocator = serviceLocator;
-	}
-
 	protected DescriptorFileFinder getDescriptorFileFinder() {
 		return descriptorFileFinder;
 	}
@@ -346,6 +351,8 @@ public class Main {
 
 	protected void addPopulatorPostProcessor(
 			PopulatorPostProcessor populatorPostProcessor) {
+	    if (!created) return;
+	    
 		DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
 		DynamicConfiguration config = dcs.createDynamicConfiguration();
 		

@@ -54,10 +54,9 @@ import java.lang.annotation.Documented;
  *
  * <h2>Contract interface</h2>
  * <p>
- * This annotation can be placed on interfaces and abstract classes <tt>T</tt>,
- * and derived classes that are assignable to <tt>T</tt> with {@link Service}
- * annotation can be looked up by using {@link org.glassfish.hk2.Services#byType(Class)}
- * (and its family of methods.)
+ * This annotation can be placed on classes to indicate
+ * that when automatically deducing the set of advertised
+ * classes that it should be included.
  *
  * @author Jerome Dochez
  * @see Index
