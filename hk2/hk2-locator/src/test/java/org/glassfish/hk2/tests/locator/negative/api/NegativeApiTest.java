@@ -563,4 +563,19 @@ public class NegativeApiTest {
                     "The @Named qualifier must have a value"));
         }
     }
+    
+    /**
+     * Trying to lookup a type which is neither scope nor qualifier
+     */
+    @Test
+    public void testNotScopeOrQualifier() {
+        try {
+            locator.getService(NotAQualifier.class);
+            Assert.fail("NotAQualifier is neither a qualifier nor scope");
+          }
+          catch (IllegalArgumentException iae) {
+              Assert.assertTrue(iae.getMessage(), iae.getMessage().contains(
+                      " must be a scope or annotation"));
+          }
+    }
 }

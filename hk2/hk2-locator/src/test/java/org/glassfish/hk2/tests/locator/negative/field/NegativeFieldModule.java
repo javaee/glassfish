@@ -56,6 +56,7 @@ public class NegativeFieldModule implements TestModule {
     public void configure(DynamicConfiguration config) {
         config.bind(BuilderHelper.link(FinalFieldService.class).build());
         config.bind(BuilderHelper.link(StaticFieldService.class).build());
+        config.bind(BuilderHelper.link(AnnotationFieldService.class).build());
 
     }
 

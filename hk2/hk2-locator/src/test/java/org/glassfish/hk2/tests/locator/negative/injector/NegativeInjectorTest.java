@@ -114,7 +114,7 @@ public class NegativeInjectorTest {
         }
     }
     
-    private final static String FIELD_EXPECTED = "may not be static or final";
+    private final static String FIELD_EXPECTED = " may not be static, final or have an Annotation type";
     
     /**
      * tries to inject into a bad string
@@ -128,7 +128,7 @@ public class NegativeInjectorTest {
             Assert.fail("ThrowyF has a final field to be injected");
         }
         catch (MultiException me) {
-            Assert.assertTrue(me.getMessage().contains(FIELD_EXPECTED));
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(FIELD_EXPECTED));
         }
     }
     

@@ -563,6 +563,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
+        Utilities.checkLookupType(rawClass);
+        
         rawClass = Utilities.translatePrimitiveType(rawClass);
         
         Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
@@ -874,7 +876,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
             thingsAdded.add(sd);
             allDescriptors.add(sd);
             
-            for (String advertisedContract : sd.getAdvertisedContracts()) {
+            LinkedList<String> allContracts = new LinkedList<String>(sd.getAdvertisedContracts());
+            allContracts.addAll(sd.getQualifiers());
+            String scope = (sd.getScope() == null) ? PerLookup.class.getName() : sd.getScope() ;
+            allContracts.add(scope);
+            
+            for (String advertisedContract : allContracts) {
                 LinkedList<SystemDescriptor<?>> byImpl = descriptorsByAdvertisedContract.get(advertisedContract);
                 if (byImpl == null) {
                     byImpl = new LinkedList<SystemDescriptor<?>>();

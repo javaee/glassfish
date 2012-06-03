@@ -37,26 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.constructor;
+package org.glassfish.hk2.tests.locator.negative.method;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import javax.inject.Inject;
 
 /**
  * @author jwells
  *
  */
-public class NegativeConstructorModule implements TestModule {
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(BadC.class).build());
-        config.bind(BuilderHelper.link(NoC.class).build());
-        config.bind(BuilderHelper.link(AnnotationC.class).build());
-
+public class AnnotationMethodService {
+    @Inject
+    private void setAService(Anno anno) {
+        throw new AssertionError("not called");
     }
 
 }

@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -66,6 +67,7 @@ public class TypeChecker {
      * @param beanType the type being assigned
      * @return true if things are type safe
      */
+    @SuppressWarnings("unchecked")
     public static boolean isTypeSafe(Type requiredType, Type beanType) {
         Class<?> requiredClass = ReflectionHelper.getRawClass(requiredType);
         if (requiredClass == null) {
@@ -78,7 +80,19 @@ public class TypeChecker {
             return false;
         }
         
-        if (!requiredClass.isAssignableFrom(beanClass)) return false;
+        if (!requiredClass.isAssignableFrom(beanClass)) {
+            if (requiredClass.isAnnotation()) {
+                if (beanClass.isAnnotationPresent((Class<? extends Annotation>) requiredClass)) {
+                    return true;
+                }
+                
+                Class<? extends Annotation> trueScope = Utilities.getScopeAnnotationType(beanClass);
+                if (trueScope.equals((Class<? extends Annotation>) requiredClass)) {
+                    return true;
+                }
+            }
+            return false;
+        }
         
         if ((requiredType instanceof Class) ||
             (requiredType instanceof GenericArrayType)) {

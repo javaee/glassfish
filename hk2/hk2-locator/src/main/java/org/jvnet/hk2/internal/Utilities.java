@@ -68,6 +68,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.inject.Singleton;
 
@@ -97,6 +98,22 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * Checks that the incoming lookup type is not improper in some way
+     * 
+     * @param checkMe
+     */
+    public static void checkLookupType(Class<?> checkMe) {
+        if (!checkMe.isAnnotation()) return;
+        
+        // If it is in annotation we need to ensure it is either a
+        // scope or a qualifier
+        if (checkMe.isAnnotationPresent(Scope.class)) return;
+        if (checkMe.isAnnotationPresent(Qualifier.class)) return;
+        
+        throw new IllegalArgumentException("Lookup type " + checkMe + " must be a scope or annotation");
+    }
+    
     /**
      * This is used to check on the annotation set.  It must be done under protection because the annotations may
      * attempt to discover if they are equal using getDeclaredMembers permission
@@ -713,6 +730,13 @@ public class Utilities {
                 aConstructorWithInjectAnnotation = constructor;
             }
             
+            if (!isProperConstructor(constructor)) {
+                collector.addThrowable(new IllegalArgumentException("The constructor for " +
+                        Pretty.clazz(annotatedType) + " may not have an annotation as a parameter"));
+                      return null;
+                
+            }
+            
         }
         
         if (aConstructorWithInjectAnnotation != null) {
@@ -726,6 +750,14 @@ public class Utilities {
         }
         
         return zeroArgConstructor;
+    }
+    
+    private static boolean isProperConstructor(Constructor<?> c) {
+        for (Class<?> pClazz : c.getParameterTypes()) {
+            if (pClazz.isAnnotation()) return false;
+        }
+        
+        return true;
     }
     
     /**
@@ -836,10 +868,10 @@ public class Utilities {
                 continue;
             }
             
-            if (!hasCorrectInitializerMethodModifiers(method)) {
+            if (!isProperMethod(method)) {
                 errorCollector.addThrowable(new IllegalArgumentException(
                         "An initializer method " + Pretty.method(method) + 
-                        " is static or abstract"));
+                        " is static, abstract or has a parameter that is an annotation"));
                 continue;
             }
             
@@ -868,9 +900,9 @@ public class Utilities {
                 continue;
             }
             
-            if (!hasCorrectInitializerFieldModifiers(field)) {
+            if (!isProperField(field)) {
                 errorCollector.addThrowable(new IllegalArgumentException("The field " +
-                  Pretty.field(field) + " may not be static or final"));
+                  Pretty.field(field) + " may not be static, final or have an Annotation type"));
                 continue;
             }
             
@@ -897,16 +929,23 @@ public class Utilities {
         return null;
     }
     
-    private static boolean hasCorrectInitializerMethodModifiers(Method member) {
+    private static boolean isProperMethod(Method member) {
         if (ReflectionHelper.isStatic(member)) return false;
         if (isAbstract(member)) return false;
+        for (Class<?> paramClazz : member.getParameterTypes()) {
+            if (paramClazz.isAnnotation()) {
+                return false;
+            }
+        }
         
         return true;
     }
     
-    private static boolean hasCorrectInitializerFieldModifiers(Field field) {
+    private static boolean isProperField(Field field) {
         if (ReflectionHelper.isStatic(field)) return false;
         if (isFinal(field)) return false;
+        Class<?> type = field.getType();
+        if (type.isAnnotation()) return false;
         
         return true;
     }
@@ -1004,6 +1043,25 @@ public class Utilities {
             
         return new ScopeInfo(null, PerLookup.class);
         
+    }
+    
+    /**
+     * Returns the scope of this thing
+     * 
+     * @param annotatedGuy The annotated class or producer method
+     * @param collector The error collector
+     * @return The scope of this class or producer method.  If no scope is
+     * found will return the dependent scope
+     */
+    public static Class<? extends Annotation> getScopeAnnotationType(
+            Class<?> fromThis) {
+        Collector collector = new Collector();
+        
+        ScopeInfo si = getScopeInfo(fromThis, collector);
+        
+        collector.throwIfErrors();
+        
+        return si.getAnnoType();
     }
     
     /**

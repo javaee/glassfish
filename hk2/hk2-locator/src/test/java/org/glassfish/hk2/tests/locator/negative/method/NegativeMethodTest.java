@@ -65,7 +65,22 @@ public class NegativeMethodTest {
             Assert.fail("static method should cause failure");
         }
         catch (MultiException me) {
-            Assert.assertTrue(me.getMessage().contains("is static or abstract"));
+            Assert.assertTrue(me.getMessage().contains("is static, abstract or has a parameter that is an annotation"));
+        }
+    }
+    
+    /**
+     * Methods injected may not be static
+     */
+    @Test
+    public void testAnnotationMethod() {
+        try {
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    AnnotationMethodService.class.getName())));
+            Assert.fail("method with annotation should cause failure");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains("is static, abstract or has a parameter that is an annotation"));
         }
     }
 
