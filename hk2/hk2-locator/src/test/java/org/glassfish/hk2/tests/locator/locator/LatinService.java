@@ -39,64 +39,13 @@
  */
 package org.glassfish.hk2.tests.locator.locator;
 
-import java.util.Set;
-
 import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
  * @author jwells
  *
  */
-public class LocatorModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.bind(BuilderHelper.link(BootCommand.class).
-                to(AdminCommand.class).
-                named("BootCommand").
-                build());
-        
-        configurator.bind(BuilderHelper.link(GetStatisticsCommand.class).
-                to(AdminCommand.class).
-                named("GetStatisticsCommand").
-                build());
-        
-        configurator.bind(BuilderHelper.link(ShutdownCommand.class).
-                to(AdminCommand.class).
-                named("ShutdownCommand").
-                build());
-        
-        // This is part of the test, to use a non-BuilderHelper descriptor
-        ForeignDescriptor fd = new ForeignDescriptor();
-        fd.setImplementation(FrenchService.class.getName());
-        
-        Set<String> contracts = fd.getAdvertisedContracts();
-        contracts.add(FrenchService.class.getName());
-        
-        configurator.bind(fd);
-        
-        DescriptorImpl latin = new DescriptorImpl();
-        latin.setImplementation(LatinService.class.getName());
-        latin.addAdvertisedContract(LatinService.class.getName());
-        latin.addQualifier(Dead.class.getName());
-        latin.setScope(Singleton.class.getName());
-        
-        configurator.bind(latin);
-        
-        DescriptorImpl thracian = new DescriptorImpl();
-        thracian.setImplementation(ThracianService.class.getName());
-        thracian.addAdvertisedContract(ThracianService.class.getName());
-        thracian.addQualifier(Dead.class.getName());
-        
-        configurator.bind(thracian);
-    }
+@Dead @Singleton
+public class LatinService {
 
 }

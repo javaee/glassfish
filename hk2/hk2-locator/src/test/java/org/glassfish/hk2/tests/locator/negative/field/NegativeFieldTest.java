@@ -65,7 +65,7 @@ public class NegativeFieldTest {
             Assert.fail("static field should cause failure");
         }
         catch (MultiException me) {
-            Assert.assertTrue(me.getMessage().contains(" may not be static or final"));
+            Assert.assertTrue(me.getMessage().contains(" may not be static, final or have an Annotation type"));
         }
     }
     
@@ -80,7 +80,22 @@ public class NegativeFieldTest {
             Assert.fail("final field should cause failure");
         }
         catch (MultiException me) {
-            Assert.assertTrue(me.getMessage().contains(" may not be static or final"));
+            Assert.assertTrue(me.getMessage().contains(" may not be static, final or have an Annotation type"));
+        }
+    }
+    
+    /**
+     * Fields injected may not be annotations
+     */
+    @Test
+    public void testAnnotationField() {
+        try {
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    AnnotationFieldService.class.getName())));
+            Assert.fail("annotated field should cause failure");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(" may not be static, final or have an Annotation type"));
         }
     }
 

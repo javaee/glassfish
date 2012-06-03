@@ -37,26 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.constructor;
+package org.glassfish.hk2.tests.locator.locator;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
  * @author jwells
  *
  */
-public class NegativeConstructorModule implements TestModule {
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(BadC.class).build());
-        config.bind(BuilderHelper.link(NoC.class).build());
-        config.bind(BuilderHelper.link(AnnotationC.class).build());
-
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE })
+public @interface Dead {
 
 }

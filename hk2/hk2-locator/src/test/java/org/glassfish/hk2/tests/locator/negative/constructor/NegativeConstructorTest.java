@@ -85,5 +85,21 @@ public class NegativeConstructorTest {
         }
         
     }
+    
+    /**
+     * This constructor has an annotation in its constructor
+     */
+    @Test
+    public void testAnnotationInConstructor() {
+        try {
+            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                    AnnotationC.class.getName())));
+            Assert.fail("Constructor with an Annotation parameter should have failed");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(" may not have an annotation as a parameter"));
+        }
+        
+    }
 
 }

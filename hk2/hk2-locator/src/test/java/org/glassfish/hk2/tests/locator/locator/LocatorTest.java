@@ -46,6 +46,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Singleton;
+
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -170,6 +172,46 @@ public class LocatorTest {
         Assert.assertEquals(GermanService.class, ad.getImplementationClass());
         
         Assert.assertTrue(ad.getContractTypes().contains(GermanService.class));
+    }
+    
+    /**
+     * Gets services based on their qualifier
+     */
+    @Test
+    public void testLookupViaQualifier() {
+        List<Object> deadLanguages = locator.getAllServices(Dead.class);
+        Assert.assertNotNull(deadLanguages);
+        
+        Assert.assertTrue("Expected at least two dead languages, but got " + deadLanguages.size(),
+                deadLanguages.size() >= 2);
+        
+        // Should be in priority order
+        Assert.assertTrue(deadLanguages.get(0) instanceof LatinService);
+        Assert.assertTrue(deadLanguages.get(1) instanceof ThracianService);
+    }
+    
+    /**
+     * Gets the per-lookup services
+     */
+    @Test
+    public void testLookupViaPerLookup() {
+        List<Object> perLookup = locator.getAllServices(PerLookup.class);
+        Assert.assertNotNull(perLookup);
+        
+        Assert.assertTrue("Expected at least five perLookup services, but got " + perLookup.size(),
+                perLookup.size() >= 5);
+    }
+    
+    /**
+     * Gets the singleton services
+     */
+    @Test
+    public void testLookupViaPerSingleton() {
+        List<Object> singleton = locator.getAllServices(Singleton.class);
+        Assert.assertNotNull(singleton);
+        
+        Assert.assertTrue("Expected at least one singleton services, but got " + singleton.size(),
+                singleton.size() >= 1);
     }
 
 }

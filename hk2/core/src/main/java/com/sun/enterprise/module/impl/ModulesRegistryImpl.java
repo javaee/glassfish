@@ -67,6 +67,9 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
 
     public ModulesRegistryImpl(AbstractModulesRegistryImpl parent) {
         super(parent);
+        
+        System.out.println("JRW(10) ModulesRegistryImpl being created here " + this);
+        Thread.dumpStack();
     }
 
     /**

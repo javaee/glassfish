@@ -55,6 +55,7 @@ public class NegativeMethodModule implements TestModule {
     @Override
     public void configure(DynamicConfiguration config) {
         config.bind(BuilderHelper.link(StaticMethodService.class).build());
+        config.bind(BuilderHelper.link(AnnotationMethodService.class).build());
 
     }
 

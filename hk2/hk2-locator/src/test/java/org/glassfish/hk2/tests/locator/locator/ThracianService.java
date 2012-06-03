@@ -37,26 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.constructor;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+package org.glassfish.hk2.tests.locator.locator;
 
 /**
  * @author jwells
  *
  */
-public class NegativeConstructorModule implements TestModule {
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(BadC.class).build());
-        config.bind(BuilderHelper.link(NoC.class).build());
-        config.bind(BuilderHelper.link(AnnotationC.class).build());
-
-    }
+@Dead
+public class ThracianService {
 
 }
