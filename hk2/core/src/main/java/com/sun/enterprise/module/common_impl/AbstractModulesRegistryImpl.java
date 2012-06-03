@@ -206,7 +206,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             weight++;
         }
         repositories.put(weight, repository);
-        System.out.println("JRW(100) AMR adding registry " + repository + " with weight " + weight + " in " + this);
     }
     
     /**
@@ -217,7 +216,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      */
     public synchronized void addRepository(Repository repository) {
         repositories.put(100+repositories.size(), repository);
-        System.out.println("JRW(110) AMR adding registry " + repository + " in " + this);
     }
     
     /**
@@ -270,7 +268,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
         Module module;
         Logger.getAnonymousLogger().fine("this.makeModuleFor("+name+ ", " +
                 version + ", " + resolve + ") called.");
-        System.out.println("JRW(10) parent=" + parent);
         if(parent!=null) {
             module = parent.makeModuleFor(name,version, resolve);
             if(module!=null)        return module;
@@ -278,22 +275,18 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
         
         ModuleId jrw = AbstractFactory.getInstance().createModuleId(name, version);
         module = modules.get(AbstractFactory.getInstance().createModuleId(name, version));
-        System.out.println("JRW(20) module=" + module + " for " + jrw);
         if (module == null && version == null) {
             Collection<Module> matchingModules = getModules(name);
-            System.out.println("JRW(25) matchingModules=" + matchingModules.size() + " for " + name);
             if (!matchingModules.isEmpty()) {
                 module = matchingModules.iterator().next();
             }
         }
-        System.out.println("JRW(30) module=" + module);
         if (module==null) {
             module = loadFromRepository(name, version);
             if (module!=null) {
                 add(module);
             }
         }
-        System.out.println("JRW(40) module=" + module + " resolve=" + resolve);
         if (module!=null && resolve) {
             try {
                 module.resolve();
@@ -337,18 +330,14 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
         Set<Integer> keys = repositories.keySet();
         TreeSet<Integer> sortedKeys = new TreeSet<Integer>();
         sortedKeys.addAll(keys);
-        System.out.println("JRW(50) sortedKeys.size=" + sortedKeys.size());
         for (Integer key : sortedKeys) {
             Repository repo = repositories.get(key);
-            System.out.println("JRW(60) repo=" + repo + " of type " + repo.getClass().getName());
             ModuleDefinition moduleDef = repo.find(name, version);
-            System.out.println("JRW(70) moduleDef=" + moduleDef);
             if (moduleDef!=null) {
                 return newModule(moduleDef);
             }
         }
         
-        System.out.println("JRW(80) loadFromRepo returning null");
         return null;
     }
 
