@@ -51,6 +51,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import java.lang.reflect.Proxy;
+import java.util.List;
 
 /**
  * @author Jagadish Ramu
@@ -58,6 +59,7 @@ import java.lang.reflect.Proxy;
 @Singleton
 @Service
 public class ResourceManagerFactory {
+    public final static String METADATA_KEY = "ResourceImpl";
 
     @Inject
     private ServiceLocator locator;
@@ -68,45 +70,43 @@ public class ResourceManagerFactory {
             ActiveDescriptor<?> desc = handle.getActiveDescriptor();
             if (desc == null) continue;
             
-            if( desc.getName() != null){
-                if(Proxy.isProxyClass(resource.getClass())){
-                    if(resource.getClass().getInterfaces() != null){
-                        for(Class<?> clz : resource.getClass().getInterfaces()){
-                            if(desc.getName().equals(clz.getName())){
-                                deployerHandle = handle;
-                                break;
-                            }
-                        }
-                        
-                        if(deployerHandle != null){
-                            break;
-                        }
-                    }
-                }
-                
-                if(desc.getName().equals(resource.getClass().getName())){
-                    deployerHandle = handle;
-                    break;
-                }
-                
-                if(resource.getClass().getInterfaces() != null){
-                    //hack : for JdbcConnectionPool impl used by DataSourceDefinition.
-                    //check whether the interfaces implemented by the class matches
-                    for(Class<?> clz : resource.getClass().getInterfaces()){
-                        if(desc.getName().equals(clz.getName())){
-                            deployerHandle = handle;
-                            break;
-                        }
-                    }
-                    
-                    if(deployerHandle != null){
+            List<String> resourceImpls = desc.getMetadata().get(METADATA_KEY);
+            if (resourceImpls == null || resourceImpls.isEmpty()) continue;
+            String resourceImpl = resourceImpls.get(0);
+            
+            if(Proxy.isProxyClass(resource.getClass())){
+                for(Class<?> clz : resource.getClass().getInterfaces()){
+                    if(resourceImpl.equals(clz.getName())){
+                        deployerHandle = handle;
                         break;
                     }
                 }
+                        
+                if(deployerHandle != null){
+                    break;
+                }
+            }
+                
+            if(resourceImpl.equals(resource.getClass().getName())){
+                deployerHandle = handle;
+                break;
+            }
+                
+            //hack : for JdbcConnectionPool impl used by DataSourceDefinition.
+            //check whether the interfaces implemented by the class matches
+            for(Class<?> clz : resource.getClass().getInterfaces()){
+                if(resourceImpl.equals(clz.getName())){
+                    deployerHandle = handle;
+                    break;
+                }
+            }
+                    
+            if(deployerHandle != null){
+                break;
             }
         }
         
-        if(deployerHandle != null){
+        if (deployerHandle != null){
             Object deployer = deployerHandle.getService();
             if(deployer != null && deployer instanceof ResourceDeployer){
                 return (ResourceDeployer) deployer;
