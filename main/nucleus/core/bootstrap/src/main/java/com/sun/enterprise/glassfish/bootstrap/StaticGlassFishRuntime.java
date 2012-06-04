@@ -39,14 +39,16 @@
  */
 package com.sun.enterprise.glassfish.bootstrap;
 
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.bootstrap.Main;
-import com.sun.enterprise.module.bootstrap.ModuleStartup;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.common_impl.AbstractFactory;
-import com.sun.enterprise.module.impl.ModulesRegistryImpl;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.glassfish.embeddable.BootstrapProperties;
 import org.glassfish.embeddable.GlassFish;
 import org.glassfish.embeddable.GlassFishException;
 import org.glassfish.embeddable.GlassFishProperties;
@@ -58,15 +60,10 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.BaseServiceLocator;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.bootstrap.Main;
+import com.sun.enterprise.module.bootstrap.ModuleStartup;
+import com.sun.enterprise.module.bootstrap.StartupContext;
 
 /**
  * The GlassFishRuntime implementation for NonOSGi environments.
@@ -114,10 +111,11 @@ public class StaticGlassFishRuntime extends GlassFishRuntime {
             
             DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
             DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+            ModulesRegistry modulesRegistry = SingleHK2Factory.getInstance().createModulesRegistry();
             
-            AbstractActiveDescriptor<ModulesRegistryImpl> modulesRegistryDescriptor = BuilderHelper.createConstantDescriptor(new ModulesRegistryImpl(null));
+            AbstractActiveDescriptor<ModulesRegistry> modulesRegistryDescriptor = BuilderHelper.createConstantDescriptor(modulesRegistry);
 			
-            modulesRegistryDescriptor.addAdvertisedContract(ModulesRegistry.class.getCanonicalName());
             config.addActiveDescriptor(modulesRegistryDescriptor);
             
             config.commit();
