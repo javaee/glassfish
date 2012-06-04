@@ -39,8 +39,11 @@
  */
 package org.glassfish.common.util.admin;
 
+import java.util.StringTokenizer;
+
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ValidationInformation;
@@ -69,8 +72,12 @@ public class HK2BindTracingService implements ValidationService {
     };
     private final static boolean TRACE_BINDS = Boolean.parseBoolean(
             System.getProperty("org.glassfish.hk2.tracing.binds", "false"));
+    private final static String TRACE_BINDS_PATTERN =
+            System.getProperty("org.glassfish.hk2.tracing.bindsPattern");
     private final static boolean TRACE_LOOKUPS = Boolean.parseBoolean(
             System.getProperty("org.glassfish.hk2.tracing.lookups", "false"));
+    private final static String TRACE_LOOKUPS_PATTERN =
+            System.getProperty("org.glassfish.hk2.tracing.lookupsPattern");
     
     private final static String STACK_PATTERN =
             System.getProperty("org.glassfish.hk2.tracing.binds.stackPattern");
@@ -95,6 +102,28 @@ public class HK2BindTracingService implements ValidationService {
         return VALIDATOR;
     }
     
+    private static boolean matchesPattern(String pattern, ActiveDescriptor<?> descriptor) {
+        if (pattern == null) return true;
+        
+        StringTokenizer st = new StringTokenizer(pattern, "|");
+        
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            
+            if (descriptor.getImplementation().contains(token)) {
+                return true;
+            }
+            
+            for (String contract : descriptor.getAdvertisedContracts()) {
+                if (contract.contains(token)) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;        
+    }
+    
     private static class ValidatorImpl implements Validator {
 
         /* (non-Javadoc)
@@ -106,17 +135,17 @@ public class HK2BindTracingService implements ValidationService {
             
             switch (info.getOperation()) {
             case BIND:
-                if (TRACE_BINDS) {
+                if (TRACE_BINDS && matchesPattern(TRACE_BINDS_PATTERN, info.getCandidate())) {
                     System.out.println("HK2 Tracing (BIND): " + info.getCandidate());
                 }
                 break;
             case UNBIND:
-                if (TRACE_BINDS) {
+                if (TRACE_BINDS && matchesPattern(TRACE_BINDS_PATTERN, info.getCandidate())) {
                     System.out.println("HK2 Tracing (UNBIND): " + info.getCandidate());
                 }
                 break;
             case LOOKUP:
-                if (TRACE_LOOKUPS) {
+                if (TRACE_LOOKUPS && matchesPattern(TRACE_LOOKUPS_PATTERN, info.getCandidate())) {
                     System.out.println("HK2 Tracing (LOOKUP) Candidate: " + info.getCandidate());
                     if (info.getInjectee() != null) {
                         System.out.println("HK2 Tracing (LOOKUP) Injectee: " + info.getInjectee());
@@ -128,8 +157,7 @@ public class HK2BindTracingService implements ValidationService {
                     
             }
             
-            if (STACK_PATTERN != null) {
-                if (info.getCandidate().getImplementation().contains(STACK_PATTERN));
+            if ((STACK_PATTERN != null) && matchesPattern(STACK_PATTERN, info.getCandidate())) {
                 Thread.dumpStack();
             }
             
