@@ -41,6 +41,7 @@ package org.glassfish.hk2.runlevel.utilities;
 
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.Activator;
 import org.glassfish.hk2.runlevel.RunLevelController;
@@ -48,9 +49,6 @@ import org.glassfish.hk2.runlevel.RunLevelException;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.Sorter;
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.IterableProvider;
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.internal.RunLevelContext;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -425,7 +423,7 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
      * @return true if the RunLevel for the given descriptor in question should
      *         be processed by this RunLevelController instance
      */
-    protected boolean accept(ActiveDescriptor<?> descriptor, int activeRunLevel) {
+    protected boolean accept(Descriptor descriptor, int activeRunLevel) {
         Integer runLevel = Utilities.getRunLevelValue(descriptor);
         if (runLevel != null) {
             if (runLevel != activeRunLevel) {
@@ -787,24 +785,25 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
         }
 
         private void activateRunLevel() {
-            List<ActiveDescriptor<?>> activations = new ArrayList<ActiveDescriptor<?>>();
+            List<ActiveDescriptor<?>> activations = serviceLocator.getDescriptors(
+                    new IndexedFilter() {
+                        private final String contract = RunLevel.class.getName();
 
-            final Filter filter = new Filter() {
-                @Override
-                public boolean matches(Descriptor d) {
-                    return RunLevel.class.getName().equals(d.getScope());
-                }
-            };
+                        @Override
+                        public boolean matches(Descriptor d) {
+                            return accept(d, activeRunLevel);
+                        }
 
-            // TODO: we could cache this in top-level proceedTo()
-            List<ActiveDescriptor<?>> descriptors =
-                    serviceLocator.getDescriptors(filter);
+                        @Override
+                        public String getAdvertisedContract() {
+                            return contract;
+                        }
 
-            for (ActiveDescriptor<?> descriptor : descriptors) {
-                if (accept(descriptor, activeRunLevel)) {
-                    activations.add(descriptor);
-                }
-            }
+                        @Override
+                        public String getName() {
+                            return null;
+                        }
+                    });
 
             Activator ia = getActivator();
 
