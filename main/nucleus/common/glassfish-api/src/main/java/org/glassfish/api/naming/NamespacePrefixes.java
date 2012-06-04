@@ -41,13 +41,13 @@
 
 package org.glassfish.api.naming;
 
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Index;
 import org.jvnet.hk2.annotations.Service;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -58,9 +58,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author sanjeeb.sahoo@oracle.com
  */
-@Contract
+@Qualifier
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
 public @interface NamespacePrefixes {
-    @Index String[] value();
+    String[] value();
 }

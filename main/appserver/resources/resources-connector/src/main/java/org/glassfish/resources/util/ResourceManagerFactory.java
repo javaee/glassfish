@@ -40,12 +40,12 @@
 
 package org.glassfish.resources.util;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.resources.api.ResourceDeployer;
 import org.glassfish.resources.api.ResourceDeployerInfo;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -60,53 +60,59 @@ import java.lang.reflect.Proxy;
 public class ResourceManagerFactory {
 
     @Inject
-    private Habitat habitat;
+    private ServiceLocator locator;
 
     public ResourceDeployer getResourceDeployer(Object resource){
-        Inhabitant deployerInhabitant = null;
-        for (Inhabitant<?> inhabitant : habitat.getInhabitants(ResourceDeployerInfo.class)) {
-            org.glassfish.hk2.api.Descriptor desc = inhabitant.getDescriptor();
-            if(desc != null){
-                if( desc.getName() != null){
-                    if(Proxy.isProxyClass(resource.getClass())){
-                        if(resource.getClass().getInterfaces() != null){
-                            for(Class clz : resource.getClass().getInterfaces()){
-                                if(desc.getName().equals(clz.getName())){
-                                    deployerInhabitant = inhabitant;
-                                    break;
-                                }
-                            }
-                            if(deployerInhabitant != null){
-                                break;
-                            }
-                        }
-                    }
-                    if(desc.getName().equals(resource.getClass().getName())){
-                        deployerInhabitant = inhabitant;
-                        break;
-                    }
+        ServiceHandle<?> deployerHandle = null;
+        for (ServiceHandle<?> handle : locator.getAllServiceHandles(ResourceDeployerInfo.class)) {
+            ActiveDescriptor<?> desc = handle.getActiveDescriptor();
+            if (desc == null) continue;
+            
+            if( desc.getName() != null){
+                if(Proxy.isProxyClass(resource.getClass())){
                     if(resource.getClass().getInterfaces() != null){
-                        //hack : for JdbcConnectionPool impl used by DataSourceDefinition.
-                        //check whether the interfaces implemented by the class matches
-                        for(Class clz : resource.getClass().getInterfaces()){
+                        for(Class<?> clz : resource.getClass().getInterfaces()){
                             if(desc.getName().equals(clz.getName())){
-                                deployerInhabitant = inhabitant;
+                                deployerHandle = handle;
                                 break;
                             }
                         }
-                        if(deployerInhabitant != null){
+                        
+                        if(deployerHandle != null){
                             break;
                         }
                     }
                 }
+                
+                if(desc.getName().equals(resource.getClass().getName())){
+                    deployerHandle = handle;
+                    break;
+                }
+                
+                if(resource.getClass().getInterfaces() != null){
+                    //hack : for JdbcConnectionPool impl used by DataSourceDefinition.
+                    //check whether the interfaces implemented by the class matches
+                    for(Class<?> clz : resource.getClass().getInterfaces()){
+                        if(desc.getName().equals(clz.getName())){
+                            deployerHandle = handle;
+                            break;
+                        }
+                    }
+                    
+                    if(deployerHandle != null){
+                        break;
+                    }
+                }
             }
         }
-        if(deployerInhabitant != null){
-            Object deployer = deployerInhabitant.get();
+        
+        if(deployerHandle != null){
+            Object deployer = deployerHandle.getService();
             if(deployer != null && deployer instanceof ResourceDeployer){
-                return (ResourceDeployer)deployer;
+                return (ResourceDeployer) deployer;
             }
         }
+        
         return null;
     }
 
