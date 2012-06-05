@@ -58,6 +58,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.classmodel.reflect.AnnotatedElement;
 import org.glassfish.hk2.classmodel.reflect.AnnotationType;
 import org.glassfish.hk2.classmodel.reflect.Parser;
@@ -68,7 +69,6 @@ import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.InhabitantMetadata;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 
@@ -128,7 +128,7 @@ public abstract class InhabitantsParsingContextGenerator implements Closeable {
         final Set<String> annotations = new HashSet<String>();
         annotations.add(Contract.class.getName());
         annotations.add(Service.class.getName());
-        annotations.add(InhabitantMetadata.class.getName());
+        annotations.add(Metadata.class.getName());
         annotations.add(RunLevel.class.getName());
         annotations.add("org.jvnet.hk2.config.Configured");
 
