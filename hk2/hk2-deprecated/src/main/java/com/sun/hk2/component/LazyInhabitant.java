@@ -88,6 +88,10 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     
     @Override
     public Class<? extends T> type() {
+        return type(null);
+    }
+    
+    public Class<? extends T> type(HK2Loader loader) {
       // fetching is too heavy of an operation because it will activate/write the class
 //        fetch();
 
@@ -95,7 +99,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
         if (null != real) {
             return real.type();
         } else {
-            return loadClass();
+            return loadClass(loader);
         }
     }
 
@@ -119,23 +123,32 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     }
     
     @SuppressWarnings("unchecked")
-    protected Class<T> loadClass() {
+    private Class<T> loadClass(HK2Loader loader) {
         String typeName = typeName();
         logger.log(Level.FINER, "loading class for: {0}", typeName);
         
         //final ClassLoader cl = getClassLoader();
         try {
-            final HK2Loader loader = getLoader();
+            if (loader == null) {
+                loader = getLoader();
+            }
 
             Class<T> c = loader == null ?
                         (Class<T>) getClass().getClassLoader().loadClass(typeName) :
                         (Class<T>) loader.loadClass(typeName);
             return c;
         } catch (ClassNotFoundException e) {
-            throw new ComponentException("Failed to load "+typeName+" from " + getLoader(), e);
+            throw new ComponentException("Failed to load "+typeName+" from loader " + loader + " of " +
+               this, e);
         } catch (MultiException e) {
-            throw new ComponentException("Failed to load "+typeName+" from " + getLoader(), e);
+            throw new ComponentException("Failed to load "+typeName+" from loader " + getLoader() + " of " +
+                this, e);
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected Class<T> loadClass() {
+        return loadClass(null);
     }
 
     @Override

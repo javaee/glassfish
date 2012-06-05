@@ -41,6 +41,9 @@ package org.jvnet.hk2.config;
 
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsFile;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
@@ -113,15 +116,20 @@ public final class ConfigModel {
      */
     public final Holder<ClassLoader> classLoaderHolder = new Holder<ClassLoader>() {
         public ClassLoader get() {
+            
             if (System.getSecurityManager()!=null) {
                 return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
                     @Override
                     public ClassLoader run() {
-                        return injector.get().getClass().getClassLoader();
+                        ActiveDescriptor<?> reified = locator.reifyDescriptor(injector);
+                        
+                        return reified.getImplementationClass().getClassLoader();
                     }
                 });
             } else {
-                return injector.get().getClass().getClassLoader();
+                ActiveDescriptor<?> reified = locator.reifyDescriptor(injector);
+                
+                return reified.getImplementationClass().getClassLoader();
             }
         }
     };
@@ -166,6 +174,8 @@ public final class ConfigModel {
      * @see ConfigMetadata#KEY
      */
     public final String key;
+    
+    private final ServiceLocator locator;
 
     /**
      * Returns the set of possible attributes names on this configuration model.
@@ -825,12 +835,16 @@ public final class ConfigModel {
      * @param description
      *      The description of the model as written in {@link InhabitantsFile the inhabitants file}.
      */
-    public ConfigModel(DomDocument document, Inhabitant<? extends ConfigInjector> injector, Map<String, List<String>> description) {
+    public ConfigModel(DomDocument document,
+            Inhabitant<? extends ConfigInjector> injector,
+            Map<String, List<String>> description,
+            ServiceLocator locator) {
         if(description==null)
             throw new ComponentException("%s doesn't have any metadata",injector.type());
 
         document.models.put(injector,this); // register now so that cyclic references are handled correctly.
         this.injector = injector;
+        this.locator = locator;
         String targetTypeName=null,indexTypeName=null;
         String key = null;
         for (Map.Entry<String, List<String>> e : description.entrySet()) {

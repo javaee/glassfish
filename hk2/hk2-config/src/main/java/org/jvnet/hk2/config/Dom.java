@@ -170,12 +170,14 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
 
         //        habitat.add(this);
+        HK2Loader loader = new HolderHK2LoaderImpl(this.model.classLoaderHolder);
+        
         Set ctrs = new HashSet();
-        ctrs.add(type());
+        ctrs.add(type(loader));
         ctrs.add(ConfigBean.class);
         DomDescriptor domDesc = new DomDescriptor(this, ctrs, PerLookup.class,
                 typeName(), new HashSet<Annotation>());
-        domDesc.setLoader(new HolderHK2LoaderImpl(this.model.classLoaderHolder));
+        domDesc.setLoader(loader);
         dc.addActiveDescriptor(domDesc);
 
         String key = getKey();
