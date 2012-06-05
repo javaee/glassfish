@@ -157,7 +157,7 @@ public class Pretty {
             baseString = type(t);
         }
         
-        return "field(" + baseString + " " + field.getName() + ")";
+        return "field(" + baseString + " " + field.getName() + " in " + field.getDeclaringClass().getName() + ")";
     }
     
     public static String array(Object[] array) {
