@@ -40,11 +40,16 @@
 
 package org.glassfish.api.admin.config;
 
-import org.jvnet.hk2.annotations.InhabitantAnnotation;
-import org.jvnet.hk2.annotations.InhabitantMetadata;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.glassfish.hk2.api.Metadata;
 import org.jvnet.hk2.config.Configured;
 
-import java.lang.annotation.*;
+import javax.inject.Qualifier;
 
 /**
  * Listens to any change happening in the configuration that involves any instances of a particular
@@ -57,7 +62,7 @@ import java.lang.annotation.*;
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@InhabitantAnnotation("default")
+@Qualifier
 public @interface ListenTo {
 
     /**
@@ -65,6 +70,6 @@ public @interface ListenTo {
      *
      * @return the configured subclass
      */
-    @InhabitantMetadata("target")
+    @Metadata("target")
     Class<? extends Configured> value();
 }
