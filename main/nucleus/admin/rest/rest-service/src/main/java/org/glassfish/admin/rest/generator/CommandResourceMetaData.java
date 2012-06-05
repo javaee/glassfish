@@ -54,6 +54,10 @@ import org.glassfish.config.support.Create;
 import org.glassfish.config.support.Creates;
 import org.glassfish.config.support.Delete;
 import org.glassfish.config.support.Deletes;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
@@ -172,13 +176,21 @@ public class CommandResourceMetaData {
     }
 
     private static void processConfigBeans(Habitat habitat) {
-        Iterator<String> types = habitat.getAllTypes();
-        String t;
-        while (types.hasNext()) {
-            t = types.next();
+    	
+    	ServiceLocator serviceLocator = (ServiceLocator) habitat;
+
+		List<ActiveDescriptor<?>> allDescriptors = serviceLocator.getDescriptors(new Filter() {
+			@Override
+			public boolean matches(Descriptor d) {
+				return true;
+			}
+		});
+
+        for (ActiveDescriptor<?> ad : allDescriptors){
+            String t = ad.getImplementation();
             if (t != null) {
                 try {
-                    Class tclass = Class.forName(t);
+                    Class<?> tclass = Class.forName(t);
                     if (tclass != null && ConfigBeanProxy.class.isAssignableFrom(tclass)) {
                         String beanName = tclass.getSimpleName();
                         for (Method m : tclass.getMethods()) {
