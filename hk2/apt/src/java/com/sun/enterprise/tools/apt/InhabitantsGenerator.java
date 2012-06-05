@@ -51,6 +51,8 @@ import com.sun.mirror.type.*;
 import com.sun.mirror.util.DeclarationVisitor;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
+
+import org.glassfish.hk2.api.Metadata;
 import org.jvnet.hk2.annotations.*;
 import org.jvnet.hk2.component.MultiMap;
 
@@ -251,7 +253,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
             }
                  for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
                      for (AnnotationMirror am : ated.getAnnotationMirrors()) {
-                         if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
+                         if (am.getAnnotationType().getDeclaration().getSimpleName().equals(Metadata.class.getSimpleName())) {
                              for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : a.getElementValues().entrySet()) {
                                  if (entry.getKey().getSimpleName().equals(ated.getSimpleName())) {
                                      buf.append(",").append(ated.getSimpleName()).append("=").append(entry.getValue().toString());
@@ -387,7 +389,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 buf.append(",").append(METHOD_NAME).append('=').append(d.getSimpleName());
                 for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
                     for (AnnotationMirror am : ated.getAnnotationMirrors()) {
-                        if (am.getAnnotationType().getDeclaration().getSimpleName().equals(InhabitantMetadata.class.getSimpleName())) {
+                        if (am.getAnnotationType().getDeclaration().getSimpleName().equals(Metadata.class.getSimpleName())) {
                             for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : a.getElementValues().entrySet()) {
                                 if (entry.getKey().getSimpleName().equals(ated.getSimpleName())) {
                                     buf.append(",").append(ated.getSimpleName()).append("=").append(entry.getValue().toString());

@@ -46,7 +46,8 @@ import com.sun.mirror.declaration.TypeDeclaration;
 import com.sun.mirror.type.AnnotationType;
 import com.sun.mirror.type.DeclaredType;
 import com.sun.mirror.type.TypeMirror;
-import org.jvnet.hk2.annotations.InhabitantMetadata;
+
+import org.glassfish.hk2.api.Metadata;
 import org.jvnet.hk2.component.MultiMap;
 
 import java.lang.annotation.Annotation;
@@ -73,7 +74,7 @@ public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<MultiMap<S
         public Model(AnnotationType type) {
             this.type = type;
             for (AnnotationTypeElementDeclaration e : type.getDeclaration().getMethods()) {
-                InhabitantMetadata im = e.getAnnotation(InhabitantMetadata.class);
+                Metadata im = e.getAnnotation(Metadata.class);
                 if(im==null)    continue;
 
                 String name = im.value();

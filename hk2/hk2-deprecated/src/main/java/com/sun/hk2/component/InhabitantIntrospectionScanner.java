@@ -39,12 +39,12 @@
  */
 package com.sun.hk2.component;
 
+import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
-import org.jvnet.hk2.annotations.InhabitantMetadata;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
 import sun.misc.VM;
@@ -231,7 +231,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
 
     private static void populateExtraInhabitantMetaData(Map<String, List<String>> dest, AnnotationModel model, MethodModel mm) {
       if (null != mm) {
-        AnnotationModel ma = mm.getAnnotation(InhabitantMetadata.class.getName());
+        AnnotationModel ma = mm.getAnnotation(Metadata.class.getName());
         if (null != ma) {
           Object tag = ma.getValues().get("value");
           Object val = model.getValues().get(mm.getName());
