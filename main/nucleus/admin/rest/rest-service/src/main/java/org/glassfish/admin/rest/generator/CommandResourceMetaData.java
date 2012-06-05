@@ -51,13 +51,12 @@ import org.glassfish.api.admin.RestEndpoint;
 import org.glassfish.api.admin.RestEndpoints;
 import org.glassfish.api.admin.RestParam;
 import org.glassfish.config.support.Create;
-import org.glassfish.config.support.Creates;
 import org.glassfish.config.support.Delete;
-import org.glassfish.config.support.Deletes;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
@@ -179,12 +178,8 @@ public class CommandResourceMetaData {
     	
     	ServiceLocator serviceLocator = (ServiceLocator) habitat;
 
-		List<ActiveDescriptor<?>> allDescriptors = serviceLocator.getDescriptors(new Filter() {
-			@Override
-			public boolean matches(Descriptor d) {
-				return true;
-			}
-		});
+		List<ActiveDescriptor<?>> allDescriptors = serviceLocator.getDescriptors(
+		        BuilderHelper.allFilter());
 
         for (ActiveDescriptor<?> ad : allDescriptors){
             String t = ad.getImplementation();
@@ -198,16 +193,6 @@ public class CommandResourceMetaData {
                                 addCreateMethod(beanName, m, m.getAnnotation(Create.class));
                             } else if (m.isAnnotationPresent(Delete.class)) {
                                 addDeleteMethod(beanName, m, m.getAnnotation(Delete.class));
-                            } else if (m.isAnnotationPresent(Creates.class)) {
-                                Creates creates = m.getAnnotation(Creates.class);
-                                for (Create c : creates.value()) {
-                                    addCreateMethod(beanName, m, c);
-                                }
-                            } else if (m.isAnnotationPresent(Deletes.class)) {
-                                Deletes deletes = m.getAnnotation(Deletes.class);
-                                for (Delete d : deletes.value()) {
-                                    addDeleteMethod(beanName, m, d);
-                                }
                             }
                         }
                     }
