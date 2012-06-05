@@ -265,6 +265,10 @@ public class CompositeUtil {
                : ("L" + getInternalName(type.getName()) + ";");
     }
 
+    private static String getPropertyName(String name) {
+        return name.substring(0,1).toLowerCase() + name.substring(1);
+    }
+
     /**
      * This method starts the class definition, adding the JAX-B annotations to allow for marshalling via JAX-RS
      */
@@ -314,64 +318,6 @@ public class CompositeUtil {
         method.visitEnd();
     }
 
-    /**
-     * This enum encapsulates the metadata for primitives needed for generating fields, getters and setters
-     */
-    static enum Primitive {
-
-        DOUBLE("D", DRETURN, DLOAD),
-        FLOAT("F", FRETURN, FLOAD),
-        LONG("J", LRETURN, LLOAD),
-        SHORT("S", IRETURN, ILOAD),
-        INT("I", IRETURN, ILOAD),
-//        CHAR   ("C", IRETURN, ILOAD),
-        BYTE("B", IRETURN, ILOAD),
-        BOOLEAN("Z", IRETURN, ILOAD);
-        private final int returnOpcode;
-        private final int setOpcode;
-        private final String internalType;
-
-        Primitive(String type, int returnOpcode, int setOpcode) {
-            this.internalType = type;
-            this.returnOpcode = returnOpcode;
-            this.setOpcode = setOpcode;
-        }
-
-        public int getReturnOpcode() {
-            return returnOpcode;
-        }
-
-        public int getSetOpCode() {
-            return setOpcode;
-        }
-
-        public String getInternalType() {
-            return internalType;
-        }
-
-        static Primitive getPrimitive(String type) {
-            if ("S".equals(type) || "short".equals(type)) {
-                return SHORT;
-            } else if ("J".equals(type) || "long".equals(type)) {
-                return LONG;
-            } else if ("I".equals(type) || "int".equals(type)) {
-                return INT;
-            } else if ("F".equals(type) || "float".equals(type)) {
-                return FLOAT;
-            } else if ("D".equals(type) || "double".equals(type)) {
-                return DOUBLE;
-//            } else if ("C".equals(type) || "char".equals(type)) {
-//                return CHAR;
-            } else if ("B".equals(type) || "byte".equals(type)) {
-                return BYTE;
-            } else if ("Z".equals(type) || "boolean".equals(type)) {
-                return BOOLEAN;
-            } else {
-                throw new RuntimeException("Unknown primitive type: " + type);
-            }
-        }
-    };
-
     /*
      * This method generates the byte code to set the default value for a given field. Efforts are made to determine the
      * best way to create the correct value. If the field is a primitive, the one-arg, String constructor of the
@@ -384,6 +330,7 @@ public class CompositeUtil {
     protected static void setDefaultValue(MethodVisitor method, String className, String fieldName, Class<?> fieldClass, String defaultValue) {
         final String type = getInternalTypeString(fieldClass);
         Object value = defaultValue;
+        fieldName = getPropertyName(fieldName);
 
         if (fieldClass.isPrimitive()) {
             switch (Primitive.getPrimitive(type)) {
@@ -435,7 +382,7 @@ public class CompositeUtil {
      */
     protected static void createField(ClassWriter cw, String name, Class<?> type) {
         String internalType = getInternalTypeString(type);
-        FieldVisitor field = cw.visitField(ACC_PRIVATE, name, internalType, null, null);
+        FieldVisitor field = cw.visitField(ACC_PRIVATE, getPropertyName(name), internalType, null, null);
         field.visitAnnotation("Ljavax/xml/bind/annotation/XmlAttribute;", true).visitEnd();
         field.visitEnd();
     }
@@ -451,7 +398,7 @@ public class CompositeUtil {
         MethodVisitor getter = cw.visitMethod(ACC_PUBLIC, "get" + name, "()" + internalType, null, null);
         getter.visitCode();
         getter.visitVarInsn(ALOAD, 0);
-        getter.visitFieldInsn(GETFIELD, className, name, internalType);
+        getter.visitFieldInsn(GETFIELD, className, getPropertyName(name), internalType);
         getter.visitInsn(type.isPrimitive()
                          ? Primitive.getPrimitive(internalType).getReturnOpcode()
                          : ARETURN);
@@ -465,7 +412,7 @@ public class CompositeUtil {
         setter.visitVarInsn(type.isPrimitive()
                             ? Primitive.getPrimitive(internalType).getSetOpCode()
                             : ALOAD, 1);
-        setter.visitFieldInsn(PUTFIELD, className, name, internalType);
+        setter.visitFieldInsn(PUTFIELD, className, getPropertyName(name), internalType);
         setter.visitInsn(RETURN);
         setter.visitMaxs(0, 0);
         setter.visitEnd();
