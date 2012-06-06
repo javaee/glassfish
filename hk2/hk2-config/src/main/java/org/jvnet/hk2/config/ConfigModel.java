@@ -43,6 +43,7 @@ import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsFile;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
@@ -121,13 +122,25 @@ public final class ConfigModel {
                 return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
                     @Override
                     public ClassLoader run() {
-                        ActiveDescriptor<?> reified = locator.reifyDescriptor(injector);
+                        ActiveDescriptor<?> reified;
+                        try {
+                            reified = locator.reifyDescriptor(injector);
+                        }
+                        catch (MultiException me) {
+                            return null;
+                        }
                         
                         return reified.getImplementationClass().getClassLoader();
                     }
                 });
             } else {
-                ActiveDescriptor<?> reified = locator.reifyDescriptor(injector);
+                ActiveDescriptor<?> reified;
+                try {
+                    reified = locator.reifyDescriptor(injector);
+                }
+                catch (MultiException me) {
+                    return null;
+                }
                 
                 return reified.getImplementationClass().getClassLoader();
             }
