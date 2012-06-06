@@ -62,6 +62,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
 import org.glassfish.internal.api.*;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.*;
@@ -129,7 +130,8 @@ public final class VerifyDomainXmlCommand extends LocalDomainCommand {
             Habitat habitat = new Habitat();
             
             try {
-            	HK2Populator.populate(serviceLocator, new ClasspathDescriptorFileFinder(cl));
+            	HK2Populator.populate(serviceLocator, new ClasspathDescriptorFileFinder(cl),
+            	        new Hk2LoaderPopulatorPostProcessor(cl));
             } catch (IOException e) {
             	logger.log(Level.SEVERE, "Error initializing HK2", e);
             }
