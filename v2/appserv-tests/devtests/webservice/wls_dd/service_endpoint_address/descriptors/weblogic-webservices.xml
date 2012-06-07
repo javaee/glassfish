@@ -4,7 +4,7 @@
              xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://www.ibm.com/webservices/xsd/javaee_web_services_1_2.xsd">
     <webservice-description>
         <webservice-description-name>AddNumbersImplService</webservice-description-name>
-        <webservice-type>JAX-WS</webservice-type>
+        <webservice-type>JAXWS</webservice-type>
         <port-component>
             <port-component-name>AddNumbersImpl</port-component-name>
             <service-endpoint-address>
