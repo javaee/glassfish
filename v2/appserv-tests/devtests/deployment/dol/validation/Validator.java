@@ -19,7 +19,6 @@ import org.glassfish.internal.api.Globals;
 public class Validator {
 
     private static Habitat habitat;
-    private static final String INSTALL_ROOT_PROP_NAME = "com.sun.aas.installRoot";
 
     public static void main(String args[]) {
         String fileName = args[0];
@@ -40,9 +39,6 @@ public class Validator {
 
         ArchivistFactory archivistFactory = habitat.getComponent(ArchivistFactory.class);
         ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
-        StartupContext context = habitat.getComponent(StartupContext.class);
-        context.getArguments().setProperty(INSTALL_ROOT_PROP_NAME, System.getProperty(INSTALL_ROOT_PROP_NAME));
-        
         // first read/parse and write out the original valid archive
         try {
             File archiveFile = new File(fileName);
