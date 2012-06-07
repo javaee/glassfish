@@ -196,7 +196,9 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
 
         if (qualifiers == null) {
             qualifiers = new HashSet<Annotation>(descriptor.getQualifierAnnotations());
-            qualifiers.add(new NamedImpl(getName()));
+            if (getName() != null) {
+                qualifiers.add(new NamedImpl(getName()));
+            }
         }
         return qualifiers;
     }
