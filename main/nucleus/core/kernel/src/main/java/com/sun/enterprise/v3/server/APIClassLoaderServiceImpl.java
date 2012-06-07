@@ -40,25 +40,30 @@
 
 package com.sun.enterprise.v3.server;
 
+import java.io.IOException;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.PostConstruct;
+import org.jvnet.hk2.annotations.Service;
+
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.ModuleLifecycleListener;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
-import com.sun.enterprise.module.single.SingleModulesRegistry;
 import com.sun.logging.LogDomains;
-import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.api.PostConstruct;
-import org.glassfish.main.core.apiexporter.APIExporter;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.*;
-import java.net.URL;
 
 /**
  * This class is responsible for creating a ClassLoader that can
@@ -91,9 +96,7 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
     private ClassLoader theAPIClassLoader;
     
     @Inject
-    private APIExporter apiExporter;
-    
-    ModulesRegistry mr = new SingleModulesRegistry(APIClassLoader.class.getClassLoader()); //TODO: placeholder
+    ModulesRegistry mr;
     
     /**
      * This is the module that we delegate to.
@@ -133,7 +136,9 @@ public class APIClassLoaderServiceImpl implements PostConstruct {
 
     private void createAPIClassLoader() throws IOException {
 
-        final ClassLoader apiModuleLoader = apiExporter.getClass().getClassLoader();
+        APIModule = mr.getModules(APIExporterModuleName).iterator().next();
+        assert (APIModule != null);
+        final ClassLoader apiModuleLoader = APIModule.getClassLoader();
         /*
          * We don't directly retrun APIModule's class loader, because
          * that class loader does not delegate to the parent. Instead, it

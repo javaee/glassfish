@@ -67,6 +67,7 @@ import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
 
 import com.sun.enterprise.module.bootstrap.DefaultErrorService;
+import com.sun.enterprise.module.single.SingleModulesRegistry;
 
 /**
  * Utilities to create a configured Habitat and cache them
@@ -143,6 +144,7 @@ public class Utils {
 
         config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new StartupContext(new Properties())));
 
+        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new SingleModulesRegistry(Utils.class.getClassLoader())));
         // set up a Logger for tests
         Logger logger = Logger.getLogger("");
 
