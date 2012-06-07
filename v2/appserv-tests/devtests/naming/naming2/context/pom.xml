@@ -49,6 +49,7 @@
                 <version>2.9</version>
                 <configuration>
                     <argLine>-Djava.endorsed.dirs=${env.S1AS_HOME}/modules/endorsed</argLine>
+                    <enableAssertions>false</enableAssertions>
                 </configuration>
             </plugin>
         </plugins>

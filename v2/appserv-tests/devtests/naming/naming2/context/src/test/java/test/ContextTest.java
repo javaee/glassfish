@@ -31,7 +31,8 @@ public class ContextTest {
     }
 
     @AfterClass public static void tearDownClass() {
-        ejbContainer.close();
+        if(ejbContainer != null)
+            ejbContainer.close();
     }
 
     @Before public void setUp() throws NamingException {
@@ -44,8 +45,8 @@ public class ContextTest {
     }
 
     @Test public void lookupWithWLInitialContextFactory() throws NamingException {
-        TestBean b = testBean.lookupWithWLInitialContextFactory("java:global/classes/TestBean", TestBean.class);
-        DataSource ds = testBean.lookupWithWLInitialContextFactory("jdbc/__default", DataSource.class);
+        TestBean b = testBean.lookupWithWLInitialContextFactory("java:global/classes/TestBean");
+        DataSource ds = testBean.lookupWithWLInitialContextFactory("jdbc/__default");
         System.out.println("TestBean from lookup: " + b);
         System.out.println("DataSource from lookup: " + ds);
     }

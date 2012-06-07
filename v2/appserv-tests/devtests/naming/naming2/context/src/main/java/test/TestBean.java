@@ -12,8 +12,9 @@ public class TestBean {
         return "Hello from " + this;
     }
 
-    public <T> T lookupWithWLInitialContextFactory(String name, Class<T> clazz) throws NamingException {
+    public <T> T lookupWithWLInitialContextFactory(String name) throws NamingException {
         Properties props = new Properties();
+        props.put(Context.PROVIDER_URL, "t3://localhost:3700,localhost:3701");
         props.put(Context.INITIAL_CONTEXT_FACTORY, "weblogic.jndi.WLInitialContextFactory");
         InitialContext ic = new InitialContext(props);
         return (T) ic.lookup(name);
