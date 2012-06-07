@@ -91,9 +91,6 @@ public final class EJBServerConfigLookup {
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
     AvailabilityService availabilityService;
 
-    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    EjbContainer ejbContainer;
-
     @Inject
     Applications applications;
 

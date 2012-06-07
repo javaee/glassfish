@@ -75,6 +75,7 @@ import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.component.Habitat;
 import javax.inject.Named;
 import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 
@@ -154,8 +155,8 @@ public class EjbContainerUtilImpl
     @Inject
     private JavaEETransactionManager txMgr;
 
-    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    private EjbContainer ejbContainer;
+    @Inject
+    private IterableProvider<EjbContainer> ejbContainerProvider;
 
     @Inject
     private GlassFishORBHelper orbHelper;
@@ -414,9 +415,24 @@ public class EjbContainerUtilImpl
 
         getContainerSync(jtx).addPMSynchronization(sync);
     }
+    
+    private EjbContainer internalGetEjbContainer() {
+        IterableProvider<EjbContainer> namedProvider =
+                ejbContainerProvider.named(ServerEnvironment.DEFAULT_INSTANCE_NAME);
+        if (namedProvider.getSize() > 0) {
+            return namedProvider.get();
+        }
+        
+        EjbContainer retVal = ejbContainerProvider.get();
+        if (retVal == null) {
+            throw new AssertionError("An EjbContainer implementation could not be found");
+        }
+        
+        return retVal;
+    }
 
     public EjbContainer getEjbContainer() {
-        return ejbContainer;
+        return internalGetEjbContainer();
     }
 
     public ServerEnvironmentImpl getServerEnvironment() {
@@ -519,6 +535,8 @@ public class EjbContainerUtilImpl
     }
 
     private ThreadPoolExecutor createThreadPoolExecutor(String poolName) {
+        EjbContainer ejbContainer = internalGetEjbContainer();
+        
         ThreadPoolExecutor result = null;
         String val = ejbContainer.getPropertyValue(RuntimeTagNames.THREAD_CORE_POOL_SIZE);
         int corePoolSize = val != null ? Integer.parseInt(val.trim())
