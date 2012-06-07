@@ -95,3 +95,14 @@ singleengine
 httpResponseErrorMessage # Need Grizzly integration and a change in GlassFish for custom error message header
 programmaticLogin
 instanceHttpPortDynamicReconfig
+#skip weblogic related tests
+weblogicDD/contextRoot
+weblogicDD/delegate
+weblogicDD/sessionCookieConfigDeclarative
+weblogicDD/sessionExpired
+weblogicDD/sessionIdUrlRewriteSessionTrackingModeDeclarative
+weblogicDD/sessionPreserveAcrossRedeployDeclarative
+weblogicDD/dirListing
+weblogicDD/jspDescriptor
+weblogicDD/runAsPrincipalName
+weblogicDD/referenceDescriptor

@@ -1,0 +1,10 @@
+weblogicDD/contextRoot #skip weblogic related tests
+weblogicDD/delegate
+weblogicDD/sessionCookieConfigDeclarative
+weblogicDD/sessionExpired
+weblogicDD/sessionIdUrlRewriteSessionTrackingModeDeclarative
+weblogicDD/sessionPreserveAcrossRedeployDeclarative
+weblogicDD/dirListing
+weblogicDD/jspDescriptor
+weblogicDD/runAsPrincipalName
+weblogicDD/referenceDescriptor
