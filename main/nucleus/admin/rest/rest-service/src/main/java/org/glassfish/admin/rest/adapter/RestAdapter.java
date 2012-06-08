@@ -92,6 +92,7 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.hk2.api.PostConstruct;
@@ -127,7 +128,7 @@ public abstract class RestAdapter extends HttpHandler implements ProxiedRestAdap
     @Inject
     private SessionManager sessionManager;
     
-    @Inject
+    @Inject @Optional
     private AdminAccessController adminAuthenticator;
     
     private static final Logger logger = LogDomains.getLogger(RestAdapter.class, LogDomains.ADMIN_LOGGER);
@@ -169,9 +170,13 @@ public abstract class RestAdapter extends HttpHandler implements ProxiedRestAdap
                     }
                 }
 
-                final Subject s = adminAuthenticator.loginAsAdmin(req);
-                AdminAccessController.Access access = adminAuthenticator.chooseAccess(s, req.getRemoteHost());
-                if (access.isOK()) {
+                AdminAccessController.Access access = null;
+                if (adminAuthenticator != null) {
+                    final Subject s = adminAuthenticator.loginAsAdmin(req);
+                    access = adminAuthenticator.chooseAccess(s, req.getRemoteHost());
+                }
+                
+                if (access == null || access.isOK()) {
                     String context = getContextRoot();
                     logger.log(Level.FINE, "Exposing rest resource context root: {0}", context);
                     if ((context != null) && (!"".equals(context)) && (adapter == null)) {
