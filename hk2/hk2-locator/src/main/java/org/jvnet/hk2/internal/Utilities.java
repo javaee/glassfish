@@ -73,6 +73,7 @@ import javax.inject.Scope;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Factory;
@@ -98,6 +99,22 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * This utility will return the proper implementation class, taking into account that the
+     * descriptor may be a factory
+     * 
+     * @param descriptor The descriptor (reified and not null) that will be used to find the
+     * implementation
+     * 
+     * @return The real implementation class
+     */
+    public static Class<?> getFactoryAwareImplementationClass(ActiveDescriptor<?> descriptor) {
+        if (descriptor.getDescriptorType().equals(DescriptorType.CLASS)) {
+            return descriptor.getImplementationClass();
+        }
+        
+        return getFactoryProductionClass(descriptor.getImplementationClass());
+    }
     /**
      * Checks that the incoming lookup type is not improper in some way
      * 
@@ -291,6 +308,27 @@ public class Utilities {
         }
         
         return null;
+    }
+    
+    /**
+     * This method assumes that this class has already been checked...
+     * 
+     * @param factoryClass The non-null factory class
+     * @return the CLASS version of what the factory produces
+     */
+    private static Class<?> getFactoryProductionClass(Class<?> factoryClass) {
+        for (Type type : factoryClass.getGenericInterfaces()) {
+            Class<?> rawClass = ReflectionHelper.getRawClass(type);
+            if (rawClass == null) continue;
+            
+            if (!Factory.class.equals(rawClass)) continue;
+            
+            Type firstType = getFirstTypeArgument(type);
+            
+            return ReflectionHelper.getRawClass(firstType);
+        }
+        
+        throw new MultiException(new IllegalArgumentException(factoryClass.getName() + " is not a factory"));
     }
     
     /**
