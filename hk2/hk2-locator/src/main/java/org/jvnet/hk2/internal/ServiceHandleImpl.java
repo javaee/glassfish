@@ -112,9 +112,30 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             }
         
             if (Utilities.isProxiableScope(root.getScopeAnnotation())) {
-                T proxy = (T) secureCreate(root.getImplementationClass(),
-                    Utilities.getInterfacesForProxy(root.getContractTypes()),
-                    new MethodInterceptorImpl(locator, root, this));
+                Class<?> proxyClass = Utilities.getFactoryAwareImplementationClass(root);
+                
+                T proxy;
+                try {
+                    proxy = (T) secureCreate(proxyClass,
+                        Utilities.getInterfacesForProxy(root.getContractTypes()),
+                        new MethodInterceptorImpl(locator, root, this));
+                }
+                catch (Throwable th) {
+                    Exception addMe = new IllegalArgumentException("While attempting to create a Proxy for " + proxyClass.getName() +
+                            " in proxiable scope " + root.getScope() + " an error occured while creating the proxy");
+                    
+                    if (th instanceof MultiException) {
+                        MultiException me = (MultiException) th;
+                        
+                        me.addError(addMe);
+                        
+                        throw me;
+                    }
+                    
+                    MultiException me = new MultiException(th);
+                    me.addError(addMe);
+                    throw me;
+                }
             
                 serviceSet = true;
                 service = proxy;
