@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -70,7 +70,7 @@
     <property name="ant.contrib.url"
               value="http://mirrors.ibiblio.org/pub/mirrors/maven2/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"/>
     <property name="maven.ant.tasks.url"
-              value="http://repo2.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.1/maven-ant-tasks-2.1.1.jar"/>
+              value="http://repo2.maven.org/maven2/org/apache/maven/maven-ant-tasks/2.1.3/maven-ant-tasks-2.1.3.jar"/>
     <property name="glassfish.dist.url"
               value="http://hudson.glassfish.org/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"/>
 
@@ -154,8 +154,8 @@
                     <arg value="-Dhttp.proxyHost=${http.proxyHost}"/>
                     <arg value="-Dhttp.proxyPort=${http.proxyPort}"/>
                     <arg value="-Dadmin.port=${env.ADMIN_PORT}"/>
+                    <arg value="-DlocalRepository=m2"/>
                     <arg value="-Dinstance.port=${env.INSTANCE_PORT}"/>
-                    <arg value="-Dmaven.repo.local=m2"/>
                     <arg value="-Prest-devtest"/>
                     <arg value="test"/>
                 </artifact:mvn>

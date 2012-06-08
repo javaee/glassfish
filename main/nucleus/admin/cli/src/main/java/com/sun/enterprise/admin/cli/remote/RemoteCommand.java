@@ -278,23 +278,23 @@ public class RemoteCommand extends CLICommand {
             try {
                 ((ClientCookieStore) cookieManager.getCookieStore()).load();
             } catch (IOException e) {
-                logger.log(Level.FINE, "Unable to load cookies: {0}", e.toString());
+                logger.log(Level.FINER, "Unable to load cookies: {0}", e.toString());
                 return;
             }
 
             if (isSessionCookieExpired(cookieManager, modifiedTime)) {
-                logger.fine("Cookie session file has expired.");
+                logger.finer("Cookie session file has expired.");
                 if (!sessionCache.delete()) {
-                    logger.fine("Unable to delete session file.");
+                    logger.finer("Unable to delete session file.");
                 }
                 return;
             }
 
-            StringBuilder sb = new StringBuilder("$Version=\"1\"");
+            StringBuilder sb = new StringBuilder("$Version=1");
             boolean hasCookies = false;
             for (HttpCookie cookie: cookieManager.getCookieStore().getCookies()) {
                 hasCookies = true;
-                sb.append("; ").append(cookie.toString());
+                sb.append("; ").append(cookie.getName()).append("=").append(cookie.getValue());
             }
             if (hasCookies) {
                 urlConnection.setRequestProperty(COOKIE_HEADER, sb.toString());
@@ -344,7 +344,7 @@ public class RemoteCommand extends CLICommand {
             CookieManager systemCookieManager = (CookieManager)CookieManager.getDefault();
 
             if (systemCookieManager == null) {
-                logger.fine("Assertion failed: null system CookieManager");
+                logger.finer("Assertion failed: null system CookieManager");
                 return;
             }
 
@@ -385,14 +385,14 @@ public class RemoteCommand extends CLICommand {
                             urlConnection.getHeaderFields());
                 } catch (IOException e) {
                     // Thrown by cookieManger.put()
-                    logger.fine("Unable to save cookies: " + e.toString());
+                    logger.finer("Unable to save cookies: " + e.toString());
                     return;
                 }
 
                 try {
                     ((ClientCookieStore) cookieManager.getCookieStore()).store();
                 } catch (IOException e) {
-                    logger.fine("Unable to store cookies: " + e.toString());
+                    logger.finer("Unable to store cookies: " + e.toString());
                 }
                 return;
             }
@@ -406,7 +406,7 @@ public class RemoteCommand extends CLICommand {
                 try {
                     ((ClientCookieStore) cookieManager.getCookieStore()).load();
                 } catch (IOException e) {
-                    logger.fine("Unable to load cookies: " + e.toString());
+                    logger.finer("Unable to load cookies: " + e.toString());
                     return;
                 }
             }
@@ -447,12 +447,12 @@ public class RemoteCommand extends CLICommand {
                             urlConnection.getHeaderFields());
                     } catch (IOException e) {
                         // Thrown by cookieManger.put()
-                        logger.fine("Unable to save cookies: " + e.toString());
+                        logger.finer("Unable to save cookies: " + e.toString());
                         return;
                     }
                     ((ClientCookieStore) cookieManager.getCookieStore()).store();
                 } catch (IOException e) {
-                    logger.fine("Unable to store cookies: " + e.toString());
+                    logger.finer("Unable to store cookies: " + e.toString());
                 }
             } else {
                 // No cookies changed.  Update the modification time on the store.

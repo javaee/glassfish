@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,7 +61,6 @@ package com.sun.enterprise.web.connector.grizzly;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-import javax.management.MBeanRegistration;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
@@ -78,7 +77,7 @@ import org.glassfish.grizzly.http.server.HttpHandler;
  * @author Remy Maucherat
  * @author Costin Manolache
  */
-public class CoyoteConnectorLauncher implements ProtocolHandler, MBeanRegistration
+public class CoyoteConnectorLauncher implements ProtocolHandler
 {
     // START SJSAS 6439313     
     protected boolean blocking = false;
@@ -422,27 +421,6 @@ public class CoyoteConnectorLauncher implements ProtocolHandler, MBeanRegistrati
 
     public String getDomain() {
         return domain;
-    }
-
-    @Override
-    public ObjectName preRegister(MBeanServer server,
-                                  ObjectName name) throws Exception {
-        oname=name;
-        mserver=server;
-        domain=name.getDomain();
-        return name;
-    }
-
-    @Override
-    public void postRegister(Boolean registrationDone) {
-    }
-
-    @Override
-    public void preDeregister() throws Exception {
-    }
-
-    @Override
-    public void postDeregister() {
     }
     
     // START OF SJSAS PE 8.1 6172948

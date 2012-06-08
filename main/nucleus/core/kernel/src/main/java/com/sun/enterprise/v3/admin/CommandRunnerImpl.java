@@ -42,6 +42,7 @@ package com.sun.enterprise.v3.admin;
 import com.sun.enterprise.admin.util.CachedCommandModel;
 import java.util.EnumSet;
 import java.util.Map;
+import javax.security.auth.Subject;
 import org.glassfish.api.admin.CommandWrapperImpl;
 import com.sun.enterprise.admin.util.ClusterOperationUtil;
 import com.sun.enterprise.admin.util.InstanceStateService;
@@ -88,13 +89,16 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.v3.common.XMLContentActionReporter;
 import com.sun.logging.LogDomains;
 import java.lang.annotation.Annotation;
+import java.text.MessageFormat;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Scope;
 import javax.inject.Singleton;
-
+import javax.validation.*;
+import org.glassfish.api.admin.Payload;
 import org.glassfish.api.admin.SupplementalCommandExecutor.SupplementalCommand;
+import org.jvnet.hk2.config.MessageInterpolatorImpl;
 
 /**
  * Encapsulates the logic needed to execute a server-side command (for example,
@@ -141,6 +145,7 @@ public class CommandRunnerImpl implements CommandRunner {
     
     private static final LocalStringManagerImpl adminStrings =
             new LocalStringManagerImpl(CommandRunnerImpl.class);
+    private static Validator beanValidator = null;
 
     /**
      * Returns an initialized ActionReport instance for the passed type or
@@ -426,9 +431,46 @@ public class CommandRunnerImpl implements CommandRunner {
             childPart.setMessage(getUsageText(command, model));
             return report.getActionExitCode();
         }
+        checkAgainstBeanConstraints(command, model.getCommandName());
         return report.getActionExitCode();
     }
 
+        private void checkAgainstBeanConstraints(AdminCommand component, String cname) {
+        if (beanValidator == null) {
+            ClassLoader cl = System.getSecurityManager() == null ?
+                    Thread.currentThread().getContextClassLoader():
+                    AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                        @Override
+                        public ClassLoader run() {
+                            return Thread.currentThread().getContextClassLoader();
+                        }
+                    });
+            try {
+                Thread.currentThread().setContextClassLoader(null);
+                ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+                ValidatorContext validatorContext = validatorFactory.usingContext();
+                validatorContext.messageInterpolator(new MessageInterpolatorImpl());                
+                beanValidator = validatorContext.getValidator();
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
+            }
+        }
+                
+        Set<ConstraintViolation<AdminCommand>> constraintViolations = beanValidator.validate(component);
+        if (constraintViolations == null || constraintViolations.isEmpty()) return;
+        StringBuilder msg = new StringBuilder(adminStrings.getLocalString("commandrunner.unacceptableBV",
+                "Parameters for command {0} violate the following constraints: ", 
+                cname));
+        boolean addc = false;
+        String violationMsg = adminStrings.getLocalString("commandrunner.unacceptableBV.reason",
+                "on parameter [ {1} ] violation reason [ {0} ]");
+        for (ConstraintViolation cv : constraintViolations) {
+            if (addc) msg.append(", ");
+            msg.append(MessageFormat.format(violationMsg, cv.getMessage(), cv.getPropertyPath()));
+            addc = true;
+        }
+        throw new UnacceptableValueException(msg.toString());
+    }
     /**
      * Executes the provided command object.
      *
@@ -899,7 +941,7 @@ public class CommandRunnerImpl implements CommandRunner {
     /**
      * Called from ExecutionContext.execute.
      */
-    private void doCommand(ExecutionContext inv, AdminCommand command) {
+    private void doCommand(ExecutionContext inv, AdminCommand command, final Subject subject) {
 
         if (command == null) {
             command = getCommand(inv.scope(), inv.name(), inv.report(), logger);
@@ -921,7 +963,7 @@ public class CommandRunnerImpl implements CommandRunner {
         final AdminCommandContext context = new AdminCommandContextImpl(
                 LogDomains.getLogger(command.getClass(), LogDomains.ADMIN_LOGGER),
                 report, inv.inboundPayload(), inv.outboundPayload());
-
+        context.setSubject(subject);
         List<RuntimeType> runtimeTypes = new ArrayList<RuntimeType>();
         FailurePolicy fp = null;
         Set<CommandTarget> targetTypesAllowed = new HashSet<CommandTarget>();
@@ -1014,9 +1056,10 @@ public class CommandRunnerImpl implements CommandRunner {
                 }
 
                 // initialize the injector and inject
-                InjectionResolver<Param> injectionMgr =
+                MapInjectionResolver injectionMgr =
                         new MapInjectionResolver(model, parameters,
                         ufm.optionNameToFileMap());
+                injectionMgr.setContext(context);
                 if (!injectParameters(model, command, injectionMgr, context).equals(ActionReport.ExitCode.SUCCESS)) {
                     progressHelper.complete(context);
                     return;
@@ -1438,6 +1481,7 @@ public class CommandRunnerImpl implements CommandRunner {
         protected CommandParameters paramObject;
         protected Payload.Inbound inbound;
         protected Payload.Outbound outbound;
+        protected Subject subject;
 
         private ExecutionContext(String scope, String name, ActionReport report) {
             this.scope = scope;
@@ -1469,6 +1513,13 @@ public class CommandRunnerImpl implements CommandRunner {
             return this;
         }
 
+        @Override
+        public CommandInvocation subject(Subject subject) {
+            this.subject = subject;
+            return this;
+        }
+
+        
         @Override
         public void execute() {
             execute(null);
@@ -1508,7 +1559,7 @@ public class CommandRunnerImpl implements CommandRunner {
 
         @Override
         public void execute(AdminCommand command) {
-            CommandRunnerImpl.this.doCommand(this, command);
+            CommandRunnerImpl.this.doCommand(this, command, subject);
 
             // bnevins
             ActionReport r = report;

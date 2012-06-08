@@ -131,6 +131,7 @@ import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.EnvironmentProperty;
 import com.sun.enterprise.deployment.InterceptorDescriptor;
 import com.sun.enterprise.deployment.LifecycleCallbackDescriptor;
+import com.sun.enterprise.deployment.LifecycleCallbackDescriptor.CallbackType;
 import com.sun.enterprise.deployment.MethodDescriptor;
 import com.sun.enterprise.deployment.WebServiceEndpoint;
 import com.sun.enterprise.deployment.WebServicesDescriptor;
@@ -216,8 +217,6 @@ public abstract class BaseContainer
       false, false, false, false, 
       true,  true };            
     
-    private static final String USER_TX = "java:comp/UserTransaction";
-
     private static final byte HOME_KEY = (byte)0xff;
     private static final byte[] homeInstanceKey = {HOME_KEY};
 
@@ -229,7 +228,7 @@ public abstract class BaseContainer
     protected Method ejbPassivateMethod = null;
     protected Method ejbActivateMethod = null;
     protected Method ejbRemoveMethod = null;
-    protected Method ejbTimeoutMethod = null;
+    private Method ejbTimeoutMethod = null;
 
     protected Class webServiceEndpointIntf = null;
    
@@ -379,9 +378,6 @@ public abstract class BaseContainer
     protected Map<String, RemoteBusinessIntfInfo> remoteBusinessIntfInfo
         = new HashMap<String, RemoteBusinessIntfInfo>();
 
-    Map<Method, List<ScheduledTimerDescriptor>> schedules =
-            new HashMap<Method, List<ScheduledTimerDescriptor>>();
-
     //
     // END -- Data members for Remote views    
     // 
@@ -399,10 +395,13 @@ public abstract class BaseContainer
     protected EjbDescriptor ejbDescriptor;
     protected String componentId; // unique id for java:comp namespace lookup
     
-    
     protected Map invocationInfoMap = new HashMap();
+    
     protected Map<TimerPrimaryKey, Method> scheduleIds = 
             new HashMap<TimerPrimaryKey, Method>();
+
+    Map<Method, List<ScheduledTimerDescriptor>> schedules =
+            new HashMap<Method, List<ScheduledTimerDescriptor>>();
 
     // Need a separate map for web service methods since it's possible for
     // an EJB Remote interface to be a subtype of the Service Endpoint
@@ -538,19 +537,7 @@ public abstract class BaseContainer
 
             isBeanManagedTran = ejbDescriptor.getTransactionType().equals("Bean");
 
-            if( ejbDescriptor.getType().equals(EjbMessageBeanDescriptor.TYPE) )
-            {
-                assertFullProfile("is a Message-Driven Bean");
-                isMessageDriven = true;
-
-                // Instantiate the ORB and Remote naming manager
-                // to allow client lookups of JMS queues/topics/connectionfactories
-                // TODO - implement the sniffer for DAS/cluster instance - listening on the naming port that will
-                // instantiate the orb/remote naming service on demand upon initial access.
-                // Once that's available, this call can be removed.               
-                initializeProtocolManager();
-            }
-            else if( ejbDescriptor instanceof EjbSessionDescriptor) 
+            if( ejbDescriptor instanceof EjbSessionDescriptor) 
             {
                 isSession = true;
                 EjbSessionDescriptor sd = (EjbSessionDescriptor) ejbDescriptor;
@@ -784,6 +771,9 @@ public abstract class BaseContainer
 
             // NOTE : InterceptorManager initialization delayed until transition to START state.
             
+            addLocalRemoteInvocationInfo();
+            addWSOrTimedObjectInvocationInfo();
+
             initializeInvocationInfo();
 
             setupEnvironment();
@@ -821,7 +811,7 @@ public abstract class BaseContainer
         monitoredGeneratedClasses.add(generatedClass);
     }
     
-    private void initializeProtocolManager() {
+    protected void initializeProtocolManager() {
 
         try {
 
@@ -976,26 +966,8 @@ public abstract class BaseContainer
         return metadata;
     }
     
-    final UserTransaction getUserTransaction() {
-        // Only session beans with bean-managed transactions
-        // or message-driven beans with bean-managed transactions
-        // can programmatically demarcate transactions.
-        if ( (isSession || isMessageDriven) && isBeanManagedTran ) {
-            try {
-                UserTransaction utx = (UserTransaction)
-                namingManager.getInitialContext().lookup(USER_TX);
-                return utx;
-            } catch ( Exception ex ) {
-                _logger.log(Level.FINE, "ejb.user_transaction_exception", ex);
-                throw new EJBException(_logger.getResourceBundle().
-                        getString("ejb.user_transaction_exception"), ex);
-            }
-        }
-        else {
-            throw new IllegalStateException(localStrings.getLocalString(
-                "ejb.ut_only_for_bmt",
-                "Only session beans with bean-managed transactions can obtain UserTransaction"));
-        }
+    public final UserTransaction getUserTransaction() {
+        return containerTransactionManager.getUserTransaction();
     }
     
     public boolean isHAEnabled() {
@@ -1956,6 +1928,12 @@ public abstract class BaseContainer
         }
     }
     
+    protected boolean intercept(CallbackType eventType, EJBContextImpl ctx)
+            throws Throwable {
+
+        return interceptorManager.intercept(eventType, ctx);
+    }
+    
     protected void enlistExtendedEntityManagers(ComponentContext ctx) {
         // Do nothing in general case
     }
@@ -2441,7 +2419,11 @@ public abstract class BaseContainer
             }
         }
     }
-    
+
+    protected boolean isEjbTimeoutMethod(Method m) {
+        return schedules.containsKey(m) || m.equals(ejbTimeoutMethod);
+    }
+
     // internal API, implemented in subclasses
     protected abstract EJBObjectImpl createEJBObjectImpl()
         throws CreateException, RemoteException;
@@ -2842,49 +2824,11 @@ public abstract class BaseContainer
         return true;
     }
     
-    // Check if a method is a finder / home method.
-    // Note: this method object is of the EJB's remote/home/local interfaces,
-    // not the EJB class.
-    final boolean isHomeFinder(Method method) {
-        Class methodClass = method.getDeclaringClass();
-        
-        // MDBs and SessionBeans cant have finder/home methods.
-        if ( isMessageDriven || isSession ) {
-            return false;
-        }
-        
-        if ( isRemote ) {
-            if ( (hasRemoteHomeView &&
-                  methodClass.isAssignableFrom(homeIntf))
-                 && (methodClass != EJBHome.class)
-                 && (!method.getName().startsWith("create")) ) {
-                return true;
-            }
-        }
-        if ( isLocal ) {
-            // No need to check LocalBusiness view b/c home/finder methods
-            // only apply to entity beans.
-            if ( (hasLocalHomeView &&
-                  methodClass.isAssignableFrom(localHomeIntf)) 
-                 && (methodClass != EJBLocalHome.class)
-                 && (!method.getName().startsWith("create")) ) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    
     // Check if a method is a create / finder / home method.
     // Note: this method object is of the EJB's remote/home/local interfaces,
     // not the EJB class.
-    final boolean isCreateHomeFinder(Method method) {
+    protected boolean isCreateHomeFinder(Method method) {
         Class methodClass = method.getDeclaringClass();
-        
-        if ( isMessageDriven ) {
-            return false;
-        }
         
         if ( hasRemoteHomeView 
              && methodClass.isAssignableFrom(homeIntf)
@@ -2914,7 +2858,7 @@ public abstract class BaseContainer
         return false;
     }
 
-    private InvocationInfo addInvocationInfo(Method method, String methodIntf,
+    protected InvocationInfo addInvocationInfo(Method method, String methodIntf,
                                    Class originalIntf)
         throws EJBException {
 
@@ -3065,7 +3009,7 @@ public abstract class BaseContainer
      * @param originalIntf Leaf interface for the given view.  Not set for
      * methodIntf == bean.  
      */
-    private InvocationInfo createInvocationInfo(Method method, int txAttr, 
+    private final InvocationInfo createInvocationInfo(Method method, int txAttr, 
                                                 boolean flushEnabled,
                                                 String methodIntf,
                                                 Class originalIntf) 
@@ -3080,7 +3024,6 @@ public abstract class BaseContainer
 
         invInfo.isBusinessMethod = isBusinessMethod(method);
         invInfo.isCreateHomeFinder = isCreateHomeFinder(method);
-        invInfo.isHomeFinder = isHomeFinder(method);
 
         invInfo.startsWithCreate = method.getName().startsWith("create");
         invInfo.startsWithFind = method.getName().startsWith("find");
@@ -3113,9 +3056,18 @@ public abstract class BaseContainer
             _logger.log(Level.FINE, invInfo.toString());
         }
 
-
+        adjustInvocationInfo(invInfo, method, txAttr, flushEnabled, methodIntf, originalIntf);
 
         return invInfo;
+    }
+
+    // default impl
+    protected void adjustInvocationInfo(InvocationInfo invInfo, Method method, int txAttr,
+                                                boolean flushEnabled,
+                                                String methodIntf,
+                                                Class originalIntf)
+                 throws EJBException {
+         // Nothing todo
     }
 
     private void setConcurrencyInvInfo(Method invInfoMethod, String methodIntf,
@@ -3407,159 +3359,145 @@ public abstract class BaseContainer
 
     }
     
-    /*
-     * Used by message bean container to register message-listener methods
-     */
-    protected void registerTxAttrForMethod(Method method, String methodIntf) {
-        addInvocationInfo(method, methodIntf, null);
-    }
-    
-    
-    private void initializeInvocationInfo()
-        throws Exception
+    protected void addLocalRemoteInvocationInfo() throws Exception
     {
-        
-        if( isMessageDriven ) {
-            // message listener method initialization performed by 
-            // message bean container 
-        } else {
-            if ( isRemote ) {
+        if ( isRemote ) {
 
-                if( hasRemoteHomeView ) {
-                    // Process Remote intf
-                    Method[] methods = remoteIntf.getMethods();
-                    for ( int i=0; i<methods.length; i++ ) {
-                        Method method = methods[i];                    
-                        addInvocationInfo(method, MethodDescriptor.EJB_REMOTE,
-                                          remoteIntf);
-                    }
-                    
-                    // Process EJBHome intf
-                    methods = homeIntf.getMethods();
-                    for ( int i=0; i<methods.length; i++ ) {
-                        Method method = methods[i];                   
-                        addInvocationInfo(method, MethodDescriptor.EJB_HOME,
-                                          homeIntf);
-                    }
+            if( hasRemoteHomeView ) {
+                // Process Remote intf
+                Method[] methods = remoteIntf.getMethods();
+                for ( int i=0; i<methods.length; i++ ) {
+                    Method method = methods[i];                    
+                    addInvocationInfo(method, MethodDescriptor.EJB_REMOTE,
+                                      remoteIntf);
                 }
-
-                if( hasRemoteBusinessView ) {
-
-                    for(RemoteBusinessIntfInfo next : 
-                            remoteBusinessIntfInfo.values()) {
-                        // Get methods from generated remote intf but pass
-                        // actual business interface as original interface.
-                        Method[] methods = 
-                            next.generatedRemoteIntf.getMethods();
-                        for ( int i=0; i<methods.length; i++ ) {
-                            Method method = methods[i];                    
-                            addInvocationInfo(method, 
-                                              MethodDescriptor.EJB_REMOTE,
-                                              next.remoteBusinessIntf);
-                        }
-                    }
-                    
-                    // Process internal EJB RemoteBusinessHome intf
-                    Method[] methods = remoteBusinessHomeIntf.getMethods();
-                    for ( int i=0; i<methods.length; i++ ) {
-                        Method method = methods[i];                   
-                        addInvocationInfo(method, MethodDescriptor.EJB_HOME,
-                                          remoteBusinessHomeIntf);
-                    } 
-                }
-            }
-
-            if ( isLocal ) {
-                if( hasLocalHomeView ) {
-                    // Process Local interface
-                    Method[] methods = localIntf.getMethods();
-                    for ( int i=0; i<methods.length; i++ ) {
-                        Method method = methods[i];                    
-                        InvocationInfo info = addInvocationInfo(method, MethodDescriptor.EJB_LOCAL,
-                                          localIntf);
-                        postProcessInvocationInfo(info);
-                    }
-
-                    // Process LocalHome interface
-                    methods = localHomeIntf.getMethods();
-                    for ( int i=0; i<methods.length; i++ ) {
-                        Method method = methods[i];                    
-                        addInvocationInfo(method, 
-                                          MethodDescriptor.EJB_LOCALHOME,
-                                          localHomeIntf);
-                    }
-                }
-
-                if( hasLocalBusinessView ) {
-
-                    // Process Local Business interfaces
-                    for(Class localBusinessIntf : localBusinessIntfs) {
-                        Method[] methods = localBusinessIntf.getMethods();
-                        for ( int i=0; i<methods.length; i++ ) {
-                            Method method = methods[i];                    
-                            addInvocationInfo(method, 
-                                              MethodDescriptor.EJB_LOCAL,
-                                              localBusinessIntf);
-                        }
-                    }
-
-                    // Process (internal) Local Business Home interface
-                    Method[] methods = localBusinessHomeIntf.getMethods();
-                    for ( int i=0; i<methods.length; i++ ) {
-                        Method method = methods[i];                    
-                        addInvocationInfo(method, 
-                                          MethodDescriptor.EJB_LOCALHOME,
-                                          localBusinessHomeIntf);
-                    }
-                }
-
-                if (hasOptionalLocalBusinessView) {
-                    
-                    // Process generated Optional Local Business interface
-                    String optClassName = EJBUtils.getGeneratedOptionalInterfaceName(ejbClass.getName());
-                    ejbGeneratedOptionalLocalBusinessIntfClass = optIntfClassLoader.loadClass(optClassName);
-                    Method[] methods = ejbGeneratedOptionalLocalBusinessIntfClass.getMethods();
-                    for ( int i=0; i<methods.length; i++ ) {
-                        Method method = methods[i];
-                        addInvocationInfo(method,
-                                          MethodDescriptor.EJB_LOCAL,
-                                          ejbGeneratedOptionalLocalBusinessIntfClass, 
-                                          false, true);
-                    }
-
-                    // Process generated Optional Local Business interface
-                    Method[] optHomeMethods = ejbOptionalLocalBusinessHomeIntf.getMethods();
-                    for ( int i=0; i<optHomeMethods.length; i++ ) {
-                        Method method = optHomeMethods[i];
-                        addInvocationInfo(method,
-                                          MethodDescriptor.EJB_LOCALHOME,
-                                          ejbOptionalLocalBusinessHomeIntf);
-                    }
-
-
-                }
-
-                if( !hasLocalHomeView ) {
-                    // Add dummy local business interface remove method so that internal
-                    // container remove operations will work.  (needed for internal 299 contract)
-                    addInvocationInfo(this.ejbIntfMethods[EJBLocalObject_remove],
-                            MethodDescriptor.EJB_LOCAL,
-                            javax.ejb.EJBLocalObject.class);
-                }
-            }
-
-            if ( isWebServiceEndpoint ) {
-                // Process Service Endpoint interface
-                Method[] methods = webServiceEndpointIntf.getMethods();
+                
+                // Process EJBHome intf
+                methods = homeIntf.getMethods();
                 for ( int i=0; i<methods.length; i++ ) {
                     Method method = methods[i];                   
-                    addInvocationInfo(method,MethodDescriptor.EJB_WEB_SERVICE,
-                                      webServiceEndpointIntf);
+                    addInvocationInfo(method, MethodDescriptor.EJB_HOME,
+                                      homeIntf);
                 }
             }
 
+            if( hasRemoteBusinessView ) {
+
+                for(RemoteBusinessIntfInfo next : 
+                        remoteBusinessIntfInfo.values()) {
+                    // Get methods from generated remote intf but pass
+                    // actual business interface as original interface.
+                    Method[] methods = 
+                        next.generatedRemoteIntf.getMethods();
+                    for ( int i=0; i<methods.length; i++ ) {
+                        Method method = methods[i];                    
+                        addInvocationInfo(method, 
+                                          MethodDescriptor.EJB_REMOTE,
+                                          next.remoteBusinessIntf);
+                    }
+                }
+                
+                // Process internal EJB RemoteBusinessHome intf
+                Method[] methods = remoteBusinessHomeIntf.getMethods();
+                for ( int i=0; i<methods.length; i++ ) {
+                    Method method = methods[i];                   
+                    addInvocationInfo(method, MethodDescriptor.EJB_HOME,
+                                      remoteBusinessHomeIntf);
+                } 
+            }
+        }
+
+        if ( isLocal ) {
+            if( hasLocalHomeView ) {
+                // Process Local interface
+                Method[] methods = localIntf.getMethods();
+                for ( int i=0; i<methods.length; i++ ) {
+                    Method method = methods[i];                    
+                    InvocationInfo info = addInvocationInfo(method, MethodDescriptor.EJB_LOCAL,
+                                      localIntf);
+                    postProcessInvocationInfo(info);
+                }
+
+                // Process LocalHome interface
+                methods = localHomeIntf.getMethods();
+                for ( int i=0; i<methods.length; i++ ) {
+                    Method method = methods[i];                    
+                    addInvocationInfo(method, 
+                                      MethodDescriptor.EJB_LOCALHOME,
+                                      localHomeIntf);
+                }
+            }
+
+            if( hasLocalBusinessView ) {
+
+                // Process Local Business interfaces
+                for(Class localBusinessIntf : localBusinessIntfs) {
+                    Method[] methods = localBusinessIntf.getMethods();
+                    for ( int i=0; i<methods.length; i++ ) {
+                        Method method = methods[i];                    
+                        addInvocationInfo(method, 
+                                          MethodDescriptor.EJB_LOCAL,
+                                          localBusinessIntf);
+                    }
+                }
+
+                // Process (internal) Local Business Home interface
+                Method[] methods = localBusinessHomeIntf.getMethods();
+                for ( int i=0; i<methods.length; i++ ) {
+                    Method method = methods[i];                    
+                    addInvocationInfo(method, 
+                                      MethodDescriptor.EJB_LOCALHOME,
+                                      localBusinessHomeIntf);
+                }
+            }
+
+            if (hasOptionalLocalBusinessView) {
+                
+                // Process generated Optional Local Business interface
+                String optClassName = EJBUtils.getGeneratedOptionalInterfaceName(ejbClass.getName());
+                ejbGeneratedOptionalLocalBusinessIntfClass = optIntfClassLoader.loadClass(optClassName);
+                Method[] methods = ejbGeneratedOptionalLocalBusinessIntfClass.getMethods();
+                for ( int i=0; i<methods.length; i++ ) {
+                    Method method = methods[i];
+                    addInvocationInfo(method,
+                                      MethodDescriptor.EJB_LOCAL,
+                                      ejbGeneratedOptionalLocalBusinessIntfClass, 
+                                      false, true);
+                }
+
+                // Process generated Optional Local Business interface
+                Method[] optHomeMethods = ejbOptionalLocalBusinessHomeIntf.getMethods();
+                for ( int i=0; i<optHomeMethods.length; i++ ) {
+                    Method method = optHomeMethods[i];
+                    addInvocationInfo(method,
+                                      MethodDescriptor.EJB_LOCALHOME,
+                                      ejbOptionalLocalBusinessHomeIntf);
+                }
 
 
+            }
+
+            if( !hasLocalHomeView ) {
+                // Add dummy local business interface remove method so that internal
+                // container remove operations will work.  (needed for internal 299 contract)
+                addInvocationInfo(this.ejbIntfMethods[EJBLocalObject_remove],
+                        MethodDescriptor.EJB_LOCAL,
+                        javax.ejb.EJBLocalObject.class);
+            }
+        }
+    }
+
+    private void addWSOrTimedObjectInvocationInfo() throws Exception
+    {
+
+        if ( isWebServiceEndpoint ) {
+            // Process Service Endpoint interface
+            Method[] methods = webServiceEndpointIntf.getMethods();
+            for ( int i=0; i<methods.length; i++ ) {
+                Method method = methods[i];                   
+                addInvocationInfo(method,MethodDescriptor.EJB_WEB_SERVICE,
+                                  webServiceEndpointIntf);
+            }
         }
         
         if( isTimedObject() ) {
@@ -3571,7 +3509,10 @@ public abstract class BaseContainer
                 processTxAttrForScheduledTimeoutMethod(entry.getKey());
             }
         }
+    }
 
+    private void initializeInvocationInfo() throws Exception
+    {
         // Create a map implementation that is optimized
         // for method lookups.  This is especially important for local
         // invocations through dynamic proxies, where the overhead of the
@@ -3936,6 +3877,11 @@ public abstract class BaseContainer
     }
 
     // default implementation
+    public boolean scanForEjbCreateMethod() {
+        return false;
+    }
+
+    // default implementation
     public void postCreate(EjbInvocation inv, Object primaryKey)
         throws CreateException
     {
@@ -4008,7 +3954,7 @@ public abstract class BaseContainer
     /**
      *
      */
-    boolean callEJBTimeout(RuntimeTimerState timerState,
+    protected boolean callEJBTimeout(RuntimeTimerState timerState,
                            EJBTimerService timerService) throws Exception {
      
         boolean redeliver = false;
@@ -4069,8 +4015,7 @@ public abstract class BaseContainer
 
             // Only call postEjbTimeout if there are no errors so far.
             if( !redeliver ) {
-                boolean success =                 
-                    timerService.postEjbTimeout(timerState.getTimerId());
+                boolean success = postEjbTimeout(timerState, timerService);
                 redeliver = !success;
             }
             
@@ -4090,12 +4035,16 @@ public abstract class BaseContainer
         return redeliver;
     }
 
-    Method getTimeoutMethod(RuntimeTimerState timerState) {
+    protected Method getTimeoutMethod(RuntimeTimerState timerState) {
         Method m = scheduleIds.get(timerState.getTimerId());
         return (m != null) ? m : ejbTimeoutMethod;
     }
 
-    void prepareEjbTimeoutParams(EjbInvocation inv, RuntimeTimerState timerState,
+    protected boolean postEjbTimeout(RuntimeTimerState timerState, EJBTimerService timerService) {
+        return timerService.postEjbTimeout(timerState.getTimerId());
+    }
+
+    protected void prepareEjbTimeoutParams(EjbInvocation inv, RuntimeTimerState timerState,
                            EJBTimerService timerService) {
         // Create a TimerWrapper for AroundTimeout and as a method argument.
         javax.ejb.Timer timer  = new TimerWrapper(timerState.getTimerId(),
@@ -4109,15 +4058,15 @@ public abstract class BaseContainer
             inv.methodParams = null;
         }
     }
-     
-    final void onEnteringContainer() {
+
+    public final void onEnteringContainer() {
         ejbProbeNotifier.ejbContainerEnteringEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName, 
                 containerInfo.ejbName);
         //callFlowAgent.startTime(ContainerTypeOrApplicationType.EJB_CONTAINER);
     }
 
-    final void onLeavingContainer() {
+    public final void onLeavingContainer() {
         ejbProbeNotifier.ejbContainerLeavingEvent(getContainerId(),
                 containerInfo.appName, containerInfo.modName, 
                 containerInfo.ejbName);
@@ -4520,7 +4469,7 @@ public abstract class BaseContainer
      * NOTE: postInvokeTx is called even if the EJB was not invoked
      * because of an exception thrown from preInvokeTx.
      */
-    void postInvokeTx(EjbInvocation inv)
+    protected void postInvokeTx(EjbInvocation inv)
         throws Exception
     {
         
@@ -4693,9 +4642,7 @@ public abstract class BaseContainer
      * InvocationTargetException.
      * 
      */
-    Object intercept(EjbInvocation inv)
-        throws Throwable
-    {
+    protected Object intercept(EjbInvocation inv) throws Throwable {
         Object result = null;
         if (inv.mustInvokeAsynchronously()) {
             EjbAsyncInvocationManager asyncManager =
