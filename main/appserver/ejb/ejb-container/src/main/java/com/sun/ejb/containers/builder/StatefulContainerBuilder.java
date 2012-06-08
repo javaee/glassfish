@@ -45,6 +45,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -79,6 +81,7 @@ import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.PerLookup;
 
 /**
@@ -121,7 +124,9 @@ public class StatefulContainerBuilder
     private EjbContainerAvailability ejbAvailability;
 
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    EjbContainer ejbContainerConfig;
+    private IterableProvider<EjbContainer> ejbContainerProvider;
+    
+    private EjbContainer ejbContainerConfig;
 
     @Inject @Optional
     GMSAdapterService gmsAdapterService;
@@ -138,6 +143,18 @@ public class StatefulContainerBuilder
 
     public StatefulContainerBuilder() {
         super();
+    }
+    
+    @SuppressWarnings("unused")
+    @PostConstruct
+    private void postConstruct() {
+        IterableProvider<EjbContainer> namedProvider = ejbContainerProvider.named(ServerEnvironment.DEFAULT_INSTANCE_NAME);
+        if (namedProvider.getSize() > 0) {
+            ejbContainerConfig = namedProvider.get();
+        }
+        else {
+            ejbContainerConfig = ejbContainerProvider.get();
+        }
     }
 
     public BaseContainer createContainer(

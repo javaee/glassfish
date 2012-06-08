@@ -103,7 +103,7 @@ import org.glassfish.hk2.api.PostConstruct;
  *  @since GlassFish v3
  */
 @Service
-@ContractsProvided(JMXAuthenticator.class)
+@ContractsProvided({JMXAuthenticator.class, AdminAccessController.class})
 public class GenericAdminAuthenticator implements AdminAccessController, JMXAuthenticator, PostConstruct {
     @Inject
     BaseServiceLocator habitat;

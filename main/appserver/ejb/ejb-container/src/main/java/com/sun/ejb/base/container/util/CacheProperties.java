@@ -42,6 +42,8 @@ package com.sun.ejb.base.container.util;
 
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
+
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -52,6 +54,7 @@ import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
 import org.glassfish.ejb.deployment.descriptor.EjbSessionDescriptor;
 import org.glassfish.ejb.deployment.descriptor.runtime.BeanCacheDescriptor;
 import org.glassfish.ejb.deployment.descriptor.runtime.IASEjbExtraDescriptors;
+import org.glassfish.hk2.api.IterableProvider;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -73,10 +76,24 @@ public class CacheProperties {
 
     private String victimSelectionPolicy;
 
-    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
-    EjbContainer ejbContainer;
+    @Inject
+    private IterableProvider<EjbContainer> ejbContainerProvider;
+    
+    private EjbContainer ejbContainer;
 
     public CacheProperties() {
+    }
+    
+    @SuppressWarnings("unused")
+    @PostConstruct
+    private void postConstruct() {
+        IterableProvider<EjbContainer> namedProvider = ejbContainerProvider.named(ServerEnvironment.DEFAULT_INSTANCE_NAME);
+        if (namedProvider.getSize() > 0) {
+            ejbContainer = namedProvider.get();
+        }
+        else {
+            ejbContainer = ejbContainerProvider.get();
+        }
     }
 
     public void init(EjbDescriptor desc) {
