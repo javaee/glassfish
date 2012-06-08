@@ -229,7 +229,8 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
                 report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                 report.setMessage("V3 cannot process this command at this time, please wait");            
             } else {
-                final Subject s = authenticator.loginAsAdmin(req);
+                
+                final Subject s = (authenticator == null) ? null : authenticator.loginAsAdmin(req);
                 if ( ! checkAccess(s, req.getRemoteHost(), report, res)) {
                     return;
                 }
@@ -414,6 +415,8 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
 
     private boolean checkAccess(Subject subject, String originHost, ActionReport report, Response res)
             throws Exception {
+        
+        if (authenticator == null) return true;
         
         AdminAccessController.Access access = authenticator.chooseAccess(subject, originHost);
         /*
