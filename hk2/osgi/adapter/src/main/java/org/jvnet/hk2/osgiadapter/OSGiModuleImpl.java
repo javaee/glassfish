@@ -406,12 +406,27 @@ public class OSGiModuleImpl implements Module {
         return new ClassLoader(getParentLoader()) {
 
             @Override
-            protected synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException {
+            protected synchronized Class<?> loadClass(final String name, boolean resolve) throws ClassNotFoundException {        	
                 try {
                     //doprivileged needed for running with SecurityManager
                     return AccessController.doPrivileged(new PrivilegedExceptionAction<Class>() {
                         public Class run() throws ClassNotFoundException {
-                            return bundle.loadClass(name);
+                        	
+                        	Class c = null;
+                        	try {
+                             c = bundle.loadClass(name);
+                         
+                        	} catch (ClassNotFoundException cnfe) {
+                        		Throwable cause = cnfe.getCause();
+                        		
+                        		if (cause instanceof BundleException) {
+                        			logger.log(Level.SEVERE, "BundleException while loading class", cause);
+                        		}
+                        		
+                        		throw cnfe;
+                        	}
+                            return c;
+                            
                         }
                     });
                 } catch (PrivilegedActionException e) {
@@ -423,6 +438,7 @@ public class OSGiModuleImpl implements Module {
             @Override
             public URL getResource(String name) {
                 URL result = bundle.getResource(name);
+                               
                 if (result != null) return result;
                 return null;
             }
@@ -435,6 +451,7 @@ public class OSGiModuleImpl implements Module {
                     // expects us to return an empty enumeration.
                     resources = EMPTY_URLS;
                 }
+
                 return resources;
             }
 
