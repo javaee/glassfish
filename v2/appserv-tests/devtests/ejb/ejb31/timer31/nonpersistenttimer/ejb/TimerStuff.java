@@ -57,8 +57,4 @@ public interface TimerStuff {
         throws  Exception;
 
 
-    void distributedTimerTestSetup(String timerId, String owner) throws  Exception;
-    void distributedTimerGetTimers() throws  Exception;
-    void distributedTimerTestCleanup() throws  Exception;
-
 }

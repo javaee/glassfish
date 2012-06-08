@@ -416,44 +416,6 @@ System.out.println("********PG-> setup(): after createPublisher");
 
         timerStuff.assertNoTimers();
 
-	/** TODO distributed timer tests
-        try {
-            System.out.println("Doing distributed timer tests");
-                               
-            // distributed timer tests
-            String owner = "foo";
-            timerStuff.distributedTimerTestSetup("1", owner);
-            timerStuff.distributedTimerGetTimers();
-            timerStuff.distributedTimerTestCleanup();
-            timerStuff.assertNoTimers();        
-
-            // Do migration test, unless cmp bean.  (cmp bean must have
-            // tx, which messes up migration logic that expects to start
-            // a tx)
-            if ( !( timerStuff instanceof Bar) ) {
-                System.out.println("migration 1");
-                // Try migration when there aren't any timers to migrate
-                timerStuff.migrateTimersFrom(owner);
-                timerStuff.assertNoTimers();        
-                
-                // now create some timers for another server and migrate
-                System.out.println("migration 2");
-                timerStuff.distributedTimerTestSetup("2", owner);
-                timerStuff.migrateTimersFrom(owner);
-                timerStuff.distributedTimerTestCleanup();
-                timerStuff.assertNoTimers();        
-            }
-        } catch(Exception e) {
-            
-            System.out.println("Got exception during distributed timer tests");
-            System.out.println("Not treating as fatal error yet b/c might be");
-            System.out.println("ok if run within pe8fcs branch.  change this");
-            System.out.println("when appserv-tests is branched");
-            System.out.println("Exception is ..." + e);
-            
-        }
-	*/
-        
     }
 
     public void doEntityTests(BarHome barHome) 

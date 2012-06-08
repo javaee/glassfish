@@ -56,11 +56,4 @@ public interface TimerStuff {
         throws RemoteException, Exception;
     void recvMessageAndCreateTimerAndRollback(boolean expectMessage) 
         throws RemoteException, Exception;
-
-
-    void distributedTimerTestSetup(String timerId, String owner) throws RemoteException, Exception;
-    void distributedTimerGetTimers() throws RemoteException, Exception;
-    void distributedTimerTestCleanup() throws RemoteException, Exception;
-
-    void migrateTimersFrom(String from) throws RemoteException;
 }

@@ -60,18 +60,18 @@ public class Client {
         stat.addDescription(appName);
         Client t = new Client();
         try {
-            t.test(appName);
+            t.test(appName, 1);
         } catch (Exception e) {
-            stat.addStatus("EJB embedded with timertest", stat.FAIL);
+            stat.addStatus("EJB embedded with timertest 1", stat.FAIL);
             e.printStackTrace();
         }
         System.err.println("------------------------");
         if (s.length == 2 && s[1].equals("false")) {
             System.err.println("-------This part of the test will fail if ran against Full Profile ------------");
             try {
-                t.test(appName);
+                t.test(appName, 2);
             } catch (Exception e) {
-                stat.addStatus("EJB embedded with timertest", stat.FAIL);
+                stat.addStatus("EJB embedded with timertest 2", stat.FAIL);
                 e.printStackTrace();
             }
             System.err.println("------------------------");
@@ -82,7 +82,7 @@ public class Client {
         System.exit(0);
     }
 
-    private void test(String module) {
+    private void test(String module, int id) {
 
         EJBContainer c = EJBContainer.createEJBContainer();
         // ok now let's look up the EJB...
@@ -98,9 +98,9 @@ public class Client {
             if (!result)
                 throw new Exception ("EJB timer was NOT called for 1 or 2 timers");
 
-            stat.addStatus("EJB embedded with timertest", stat.PASS);
+            stat.addStatus("EJB embedded with timertest" + id, stat.PASS);
         } catch (Exception e) {
-            stat.addStatus("EJB embedded with timertest", stat.FAIL);
+            stat.addStatus("EJB embedded with timertest" + id, stat.FAIL);
             System.err.println("ERROR calling EJB:");
             e.printStackTrace();
         } finally {
