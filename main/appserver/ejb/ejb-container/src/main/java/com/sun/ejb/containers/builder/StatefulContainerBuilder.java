@@ -123,7 +123,7 @@ public class StatefulContainerBuilder
     @Inject @Optional
     private EjbContainerAvailability ejbAvailability;
 
-    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject
     private IterableProvider<EjbContainer> ejbContainerProvider;
     
     private EjbContainer ejbContainerConfig;

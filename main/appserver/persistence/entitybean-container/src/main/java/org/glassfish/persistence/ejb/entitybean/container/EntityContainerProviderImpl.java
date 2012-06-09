@@ -62,7 +62,7 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public final class EntityContainerProviderImpl implements ContainerProvider {
 
-    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    @Inject
     private IterableProvider<EjbContainer> ejbContainerProvider;
     
     private EjbContainer ejbContainerDesc;
