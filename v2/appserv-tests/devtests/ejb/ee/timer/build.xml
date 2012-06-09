@@ -38,7 +38,7 @@
 <!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
 <!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
 <!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
-<!ENTITY reporting SYSTEM "report.xml">
+<!ENTITY reporting SYSTEM "./../../../../config/report.xml">
 ]>
 
 <project name="ejb.ee.timer" default="usage" basedir=".">
@@ -59,8 +59,12 @@
         <ant dir="failover" target="test"/>
 
         <record name="ejb.ee.timer.output" action="stop" />
-        <antcall target="report"/>
+        <antcall target="dev-report"/>
 
+    </target>
+
+    <target name="xxx" depends="init-common">
+        <antcall target="report"/>
     </target>
 
     <target name="clean-results" depends="init-common">
