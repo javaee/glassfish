@@ -45,6 +45,7 @@ import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.api.naming.JNDIBinding;
 import org.glassfish.api.naming.NamingObjectProxy;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.logging.annotation.LogMessageInfo;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
@@ -102,7 +103,7 @@ public final class  GlassfishNamingManagerImpl implements GlassfishNamingManager
     private static final int JAVA_MODULE_LENGTH = "java:module".length();
 
     @Inject
-    BaseServiceLocator habitat;
+    private ServiceLocator habitat;
 
     //@Inject
     volatile InvocationManager invMgr=null;
@@ -831,7 +832,7 @@ public final class  GlassfishNamingManagerImpl implements GlassfishNamingManager
 
         ComponentInvocation ci;
         if (invMgr==null) {
-            ci= habitat.getByContract(InvocationManager.class).getCurrentInvocation();
+            ci= habitat.<InvocationManager>getService(InvocationManager.class).getCurrentInvocation();
         } else {
             ci= invMgr.getCurrentInvocation();
         }
