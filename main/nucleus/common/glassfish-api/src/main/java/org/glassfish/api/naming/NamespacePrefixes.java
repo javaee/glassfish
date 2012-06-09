@@ -41,6 +41,7 @@
 
 package org.glassfish.api.naming;
 
+import org.glassfish.hk2.api.Metadata;
 import org.jvnet.hk2.annotations.Service;
 
 import java.lang.annotation.ElementType;
@@ -62,5 +63,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
 public @interface NamespacePrefixes {
+    @Metadata(GlassfishNamingManager.NAMESPACE_METADATA_KEY)
     String[] value();
 }

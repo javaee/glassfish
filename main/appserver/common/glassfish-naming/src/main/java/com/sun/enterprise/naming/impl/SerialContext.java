@@ -439,7 +439,7 @@ public class SerialContext implements Context {
         // Before any lookup bind any NamedNamingObjectProxy
         // Skip if in plain Java SE client
         // TODO this should really be moved somewhere else
-        NamedNamingObjectManager.checkAndLoadProxies((BaseServiceLocator) services);
+        NamedNamingObjectManager.checkAndLoadProxies(services);
 
         /**
          * In case a user is creating an IC with env passed in constructor; env
