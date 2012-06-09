@@ -47,9 +47,15 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 @ScopeWithMetadata(value1=InhabitantsGeneratorTest.VALUE1,
-                   value3=3)
+                   value3=3,
+                   value5={InhabitantsGeneratorTest.VALUE5_1,
+                           InhabitantsGeneratorTest.VALUE5_2,
+                           InhabitantsGeneratorTest.VALUE5_3})
 @QualifierWithMetadata(value2=InhabitantsGeneratorTest.VALUE2,
-                       value4=InhabitantsGeneratorTest.class)
+                       value4=InhabitantsGeneratorTest.class,
+                       value6={InhabitantsGeneratorTest.VALUE6_1,
+                               InhabitantsGeneratorTest.VALUE6_2,
+                               InhabitantsGeneratorTest.VALUE6_3})
 public class ServiceWithMetadata {
 
 }

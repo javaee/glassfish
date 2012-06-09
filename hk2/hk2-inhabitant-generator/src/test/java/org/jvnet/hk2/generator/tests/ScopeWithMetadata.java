@@ -62,5 +62,8 @@ public @interface ScopeWithMetadata {
     
     @Metadata(InhabitantsGeneratorTest.KEY3)
     public int value3();
+    
+    @Metadata(InhabitantsGeneratorTest.KEY5)
+    public String[] value5();
 
 }
