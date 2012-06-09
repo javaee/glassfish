@@ -62,4 +62,7 @@ public @interface QualifierWithMetadata {
     
     @Metadata(InhabitantsGeneratorTest.KEY4)
     public Class<?> value4();
+    
+    @Metadata(InhabitantsGeneratorTest.KEY6)
+    public long[] value6();
 }

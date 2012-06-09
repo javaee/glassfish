@@ -99,6 +99,14 @@ public class InhabitantsGeneratorTest {
     public final static String VALUE3 = "3";
     public final static String KEY4 = "key4";
     public final static String VALUE4 = InhabitantsGeneratorTest.class.getName();
+    public final static String KEY5 = "key5";
+    public final static String VALUE5_1 = "5_1";
+    public final static String VALUE5_2 = "5_2";
+    public final static String VALUE5_3 = "5_3";
+    public final static String KEY6 = "key6";
+    public final static long VALUE6_1 = 6001L;
+    public final static long VALUE6_2 = 6002L;
+    public final static long VALUE6_3 = 6003L;
     
     /** The name for non-defaulted things */
     public final static String NON_DEFAULT_NAME = "non-default-name";
@@ -288,6 +296,12 @@ public class InhabitantsGeneratorTest {
             envItself.addMetadata(KEY2, VALUE2);
             envItself.addMetadata(KEY3, VALUE3);
             envItself.addMetadata(KEY4, VALUE4);
+            envItself.addMetadata(KEY5, VALUE5_1);
+            envItself.addMetadata(KEY5, VALUE5_2);
+            envItself.addMetadata(KEY5, VALUE5_3);
+            envItself.addMetadata(KEY6, new Long(VALUE6_1).toString());
+            envItself.addMetadata(KEY6, new Long(VALUE6_2).toString());
+            envItself.addMetadata(KEY6, new Long(VALUE6_3).toString());
         
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }

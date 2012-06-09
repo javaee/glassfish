@@ -40,6 +40,7 @@
 package org.jvnet.hk2.generator.internal;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -463,13 +464,20 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     
     private class MetadataAnnotationVisitor extends AbstractAnnotationVisitorImpl {
         private final String scopeOrQualifierName;
+        private final String arrayName;
         
         private MetadataAnnotationVisitor(String scopeOrQualifierName) {
+            this(scopeOrQualifierName, null);
+        }
+        
+        private MetadataAnnotationVisitor(String scopeOrQualifierName, String arrayName) {
             this.scopeOrQualifierName = scopeOrQualifierName;
+            this.arrayName = arrayName;
         }
         
         @Override
         public void visit(String name, Object value) {
+            if (name == null) name = arrayName;
             String metadataKey = utilities.getMetadataKey(scopeOrQualifierName, name);
             
             if (metadataKey != null) {
@@ -480,12 +488,32 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
                     valueString = type.getClassName();
                 }
                 else {
+                    String valueClassName = value.getClass().getName();
+                    if (valueClassName.startsWith("[")) {
+                        int length = Array.getLength(value);
+                        for (int lcv = 0; lcv < length; lcv++) {
+                            Object member = Array.get(value, lcv);
+                            
+                            ReflectionHelper.addMetadata(metadata, metadataKey, member.toString());
+                        }
+                        
+                        return;
+                    }
+                    
                     valueString = value.toString();
                 }
                 
                 ReflectionHelper.addMetadata(metadata, metadataKey, valueString);
             }
-        }  
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
+         */
+        @Override
+        public AnnotationVisitor visitArray(String name) {
+            return new MetadataAnnotationVisitor(scopeOrQualifierName, name);
+        }
     }
     
     /**
