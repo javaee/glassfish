@@ -83,6 +83,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ProxyCtl;
+import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
@@ -424,7 +425,7 @@ public class Utilities {
         ScopeInfo scopeInfo = getScopeInfo(clazz, collector);
         scope = scopeInfo.getAnnoType();
             
-        creator = new ClazzCreator<T>(locator, clazz, collector);
+        creator = new ClazzCreator<T>(locator, clazz, null, collector);
         
         collector.throwIfErrors();
         
@@ -521,7 +522,12 @@ public class Utilities {
         for (Field field : fields) {
             InjectionResolver<?> resolver = getInjectionResolver(locator, field);
             
-            Injectee injectee = Utilities.getFieldInjectees(field).get(0);
+            List<Injectee> injecteeFields = Utilities.getFieldInjectees(field);
+            
+            validateSelfInjectees(null, injecteeFields, collector);
+            collector.throwIfErrors();
+            
+            Injectee injectee = injecteeFields.get(0);
             
             Object fieldValue = resolver.resolve(injectee, null);
             
@@ -539,6 +545,9 @@ public class Utilities {
             InjectionResolver<?> resolver = getInjectionResolver(locator, method);
             
             List<Injectee> injectees = Utilities.getMethodInjectees(method);
+            
+            validateSelfInjectees(null, injectees, collector);
+            collector.throwIfErrors();
             
             Object args[] = new Object[injectees.size()];
             
@@ -576,6 +585,9 @@ public class Utilities {
         InjectionResolver<?> resolver = getInjectionResolver(locator, c);
         
         List<Injectee> injectees = getConstructorInjectees(c);
+        
+        validateSelfInjectees(null, injectees, collector);
+        collector.throwIfErrors();
         
         Object args[] = new Object[injectees.size()];
         
@@ -1316,6 +1328,18 @@ public class Utilities {
         return false;
     }
     
+    private static boolean isSelf(
+            Annotation memberAnnotations[]) {
+        
+        for (Annotation annotation : memberAnnotations) {
+            if (annotation.annotationType().equals(Self.class)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     /**
      * Returns all the injectees for a constructor
      * @param c The constructor to analyze
@@ -1332,7 +1356,8 @@ public class Utilities {
                     getAllQualifiers(paramAnnotations[lcv]),
                     lcv,
                     c,
-                    isOptional(paramAnnotations[lcv])));
+                    isOptional(paramAnnotations[lcv]),
+                    isSelf(paramAnnotations[lcv])));
         }
         
         return retVal;
@@ -1354,7 +1379,8 @@ public class Utilities {
                     getAllQualifiers(paramAnnotations[lcv]),
                     lcv,
                     c,
-                    isOptional(paramAnnotations[lcv])));
+                    isOptional(paramAnnotations[lcv]),
+                    isSelf(paramAnnotations[lcv])));
         }
         
         return retVal;
@@ -1372,9 +1398,50 @@ public class Utilities {
                 ReflectionHelper.getQualifierAnnotations(f),
                 -1,
                 f,
-                isOptional(f.getAnnotations())));
+                isOptional(f.getAnnotations()),
+                isSelf(f.getAnnotations())));
         
         return retVal;
+    }
+    
+    /**
+     * This method validates a list of injectees to ensure that any self injectees have
+     * the proper set of requirements.  It adds IllegalArgumentExceptions to the collector
+     * if it finds errors
+     * 
+     * @param givenDescriptor The descriptor associated with this injectee, or null if there are none
+     * @param injectees The list of injectees to check.  Only self injectees are validates
+     * @param collector The collector to add any errors to
+     */
+    public static void validateSelfInjectees(ActiveDescriptor<?> givenDescriptor,
+            List<Injectee> injectees,
+            Collector collector) {
+        
+        for (Injectee injectee : injectees) {
+            if (!injectee.isSelf()) continue;
+            
+            Class<?> requiredRawClass = ReflectionHelper.getRawClass(injectee.getRequiredType());
+            if (requiredRawClass == null || !(ActiveDescriptor.class.equals(requiredRawClass))) {
+                collector.addThrowable(new IllegalArgumentException("Injection point " + injectee + 
+                        " does not have the required type of ActiveDescriptor"));
+            }
+            
+            if (injectee.isOptional()) {
+                collector.addThrowable(new IllegalArgumentException("Injection point " + injectee + 
+                        " is marked both @Optional and @Self"));
+            }
+            
+            if (!injectee.getRequiredQualifiers().isEmpty()) {
+                collector.addThrowable(new IllegalArgumentException("Injection point " + injectee + 
+                        " is marked @Self but has other qualifiers"));
+            }
+            
+            if (givenDescriptor == null) {
+                collector.addThrowable(new IllegalArgumentException("A class with injection point " + injectee + 
+                        " is being created or injected via the non-managed ServiceLocator API"));
+            }
+        }
+        
     }
     
     private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";

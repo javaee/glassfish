@@ -37,44 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.selfdescriptor;
+package org.glassfish.hk2.tests.locator.negative.self;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Self;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class ActiveDescriptorFactory implements
-        Factory<ActiveDescriptor<SelfDescriptorInjectedService>> {
+public class AnotherValidSelfInjectedService {
+    @SuppressWarnings("unused")
     @Inject
-    private ServiceLocator locator;
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
-     */
-    @Override @Singleton
-    public ActiveDescriptor<SelfDescriptorInjectedService> provide() {
-        ServiceHandle<SelfDescriptorInjectedService> handle = locator.getServiceHandle(SelfDescriptorInjectedService.class);
-        if (handle == null) throw new IllegalStateException();
-        
-        return handle.getActiveDescriptor();
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(ActiveDescriptor<SelfDescriptorInjectedService> instance) {
-        // do nothing
-        
+    private void init(@Self ActiveDescriptor<?> self) {
+        throw new AssertionError("not called");
     }
 
 }

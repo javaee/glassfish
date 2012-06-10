@@ -61,18 +61,21 @@ public class InjecteeImpl implements Injectee {
     private final Class<?> pClass;
     private final AnnotatedElement parent;
     private final boolean isOptional;
+    private final boolean isSelf;
     
     /* package */ InjecteeImpl(
             Type requiredType,
             Set<Annotation> qualifiers,
             int position,
             AnnotatedElement parent,
-            boolean isOptional) {
+            boolean isOptional,
+            boolean isSelf) {
         this.requiredType = requiredType;
         this.position = position;
         this.parent = parent;
         this.qualifiers = Collections.unmodifiableSet(qualifiers);
         this.isOptional = isOptional;
+        this.isSelf = isSelf;
         
         if (parent instanceof Field) {
             pClass = ((Field) parent).getDeclaringClass();
@@ -133,12 +136,21 @@ public class InjecteeImpl implements Injectee {
         return isOptional;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Injectee#isSelf()
+     */
+    @Override
+    public boolean isSelf() {
+        return isSelf;
+    } 
+    
     public String toString() {
         return "Injectee(requiredType=" + Pretty.type(requiredType) +
                 ",parent=" + Pretty.clazz(pClass) +
                 ",qualifiers=" + Pretty.collection(qualifiers) +
                 ",position=" + position +
                 ",optional=" + isOptional +
+                ",self=" + isSelf +
                 "," + System.identityHashCode(this) + ")";
-    }    
+    }
 }

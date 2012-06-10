@@ -37,29 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.negative.self;
 
+import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.inject.Scope;
+import javax.inject.Qualifier;
 
 /**
- * PerLookup is the scope for objects that are created every time they are looked up.  PerLookup objects
- * will be destroyed whenever a service containing them is destroyed or they are destroyed explicitly
- * with the {@link ServiceHandle#destroy()} method.
- * 
  * @author jwells
+ *
  */
-@Documented
+@Qualifier
 @Retention(RUNTIME)
-@Scope
-@Target( { TYPE, METHOD })
-public @interface PerLookup {
-
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface ImaQualifier {
 }

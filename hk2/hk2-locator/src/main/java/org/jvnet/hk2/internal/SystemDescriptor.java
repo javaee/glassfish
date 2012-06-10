@@ -402,7 +402,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                             baseDescriptor.getName(),
                             collector));
             
-            creator = new ClazzCreator<T>(locator, implClass, collector);
+            creator = new ClazzCreator<T>(locator, implClass, this, collector);
             
             scope = Utilities.getScopeAnnotationType(implClass, collector);
             contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(implClass,

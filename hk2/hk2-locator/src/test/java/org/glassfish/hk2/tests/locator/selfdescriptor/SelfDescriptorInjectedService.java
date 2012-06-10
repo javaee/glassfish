@@ -39,10 +39,13 @@
  */
 package org.glassfish.hk2.tests.locator.selfdescriptor;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Self;
 import org.junit.Assert;
 
 /**
@@ -53,15 +56,15 @@ import org.junit.Assert;
  *
  */
 public class SelfDescriptorInjectedService {
-    private final Descriptor viaConstructor;
+    private final ActiveDescriptor<?> viaConstructor;
     
-    @Inject
+    @Inject @Self
     private ActiveDescriptor<SelfDescriptorInjectedService> viaField;
     
     private ActiveDescriptor<SelfDescriptorInjectedService> viaMethod;
     
     @Inject
-    private SelfDescriptorInjectedService(Descriptor viaConstructor) {
+    private SelfDescriptorInjectedService(@Self ActiveDescriptor<?> viaConstructor) {
         this.viaConstructor = viaConstructor;
     }
     
@@ -71,7 +74,7 @@ public class SelfDescriptorInjectedService {
      * @param viaMethod with its own descriptor
      */
     @Inject
-    public void injectMe(ActiveDescriptor<SelfDescriptorInjectedService> viaMethod) {
+    public void injectMe(@Self ActiveDescriptor<SelfDescriptorInjectedService> viaMethod) {
         this.viaMethod = viaMethod;
     }
     
@@ -84,5 +87,12 @@ public class SelfDescriptorInjectedService {
         Assert.assertEquals(viaConstructor, viaField);
         Assert.assertEquals(viaConstructor, viaMethod);
         Assert.assertEquals(viaField, viaMethod);
+        
+        List<Injectee> injectees = viaConstructor.getInjectees();
+        Assert.assertTrue(3 == injectees.size());
+        
+        for (Injectee injectee : injectees) {
+            Assert.assertTrue(injectee.isSelf());
+        }
     }
 }

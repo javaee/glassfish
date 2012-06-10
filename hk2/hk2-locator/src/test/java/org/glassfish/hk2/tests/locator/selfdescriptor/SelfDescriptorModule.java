@@ -39,10 +39,6 @@
  */
 package org.glassfish.hk2.tests.locator.selfdescriptor;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -58,14 +54,7 @@ public class SelfDescriptorModule implements TestModule {
      */
     @Override
     public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(SelfDescriptorInjectedService.class);
-        
-        config.bind(BuilderHelper.link(ActiveDescriptorFactory.class).
-                to(ActiveDescriptor.class).
-                to(Descriptor.class).
-                in(Singleton.class.getName()).
-                buildFactory(Singleton.class.getName()));
-        
+        config.bind(BuilderHelper.link(SelfDescriptorInjectedService.class).build());
     }
 
 }

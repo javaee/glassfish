@@ -112,4 +112,15 @@ public interface Injectee {
      * false otherwise
      */
     public boolean isOptional();
+    
+    /**
+     * This method returns true if this injection point is annotated
+     * with &#86;Self.  In this case the required type must have
+     * a raw class of {@link ActiveDescriptor}, isOptional must be
+     * false and the set of required qualifiers must be empty
+     * 
+     * @return true if the injection point is annotated with &#86;Self,
+     * false otherwise
+     */
+    public boolean isSelf();
 }

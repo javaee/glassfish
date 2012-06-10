@@ -92,6 +92,14 @@ public class InjecteeImpl implements Injectee {
     public boolean isOptional() {
         throw new AssertionError("never called");
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Injectee#isOptional()
+     */
+    @Override
+    public boolean isSelf() {
+        throw new AssertionError("never called");
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Injectee#getInjecteeClass()

@@ -37,29 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.negative.self;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.inject.Inject;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.inject.Scope;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Self;
+import org.jvnet.hk2.annotations.Optional;
 
 /**
- * PerLookup is the scope for objects that are created every time they are looked up.  PerLookup objects
- * will be destroyed whenever a service containing them is destroyed or they are destroyed explicitly
- * with the {@link ServiceHandle#destroy()} method.
- * 
+ * This injection service has several invalid injection points
  * @author jwells
+ *
  */
-@Documented
-@Retention(RUNTIME)
-@Scope
-@Target( { TYPE, METHOD })
-public @interface PerLookup {
+public class AllBadSelfInjectionService {
+    @Inject @Self
+    AValidSelfInjectedService foo;
+    
+    @Inject
+    AllBadSelfInjectionService(@Self @Optional ActiveDescriptor<?> self) {
+        
+    }
+    
+    @Inject
+    void init(@Self @Optional @ImaQualifier AValidSelfInjectedService self) {
+        
+    }
 
 }
