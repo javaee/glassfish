@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2006-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,47 +38,47 @@
  * holder.
  */
 
-package org.glassfish.ejb.startup;
+package org.glassfish.ejb.mdb.monitoring.stats;
 
-import com.sun.ejb.containers.EjbContainerUtil;
-import org.glassfish.api.container.Container;
-import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.api.PostConstruct;
-import org.glassfish.hk2.api.PreDestroy;
-
+import com.sun.ejb.monitoring.stats.EjbMonitoringStatsProvider;
+import org.glassfish.external.probe.provider.annotations.*;
+import org.glassfish.external.statistics.*;
+import org.glassfish.external.statistics.impl.*;
+import org.glassfish.gmbal.*;
 
 /**
- * Ejb container service
+ * Probe listener for the Message-Driven Beans part of the EJB monitoring events. 
  *
- * @author Mahesh Kannan
+ * @author Marina Vatkina
  */
-@Service(name="org.glassfish.ejb.startup.EjbContainerStarter")
-public class EjbContainerStarter
-    implements Container, PostConstruct, PreDestroy {
+@AMXMetadata(type="message-driven-bean-mon", group="monitoring", isSingleton=false)
+@ManagedObject
+public class MessageDrivenBeanStatsProvider extends EjbMonitoringStatsProvider {
 
-    /**
-     * Initializes EjbContainerUtilImpl instance with this injection so that
-     * its instance is available to subsequent request, e.g., with
-     * EjbContainerUtilImpl.getInstance().
-     */
-    @Inject
-    EjbContainerUtil ejbContainerUtilImpl;
+    private CountStatisticImpl messageCount = new CountStatisticImpl("MessageCount",
+            "count", "Number of messages received for a message-driven bean");
 
-    public void postConstruct() {
-    }    
-    
-    public void preDestroy() {
-        if (ejbContainerUtilImpl instanceof PreDestroy) {
-            ((PreDestroy)ejbContainerUtilImpl).preDestroy();
+    public MessageDrivenBeanStatsProvider(long beanId, String appName, String moduleName,
+            String beanName) {
+        super(beanId, appName, moduleName, beanName);
+    }
+
+    @ManagedAttribute(id="messagecount")
+    @Description( "Number of messages received for a message-driven bean")
+    public CountStatistic getCreateCount() {
+        return messageCount.getStatistic();
+    }
+
+    @ProbeListener("glassfish:ejb:bean:messageDeliveredEvent")
+    public void messageDeliveredEvent(
+            @ProbeParam("beanId") long beanId,
+            @ProbeParam("appName") String appName,
+            @ProbeParam("modName") String modName,
+            @ProbeParam("ejbName") String ejbName) {
+        if (this.beanId == beanId) {
+            log ("messageDeliveredEvent", "MessageDrivenBeanStatsProvider");
+            messageCount.increment();
         }
     }
 
-    public String getName() {
-        return "EjbContainer";
-    }
-
-    public Class<? extends org.glassfish.api.deployment.Deployer> getDeployer() {
-        return EjbDeployer.class;
-    }
 }

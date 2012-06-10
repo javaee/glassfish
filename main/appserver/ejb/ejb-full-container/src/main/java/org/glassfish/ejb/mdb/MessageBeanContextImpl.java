@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.ejb.full.containers.mdb;
+package org.glassfish.ejb.mdb;
 
 import javax.ejb.*;
 
@@ -173,7 +173,7 @@ public final class MessageBeanContextImpl
             throw new java.lang.IllegalStateException("Operation not allowed");
         }
 
-        EJBTimerService timerService = EjbContainerUtilImpl.getInstance().getValidEJBTimerService();
+        EJBTimerService timerService = EJBTimerService.getValidEJBTimerService();
         return new EJBTimerServiceWrapper(timerService, this);
     }
 

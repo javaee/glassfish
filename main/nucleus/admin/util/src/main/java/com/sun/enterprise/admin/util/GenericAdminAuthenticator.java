@@ -64,7 +64,11 @@ import org.glassfish.api.container.Sniffer;
 import org.glassfish.common.util.admin.AdminAuthCallback;
 import org.glassfish.common.util.admin.AuthTokenManager;
 import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.internal.api.*;
+import org.glassfish.logging.annotation.LogMessageInfo;
+import org.glassfish.logging.annotation.LogMessagesResourceBundle;
+import org.glassfish.logging.annotation.LoggerInfo;
 import org.glassfish.security.services.api.authentication.AuthenticationService;
 import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.ContractsProvided;
@@ -105,6 +109,15 @@ import org.glassfish.hk2.api.PostConstruct;
 @Service
 @ContractsProvided({JMXAuthenticator.class})
 public class GenericAdminAuthenticator implements AdminAccessController, JMXAuthenticator, PostConstruct {
+    
+    @LoggerInfo(subsystem="ADMSEC", description="Admin security ")
+    private static final String ADMSEC_LOGGER_NAME = "javax.enterprise.system.admin.security";
+
+    @LogMessagesResourceBundle
+    private static final String LOG_MESSAGES_RB = "com.sun.enterprise.admin.util.LogMessages";
+
+    static final Logger ADMSEC_LOGGER = Logger.getLogger(ADMSEC_LOGGER_NAME, LOG_MESSAGES_RB);
+    
     @Inject
     BaseServiceLocator habitat;
     
@@ -139,9 +152,6 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
     
     private static LocalStringManagerImpl lsm = new LocalStringManagerImpl(GenericAdminAuthenticator.class);
     
-    private static final Logger logger = LogDomains.getLogger(GenericAdminAuthenticator.class,
-            LogDomains.ADMIN_LOGGER);
-
     private KeyStore truststore = null;
 
     /** maps server alias to the Principal for the cert with that alias from the truststore */
@@ -161,12 +171,12 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                     if (!fr.hasAuthenticatableUser()) {
                         String emsg = lsm.getLocalString("secure.admin.empty.password",
                             "The server requires a valid admin password to be set before it can start. Please set a password using the change-admin-password command.");
-                        logger.log(Level.SEVERE, emsg);
+                        ADMSEC_LOGGER.log(Level.SEVERE, emsg);
                         throw new IllegalStateException(emsg);
                     }
                 }
             } catch (Exception ex) {
-                logger.log(Level.SEVERE, ex.getMessage());
+                ADMSEC_LOGGER.log(Level.SEVERE, ex.getMessage());
                 throw new RuntimeException(ex);
             }
 
@@ -236,7 +246,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         }
         
         if ( ! isAuthenticatedAsAdmin(s, adminPrincipals)) {
-            logger.log(Level.FINE, "User authenticated but not as an administrator; refusing admin access");
+            ADMSEC_LOGGER.log(Level.FINE, "User did not authenticate as an administrator; refusing admin access");
             return AdminAccessController.Access.NONE;
         }
 
@@ -255,7 +265,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                 SecureAdmin.Util.isEnabled(secureAdmin) ) {
                 grantedAccess = AdminAccessController.Access.FULL;
             } else {
-                LogHelper.getDefaultLogger().log(Level.FINE, "Forbidding the admin request to the DAS; the request is remote and secure admin is not enabled");
+                ADMSEC_LOGGER.log(Level.FINE, "Forbidding the admin request to the DAS; the request is remote and secure admin is not enabled");
                 grantedAccess = AdminAccessController.Access.FORBIDDEN;
             }
 //        } else {
@@ -272,6 +282,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
 //                logger.log(Level.FINE, "Granting read-only access for the admin request to this instance; full access was refused because the request lacked the unique ID or contained an incorrect one");
 //            }
 //        }
+        ADMSEC_LOGGER.log(Level.FINE, "Admin access chosen: {0}", grantedAccess.toString());
         return grantedAccess;
     }
     
@@ -291,50 +302,24 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                         return true;
                 }
             }
-            logger.fine("User is not the member of the special admin group");
+            ADMSEC_LOGGER.fine("User is not a member of the special admin group");
             return false;
         } catch(Exception e) {
-            logger.log(Level.FINE, "User is not the member of the special admin group: {0}", e.getMessage());
+            ADMSEC_LOGGER.log(Level.FINE, "User is not a member of the special admin group: {0}", e);
             return false;
         }
 
     }
     
-    private Collection<Callback> prepareRequestBasedCallbacks(final Request req) {
-        final Collection<Callback> result = new ArrayList<Callback>();
-        for (Callback cb : habitat.getAllByContract(AdminAuthCallback.class)) {
-            result.add(cb);
-            if (cb instanceof AdminAuthCallback.RequestBasedCallback) {
-                final AdminAuthCallback.RequestBasedCallback tbcb = (AdminAuthCallback.RequestBasedCallback) cb;
-                tbcb.setRequest(req);
-                
-            }
-        }
-        return result;
-    }
-    
     private Subject authenticate(final Request req, final String alternateHostname) throws IOException, LoginException {
-        final AdminCallbackHandler cbh = new AdminCallbackHandler(req, 
-                    secureAdmin.getSpecialAdminIndicator(),
-                    authTokenManager,
+        final AdminCallbackHandler cbh = new AdminCallbackHandler(habitat,
+                    req, 
                     alternateHostname,
                     getDefaultAdminUser(),
-                    localPassword,
-                    prepareRequestBasedCallbacks(req)
+                    localPassword
         );
         Subject s = null;
-        // TODO - remove the following classloader workaround
-//        /*
-//            * We have to temporarily set the class loader so the authentication
-//            * service can find the login module(s).
-//            */
-//        final Thread thread = Thread.currentThread();
-//        final ClassLoader origCL = thread.getContextClassLoader();
-//        final ClassLoader ccl = sc.getCommonClassLoader();
         try {
-//            if (origCL != ccl) {
-//                thread.setContextClassLoader(ccl);
-//            }
             s = authService.login(cbh, null);
             /*
              * Local commands which send a token also currently send a username
@@ -352,24 +337,20 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             }
         } catch (LoginException lex) {
             final String cmd = req.getContextPath();
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "*** LoginException during auth for {7}\n  user={0}\n  dn={1}\n  tkn={2}\n  admInd={3}\n  restTkn={4}\n  host={5}",
+            if (ADMSEC_LOGGER.isLoggable(Level.FINE)) {
+                ADMSEC_LOGGER.log(Level.FINE, "*** LoginException during auth for {5}\n  user={0}\n  dn={1}\n  tkn={2}\n  admInd={3}\n  host={4}\n",
                     new Object[] {cbh.pw().getUserName(), 
                                     cbh.clientPrincipal() == null ? "null" : cbh.clientPrincipal().getName(), 
-                                    cbh.tkn(), cbh.adminIndicator(), cbh.restTkn(), cbh.remoteHost(), cmd});
+                                    cbh.tkn(), cbh.adminIndicator(), cbh.remoteHost(),  cmd});
             }
             return null;
-//        } finally {
-//            if (origCL != ccl) {
-//                thread.setContextClassLoader(origCL);
-//            }
         }
 
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "*** Login worked\n  user={0}\n  dn={1}\n  tkn={2}\n  admInd={3}\n  restTkn={4}\n  host={5}",
+        if (ADMSEC_LOGGER.isLoggable(Level.FINE)) {
+            ADMSEC_LOGGER.log(Level.FINE, "*** Login worked\n  user={0}\n  dn={1}\n  tkn={2}\n  admInd={3}\n  host={4}\n",
                     new Object[] {cbh.pw().getUserName(),  
                                     cbh.clientPrincipal() == null ? "null" : cbh.clientPrincipal().getName(), 
-                                    cbh.tkn(), cbh.adminIndicator(), cbh.restTkn(), cbh.remoteHost()});
+                                    cbh.tkn(), cbh.adminIndicator(), cbh.remoteHost()});
         }
             
         return s;
@@ -397,14 +378,14 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             throw new RuntimeException("Warning: Configuration is bad, realm: " + as.getAuthRealmName() + " does not exist!");
         }
         if (! FileRealm.class.getName().equals(realm.getClassname())) {
-            logger.fine("CAN'T FIND DEFAULT ADMIN USER: IT'S NOT A FILE REALM");
+            ADMSEC_LOGGER.fine("CAN'T FIND DEFAULT ADMIN USER: IT'S NOT A FILE REALM");
             return null;  // can only find default admin user in file realm
         }
         String pv = realm.getPropertyValue("file");  //the property named "file"
         File   rf = null;
         if (pv == null || !(rf=new File(pv)).exists()) {
             //an incompletely formed file property or the file property points to a non-existent file, can't allow access
-            logger.fine("CAN'T FIND DEFAULT ADMIN USER: THE KEYFILE DOES NOT EXIST");
+            ADMSEC_LOGGER.fine("CAN'T FIND DEFAULT ADMIN USER: THE KEYFILE DOES NOT EXIST");
             return null;
         }
         try {
@@ -417,15 +398,19 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
                     for (String group : fru.getGroups()) {
                         if (group.equals(AdminConstants.DOMAIN_ADMIN_GROUP_NAME))
                             // there is only one admin user, in the right group, default to it
-                            logger.log(Level.FINE, "Attempting access using default admin user: {0}", au);
+                            ADMSEC_LOGGER.log(Level.FINE, "Will use \"{0}\", if needed, for a default admin user", au);
                             return au;
                     }
                 }
+                ADMSEC_LOGGER.log(Level.FINE, "There are multiple admin users so we cannot use any as a default");
+                return null;
             }
+            ADMSEC_LOGGER.log(Level.FINE, "There are no admin users so we cannot use any as a default");
+            return null;
         } catch(Exception e) {
+            ADMSEC_LOGGER.log(Level.WARNING, "Error searching for a default admin user", e);
             return null;
         }
-        return null;
     }
     
     private Subject authenticate(final String user, final char[] password) throws LoginException {
@@ -440,22 +425,22 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
         
         for (PasswordCredential pc : s.getPrivateCredentials(PasswordCredential.class)) {
             if (pc.getRealm().equals("admin-realm")) {
-                logger.log(Level.FINE, "Granting admin access for this request; user/password authenticated as a valid admin account");
+                ADMSEC_LOGGER.log(Level.FINE, "Recognized the user as an admin user");
                 return true;
             }
         }
-        return authorizeUsingCert(adminPrincipalDNs, s.getPrincipals());
+        return isAauthenticatedUsingCert(adminPrincipalDNs, s.getPrincipals());
     }
     
-    private static boolean authorizeUsingCert(
+    private static boolean isAauthenticatedUsingCert(
             final Collection<String> adminPrincipalDNs,
             final Collection<Principal> principals) {
         for (Principal p : principals) {
             if (isPrincipalAuthorized(adminPrincipalDNs, p)) {
-                logger.log(Level.FINE, "Cert {0} recognized as authorized admin cert", p.toString());
+                ADMSEC_LOGGER.log(Level.FINE, "Cert {0} recognized as an admin cert", p.toString());
                 return true;
             }
-            logger.log(Level.FINE, "Authenticated cert {0} is not separately authorized for admin operations", 
+            ADMSEC_LOGGER.log(Level.FINE, "Authenticated cert {0} is not separately set up for admin operations", 
                     p.toString());
             return false;
         }
@@ -511,7 +496,7 @@ public class GenericAdminAuthenticator implements AdminAccessController, JMXAuth
             if ( ! result.isOK()) {
                 String msg = lsm.getLocalString("authentication.failed",
                         "User [{0}] from host {1} does not have administration access", user, host);
-                logger.log(Level.INFO, msg);
+                ADMSEC_LOGGER.log(Level.INFO, msg);
                 throw new SecurityException(msg);
             }
             return null;

@@ -38,18 +38,16 @@
  * holder.
  */
 
-package com.sun.ejb.spi.distributed;
+package org.glassfish.ejb.persistent.timer;
 
+import com.sun.ejb.PersistentTimerService;
 import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.ejb.containers.EJBTimerService;
-import com.sun.ejb.containers.PersistenceEJBTimerService;
 import com.sun.enterprise.transaction.api.RecoveryResourceRegistry;
 import com.sun.enterprise.transaction.spi.RecoveryEventListener;
 
 import org.glassfish.gms.bootstrap.GMSAdapter;
 import org.glassfish.gms.bootstrap.GMSAdapterService;
-import org.glassfish.hk2.api.PostConstruct;
-
 import com.sun.enterprise.ee.cms.core.CallBack;
 import com.sun.enterprise.ee.cms.core.GMSConstants;
 import com.sun.enterprise.ee.cms.core.PlannedShutdownSignal;
@@ -57,13 +55,14 @@ import com.sun.enterprise.ee.cms.core.Signal;
 
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
+import org.glassfish.hk2.api.PostConstruct;
 
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 @Service
 public class DistributedEJBTimerService
-    implements RecoveryEventListener, PostConstruct, CallBack {
+    implements PersistentTimerService, RecoveryEventListener, PostConstruct, CallBack {
 
     @Inject
     private EjbContainerUtil ejbContainerUtil;
@@ -73,8 +72,6 @@ public class DistributedEJBTimerService
 
     @Inject
     RecoveryResourceRegistry recoveryResourceRegistry;
-
-    private boolean defaultDBReadValue = false;
 
     public void postConstruct() {
         if (!ejbContainerUtil.isDas()) {
@@ -89,12 +86,13 @@ public class DistributedEJBTimerService
                     gmsAdapter.registerPlannedShutdownListener(this);
                 }
             }
-            // Do DB read before timeout in a cluster
-            setPerformDBReadBeforeTimeout(true);
-
             // Register for transaction recovery events
             recoveryResourceRegistry.addEventListener(this);
         }
+    }
+
+    public void initPersistentTimerService(String target) {
+        PersistentEJBTimerService.initEJBTimerService(target);
     }
 
     @Override
@@ -102,7 +100,7 @@ public class DistributedEJBTimerService
         Logger logger = ejbContainerUtil.getLogger();
         if (signal instanceof PlannedShutdownSignal) {
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "[DistributedEJBTimerServiceImpl] planned shutdown signal: " + signal);
+                logger.log(Level.FINE, "[DistributedEJBTimerService] planned shutdown signal: " + signal);
             }
             PlannedShutdownSignal pssig = (PlannedShutdownSignal)signal;
             if (pssig.getEventSubType() == GMSConstants.shutdownType.INSTANCE_SHUTDOWN) {
@@ -110,7 +108,7 @@ public class DistributedEJBTimerService
             }
         } else {
             if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, "[DistributedEJBTimerServiceImpl] ignoring signal: " + signal);
+                logger.log(Level.FINE, "[DistributedEJBTimerService] ignoring signal: " + signal);
             }
         }
     }
@@ -126,25 +124,16 @@ public class DistributedEJBTimerService
 
         Logger logger = ejbContainerUtil.getLogger();
         if (logger.isLoggable(Level.INFO)) {
-                logger.log(Level.INFO, "[DistributedEJBTimerServiceImpl] afterRecovery event for instance " + instance);
+                logger.log(Level.INFO, "[DistributedEJBTimerService] afterRecovery event for instance " + instance);
         }
 
         if (instance != null && !instance.equals(ejbContainerUtil.getServerEnvironment().getInstanceName())) {
             if (success) {
                 migrateTimers(instance);
             } else {
-                logger.log(Level.WARNING, "[DistributedEJBTimerServiceImpl] Cannot perform automatic timer migration after failed transaction recovery");
+                logger.log(Level.WARNING, "[DistributedEJBTimerService] Cannot perform automatic timer migration after failed transaction recovery");
             }
         }
-    }
-
-    /**
-     *--------------------------------------------------------------
-     * Methods implemented for DistributedEJBTimerService
-     *--------------------------------------------------------------
-     */
-    public boolean getPerformDBReadBeforeTimeout() {
-        return defaultDBReadValue;
     }
 
     /**
@@ -155,13 +144,13 @@ public class DistributedEJBTimerService
     private int migrateTimers( String serverId ) {
         Logger logger = ejbContainerUtil.getLogger();
         if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, "[DistributedEJBTimerServiceImpl] migrating timers from " + serverId);
+            logger.log(Level.INFO, "[DistributedEJBTimerService] migrating timers from " + serverId);
         }
 
         int result = 0;
         // Force loading TimerService if it hadn't been started
-        EJBTimerService ejbTimerService = ejbContainerUtil.getEJBTimerService();
-        if (ejbTimerService != null) {
+        EJBTimerService ejbTimerService = EJBTimerService.getEJBTimerService();
+        if (ejbTimerService != null && ejbTimerService.isPersistent()) {
             result = ejbTimerService.migrateTimers( serverId );
         } else {
             //throw new IllegalStateException("EJB Timer service is null. "
@@ -171,18 +160,5 @@ public class DistributedEJBTimerService
         return result;
     }
 
-    private void setPerformDBReadBeforeTimeout( boolean value ) {
-        defaultDBReadValue = value;
-        // Set it the EJBTimerService is available. Otherwise the value will be pulled
-        // on the timer service startup
-        if (ejbContainerUtil.isEJBTimerServiceLoaded()) {
-            EJBTimerService ts = ejbContainerUtil.getEJBTimerService();
-            if (ts != null && ts instanceof PersistenceEJBTimerService) {
-                ((PersistenceEJBTimerService)ts).setPerformDBReadBeforeTimeout(value);
-            }
-        }
-    }
-
-
-} //DistributedEJBTimerServiceImpl.java
+} //DistributedEJBTimerService.java
 
