@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.InstanceLifecycleEventType;
@@ -70,6 +71,7 @@ public class ClazzCreator<T> implements Creator<T> {
     private final Class<?> implClass;
     private final Set<ResolutionInfo> myInitializers = new HashSet<ResolutionInfo>();
     private final Set<ResolutionInfo> myFields = new HashSet<ResolutionInfo>();
+    private final ActiveDescriptor<?> selfDescriptor;
     
     private final ResolutionInfo myConstructor;
     private List<Injectee> allInjectees;
@@ -77,9 +79,11 @@ public class ClazzCreator<T> implements Creator<T> {
     private Method postConstructMethod;
     private Method preDestroyMethod;
     
-    /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, Collector collector) {
+    /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, ActiveDescriptor<?> selfDescriptor, Collector collector) {
         this.locator = locator;
         this.implClass = implClass;
+        this.selfDescriptor = selfDescriptor;
+        
         List<Injectee> baseAllInjectees = new LinkedList<Injectee>();
         
         AnnotatedElement element;
@@ -129,13 +133,20 @@ public class ClazzCreator<T> implements Creator<T> {
         preDestroyMethod = Utilities.findPreDestroy(implClass, collector);
         
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
+        
+        Utilities.validateSelfInjectees(selfDescriptor, allInjectees, collector);
     }
     
-    private static void resolve(Map<Injectee, Object> addToMe,
+    private void resolve(Map<Injectee, Object> addToMe,
             InjectionResolver<?> resolver,
             Injectee injectee,
             ServiceHandle<?> root,
             Collector errorCollection) {
+        if (injectee.isSelf()) {
+            addToMe.put(injectee, selfDescriptor);
+            return;
+        }
+        
         Object addIn = null;
         try {
             addIn = resolver.resolve(injectee, root);
