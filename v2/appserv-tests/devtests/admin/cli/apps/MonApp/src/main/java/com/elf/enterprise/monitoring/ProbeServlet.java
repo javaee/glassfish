@@ -88,7 +88,7 @@ public class ProbeServlet extends HttpServlet {
             probeInterface = probeProviderFactory.getProbeProvider(ProbeInterface.class);
             //listenerRegistrar.registerListener(new MyProbeListener());
 
-            StatsProviderManager.register("foo", PluginPoint.SERVER, "fooblog/samples/ProbeServlet", new MyProbeListener());
+            StatsProviderManager.register("cloud", PluginPoint.SERVER, "fooblog/samples/ProbeServlet", new MyProbeListener());
         }
         catch (Exception e) {
             throw new ServletException("Error initializing", e);

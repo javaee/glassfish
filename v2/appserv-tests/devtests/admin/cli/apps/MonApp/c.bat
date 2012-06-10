@@ -1,1 +1,1 @@
-curl http://localhost:8080/MonApp | grep foo
+curl http://me:8080/MonApp
