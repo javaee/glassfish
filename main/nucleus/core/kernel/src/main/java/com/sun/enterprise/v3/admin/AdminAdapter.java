@@ -58,7 +58,6 @@ import org.glassfish.api.event.EventListener;
 import org.glassfish.api.container.Adapter;
 import org.glassfish.grizzly.http.Cookie;
 import org.glassfish.grizzly.http.util.CookieSerializerUtils;
-import org.jvnet.hk2.annotations.Optional;
 import org.glassfish.hk2.api.PostConstruct;
 
 import java.net.InetAddress;
@@ -155,7 +154,7 @@ public abstract class AdminAdapter extends StaticHttpHandler implements Adapter,
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private volatile Server server;
     
-    @Inject @Optional 
+    @Inject
     AdminAccessController authenticator;
    
     final Class<? extends Privacy> privacyClass;

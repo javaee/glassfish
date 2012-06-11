@@ -257,6 +257,12 @@ public class SerialContext implements Context {
             processType = ProcessType.Server;
         } else {
             ProcessEnvironment processEnv = services.getService(ProcessEnvironment.class);
+            if (processEnv == null) {
+                processEnv = services.create(ProcessEnvironment.class);
+                services.inject(processEnv);
+                services.postConstruct(processEnv);
+            }
+            
             processType = processEnv.getProcessType();
         }
 

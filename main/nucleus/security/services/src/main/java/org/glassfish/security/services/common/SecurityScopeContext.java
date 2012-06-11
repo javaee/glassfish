@@ -48,10 +48,12 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * The security context used to enable the scoping of security service instances.
  */
+@Service
 @Singleton
 public class SecurityScopeContext implements Context<SecurityScope> {
     private final HashMap<String, HashMap<ActiveDescriptor<?>, Object>> contexts =
