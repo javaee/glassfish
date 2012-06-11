@@ -67,6 +67,15 @@ public abstract class AbstractMethodVisitorImpl implements MethodVisitor {
     public void visitAttribute(Attribute arg0) {
 
     }
+    
+    /* (non-Javadoc)
+     * @see org.objectweb.asm.MethodVisitor#visitEnd()
+     */
+    @Override
+    public void visitEnd() {
+        // TODO Auto-generated method stub
+        
+    }
 
     /* (non-Javadoc)
      * @see org.objectweb.asm.MethodVisitor#visitCode()
