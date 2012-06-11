@@ -39,12 +39,14 @@ public class Validator {
 
         ArchivistFactory archivistFactory = habitat.getComponent(ArchivistFactory.class);
         ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
+        Archivist archivist = null;
+        
         // first read/parse and write out the original valid archive
         try {
             File archiveFile = new File(fileName);
             ReadableArchive archive = archiveFactory.openArchive(
                 archiveFile);
-            Archivist archivist = archivistFactory.getArchivist(archiveType);
+            archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(fileName);
 	    archivist.setXMLValidation(true);
@@ -68,7 +70,7 @@ public class Validator {
             File archiveFile = new File(outputFileName);
             ReadableArchive archive = archiveFactory.openArchive(
                 archiveFile);
-            Archivist archivist = archivistFactory.getArchivist(archiveType);
+            archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(outputFileName);
             archivist.setXMLValidation(true);
@@ -76,12 +78,19 @@ public class Validator {
             log("Reading/parsing the output archive" + 
                 outputFileName);
             Descriptor descriptor = archivist.open(archiveFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            log("The input archive: [" + outputFileName + 
+                "] is not valid");
+            fail();
+        }
+        try {
             log("Writing out the archive to: " +
                 outputFileName2);
             archivist.write(outputFileName2);
         } catch (Exception e) {
             e.printStackTrace();
-            log("The output archive: [" + outputFileName + 
+            log("The output archive: [" + outputFileName2 + 
                 "] is not valid");
             fail();
         }
@@ -92,7 +101,7 @@ public class Validator {
             File archiveFile = new File(outputFileName2);
             ReadableArchive archive = archiveFactory.openArchive(
                 archiveFile);
-            Archivist archivist = archivistFactory.getArchivist(archiveType);
+            archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
             archivist.setArchiveUri(outputFileName2);
             archivist.setXMLValidation(true);
