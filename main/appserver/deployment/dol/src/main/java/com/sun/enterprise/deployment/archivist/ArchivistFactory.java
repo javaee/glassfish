@@ -102,15 +102,20 @@ public class ArchivistFactory {
         }
         List<ExtensionsArchivist> archivists = new ArrayList<ExtensionsArchivist>();
         for (String containerType : containerTypes) {
-            ActiveDescriptor<ExtensionsArchivist> descriptor = (ActiveDescriptor<ExtensionsArchivist>)
-                    habitat.getBestDescriptor(
+            List<ActiveDescriptor<?>> descriptors =
+                    habitat.getDescriptors(
                     new ExtensionsArchivistFilter(containerType));
-            if (descriptor == null) continue;
             
-            ServiceHandle<ExtensionsArchivist> handle = habitat.getServiceHandle(descriptor);
-            ExtensionsArchivist ea = handle.getService();
-            if (ea.supportsModuleType(moduleType)) {
-                archivists.add(ea);
+            for (ActiveDescriptor<?> item : descriptors) {
+                
+                ActiveDescriptor<ExtensionsArchivist> descriptor =
+                        (ActiveDescriptor<ExtensionsArchivist>) item;
+            
+                ServiceHandle<ExtensionsArchivist> handle = habitat.getServiceHandle(descriptor);
+                ExtensionsArchivist ea = handle.getService();
+                if (ea.supportsModuleType(moduleType)) {
+                    archivists.add(ea);
+                }
             }
         }
         return archivists;
