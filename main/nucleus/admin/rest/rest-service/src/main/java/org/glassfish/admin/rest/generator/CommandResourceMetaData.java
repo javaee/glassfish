@@ -42,7 +42,7 @@ package org.glassfish.admin.rest.generator;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,16 +53,14 @@ import org.glassfish.api.admin.RestParam;
 import org.glassfish.config.support.Create;
 import org.glassfish.config.support.Delete;
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.internal.api.Globals;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigInjector;
 
 /**
  * @author Mitesh Meswani
@@ -129,6 +127,7 @@ public class CommandResourceMetaData {
         return customResources;
     }
 
+    @SuppressWarnings("unchecked")
     public static List<CommandResourceMetaData> getRestRedirectPointToBean(String beanName) {
         synchronized (restRedirects) {
             if (restRedirects.isEmpty()) {
@@ -136,10 +135,24 @@ public class CommandResourceMetaData {
 
                 processConfigBeans(habitat);
 
-                Iterator<Inhabitant<?>> iter = habitat.getInhabitantsByContract(AdminCommand.class.getName()).iterator();
-                while (iter.hasNext()) {
-                    Inhabitant<?> inhab = iter.next();
-                    final Class<? extends AdminCommand> clazz = (Class<? extends AdminCommand>) inhab.type();
+                List<ActiveDescriptor<?>> iter = habitat.getDescriptors(
+                        BuilderHelper.createContractFilter(AdminCommand.class.getName()));
+                for (ActiveDescriptor<?> ad : iter) {
+                    if (!(ad.getQualifiers().contains(RestEndpoints.class.getName()))) {
+                        continue;
+                    }
+                    
+                    if (!ad.isReified()) {
+                        try {
+                            habitat.reifyDescriptor(ad);
+                        }
+                        catch (MultiException me) {
+                            // If we can't see the command, forget it
+                            continue;
+                        }
+                    }
+                    
+                    final Class<? extends AdminCommand> clazz = (Class<? extends AdminCommand>) ad.getImplementationClass();
                     RestEndpoints endpoints = clazz.getAnnotation(RestEndpoints.class);
                     if (endpoints != null) {
                         RestEndpoint[] list = endpoints.value();
@@ -179,11 +192,18 @@ public class CommandResourceMetaData {
     	ServiceLocator serviceLocator = (ServiceLocator) habitat;
 
 		List<ActiveDescriptor<?>> allDescriptors = serviceLocator.getDescriptors(
-		        BuilderHelper.allFilter());
+		        BuilderHelper.createContractFilter(ConfigInjector.class.getName()));
+		
+		HashSet<String> alreadyChecked = new HashSet<String>();
 
         for (ActiveDescriptor<?> ad : allDescriptors){
-            String t = ad.getImplementation();
-            if (t != null) {
+            List<String> targets = ad.getMetadata().get("target");
+            if (targets == null) continue;
+            
+            for (String t : targets) {
+                if (alreadyChecked.contains(t)) continue;
+                alreadyChecked.add(t);
+                
                 try {
                     Class<?> tclass = Class.forName(t);
                     if (tclass != null && ConfigBeanProxy.class.isAssignableFrom(tclass)) {

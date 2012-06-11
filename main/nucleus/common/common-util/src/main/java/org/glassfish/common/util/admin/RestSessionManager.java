@@ -45,9 +45,7 @@ import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import javax.inject.Inject;
 import javax.security.auth.Subject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Singleton;
 
@@ -58,7 +56,6 @@ import javax.inject.Singleton;
 @Service
 @Singleton
 public class RestSessionManager {
-    @Inject
     private final SecureRandom randomGenerator = new SecureRandom();
     private Map<String, SessionData> activeSessions = new ConcurrentHashMap<String, SessionData>(); //To guard against parallel mutation corrupting the map
 
