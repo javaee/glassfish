@@ -50,6 +50,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -86,6 +87,8 @@ public class Utilities {
     private final static String CONTRACT_WITH_SLASHES = "L" + Contract.class.getName().replace('.', '/') + ";";
     private final static String SCOPE_WITH_SLASHES = "L" + Scope.class.getName().replace('.', '/') + ";";
     private final static String QUALIFIER_WITH_SLASHES = "L" + Qualifier.class.getName().replace('.', '/') + ";";
+    private final static String METHOD_GENERATOR_WITH_SLASHES = "Lorg/jvnet/hk2/config/GenerateServiceFromMethod;";
+    private final static String GENERATOR_NAME_FIELD_WITH_SLASHES = "Lorg/jvnet/hk2/config/GeneratedServiceName;";
     
     private final static String METADATA_DESC = "Lorg/glassfish/hk2/api/Metadata;";
     
@@ -94,6 +97,7 @@ public class Utilities {
     private final Map<String, Boolean> ISA_QUALIFIER = new HashMap<String, Boolean>();
     private final Map<String, String> FOUND_SUPERCLASS = new HashMap<String, String>();  // Terminal is null
     private final Map<String, Set<String>> FOUND_INTERFACES = new HashMap<String, Set<String>>();
+    private final Map<String, GenerateMethodAnnotationData> FOUND_GENERATORS = new HashMap<String, GenerateMethodAnnotationData>();
     
     // Map from scope or qualifier name to method name to metadata key value
     private final Map<String, Map<String, String>> METADATA =
@@ -293,6 +297,7 @@ public class Utilities {
             ISA_QUALIFIER.put(kcd.getClazz(), kcd.isIsa_qualifier());
             FOUND_SUPERCLASS.put(kcd.getClazz(), kcd.getSuperclass());
             FOUND_INTERFACES.put(kcd.getClazz(), kcd.getiFaces());
+            FOUND_GENERATORS.put(kcd.getClazz(), null);
         }
     }
     
@@ -355,7 +360,7 @@ public class Utilities {
         ISA_SCOPE.put(dotDelimitedName, false);
         ISA_QUALIFIER.put(dotDelimitedName, false);
         FOUND_SUPERCLASS.put(dotDelimitedName, null);
-        
+        FOUND_GENERATORS.put(dotDelimitedName, null);
     }
     
     /**
@@ -365,7 +370,7 @@ public class Utilities {
      * @param dotDelimitedName The fully qualified class name to look for
      * @return true if this can determine that this is a contract
      */
-    public boolean isClassAContract(File searchHere, String dotDelimitedName) {
+    private boolean isClassAContract(File searchHere, String dotDelimitedName) {
         if (ISA_CONTRACT.containsKey(dotDelimitedName)) {
             return ISA_CONTRACT.get(dotDelimitedName);
         }
@@ -501,6 +506,42 @@ public class Utilities {
         }
     }
     
+    /**
+     * Returns true if it can be determined that this class is a qualifier
+     * 
+     * @param searchHere
+     * @param dotDelimitedName
+     * @return true if this class is a qualifier
+     */
+    public GenerateMethodAnnotationData isClassAGenerator(File searchHere, String dotDelimitedName) {
+        if (FOUND_GENERATORS.containsKey(dotDelimitedName)) {
+            return FOUND_GENERATORS.get(dotDelimitedName);
+        }
+        
+        try {
+            InputStream is = findClass(searchHere, dotDelimitedName, true, "isaMethodGenerator");
+            if (is == null) {
+                nullCaches(dotDelimitedName);
+                
+                return null;
+            }
+            
+            ClassReader reader = new ClassReader(is);
+            
+            GeneratorClassVisitor gcv = new GeneratorClassVisitor(dotDelimitedName);
+            
+            reader.accept(gcv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            
+            return gcv.getGenerateMethodAnnotationData();
+        }
+        catch (IOException ioe) {
+            // Error on the side of not a contract
+            nullCaches(dotDelimitedName);
+            
+            return null;
+        }
+    }
+    
     private void getAssociatedSuperclassContracts(File searchHere, String dotDelimitedName, Set<String> addToMe) {
         if (!addToMe.contains(dotDelimitedName) && isClassAContract(searchHere, dotDelimitedName)) {
             addToMe.add(dotDelimitedName);
@@ -622,6 +663,10 @@ public class Utilities {
                 isQualifier = true;
             }
             
+            if (desc.equals(QUALIFIER_WITH_SLASHES)) {
+                isQualifier = true;
+            }
+            
             return null;
         }
         
@@ -710,7 +755,146 @@ public class Utilities {
         public void visit(String name, Object value) {
             parent.setMetadataKey((String) value);
         }
+    }
+    
+    private class GeneratorClassVisitor extends AbstractClassVisitorImpl {
+        private final String cacheKey;
+        private GenerateMethodAnnotationData methodGenerateData = null;
         
+        private GeneratorClassVisitor(String cacheKey) {
+            this.cacheKey = cacheKey;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.ClassVisitor#visitAnnotation(java.lang.String, boolean)
+         */
+        @Override
+        public AnnotationVisitor visitAnnotation(String desc, boolean arg1) {
+            if (desc.equals(METHOD_GENERATOR_WITH_SLASHES)) {
+                return new GenerateServiceFromMethodVisitor(this);
+            }
+            
+            return null;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
+         */
+        @Override
+        public MethodVisitor visitMethod(int access,
+                String name,
+                String desc,
+                String signature,
+                String[] exceptions) {
+            if (methodGenerateData == null) {
+                return null;
+            }
+            
+            return new GeneratorNameFinderMethodVisitor(this, name);
+        }
+        
+        private void setGenerateMethodAnnotationData(GenerateMethodAnnotationData methodGenerateData) {
+            this.methodGenerateData = methodGenerateData;
+            
+        }
+        
+        private GenerateMethodAnnotationData getGenerateMethodAnnotationData() {
+            return methodGenerateData;
+        }
+        
+        private void setNameMethodName(String methodName) {
+            methodGenerateData.setNameMethodName(methodName);
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.ClassVisitor#visitEnd()
+         */
+        @Override
+        public void visitEnd() {
+            FOUND_GENERATORS.put(cacheKey, methodGenerateData);
+        }
+    }
+    
+    private final static String GENERATOR_IMPL_NAME = "implementation";
+    private final static String GENERATOR_SCOPE_NAME = "scope";
+    
+    private static class GenerateServiceFromMethodVisitor extends AbstractAnnotationVisitorImpl {
+        private final GeneratorClassVisitor parent;
+        
+        private String implementation;
+        private String scope = PerLookup.class.getName();
+        private final HashSet<String> contracts = new HashSet<String>();
+        
+        private GenerateServiceFromMethodVisitor(GeneratorClassVisitor parent) {
+            this.parent = parent;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visit(String name, Object value) {
+            if (name == null) {
+                // This is the contracts array
+                contracts.add((String) value);
+            }
+            else if (GENERATOR_IMPL_NAME.equals(name)) {
+                implementation = (String) value;
+            }
+            else if (GENERATOR_SCOPE_NAME.equals(name)) {
+                scope = (String) value;
+            }
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
+         */
+        @Override
+        public AnnotationVisitor visitArray(String name) {
+            return this;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
+         */
+        @Override
+        public void visitEnd() {
+            parent.setGenerateMethodAnnotationData(
+                    new GenerateMethodAnnotationData(implementation, contracts, scope));
+        }
+        
+    }
+    
+    private static class GeneratorNameFinderMethodVisitor extends AbstractMethodVisitorImpl {
+        private final String methodName;
+        private final GeneratorClassVisitor parent;
+        
+        private GeneratorNameFinderMethodVisitor(GeneratorClassVisitor parent, String methodName) {
+            this.parent = parent;
+            this.methodName = methodName;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.MethodVisitor#visitAnnotation(java.lang.String, boolean)
+         */
+        @Override
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            if (GENERATOR_NAME_FIELD_WITH_SLASHES.equals(desc)) {
+                parent.setNameMethodName(methodName);
+                
+            }
+            
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.MethodVisitor#visitEnd()
+         */
+        @Override
+        public void visitEnd() {
+            // TODO Auto-generated method stub
+            
+        }
         
     }
     
@@ -784,5 +968,24 @@ public class Utilities {
         if (methodToKey == null) return null;
         
         return methodToKey.get(methodName);
+    }
+    
+    private final static String LIST_WITH_PTYPE = "Ljava/util/List<";
+    
+    /* package */ static String getListActualType(String signature) {
+        if (signature == null) return null;
+        if (!signature.contains(LIST_WITH_PTYPE)) return null;
+        
+        int ltIndex = signature.indexOf('<');
+        int gtIndex = signature.indexOf('>');
+        
+        if (ltIndex < 0 || gtIndex < 0) return null;
+        
+        String pType = signature.substring(ltIndex + 1, gtIndex);
+        if (!pType.startsWith("L")) return null;
+        
+        pType = pType.substring(1, pType.length() - 1);  // Remove L and ;
+        
+        return pType.replace('/', '.');
     }
 }

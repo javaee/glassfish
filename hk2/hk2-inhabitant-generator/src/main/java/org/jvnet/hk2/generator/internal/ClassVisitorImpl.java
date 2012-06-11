@@ -68,10 +68,21 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String SERVICE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Service;";
     private final static String CONTRACTS_PROVIDED_CLASS_FORM = "Lorg/jvnet/hk2/annotations/ContractsProvided;";
     private final static String RANK_CLASS_FORM = "Lorg/glassfish/hk2/api/Rank;";
+    private final static String CONFIGURED_CLASS_FORM = "Lorg/jvnet/hk2/config/Configured;";
     private final static String NAME = "name";
     private final static String METADATA = "metadata";
     private final static String VALUE = "value";
     private final static String PROVIDE = "provide";
+    
+    /**
+     * Must be the same value as from the GenerateServiceFromMethod value
+     */
+    private final static String METHOD_ACTUAL = "MethodListActual";
+    
+    /**
+     * Must be the same value as from the GenerateServiceFromMethod value
+     */
+    public final static String METHOD_NAME = "MethodName";
     
     private final boolean verbose;
     private final File searchHere;
@@ -83,6 +94,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private String scopeClass;
     private final LinkedList<String> qualifiers = new LinkedList<String>();
     private boolean isAService = false;
+    private boolean isConfigured = false;
     private NamedAnnotationVisitor baseName;
     private String metadataString = null;
     private Integer rank = null;
@@ -145,6 +157,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
         if (RANK_CLASS_FORM.equals(desc)) {
             return new RankAnnotationVisitor();
+        }
+        
+        if (CONFIGURED_CLASS_FORM.equals(desc)) {
+            isConfigured = true;
         }
         
         if (!desc.startsWith("L")) return null;
@@ -259,6 +275,14 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
         generatedDescriptors.add(generatedDescriptor);
     }
+    
+    private MethodVisitor visitConfiguredMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        String methodListActual = Utilities.getListActualType(signature);
+        if (methodListActual == null) return null;  // Nothing to see here
+        
+        // OK, well, we have a reasonable candidate now, lets check its annotations
+        return new ConfiguredMethodVisitor(name, methodListActual);
+    }
 
     /* (non-Javadoc)
      * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
@@ -266,6 +290,8 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc,
             String signature, String[] exceptions) {
+        if (isConfigured) return visitConfiguredMethod(access, name, desc, signature, exceptions);
+        
         if (!isFactory) return null;
         if (!PROVIDE.equals(name)) return null;
         if (!desc.startsWith("()")) return null;
@@ -514,6 +540,90 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         public AnnotationVisitor visitArray(String name) {
             return new MetadataAnnotationVisitor(scopeOrQualifierName, name);
         }
+    }
+    
+    private class ConfiguredMethodVisitor extends AbstractMethodVisitorImpl {
+        private final String methodName;
+        private final String actualType;
+        
+        private final List<GenerateMethodAnnotationData> allAnnotationDataToAdd =
+                new LinkedList<GenerateMethodAnnotationData>();
+        
+        private ConfiguredMethodVisitor(String methodName, String actualType) {
+            this.methodName = methodName;
+            this.actualType = actualType;
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.MethodVisitor#visitAnnotation(java.lang.String, boolean)
+         */
+        @Override
+        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
+            String loadAnnotationName = desc.substring(1, desc.length() -1).replace("/", ".");
+            GenerateMethodAnnotationData generateData = utilities.isClassAGenerator(searchHere, loadAnnotationName);
+            
+            if (generateData == null) return null;
+            
+            allAnnotationDataToAdd.add(generateData);
+            
+            if (generateData.getNameMethodName() == null) {
+                return null;
+            }
+            
+            return new GeneratedNameMethodFinderVisitor(generateData);
+        }
+
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.MethodVisitor#visitEnd()
+         */
+        @Override
+        public void visitEnd() {
+            for (GenerateMethodAnnotationData methodGenerated : allAnnotationDataToAdd) {
+                DescriptorImpl di = new DescriptorImpl();
+                di.setImplementation(methodGenerated.getImplementation());
+                for (String contract : methodGenerated.getContracts()) {
+                    di.addAdvertisedContract(contract);
+                }
+                di.setScope(methodGenerated.getScope());
+                if (methodGenerated.getName() != null) {
+                    di.setName(methodGenerated.getName());
+                }
+                
+                di.addMetadata(METHOD_ACTUAL, actualType);
+                di.addMetadata(METHOD_NAME, methodName);
+                
+                if (verbose) {
+                    System.out.println("Generated Descriptor for GenerateServiceFromMethod annotation: " + di);
+                }
+                
+                generatedDescriptors.add(di);
+            }
+            
+        }
+        
+    }
+    
+    private static class GeneratedNameMethodFinderVisitor extends AbstractAnnotationVisitorImpl {
+        private final GenerateMethodAnnotationData annoData;
+        
+        private GeneratedNameMethodFinderVisitor(GenerateMethodAnnotationData annoData) {
+            this.annoData = annoData;
+        }
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visit(String name, Object value) {
+            if (name == null || value == null) return;
+            
+            if (annoData.getNameMethodName().equals(name)) {
+                if (!(value instanceof String)) return;
+                
+                annoData.setName((String) value);
+            }
+        }
+        
     }
     
     /**
