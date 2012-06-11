@@ -292,6 +292,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             String signature, String[] exceptions) {
         if (isConfigured) return visitConfiguredMethod(access, name, desc, signature, exceptions);
         
+        if (!isAService) return null;
         if (!isFactory) return null;
         if (!PROVIDE.equals(name)) return null;
         if (!desc.startsWith("()")) return null;
