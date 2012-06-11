@@ -22,6 +22,7 @@ public class Foo2ManagedBean {
     
     public void foo() {
 	System.out.println("In Foo2ManagedBean::foo() ");
+	System.out.println("In Foo2ManagedBean::foo() testing @EJB: " + s.hello());
     }
 
     public Object getThis() {
