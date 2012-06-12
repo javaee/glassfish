@@ -40,11 +40,13 @@ public class Validator {
         ArchivistFactory archivistFactory = habitat.getComponent(ArchivistFactory.class);
         ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
         Archivist archivist = null;
+
+        ReadableArchive archive = null;
         
         // first read/parse and write out the original valid archive
         try {
             File archiveFile = new File(fileName);
-            ReadableArchive archive = archiveFactory.openArchive(
+            archive = archiveFactory.openArchive(
                 archiveFile);
             archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
@@ -56,19 +58,26 @@ public class Validator {
             Descriptor descriptor = archivist.open(archiveFile);
             log("Writing out the archive to: " + 
                 outputFileName);
-            archivist.write(outputFileName);
+            archivist.write(archive, outputFileName);
         } catch (Exception e) {
             e.printStackTrace();
             log("Input archive: [" + fileName + 
                 "] is not valid");
             fail();
+        } finally {
+            try {
+                if (archive != null) {
+                    archive.close();
+                }
+            } catch(IOException ioe) {
+            }
         }
 
         // Read/parse the resulted archive, it should be valid too
         // then write to another archive
         try {
             File archiveFile = new File(outputFileName);
-            ReadableArchive archive = archiveFactory.openArchive(
+            archive = archiveFactory.openArchive(
                 archiveFile);
             archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
@@ -87,19 +96,26 @@ public class Validator {
         try {
             log("Writing out the archive to: " +
                 outputFileName2);
-            archivist.write(outputFileName2);
+            archivist.write(archive, outputFileName2);
         } catch (Exception e) {
             e.printStackTrace();
             log("The output archive: [" + outputFileName2 + 
                 "] is not valid");
             fail();
+        } finally {
+            try {
+                if (archive != null) {
+                    archive.close();
+                }
+            } catch(IOException ioe) {
+            }
         }
 
         // Read/parse the resulted archive, it should be valid too
         try {
 
             File archiveFile = new File(outputFileName2);
-            ReadableArchive archive = archiveFactory.openArchive(
+            archive = archiveFactory.openArchive(
                 archiveFile);
             archivist = archivistFactory.getArchivist(archiveType);
             archivist.setHandleRuntimeInfo(true);
@@ -114,8 +130,14 @@ public class Validator {
             log("The output archive: [" + outputFileName2 +
                 "] is not valid");
             fail();
+        } finally {
+            try {
+                if (archive != null) {
+                    archive.close();
+                }
+            } catch(IOException ioe) {
+            }
         }
-
     }
 
     private static void log(String message) {

@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 256 
+PASS: 260 
 FAIL: 0
 UNKNOWN: 0
 
@@ -136,6 +136,10 @@ UNKNOWN: 0
 [PASSED] appmgt : earwithall/appmgt Make sure a customization used during the test is absent when it should be [7.3] (server)  
 [PASSED] simple : jsr88/war/simple deploy test  
 [PASSED] simple : jsr88/war/simple redeploy test  
+[PASSED] validation : dol/validation Test standalone war
+[PASSED] validation : dol/validation Test standalone ejb jar
+[PASSED] validation : dol/validation Test standalone rar
+[PASSED] validation : dol/validation Test standalone car
 [PASSED] session : ejb30/session Test asadmin deploy  
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
@@ -269,7 +273,7 @@ UNKNOWN: 0
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 185
+PASS: 189
 FAIL: 0
 UNKNOWN: 0
 
@@ -359,6 +363,10 @@ UNKNOWN: 0
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
 [PASSED] simple : jsr88/war/simple deploy test
 [PASSED] simple : jsr88/war/simple redeploy test
+[PASSED] validation : dol/validation Test standalone war
+[PASSED] validation : dol/validation Test standalone ejb jar
+[PASSED] validation : dol/validation Test standalone rar
+[PASSED] validation : dol/validation Test standalone car
 [PASSED] session : ejb30/session Test asadmin deploy  
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
@@ -463,7 +471,7 @@ UNKNOWN: 0
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 341
+PASS: 345
 FAIL: 0
 UNKNOWN: 0
 
@@ -632,6 +640,10 @@ UNKNOWN: 0
 [PASSED] manifestClassPath : libClasspath Test asadmin deploy (cluster-inst1)
 [PASSED] simple : jsr88/war/simple deploy test
 [PASSED] simple : jsr88/war/simple redeploy test
+[PASSED] validation : dol/validation Test standalone war
+[PASSED] validation : dol/validation Test standalone ejb jar
+[PASSED] validation : dol/validation Test standalone rar
+[PASSED] validation : dol/validation Test standalone car
 [PASSED] session : ejb30/session Test asadmin deploy
 [PASSED] session : ejb30/session Test asadmin redeploy
 [PASSED] session2 : ejb30/session2 Test asadmin deploy
