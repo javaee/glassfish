@@ -328,6 +328,7 @@ public class InhabitantsGeneratorTest {
             envItself.setName(GENERATE_METHOD_CREATE_NAME1);
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.StreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getStreetAddress");
+            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
@@ -342,6 +343,7 @@ public class InhabitantsGeneratorTest {
             envItself.setName(GENERATE_METHOD_CREATE_NAME2);
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.StreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getSecondaryStreetAddress");
+            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
@@ -354,6 +356,7 @@ public class InhabitantsGeneratorTest {
             envItself.setScope(Singleton.class.getName());
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.StreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getStreetAddress");
+            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }

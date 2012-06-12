@@ -72,6 +72,7 @@ import java.lang.annotation.Target;
  * <LI>If the user-supplied annotation has a field marked with {@link GeneratedServiceName} it will be the name in the descriptor</LI>
  * <LI>It will have a metadata entry with the name of the actual type of the List parameterized return type with key METHOD_ACTUAL</LI>
  * <LI>It will have a metadata entry with the name of the method with key METHOD_NAME</LI>
+ * <LI>It will have a metadata entry with the name of the parent {@link Configured} class with key PARENT_CONFGIURED</LI>
  * </UL>
  * <p>
  * 
@@ -92,6 +93,12 @@ public @interface GenerateServiceFromMethod {
      * annotation has been placed
      */
     public final static String METHOD_NAME = "MethodName";
+    
+    /**
+     * This is the key in the metadata that will contain the fully qualified class name of the class marked
+     * {@link Configured} that contains this annotation
+     */
+    public final static String PARENT_CONFIGURED = "ParentConfigured";
     
     /**
      * This must have the fully qualified class name of the implementation that is to be used in the

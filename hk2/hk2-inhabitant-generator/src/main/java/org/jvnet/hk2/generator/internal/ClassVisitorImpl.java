@@ -84,6 +84,11 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
      */
     public final static String METHOD_NAME = "MethodName";
     
+    /**
+     * Must be the same value as from the GenerateServiceFromMethod value
+     */
+    public final static String PARENT_CONFIGURED = "ParentConfigured";
+    
     private final boolean verbose;
     private final File searchHere;
     private final Utilities utilities;
@@ -281,7 +286,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         if (methodListActual == null) return null;  // Nothing to see here
         
         // OK, well, we have a reasonable candidate now, lets check its annotations
-        return new ConfiguredMethodVisitor(name, methodListActual);
+        return new ConfiguredMethodVisitor(name, methodListActual, implName);
     }
 
     /* (non-Javadoc)
@@ -546,13 +551,15 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private class ConfiguredMethodVisitor extends AbstractMethodVisitorImpl {
         private final String methodName;
         private final String actualType;
+        private final String parentConfigured;
         
         private final List<GenerateMethodAnnotationData> allAnnotationDataToAdd =
                 new LinkedList<GenerateMethodAnnotationData>();
         
-        private ConfiguredMethodVisitor(String methodName, String actualType) {
+        private ConfiguredMethodVisitor(String methodName, String actualType, String parentConfigured) {
             this.methodName = methodName;
             this.actualType = actualType;
+            this.parentConfigured = parentConfigured;
         }
 
         /* (non-Javadoc)
@@ -592,6 +599,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
                 
                 di.addMetadata(METHOD_ACTUAL, actualType);
                 di.addMetadata(METHOD_NAME, methodName);
+                di.addMetadata(PARENT_CONFIGURED, parentConfigured);
                 
                 if (verbose) {
                     System.out.println("Generated Descriptor for GenerateServiceFromMethod annotation: " + di);
