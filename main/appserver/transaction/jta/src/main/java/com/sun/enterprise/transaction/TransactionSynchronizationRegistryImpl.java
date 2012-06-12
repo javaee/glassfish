@@ -54,7 +54,8 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.annotations.ContractsProvided;
 
 @Service
-@ContractsProvided(TransactionSynchronizationRegistry.class) // Needed because we can't change spec provided class
+@ContractsProvided({TransactionSynchronizationRegistryImpl.class,
+                    TransactionSynchronizationRegistry.class}) // Needed because we can't change spec provided class
 public class TransactionSynchronizationRegistryImpl 
              implements TransactionSynchronizationRegistry {
 

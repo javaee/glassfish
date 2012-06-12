@@ -79,7 +79,7 @@ import org.jvnet.hk2.component.BaseServiceLocator;
  * @author Marina Vatkina
  */
 @Service
-@ContractsProvided(UserTransaction.class) // Needed because we can't change spec provided class
+@ContractsProvided({UserTransactionImpl.class, UserTransaction.class}) // Needed because we can't change spec provided class
 @PerLookup
 public class UserTransactionImpl implements UserTransaction, Serializable
 {

@@ -61,7 +61,7 @@ import com.sun.enterprise.transaction.api.TransactionImport;
 **/
 
 @Service
-@ContractsProvided(TransactionManager.class) // Needed because we can't change spec provided class
+@ContractsProvided({TransactionManagerHelper.class, TransactionManager.class}) // Needed because we can't change spec provided class
 public class TransactionManagerHelper implements TransactionManager, TransactionImport {
 
     @Inject
