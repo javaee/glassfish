@@ -71,6 +71,12 @@ public @interface GenerateServiceFromMethod {
     public final static String METHOD_NAME = "MethodName";
     
     /**
+     * This is the key in the metadata that will contain the fully qualified class name of the class marked
+     * {@link Configured} that contains this annotation
+     */
+    public final static String PARENT_CONFIGURED = "ParentConfigured";
+    
+    /**
      * This must have the fully qualified class name of the implementation that is to be used in the
      * generated descriptor
      * 
