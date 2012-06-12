@@ -62,7 +62,6 @@ import org.glassfish.api.admin.config.ReferenceContainer;
 import org.glassfish.api.invocation.ComponentInvocation;
 import org.glassfish.api.invocation.InvocationManager;
 import org.glassfish.api.naming.GlassfishNamingManager;
-import org.glassfish.api.ActionReport;
 import org.glassfish.enterprise.iiop.api.GlassFishORBHelper;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.internal.api.Globals;
@@ -73,20 +72,17 @@ import org.glassfish.flashlight.provider.ProbeProviderFactory;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
-import javax.ejb.EJBException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.Synchronization;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -96,7 +92,6 @@ import java.util.logging.Logger;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.io.File;
 import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -149,8 +144,11 @@ public class EjbContainerUtilImpl
     @Inject
     private JavaEETransactionManager txMgr;
 
-    @Inject
-    private IterableProvider<EjbContainer> ejbContainerProvider;
+    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config serverConfig;
+
+    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME) @Optional
+    private EjbContainer ejbContainer;
 
     @Inject
     private GlassFishORBHelper orbHelper;
@@ -189,6 +187,9 @@ public class EjbContainerUtilImpl
     }
 
     public void postConstruct() {
+        if (ejbContainer == null) {
+            ejbContainer = serverConfig.getExtensionByType(EjbContainer.class);
+        }
         ClassLoader ejbImplClassLoader = EjbContainerUtilImpl.class.getClassLoader();
         if (callFlowAgent == null) {
             callFlowAgent = (Agent) Proxy.newProxyInstance(ejbImplClassLoader,
@@ -361,24 +362,9 @@ public class EjbContainerUtilImpl
 
         getContainerSync(jtx).addPMSynchronization(sync);
     }
-    
-    private EjbContainer internalGetEjbContainer() {
-        IterableProvider<EjbContainer> namedProvider =
-                ejbContainerProvider.named(ServerEnvironment.DEFAULT_INSTANCE_NAME);
-        if (namedProvider.getSize() > 0) {
-            return namedProvider.get();
-        }
-        
-        EjbContainer retVal = ejbContainerProvider.get();
-        if (retVal == null) {
-            throw new AssertionError("An EjbContainer implementation could not be found");
-        }
-        
-        return retVal;
-    }
 
     public EjbContainer getEjbContainer() {
-        return internalGetEjbContainer();
+        return ejbContainer;
     }
 
     public ServerEnvironmentImpl getServerEnvironment() {
@@ -481,8 +467,6 @@ public class EjbContainerUtilImpl
     }
 
     private ThreadPoolExecutor createThreadPoolExecutor(String poolName) {
-        EjbContainer ejbContainer = internalGetEjbContainer();
-        
         ThreadPoolExecutor result = null;
         String val = ejbContainer.getPropertyValue(RuntimeTagNames.THREAD_CORE_POOL_SIZE);
         int corePoolSize = val != null ? Integer.parseInt(val.trim())

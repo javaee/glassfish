@@ -52,7 +52,6 @@ import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.deployment.Application;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.ejb.config.EjbContainer;
 import org.glassfish.ejb.config.EjbContainerAvailability;
 import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
 import org.glassfish.ejb.deployment.descriptor.runtime.IASEjbExtraDescriptors;
