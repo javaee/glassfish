@@ -96,11 +96,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final long id;
     private final ServiceLocator parent;
     
-    private final LinkedList<SystemDescriptor<?>> allDescriptors = new LinkedList<SystemDescriptor<?>>();
-    private final HashMap<String, LinkedList<SystemDescriptor<?>>> descriptorsByAdvertisedContract =
-            new HashMap<String, LinkedList<SystemDescriptor<?>>>();
-    private final HashMap<String, LinkedList<SystemDescriptor<?>>> descriptorsByName =
-            new HashMap<String, LinkedList<SystemDescriptor<?>>>();
+    private final IndexedListData allDescriptors = new IndexedListData();
+    private final HashMap<String, IndexedListData> descriptorsByAdvertisedContract =
+            new HashMap<String, IndexedListData>();
+    private final HashMap<String, IndexedListData> descriptorsByName =
+            new HashMap<String, IndexedListData>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
     private final Context<Singleton> singletonContext = new SingletonContext();
@@ -159,7 +159,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     
                     String name = df.getName();
                     
-                    scopedByName = descriptorsByName.get(name);
+                    IndexedListData ild = descriptorsByName.get(name);
+                    scopedByName = (ild == null) ? null : ild.getSortedList();
                     if (scopedByName == null) {
                         scopedByName = Collections.emptyList();
                     }
@@ -180,35 +181,43 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 else if (df.getAdvertisedContract() != null) {
                     String advertisedContract = df.getAdvertisedContract();
                     
-                    sortMeOut = descriptorsByAdvertisedContract.get(advertisedContract);
+                    IndexedListData ild = descriptorsByAdvertisedContract.get(advertisedContract);
+                    sortMeOut = (ild == null) ? null : ild.getSortedList();
                     if (sortMeOut == null) {
                         sortMeOut = Collections.emptyList();
                         
                     }
                 }
                 else {
-                    sortMeOut = allDescriptors;
+                    sortMeOut = allDescriptors.getSortedList();
                 }
             }
             else {
-                sortMeOut = allDescriptors;
+                sortMeOut = allDescriptors.getSortedList();
             }
             
-            TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
+            LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
             
             for (SystemDescriptor<?> candidate : sortMeOut) {
                 if (!validate(candidate, onBehalfOf, filter)) continue;
                 
                 if (filter.matches(candidate)) {
-                    sorter.add(candidate);
+                    retVal.add(candidate);
                 }
             }
             
             if (getParents && parent != null) {
+                TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
+                
+                sorter.addAll(retVal);
                 sorter.addAll(parent.getDescriptors(filter));
+                
+                retVal.clear();
+                
+                retVal.addAll(sorter);
             }
             
-            return new LinkedList<ActiveDescriptor<?>>(sorter);
+            return retVal;
         }
         
     }
@@ -835,27 +844,23 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @SuppressWarnings("unchecked")
     private void removeConfigurationInternal(SortedSet<SystemDescriptor<?>> unbinds) {
         for (SystemDescriptor<?> unbind : unbinds) {
-            allDescriptors.remove(unbind);
+            allDescriptors.removeDescriptor(unbind);
             
             for (String advertisedContract : unbind.getAdvertisedContracts()) {
-                LinkedList<SystemDescriptor<?>> byImpl = descriptorsByAdvertisedContract.get(advertisedContract);
-                if (byImpl != null) {
-                    byImpl.remove(unbind);
-                    
-                    if (byImpl.isEmpty()) {
-                        descriptorsByAdvertisedContract.remove(advertisedContract);
-                    }
-                }
+                IndexedListData ild = descriptorsByAdvertisedContract.get(advertisedContract);
+                if (ild == null) continue;
+                
+                ild.removeDescriptor(unbind);
+                if (ild.isEmpty()) descriptorsByAdvertisedContract.remove(ild);
             }
             
             String unbindName = unbind.getName();
             if (unbindName != null) {
-                LinkedList<SystemDescriptor<?>> byName = descriptorsByName.get(unbindName);
-                if (byName != null) {
-                    byName.remove(unbind);
-                    
-                    if (byName.isEmpty()) {
-                        descriptorsByName.remove(unbindName);
+                IndexedListData ild = descriptorsByName.get(unbindName);
+                if (ild != null) {
+                    ild.removeDescriptor(unbind);
+                    if (ild.isEmpty()) {
+                        descriptorsByName.remove(ild);
                     }
                 }
             }
@@ -874,7 +879,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
             thingsAdded.add(sd);
-            allDescriptors.add(sd);
+            allDescriptors.addDescriptor(sd);
             
             LinkedList<String> allContracts = new LinkedList<String>(sd.getAdvertisedContracts());
             allContracts.addAll(sd.getQualifiers());
@@ -882,25 +887,24 @@ public class ServiceLocatorImpl implements ServiceLocator {
             allContracts.add(scope);
             
             for (String advertisedContract : allContracts) {
-                LinkedList<SystemDescriptor<?>> byImpl = descriptorsByAdvertisedContract.get(advertisedContract);
-                if (byImpl == null) {
-                    byImpl = new LinkedList<SystemDescriptor<?>>();
-                    descriptorsByAdvertisedContract.put(advertisedContract, byImpl);
+                IndexedListData ild = descriptorsByAdvertisedContract.get(advertisedContract);
+                if (ild == null) {
+                    ild = new IndexedListData();
+                    descriptorsByAdvertisedContract.put(advertisedContract, ild);
                 }
                 
-                byImpl.add(sd);
+                ild.addDescriptor(sd);
             }
             
             if (sd.getName() != null) {
                 String name = sd.getName();
-                LinkedList<SystemDescriptor<?>> byName = descriptorsByName.get(name);
-                if (byName == null) {
-                    byName = new LinkedList<SystemDescriptor<?>>();
-                    
-                    descriptorsByName.put(name, byName);
+                IndexedListData ild = descriptorsByName.get(name);
+                if (ild == null) {
+                    ild = new IndexedListData();
+                    descriptorsByName.put(name, ild);
                 }
                 
-                byName.add(sd);
+                ild.addDescriptor(sd);
             }
             
             if (sd.getAdvertisedContracts().contains(ValidationService.class.getName())) {
@@ -965,7 +969,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         if (instanceListenersModified) {
-            reupInstanceListenersHandlers(allDescriptors);
+            reupInstanceListenersHandlers(allDescriptors.getSortedList());
         }
         else {
             reupInstanceListenersHandlers(thingsAdded);

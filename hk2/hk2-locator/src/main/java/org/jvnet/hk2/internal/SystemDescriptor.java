@@ -44,6 +44,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,8 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     
     private final List<InstanceLifecycleListener> instanceListeners =
             new LinkedList<InstanceLifecycleListener>();
+    
+    private final Set<IndexedListData> myLists = new HashSet<IndexedListData>();
     
     /* package */ @SuppressWarnings("unchecked")
     SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId) {
@@ -196,7 +199,19 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
      */
     @Override
     public int setRanking(int ranking) {
+        for (IndexedListData myList : myLists) {
+            myList.unSort();
+        }
+        
         return baseDescriptor.setRanking(ranking);
+    }
+    
+    /* package */ void addList(IndexedListData indexedList) {
+        myLists.add(indexedList);
+    }
+    
+    /* package */ void removeList(IndexedListData indexedList) {
+        myLists.remove(indexedList);
     }
     
     /* (non-Javadoc)
