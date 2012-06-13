@@ -147,7 +147,6 @@ public class EjbContainerUtilImpl
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
     private Config serverConfig;
 
-    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME) @Optional
     private EjbContainer ejbContainer;
 
     @Inject
@@ -187,9 +186,8 @@ public class EjbContainerUtilImpl
     }
 
     public void postConstruct() {
-        if (ejbContainer == null) {
-            ejbContainer = serverConfig.getExtensionByType(EjbContainer.class);
-        }
+        ejbContainer = serverConfig.getExtensionByType(EjbContainer.class);
+
         ClassLoader ejbImplClassLoader = EjbContainerUtilImpl.class.getClassLoader();
         if (callFlowAgent == null) {
             callFlowAgent = (Agent) Proxy.newProxyInstance(ejbImplClassLoader,

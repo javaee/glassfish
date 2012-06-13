@@ -46,7 +46,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -64,6 +63,7 @@ import com.sun.ejb.containers.util.cache.NRUSessionCache;
 import com.sun.ejb.containers.util.cache.UnBoundedSessionCache;
 import com.sun.ejb.spi.container.SFSBContainerInitialization;
 import com.sun.enterprise.config.serverbeans.AvailabilityService;
+import com.sun.enterprise.config.serverbeans.Config;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.deployment.DeployCommandParameters;
 import org.glassfish.api.deployment.DeploymentContext;
@@ -78,11 +78,10 @@ import org.glassfish.ha.store.api.BackingStoreException;
 import org.glassfish.ha.store.api.BackingStoreFactory;
 import org.glassfish.ha.store.util.SimpleMetadata;
 import org.jvnet.hk2.annotations.Optional;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.PostConstruct;
 
 /**
  * A builder for StatefulSessionContainer. Takes care of
@@ -101,7 +100,7 @@ import org.glassfish.hk2.api.PerLookup;
 @Service
 @PerLookup
 public class StatefulContainerBuilder
-        extends BaseContainerBuilder {
+        extends BaseContainerBuilder implements PostConstruct {
     private static final Level TRACE_LEVEL = Level.FINE;
 
     private StatefulSessionContainer sfsbContainer;
@@ -123,10 +122,10 @@ public class StatefulContainerBuilder
     @Inject @Optional
     private EjbContainerAvailability ejbAvailability;
 
-    @Inject
-    private IterableProvider<EjbContainer> ejbContainerProvider;
-    
-    private EjbContainer ejbContainerConfig;
+    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config serverConfig;
+
+    EjbContainer ejbContainerConfig;
 
     @Inject @Optional
     GMSAdapterService gmsAdapterService;
@@ -144,17 +143,9 @@ public class StatefulContainerBuilder
     public StatefulContainerBuilder() {
         super();
     }
-    
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        IterableProvider<EjbContainer> namedProvider = ejbContainerProvider.named(ServerEnvironment.DEFAULT_INSTANCE_NAME);
-        if (namedProvider.getSize() > 0) {
-            ejbContainerConfig = namedProvider.get();
-        }
-        else {
-            ejbContainerConfig = ejbContainerProvider.get();
-        }
+
+    public void postConstruct() {
+        ejbContainerConfig = serverConfig.getExtensionByType(EjbContainer.class);
     }
 
     public BaseContainer createContainer(

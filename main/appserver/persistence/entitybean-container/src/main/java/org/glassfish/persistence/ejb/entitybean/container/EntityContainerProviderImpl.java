@@ -43,10 +43,8 @@ package org.glassfish.persistence.ejb.entitybean.container;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 
 import com.sun.ejb.Container;
 import com.sun.ejb.ContainerProvider;
@@ -56,32 +54,25 @@ import org.glassfish.ejb.config.EjbContainer;
 import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
 import org.glassfish.ejb.deployment.descriptor.EjbEntityDescriptor;
 import org.glassfish.ejb.deployment.descriptor.runtime.IASEjbExtraDescriptors;
-import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.PostConstruct;
+import com.sun.enterprise.config.serverbeans.Config;
 import org.jvnet.hk2.annotations.Service;
 
 @Service
-public final class EntityContainerProviderImpl implements ContainerProvider {
-
-    @Inject
-    private IterableProvider<EjbContainer> ejbContainerProvider;
+public final class EntityContainerProviderImpl implements PostConstruct, ContainerProvider {
     
+    @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    private Config serverConfig;
+
     private EjbContainer ejbContainerDesc;
     
     private static final Logger _logger = 
     	LogDomains.getLogger(EntityContainerProviderImpl.class, LogDomains.EJB_LOGGER);
     
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        IterableProvider<EjbContainer> namedProvider = ejbContainerProvider.named(ServerEnvironment.DEFAULT_INSTANCE_NAME);
-        if (namedProvider.getSize() > 0) {
-            ejbContainerDesc = namedProvider.get();
-        }
-        else {
-            ejbContainerDesc = ejbContainerProvider.get();
-        }
+    public void postConstruct() {
+        ejbContainerDesc = serverConfig.getExtensionByType(EjbContainer.class);
     }
-    
+
     public Container getContainer(EjbDescriptor ejbDescriptor,
 				     ClassLoader loader) throws Exception {
         Container container = null;
