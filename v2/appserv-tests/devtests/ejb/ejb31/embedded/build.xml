@@ -60,17 +60,18 @@
     <target name="run-lite">
         <antcall target="basic"/>
         <antcall target="testclose"/>
-        <antcall target="timertest">
-        </antcall>
+        <antcall target="timertest"/>
         <antcall target="modulewithlibs"/>
         <antcall target="ejbinwar"/>
         <antcall target="skipjar"/>
         <antcall target="twocontainers"/>
         <antcall target="embedasync"/>
+        <antcall target="jaxrs"/>
 
     </target>
 
     <target name="run-full">
+        <!-- These tests require Full Profile -->
         <antcall target="modulewithappname"/>
         <antcall target="twomodules"/>
         <antcall target="twomoduleswithlibs"/> 
@@ -151,6 +152,12 @@
         <record name="embedasync.output" action="start" />
             <ant dir="embedasync" target="all"/>
         <record name="embedasync.output" action="stop" />
+    </target>
+
+    <target name="jaxrs">
+        <record name="jaxrs.output" action="start" />
+            <ant dir="jaxrs" target="all"/>
+        <record name="jaxrs.output" action="stop" />
     </target>
 
     <target name="mdb">
