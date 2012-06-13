@@ -1,6 +1,7 @@
 package com.acme;
 
 import javax.ejb.*;
+import javax.persistence.*;
 import javax.annotation.*;
 import org.omg.CORBA.ORB;
 
@@ -16,6 +17,9 @@ public class SingletonBean {
 
     @Resource
     private ORB orb;
+
+    @PersistenceContext
+    private EntityManager em;
 
     /*Object returned from IIOP_OBJECT_FACTORY is still ior
     @EJB(mappedName="ejb/mgmt/MEJB")
@@ -65,13 +69,32 @@ public class SingletonBean {
 	return "hello, world!\n";
     }
 
-    public void testError() {
+    public void test_Err_or(String s1, String s2) {
 	throw new Error("test java.lang.Error");
+    }
+
+    @Asynchronous
+    public void async() {
+        FooEntity fe = new FooEntity("ASYNC");
+            em.persist(fe);
+
     }
 
     @PreDestroy
     public void destroy() {
         System.out.println("In SingletonBean::destroy()");
+        try {
+            javax.transaction.TransactionSynchronizationRegistry r = (javax.transaction.TransactionSynchronizationRegistry)
+                   new InitialContext().lookup("java:comp/TransactionSynchronizationRegistry");
+            if (r.getTransactionStatus() != javax.transaction.Status.STATUS_ACTIVE) {
+                throw new IllegalStateException("Transaction status is not STATUS_ACTIVE: " + r.getTransactionStatus());
+            }
+            FooEntity fe = new FooEntity("FOO");
+            em.persist(fe);
+        } catch(Exception e) {
+            throw new EJBException(e);
+        }
+
     }
 
 
