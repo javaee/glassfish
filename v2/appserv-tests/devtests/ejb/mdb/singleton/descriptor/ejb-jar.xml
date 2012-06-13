@@ -1,34 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   version="3.1" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
-  <display-name>Ejb1</display-name>
   <enterprise-beans>
     <message-driven>
-      <display-name>MDB1</display-name>
-      <ejb-name>MDB1</ejb-name>
+      <ejb-name>MessageBean</ejb-name>
       <ejb-class>com.sun.s1asdev.ejb.mdb.singleton.MessageBean</ejb-class>
       <messaging-type>javax.jms.MessageListener</messaging-type>
       <transaction-type>Container</transaction-type>
       <message-destination-type>javax.jms.Queue</message-destination-type>
       <message-destination-link>MsgBeanInQueue</message-destination-link>
-      <resource-ref>
-        <description>description</description>
-        <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
-        <res-type>javax.jms.QueueConnectionFactory</res-type>
-        <res-auth>Container</res-auth>
-        <res-sharing-scope>Shareable</res-sharing-scope>
-      </resource-ref>
-      <message-destination-ref>
-        <description>test destination</description>
-        <message-destination-ref-name>jms/MyQueue
-        </message-destination-ref-name>
-        <message-destination-type>javax.jms.Queue</message-destination-type>
-        <message-destination-usage>Consumes</message-destination-usage>
-        <message-destination-link>MsgBeanOutQueue</message-destination-link>
-      </message-destination-ref>
-      <security-identity>
-        <use-caller-identity/>
-      </security-identity>
     </message-driven>
   </enterprise-beans>
   <assembly-descriptor>

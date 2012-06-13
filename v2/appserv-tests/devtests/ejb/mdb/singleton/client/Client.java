@@ -1,20 +1,25 @@
 package com.sun.s1asdev.ejb.mdb.singleton.client;
 
 /*
- * Copyright 2002 Sun Microsystems, Inc. All rights reserved.
- * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ * Copyright (c) 2011, 2012, Oracle and/or its affiliates. All rights reserved.
  */
+
 import java.io.*;
 import java.util.*;
-import javax.ejb.EJBHome;
 import javax.naming.*;
 import javax.jms.*;
 import javax.annotation.*;
 import javax.ejb.*;
 import com.sun.s1asdev.ejb.mdb.singleton.FooRemoteIF;
-
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
+/**
+ * Tests for http://java.net/jira/browse/GLASSFISH-13004 (Support MDB singleton).
+ * The test ejb jar is configured with property singleton-bean-pool=true in 
+ * sun-ejb-jar.xml.  This test client calls fooTest and doTest(...):
+ * fooTest: verify the stateless bean FooBean is single instance;
+ * doTest(..): verify the mdb MessageBean is single instance.
+ */
 public class Client {
 
     private static SimpleReporterAdapter stat =
@@ -36,10 +41,6 @@ public class Client {
     private QueueReceiver queueReceiver;
     private javax.jms.Queue clientQueue;
 
-    private TopicConnection topicCon;
-    private TopicSession topicSession;
-    private TopicPublisher topicPublisher;
-
     private int numMessages = 1;
     private int numOfCalls = 120;
 
@@ -58,8 +59,6 @@ public class Client {
             setup();
 	    doTest("jms/ejb_mdb_singleton_InQueue", numMessages);
             fooTest();
-	    // @@@ message-destination-ref support
-	    // oTest("java:comp/env/jms/MsgBeanQueue", numMessages);
             stat.addStatus("singleton main", stat.PASS);
         } catch(Throwable t) {
             stat.addStatus("singleton main", stat.FAIL);
@@ -70,15 +69,16 @@ public class Client {
     }
 
     public void fooTest() {
+        final Set<String> fooBeans = new HashSet<String>();
         Thread[] threads = new Thread[numOfCalls];
         for (int i = 0; i < threads.length; i++) {
             threads[i] = new Thread(new Runnable() {
                 public void run() {
-                    System.out.println("FooBean.foo returned " + foo.foo());        
+                    fooBeans.add(foo.foo());
                 }
             });
             threads[i].start();
-        }// end for
+        }
 
         for (int i = 0; i < threads.length; i++) {
             try {
@@ -86,39 +86,16 @@ public class Client {
             } catch (InterruptedException e) {
             }
         }
-
+        verifySingleInstance(fooBeans);
     }
 
     public void setup() throws Exception {
         context = new InitialContext();
-        
-        QueueConnectionFactory queueConFactory = 
-            (QueueConnectionFactory) context.lookup
-            ("java:comp/env/FooCF");
-            
+        QueueConnectionFactory queueConFactory = (QueueConnectionFactory) context.lookup ("java:comp/env/FooCF");
         queueCon = queueConFactory.createQueueConnection();
-
-        queueSession = queueCon.createQueueSession
-            (false, Session.AUTO_ACKNOWLEDGE); 
-
-        // Producer will be specified when actual msg is sent.
+        queueSession = queueCon.createQueueSession(false, Session.AUTO_ACKNOWLEDGE); 
         queueSender = queueSession.createSender(null);        
-
         queueCon.start();
-
-        /*
-        TopicConnectionFactory topicConFactory = 
-            (TopicConnectionFactory) context.lookup
-            ("jms/TopicConnectionFactory");
-                
-        topicCon = topicConFactory.createTopicConnection();
-
-        topicSession = 
-            topicCon.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-            
-        // Producer will be specified when actual msg is published.
-        topicPublisher = topicSession.createPublisher(null);
-        */
     }
 
     public void cleanup() {
@@ -142,18 +119,7 @@ public class Client {
         }
     }
 
-    public void sendMsgs(Topic topic, Message msg, int num) 
-        throws JMSException {
-        for(int i = 0; i < num; i++) {
-            //            System.out.println("Publishing message " + i + " to " + queue);
-            System.out.println("Publishing message " + i + " to " + topic);
-            topicPublisher.publish(topic, msg);
-        }
-    }
-
-    public void doTest(String destName, int num) 
-        throws Exception {
-
+    public void doTest(String destName, int num) throws Exception {
         Destination dest = (Destination) context.lookup(destName);
             
         for(int i = 0; i < numOfCalls; i++) {
@@ -162,6 +128,32 @@ public class Client {
             message.setBooleanProperty("flag", true);
             message.setIntProperty("num", i);
             sendMsgs((javax.jms.Queue) dest, message, num);
+        }
+
+        List<String> messageBeanInstances = new ArrayList<String>();
+        int trials = 0;
+        do {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
+            messageBeanInstances = foo.getMessageBeanInstances();
+            ++trials;
+        } while (messageBeanInstances.size() < numOfCalls && trials < 5);
+
+        if(messageBeanInstances.size() <= 1 || messageBeanInstances.size() < numOfCalls) {
+            throw new RuntimeException("Expecting number of instances " + numOfCalls + ", but got " +
+                messageBeanInstances.size() + ": " + messageBeanInstances);
+        }
+        Set<String> messageBeanInstancesUnique = new HashSet<String>(messageBeanInstances);
+        verifySingleInstance(messageBeanInstancesUnique);
+    }
+
+    private void verifySingleInstance(Collection<String> c) {
+        if (c.size() == 1) {
+            System.out.println("Got expected instances (single one): " + c);
+        } else {
+            throw new RuntimeException("Expecting single instance, but got " + c);
         }
     }
 }

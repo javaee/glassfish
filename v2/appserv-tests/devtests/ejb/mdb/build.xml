@@ -15,6 +15,7 @@
 
         <antcall target="cmt"/> 
        <antcall target="msgbean"/> 
+       <antcall target="singleton"/> 
 
     </target>
 
@@ -30,11 +31,18 @@
         <record name="msgbean.output" action="stop" />
     </target>
 
+    <target name="singleton">
+        <record name="singleton.output" action="start" />
+            <ant dir="singleton" target="all"/>
+        <record name="singleton.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:
 			ant cmt (Executes the ejb-mdb cmt test)
 			ant msgbean (Executes the ejb-mdb msgbean test)
+			ant singleton (Executes the ejb-mdb singleton test)
 			ant all (Executes all the ejb-mdb tests)
 	</echo>
     </target>
