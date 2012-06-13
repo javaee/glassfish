@@ -128,7 +128,7 @@ public class CommandRunnerImpl implements CommandRunner {
     private ServerEnvironment serverEnv;
     @Inject
     private ProcessEnvironment processEnv;
-    @org.jvnet.hk2.annotations.Inject
+    @Inject
     private InstanceStateService state;
     @Inject
     private AdminCommandLock adminLock;

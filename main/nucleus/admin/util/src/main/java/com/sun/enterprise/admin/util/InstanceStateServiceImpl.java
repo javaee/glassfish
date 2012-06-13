@@ -67,7 +67,7 @@ import java.util.logging.Logger;
  * @author Vijay Ramachandran
  */
 @Service
-@RunLevel(StartupRunLevel.VAL)
+@RunLevel(value=StartupRunLevel.VAL, mode=RunLevel.RUNLEVEL_MODE_NON_VALIDATING)
 public class InstanceStateServiceImpl implements InstanceStateService {
 
     @Inject
