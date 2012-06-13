@@ -51,6 +51,13 @@
         </antcall>
         <antcall target="deploy-jdbc-common"/>
 
+	<!-- Workaround for issue 18783 -->
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="create-module-config"/>
+            <param name="operand.props"
+                   value="ejb-container"/>
+       </antcall>
+        <!-- Workaround : end -->
 
         <antcall target="asadmin-common">
             <param name="admin.command" value="set"/>
