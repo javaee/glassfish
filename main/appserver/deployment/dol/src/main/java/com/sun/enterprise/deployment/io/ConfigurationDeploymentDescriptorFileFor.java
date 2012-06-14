@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,48 +38,29 @@
  * holder.
  */
 
-package org.glassfish.web.deployment.io.runtime;
+package com.sun.enterprise.deployment.io;
 
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.DescriptorConstants;
-import com.sun.enterprise.deployment.node.RootXMLNode;
-import org.glassfish.deployment.common.Descriptor;
-import org.glassfish.web.deployment.node.runtime.wls.WeblogicWebAppNode;
+import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Index;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This class is responsible for handling the XML configuration information
- * for the WebLogic Web Container
- *
+ * Normally goes with {@link org.jvnet.hk2.annotations.Service} annotation,
+ * and this annotation must be placed on a class that extends
+ * {@link com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile}.
  */
-public class WLSWebRuntimeDDFile extends 
-        ConfigurationDeploymentDescriptorFile {  
-   
+@Contract
+@Retention(RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ConfigurationDeploymentDescriptorFileFor {
     /**
-     * @return the location of the DeploymentDescriptor file for a
-     * particular type of J2EE Archive
+     * see {@link org.glassfish.api.deployment.archive.ArchiveType} and its
+     * implementation classes for valid string values.
      */
-    public String getDeploymentDescriptorPath() {
-        return DescriptorConstants.WLS_WEB_JAR_ENTRY;        
-    }
-    
-    /**
-     * @return a RootXMLNode responsible for handling the deployment
-     * descriptors associated with this J2EE module
-     *
-     * @param the descriptor for which we need the node
-     */
-    public RootXMLNode getRootXMLNode(Descriptor descriptor) {
-   
-        if (descriptor instanceof WebBundleDescriptor) {
-            WebBundleDescriptor bundleDesc = (WebBundleDescriptor)descriptor;
-            RootXMLNode node = bundleDesc.getRootNode(getDeploymentDescriptorPath());
-            if (node == null) {
-                node = new WeblogicWebAppNode(bundleDesc);
-                bundleDesc.addRootNode(getDeploymentDescriptorPath(), node);
-            }
-            return node;
-        }
-        return null;
-    }
+    @Index String value();
 }

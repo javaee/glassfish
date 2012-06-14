@@ -40,22 +40,35 @@
 
 package org.glassfish.web.deployment.io.runtime;
 
+import java.util.Map;
+
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
+import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFileFor;
+import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.node.RootXMLNode;
 import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.web.WarType;
 import org.glassfish.web.deployment.node.runtime.gf.GFWebBundleRuntimeNode;
+
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * This class is responsible for handling the XML configuration information
  * for the Glassfish Web Container
  */
-public class GFWebRuntimeDDFile extends ConfigurationDeploymentDescriptorFile {  
+@ConfigurationDeploymentDescriptorFileFor(WarType.ARCHIVE_TYPE)
+@Service
+@PerLookup
+public class GFWebRuntimeDDFile extends ConfigurationDeploymentDescriptorFile {
+
     /**
      * @return the location of the DeploymentDescriptor file for a
      * particular type of J2EE Archive
      */
+    @Override
     public String getDeploymentDescriptorPath() {
         return DescriptorConstants.GF_WEB_JAR_ENTRY;        
     }
@@ -64,13 +77,22 @@ public class GFWebRuntimeDDFile extends ConfigurationDeploymentDescriptorFile {
      * @return a RootXMLNode responsible for handling the deployment
      * descriptors associated with this J2EE module
      *
-     * @param the descriptor for which we need the node
+     * @param descriptor the descriptor for which we need the node
      */
+    @Override
     public RootXMLNode getRootXMLNode(Descriptor descriptor) {
    
         if (descriptor instanceof WebBundleDescriptor) {
             return new GFWebBundleRuntimeNode((WebBundleDescriptor) descriptor);
         }
         return null;
+    }
+
+    @Override
+    public void registerBundle(final Map<String, Class> registerMap,
+            final Map<String, String> publicIDToDTD) {
+
+        registerMap.put(GFWebBundleRuntimeNode.registerBundle(publicIDToDTD),
+                GFWebBundleRuntimeNode.class);
     }
 }

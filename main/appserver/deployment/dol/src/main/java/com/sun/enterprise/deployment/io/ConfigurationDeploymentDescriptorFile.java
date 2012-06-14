@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/publin/CDDL+GPL_1_1.html
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -42,12 +42,15 @@ package com.sun.enterprise.deployment.io;
 
 import java.util.Map;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * This class is responsible for handling the XML configuration information
  * for the J2EE Reference Implementation runtime descriptors.
  *
  * @author Jerome Dochez
  */
+@Contract
 public abstract class ConfigurationDeploymentDescriptorFile extends DeploymentDescriptorFile {
 
     /**

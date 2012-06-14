@@ -53,7 +53,7 @@ import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.ArchivistFor;
 import com.sun.enterprise.deployment.archivist.ExtensionsArchivist;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
-import com.sun.enterprise.deployment.io.DescriptorConstants;
+import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.util.*;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.Archive;
@@ -64,9 +64,6 @@ import org.glassfish.deployment.common.DeploymentUtils;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.web.WarType;
 import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
-import org.glassfish.web.deployment.io.runtime.WebRuntimeDDFile;
-import org.glassfish.web.deployment.io.runtime.WLSWebRuntimeDDFile;
-import org.glassfish.web.deployment.io.runtime.GFWebRuntimeDDFile;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import org.xml.sax.SAXParseException;
@@ -78,7 +75,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Vector;
 import java.net.URL;
@@ -100,6 +96,7 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
 
     @Inject
     private ServerEnvironment env;
+
 
     /**
      * The DeploymentDescriptorFile handlers we are delegating for XML i/o
@@ -150,12 +147,9 @@ public class WebArchivist extends Archivist<WebBundleDescriptor> {
      * @return the list of the DeploymentDescriptorFile responsible for
      *         handling the configuration deployment descriptors
      */
-    public List<DeploymentDescriptorFile> getConfigurationDDFiles() {
+    public List<ConfigurationDeploymentDescriptorFile> getConfigurationDDFiles() {
         if (confDDFiles == null) {
-            confDDFiles = new ArrayList<DeploymentDescriptorFile>();
-            confDDFiles.add(new WLSWebRuntimeDDFile());
-            confDDFiles.add(new GFWebRuntimeDDFile());
-            confDDFiles.add(new WebRuntimeDDFile());
+            confDDFiles = DOLUtils.getConfigurationDeploymentDescriptorFiles(habitat, WarType.ARCHIVE_TYPE);
         }
         return confDDFiles;
     }
