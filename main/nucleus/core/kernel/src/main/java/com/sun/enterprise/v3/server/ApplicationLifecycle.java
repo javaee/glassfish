@@ -989,8 +989,7 @@ public class ApplicationLifecycle implements Deployment, PostConstruct {
                 logger.log(Level.SEVERE, "Cannot start container  " +  engineInfo.getSniffer().getModuleType(),e);
                 return false;
             }
-            
-      System.out.println(">>>>>>>>>>>>> Trying Container: " + container);      
+                
             Class<? extends Deployer> deployerClass = container.getDeployer();
             Deployer deployer;
             try {

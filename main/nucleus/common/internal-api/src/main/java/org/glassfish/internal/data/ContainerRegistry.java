@@ -65,8 +65,6 @@ public class ContainerRegistry {
 
 
     public synchronized void addContainer(String name, EngineInfo info) {
-System.out.println((">>>>>>>>> Adding " + name) + ": " + info);
-
         containers.put(name, info);
         info.setRegistry(this);
     }
@@ -82,7 +80,6 @@ System.out.println((">>>>>>>>> Adding " + name) + ": " + info);
     }
 
     public synchronized EngineInfo getContainer(String containerType) {
-    	System.out.println(">>>>>>>> getContainer: " + containerType);
         return containers.get(containerType);
     }
 

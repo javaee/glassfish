@@ -116,8 +116,6 @@ public class EmbeddedTest {
     @Test
     public void testEjb() throws GlassFishException {
         Deployer deployer = glassfish.getDeployer();
-
-        System.out.println(">>>>>>> deployer: " + deployer.getClass().getCanonicalName());
         
         URL source = SampleEjb.class.getClassLoader().getResource(
                 "org/glassfish/distributions/test/ejb/SampleEjb.class");
@@ -127,8 +125,6 @@ public class EmbeddedTest {
         String appName = deployer.deploy(new File(p).toURI(), "--name=sample");
         Assert.assertNotNull("AppName is null from deployer of type " + deployer.getClass().getName(),
                 appName);
-        
-        System.out.println(">>>>>>> appName: " + appName);
         
         // ok now let's look up the EJB...
         try {

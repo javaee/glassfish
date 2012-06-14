@@ -212,16 +212,10 @@ public class CLIUtil {
 
         String cname = CLICommand.class.getName();
         for (Inhabitant<?> command : habitat.getInhabitantsByContract(cname)) {
-
-        	System.out.println(command.getDescriptor().getImplementation());
         	for (String name : Inhabitants.getNamesFor(command, cname)) {
-        		System.out.println(">>>>>>>>>>>> command: " + (name)	);
-            	
         		names.add(name);
         	}
         }
-        
-        System.out.println(">>>>>>>>>>>>>>");
         
         String[] localCommands = names.toArray(new String[names.size()]);
         Arrays.sort(localCommands);
