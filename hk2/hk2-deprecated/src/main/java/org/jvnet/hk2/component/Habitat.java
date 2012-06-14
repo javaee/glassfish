@@ -276,7 +276,22 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @return true if any inhabitants were removed
      */
     public boolean removeAllByType(Class<?> type) {
-        throw new UnsupportedOperationException("removeAllByType(" + type + ") in Habitat");
+        if (type == null) return false;
+        
+        Filter filter = BuilderHelper.createContractFilter(type.getName());
+        List<ActiveDescriptor<?>> descriptors = delegate.getDescriptors(filter);
+        if (descriptors.isEmpty()) {
+            return false;
+        }
+        
+        DynamicConfigurationService dcs = delegate.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addUnbindFilter(filter);
+        
+        config.commit();
+        
+        return true;
     }
 
     /**

@@ -37,7 +37,11 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
+package org.glassfish.hk2.tests.locator.customresolver;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
@@ -47,14 +51,18 @@ import org.glassfish.hk2.api.ServiceHandle;
  * @author jwells
  *
  */
-public class BadInjectionResolver implements InjectionResolver<BadInject> {
+@Singleton
+public class MethodOnlyInjectionResolver implements
+        InjectionResolver<MethodParameterInjectionPoint> {
+    @Inject @Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
+    private InjectionResolver<Inject> systemResolver;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
     public Object resolve(Injectee injectee, ServiceHandle<?> root) {
-        throw new AssertionError("not called");
+        return systemResolver.resolve(injectee, root);
     }
 
     /* (non-Javadoc)
@@ -70,7 +78,7 @@ public class BadInjectionResolver implements InjectionResolver<BadInject> {
      */
     @Override
     public boolean isMethodParameterIndicator() {
-        return false;
+        return true;
     }
 
 }

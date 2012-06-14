@@ -770,7 +770,7 @@ public class Utilities {
                 zeroArgConstructor = constructor;
             }
             
-            if (getInjectAnnotation(locator, constructor) != null) {
+            if (getInjectAnnotation(locator, constructor, true) != null) {
                 if (aConstructorWithInjectAnnotation != null) {
                     collector.addThrowable(new IllegalArgumentException("There is more than one constructor on class " +
                       Pretty.clazz(annotatedType)));
@@ -913,7 +913,7 @@ public class Utilities {
         HashSet<Method> retVal = new HashSet<Method>();
         
         for (Method method : getAllMethods(annotatedType)) {
-            if (getInjectAnnotation(locator, method) == null) {
+            if (getInjectAnnotation(locator, method, true) == null) {
                 // Not an initializer method
                 continue;
             }
@@ -945,7 +945,7 @@ public class Utilities {
         HashSet<Field> retVal = new HashSet<Field>();
         
         for (Field field : getAllFields(annotatedType, errorCollector)) {
-            if (getInjectAnnotation(locator, field) == null) {
+            if (getInjectAnnotation(locator, field, false) == null) {
                 // Not an initializer field
                 continue;
             }
@@ -971,9 +971,35 @@ public class Utilities {
      * @return The annotation that is the inject annotation, or null
      * if no inject annotation was found
      */
-    private static Annotation getInjectAnnotation(ServiceLocatorImpl locator, AnnotatedElement annotated) {
+    private static Annotation getInjectAnnotation(ServiceLocatorImpl locator, AnnotatedElement annotated, boolean checkParams) {
         for (Annotation anno : annotated.getAnnotations()) {
             if (locator.isInjectAnnotation(anno)) return anno;
+        }
+        
+        if (!checkParams) return null;
+        
+        boolean isConstructor;
+        Annotation allAnnotations[][];
+        if (annotated instanceof Method) {
+            Method m = (Method) annotated;
+            
+            isConstructor = false;
+            allAnnotations = m.getParameterAnnotations();
+        }
+        else if (annotated instanceof Constructor) {
+            Constructor<?> c = (Constructor<?>) annotated;
+            
+            isConstructor = true;
+            allAnnotations = c.getParameterAnnotations();
+        }
+        else {
+            return null;
+        }
+        
+        for (Annotation allParamAnnotations[] : allAnnotations) {
+            for (Annotation paramAnno : allParamAnnotations) {
+                if (locator.isInjectAnnotation(paramAnno, isConstructor)) return paramAnno;
+            }
         }
         
         return null;
@@ -1170,7 +1196,7 @@ public class Utilities {
     public static InjectionResolver<?> getInjectionResolver(
             ServiceLocatorImpl locator,
             AnnotatedElement annotatedGuy) throws IllegalStateException {
-        Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy);
+        Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy, true);
         
         Class<? extends Annotation> injectType = (injectAnnotation == null) ?
                 Inject.class : injectAnnotation.annotationType() ;

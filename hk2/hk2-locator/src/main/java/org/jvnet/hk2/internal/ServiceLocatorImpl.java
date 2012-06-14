@@ -998,6 +998,19 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
+    /* package */ boolean isInjectAnnotation(Annotation annotation, boolean isConstructor) {
+        synchronized (lock) {
+            InjectionResolver<?> resolver = allResolvers.get(annotation.annotationType());
+            if (resolver == null) return false;
+            
+            if (isConstructor) {
+                return resolver.isConstructorParameterIndicator();
+            }
+            
+            return resolver.isMethodParameterIndicator();
+        }
+    }
+    
     /* package */ InjectionResolver<?> getInjectionResolver(Class<? extends Annotation> annoType) {
         synchronized (lock) {
             return allResolvers.get(annoType);

@@ -37,40 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
+package org.glassfish.hk2.tests.locator.customresolver;
 
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.api.ServiceHandle;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
+ * This custom resolution point only works on method
+ * parameters
+ * 
  * @author jwells
  *
  */
-public class BadInjectionResolver implements InjectionResolver<BadInject> {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
-     */
-    @Override
-    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
-        throw new AssertionError("not called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.InjectionResolver#isConstructorParameterIndicator()
-     */
-    @Override
-    public boolean isConstructorParameterIndicator() {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.InjectionResolver#isMethodParameterIndicator()
-     */
-    @Override
-    public boolean isMethodParameterIndicator() {
-        return false;
-    }
+@Retention(RUNTIME)
+@Target( PARAMETER )
+public @interface MethodParameterInjectionPoint {
 
 }
