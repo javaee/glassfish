@@ -75,5 +75,23 @@ public interface InjectionResolver<T> {
      * @return A possibly null value to be injected into the given injection point
      */
     public Object resolve(Injectee injectee, ServiceHandle<?> root);
+    
+    /**
+     * This method should return true if the annotation that indicates that this is
+     * an injection point can appear in the parameter list of a constructor.
+     * 
+     * @return true if the injection annotation can appear in the parameter list of
+     * a constructor
+     */
+    public boolean isConstructorParameterIndicator();
+    
+    /**
+     * This method should return true if the annotation that indicates that this is
+     * an injection point can appear in the parameter list of a method.
+     * 
+     * @return true if the injection annotation can appear in the parameter list of
+     * a method
+     */
+    public boolean isMethodParameterIndicator();
 
 }

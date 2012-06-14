@@ -63,5 +63,41 @@ public class CustomResolverTest {
         
         Assert.assertTrue(cwci.isValid());
     }
+    
+    /**
+     * Tests custom resolution with the resolver on the constuctor (and only valid on the constructor)
+     */
+    @Test
+    public void testConstructorOnly() {
+        ConstructorOnlyInjectedService service = locator.getService(ConstructorOnlyInjectedService.class);
+        Assert.assertNotNull(service);
+        
+        Assert.assertNotNull(service.getViaConstructor());
+        Assert.assertNull(service.getViaMethod());
+    }
+    
+    /**
+     * Tests custom resolution with the resolver on the method (and only valid on the method)
+     */
+    @Test
+    public void testMethodOnly() {
+        MethodOnlyInjectedService service = locator.getService(MethodOnlyInjectedService.class);
+        Assert.assertNotNull(service);
+        
+        Assert.assertNull(service.getViaConstructor());
+        Assert.assertNotNull(service.getViaMethod());
+    }
+    
+    /**
+     * Tests custom resolution with the resolver on both the constructor and the method
+     */
+    @Test
+    public void testBothMethodAndConstructor() {
+        ParameterInjectionService service = locator.getService(ParameterInjectionService.class);
+        Assert.assertNotNull(service);
+        
+        Assert.assertNotNull(service.getViaConstructor());
+        Assert.assertNotNull(service.getViaMethod());
+    }
 
 }

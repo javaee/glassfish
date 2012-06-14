@@ -64,6 +64,16 @@ public class CustomResolverModule implements TestModule {
                 to(InjectionResolver.class).
                 in(Singleton.class.getName()).
                 ofRank(1).build());
+        
+        configurator.addActiveDescriptor(ConstructorOnlyInjectionResolver.class);
+        configurator.addActiveDescriptor(MethodOnlyInjectionResolver.class);
+        configurator.addActiveDescriptor(ParameterOnlyInjectionResolver.class);
+        
+        configurator.bind(BuilderHelper.link(ConstructorOnlyInjectedService.class.getName()).build());
+        configurator.bind(BuilderHelper.link(MethodOnlyInjectedService.class.getName()).build());
+        configurator.bind(BuilderHelper.link(ParameterInjectionService.class.getName()).build());
+        
+        configurator.addActiveDescriptor(SimpleService.class);
     }
 
 }

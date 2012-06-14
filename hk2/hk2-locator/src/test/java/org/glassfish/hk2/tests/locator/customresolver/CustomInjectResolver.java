@@ -97,4 +97,20 @@ public class CustomInjectResolver implements InjectionResolver<Inject> {
         return systemResolver.resolve(injectee, root);
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isConstructorParameterIndicator()
+     */
+    @Override
+    public boolean isConstructorParameterIndicator() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isMethodParameterIndicator()
+     */
+    @Override
+    public boolean isMethodParameterIndicator() {
+        return false;
+    }
+
 }
