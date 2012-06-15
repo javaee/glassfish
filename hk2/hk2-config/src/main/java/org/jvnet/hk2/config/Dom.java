@@ -1314,4 +1314,12 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     public Object create(ServiceHandle root) {
         return createProxy();
     }
+    
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+    
+    public boolean equals(Object o) {
+        return this == o;
+    }
 }
