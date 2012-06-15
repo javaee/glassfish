@@ -379,6 +379,7 @@
         <ant dir="monitorWebRequest" target="all"/>
         <ant dir="multiByteContextRoot" target="all"/>
         <ant dir="multiByteContextRootWithCookie" target="all"/>
+        <ant dir="osgiServlet" target="all"/>
         <ant dir="overrideImplicitMapping" target="all"/>
         <ant dir="pipelineQueueFull" target="all"/>
         <ant dir="portUnification" target="all"/>
