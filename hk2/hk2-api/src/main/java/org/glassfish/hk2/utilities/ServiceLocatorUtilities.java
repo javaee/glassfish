@@ -46,6 +46,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.internal.PerThreadContext;
 
@@ -55,6 +56,7 @@ import org.glassfish.hk2.internal.PerThreadContext;
  * @author jwells
  */
 public abstract class ServiceLocatorUtilities {
+    private final static String DEFAULT_LOCATOR_NAME = "default";
     
     /**
      * This method will add the ability to use the {@link PerThread} scope to
@@ -79,5 +81,53 @@ public abstract class ServiceLocatorUtilities {
         config.commit();
     }
     
-
+    /**
+     * This method will bind all of the binders given together in a
+     * single config transaction.
+     * 
+     * @param locator The non-null locator to use for the configuration action
+     * @param binders The non-null list of binders to be added to the locator
+     * @throws MultiException if any error was encountered while binding services
+     */
+    public static void bind(ServiceLocator locator, Binder... binders) {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        for (Binder binder : binders) {
+            binder.bind(config);
+        }
+        
+        config.commit();
+    }
+    
+    /**
+     * This method will create or find a ServiceLocator with the given name and
+     * bind all of the binders given together in a single config transaction.
+     * 
+     * @param locator The non-null locator to use for the configuration action
+     * @param binders The non-null list of binders to be added to the locator
+     * @return The service locator that was either found or created
+     * @throws MultiException if any error was encountered while binding services
+     */
+    public static ServiceLocator bind(String name, Binder... binders) {
+        ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+        
+        ServiceLocator locator = factory.create(name);
+        bind(locator, binders);
+        
+        return locator;
+    }
+    
+    /**
+     * This method will create or find a ServiceLocator with the name "default" and
+     * bind all of the binders given together in a single config transaction.
+     * 
+     * @param locator The non-null locator to use for the configuration action
+     * @param binders The non-null list of binders to be added to the locator
+     * @return The service locator that was either found or created
+     * @throws MultiException if any error was encountered while binding services
+     */
+    public static ServiceLocator bind(Binder... binders) {
+        return bind(DEFAULT_LOCATOR_NAME, binders);
+    }
 }
