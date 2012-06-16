@@ -97,6 +97,17 @@ public class LocatorModule implements TestModule {
         thracian.addQualifier(Dead.class.getName());
         
         configurator.bind(thracian);
+        
+        // These are for the TypeLiteral tests
+        configurator.bind(BuilderHelper.link(COBOL.class).
+                                        to(ComputerLanguage.class).
+                                        in(Singleton.class.getName()).
+                                        build());
+        
+        configurator.bind(BuilderHelper.link(Fortran.class).
+                to(ComputerLanguage.class).
+                in(Singleton.class.getName()).
+                build());
     }
 
 }
