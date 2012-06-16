@@ -223,6 +223,14 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
       return serviceLocator;
   }
   
+  public int hashCode() {
+      return System.identityHashCode(this);
+  }
+  
+  public boolean equals(Object o) {
+      return this == o;
+  }
+  
   @Override
   public String toString() {
       return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 

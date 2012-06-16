@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 import org.jvnet.hk2.internal.Pretty;
@@ -67,6 +68,9 @@ import org.jvnet.hk2.internal.Pretty;
 public class LocatorTest {
     private final static String TEST_NAME = "LocatorTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new LocatorModule());
+    
+    /* package */ final static String COBOL_ID = "COBOL is fun!";
+    /* package */ final static int FORTRAN = 77;  // There really was a Fortran-77!
     
     /**
      * Gets all the services in the registry
@@ -212,6 +216,23 @@ public class LocatorTest {
         
         Assert.assertTrue("Expected at least one singleton services, but got " + singleton.size(),
                 singleton.size() >= 1);
+    }
+    
+    /**
+     * Tests that we can look up using TypeLiterals
+     */
+    @Test
+    public void testLookupWithTypeLiteral() {
+        ComputerLanguage<String> cobol = locator.getService((new TypeLiteral<ComputerLanguage<String>>() {}).getType());
+        Assert.assertNotNull(cobol);
+        
+        Assert.assertSame(COBOL_ID, cobol.getItem());
+        
+        ComputerLanguage<Integer> fortran = locator.getService((new TypeLiteral<ComputerLanguage<Integer>>() {}).getType());
+        Assert.assertNotNull(fortran);
+        
+        Integer i = fortran.getItem();
+        Assert.assertSame("fortran.getItem() is " + fortran.getItem(), FORTRAN, i.intValue());
     }
 
 }

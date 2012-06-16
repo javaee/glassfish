@@ -60,6 +60,7 @@ import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.HabitatListener.EventType;
 import org.jvnet.hk2.component.InhabitantTracker.Callback;
@@ -317,16 +318,17 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
 
     protected void addIndex(Inhabitant<?> i, String index, String name, boolean notify) {
 
-        final Descriptor descriptor = i;
+        // Need the descriptorImp because the inhabitant likely has equals overridden
+        final Descriptor matchDescriptor = new DescriptorImpl(i);
         ActiveDescriptor<?> activeDescriptor = getBestDescriptor(new Filter(){
             @Override
             public boolean matches(Descriptor d) {
-                return descriptor.equals(d);
+                return matchDescriptor.equals(d);
             }
         });
 
         if (activeDescriptor == null) {
-            activeDescriptor = Utilities.add(delegate, descriptor);
+            activeDescriptor = Utilities.add(delegate, i);
         }
 
         Utilities.addIndex(delegate, activeDescriptor, index, name);
@@ -349,11 +351,11 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
      * @param inhabitant inhabitant to be removed
      */
     public boolean remove(Inhabitant<?> inhabitant) {
-        final Descriptor descriptor = inhabitant;
+        final Descriptor matchDescriptor = new DescriptorImpl(inhabitant);
         final Filter filter = new Filter() {
             @Override
             public boolean matches(Descriptor d) {
-                return descriptor.equals(d);
+                return matchDescriptor.equals(d);
             }
         };
 
