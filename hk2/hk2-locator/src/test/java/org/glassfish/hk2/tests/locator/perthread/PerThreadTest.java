@@ -62,6 +62,9 @@ public class PerThreadTest {
     @Before
     public void before() {
         ServiceLocatorUtilities.enablePerThreadScope(locator);
+        
+        // Doing this twice ensures the idempotence of this call
+        ServiceLocatorUtilities.enablePerThreadScope(locator);
     }
     
     @Test
