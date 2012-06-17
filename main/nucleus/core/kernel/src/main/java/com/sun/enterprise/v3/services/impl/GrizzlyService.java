@@ -83,8 +83,10 @@ import org.glassfish.grizzly.utils.Futures;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
+import org.jvnet.hk2.component.Habitat;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ObservableBean;
@@ -106,7 +108,7 @@ public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDest
     Config config;
 
     @Inject
-    BaseServiceLocator habitat;
+    private Habitat habitat;
 
     @Inject
     Transactions transactions;
@@ -305,7 +307,7 @@ public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDest
      *
      * @return the habitat
      */   
-    public BaseServiceLocator getHabitat() {
+    public Habitat getHabitat() {
         return habitat;
     }
 
@@ -445,7 +447,7 @@ public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDest
      */
     public void registerNetworkProxy() {
         for (org.glassfish.api.container.Adapter subAdapter :
-            habitat.getAllByContract(org.glassfish.api.container.Adapter.class)) {
+            habitat.<org.glassfish.api.container.Adapter>getAllServices(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required
             try {
                 if (!subAdapter.isRegistered()) {
