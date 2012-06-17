@@ -75,9 +75,6 @@ public class VersionCommand implements AdminCommand {
     
     @Param(optional=true, defaultValue="false", shortName = "v")
     Boolean verbose;
-    
-    @Inject
-    Version version;
 
     final private static LocalStringManagerImpl strings = new LocalStringManagerImpl(VersionCommand.class);
 
@@ -86,10 +83,10 @@ public class VersionCommand implements AdminCommand {
         if (verbose) {
             vers = strings.getLocalString("version.verbose",
                 "{0}, JRE version {1}",
-                version.getFullVersion(), System.getProperty("java.version"));
+                Version.getFullVersion(), System.getProperty("java.version"));
         } else {
             vers = strings.getLocalString("version",
-                "{0}", version.getFullVersion());
+                "{0}", Version.getFullVersion());
         }
         ActionReport report = context.getActionReport();
         report.setActionExitCode(ExitCode.SUCCESS);

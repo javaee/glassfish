@@ -81,7 +81,7 @@ import java.util.logging.*;
  */
 @Service
 @Singleton
-@ContractsProvided(java.util.logging.Handler.class)
+@ContractsProvided({GFFileHandler.class, java.util.logging.Handler.class})
 public class GFFileHandler extends StreamHandler implements PostConstruct, PreDestroy {
 
 
