@@ -215,7 +215,8 @@ public class GeneratorRunner {
         
         byte buffer[] = new byte[1024];
         
-        File tmpJarFile = File.createTempFile(jarFile.getName(), ".tmp");
+        File outjar = new File(outjarName);
+        File tmpJarFile = File.createTempFile(jarFile.getName(), ".tmp", outjar.getParentFile());
         
         FileInputStream fis = new FileInputStream(jarFile);
         ZipInputStream zis = new ZipInputStream(fis);
@@ -260,7 +261,7 @@ public class GeneratorRunner {
         
         // All went well, replace the JAR file with the new and improved jar file
         String tmpFileName = tmpJarFile.getAbsolutePath();
-        File outjar = new File(outjarName);
+        
         
         if (verbose) {
             System.out.println("Swapping jar file " + tmpFileName + " to " + outjar.getAbsolutePath());
