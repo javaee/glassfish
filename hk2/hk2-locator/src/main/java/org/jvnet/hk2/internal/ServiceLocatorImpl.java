@@ -851,7 +851,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 if (ild == null) continue;
                 
                 ild.removeDescriptor(unbind);
-                if (ild.isEmpty()) descriptorsByAdvertisedContract.remove(ild);
+                if (ild.isEmpty()) descriptorsByAdvertisedContract.remove(advertisedContract);
             }
             
             String unbindName = unbind.getName();
@@ -860,7 +860,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 if (ild != null) {
                     ild.removeDescriptor(unbind);
                     if (ild.isEmpty()) {
-                        descriptorsByName.remove(ild);
+                        descriptorsByName.remove(unbindName);
                     }
                 }
             }
