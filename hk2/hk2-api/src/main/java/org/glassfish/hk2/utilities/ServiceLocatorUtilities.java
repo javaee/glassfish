@@ -41,7 +41,9 @@ package org.glassfish.hk2.utilities;
 
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.PerThread;
@@ -129,5 +131,38 @@ public abstract class ServiceLocatorUtilities {
      */
     public static ServiceLocator bind(Binder... binders) {
         return bind(DEFAULT_LOCATOR_NAME, binders);
+    }
+    
+    /**
+     * It is very often the case that one wishes to add a single descriptor to
+     * a service locator.  This method adds that one descriptor.  If the descriptor
+     * is an {@link ActiveDescriptor} and is reified, it will be added as an
+     * {@link ActiveDescriptor}.  Otherwise it will be bound as a {@link Descriptor}.
+     * 
+     * @param locator The non-null locator to add this descriptor to
+     * @param descriptor The non-null descrptor to add to this locator
+     * @throws MultiException On a commit failure
+     */
+    public static void addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        if (descriptor instanceof ActiveDescriptor) {
+            ActiveDescriptor<?> active = (ActiveDescriptor<?>) descriptor;
+            
+            if (active.isReified()) {
+                config.addActiveDescriptor(active);
+            }
+            else {
+                config.bind(descriptor);
+            }
+            
+        }
+        else {
+            config.bind(descriptor);
+        }
+        
+        config.commit();
+        
     }
 }
