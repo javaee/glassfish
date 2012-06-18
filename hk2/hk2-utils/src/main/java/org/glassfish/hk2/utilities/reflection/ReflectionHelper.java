@@ -49,6 +49,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
@@ -161,22 +162,112 @@ public class ReflectionHelper {
      * Gets all the interfaces on this particular class (but not any
      * superclasses of this class).
      */
-    private static void addAllGenericInterfaces(Type types[], Set<Type> closures) {
-        
-        for (Type type : types) {
-            closures.add(type);
-            
-            Class<?> rawClass = ReflectionHelper.getRawClass(type);
+    private static void addAllGenericInterfaces(Class<?> rawClass ,
+                                                Type type,
+                                                Set<Type> closures) {
+
+        Map<String, Type> typeArgumentsMap = null;
+
+        for (Type currentType : rawClass.getGenericInterfaces()) {
+
+            // replace any TypeVariables in the current type's arguments with
+            // the actual argument types
+            if (type instanceof ParameterizedType &&
+                    currentType instanceof ParameterizedType) {
+
+                if (typeArgumentsMap == null ) {
+                    typeArgumentsMap = getTypeArguments(rawClass, (ParameterizedType) type);
+                }
+
+                ParameterizedType parameterizedType = (ParameterizedType) currentType;
+
+                Type[] newTypeArguments =
+                        getNewTypeArguments(parameterizedType, typeArgumentsMap);
+
+                if (newTypeArguments != null) {
+                    currentType = getNewType(parameterizedType, newTypeArguments);
+                }
+            }
+
+            closures.add(currentType);
+
+            rawClass = ReflectionHelper.getRawClass(currentType);
             if (rawClass != null) {
-                addAllGenericInterfaces(rawClass.getGenericInterfaces(), closures);
+                addAllGenericInterfaces(rawClass, currentType, closures);
             }
         }
     }
-    
+
+    /**
+     * Get a new array of type arguments for the given parameter replacing any TypeVariables with actual types.
+     * The types should be found in the given arguments map, keyed by variable name.  Return null if no arguments
+     * needed to be replaced.
+     */
+    private static Type[] getNewTypeArguments(final ParameterizedType type,
+                                              final Map<String, Type> typeArgumentsMap) {
+
+        Type[]  typeArguments    = type.getActualTypeArguments();
+        Type[]  newTypeArguments = new Type[typeArguments.length];
+        boolean newArgsNeeded    = false;
+
+        int i = 0;
+        for (Type argType : typeArguments) {
+            if (argType instanceof TypeVariable) {
+                newTypeArguments[i++] = typeArgumentsMap.get(((TypeVariable) argType).getName());
+                newArgsNeeded = true;
+            } else {
+                newTypeArguments[i++] = argType;
+            }
+        }
+        return newArgsNeeded ? newTypeArguments : null;
+    }
+
+    /**
+     * Get a new ParameterizedType from the given ParameterizedType by replacing the
+     * original type arguments with the given type arguments.
+     */
+    private static ParameterizedType getNewType(final ParameterizedType type,
+                                                final Type[] newTypeArguments) {
+
+        return new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments() {
+                return newTypeArguments;  // replace type arguments
+            }
+
+            @Override
+            public Type getRawType() {
+                return type.getRawType();
+            }
+
+            @Override
+            public Type getOwnerType() {
+                return type.getOwnerType();
+            }
+        };
+    }
+
+    /**
+     * Gets a mapping of type variable names of the raw class to type arguments of the
+     * parameterized type.
+     */
+    private static Map<String, Type> getTypeArguments(Class<?> rawClass,
+                                                      ParameterizedType type) {
+
+        Map<String, Type> typeMap       = new HashMap<String, Type>();
+        Type[]            typeArguments = type.getActualTypeArguments();
+
+        int i = 0;
+        for (TypeVariable typeVariable : rawClass.getTypeParameters() ) {
+            typeMap.put(typeVariable.getName(), typeArguments[i++]);
+        }
+        return typeMap;
+    }
+
     /**
      * Returns the type closure of the given class
      * 
-     * @param ofClass The full type closure of the given class
+     * @param ofType The full type closure of the given class
      * with nothing omitted (normal case).  May not be null
      * @return The non-null (and never empty) set of classes
      * that this class can be assigned to
@@ -191,9 +282,9 @@ public class ReflectionHelper {
                 break;
             }
             retVal.add(currentType);
-            
-            addAllGenericInterfaces(rawClass.getGenericInterfaces(), retVal);
-            
+
+            addAllGenericInterfaces(rawClass, currentType, retVal);
+
             currentType = rawClass.getGenericSuperclass();
         }
         
@@ -223,7 +314,7 @@ public class ReflectionHelper {
         
         return retVal;
     }
-    
+
     /**
      * Returns the set of types this class advertises
      * @param type The outer type to analyze
@@ -334,7 +425,6 @@ public class ReflectionHelper {
     /**
      * Gets the scope annotation from the object
      * @param t The object to analyze
-     * @param annoDefault The default that this should have if no scope could be found
      * @return The class of the scope annotation
      */
     public static Annotation getScopeAnnotationFromObject(Object t) {
@@ -347,7 +437,6 @@ public class ReflectionHelper {
     /**
      * Gets the scope annotation from the object
      * @param clazz The class to analyze
-     * @param annoDefault The scope that should be returned if no scope could be found
      * @return The class of the scope annotation
      */
     public static Annotation getScopeAnnotationFromClass(Class<?> clazz) {
@@ -546,7 +635,7 @@ public class ReflectionHelper {
      * Writes a set in a way that can be read from an input stream as well.  The values in
      * the set may not contain the characters "{},"
      * 
-     * @param line The line to read
+     * @param asChars The line to read
      * @param addToMe The set to add the strings to
      * @return The number of characters read until the end of the set
      * @throws IOException On a failure
