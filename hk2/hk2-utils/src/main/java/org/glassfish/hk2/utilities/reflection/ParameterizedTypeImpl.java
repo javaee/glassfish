@@ -37,7 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.utilities.reflection;
+
+import org.glassfish.hk2.utilities.Pretty;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

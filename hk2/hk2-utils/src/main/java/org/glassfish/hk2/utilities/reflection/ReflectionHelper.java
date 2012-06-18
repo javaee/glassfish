@@ -175,17 +175,17 @@ public class ReflectionHelper {
             if (type instanceof ParameterizedType &&
                     currentType instanceof ParameterizedType) {
 
+                ParameterizedType parameterizedType = (ParameterizedType) currentType;
+
                 if (typeArgumentsMap == null ) {
                     typeArgumentsMap = getTypeArguments(rawClass, (ParameterizedType) type);
                 }
-
-                ParameterizedType parameterizedType = (ParameterizedType) currentType;
 
                 Type[] newTypeArguments =
                         getNewTypeArguments(parameterizedType, typeArgumentsMap);
 
                 if (newTypeArguments != null) {
-                    currentType = getNewType(parameterizedType, newTypeArguments);
+                    currentType = new ParameterizedTypeImpl(parameterizedType.getRawType(), newTypeArguments);
                 }
             }
 
@@ -199,9 +199,9 @@ public class ReflectionHelper {
     }
 
     /**
-     * Get a new array of type arguments for the given parameter replacing any TypeVariables with actual types.
-     * The types should be found in the given arguments map, keyed by variable name.  Return null if no arguments
-     * needed to be replaced.
+     * Get a new array of type arguments for the given ParameterizedType, replacing any TypeVariables with
+     * actual types.  The types should be found in the given arguments map, keyed by variable name.  Return
+     * null if no arguments needed to be replaced.
      */
     private static Type[] getNewTypeArguments(final ParameterizedType type,
                                               final Map<String, Type> typeArgumentsMap) {
@@ -220,31 +220,6 @@ public class ReflectionHelper {
             }
         }
         return newArgsNeeded ? newTypeArguments : null;
-    }
-
-    /**
-     * Get a new ParameterizedType from the given ParameterizedType by replacing the
-     * original type arguments with the given type arguments.
-     */
-    private static ParameterizedType getNewType(final ParameterizedType type,
-                                                final Type[] newTypeArguments) {
-
-        return new ParameterizedType() {
-            @Override
-            public Type[] getActualTypeArguments() {
-                return newTypeArguments;  // replace type arguments
-            }
-
-            @Override
-            public Type getRawType() {
-                return type.getRawType();
-            }
-
-            @Override
-            public Type getOwnerType() {
-                return type.getOwnerType();
-            }
-        };
     }
 
     /**

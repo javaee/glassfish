@@ -65,6 +65,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
