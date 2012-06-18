@@ -83,6 +83,8 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     private final Dom parent;
 
     private DomDescriptor domDescriptor;
+    
+    private ServiceHandle<Dom> serviceHandle;
 
     static abstract class Child {
         final String name;
@@ -165,20 +167,21 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     public void initializationCompleted() {
     }
 
-    /* package */ void register() {
+    /* package */ @SuppressWarnings({ "unchecked" })
+    void register() {
         DynamicConfigurationService dcs = getHabitat().getService(DynamicConfigurationService.class);
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
 
         //        habitat.add(this);
         HK2Loader loader = new HolderHK2LoaderImpl(this.model.classLoaderHolder);
         
-        Set ctrs = new HashSet();
+        Set<Type> ctrs = new HashSet<Type>();
         ctrs.add(type(loader));
         ctrs.add(ConfigBean.class);
         DomDescriptor domDesc = new DomDescriptor(this, ctrs, PerLookup.class,
                 typeName(), new HashSet<Annotation>());
         domDesc.setLoader(loader);
-        dc.addActiveDescriptor(domDesc);
+        ActiveDescriptor<Dom> addedDescriptor = dc.addActiveDescriptor(domDesc);
 
         String key = getKey();
         for (String contract : model.contracts) {
@@ -189,6 +192,34 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
         }
 
         dc.commit();
+        
+        final long locatorId = addedDescriptor.getLocatorId();
+        final long serviceId = addedDescriptor.getServiceId();
+        final String name = typeName();
+        
+        ActiveDescriptor<Dom> myDescriptor = (ActiveDescriptor<Dom>) getHabitat().getBestDescriptor(new IndexedFilter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                if (d.getServiceId().longValue() != serviceId) return false;
+                if (d.getLocatorId().longValue() != locatorId) return false;
+                
+                return true;
+            }
+
+            @Override
+            public String getAdvertisedContract() {
+                return ConfigBean.class.getName();
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+            
+        });
+        
+        serviceHandle = getHabitat().getServiceHandle(myDescriptor);
     }
 
     /*
@@ -1313,5 +1344,21 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     @Override
     public Object create(ServiceHandle root) {
         return createProxy();
+    }
+    
+    @Override
+    public Object get(Inhabitant onBehalfOf) {
+        if (serviceHandle == null) {
+            return null;
+        }
+        
+        boolean wasActive = serviceHandle.isActive();
+        Object result = serviceHandle.getService();
+        
+        if (!wasActive) {
+            notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
+        }
+        
+        return result;
     }
 }
