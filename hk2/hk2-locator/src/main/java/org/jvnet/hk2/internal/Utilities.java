@@ -1580,10 +1580,6 @@ public class Utilities {
         Set<String> dupChecker = new HashSet<String>();
         Named named = null;
         for (Annotation qualifier : qualifiers) {
-            if (!ReflectionHelper.isAnnotationAQualifier(qualifier)) {
-                throw new IllegalArgumentException(Pretty.clazz(qualifier.annotationType()) + " is not a qualifier");
-            }
-            
             String annotationType = qualifier.annotationType().getName();
             if (dupChecker.contains(annotationType)) {
                 throw new IllegalArgumentException(annotationType + " appears more than once in the qualifier list");

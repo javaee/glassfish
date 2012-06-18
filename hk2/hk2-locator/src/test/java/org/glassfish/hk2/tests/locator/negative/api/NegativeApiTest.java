@@ -502,22 +502,6 @@ public class NegativeApiTest {
     }
     
     /**
-     * Invalid qualifier passed
-     */
-    @Test
-    public void testAskingForInvalidQualifier() {
-        try {
-          locator.getService(NamedService.class,
-                new NotAQualifierImpl());
-          Assert.fail("Asking for invalid qualifier");
-        }
-        catch (IllegalArgumentException iae) {
-            Assert.assertTrue(iae.getMessage(), iae.getMessage().contains(
-                    " is not a qualifier"));
-        }
-    }
-    
-    /**
      * Same qualifier passed twice
      */
     @Test
