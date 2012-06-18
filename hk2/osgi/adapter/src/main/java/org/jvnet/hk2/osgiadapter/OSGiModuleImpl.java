@@ -375,7 +375,10 @@ public class OSGiModuleImpl implements Module {
 		postProcessors.addAll(registeredPostProcessors);
 		
         for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name)) {
-			HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(bundle.getEntry("META-INF/hk2-locator/default")),
+            URL entry = bundle.getEntry("META-INF/hk2-locator/default");
+            if (entry == null) continue;
+            
+			HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry),
 					postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
         }
     }

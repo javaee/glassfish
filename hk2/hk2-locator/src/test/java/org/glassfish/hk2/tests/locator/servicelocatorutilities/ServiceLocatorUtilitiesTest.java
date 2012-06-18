@@ -104,6 +104,18 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNotSame(ss, ss1);
     }
     
+    /**
+     * Tests the createAndInitialize method
+     */
+    @Test
+    public void testCreateAndInitialize() {
+        ServiceWithPostConstruct swpc = ServiceLocatorUtilities.createAndInitialize(locator,
+                ServiceWithPostConstruct.class);
+        Assert.assertNotNull(swpc);
+        
+        swpc.check();
+    }
+    
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
         /**
          * 

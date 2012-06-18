@@ -49,6 +49,7 @@ import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Inhabitant;
@@ -139,8 +140,7 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
     @SuppressWarnings("unchecked")
     @Override
     public T create(Inhabitant onBehalfOf) throws ComponentException {
-        Object retVal = locator.getService(c);
-        return (T) retVal;
+        return (T) ServiceLocatorUtilities.createAndInitialize(locator, c);
     }
 
     /* (non-Javadoc)
