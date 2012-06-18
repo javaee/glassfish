@@ -52,7 +52,7 @@ import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.NamedImpl;
-import org.glassfish.hk2.utilities.Pretty;
+import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
  * @author jwells

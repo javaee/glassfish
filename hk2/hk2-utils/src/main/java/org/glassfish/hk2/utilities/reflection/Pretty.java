@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.utilities;
+package org.glassfish.hk2.utilities.reflection;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -45,8 +45,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * @author jwells

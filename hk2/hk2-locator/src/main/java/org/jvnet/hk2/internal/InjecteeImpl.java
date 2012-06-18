@@ -49,7 +49,7 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.utilities.Pretty;
+import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
  * @author jwells
