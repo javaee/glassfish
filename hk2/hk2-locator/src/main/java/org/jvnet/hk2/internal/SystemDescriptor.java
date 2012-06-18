@@ -79,6 +79,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final ActiveDescriptor<T> activeDescriptor;
     private final Long locatorId;
     private boolean reified;
+    private boolean preAnalyzed = false;
     
     private final Object cacheLock = new Object();
     private boolean cacheSet = false;
@@ -115,6 +116,12 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             else {
             	activeDescriptor = null;
                 reified = false;
+                preAnalyzed = true;
+                
+                implClass = active.getImplementationClass();
+                scope = active.getScopeAnnotation();
+                contracts = Collections.unmodifiableSet(active.getContractTypes());
+                qualifiers = Collections.unmodifiableSet(active.getQualifierAnnotations());
             }
         }
         else {
@@ -410,19 +417,32 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     }
     
     /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, Collector collector) {
-        this.implClass = implClass;
+        if (!preAnalyzed) {
+            this.implClass = implClass;
+        }
+        else {
+            if (!implClass.equals(this.implClass)) {
+                collector.addThrowable(new IllegalArgumentException(
+                        "During reification a class mistmatch was found " + implClass.getName() +
+                        " is not the same as " + this.implClass.getName()));
+            }
+        }
         
         if (getDescriptorType().equals(DescriptorType.CLASS)) {
-            qualifiers = Collections.unmodifiableSet(
+            if (!preAnalyzed) {
+               qualifiers = Collections.unmodifiableSet(
                     Utilities.getAllQualifiers(implClass,
                             baseDescriptor.getName(),
                             collector));
+            }
             
             creator = new ClazzCreator<T>(locator, implClass, this, collector);
             
-            scope = Utilities.getScopeAnnotationType(implClass, collector);
-            contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(implClass,
+            if (!preAnalyzed) {
+                scope = Utilities.getScopeAnnotationType(implClass, collector);
+                contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(implClass,
                     baseDescriptor.getAdvertisedContracts()));
+            }
         }
         else {
             Utilities.checkFactoryType(implClass, collector);
@@ -436,19 +456,23 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                 return;
             }
             
-            qualifiers = Collections.unmodifiableSet(
+            if (!preAnalyzed) {
+                qualifiers = Collections.unmodifiableSet(
                     Utilities.getAllQualifiers(
                             provideMethod,
                             Utilities.getDefaultNameFromMethod(provideMethod, collector),
                             collector));
+            }
             
             creator = new FactoryCreator<T>(locator, implClass);
             
-            scope = Utilities.getScopeAnnotationType(provideMethod, collector);
+            if (!preAnalyzed) {
+                scope = Utilities.getScopeAnnotationType(provideMethod, collector);
             
-            Type factoryProvidedType = provideMethod.getGenericReturnType();
-            contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(factoryProvidedType,
+                Type factoryProvidedType = provideMethod.getGenericReturnType();
+                contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(factoryProvidedType,
                     baseDescriptor.getAdvertisedContracts()));
+            }
         }
         
         // Check the scope

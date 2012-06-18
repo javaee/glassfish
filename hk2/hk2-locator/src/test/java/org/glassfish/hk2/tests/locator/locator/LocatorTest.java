@@ -58,6 +58,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 import org.glassfish.hk2.utilities.Pretty;
 
@@ -233,6 +234,40 @@ public class LocatorTest {
         
         Integer i = fortran.getItem();
         Assert.assertSame("fortran.getItem() is " + fortran.getItem(), FORTRAN, i.intValue());
+    }
+    
+    /**
+     * This binds a non-reified active descriptor with contracts that are not contracts,
+     * and qualifiers that are not qualifiers, and makes sure that we can look it up
+     * ONLY with the things we put into the ActiveDescriptor as contracts or qualifiers
+     */
+    @Test
+    public void testBindEverythingBackwards() {
+        HashSet<Type> contracts = new HashSet<Type>();
+        contracts.add(IsNotAContract.class);  // Crazy, I know
+        // And the thing marked @Contract is NOT added
+        
+        NotAQualifier naq = new NotAQualifierImpl();
+        Set<Annotation> qualifiers = new HashSet<Annotation>();
+        qualifiers.add(naq);  // Crazy, I know
+        // And the thing marked @Qualifier is NOT added
+        
+        ForeignActiveDescriptor<ChineseService> fad = new ForeignActiveDescriptor<ChineseService>(
+                contracts,
+                PerLookup.class,
+                null,
+                qualifiers,
+                DescriptorType.CLASS,
+                0,
+                ChineseService.class);
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, fad);
+        
+        Assert.assertNotNull(locator.getService(IsNotAContract.class));
+        Assert.assertNull(locator.getService(IsAContract.class));
+        
+        Assert.assertNotNull(locator.getService(IsNotAContract.class, naq));
+        Assert.assertNull(locator.getService(IsNotAContract.class, new DeadImpl()));
     }
 
 }
