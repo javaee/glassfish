@@ -87,7 +87,7 @@ import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
-import org.glassfish.hk2.utilities.Pretty;
+import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.annotations.Contract;

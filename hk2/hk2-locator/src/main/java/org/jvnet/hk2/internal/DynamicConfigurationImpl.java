@@ -48,7 +48,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.utilities.Pretty;
+import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
  * @author jwells

@@ -60,7 +60,7 @@ import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
-import org.glassfish.hk2.utilities.Pretty;
+import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
  * @author jwells

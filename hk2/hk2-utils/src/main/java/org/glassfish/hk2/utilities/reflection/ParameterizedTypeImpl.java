@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.utilities.reflection;
 
-import org.glassfish.hk2.utilities.Pretty;
-
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
