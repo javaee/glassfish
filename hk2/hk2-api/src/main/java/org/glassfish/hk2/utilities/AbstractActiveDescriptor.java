@@ -71,6 +71,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
     private Set<Type> advertisedContracts = new LinkedHashSet<Type>();
     private Class<? extends Annotation> scope;
     private Set<Annotation> qualifiers = new LinkedHashSet<Annotation>();
+    private boolean isReified = true;
     
     private transient boolean cacheSet = false;
     private transient T cachedValue;
@@ -181,7 +182,18 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      */
     @Override
     public synchronized boolean isReified() {
-        return true;
+        return isReified;
+    }
+    
+    /**
+     * This method is called to change the state of the
+     * reification of this descriptor
+     * 
+     * @param reified true if this descriptor should appear reified,
+     * false otherwise
+     */
+    public void setReified(boolean reified) {
+        isReified = reified;
     }
 
     /* (non-Javadoc)

@@ -55,6 +55,7 @@ import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.internal.ActiveDescriptorBuilderImpl;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
@@ -219,6 +220,24 @@ public class BuilderHelper {
 	    
 	    return db;
 	}
+	
+	/**
+     * This method creates an {@link ActiveDescriptorBuilder}, whose job it
+     * is to create an unreified {@link ActiveDescriptor}.  The implementation
+     * class given will NOT automatically be added to the set of contracts
+     * of the {@link ActiveDescriptor}.
+     * 
+     * @param implementationClass The implementation class to be associated
+     * with the {@link ActiveDescriptorBuilder}.
+     * @return A {@link ActiveDescriptorBuilder} that can be used to further build up the
+     * {@link Descriptor}
+     * @throws IllegalArgumentException if implementationClass is null
+     */
+    public static ActiveDescriptorBuilder activeLink(Class<?> implementationClass) throws IllegalArgumentException {
+        if (implementationClass == null) throw new IllegalArgumentException();
+        
+        return new ActiveDescriptorBuilderImpl(implementationClass);
+    }
     
     /**
      * This creates a descriptor that will always return the given object.  The
