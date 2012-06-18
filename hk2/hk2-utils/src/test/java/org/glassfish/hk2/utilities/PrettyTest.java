@@ -37,12 +37,63 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.internal;
+package org.glassfish.hk2.utilities;
+
+import java.util.List;
+import java.util.Map;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 
 /**
  * @author jwells
  *
  */
-public class Base<T> {
+public class PrettyTest {
+    private final static String NULL = "null";
+    
+    /**
+     * Tests the pretty printer clazz facility
+     */
+    @Test
+    public void testPrettyClass() {
+        Assert.assertEquals("PrettyTest", Pretty.clazz(this.getClass()));
+    }
+    
+    /**
+     * Tests the pretty printer clazz facility
+     */
+    @Test
+    public void testPrettyNullClass() {
+        Assert.assertEquals(NULL, Pretty.clazz(null));
+    }
+    
+    /**
+     * Tests the pretty printer clazz facility
+     */
+    @Test
+    public void testPrettyNullType() {
+        Assert.assertEquals(NULL, Pretty.type(null));
+    }
+    
+    /**
+     * Tests a parameterized type with one param
+     */
+    @Test
+    public void testPrettyPT() {
+        ParameterizedTypeImpl pti = new ParameterizedTypeImpl(List.class, String.class);
+        Assert.assertEquals("List<String>", Pretty.type(pti));
+    }
+    
+    /**
+     * Tests a parameterized type with one param
+     */
+    @Test
+    public void testPrettyPT2() {
+        ParameterizedTypeImpl pti = new ParameterizedTypeImpl(Map.class, String.class, Integer.class);
+        Assert.assertEquals("Map<String,Integer>", Pretty.type(pti));
+    }
 
 }

@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.utilities;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

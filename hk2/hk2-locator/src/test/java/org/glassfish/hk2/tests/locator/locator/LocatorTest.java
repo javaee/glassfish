@@ -59,7 +59,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
-import org.jvnet.hk2.internal.Pretty;
+import org.glassfish.hk2.utilities.Pretty;
 
 /**
  * @author jwells
