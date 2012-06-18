@@ -143,26 +143,48 @@ public abstract class ServiceLocatorUtilities {
      * @param descriptor The non-null descrptor to add to this locator
      * @throws MultiException On a commit failure
      */
-    public static void addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
+    public static ActiveDescriptor<?> addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         
+        ActiveDescriptor<?> retVal;
         if (descriptor instanceof ActiveDescriptor) {
             ActiveDescriptor<?> active = (ActiveDescriptor<?>) descriptor;
             
             if (active.isReified()) {
-                config.addActiveDescriptor(active);
+                retVal = config.addActiveDescriptor(active);
             }
             else {
-                config.bind(descriptor);
+                retVal = config.bind(descriptor);
             }
             
         }
         else {
-            config.bind(descriptor);
+            retVal = config.bind(descriptor);
         }
         
         config.commit();
         
+        return retVal;
+    }
+    
+    /**
+     * This method creates, injects and post-constructs an object with the given
+     * class. This is equivalent to calling the {@link ServiceLocator#create(Class)}
+     * method followed by the {@link ServiceLocator#inject(Object)} method followed
+     * by the {@link ServiceLocator#postConstruct(Object)} method.
+     * <p>
+     * The object created is not managed by the locator.
+     * 
+     * @param locator The non-null locator to use to create and initialize the object
+     * @param createMe The non-null class to create this object from
+     * @return An instance of the object that has been created, injected and post constructed
+     * @throws MultiException if there was an error when creating or initializing the object
+     */
+    public static <T> T createAndInitialize(ServiceLocator locator, Class<T> createMe) {
+        T retVal = locator.create(createMe);
+        locator.inject(retVal);
+        locator.postConstruct(retVal);
+        return retVal;
     }
 }

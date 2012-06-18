@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,74 +37,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config;
+package org.glassfish.hk2.tests.locator.servicelocatorutilities;
 
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.Inhabitant;
-import com.sun.hk2.component.AbstractInhabitantImpl;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
-import java.util.List;
-import java.util.Map;
+import org.junit.Assert;
 
 /**
- * {@link Creator} decorator that uses {@link ConfigInjector} to set values to objects
- * that are created.
+ * @author jwells
  *
- * @author Kohsuke Kawaguchi
  */
-class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
-    private final Creator<T> core;
-    private final Dom dom;
-
-    public ConfiguredCreator(Creator<T> core, Dom dom) {
-        super(getDescriptorFor(core));
-        this.core = core;
-        this.dom = dom;
+public class ServiceWithPostConstruct {
+    @Inject
+    private SimpleService field;
+    
+    private final SimpleService constructor;
+    
+    private SimpleService method;
+    
+    private boolean postCalled = false;
+    
+    @Inject
+    private ServiceWithPostConstruct(SimpleService constructor) {
+        this.constructor = constructor;
+    }
+    
+    @SuppressWarnings("unused")
+    @Inject
+    private void init(SimpleService method) {
+        this.method = method;
+    }
+    
+    @PostConstruct
+    private void post() {
+        postCalled = true;
+    }
+    
+    /* package */ void check() {
+        Assert.assertNotNull(field);
+        Assert.assertNotNull(constructor);
+        Assert.assertNotNull(method);
+        Assert.assertTrue(postCalled);
     }
 
-    public boolean isActive() {
-        return true;
-    }
-
-    public String typeName() {
-        return core.typeName();
-    }
-
-    public Class<? extends T> type() {
-        return core.type();
-    }
-
-    @SuppressWarnings("unchecked")
-    public T get(Inhabitant onBehalfOf) {
-        T t = create(onBehalfOf);
-        initialize(t,onBehalfOf);
-        return t;
-    }
-
-    @SuppressWarnings("unchecked")
-    public T create(Inhabitant onBehalfOf) throws ComponentException {
-        T retVal = core.create(onBehalfOf);
-        initialize(retVal, onBehalfOf);
-        return retVal;
-    }
-
-    @SuppressWarnings("unchecked")
-    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
-        injectConfig(t);
-        core.initialize(t,onBehalfOf);
-    }
-
-    private void injectConfig(T t) {
-        dom.inject(t);
-    }
-
-    public Map<String, List<String>> metadata() {
-        return core.metadata();
-    }
-
-    public void release() {
-        core.release();
-    }
 }

@@ -42,10 +42,10 @@ package org.jvnet.hk2.component;
 import java.util.*;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.deprecated.internal.CreatorImpl;
 import org.jvnet.hk2.deprecated.internal.MetadataIndexFilter;
 import org.jvnet.hk2.deprecated.internal.Utilities;
@@ -74,11 +74,9 @@ public class Creators {
         
         ActiveDescriptor<?> foundDescriptor;
         if (descriptors.isEmpty()) {
-            DynamicConfigurationService dcs = habitat.getService(DynamicConfigurationService.class);
-            DynamicConfiguration dc = dcs.createDynamicConfiguration();
-            
             try {
-                foundDescriptor = dc.addActiveDescriptor(c);
+                foundDescriptor = ServiceLocatorUtilities.addOneDescriptor(habitat,
+                        BuilderHelper.createDescriptorFromClass(c));
             }
             catch (MultiException me) {
                 Utilities.printThrowable(me);
