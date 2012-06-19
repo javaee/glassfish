@@ -1417,7 +1417,7 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
             iex.initCause(ex);
             throw iex;
         }
-        System.out.println("JRW(10) RealmAdapter serverAuthConfig=" + serverAuthConfig);
+        
         if (serverAuthConfig != null) {
             //JSR 196 is enabled for this application
             result = validate(request, response, config, authenticator, calledFromAuthenticate);
@@ -1845,6 +1845,5 @@ public class RealmAdapter extends RealmBase implements RealmInitializer, PostCon
 
     public void postConstruct() {
         nwListeners = networkConfig.getNetworkListeners();
-        System.out.println("JRW(20) RealmAdapter nwListeners=" + nwListeners);
     }
 }
