@@ -415,21 +415,9 @@ public class OSGiModuleImpl implements Module {
                     return AccessController.doPrivileged(new PrivilegedExceptionAction<Class>() {
                         public Class run() throws ClassNotFoundException {
                         	
-                        	Class c = null;
-                        	try {
-                             c = bundle.loadClass(name);
+                        	Class c = bundle.loadClass(name);
                          
-                        	} catch (ClassNotFoundException cnfe) {
-                        		Throwable cause = cnfe.getCause();
-                        		
-                        		if (cause instanceof BundleException) {
-                        			logger.log(Level.SEVERE, "BundleException while loading class", cause);
-                        		}
-                        		
-                        		throw cnfe;
-                        	}
-                            return c;
-                            
+                            return c;                         
                         }
                     });
                 } catch (PrivilegedActionException e) {
