@@ -52,9 +52,10 @@ public enum DescriptorType {
     CLASS,
     
     /**
-     * This is a factory based descriptor, and the associated implementation class is actually
-     * the class of the factory that should be found in the registry in order to create
-     * objects of this type
+     * This is a description of the contracts, scope and qualifiers on the {@link Factory#provide()} method.
+     * For this descriptor the implementation class is the class of the {@link Factory} implementation, but
+     * the rest of the descriptor provides information about the {@link Factory#provide()} method and the
+     * services it can produce
      */
-    FACTORY
+    PROVIDE_METHOD
 }

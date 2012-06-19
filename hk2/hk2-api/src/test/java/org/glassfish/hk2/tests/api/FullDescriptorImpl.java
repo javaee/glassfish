@@ -113,7 +113,7 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
                 FullDescriptorImpl.class.getName(),
                 FULL_METADATA,
                 FULL_ANNOTATIONS,
-                DescriptorType.FACTORY,
+                DescriptorType.PROVIDE_METHOD,
                 new HK2LoaderImpl(),
                 FULL_INITIAL_RANK,
                 new DescriptorImpl(),

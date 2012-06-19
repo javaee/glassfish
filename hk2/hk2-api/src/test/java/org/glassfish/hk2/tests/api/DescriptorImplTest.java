@@ -122,7 +122,7 @@ public class DescriptorImplTest {
         Assert.assertTrue(full.getQualifiers().contains(Green.class.getName()));
         Assert.assertTrue(full.getQualifiers().contains(Blue.class.getName()));
         
-        Assert.assertEquals(DescriptorType.FACTORY, full.getDescriptorType());
+        Assert.assertEquals(DescriptorType.PROVIDE_METHOD, full.getDescriptorType());
         
         Assert.assertNotNull(full.getMetadata());
         Map<String, List<String>> metadata = full.getMetadata();
@@ -155,7 +155,7 @@ public class DescriptorImplTest {
         Assert.assertTrue(asString.contains("contracts={org.glassfish.hk2.tests.api.FullDescriptorImpl,org.glassfish.hk2.tests.api.MarkerInterface}"));
         Assert.assertTrue(asString.contains("scope=javax.inject.Singleton"));
         Assert.assertTrue(asString.contains("name=Full"));
-        Assert.assertTrue(asString.contains("descriptorType=FACTORY"));
+        Assert.assertTrue(asString.contains("descriptorType=PROVIDE_METHOD"));
         
     }
     
@@ -299,8 +299,8 @@ public class DescriptorImplTest {
         catch (IllegalArgumentException iae) {
         }
         
-        desc.setDescriptorType(DescriptorType.FACTORY);
-        Assert.assertEquals(DescriptorType.FACTORY, desc.getDescriptorType());
+        desc.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+        Assert.assertEquals(DescriptorType.PROVIDE_METHOD, desc.getDescriptorType());
         
         desc.setDescriptorType(DescriptorType.CLASS);
         Assert.assertEquals(DescriptorType.CLASS, desc.getDescriptorType());

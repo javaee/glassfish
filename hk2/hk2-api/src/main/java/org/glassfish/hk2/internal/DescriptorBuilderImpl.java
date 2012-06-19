@@ -288,7 +288,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 implementation,
                 metadatas,
                 qualifiers,
-                DescriptorType.FACTORY,
+                DescriptorType.PROVIDE_METHOD,
                 loader,
                 rank,
                 null,

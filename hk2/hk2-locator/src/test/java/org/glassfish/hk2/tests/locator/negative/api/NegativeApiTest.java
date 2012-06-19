@@ -409,7 +409,7 @@ public class NegativeApiTest {
         }
         catch (IllegalArgumentException iae) {
             Assert.assertTrue(iae.getMessage(),
-                    iae.getMessage().contains("The getFactoryAsFactory descriptor must be of type FACTORY"));
+                    iae.getMessage().contains("The getFactoryAsFactory descriptor must be of type PROVIDE_METHOD"));
         }
     }
     

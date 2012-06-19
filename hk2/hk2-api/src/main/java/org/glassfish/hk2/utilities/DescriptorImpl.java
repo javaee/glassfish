@@ -571,7 +571,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
             out.println(QUALIFIER_KEY + ReflectionHelper.writeSet(qualifiers));
         }
         
-        if (descriptorType != null && descriptorType.equals(DescriptorType.FACTORY)) {
+        if (descriptorType != null && descriptorType.equals(DescriptorType.PROVIDE_METHOD)) {
             out.println(TYPE_KEY + FACTORY_DT);
         }
         
@@ -647,7 +647,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
                     }
                     else if (leftHandSide.equals(TYPE_KEY)) {
                         if (rightHandSide.equals(FACTORY_DT)) {
-                            descriptorType = DescriptorType.FACTORY;
+                            descriptorType = DescriptorType.PROVIDE_METHOD;
                         }
                     }
                     else if (leftHandSide.equals(METADATA_KEY)) {

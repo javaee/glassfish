@@ -113,8 +113,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         if (!asService.getDescriptorType().equals(DescriptorType.CLASS)) {
             throw new IllegalArgumentException("The getFactoryAsService descriptor must be of type CLASS");
         }
-        if (!asFactory.getDescriptorType().equals(DescriptorType.FACTORY)) {
-            throw new IllegalArgumentException("The getFactoryAsFactory descriptor must be of type FACTORY");
+        if (!asFactory.getDescriptorType().equals(DescriptorType.PROVIDE_METHOD)) {
+            throw new IllegalArgumentException("The getFactoryAsFactory descriptor must be of type PROVIDE_METHOD");
         }
         
         // Bind the factory first, so normally people get the factory, not the service

@@ -299,7 +299,7 @@ public class BuilderHelper {
         Set<String> qualifiers = ReflectionHelper.getQualifiersFromClass(clazz);
         DescriptorType type = DescriptorType.CLASS;
         if (Factory.class.isAssignableFrom(clazz)) {
-            type = DescriptorType.FACTORY;
+            type = DescriptorType.PROVIDE_METHOD;
         }
         
         // TODO:  Can we get metadata from @Service?

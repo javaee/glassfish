@@ -147,7 +147,7 @@ public class InhabitantsGeneratorTest {
             envItself.setImplementation("org.glassfish.examples.ctm.EnvironmentFactory");
             envItself.addAdvertisedContract("org.glassfish.examples.ctm.Environment");
             envItself.setScope("org.glassfish.examples.ctm.TenantScoped");
-            envItself.setDescriptorType(DescriptorType.FACTORY);
+            envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
         
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
@@ -244,7 +244,7 @@ public class InhabitantsGeneratorTest {
             di.addAdvertisedContract("org.jvnet.hk2.generator.tests.ComplexE");
             di.setName(NON_DEFAULT_NAME);
             di.setScope(PerLookup.class.getName());
-            di.setDescriptorType(DescriptorType.FACTORY);
+            di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
             di.addQualifier(Blue.class.getName());
             di.addQualifier(Named.class.getName());
         
@@ -290,7 +290,7 @@ public class InhabitantsGeneratorTest {
             envItself.setImplementation(FactoryWithRanks.class.getName());
             envItself.addAdvertisedContract(SimpleInterface.class.getName());
             envItself.setRanking(FACTORY_METHOD_RANK);
-            envItself.setDescriptorType(DescriptorType.FACTORY);
+            envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
         
             EXPECTED_DESCRIPTORS.put(envItself, FACTORY_METHOD_RANK);
         }
