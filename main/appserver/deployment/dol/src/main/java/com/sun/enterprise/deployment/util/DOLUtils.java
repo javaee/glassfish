@@ -88,7 +88,11 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.xml.sax.SAXParseException;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.hk2.ContractLocator;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.classmodel.reflect.Types;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * Utility class for convenienve methods
@@ -481,12 +485,13 @@ public class DOLUtils {
         return allIncompatTypes;
     }
 
-    public static List<ConfigurationDeploymentDescriptorFile> getConfigurationDeploymentDescriptorFiles(BaseServiceLocator habitat, String archiveType) {
+    public static List<ConfigurationDeploymentDescriptorFile> getConfigurationDeploymentDescriptorFiles(ServiceLocator habitat, String archiveType) {
         List<ConfigurationDeploymentDescriptorFile> confDDFiles = new ArrayList<ConfigurationDeploymentDescriptorFile>();
-        for (Inhabitant<?> inhabitant : ((Habitat)habitat).getInhabitants(ConfigurationDeploymentDescriptorFileFor.class)) {
-            String indexedType = inhabitant.metadata().get(ConfigurationDeploymentDescriptorFileFor.class.getName()).get(0);
+        for (ServiceHandle<?> serviceHandle : habitat.getAllServiceHandles(ConfigurationDeploymentDescriptorFileFor.class)) {
+            ActiveDescriptor<?> descriptor = serviceHandle.getActiveDescriptor();
+            String indexedType = descriptor.getMetadata().get(ConfigurationDeploymentDescriptorFileFor.DESCRIPTOR_FOR).get(0);
             if(indexedType.equals(archiveType)) {
-                ConfigurationDeploymentDescriptorFile confDD = (ConfigurationDeploymentDescriptorFile) inhabitant.get();
+                ConfigurationDeploymentDescriptorFile confDD = (ConfigurationDeploymentDescriptorFile) serviceHandle.getService();
                 confDDFiles.add(confDD);
             }
         }
