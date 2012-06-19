@@ -119,7 +119,7 @@ public class DescriptorBuilderTest {
             // The javadoc says the return from buildFactory will have DescriptorImpl
             Assert.assertTrue(asFactory instanceof DescriptorImpl);
         
-            Assert.assertEquals(DescriptorType.FACTORY, asFactory.getDescriptorType());
+            Assert.assertEquals(DescriptorType.PROVIDE_METHOD, asFactory.getDescriptorType());
             Assert.assertEquals(FACTORY_CLASS_NAME, asFactory.getImplementation());
             Assert.assertEquals(Singleton.class.getName(), asFactory.getScope());
             Assert.assertEquals(MY_RANK, asFactory.getRanking());
@@ -144,7 +144,7 @@ public class DescriptorBuilderTest {
             Assert.assertTrue(serviceContracts.contains(CONTRACT_NAME));
         }
         
-        Assert.assertTrue(fds.toString().contains("descriptorType=FACTORY"));
+        Assert.assertTrue(fds.toString().contains("descriptorType=PROVIDE_METHOD"));
         Assert.assertTrue(fds.toString().contains("descriptorType=CLASS"));
     }
     

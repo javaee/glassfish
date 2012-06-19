@@ -119,7 +119,7 @@ public class NullDescriptorImpl implements Descriptor {
     
     public void unNullType(boolean asFactory) {
         if (asFactory) {
-            type = DescriptorType.FACTORY;
+            type = DescriptorType.PROVIDE_METHOD;
         }
         else {
             type = DescriptorType.CLASS;

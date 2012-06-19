@@ -308,7 +308,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         generatedDescriptors.add(asAFactory);
         
         asAFactory.setImplementation(implName);
-        asAFactory.setDescriptorType(DescriptorType.FACTORY);
+        asAFactory.setDescriptorType(DescriptorType.PROVIDE_METHOD);
         
         String factoryType = desc.substring(2);
         if (factoryType.charAt(0) == '[') {

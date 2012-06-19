@@ -186,7 +186,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 scope,
                 name,
                 qualifiers,
-                DescriptorType.FACTORY,
+                DescriptorType.PROVIDE_METHOD,
                 rank,
                 metadatas,
                 loader);
