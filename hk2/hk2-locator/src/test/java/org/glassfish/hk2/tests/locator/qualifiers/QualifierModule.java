@@ -39,9 +39,13 @@
  */
 package org.glassfish.hk2.tests.locator.qualifiers;
 
+import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+
+import javax.inject.Singleton;
 
 /**
  * @author jwells
@@ -79,6 +83,22 @@ public class QualifierModule implements TestModule {
         
         // This is to test Inheritance of qualifiers
         configurator.addActiveDescriptor(SpecifiedImplementation.class);
+
+
+        Color unqualifiedColor = new Color() {
+            @Override
+            public String getColorName() {
+                return QualifierTest.BLACK;
+            }
+        };
+
+        AbstractActiveDescriptor<Color> descriptor = BuilderHelper.createConstantDescriptor(unqualifiedColor);
+        descriptor.addContractType(Color.class);
+        descriptor.addQualifierAnnotation(new AnnotationLiteral<Black>(){});
+
+        configurator.bind(descriptor);
+
+        configurator.bind(BuilderHelper.link(BlackInjectee.class).in(Singleton.class).build());
     }
 
 }

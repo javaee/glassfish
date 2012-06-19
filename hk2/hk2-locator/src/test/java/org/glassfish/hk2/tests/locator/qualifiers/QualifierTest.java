@@ -47,6 +47,7 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -69,6 +70,8 @@ public class QualifierTest {
     public final static String PURPLE = "Purple";
     /** Eagles */
     public final static String GREEN = "Green";
+    /** Raiders */
+    public final static String BLACK = "Black";
 
     /**
      * Checks the qualifiers
@@ -86,7 +89,15 @@ public class QualifierTest {
         Assert.assertEquals(PURPLE, wheel.getPurple().getColorName());
         
     }
-    
+
+    @Test @Ignore
+    public void testUnqualifiedClass() {
+        BlackInjectee injectee = locator.getService(BlackInjectee.class);
+        Assert.assertNotNull("Injectee is null", injectee);
+
+        Assert.assertEquals(BLACK, injectee.getBlack().getColorName());
+    }
+
     /**
      * Tests getting something via a qualifier only
      */
