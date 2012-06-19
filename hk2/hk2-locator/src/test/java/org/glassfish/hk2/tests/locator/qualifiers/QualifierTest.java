@@ -90,7 +90,7 @@ public class QualifierTest {
         
     }
 
-    @Test @Ignore
+    @Test
     public void testUnqualifiedClass() {
         BlackInjectee injectee = locator.getService(BlackInjectee.class);
         Assert.assertNotNull("Injectee is null", injectee);
