@@ -94,11 +94,13 @@ public class QualifierModule implements TestModule {
 
         AbstractActiveDescriptor<Color> descriptor = BuilderHelper.createConstantDescriptor(unqualifiedColor);
         descriptor.addContractType(Color.class);
-        descriptor.addQualifierAnnotation(new AnnotationLiteral<Black>(){});
+        descriptor.addQualifierAnnotation(new BlackAnnotationImpl(){});
 
         configurator.bind(descriptor);
 
         configurator.bind(BuilderHelper.link(BlackInjectee.class).in(Singleton.class).build());
     }
 
+    public static class BlackAnnotationImpl extends AnnotationLiteral<Black> implements Black {
+    }
 }
