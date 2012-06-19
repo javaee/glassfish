@@ -320,13 +320,25 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
 
         // Need the descriptorImp because the inhabitant likely has equals overridden
         final Descriptor matchDescriptor = new DescriptorImpl(i);
-        ActiveDescriptor<?> activeDescriptor = getBestDescriptor(new Filter(){
+        List<ActiveDescriptor<?>> activeDescriptors = getDescriptors(new Filter(){
             @Override
             public boolean matches(Descriptor d) {
                 return matchDescriptor.equals(d);
             }
         });
 
+        ActiveDescriptor<?> activeDescriptor = null;
+        for (ActiveDescriptor candidate : activeDescriptors) {
+            Descriptor d = candidate.getBaseDescriptor();
+            if (d == null) continue;
+            
+            if (d == i) {
+                activeDescriptor = candidate;
+                break;
+            }
+            
+        }
+        
         if (activeDescriptor == null) {
             activeDescriptor = Utilities.add(delegate, i);
         }
