@@ -86,7 +86,7 @@ public class ProbeServlet extends HttpServlet {
             // need to get the probe provider registered before the listener!
             probeProviderFactory.getProbeProvider(getClass());
             probeInterface = probeProviderFactory.getProbeProvider(ProbeInterface.class);
-            //listenerRegistrar.registerListener(new MyProbeListener());
+            listenerRegistrar.registerListener(new MyProbeListener());
 
             StatsProviderManager.register("cloud", PluginPoint.SERVER, "fooblog/samples/ProbeServlet", new MyProbeListener());
         }
