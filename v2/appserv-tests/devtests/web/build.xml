@@ -540,6 +540,7 @@
     </target>
 
     <target name="weblogicDD" depends="init-report">
+<!--
         <ant dir="weblogicDD/contextRoot" target="all"/>
         <ant dir="weblogicDD/delegate" target="all"/>
         <ant dir="weblogicDD/sessionCookieConfigDeclarative" target="all"/>
@@ -550,6 +551,7 @@
         <ant dir="weblogicDD/jspDescriptor" target="all"/>
         <ant dir="weblogicDD/runAsPrincipalName" target="all"/>
         <ant dir="weblogicDD/referenceDescriptor" target="all"/>
+-->
     </target>
 
     <target name="clustering" depends="init-report">
