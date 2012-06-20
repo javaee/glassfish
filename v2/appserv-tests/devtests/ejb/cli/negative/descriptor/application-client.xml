@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<application-client> 
+  <display-name>ejb-cli-client</display-name>
+  <ejb-ref>
+    <ejb-ref-name>MyEjbRef</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+  </ejb-ref>
+
+</application-client>

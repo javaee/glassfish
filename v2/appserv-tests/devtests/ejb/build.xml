@@ -63,6 +63,7 @@
         <ant dir="ejbc" target="all"/>  
         <ant dir="ejb30" target="all"/>
         <ant dir="mdb" target="all"/> 
+        <ant dir="cli" target="all"/>
         <ant dir="timer" target="all"/>
         <ant dir="bmp" target="all"/>  
         <ant dir="cmp" target="all"/>  
@@ -187,6 +188,13 @@
         <record name="timer.output" action="start" />
             <ant dir="timer" target="all"/>
         <record name="timer.output" action="stop" />
+        <antcall target="report"/>
+    </target>
+
+    <target name="cli">
+        <record name="cli.output" action="start" />
+            <ant dir="cli" target="all"/>
+        <record name="cli.output" action="stop" />
         <antcall target="report"/>
     </target>
 
