@@ -217,7 +217,7 @@ public class EJBTimerService {
     private static synchronized void initEJBTimerService(String target, boolean force) {
         if (_timerService == null) {
             PersistentTimerService persistentTS = 
-                    EjbContainerUtilImpl.getInstance().getServices().byType(PersistentTimerService.class).get();
+                    EjbContainerUtilImpl.getInstance().getServices().getService(PersistentTimerService.class);
             if (persistentTS == null) {
                 try {
                     _timerService = new EJBTimerService();
