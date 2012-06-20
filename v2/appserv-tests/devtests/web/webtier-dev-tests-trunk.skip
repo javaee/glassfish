@@ -8,4 +8,3 @@ weblogicDD/dirListing
 weblogicDD/jspDescriptor
 weblogicDD/runAsPrincipalName
 weblogicDD/referenceDescriptor
-osgiServlet #regression since r54628
