@@ -170,23 +170,14 @@ public class ReflectionHelper {
 
         for (Type currentType : rawClass.getGenericInterfaces()) {
 
-            // replace any TypeVariables in the current type's arguments with
-            // the actual argument types
             if (type instanceof ParameterizedType &&
                     currentType instanceof ParameterizedType) {
-
-                ParameterizedType parameterizedType = (ParameterizedType) currentType;
 
                 if (typeArgumentsMap == null ) {
                     typeArgumentsMap = getTypeArguments(rawClass, (ParameterizedType) type);
                 }
 
-                Type[] newTypeArguments =
-                        getNewTypeArguments(parameterizedType, typeArgumentsMap);
-
-                if (newTypeArguments != null) {
-                    currentType = new ParameterizedTypeImpl(parameterizedType.getRawType(), newTypeArguments);
-                }
+                currentType = fixTypeVariables((ParameterizedType) currentType, typeArgumentsMap);
             }
 
             closures.add(currentType);
@@ -196,6 +187,22 @@ public class ReflectionHelper {
                 addAllGenericInterfaces(rawClass, currentType, closures);
             }
         }
+    }
+
+    /**
+     * Replace any TypeVariables in the given type's arguments with
+     * the actual argument types.  Return the given type if no replacing
+     * is required.
+     */
+    private static Type fixTypeVariables(ParameterizedType type,
+                                         Map<String, Type> typeArgumentsMap) {
+
+        Type[] newTypeArguments = getNewTypeArguments(type, typeArgumentsMap);
+
+        if (newTypeArguments != null) {
+            type = new ParameterizedTypeImpl(type.getRawType(), newTypeArguments);
+        }
+        return type;
     }
 
     /**
@@ -248,24 +255,36 @@ public class ReflectionHelper {
      * that this class can be assigned to
      */
     private static Set<Type> getTypeClosure(Type ofType) {
-        HashSet<Type> retVal = new HashSet<Type>();
-        
-        Type currentType = ofType;
-        while (currentType != null) {
-            Class<?> rawClass = ReflectionHelper.getRawClass(currentType);
-            if (rawClass == null) {
-                break;
+        Set<Type> retVal   = new HashSet<Type>();
+        Class<?>  rawClass = ReflectionHelper.getRawClass(ofType);
+
+        if (rawClass != null) {
+            Map<String, Type> typeArgumentsMap = null;
+            Type              currentType      = ofType;
+
+            while (currentType != null && rawClass != null) {
+
+                retVal.add(currentType);
+
+                addAllGenericInterfaces(rawClass, currentType, retVal);
+
+                if (typeArgumentsMap == null && currentType instanceof ParameterizedType){
+                    typeArgumentsMap = getTypeArguments(rawClass, (ParameterizedType) currentType);
+                }
+
+                currentType = rawClass.getGenericSuperclass();
+                if (currentType != null) {
+                    rawClass = ReflectionHelper.getRawClass(currentType);
+
+                    if (currentType instanceof ParameterizedType){
+                        currentType = fixTypeVariables((ParameterizedType) currentType, typeArgumentsMap);
+                    }
+                }
             }
-            retVal.add(currentType);
-
-            addAllGenericInterfaces(rawClass, currentType, retVal);
-
-            currentType = rawClass.getGenericSuperclass();
         }
-        
         return retVal;
     }
-    
+
     /**
      * Returns the type closure, as restricted by the classes listed in the
      * set of contracts implemented
