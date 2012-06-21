@@ -56,8 +56,6 @@ public interface SimpleServiceLocator extends BaseServiceLocator {
      */
     <T> Inhabitant<T> getProvider(Type type, String name);
 
-    <T> Inhabitant<T> getProvider(String fqcn, String name);
-
     /**
      * Gets all the inhabitants that has the given contract.
      */
