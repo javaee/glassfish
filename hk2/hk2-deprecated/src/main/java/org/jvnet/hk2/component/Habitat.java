@@ -40,10 +40,6 @@
 
 package org.jvnet.hk2.component;
 
-
-import org.glassfish.hk2.Binding;
-import org.glassfish.hk2.ContractLocator;
-import org.glassfish.hk2.DynamicBinderFactory;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -54,7 +50,6 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.deprecated.utilities.AliasDescriptor;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
@@ -62,20 +57,13 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.component.HabitatListener.EventType;
-import org.jvnet.hk2.component.InhabitantTracker.Callback;
-import org.jvnet.hk2.deprecated.internal.ContractLocatorImpl;
 import org.jvnet.hk2.deprecated.internal.QualifierFilter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.Future;
 
 
 /**
@@ -122,138 +110,6 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         config.addActiveDescriptor(habitatDescriptor);
         
         config.commit();
-    }
-
-    public Habitat getDefault() {
-        throw new UnsupportedOperationException("getDefault in Habitat");
-    }
-
-    public Habitat getServices(String moduleName) {
-        throw new UnsupportedOperationException("getServices(" + moduleName + ") in Habitat");
-    }
-
-    public Collection<Binding<?>> getDeclaredBindings() {
-        throw new UnsupportedOperationException("getDeclaredBindings in Habitat");
-    }
-
-    public Collection<Binding<?>> getDeclaredBindings(Descriptor descriptor) {
-        throw new UnsupportedOperationException("getDeclaredBindings(" + descriptor + ") in Habitat");
-    }
-
-    void includeBinding(LinkedHashSet<Binding<?>> result, Descriptor descriptor, Object i) {
-        throw new UnsupportedOperationException("includeBinding(" + result + "," + descriptor + "," + i + ") in Habitat");
-    }
-
-    public Collection<Binding<?>> getBindings() {
-        throw new UnsupportedOperationException("getBindings in Habitat");
-    }
-
-    public Collection<Binding<?>> getBindings(Descriptor descriptor) {
-        throw new UnsupportedOperationException("getBindings(" + descriptor + ") in Habitat");
-    }
-    
-    public DynamicBinderFactory bindDynamically() {
-        throw new UnsupportedOperationException("bindDynamically in Habitat");
-    }
-
-    public <U> ContractLocator<U> forContract(Class<U> contract) {
-        return new ContractLocatorImpl(delegate, contract.getName());
-    }
-
-    public ContractLocator<?> forContract(String contractName) {
-        return new ContractLocatorImpl(delegate, contractName);
-    }
-
-    public <U> ContractLocator<U> forContract(TypeLiteral<U> typeLiteral) {
-        String contractName = typeLiteral.getRawType().getName();
-        return new ContractLocatorImpl(delegate, contractName);
-    }
-
-    public <U> org.glassfish.hk2.ServiceLocator<U> byType(Class<U> type) {
-        return new ContractLocatorImpl(delegate, type.getName());
-    }
-
-    public org.glassfish.hk2.ServiceLocator<?> byType(String typeName) {
-        return new ContractLocatorImpl(delegate, typeName);
-    }
-
-    /**
-     * Add a habitat listener with no contract-level filtering. This API is
-     * primarily intended for internal cases within Hk2.
-     * <p/>
-     * The listener with no contract-level filtering will be called for all
-     * change events within the habitat pertaining to inhabitants.
-     *
-     * @param listener The habitat Listener to be added
-     * @see {@link #addHabitatListener(HabitatListener, String...)} is
-     *      recommended for most cases
-     */
-    public void addHabitatListener(HabitatListener listener) {
-        throw new UnsupportedOperationException("addHabitatListener(" + listener + ") in Habitat");
-    }
-
-    /**
-     * Add a habitat listener with contract-level filtering.
-     * <p/>
-     * The listener will be called based on the set of contract filters
-     * provided.
-     *
-     * @param listener  The habitat Listener to be added
-     * @param typeNames The contracts to filter on; this should be non-null
-     */
-    public void addHabitatListener(HabitatListener listener,
-                                   String... typeNames) {
-        throw new UnsupportedOperationException("addHabitatListener(" + listener + "," + typeNames + ") in Habitat");
-    }
-
-    protected void addHabitatListener(HabitatListener listener, Set<String> typeNames) {
-        throw new UnsupportedOperationException("addHabitatListener(" + listener + "," + typeNames + ") in Habitat");
-    }
-
-    /**
-     * Remove a habitat listener.
-     *
-     * @param listener The habitat Listener to be removed
-     * @return true; if the listener was indeed removed
-     */
-    public boolean removeHabitatListener(HabitatListener listener) {
-        throw new UnsupportedOperationException("removeHabitatListener(" + listener + ") in Habitat");
-    }
-
-    /**
-     * Registers a dependency on the inhabitant with the given tracker context.
-     * <p/>
-     * Once the criteria is met, any callback provided is called. This callback
-     * may occur asynchronously from the thread initiating the event.
-     *
-     * @param itc      The tracking criteria.
-     * @param callback Optionally the callback.
-     * @return The tracker
-     * @throws ComponentException
-     */
-    public InhabitantTracker track(InhabitantTrackerContext itc,
-                                   Callback callback) throws ComponentException {
-        throw new UnsupportedOperationException("track(" + itc + "," + callback + ") in Habitat");
-    }
-
-    /**
-     * Returns a future that can be checked asynchronously, and multiple times.
-     * <p/>
-     * <b>Implementation Note:</b> The Future that is returned does not behave
-     * in the traditional sense in that it is NOT directly submitted to an
-     * ExecutorService. Each call to get() or get(timeout) may result in a
-     * [re]submission to an internally held executor. This means that a call to
-     * get(...) may return a tracker, and a subsequent call to get(...) may
-     * return null, or vice versa. This is true until the underlying tracker is
-     * released at which point a tracker is no longer usable.
-     *
-     * @param itc The tracking criteria.
-     * @return The tracker
-     * @throws ComponentException
-     */
-    public Future<InhabitantTracker> trackFuture(InhabitantTrackerContext itc)
-            throws ComponentException {
-        throw new UnsupportedOperationException("trackFuture(" + itc + ") in Habitat");
     }
 
     /*
@@ -422,30 +278,6 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         return Utilities.remove(delegate, filter);
     }
 
-    protected boolean matches(Inhabitant<?> inhabitant,
-                              Object serviceOrInhabitant) {
-        throw new UnsupportedOperationException("matches(" + inhabitant +"," + serviceOrInhabitant + ") in Habitat");
-    }
-
-    protected Object service(Object serviceOrInhabitant) {
-        throw new UnsupportedOperationException("service(" + serviceOrInhabitant + ") in Habitat");
-    }
-
-    protected static interface NotifyCall {
-        boolean inhabitantChanged(HabitatListener listener);
-    }
-
-    /**
-     * Trigger a notification that an inhabitant has changed.
-     *
-     * @param inhabitant the inhabitant that has changed
-     * @param contracts  the contracts associated with the inhabitant
-     */
-    public void notifyInhabitantChanged(Inhabitant<?> inhabitant,
-                                        String... contracts) {
-        throw new UnsupportedOperationException("notifyInhabitantChanged(" + inhabitant + "," + contracts + ") in Habitat");
-    }
-
     /**
      * FOR INTERNAL USE ONLY
      */
@@ -453,89 +285,8 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         return;
     }
 
-    static void contextualFactoriesPresent() {
-        throw new UnsupportedOperationException("contextualFactoriesPresent in Habitat");
-    }
-
     public boolean isInitialized() {
         return true;
-    }
-
-    /**
-     * FOR INTERNAL USE
-     */
-    public static boolean isContextualFactoriesPresentAnywhere() {
-        throw new UnsupportedOperationException("isContextualFactoriesPresentAnywhere in Habitat");
-    }
-
-    /**
-     * FOR INTERNAL USE
-     */
-    public boolean isContextualFactoriesPresent() {
-        throw new UnsupportedOperationException("isContextualFactoriesPresent in Habitat");
-    }
-
-    protected void notify(final Inhabitant<?> inhabitant,
-                          final EventType event, final String index,
-                          final Inhabitant<HabitatListener> extraListenerToBeNotified) {
-        throw new UnsupportedOperationException("notify(" + inhabitant + "," + event + "," + index + "," + extraListenerToBeNotified + ") in Habitat");
-    }
-
-    protected void notify(final Inhabitant<?> inhabitant,
-                          final EventType event, final String index, final String name,
-                          final Object service,
-                          final Inhabitant<HabitatListener> extraListenerToBeNotified) {
-        throw new UnsupportedOperationException("notify(" + inhabitant + "," + event + "," + index + "," + name + "," + service + "," + extraListenerToBeNotified + ") in Habitat");
-    }
-
-    protected void notify(final NotifyCall innerCall,
-                          final Inhabitant<?> inhabitant, final EventType event,
-                          final String index,
-                          final Inhabitant<HabitatListener> extraListenerToBeNotified) {
-        throw new UnsupportedOperationException("notify(" + inhabitant + "," + event + "," + index + "," + extraListenerToBeNotified + ") in Habitat");
-    }
-
-    /**
-     * Checks if the given type is a contract interface that has some
-     * implementations in this {@link Habitat}.
-     * <p/>
-     * <p/>
-     * There are two ways for a type to be marked as a contract. Either it has
-     * {@link Contract}, or it's marked by {@link ContractProvided} from the
-     * implementation.
-     * <p/>
-     * <p/>
-     * Note that just having {@link Contract} is not enough to make this method
-     * return true. It can still return false if the contract has no
-     * implementation in this habitat.
-     * <p/>
-     * <p/>
-     * This method is useful during the injection to determine what lookup to
-     * perform, and it handles the case correctly when the type is marked as a
-     * contract by {@link ContractProvided}.
-     */
-    public boolean isContract(Class<?> type) {
-        throw new UnsupportedOperationException("isContract(" + type + ") in Habitat");
-    }
-
-    public boolean isContract(java.lang.reflect.Type type) {
-        throw new UnsupportedOperationException("isContract(" + type + ") in Habitat");
-    }
-    
-    public boolean isContract(String fullyQualifiedClassName) {
-        throw new UnsupportedOperationException("isContract(" + fullyQualifiedClassName + ") in Habitat");
-    }
-
-    /**
-     * A weaker test than {@link #isContract(Type)}.
-     * 
-     * <p/>
-     * This will return true if either the type argument
-     * is annotated with {@link Contract} or if the
-     * {@link #isContract(Type)} returns true.
-     */
-    public boolean isContractExt(java.lang.reflect.Type type) {
-        throw new UnsupportedOperationException("isContractExt(" + type + ") in Habitat");
     }
     
     /**
@@ -618,11 +369,6 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         if (name != null && name.length() <= 0) name = null;
         
         return (T) delegate.getService(contract, name);
-    }
-
-    @Override
-    public <T> Inhabitant<T> getProvider(String fullQualifiedName, String name) {
-        throw new UnsupportedOperationException("getProvider(" + fullQualifiedName + "," + name + ") in Habitat");
     }
 
     @Override
@@ -798,14 +544,6 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         return getInhabitantsByType(fullyQualifiedClassName);
     }
 
-    public Iterator<String> getAllContracts() {
-        throw new UnsupportedOperationException("getAllContracts in Habitat");
-    }
-
-    public Iterator<String> getAllTypes() {
-        throw new UnsupportedOperationException("getAllTypes in Habitat");
-    }
-
     public Inhabitant getInhabitantByContract(String fullyQualifiedName,
                                               String name) {
         ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(fullyQualifiedName, name));
@@ -894,17 +632,6 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
 
     public <T> T getByContract(String contractType) {
         return (T) getByType(contractType);
-    }
-
-    /**
-     * Releases all the components. Should be called for orderly shut-down of
-     * the system.
-     * <p/>
-     * TODO: more javadoc needed
-     */
-    public void release() {
-        throw new UnsupportedOperationException("release in Habitat");
-        
     }
 
     /* (non-Javadoc)
