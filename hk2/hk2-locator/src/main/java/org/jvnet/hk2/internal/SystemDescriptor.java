@@ -41,7 +41,9 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,6 +55,7 @@ import java.util.Set;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
@@ -468,10 +471,22 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             
             if (!preAnalyzed) {
                 scope = Utilities.getScopeAnnotationType(provideMethod, collector);
-            
+
                 Type factoryProvidedType = provideMethod.getGenericReturnType();
-                contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(factoryProvidedType,
-                    baseDescriptor.getAdvertisedContracts()));
+
+                if (factoryProvidedType instanceof TypeVariable) {
+                    // the factory provided method return type should be the single argument type
+                    // of the generic Factory<T> interface.
+                    Set<Type> types = ReflectionHelper.getTypeClosure(implClass,
+                            Collections.singleton(Factory.class.getName()));
+
+                    ParameterizedType parameterizedType = (ParameterizedType) types.iterator().next();
+
+                    factoryProvidedType = parameterizedType.getActualTypeArguments()[0];
+                }
+                contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(
+                        factoryProvidedType,
+                        baseDescriptor.getAdvertisedContracts()));
             }
         }
         
