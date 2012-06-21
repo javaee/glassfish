@@ -43,6 +43,12 @@
     </target> 
 
     <target name="configure-container" depends="init-common">
+       <!-- Workaround for issue 18783 -->
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="create-module-config"/>
+            <param name="operand.props"
+                   value="mdb-container"/>
+       </antcall>
         <antcall target="asadmin-common">
 	    <param name="admin.command" value="set"/>
 	    <param name="operand.props" value="server.mdb-container.property.cmt-max-runtime-exceptions=4"/>
