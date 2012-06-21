@@ -53,7 +53,10 @@ import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.BaseServiceLocator;
 
 import javax.inject.Inject;
@@ -74,13 +77,8 @@ public class InvocationManagerImpl
     private Map<ComponentInvocationType,List<RegisteredComponentInvocationHandler>>  regCompInvHandlerMap
             = new HashMap<ComponentInvocationType, List<RegisteredComponentInvocationHandler>>();
 
-
-    @Inject
-    BaseServiceLocator habitat;
-
-    @Inject
-    @Optional
-    ComponentInvocationHandler[] invHandlers=null;
+    @Inject @Optional
+    private IterableProvider<ComponentInvocationHandler> invHandlers=null;
 
     public InvocationManagerImpl() {
 
