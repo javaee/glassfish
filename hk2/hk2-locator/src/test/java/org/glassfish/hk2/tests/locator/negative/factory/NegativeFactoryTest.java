@@ -45,6 +45,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -60,7 +61,10 @@ public class NegativeFactoryTest {
     /**
      * Factories cannot have type variables
      */
-    @Test
+    // TODO : remove this test after review...
+    // This is required for Jersey and should work now with changes to ReflectionHelper.getTypeClosure()
+    //
+    @Test @Ignore
     public void testFactoryWithTypeVariableType() {
         try {
             locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(

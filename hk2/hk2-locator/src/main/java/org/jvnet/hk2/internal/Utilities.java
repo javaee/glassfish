@@ -51,7 +51,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -121,7 +120,7 @@ public class Utilities {
     /**
      * Checks that the incoming lookup type is not improper in some way
      * 
-     * @param checkMe
+     * @param checkMe  class to check
      */
     public static void checkLookupType(Class<?> checkMe) {
         if (!checkMe.isAnnotation()) return;
@@ -140,7 +139,7 @@ public class Utilities {
      * 
      * @param candidateAnnotations The candidate annotations
      * @param requiredAnnotations The required annotations
-     * @return
+     * @return true if the candidate set contains the entire required set
      */
     /* package */ static boolean annotationContainsAll(final Set<Annotation> candidateAnnotations, final Set<Annotation> requiredAnnotations) {
         return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
@@ -167,10 +166,9 @@ public class Utilities {
     }
     
     /**
-     * Sets this accessible object to be accessible using the permissions of
-     * the hk2-locator bundle (which will need the required grant)
+     * Get the declared methods of the given class.
      * 
-     * @param ao The object to change
+     * @param clazz  the class
      */
     private static Method[] getDeclaredMethods(final Class<?> clazz) {
         return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
@@ -217,8 +215,8 @@ public class Utilities {
     /**
      * Calls the list of error services for the list of errors
      * 
-     * @param results
-     * @param callThese
+     * @param results    the results
+     * @param callThese  the services to call
      */
     public static void handleErrors(NarrowResults results, LinkedList<ErrorService> callThese) {
         Collector collector = new Collector();
@@ -246,8 +244,11 @@ public class Utilities {
     }
     
     /**
-     * @param implementation
-     * @param injectee
+     * Load the given class for the given injectee.
+     *
+     * @param implementation  the impl class name string
+     * @param injectee        the injectee
+     *
      * @return The class represented by this implementation and injectee
      */
     public static Class<?> loadClass(String implementation, Injectee injectee) {
@@ -337,8 +338,8 @@ public class Utilities {
     /**
      * Checks to be sure the Factory class is ok
      * 
-     * @param factoryClass
-     * @param collector
+     * @param factoryClass  the class to check
+     * @param collector     the exception collector
      */
     public static void checkFactoryType(Class<?> factoryClass, Collector collector) {
         for (Type type : factoryClass.getGenericInterfaces()) {
@@ -349,10 +350,13 @@ public class Utilities {
             
             Type firstType = getFirstTypeArgument(type);
             
-            if (firstType instanceof TypeVariable) {
-                collector.addThrowable(new IllegalArgumentException("The class " +
-                    Pretty.clazz(factoryClass) + " has a TypeVariable as its type"));
-            }
+// TODO : remove this block after review...
+// This is required for Jersey and should work now with changes to ReflectionHelper.getTypeClosure()
+//
+//            if (firstType instanceof TypeVariable) {
+//                collector.addThrowable(new IllegalArgumentException("The class " +
+//                    Pretty.clazz(factoryClass) + " has a TypeVariable as its type"));
+//            }
             
             if (firstType instanceof WildcardType) {
                 // This should not be possible
@@ -967,9 +971,10 @@ public class Utilities {
     /**
      * Gets the annotation that was used for the injection
      * 
-     * @param beanManager The bean manager to use (as it will get all
+     * @param locator The service locator to use (as it will get all
      * the annotations that were added on as well as the normal Inject)
-     * @param member The member to check for
+     * @param annotated  the annotated element
+     * @param checkParams  check the params if true
      * @return The annotation that is the inject annotation, or null
      * if no inject annotation was found
      */
@@ -1023,9 +1028,7 @@ public class Utilities {
         if (ReflectionHelper.isStatic(field)) return false;
         if (isFinal(field)) return false;
         Class<?> type = field.getType();
-        if (type.isAnnotation()) return false;
-        
-        return true;
+        return !type.isAnnotation();
     }
     
     /**
@@ -1126,8 +1129,7 @@ public class Utilities {
     /**
      * Returns the scope of this thing
      * 
-     * @param annotatedGuy The annotated class or producer method
-     * @param collector The error collector
+     * @param fromThis The annotated class or producer method
      * @return The scope of this class or producer method.  If no scope is
      * found will return the dependent scope
      */
