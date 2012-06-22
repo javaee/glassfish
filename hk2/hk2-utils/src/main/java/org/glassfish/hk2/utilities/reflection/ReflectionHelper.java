@@ -276,7 +276,7 @@ public class ReflectionHelper {
                 if (currentType != null) {
                     rawClass = ReflectionHelper.getRawClass(currentType);
 
-                    if (currentType instanceof ParameterizedType){
+                    if (typeArgumentsMap != null && currentType instanceof ParameterizedType){
                         currentType = fixTypeVariables((ParameterizedType) currentType, typeArgumentsMap);
                     }
                 }
