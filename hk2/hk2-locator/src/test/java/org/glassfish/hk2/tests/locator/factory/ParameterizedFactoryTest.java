@@ -72,7 +72,7 @@ public class ParameterizedFactoryTest {
         Assert.assertTrue(injectee.getInjectedBar() instanceof BarImpl);
     }
 
-    @Test @Ignore
+    @Test
     public void testGenericFactories() {
         ServiceLocator locator = LocatorHelper.create("testGenericFactories", new TestModule(){
 

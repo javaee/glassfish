@@ -78,16 +78,16 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     public ActiveDescriptor<?> bind(Descriptor key) {
         checkState();
         checkDescriptor(key);
-        
+
         SystemDescriptor<?> sd = new SystemDescriptor<Object>(key,
                 new Long(locator.getLocatorId()),
                 new Long(locator.getNextServiceId()));
-        
+
         allDescriptors.add(sd);
-        
+
         return sd;
     }
-    
+
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Configuration#bind(org.glassfish.hk2.api.FactoryDescriptors)
      */
@@ -117,10 +117,20 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
             throw new IllegalArgumentException("The getFactoryAsFactory descriptor must be of type PROVIDE_METHOD");
         }
         
+        final SystemDescriptor<?> boundAsService = new SystemDescriptor<Object>(asService,
+                new Long(locator.getLocatorId()),
+                new Long(locator.getNextServiceId()));
+
+        // Link the factory descriptor to the service descriptor for the factory
+        final SystemDescriptor<?> boundAsFactory = new SystemDescriptor<Object>(asFactory,
+                new Long(locator.getLocatorId()),
+                new Long(locator.getNextServiceId()),
+                boundAsService);
+
         // Bind the factory first, so normally people get the factory, not the service
-        final ActiveDescriptor<?> boundAsFactory = bind(asFactory);
-        final ActiveDescriptor<?> boundAsService = bind(asService);
-        
+        allDescriptors.add(boundAsFactory);
+        allDescriptors.add(boundAsService);
+
         return new FactoryDescriptors() {
 
             @Override

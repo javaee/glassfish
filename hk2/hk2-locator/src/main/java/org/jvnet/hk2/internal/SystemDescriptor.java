@@ -80,6 +80,10 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final Descriptor baseDescriptor;
     private final Long id;
     private final ActiveDescriptor<T> activeDescriptor;
+    /**
+     * The associated service descriptor for the factory if this is a factory descriptor.
+     */
+    private final ActiveDescriptor<?> factoryDescriptor;
     private final Long locatorId;
     private boolean reified;
     private boolean preAnalyzed = false;
@@ -102,13 +106,19 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             new LinkedList<InstanceLifecycleListener>();
     
     private final Set<IndexedListData> myLists = new HashSet<IndexedListData>();
-    
+
     /* package */ @SuppressWarnings("unchecked")
     SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId) {
+        this(baseDescriptor, locatorId, serviceId, null);
+    }
+
+    /* package */ @SuppressWarnings("unchecked")
+    SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId, ActiveDescriptor<?> factoryDescriptor) {
         this.originalDescriptor = baseDescriptor;
         this.baseDescriptor = BuilderHelper.deepCopyDescriptor(baseDescriptor);
         this.locatorId = locatorId;
         this.id = serviceId;
+        this.factoryDescriptor = factoryDescriptor;
  
         if (baseDescriptor instanceof ActiveDescriptor) {
             ActiveDescriptor<T> active = (ActiveDescriptor<T>) baseDescriptor;
@@ -467,7 +477,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                             collector));
             }
             
-            creator = new FactoryCreator<T>(locator, implClass);
+            creator = new FactoryCreator<T>(locator, factoryDescriptor);
             
             if (!preAnalyzed) {
                 scope = Utilities.getScopeAnnotationType(provideMethod, collector);
