@@ -59,11 +59,11 @@ import org.glassfish.hk2.api.ServiceLocator;
  */
 public class FactoryCreator<T> implements Creator<T> {
     private final ServiceLocator locator;
-    private final Class<?> factoryClass;
+    private final ActiveDescriptor<?> factoryDescriptor;
     
-    /* package */ FactoryCreator(ServiceLocator locator, Class<?> factoryClass) {
+    /* package */ FactoryCreator(ServiceLocator locator, ActiveDescriptor<?> factoryDescriptor) {
         this.locator = locator;
-        this.factoryClass = factoryClass;
+        this.factoryDescriptor = factoryDescriptor;
     }
 
     /* (non-Javadoc)
@@ -77,14 +77,6 @@ public class FactoryCreator<T> implements Creator<T> {
     @SuppressWarnings("unchecked")
     private ServiceHandle<Factory<T>> getFactoryHandle() {
         try {
-            ActiveDescriptor<?> factoryDescriptor = locator.getBestDescriptor(
-                    new FactoryFilter(factoryClass.getName()));
-            
-            if (factoryDescriptor == null) {
-                throw new IllegalStateException("Could not find a factory for " +
-                    factoryClass.getName());
-            }
-            
             return (ServiceHandle<Factory<T>>) locator.getServiceHandle(factoryDescriptor);
         }
         catch (Throwable th) {
