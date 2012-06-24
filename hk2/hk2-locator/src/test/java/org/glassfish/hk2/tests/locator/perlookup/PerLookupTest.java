@@ -41,7 +41,10 @@ package org.glassfish.hk2.tests.locator.perlookup;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Test;
 
@@ -72,6 +75,30 @@ public class PerLookupTest {
         Assert.assertNotSame("The constructor " + byConstructor + " and field " + byField + " are the same", byConstructor, byField);
         Assert.assertNotSame(byConstructor, byMethod);
         Assert.assertNotSame(byField, byMethod);
+    }
+    
+    /**
+     * An injection of null is properly disposed
+     */
+    @Test
+    public void testNullInjectionProperlyDisposed() {
+        ServiceHandle<NullInjectedPerLookupService> serviceHandle =
+                locator.getServiceHandle(NullInjectedPerLookupService.class);
+        Assert.assertNotNull(serviceHandle);
+        
+        NullInjectedPerLookupService nips = serviceHandle.getService();
+        Assert.assertNotNull(nips);
+        Assert.assertNull(nips.getShouldBeNull());
+        
+        NullInterfaceFactory nif = locator.getService(
+                (new TypeLiteral<Factory<NullInterface>>() {}).getType());
+        Assert.assertNotNull(nif);
+        
+        Assert.assertFalse(nif.getDisposeCalled());
+        
+        serviceHandle.destroy();
+        
+        Assert.assertTrue(nif.getDisposeCalled());
     }
 
 }

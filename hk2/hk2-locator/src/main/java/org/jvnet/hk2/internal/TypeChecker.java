@@ -79,6 +79,7 @@ public class TypeChecker {
         if (beanClass == null) {
             return false;
         }
+        beanClass = Utilities.translatePrimitiveType(beanClass);
         
         if (!requiredClass.isAssignableFrom(beanClass)) {
             if (requiredClass.isAnnotation()) {
@@ -124,6 +125,12 @@ public class TypeChecker {
             if (isActualType(requiredTypeVariable) && isActualType(beanTypeVariable)) {
                 if (!isTypeSafe(requiredTypeVariable, beanTypeVariable)) return false;
             }
+            else if (isArrayType(requiredTypeVariable) && isArrayType(beanTypeVariable)) {
+                Type requiredArrayType = getArrayType(requiredTypeVariable);
+                Type beanArrayType = getArrayType(beanTypeVariable);
+                
+                if (!isTypeSafe(requiredArrayType, beanArrayType)) return false;
+            }
             else if (isWildcard(requiredTypeVariable) && isActualType(beanTypeVariable)) {
                 WildcardType wt = getWildcard(requiredTypeVariable);
                 Class<?> beanActualType = ReflectionHelper.getRawClass(beanTypeVariable);
@@ -153,7 +160,6 @@ public class TypeChecker {
                 return false;
             }
         }
-        
         
         return true;
     }
@@ -297,5 +303,46 @@ public class TypeChecker {
         
         return ((type instanceof Class) || (type instanceof ParameterizedType));
         
+    }
+    
+    /**
+     * An array type can be a class that is an array
+     * or a GenericArrayType
+     * 
+     * @param type The type to test
+     * @return true if this is an actual type
+     */
+    private static boolean isArrayType(Type type) {
+        if (type == null) return false;
+        
+        if (type instanceof Class) {
+            Class<?> clazz = (Class<?>) type;
+            return clazz.isArray();
+        }
+        
+        return (type instanceof GenericArrayType);
+    }
+    
+    /**
+     * An array type can be a class that is an array
+     * or a GenericArrayType
+     * 
+     * @param type The type to test
+     * @return true if this is an actual type
+     */
+    private static Type getArrayType(Type type) {
+        if (type == null) return null;
+        
+        if (type instanceof Class) {
+            Class<?> clazz = (Class<?>) type;
+            return clazz.getComponentType();
+        }
+        
+        if (type instanceof GenericArrayType) {
+            GenericArrayType gat = (GenericArrayType) type;
+            return gat.getGenericComponentType();
+        }
+        
+        return null;
     }
 }

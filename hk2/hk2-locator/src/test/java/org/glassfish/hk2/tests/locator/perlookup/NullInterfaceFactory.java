@@ -37,62 +37,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
+package org.glassfish.hk2.tests.locator.perlookup;
 
-import java.lang.annotation.Annotation;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
- * @param <T> Type of thing being created
  *
  */
-@PerLookup
-public class BadContext<T> implements Context<T> {
+@Singleton
+public class NullInterfaceFactory implements Factory<NullInterface> {
+    private boolean disposeCalled = false;
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#getScope()
+     * @see org.glassfish.hk2.api.Factory#provide()
+     * This method intentionally returns null
      */
-    @Override
-    public Class<? extends Annotation> getScope() {
-        throw new AssertionError("not called");
+    @Override @PerLookup
+    public NullInterface provide() {
+        return null;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
     @Override
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
-            ServiceHandle<?> root) {
-        throw new AssertionError("not called");
-    }
+    public void dispose(NullInterface instance) {
+        if (instance != null) {
+            throw new AssertionError("dispose called with a non-null value " + instance);
+        }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.ActiveDescriptor)
-     */
-    @Override
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        throw new AssertionError("not called");
+        disposeCalled = true;
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        throw new AssertionError("not called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
-     */
-    @Override
-    public boolean supportsNullCreation() {
-        throw new AssertionError("not called");
+    
+    public boolean getDisposeCalled() {
+        return disposeCalled;
     }
 
 }

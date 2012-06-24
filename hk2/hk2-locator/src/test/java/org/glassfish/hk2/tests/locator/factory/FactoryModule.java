@@ -43,10 +43,13 @@ import java.util.Date;
 
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
  * @author jwells
@@ -59,6 +62,7 @@ public class FactoryModule implements TestModule {
      */
     @Override
     public void configure(DynamicConfiguration configurator) {
+        configurator.addActiveDescriptor(ErrorServiceImpl.class);
         configurator.bind(BuilderHelper.link(DateFactory.class).to(Date.class).buildFactory());
         configurator.bind(BuilderHelper.link(DateInjectee.class).in(Singleton.class).build());
         
@@ -94,6 +98,22 @@ public class FactoryModule implements TestModule {
                 in(Singleton.class.getName()).
                 named(FactoryTest.JEFFERSON_NAME).
                 buildFactory());
+        
+        // In the following test the Factory is put in
+        // *without* using the buildFactory method, in order
+        // to ensure that works properly.  Instead we build up
+        // the factory with the normal build mechanism
+        
+        // First the class service
+        configurator.bind(BuilderHelper.link(WidgetFactory.class.getName()).
+                to(Factory.class.getName()).
+                build());
+        
+        // Second the per-lookup method
+        DescriptorImpl di = BuilderHelper.link(WidgetFactory.class.getName()).
+                to(Widget.class.getName()).build();
+        di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+        configurator.bind(di);
     }
 
 }

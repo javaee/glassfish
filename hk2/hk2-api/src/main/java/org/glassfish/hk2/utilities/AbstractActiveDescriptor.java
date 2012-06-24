@@ -71,6 +71,8 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
     private Set<Type> advertisedContracts = new LinkedHashSet<Type>();
     private Class<? extends Annotation> scope;
     private Set<Annotation> qualifiers = new LinkedHashSet<Annotation>();
+    private Long factoryServiceId;
+    private Long factoryLocatorId;
     private boolean isReified = true;
     
     private transient boolean cacheSet = false;
@@ -274,6 +276,23 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         removeQualifier(removeMe.annotationType().getName());
         
         return retVal;
+    }
+    
+    public Long getFactoryServiceId() {
+        return factoryServiceId;
+    }
+    
+    public Long getFactoryLocatorId() {
+        return factoryLocatorId;
+    }
+    
+    public void setFactoryId(Long locatorId, Long serviceId) {
+        if (!getDescriptorType().equals(DescriptorType.PROVIDE_METHOD)) {
+            throw new IllegalStateException("The descriptor type must be PROVIDE_METHOD");
+        }
+        
+        factoryServiceId = serviceId;
+        factoryLocatorId = locatorId;
     }
 
     /* (non-Javadoc)

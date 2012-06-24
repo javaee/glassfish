@@ -124,8 +124,12 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         // Link the factory descriptor to the service descriptor for the factory
         final SystemDescriptor<?> boundAsFactory = new SystemDescriptor<Object>(asFactory,
                 new Long(locator.getLocatorId()),
-                new Long(locator.getNextServiceId()),
-                boundAsService);
+                new Long(locator.getNextServiceId()));
+        
+        if (asService instanceof ActiveDescriptor) {
+            boundAsFactory.setFactoryIds(boundAsService.getLocatorId(),
+                boundAsService.getServiceId());
+        }
 
         // Bind the factory first, so normally people get the factory, not the service
         allDescriptors.add(boundAsFactory);

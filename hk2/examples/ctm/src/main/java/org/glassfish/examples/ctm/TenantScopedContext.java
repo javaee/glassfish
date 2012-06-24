@@ -93,10 +93,10 @@ public class TenantScopedContext implements Context<TenantScoped> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T find(ActiveDescriptor<T> descriptor) {
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
         HashMap<ActiveDescriptor<?>, Object> mappings = getCurrentContext();
         
-        return (T) mappings.get(descriptor);
+        return mappings.containsKey(descriptor);
     }
 
     /* (non-Javadoc)
@@ -118,6 +118,14 @@ public class TenantScopedContext implements Context<TenantScoped> {
         }
         
         return retVal;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
     }
 
 }

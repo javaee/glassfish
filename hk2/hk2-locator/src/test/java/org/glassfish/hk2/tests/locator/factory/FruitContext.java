@@ -87,8 +87,8 @@ public class FruitContext implements Context<FruitScope> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <U> U find(ActiveDescriptor<U> descriptor) {
-        return (U) fruits.get(descriptor);
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return fruits.containsKey(descriptor);
     }
 
     /* (non-Javadoc)
@@ -101,6 +101,14 @@ public class FruitContext implements Context<FruitScope> {
     
     public HashMap<ActiveDescriptor<?>, Object> getContextStoredFruits() {
         return fruits;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
     }
 
 }

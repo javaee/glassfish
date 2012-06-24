@@ -82,12 +82,8 @@ public class ProxiableSingletonContext implements Context<ProxiableSingleton> {
      * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.ActiveDescriptor)
      */
     @Override
-    public <U> U find(ActiveDescriptor<U> descriptor) {
-        if (descriptor.isCacheSet()) {
-            return descriptor.getCache();
-        }
-        
-        return null;
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return descriptor.isCacheSet();
     }
 
     /* (non-Javadoc)
@@ -96,6 +92,14 @@ public class ProxiableSingletonContext implements Context<ProxiableSingleton> {
     @Override
     public boolean isActive() {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
     }
 
 }

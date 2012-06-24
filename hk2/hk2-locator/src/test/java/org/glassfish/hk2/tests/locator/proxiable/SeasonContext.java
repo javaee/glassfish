@@ -85,8 +85,8 @@ public class SeasonContext implements Context<SeasonScope> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T find(ActiveDescriptor<T> descriptor) {
-        return (T) backingStore.get(descriptor);
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return backingStore.containsKey(descriptor);
     }
 
     /* (non-Javadoc)
@@ -95,6 +95,14 @@ public class SeasonContext implements Context<SeasonScope> {
     @Override
     public boolean isActive() {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
     }
 
 }

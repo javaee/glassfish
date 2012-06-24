@@ -117,8 +117,8 @@ public class RequestContext implements Context<RequestScope> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <U> U find(ActiveDescriptor<U> descriptor) {
-        return (U) requestScopedEntities.get(descriptor);
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return requestScopedEntities.containsKey(descriptor);
     }
 
     /* (non-Javadoc)
@@ -127,6 +127,15 @@ public class RequestContext implements Context<RequestScope> {
     @Override
     public boolean isActive() {
         return inRequest;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        // TODO Auto-generated method stub
+        return false;
     }
 
 }
