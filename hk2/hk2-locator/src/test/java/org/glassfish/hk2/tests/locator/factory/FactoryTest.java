@@ -136,4 +136,13 @@ public class FactoryTest {
         Assert.assertNotNull(jefferson);
         Assert.assertEquals(JEFFERSON_NUMBER, jefferson.getNumber());
     }
+    
+    /**
+     * This tests a factory that was not created with buildFactory
+     */
+    @Test
+    public void testFactoryCreatedWithBuild() {
+        Widget widget = locator.getService(Widget.class);
+        Assert.assertNotNull(widget);
+    }
 }

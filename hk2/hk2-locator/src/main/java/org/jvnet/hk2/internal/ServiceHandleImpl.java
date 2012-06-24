@@ -152,7 +152,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             }
             
             service = context.findOrCreate(root, this);
-            if (service == null) {
+            if (service == null && !context.supportsNullCreation()) {
                 throw new MultiException(new IllegalStateException("Context " +
                     context + " findOrCreate returned a null for descriptor " + root +
                     " and handle " + this));
@@ -183,7 +183,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         
         try {
             Context<?> context = locator.resolveContext(root.getScopeAnnotation());
-            return (context.find(root) != null);
+            return context.containsKey(root);
         }
         catch (IllegalStateException ise) {
             return false;

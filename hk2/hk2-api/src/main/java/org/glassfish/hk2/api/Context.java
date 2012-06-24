@@ -80,12 +80,19 @@ public interface Context<T> {
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor, ServiceHandle<?> root);
     
     /**
-     * Finds an existing contextual instance, without creating or loading any objects
+     * Determines if this context has a value for the given key
      * 
      * @param descriptor The descriptor to look for in this context
-     * @return Either null or the instance 
+     * @return true if this context has a value associated with this descriptor
      */
-    public <U> U find(ActiveDescriptor<U> descriptor);
+    public boolean containsKey(ActiveDescriptor<?> descriptor);
+    
+    /**
+     * Returns true if the findOrCreate method can return null
+     * 
+     * @return true if null is a legal value from the findOrCreate method
+     */
+    public boolean supportsNullCreation();
     
     /**
      * True if this context is active, false otherwise

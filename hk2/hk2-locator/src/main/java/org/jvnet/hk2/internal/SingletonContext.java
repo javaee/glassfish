@@ -79,8 +79,8 @@ public class SingletonContext implements Context<Singleton> {
      * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.Descriptor)
      */
     @Override
-    public <T> T find(ActiveDescriptor<T> descriptor) {
-        return descriptor.getCache();
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return descriptor.isCacheSet();
     }
 
     /* (non-Javadoc)
@@ -89,6 +89,14 @@ public class SingletonContext implements Context<Singleton> {
     @Override
     public boolean isActive() {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
     }
 
 }

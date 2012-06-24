@@ -126,6 +126,24 @@ public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
     public List<Injectee> getInjectees();
     
     /**
+     * If this ActiveDescriptor has DescriptorType of PROVIDE_METHOD then
+     * this field will return the ServiceId of its associated Factory
+     * service.  Otherwise this method should return null
+     * 
+     * @return The service ID of the associated factory service
+     */
+    public Long getFactoryServiceId();
+    
+    /**
+     * If this ActiveDescriptor has DescriptorType of PROVIDE_METHOD then
+     * this field will return the ServiceId of its associated Factory
+     * service.  Otherwise this method should return null
+     * 
+     * @return The locator ID of the associated factory service
+     */
+    public Long getFactoryLocatorId();
+    
+    /**
      * Creates an instance of the ActiveDescriptor.  All of the
      * Injectee's must be created prior to instantiation, and
      * associated with the ExtendedProvider so that they can be

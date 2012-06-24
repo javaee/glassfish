@@ -87,8 +87,8 @@ public class InheritedScopeContext implements Context<InheritedScope> {
      * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.ActiveDescriptor)
      */
     @Override
-    public <U> U find(ActiveDescriptor<U> descriptor) {
-        return descriptor.getCache();
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return descriptor.isCacheSet();
     }
 
     /* (non-Javadoc)
@@ -97,6 +97,14 @@ public class InheritedScopeContext implements Context<InheritedScope> {
     @Override
     public boolean isActive() {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
     }
 
 }

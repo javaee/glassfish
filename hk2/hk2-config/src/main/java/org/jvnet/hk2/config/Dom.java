@@ -1012,6 +1012,14 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     public List<Injectee> getInjectees() {
         return Collections.emptyList();
     }
+    
+    public Long getFactoryServiceId() {
+        return null;
+    }
+    
+    public Long getFactoryLocatorId() {
+        return null;
+    }
 
     /**
      * {@link InvocationHandler} implementation that allows strongly-typed access

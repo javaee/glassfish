@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.locator.perlookup;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -56,6 +58,11 @@ public class PerLookupModule implements TestModule {
     public void configure(DynamicConfiguration configurator) {
         configurator.bind(BuilderHelper.link(SimpleService.class).build());
         configurator.bind(BuilderHelper.link(ThriceInjectedService.class).build());
+        
+        configurator.bind(BuilderHelper.link(NullInjectedPerLookupService.class).build());
+        configurator.bind(BuilderHelper.link(NullInterfaceFactory.class).
+                to(NullInterface.class).
+                buildFactory(Singleton.class.getName()));
     }
 
 }

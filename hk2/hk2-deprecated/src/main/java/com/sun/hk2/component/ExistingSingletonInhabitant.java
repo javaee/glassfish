@@ -208,6 +208,14 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> im
     public Set<Annotation> getQualifierAnnotations() {
         return Collections.emptySet();
     }
+    
+    public Long getFactoryServiceId() {
+        return null;
+    }
+    
+    public Long getFactoryLocatorId() {
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getInjectees()

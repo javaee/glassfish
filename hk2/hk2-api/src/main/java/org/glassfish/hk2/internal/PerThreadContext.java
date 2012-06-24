@@ -92,9 +92,9 @@ public class PerThreadContext implements Context<PerThread> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <U> U find(ActiveDescriptor<U> descriptor) {
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
         HashMap<ActiveDescriptor<?>, Object> database = threadMap.get();
-        return (U) database.get(descriptor);
+        return database.containsKey(descriptor);
     }
 
     /* (non-Javadoc)
@@ -103,6 +103,14 @@ public class PerThreadContext implements Context<PerThread> {
     @Override
     public boolean isActive() {
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
     }
 
 }

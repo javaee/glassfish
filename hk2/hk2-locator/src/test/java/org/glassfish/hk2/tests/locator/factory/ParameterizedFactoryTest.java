@@ -13,7 +13,6 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.ActiveDescriptorBuilder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -260,7 +259,7 @@ public class ParameterizedFactoryTest {
             Factory<T> factory,
             Type... types) {
 
-        final AbstractActiveDescriptor serviceDescriptor = BuilderHelper.createConstantDescriptor(factory);
+        final AbstractActiveDescriptor<?> serviceDescriptor = BuilderHelper.createConstantDescriptor(factory);
         final ActiveDescriptorBuilder  factoryBuilder    = BuilderHelper.activeLink(factory.getClass());
 
         serviceDescriptor.addContractType(factory.getClass());
@@ -290,8 +289,6 @@ public class ParameterizedFactoryTest {
                         System.identityHashCode(this) + ")";
             }
         };
-
-        System.out.println("\n\n\n#!## ParameterizedFactoryTest.createConstantFactoryDescriptor : f=" +f);
 
         return f;
     }

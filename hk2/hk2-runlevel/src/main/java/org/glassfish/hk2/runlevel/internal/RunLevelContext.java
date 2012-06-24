@@ -132,11 +132,11 @@ public class RunLevelContext implements Context<RunLevel> {
     */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T find(ActiveDescriptor<T> activeDescriptor) {
+    public boolean containsKey(ActiveDescriptor<?> activeDescriptor) {
         Map<ActiveDescriptor<?>, Object> backingStore =
                 getBackingMap(Utilities.getRunLevelControllerName(activeDescriptor));
 
-        return (T) backingStore.get(activeDescriptor);
+        return backingStore.containsKey(activeDescriptor);
     }
 
     /* (non-Javadoc)
@@ -224,5 +224,13 @@ public class RunLevelContext implements Context<RunLevel> {
 
         return controller == null ?
                 allRunLevelControllers.get() : controller;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
     }
 }

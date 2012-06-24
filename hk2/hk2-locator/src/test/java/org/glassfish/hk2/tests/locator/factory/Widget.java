@@ -37,62 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
-
-import java.lang.annotation.Annotation;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.ServiceHandle;
+package org.glassfish.hk2.tests.locator.factory;
 
 /**
  * @author jwells
- * @param <T> Type of thing being created
  *
  */
-@PerLookup
-public class BadContext<T> implements Context<T> {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#getScope()
-     */
-    @Override
-    public Class<? extends Annotation> getScope() {
-        throw new AssertionError("not called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
-     */
-    @Override
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
-            ServiceHandle<?> root) {
-        throw new AssertionError("not called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.ActiveDescriptor)
-     */
-    @Override
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        throw new AssertionError("not called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        throw new AssertionError("not called");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
-     */
-    @Override
-    public boolean supportsNullCreation() {
-        throw new AssertionError("not called");
-    }
+public interface Widget {
 
 }

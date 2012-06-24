@@ -73,8 +73,8 @@ public class PerLookupContext implements Context<PerLookup> {
      * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.Descriptor)
      */
     @Override
-    public <T> T find(ActiveDescriptor<T> descriptor) {
-        return null;
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return false;
     }
 
     /* (non-Javadoc)
@@ -82,6 +82,14 @@ public class PerLookupContext implements Context<PerLookup> {
      */
     @Override
     public boolean isActive() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
         return true;
     }
 

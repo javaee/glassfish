@@ -63,11 +63,13 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstanceLifecycleEvent;
 import org.glassfish.hk2.api.InstanceLifecycleEventType;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -80,10 +82,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final Descriptor baseDescriptor;
     private final Long id;
     private final ActiveDescriptor<T> activeDescriptor;
-    /**
-     * The associated service descriptor for the factory if this is a factory descriptor.
-     */
-    private final ActiveDescriptor<?> factoryDescriptor;
+    
     private final Long locatorId;
     private boolean reified;
     private boolean preAnalyzed = false;
@@ -98,6 +97,8 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private Set<Type> contracts;
     private Set<Annotation> qualifiers;
     private Creator<T> creator;
+    private Long factoryLocatorId;
+    private Long factoryServiceId;
     
     private final HashMap<ValidationService, Boolean> validationServiceCache =
             new HashMap<ValidationService, Boolean>();
@@ -109,16 +110,10 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
 
     /* package */ @SuppressWarnings("unchecked")
     SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId) {
-        this(baseDescriptor, locatorId, serviceId, null);
-    }
-
-    /* package */ @SuppressWarnings("unchecked")
-    SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId, ActiveDescriptor<?> factoryDescriptor) {
         this.originalDescriptor = baseDescriptor;
         this.baseDescriptor = BuilderHelper.deepCopyDescriptor(baseDescriptor);
         this.locatorId = locatorId;
         this.id = serviceId;
-        this.factoryDescriptor = factoryDescriptor;
  
         if (baseDescriptor instanceof ActiveDescriptor) {
             ActiveDescriptor<T> active = (ActiveDescriptor<T>) baseDescriptor;
@@ -250,8 +245,6 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public Long getServiceId() {
         return id;
     }
-    
-    
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.SingleCache#getCache()
@@ -371,6 +364,27 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return creator.getInjectees();
     }
     
+    public Long getFactoryServiceId() {
+        if (activeDescriptor != null) {
+            return activeDescriptor.getFactoryServiceId();
+        }
+        
+        return factoryServiceId;
+    }
+    
+    public Long getFactoryLocatorId() {
+        if (activeDescriptor != null) {
+            return activeDescriptor.getFactoryLocatorId();
+        }
+        
+        return factoryLocatorId;
+    }
+    
+    /* package */ void setFactoryIds(Long factoryLocatorId, Long factoryServiceId) {
+        this.factoryLocatorId = factoryLocatorId;
+        this.factoryServiceId = factoryServiceId;
+    }
+    
     private void invokeInstanceListeners(InstanceLifecycleEvent event) {
         for (InstanceLifecycleListener listener : instanceListeners) {
             listener.lifecycleEvent(event);
@@ -429,6 +443,93 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         if (!reified) throw new IllegalStateException();
     }
     
+    private ActiveDescriptor<?> getFactoryDescriptor(Method provideMethod,
+            Type factoryProvidedType,
+            ServiceLocatorImpl locator,
+            Collector collector) {
+        if (factoryServiceId != null && factoryLocatorId != null) {
+            // In this case someone has told us the exact factory they want
+            final Long fFactoryServiceId = factoryServiceId;
+            final Long fFactoryLocatorId = factoryLocatorId;
+            
+            ActiveDescriptor<?> retVal = locator.getBestDescriptor(new IndexedFilter() {
+
+                @Override
+                public boolean matches(Descriptor d) {
+                    if (d.getServiceId().longValue() != fFactoryServiceId.longValue()) return false;
+                    if (d.getLocatorId().longValue() != fFactoryLocatorId.longValue()) return false;
+                    
+                    return true;
+                }
+
+                @Override
+                public String getAdvertisedContract() {
+                    return Factory.class.getName();
+                }
+
+                @Override
+                public String getName() {
+                    return null;
+                }
+                
+            });
+            
+            if (retVal == null) {
+                collector.addThrowable(new IllegalStateException("Could not find a pre-determined factory service for " +
+                        factoryProvidedType));
+                
+            }
+            
+            return retVal;
+        }
+        
+        List<ServiceHandle<?>> factoryHandles = locator.getAllServiceHandles(
+                new ParameterizedTypeImpl(Factory.class, factoryProvidedType));
+        ServiceHandle<?> factoryHandle = null;
+        for (ServiceHandle<?> candidate : factoryHandles) {
+            if (qualifiers.isEmpty()) {
+                // We do this before we reify in order to ensure we don't reify too much
+                factoryHandle = candidate;
+                break;
+            }
+            
+            ActiveDescriptor<?> descriptorUnderTest = candidate.getActiveDescriptor();
+            
+            try {
+                descriptorUnderTest = locator.reifyDescriptor(descriptorUnderTest);
+            }
+            catch (MultiException me) {
+                collector.addThrowable(me);
+                continue;
+            }
+            
+            Method candidateMethod = Utilities.getFactoryProvideMethod(
+                    descriptorUnderTest.getImplementationClass());
+            Set<Annotation> candidateQualifiers =
+                    Utilities.getAllQualifiers(
+                            candidateMethod,
+                            Utilities.getDefaultNameFromMethod(candidateMethod, collector),
+                            collector);
+            
+            if (Utilities.annotationContainsAll(candidateQualifiers, qualifiers)) {
+                factoryHandle = candidate;
+                break;
+            }
+        }
+        
+        if (factoryHandle == null) {
+            collector.addThrowable(new IllegalStateException("Could not find a factory service for " +
+                    factoryProvidedType));
+            return null;
+        }
+        
+        ActiveDescriptor<?> retVal = factoryHandle.getActiveDescriptor();
+        factoryServiceId = retVal.getServiceId();
+        factoryLocatorId = retVal.getLocatorId();
+        
+        return retVal;
+    }
+    
     /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, Collector collector) {
         if (!preAnalyzed) {
             this.implClass = implClass;
@@ -477,23 +578,30 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                             collector));
             }
             
-            creator = new FactoryCreator<T>(locator, factoryDescriptor);
+            Type factoryProvidedType = provideMethod.getGenericReturnType();
+            if (factoryProvidedType instanceof TypeVariable) {
+                // the factory provided method return type should be the single argument type
+                // of the generic Factory<T> interface.
+                Set<Type> types = ReflectionHelper.getTypeClosure(implClass,
+                        Collections.singleton(Factory.class.getName()));
+
+                ParameterizedType parameterizedType = (ParameterizedType) types.iterator().next();
+
+                factoryProvidedType = parameterizedType.getActualTypeArguments()[0];
+            }
+            
+            ActiveDescriptor<?> factoryDescriptor = getFactoryDescriptor(provideMethod,
+                    factoryProvidedType,
+                    locator,
+                    collector);
+            
+            if (factoryDescriptor != null) {
+                creator = new FactoryCreator<T>(locator, factoryDescriptor);
+            }
             
             if (!preAnalyzed) {
                 scope = Utilities.getScopeAnnotationType(provideMethod, collector);
 
-                Type factoryProvidedType = provideMethod.getGenericReturnType();
-
-                if (factoryProvidedType instanceof TypeVariable) {
-                    // the factory provided method return type should be the single argument type
-                    // of the generic Factory<T> interface.
-                    Set<Type> types = ReflectionHelper.getTypeClosure(implClass,
-                            Collections.singleton(Factory.class.getName()));
-
-                    ParameterizedType parameterizedType = (ParameterizedType) types.iterator().next();
-
-                    factoryProvidedType = parameterizedType.getActualTypeArguments()[0];
-                }
                 contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(
                         factoryProvidedType,
                         baseDescriptor.getAdvertisedContracts()));
