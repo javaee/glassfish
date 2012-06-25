@@ -37,9 +37,8 @@
 package com.sun.hk2.component;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
 
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InjectionPoint;
 

@@ -46,7 +46,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
 
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 
 /**
  * Exception thrown by the injection manager when a dependency is not satisfied when
@@ -81,7 +81,7 @@ public class UnsatisfiedDependencyException extends ComponentException {
     }
 
     static String injection_failed_msg(Object t, Annotation inject, Throwable cause) {
-      String name = (Inject.class.isInstance(inject)) ? Inject.class.cast(inject).name() : null;
+      String name = null;
       name = (null == name || name.isEmpty()) ? null : name;
       String msg;
       if (Field.class.isInstance(t)) {

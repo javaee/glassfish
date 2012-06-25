@@ -42,7 +42,7 @@ import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.IntrospectionScanner;
 import com.sun.hk2.component.LazyInhabitant;
 import org.glassfish.hk2.classmodel.reflect.*;
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;

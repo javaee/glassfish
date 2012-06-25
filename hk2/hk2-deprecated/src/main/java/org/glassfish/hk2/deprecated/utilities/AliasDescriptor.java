@@ -63,6 +63,11 @@ import java.util.Set;
 public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
 
     /**
+     * For serialization
+     */
+    private static final long serialVersionUID = 2609895430798803508L;
+
+    /**
      * The service locator.
      */
     private final ServiceLocator locator;
@@ -70,7 +75,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     /**
      * The descriptor that this descriptor will alias.
      */
-    private final ActiveDescriptor<T> descriptor;
+    private ActiveDescriptor<T> descriptor;
 
     /**
      * The contract type of this descriptor.
@@ -239,21 +244,40 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     /**
      * Ensure that this descriptor has been initialized.
      */
+    @SuppressWarnings("unchecked")
     private synchronized void ensureInitialized() {
         if (!initialized) {
             // reify the underlying descriptor if needed
             if (!descriptor.isReified()) {
-                locator.reifyDescriptor(descriptor);
+                descriptor = (ActiveDescriptor<T>) locator.reifyDescriptor(descriptor);
+            }
+            
+            if (contract == null) {
+                initialized = true;
+                return;
             }
 
             HK2Loader loader = descriptor.getLoader();
 
             Type contractType = null;
             try {
-                contractType = loader == null ?
-                        descriptor.getImplementationClass().getClassLoader().loadClass(contract) :
-                        loader.loadClass(contract);
-            } catch (ClassNotFoundException e) {
+                if (loader != null) {
+                    contractType = loader.loadClass(contract);
+                }
+                else {
+                    Class<?> ic = descriptor.getImplementationClass();
+                    ClassLoader cl = null;
+                    if (ic != null) {
+                        cl = ic.getClassLoader();
+                    }
+                    if (cl == null) {
+                        cl = ClassLoader.getSystemClassLoader();
+                    }
+                
+                    contractType = cl.loadClass(contract);
+                }
+            }
+            catch (ClassNotFoundException e) {
                 // do nothing
             }
 

@@ -48,8 +48,9 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Named;
+
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
@@ -324,7 +325,11 @@ public class ConfigTransactionImpl implements ConfigTransaction, InjectionResolv
       Type genericType,
       Class<V> type)
         throws ComponentException {
-    String name = annotated.getAnnotation(Inject.class).name();
+    Named named = annotated.getAnnotation(Named.class);
+    String name = null;
+    if (named != null) {
+        name = named.value();
+    }
     name = (null == name || name.isEmpty()) ? null : name;
     
     if (null != type.getAnnotation(Configured.class)) {
