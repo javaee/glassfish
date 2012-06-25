@@ -41,7 +41,9 @@ package com.sun.hk2.component;
 
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.ContractLocatorImpl;
 import org.jvnet.hk2.component.Inhabitant;
@@ -78,7 +80,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
     }
 
     public boolean isOptional(AnnotatedElement element, Inject annotation) {
-        return annotation.optional();
+        return element.isAnnotationPresent(Optional.class);
     }
 
     /**
@@ -283,11 +285,7 @@ public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
     void populateContractLocator(ContractLocatorImpl<?> contractLocator, AnnotatedElement target, Inject inject) {
         Named named = target.getAnnotation(Named.class);
-        String name = inject.name();
-        if (named!=null && !inject.name().isEmpty()) {
-            throw new RuntimeException("Field or method [" + target.toString() + "] is annotated with both a @Named" +
-                    " annotation as well as a @Inject.name() value, please choose");
-        }
+        String name = "";
         if (named!=null) {
             name = named.value();
         }

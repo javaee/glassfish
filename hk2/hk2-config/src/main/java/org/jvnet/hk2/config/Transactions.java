@@ -48,9 +48,12 @@ import java.lang.reflect.Proxy;
 import java.util.concurrent.*;
 
 import com.sun.hk2.component.Holder;
+
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 
@@ -62,7 +65,6 @@ import org.glassfish.hk2.api.PreDestroy;
  */
 
 @Service
-//@Scoped(Singleton.class)
 public final class Transactions implements PostConstruct, PreDestroy {
 
     // each transaction listener has a notification pump.
@@ -71,7 +73,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
 
     private final Map<Class, Set<ConfigListener>> typeListeners = new HashMap<Class, Set<ConfigListener>>();
 
-    @Inject(name="transactions-executor", optional=true)
+    @Inject @Named("transactions-executor") @Optional
     private ExecutorService executor;
 
     // all configuration listeners are notified though one notifier.

@@ -48,7 +48,9 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
@@ -78,7 +80,7 @@ public class ConfigTransactionCoordinator
   @Inject
   private Habitat habitat;
 
-  @Inject(optional=true)
+  @Inject @Optional
   private InhabitantActivator activator;
   
   private ConfigTransaction theActiveOne;

@@ -37,9 +37,8 @@
 package org.jvnet.hk2.component;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
 
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 
 /**
  * Used to describe the injection point and context of the injection.
