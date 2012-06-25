@@ -44,12 +44,6 @@ Last updated: 6/19/2012 by bill.shannon@oracle.com
 	Hudson plugin to help with cluster testing.
 
 
-- l10n
-
-	Localized resources (messages, etc.) for GlassFish v3.
-	Not used by newer versions.
-
-
 - logging-annotation-processor
 
 	A Java annotation processor that handles logging-related annotations.
