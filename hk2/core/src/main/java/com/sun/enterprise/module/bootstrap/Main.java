@@ -266,6 +266,8 @@ public class Main {
 
 		config.addActiveDescriptor(DefaultErrorService.class);
 		
+		config.addActiveDescriptor(ContextDuplicatePostProcessor.class);
+		
 		config.commit();
 
 		final ClassLoader oldCL = AccessController
