@@ -20,6 +20,9 @@
         <property name="validation.car" 
             value="${build}/car/${testName}-client.jar"/>
 
+        <property name="validation.wlsRar" 
+            value="${build}/wlsRar/${testName}.rar"/>
+
         <property name="validation.ear.dir" value="${build}/ear"/>
         <property name="validation.ear.war" 
                   value="${validation.ear.dir}/${testName}.war"/>
@@ -31,11 +34,25 @@
                   value="${validation.ear.dir}/${testName}-client.jar"/>
         <property name="validation.ear" 
                   value="${validation.ear.dir}/${testName}.ear"/>
+
+        <property name="validation.wlsEar.dir" value="${build}/wlsEar"/>
+        <property name="validation.wlsEar.wlsRar" 
+                 value="${validation.wlsEar.dir}/${testName}.rar"/>
+        <property name="validation.wlsEar" 
+                  value="${validation.wlsEar.dir}/${testName}.ear"/>
+        <property name="validation.wlsEar2.dir" value="${build}/wlsEar2"/>
+        <property name="validation.wlsEar2" 
+                  value="${validation.wlsEar2.dir}/${testName}.ear"/>
+
         <mkdir dir="${build}/war"/>
         <mkdir dir="${build}/ejb"/>
         <mkdir dir="${build}/rar"/>
         <mkdir dir="${build}/car"/>
         <mkdir dir="${build}/ear"/>
+
+        <mkdir dir="${build}/wlsRar"/>
+        <mkdir dir="${build}/wlsEar"/>
+        <mkdir dir="${build}/wlsEar2"/>
     </target>
 
     <target name="compile" depends="prepare">
@@ -57,6 +74,8 @@
         <jar destfile="${validation.car}" basedir="${basedir}/car"
              manifest="${basedir}/car/META-INF/MANIFEST.MF"/>
 
+        <jar destfile="${validation.wlsRar}" basedir="${basedir}/wlsRar"/>
+
         <!-- assemble the ear -->
         <delete>
           <fileset dir="${validation.ear.dir}" includes="*/**"/>
@@ -74,9 +93,30 @@
         </copy>
         <jar destfile="${validation.ear}" basedir="${validation.ear.dir}"/>
 
+        <delete>
+          <fileset dir="${validation.wlsEar.dir}" includes="*/**"/>
+        </delete>
+        <jar destfile="${validation.wlsEar.wlsRar}" basedir="${basedir}/wlsEar/wlsRar"/>
+        <copy todir="${validation.wlsEar.dir}">
+            <fileset dir="${basedir}/wlsEar" includes="META-INF/*"/>
+        </copy>
+        <jar destfile="${validation.wlsEar}" basedir="${validation.wlsEar.dir}"/>
+
+        <delete>
+          <fileset dir="${validation.wlsEar2.dir}" includes="*/**"/>
+        </delete>
+        <copy todir="${validation.wlsEar2.dir}">
+            <fileset dir="${validation.wlsEar.dir}" includes="*.rar"/>
+        </copy>
+        <copy todir="${validation.wlsEar2.dir}">
+            <fileset dir="${basedir}/wlsEar2" includes="META-INF/*"/>
+        </copy>
+        <jar destfile="${validation.wlsEar2}" basedir="${validation.wlsEar2.dir}"/>
+
     </target>
 
     <target name="run.validator" depends="init">
+<echo>${inst}</echo>
         <javaWithResult
             fork="true"
             failonerror="false"
@@ -92,6 +132,8 @@
             <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
             <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
             <jvmarg value="-Dcom.sun.aas.installRoot=${inst}"/>
+            <jvmarg value="-Dwriteout.xml=true"/>
+            <jvmarg value="-Djavax.enterprise.system.tools.deployment.org.glassfish.deployment.common=FINE"/>
 
             <classpath>
                 <path refid="gfv3.classpath"/>
@@ -146,6 +188,21 @@
         <antcall target="run.validator">
             <param name="arg.list" value="${validation.ear}"/>
             <param name="log.id" value="5"/>
+        </antcall>
+
+        <antcall target="declare-test">
+            <param name="description" value="dol/validation Test WLS Ear"/>
+        </antcall>
+        <antcall target="run.validator">
+            <param name="arg.list" value="${validation.wlsEar} true"/>
+            <param name="log.id" value="6"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="dol/validation Test WLS Ear2"/>
+        </antcall>
+        <antcall target="run.validator">
+            <param name="arg.list" value="${validation.wlsEar2} true"/>
+            <param name="log.id" value="7"/>
         </antcall>
     </target>
 

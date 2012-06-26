@@ -21,6 +21,7 @@ public class Validator {
     private static Habitat habitat;
 
     public static void main(String args[]) {
+
         String fileName = args[0];
         String ext = getExtension(fileName);
         String archiveType = ext.substring(1);
@@ -29,6 +30,13 @@ public class Validator {
             archiveType = "car";
           } else {
             archiveType = "ejb";
+          }
+        }
+
+        boolean runtimeValidation = false;
+        if (args.length > 1) {
+          if ("true".equals(args[1])) {
+            runtimeValidation = true;
           }
         }
 
@@ -53,6 +61,10 @@ public class Validator {
             archivist.setArchiveUri(fileName);
 	    archivist.setXMLValidation(true);
 	    archivist.setXMLValidationLevel("full");
+            if (runtimeValidation) {
+              archivist.setRuntimeXMLValidation(true);
+              archivist.setRuntimeXMLValidationLevel("full");
+            }
             log("Reading/parsing the orginal archive: " + 
                 fileName);
             Descriptor descriptor = archivist.open(archiveFile);
@@ -84,6 +96,10 @@ public class Validator {
             archivist.setArchiveUri(outputFileName);
             archivist.setXMLValidation(true);
             archivist.setXMLValidationLevel("full");
+            if (runtimeValidation) {
+              archivist.setRuntimeXMLValidation(true);
+              archivist.setRuntimeXMLValidationLevel("full");
+            }
             log("Reading/parsing the output archive" + 
                 outputFileName);
             Descriptor descriptor = archivist.open(archiveFile);
@@ -122,6 +138,10 @@ public class Validator {
             archivist.setArchiveUri(outputFileName2);
             archivist.setXMLValidation(true);
             archivist.setXMLValidationLevel("full");
+            if (runtimeValidation) {
+              archivist.setRuntimeXMLValidation(true);
+              archivist.setRuntimeXMLValidationLevel("full");
+            }
             log("Reading/parsing the output archive" +
                 outputFileName2);
             Descriptor descriptor = archivist.open(archiveFile);
