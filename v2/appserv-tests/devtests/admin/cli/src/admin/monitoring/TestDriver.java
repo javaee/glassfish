@@ -99,6 +99,5 @@ public final class TestDriver extends AdminBaseDevTest {
         new Jira(),
 	new Web(),
         new TearDown(),
-        new Cloud(),
     };
 }
