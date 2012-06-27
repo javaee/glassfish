@@ -41,4 +41,4 @@ READING RESULTS :
 
 1. result.html will state whether a particular test passed or failed. This
    file just has a summary of the test results.
-2. compare results with EXPECTED_RESULTS.v3.txt.
+2. compare results with EXPECTED_RESULTS.v3.txt, grep for "FAILED", "UNKNOWN" to see if any test has failed.
