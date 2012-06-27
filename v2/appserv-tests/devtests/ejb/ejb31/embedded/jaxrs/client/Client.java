@@ -69,14 +69,13 @@ public class Client {
             }
         } else if (s[1].equals("rest")) {
             System.out.println("SKIPPING TEST TYPE: " + s[1]);
-            /** This doesn't work as there is a problem to start Web Container
+            /** This doesn't work as there is a problem to start Web Container **/
             try {
                 System.out.println("Running test via REST....");
                 t.testREST(s);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            **/
         } else {
             System.out.println("WRONG TEST TYPE: " + s[1]);
         }
