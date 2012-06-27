@@ -123,9 +123,10 @@ public class Client {
         try {
             Map p = new HashMap();
             p.put("org.glassfish.ejb.embedded.glassfish.web.http.port", "8080");
+            // p.put("org.glassfish.ejb.embedded.glassfish.instance.reuse", "true");
             System.setProperty("org.glassfish.ejb.embedded.keep-temporary-files", "true");
             c = EJBContainer.createEJBContainer(p);
-            String url = "http://localhost:8080/" + appName + "-web/mytest";
+            String url = "http://localhost:8080/" + "ejb-ejb31-embedded-ejbwinwar-web/mytest";
 
             System.out.println("invoking webclient servlet at " + url);
 
@@ -143,6 +144,7 @@ public class Client {
             }
 
             System.out.println("Testing EJB via Servlet...");
+
         } catch (Exception e) {
             pass = false;
             System.out.println("ERROR calling EJB:");
