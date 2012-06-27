@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,65 +40,38 @@
 
 package admin.monitoring;
 
-import admin.AdminBaseDevTest;
+import com.sun.appserv.test.BaseDevTest.AsadminReturn;
+import java.io.*;
+import static admin.monitoring.Constants.*;
 
 /**
- * This is the Lord of the Monitoring Tests -- the Class of Power to drive them all.
- * Keep an eye out for Gollum.
- * @author Byron Nevins
+ * Tests Cloud monitoring.
+ * @author Srinivas Krishnan
  */
-public final class TestDriver extends AdminBaseDevTest {
-    public TestDriver() {
-    }
-
+public class Cloud extends MonTest {
     @Override
-    protected String getTestDescription() {
-        return "DevTests for Monitoring - Brought to you by\n"
-                + "Jennifer Chou and Byron Nevins";
+    void runTests(TestDriver driver) {
+        setDriver(driver);
+        report(true, "Hello from Cloud Monitoring Tests!");
+        runCloudTest();
     }
 
-    @Override
-    public String getTestName() {
-        return "Monitoring DevTests";
+    private void runCloudTest() {
+        report(asadmin("start-domain", "domain1"), "started domain1 for cloud monitoring test");
+        report(asadmin("create-ims-config-native"), "native ims confg done");
+        report(asadmin("enable-monitoring", "--modules", "cloud-iaas-mgmt:cloud-orchestrator"), "enabled the monitoring for ims,oe");
+        report(asadmin("deploy", basicPaasApp.getAbsolutePath()), "deploy basic_paas_sample app");
+        String provisionedCountArg = "server.cloud.orchestrator.provisioned-services-count";
+        String startCountArg = "server.cloud.iaas-mgmt.vm-started-count";
+        report(verifyGetm(startCountArg, startCountArg + " = " + 2), "verify ims count");
+        report(verifyGetm(provisionedCountArg, provisionedCountArg + " = " + 1), "verify orchestrator count");
+        report(asadmin("stop-domain", "domain1"), "stopped domain1");
     }
 
-    public static void main(String[] args) {
-        // top level try here!!
-        TestDriver driver = new TestDriver();
-        System.out.printf("HADAS sysprop=%s, env var=%s, hadas sys prop=%s, env var=%s\n",
-                System.getProperty("HADAS"),
-                System.getenv("HADAS"),
-                System.getProperty("hadas"),
-                System.getenv("hadas")
-                );
-        try {
-            driver.runTests();
-        }
-        catch (Exception e) {
-            driver.report("GotException-" + e.getClass().getName(), false);
-            e.printStackTrace();
-        }
-        driver.stat.printSummary();
+    private boolean verifyGetm(String arg, String key) {
+        AsadminReturn ret = asadminWithOutput("get", "-m", arg);
+        return matchString(key, ret.outAndErr);
     }
 
-    private void runTests() {
-        report("TestDriver Creation", true);
-
-        for (MonTest mt : tests) {
-            mt.runTests(this);
-        }
-
-    }
-     private MonTest tests[] = new MonTest[]{
-        new PreFlight(),
-        new Setup(),
-        new EarlyJira(), // these tests want monitoring disabled...
-        new Enabler(),
-        new Ejb(),
-        new Jdbc(),
-        new Jira(),
-	new Web(),
-        new TearDown(),
-        new Cloud(),
-    };
+    private static final File basicPaasApp = new File(RESOURCES_DIR, "basic_paas_sample.war");
 }
