@@ -109,11 +109,11 @@
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.10</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
-        <grizzly.version>2.2.10</grizzly.version>
+        <grizzly.version>2.2.11-SNAPSHOT</grizzly.version>
         <jsr181-api.version>1.0-MR1</jsr181-api.version>
         <saaj-api.version>1.3.4</saaj-api.version>
-        <hk2.version>2.1.7</hk2.version>
-        <hk2.plugin.version>2.1.7</hk2.plugin.version>
+        <hk2.version>2.1.8-SNAPSHOT</hk2.version>
+        <hk2.plugin.version>2.1.8-SNAPSHOT</hk2.plugin.version>
         <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
@@ -158,7 +158,7 @@
         <javadb.version>10.8.1.2</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>1.1.4.Final</weld.version>
-        <jersey.version>2.0-m05</jersey.version>
+        <jersey.version>2.0-SNAPSHOT</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <glassfish-management-api.version>3.1.0-b001</glassfish-management-api.version>
@@ -1047,6 +1047,11 @@
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-multipart</artifactId>
                 <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>2.0-m09</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.faces.extensions</groupId>

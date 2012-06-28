@@ -48,6 +48,7 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandModelProvider;
 import org.glassfish.common.util.admin.ParamTokenizer;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InjectionManager;
 import org.jvnet.hk2.config.Attribute;
@@ -78,9 +79,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.jvnet.hk2.component.*;
 
 import javax.inject.Inject;
+import org.glassfish.api.admin.AccessRequired;
+
 
 /**
  * services pertinent to generic CRUD command implementations
@@ -106,14 +108,17 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     // default level of noise, useful for just swithching these classes in debugging.
     protected final Level level = Level.FINE;
     
-    private static String getOne(String key, Map<String, List<String>> metadata) {
-    	if (key == null || metadata == null) return null;
-    	
-    	List<String> findInMe = metadata.get(key);
-    	if (findInMe == null) return null;
-    	
-    	return findInMe.get(0);
-    }
+    @Inject
+    Habitat habitat;
+   
+    InjectionManager manager;
+    CrudResolver resolver;
+    InjectionResolver paramResolver;
+    Class<? extends CrudResolver> resolverType;
+    
+    void prepareInjection(final AdminCommandContext ctx) {
+        // inject resolver with command parameters...
+        manager = new InjectionManager();
 
         resolver = habitat.getComponent(resolverType);
 
@@ -121,10 +126,19 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
 
         manager.inject(resolver, paramResolver);
     }
-    
+
     @Override
     public void setCommandContext(Object adminCommandContext) {
         prepareInjection((AdminCommandContext) adminCommandContext);
+    }
+    
+    private static String getOne(String key, Map<String, List<String>> metadata) {
+    	if (key == null || metadata == null) return null;
+    	
+    	List<String> findInMe = metadata.get(key);
+    	if (findInMe == null) return null;
+    	
+    	return findInMe.get(0);
     }
 
     public void postConstruct() {

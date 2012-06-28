@@ -55,16 +55,32 @@ import org.kohsuke.MetaInfServices;
  */
 @MetaInfServices
 public class EmbeddedInhabitantsParser implements PopulatorPostProcessor {
-    @Override
     public String getName() {
         return "Embedded";
     }
 
-    @Override
-    public void decorate(InhabitantsParser inhabitantsParser) {
-        inhabitantsParser.drop(RestService.class);
-        inhabitantsParser.drop(ProxyRestManagementAdapter.class);
-        inhabitantsParser.drop(ProxyRestMonitoringAdapter.class);
-        inhabitantsParser.drop(ProxyRestCommandAdapter.class);
-    }
+//    public void decorate(InhabitantsParser inhabitantsParser) {
+//        inhabitantsParser.drop(RestService.class);
+//        inhabitantsParser.drop(ProxyRestManagementAdapter.class);
+//        inhabitantsParser.drop(ProxyRestMonitoringAdapter.class);
+//        inhabitantsParser.drop(ProxyRestAdminAdapter.class);
+//    }
+
+        @Override
+        public DescriptorImpl process(DescriptorImpl descriptorImpl) {
+                
+                boolean skip = RestService.class.getCanonicalName().equals(descriptorImpl.getImplementation()) ||
+                                ProxyRestManagementAdapter.class.getCanonicalName().equals(descriptorImpl.getImplementation()) ||
+                                ProxyRestMonitoringAdapter.class.getCanonicalName().equals(descriptorImpl.getImplementation()) ||
+                                ProxyRestCommandAdapter.class.getCanonicalName().equals(descriptorImpl.getImplementation());
+                
+                if (!skip) {
+                        return descriptorImpl;
+            }
+                                
+                return null;
+
+        }
 }
+
+

@@ -40,6 +40,7 @@
 
 package org.glassfish.tests.utils;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.junit.Ignore;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
@@ -72,14 +73,14 @@ public abstract class ConfigApiTest {
      * 
      * @return a configured Habitat
      */
-    public Habitat getHabitat() {
-        Habitat habitat = Utils.instance.getHabitat(this);
+    public ServiceLocator getHabitat() {
+        ServiceLocator habitat = Utils.instance.getHabitat(this);
         
-        assertNotNull("Transactions service from Configuration subsystem is null", habitat.getComponent(Transactions.class));
+        assertNotNull("Transactions service from Configuration subsystem is null", habitat.getService(Transactions.class));
         return habitat;
     }
 
-    public BaseServiceLocator getBaseServiceLocator() {
+    public ServiceLocator getBaseServiceLocator() {
         return getHabitat();
     }
 

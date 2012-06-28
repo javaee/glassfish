@@ -61,9 +61,9 @@ import javax.ws.rs.core.MediaType;
 
 import javax.security.auth.login.LoginException;
 
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PostConstruct;
 
 import org.glassfish.admin.rest.Constants;
 import org.glassfish.admin.rest.RestConfigChangeListener;
@@ -86,6 +86,7 @@ import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.jersey.internal.inject.AbstractModule;

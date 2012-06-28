@@ -50,6 +50,7 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
@@ -68,6 +69,7 @@ import org.jvnet.hk2.config.DomDocument;
 
 import com.sun.enterprise.module.bootstrap.DefaultErrorService;
 import com.sun.enterprise.module.single.SingleModulesRegistry;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
 
 /**
  * Utilities to create a configured Habitat and cache them
@@ -82,7 +84,7 @@ public class Utils {
     private static Map<String, Habitat> habitats = new HashMap<String, Habitat>();
     public static final Utils instance = new Utils();
 
-    public synchronized Habitat getHabitat(ConfigApiTest test) {
+    public synchronized ServiceLocator getHabitat(ConfigApiTest test) {
 
         final String fileName = test.getFileName();
         // we cache the habitat per xml file
@@ -91,13 +93,14 @@ public class Utils {
            return habitats.get(fileName);
         }
 
-        Habitat habitat = getNewHabitat(test);
+        ServiceLocator habitat = getNewHabitat(test);
         return habitat;
     }
 
-    public static synchronized Habitat getNewHabitat(final ConfigApiTest test) {
+    public static synchronized ServiceLocator getNewHabitat(final ConfigApiTest test) {
 
-        final Habitat habitat = getNewHabitat(test.getFileName());
+        final ServiceLocator sl = getNewHabitat(test.getFileName());
+        Habitat habitat = new Habitat();
 
         final String fileName = test.getFileName();
 
@@ -123,18 +126,18 @@ public class Utils {
         return habitat;
     }
 
-    public static Habitat getNewHabitat() {
+    public static ServiceLocator getNewHabitat() {
     	final String root =  Utils.class.getResource("/").getPath();
         return getNewHabitat(root);
     }
 
-    public static Habitat getNewHabitat(String root) {
+    public static ServiceLocator getNewHabitat(String root) {
 
         Properties p = new Properties();
         p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_PROP_NAME, root);
         p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTANCE_ROOT_PROP_NAME, root);
         ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader(), new StartupContext(p));
-        return registry.createHabitat("default");
+        return registry.createServiceLocator("default");
     }
 
 	public void shutdownServiceLocator(

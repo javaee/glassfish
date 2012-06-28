@@ -75,7 +75,6 @@ import org.glassfish.admin.rest.utils.ResourceUtil;
 import org.glassfish.admin.rest.RestService;
 import org.glassfish.admin.rest.utils.Util;
 import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.inject.Injector;
 import org.jvnet.hk2.config.Dom;
 
 import static org.glassfish.admin.rest.utils.Util.decode;
@@ -92,9 +91,6 @@ public abstract class CollectionLeafResource {
 
     @Context
     protected Factory<UriInfo> uriInfo;
-
-    @Context
-    protected Injector injector;
 
     @Context
     protected Habitat habitat;

@@ -44,7 +44,7 @@ import org.glassfish.contextpropagation.bootstrap.LoggerAdapter.Level;
 import org.glassfish.contextpropagation.bootstrap.LoggerAdapter.MessageID;
 import org.glassfish.contextpropagation.internal.DependencyProviderImpl;
 import org.glassfish.contextpropagation.wireadapters.WireAdapter;
-import org.jvnet.hk2.annotations.Inject;
+import javax.inject.Inject;
 
 /**
  * The classes in this package were designed to facilitate the integration of 
