@@ -494,8 +494,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
         synchronized (lock) {
             if (shutdown) return;
             
+
+            List<ServiceHandle<?>> handles = getAllServiceHandles(BuilderHelper.createContractFilter(Context.class.getName()));
+
+            for (ServiceHandle<?> handle : handles){
+                if (handle.isActive()) {
+                    Context context = (Context) handle.getService();
+                    context.shutdown();
+                }
+            }
+
             shutdown = true;
-            
+
             allDescriptors.clear();
             descriptorsByAdvertisedContract.clear();
             descriptorsByName.clear();

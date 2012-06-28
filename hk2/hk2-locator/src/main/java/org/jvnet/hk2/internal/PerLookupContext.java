@@ -93,4 +93,10 @@ public class PerLookupContext implements Context<PerLookup> {
         return true;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public void shutdown() {
+    }
 }

@@ -54,7 +54,7 @@ import org.glassfish.hk2.api.ServiceHandle;
  */
 @Singleton
 public class PerThreadContext implements Context<PerThread> {
-    private final ThreadLocal<HashMap<ActiveDescriptor<?>, Object>> threadMap =
+    private ThreadLocal<HashMap<ActiveDescriptor<?>, Object>> threadMap =
             new ThreadLocal<HashMap<ActiveDescriptor<?>, Object>>() {
         public HashMap<ActiveDescriptor<?>, Object> initialValue() {
             return new HashMap<ActiveDescriptor<?>, Object>();
@@ -113,4 +113,11 @@ public class PerThreadContext implements Context<PerThread> {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public void shutdown() {
+        threadMap = null;
+    }
 }

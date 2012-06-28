@@ -100,4 +100,9 @@ public interface Context<T> {
      * @return true if this context is active, false otherwise
      */
     public boolean isActive();
+
+    /**
+     * Shut down this context.
+     */
+    public void shutdown();
 }
