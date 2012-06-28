@@ -41,11 +41,11 @@
 package org.glassfish.config.support;
 
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import com.sun.hk2.component.InjectionResolver;
 import com.sun.enterprise.config.serverbeans.CopyConfig;
 import java.util.logging.Level;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
+import org.glassfish.api.admin.AccessRequired;
 import org.glassfish.common.util.admin.GenericCommandModel;
 import org.glassfish.hk2.api.PerLookup;
 import org.jvnet.hk2.annotations.Scoped;
@@ -55,6 +55,9 @@ import org.jvnet.hk2.config.*;
 import javax.inject.Inject;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Collection;
+import org.glassfish.api.admin.AccessRequired.AccessCheck;
 
 /**
  * Implementation of the generic delete command
@@ -62,16 +65,19 @@ import java.lang.reflect.Proxy;
  * @author Jerome Dochez
  */
 @PerLookup
-public class GenericDeleteCommand extends GenericCrudCommand implements AdminCommand {
-
-    @Inject
-    BaseServiceLocator habitat;
+public class GenericDeleteCommand extends GenericCrudCommand implements AdminCommand, AccessRequired.Authorizer {
 
     @Inject
     CommandRunner runner;
+    
+    private ConfigBeanProxy parentBean;
+    
+    private ConfigBeanProxy tgt;
+    
+    private ConfigBean child;
+    
+    private String name;
 
-
-    Class<? extends CrudResolver> resolverType;
     CommandModel model;
     Delete delete = null;    
     
@@ -108,14 +114,37 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
             throw new ComponentException(msg, e);
 
         }
+        
+    }
 
+    @Override
+    public Collection<? extends AccessCheck> getAccessChecks() {
+        final Collection<AccessCheck> checks = new ArrayList<AccessCheck>();
+        parentBean = habitat.getComponent((Class<? extends ConfigBeanProxy>) parentType);
+        name = "";
+        if (resolver instanceof TypeAndNameResolver) {
+            name = ((TypeAndNameResolver) resolver).name();
+        }
+        checks.add(new AccessCheck(parentBean, targetType, name, "delete"));
+        return checks;
+    }
+    
+    
+    @Override
+    void prepareInjection(final AdminCommandContext ctx) {
+        super.prepareInjection(ctx);
+        tgt = resolver.resolve(ctx, targetType);
+
+        if (tgt != null) {
+            child = (ConfigBean) ConfigBean.unwrap(tgt);
+        }
     }
 
     @Override
     public void execute(final AdminCommandContext context) {
 
         final ActionReport result = context.getActionReport();
-
+        
         //check if cluster software is installed else fail , see issue 12023
         //This will be revisited with issue 12900
         final CopyConfig command = (CopyConfig) runner
@@ -126,27 +155,20 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
             result.failure(logger,msg) ;
             return;
         }
-
-        // inject resolver with command parameters...
-        final InjectionManager manager = new InjectionManager();
-
-        CrudResolver resolver = habitat.getComponent(resolverType);
-
-        final InjectionResolver paramResolver = getInjectionResolver();
-
-        manager.inject(resolver, paramResolver);
-
-        final ConfigBeanProxy target = resolver.resolve(context, targetType);
-        if (target==null) {
-            String msg = localStrings.getLocalString(GenericCrudCommand.class,
+        
+        if (tgt==null) {
+            
+            String msg = localStrings.getLocalString(GenericDeleteCommand.class,
+                    "TypeAndNameResolver.target_object_not_found",
+                    "Cannot find a {0} with a name {1}", targetType.getSimpleName(), name);
+            logger.severe(localStrings.getLocalString(GenericCrudCommand.class,
                     "GenericDeleteCommand.target_object_not_found",
                     "The CrudResolver {0} could not find the configuration object of type {1} where instances of {2} should be removed",
-                    resolver.getClass().toString(), parentType, targetType);
+                    resolver.getClass().toString(), parentType, targetType));
             result.failure(logger, msg);
             return;
         }
-        final ConfigBean child = (ConfigBean) ConfigBean.unwrap(target);
-
+        
         try {
             ConfigBeanProxy parentProxy = child.parent().createProxy();
             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
@@ -167,7 +189,7 @@ public class GenericDeleteCommand extends GenericCrudCommand implements AdminCom
                         manager.inject(decorator, paramResolver);
 
                         // invoke the decorator
-                        decorator.decorate(context, parentProxy, target);
+                        decorator.decorate(context, parentProxy, tgt);
 
                     }
                     return null;

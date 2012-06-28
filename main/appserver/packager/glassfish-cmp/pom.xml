@@ -99,20 +99,18 @@
           modules to be included in this bundle
         -->       
         <dependency>
-           <groupId>org.glassfish.main.persistence.cmp</groupId>
-           <artifactId>cmp-all</artifactId>
-	   <version>${project.version}</version>
-	   <type>pom</type>
+            <groupId>org.glassfish.main.persistence.cmp</groupId>
+            <artifactId>cmp-all</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.glassfish.main.persistence</groupId>
+                    <artifactId>entitybean-container</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 	
-        <dependency>
-           <groupId>org.glassfish.main.persistence</groupId>
-           <artifactId>entitybean-container</artifactId>
-	   <version>${project.version}</version>
-        </dependency>
-	
-
-
     	<!-- now, listing package dependencies so that their content
              can be excluded during staging -->	
      

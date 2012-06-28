@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.StringTokenizer;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,6 +78,8 @@ import com.sun.enterprise.deployment.io.DescriptorConstants;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.ConfigurationDeploymentDescriptorFileFor;
+import com.sun.enterprise.deployment.node.XMLElement;
+import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.config.serverbeans.Applications;
 import com.sun.enterprise.deployment.deploy.shared.Util;
 import org.glassfish.internal.data.ApplicationInfo;
@@ -102,6 +105,9 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  */
 public class DOLUtils {
     
+    public final static String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+    public final static String SCHEMA_LOCATION_TAG = "xsi:schemaLocation";
+
     private static Logger logger=null;
     
     // The system property to control the precedence between GF DD
@@ -280,11 +286,12 @@ public class DOLUtils {
     // configuration file with precedence from high to low
     // this list does not take consideration of what runtime files are 
     // present in the current archive
-    private static List<ConfigurationDeploymentDescriptorFile> sortConfigurationDDFiles(List<ConfigurationDeploymentDescriptorFile> ddFiles) {
+    private static List<ConfigurationDeploymentDescriptorFile> sortConfigurationDDFiles(List<ConfigurationDeploymentDescriptorFile> ddFiles, ArchiveType archiveType) {
         ConfigurationDeploymentDescriptorFile wlsConfDD = null;
         ConfigurationDeploymentDescriptorFile gfConfDD = null;
         ConfigurationDeploymentDescriptorFile sunConfDD = null;
         for (ConfigurationDeploymentDescriptorFile ddFile : ddFiles) {
+            ddFile.setArchiveType(archiveType);
             String ddPath = ddFile.getDeploymentDescriptorPath();
             if (ddPath.indexOf(DescriptorConstants.WLS) != -1) {
                 wlsConfDD = ddFile;
@@ -335,9 +342,9 @@ public class DOLUtils {
     // configuration file with precedence from high to low
     // this list takes consideration of what runtime files are 
     // present in the current archive
-    public static List<ConfigurationDeploymentDescriptorFile> processConfigurationDDFiles(List<ConfigurationDeploymentDescriptorFile> ddFiles, ReadableArchive archive) throws IOException {
+    public static List<ConfigurationDeploymentDescriptorFile> processConfigurationDDFiles(List<ConfigurationDeploymentDescriptorFile> ddFiles, ReadableArchive archive, ArchiveType archiveType) throws IOException {
         List<ConfigurationDeploymentDescriptorFile> processedConfDDFiles = new ArrayList<ConfigurationDeploymentDescriptorFile>();
-        for (ConfigurationDeploymentDescriptorFile ddFile : sortConfigurationDDFiles(ddFiles)) {
+        for (ConfigurationDeploymentDescriptorFile ddFile : sortConfigurationDDFiles(ddFiles, archiveType)) {
             if (archive.exists(ddFile.getDeploymentDescriptorPath())) {
                 processedConfDDFiles.add(ddFile);
             }
@@ -485,16 +492,74 @@ public class DOLUtils {
         return allIncompatTypes;
     }
 
-    public static List<ConfigurationDeploymentDescriptorFile> getConfigurationDeploymentDescriptorFiles(ServiceLocator habitat, String archiveType) {
+    public static List<ConfigurationDeploymentDescriptorFile> getConfigurationDeploymentDescriptorFiles(BaseServiceLocator habitat, String containerType) {
         List<ConfigurationDeploymentDescriptorFile> confDDFiles = new ArrayList<ConfigurationDeploymentDescriptorFile>();
         for (ServiceHandle<?> serviceHandle : habitat.getAllServiceHandles(ConfigurationDeploymentDescriptorFileFor.class)) {
             ActiveDescriptor<?> descriptor = serviceHandle.getActiveDescriptor();
             String indexedType = descriptor.getMetadata().get(ConfigurationDeploymentDescriptorFileFor.DESCRIPTOR_FOR).get(0);
-            if(indexedType.equals(archiveType)) {
+            if(indexedType.equals(containerType)) {
                 ConfigurationDeploymentDescriptorFile confDD = (ConfigurationDeploymentDescriptorFile) serviceHandle.getService();
                 confDDFiles.add(confDD);
             }
         }
         return confDDFiles;
     }
+
+    /**
+     * receives notiification of the value for a particular tag
+     * 
+     * @param element the xml element
+     * @param value it's associated value
+     */
+    public static boolean setElementValue(XMLElement element,
+                                          String value,
+                                          Object o) {    
+        if (SCHEMA_LOCATION_TAG.equals(element.getCompleteName())) {
+            // we need to keep all the non j2ee/javaee schemaLocation tags
+            StringTokenizer st = new StringTokenizer(value);
+            StringBuffer sb = new StringBuffer();
+            while (st.hasMoreElements()) {
+                String namespace = (String) st.nextElement();
+		String schema;
+		if (st.hasMoreElements()) {
+		    schema = (String) st.nextElement();
+		} else {
+		    schema = namespace;
+		    namespace = TagNames.JAVAEE_NAMESPACE;
+		}
+                if (namespace.equals(TagNames.J2EE_NAMESPACE)) 
+                    continue;
+                if (namespace.equals(TagNames.JAVAEE_NAMESPACE)) 
+                    continue;
+                if (namespace.equals(W3C_XML_SCHEMA)) 
+                    continue;
+                sb.append(namespace);
+                sb.append(" ");
+                sb.append(schema);
+            }
+            String clientSchemaLocation = sb.toString();
+            if (clientSchemaLocation!=null && clientSchemaLocation.length()!=0) {
+                if (o instanceof RootDeploymentDescriptor) {
+                    ((RootDeploymentDescriptor) o).setSchemaLocation(clientSchemaLocation);
+                }
+            }
+            return true;
+        } else if (element.getQName().equals(TagNames.METADATA_COMPLETE)) {
+            if (o instanceof BundleDescriptor) {
+                ((BundleDescriptor) o).setFullAttribute(value);
+            }
+            return true;
+        }
+        return false;
+    }
+
+  /*
+   * Returns a list of the proprietary schema namespaces
+   */
+  public static List<String> getProprietarySchemaNamespaces() {
+    ArrayList<String> ns = new ArrayList<String>();
+    ns.add(DescriptorConstants.WLS_SCHEMA_NAMESPACE_BEA);
+    ns.add(DescriptorConstants.WLS_SCHEMA_NAMESPACE_ORACLE);
+    return ns;
+  }
 }

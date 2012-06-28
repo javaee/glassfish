@@ -107,6 +107,9 @@ public abstract class Archivist<T extends BundleDescriptor> {
     // attributes of this archive
     protected Manifest manifest;
     
+    // standard DD file associated with this archivist
+    protected DeploymentDescriptorFile<T> standardDD;
+
     // configuration DD files associated with this archivist
     protected List<ConfigurationDeploymentDescriptorFile> confDDFiles;
 
@@ -632,15 +635,15 @@ public abstract class Archivist<T extends BundleDescriptor> {
         InputStream is = null;
 
         try {
-            is = archive.getEntry(getStandardDDFile().getDeploymentDescriptorPath());
+            getStandardDDFile().setArchiveType(getModuleType());
+            is = archive.getEntry(standardDD.getDeploymentDescriptorPath());
             if (is != null) {
-                DeploymentDescriptorFile<T> ddFile = getStandardDDFile();
-                ddFile.setXMLValidation(getXMLValidation());
-                ddFile.setXMLValidationLevel(validationLevel);
+                standardDD.setXMLValidation(getXMLValidation());
+                standardDD.setXMLValidationLevel(validationLevel);
                 if (archive.getURI() != null) {
-                    ddFile.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
+                    standardDD.setErrorReportingString(archive.getURI().getSchemeSpecificPart());
                 }
-                T result = ddFile.read(is);
+                T result = standardDD.read(is);
                 ((RootDeploymentDescriptor)result).setClassLoader(classLoader);
                 return result;
             } else {
@@ -861,11 +864,10 @@ public abstract class Archivist<T extends BundleDescriptor> {
      */
     public void writeStandardDeploymentDescriptors(WritableArchive out) throws IOException {
 
+        getStandardDDFile().setArchiveType(getModuleType());
         OutputStream os = out.putNextEntry(getDeploymentDescriptorPath());
-        getStandardDDFile().write(getDescriptor(), os);
+        standardDD.write(getDescriptor(), os);
         out.closeEntry();
-
-        Descriptor desc = getDescriptor();
     }
 
     /**
@@ -889,6 +891,7 @@ public abstract class Archivist<T extends BundleDescriptor> {
             confDDFilesToWrite = getConfigurationDDFiles();
         }
         for (ConfigurationDeploymentDescriptorFile ddFile : confDDFilesToWrite) {
+            ddFile.setArchiveType(getModuleType());
             OutputStream os = out.putNextEntry(
                 ddFile.getDeploymentDescriptorPath());
             ddFile.write(desc, os);
@@ -911,14 +914,14 @@ public abstract class Archivist<T extends BundleDescriptor> {
 
         for (ExtensionsArchivist extension : extArchivists) {
             if (extension.supportsModuleType(getModuleType())) {
-                extension.writeDeploymentDescriptors(getDescriptor(), in, out);
+                extension.writeDeploymentDescriptors(this, getDescriptor(), in, out);
             }
         }
     }
 
     private List<ConfigurationDeploymentDescriptorFile> getSortedConfigurationDDFiles(ReadableArchive archive) throws IOException {
         if (sortedConfDDFiles == null) {
-            sortedConfDDFiles = DOLUtils.processConfigurationDDFiles(getConfigurationDDFiles(), archive);
+            sortedConfDDFiles = DOLUtils.processConfigurationDDFiles(getConfigurationDDFiles(), archive, getModuleType());
         }
         return sortedConfDDFiles;
     }

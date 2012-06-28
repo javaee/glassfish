@@ -40,19 +40,10 @@
 
 package org.glassfish.admin.rest;
 
-import java.lang.*;import java.lang.Class;import java.lang.Exception;import java.lang.Object;import java.lang.String;import java.lang.System;import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-
 import junit.framework.Assert;
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.composite.CompositeUtil;
-import org.glassfish.admin.rest.composite.RestModel;
 import org.glassfish.admin.rest.model.BaseModel;
-import org.glassfish.admin.rest.readers.JsonPojoProvider;
 import org.junit.Test;
 
 /**

@@ -102,7 +102,7 @@ public class JsonPojoProvider<T extends RestModel> implements MessageBodyReader<
         if (value == null) {
             return;
         }
-        
+
         String setterName = "set" + key.substring(0,1).toUpperCase() + key.substring(1);
         System.out.println("Setter = " + setterName);
         Method method = null;

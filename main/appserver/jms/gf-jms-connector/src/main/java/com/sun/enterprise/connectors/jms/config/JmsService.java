@@ -40,18 +40,16 @@
 
 package com.sun.enterprise.connectors.jms.config;
 
+import com.sun.enterprise.config.util.zeroconfig.ConfigBeanDefaultValue;
 import org.glassfish.api.admin.config.ConfigExtension;
+import org.glassfish.api.admin.config.Container;
+import org.glassfish.api.admin.config.PropertiesDesc;
+import org.glassfish.api.admin.config.PropertyDesc;
+import org.jvnet.hk2.component.Injectable;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.component.Injectable;
-
-import java.beans.PropertyVetoException;
-import java.util.List;
-
-import org.glassfish.api.admin.config.PropertyDesc;
-import org.glassfish.api.admin.config.PropertiesDesc;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 
@@ -59,10 +57,13 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.beans.PropertyVetoException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * The jms-service element specifies information about the bundled/built-in 
- * JMS service that is managed by Application Server 
+ * The jms-service element specifies information about the bundled/built-in
+ * JMS service that is managed by Application Server
  */
 
 /* @XmlType(name = "", propOrder = {
@@ -71,7 +72,7 @@ import javax.validation.constraints.Pattern;
 }) */
 
 @Configured
-public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
+public interface JmsService extends ConfigExtension, Injectable, PropertyBag, Container {
 
     /**
      * Gets the value of the initTimeoutInSeconds property.
@@ -80,7 +81,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      * corresponding JMS service instance to respond. If there is no response
      * within the specifies timeout period, application server startup is
      * aborted. Default value of 60 seconds
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -100,7 +101,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      * Gets the value of the type property.
      *
      * Type of JMS service
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -122,7 +123,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      *
      * specifies the arguments that will be supplied to start up corresponding
      * JMS service instance.
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -140,7 +141,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
     /**
      * Gets the value of the defaultJmsHost property.
      *
-     * Reference to a jms-host that to be started when type of jms-service 
+     * Reference to a jms-host that to be started when type of jms-service
      * is LOCAL.
      *
      * @return possible object is
@@ -172,7 +173,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      * Gets the value of the reconnectIntervalInSeconds property.
      *
      * Interval between reconnect attempts, in seconds. An integer.
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -192,7 +193,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      * Gets the value of the reconnectAttempts property.
      *
      * Total number of attempts to reconnect. An integer.
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -211,7 +212,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      * Gets the value of the reconnectEnabled property.
      *
      * Causes reconnect feature to be enabled (true) or disabled (false).
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -234,7 +235,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
 	 *      causes selection to be performed randomly
      * priority
 	 *      causes selection to be performed sequentially
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -255,7 +256,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      *
      * Number of times reconnect logic should iterate imqAddressList.
      * This property will not be used if the addresslist-behavior is "random".
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -277,7 +278,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      *
      * Scheme for establishing connection with broker. For e.g. scheme can be
      * specified as "http" for connecting to MQ broker over http. Default: "mq"
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -299,7 +300,7 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
      * Type of broker service. If a broker supports ssl, then the type of
      * service can be "ssljms". If nothing is specified, MQ will assume
      * that service is "jms".
-     * 
+     *
      * @return possible object is
      *         {@link String }
      */
@@ -367,4 +368,20 @@ public interface JmsService extends ConfigExtension, Injectable, PropertyBag {
     )
     @Element
     List<Property> getProperty();
+
+    @DuckTyped
+    public ConfigBeanDefaultValue[] getDefaultValues();
+
+    class Duck {
+        private static final String DEFAULT_JMS_SERVICE =
+                "<jms-service default-jms-host=\"default_JMS_host\" type=\"EMBEDDED\">\n" +
+                "  <jms-host host=\"localhost\" name=\"default_JMS_host\"/>\n" +
+                "</jms-service>";
+
+        public static List<ConfigBeanDefaultValue> getDefaultValues() {
+            List<ConfigBeanDefaultValue> defaultValues = new ArrayList<ConfigBeanDefaultValue>(1);
+            defaultValues.add(new ConfigBeanDefaultValue("domain/configs/server-config", JmsService.class, DEFAULT_JMS_SERVICE, false));
+            return defaultValues;
+        }
+    }
 }

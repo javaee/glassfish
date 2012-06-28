@@ -124,52 +124,17 @@ public class Utils {
     }
 
     public static Habitat getNewHabitat() {
-    	return getNewHabitat(habitatName);
+    	final String root =  Utils.class.getResource("/").getPath();
+        return getNewHabitat(root);
     }
-    
-    public static Habitat getNewHabitat(String habitatName) {
-    	Habitat habitat;
 
-        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().find(habitatName);
-        if ( serviceLocator != null) {
-            ServiceLocatorFactory.getInstance().destroy(habitatName);
-        }
-	    serviceLocator = ServiceLocatorFactory.getInstance().create(habitatName);
+    public static Habitat getNewHabitat(String root) {
 
-			
-        DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-
-        config.addActiveDescriptor(DefaultErrorService.class);
-
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new StartupContext(new Properties())));
-
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(new SingleModulesRegistry(Utils.class.getClassLoader())));
-        // set up a Logger for tests
-        Logger logger = Logger.getLogger("");
-
-        logger.addHandler(new ConsoleHandler());
-        logger.setLevel(Level.INFO);
-
-        AbstractActiveDescriptor<Logger> loggerDescriptor = BuilderHelper.createConstantDescriptor(logger);
-        loggerDescriptor.addContractType(Logger.class);
-
-        config.addActiveDescriptor(loggerDescriptor);
-
-        config.commit();
-
-        habitat = new Habitat(null, habitatName); // implicitly binds in ServiceLocator
-
-        try {
-            HK2Populator.populate(serviceLocator,
-                    new ClasspathDescriptorFileFinder(),
-                    new Hk2LoaderPopulatorPostProcessor(null));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        habitats.put(habitatName, habitat);
-        return habitat;
+        Properties p = new Properties();
+        p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_PROP_NAME, root);
+        p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTANCE_ROOT_PROP_NAME, root);
+        ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader(), new StartupContext(p));
+        return registry.createHabitat("default");
     }
 
 	public void shutdownServiceLocator(

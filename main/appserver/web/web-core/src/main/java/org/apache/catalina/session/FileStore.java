@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,7 +66,15 @@ import org.apache.catalina.Session;
 import org.apache.catalina.core.StandardContext;
 
 import javax.servlet.ServletContext;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -438,7 +446,7 @@ public final class FileStore extends StoreBase {
      * session persistence directory, if any.  The directory will be
      * created if it does not already exist.
      */
-    private File directory() {
+    private File directory() throws IOException {
 
         if (this.directory == null) {
             return (null);
@@ -462,8 +470,14 @@ public final class FileStore extends StoreBase {
             }
         }
         if (!file.exists() || !file.isDirectory()) {
-            file.delete();
-            file.mkdirs();
+            if (!file.delete() && file.exists()) {
+                throw new IOException(
+                        sm.getString("fileStore.deleteFailed", file));
+            }
+            if (!file.mkdirs() && !file.isDirectory()) {
+                throw new IOException(
+                        sm.getString("fileStore.createFailed", file));
+            }
         }
         this.directoryFile = file;
         return (file);
@@ -478,7 +492,7 @@ public final class FileStore extends StoreBase {
      * @param id The ID of the Session to be retrieved. This is
      *    used in the file naming.
      */
-    private File file(String id) {
+    private File file(String id) throws IOException {
 
         if (this.directory == null) {
             return (null);

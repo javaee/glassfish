@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,19 +59,23 @@ class JvmOptions {
         // -Dx=y   -Dxx  -XXfoo -XXgoo=zzz -client  -server
         // Issue 4434 -- we might get a jvm-option like this:
         // <jvm-options>"-xxxxxx"</jvm-options> notice the literal double-quotes
-        
+
         for (String s : options) {
             s = StringUtils.removeEnclosingQuotes(s);
-            
+
             if (s.startsWith("-D")) {
                 addSysProp(s);
-            } else if (s.startsWith("-XX")) {
+            }
+            else if (s.startsWith("-XX")) {
                 addXxProp(s);
-            } else if (s.startsWith("-X")) {
+            }
+            else if (s.startsWith("-X")) {
                 addXProp(s);
-            } else if (s.startsWith("-")) {
+            }
+            else if (s.startsWith("-")) {
                 addPlainProp(s);
-            } else // TODO i18n
+            }
+            else // TODO i18n
             {
                 throw new GFLauncherException("UnknownJvmOptionFormat", s);
             }
@@ -98,7 +102,8 @@ class JvmOptions {
             String value = xxProps.get(name);
             if (value != null) {
                 ss.add("-XX" + name + "=" + value);
-            } else {
+            }
+            else {
                 ss.add("-XX" + name);
             }
         }
@@ -108,7 +113,8 @@ class JvmOptions {
             String value = xProps.get(name);
             if (value != null) {
                 ss.add("-X" + name + "=" + value);
-            } else {
+            }
+            else {
                 ss.add("-X" + name);
             }
         }
@@ -117,7 +123,8 @@ class JvmOptions {
             String value = plainProps.get(name);
             if (value != null) {
                 ss.add("-" + name + "=" + value);
-            } else {
+            }
+            else {
                 ss.add("-" + name);
             }
         }
@@ -126,12 +133,12 @@ class JvmOptions {
             String value = sysProps.get(name);
             if (value != null) {
                 ss.add("-D" + name + "=" + value);
-            } else {
+            }
+            else {
                 ss.add("-D" + name);
             }
         }
-        postProcessOrdering(ss);
-        return ss;
+        return postProcessOrdering(ss);
     }
 
     Map<String, String> getCombinedMap() {
@@ -146,7 +153,7 @@ class JvmOptions {
     int getOsgiPort() {
         return osgiPort;
     }
-    
+
     private void addPlainProp(String s) {
         s = s.substring(1);
         NameValue nv = new NameValue(s);
@@ -172,11 +179,12 @@ class JvmOptions {
     }
 
     @Deprecated
-     void addJvmLogging() {
+    void addJvmLogging() {
         xxProps.put(":+UnlockDiagnosticVMOptions", null);
         xxProps.put(":+LogVMOutput", null);
         xxProps.put(":LogFile", "${com.sun.aas.instanceRoot}/logs/jvm.log");
     }
+
     @Deprecated
     void removeJvmLogging() {
         xxProps.remove(":+UnlockDiagnosticVMOptions");
@@ -184,41 +192,53 @@ class JvmOptions {
         xxProps.remove(":LogFile");
     }
 
-    private void postProcessOrdering(List<String> ss) {
+
+    private List<String> postProcessOrdering(List<String> unsorted) {
         /*
-         * (1)
-         * JVM has one known order dependency.
-         * If these 3 are here, then unlock MUST appear first in the list
-         * -XX:+UnlockDiagnosticVMOptions
-         * -XX:+LogVMOutput
-         * -XX:LogFile=D:/as/domains/domain1/logs/jvm.log 
-         * 
-         * (2)
-         *  TODO Get the name of the instance early.  We no longer send in the
-         *  instanceRoot as an arg so -- ????
+         * (1) JVM has one known order dependency. If these 3 are here, then
+         * unlock MUST appear first in the list -XX:+UnlockDiagnosticVMOptions
+         * -XX:+LogVMOutput -XX:LogFile=D:/as/domains/domain1/logs/jvm.log
+         *
+         * June 2012 http://java.net/jira/browse/GLASSFISH-18777 JFR needs
+         * UnlockCommercialFeatures -- it is also order-dependent. New algorithm
+         * -- put -XX:+Unlock* first
+         *
+         * (2) TODO Get the name of the instance early. We no longer send in the
+         * instanceRoot as an arg so -- ????
          */
 
-        String arg = "-XX:+UnlockDiagnosticVMOptions";
-        int index = ss.indexOf(arg);
+        // go through the list hunting for the magic string.  If such a string is
+        // found then move it to the top.  In June 2012 I changed this to a less
+        // efficient but much more robust and simple algorithm...
 
-        // if < 0, it isn't here.  if == 0 then it's already in the right position
-        if (index > 0) {
-            ss.remove(index);
-            ss.add(0, arg);
-        }
+        List<String> sorted = new ArrayList<String>(unsorted.size());
+
+        for (String s : unsorted)
+            if (hasMagic(s))
+                sorted.add(s);
+
+        for (String s : unsorted)
+            if (!hasMagic(s))
+                sorted.add(s);
+
+        return sorted;
+    }
+
+    private boolean hasMagic(String s) {
+        final String magic = "-XX:+Unlock";
+        return s != null && s.startsWith(magic);
     }
 
     /**
      * Filters out unwanted properties and filters in interested properties that
      * may need to be present by default in certain environments (OS, vm.vendor)
      *
-     * bnevins September 2009
-     * There may be System Properties from V2 that cause havoc.  
-     * E.g. the MBean Server sys prop from V2 will be removed by upgrade code in
-     * the server but the server will blow up before it starts with a CNFE!
-     * We need to remove it carefully.  I.e. the user may want to set up their own
-     * MBean Server Factory so we just check to see if the value is identical to
-     * the V2 class...
+     * bnevins September 2009 There may be System Properties from V2 that cause
+     * havoc. E.g. the MBean Server sys prop from V2 will be removed by upgrade
+     * code in the server but the server will blow up before it starts with a
+     * CNFE! We need to remove it carefully. I.e. the user may want to set up
+     * their own MBean Server Factory so we just check to see if the value is
+     * identical to the V2 class...
      *
      */
     private void filter() {
@@ -229,13 +249,13 @@ class JvmOptions {
         // com.sun.enterprise.admin.server.core.jmx.AppServerMBeanServerBuilder
         // com.sun.enterprise.ee.admin.AppServerMBeanServerBuilder
 
-        final String key            = "javax.management.builder.initial";
+        final String key = "javax.management.builder.initial";
         final String forbiddenStart = "com.sun.enterprise";
-        final String forbiddenEnd   = "AppServerMBeanServerBuilder";
+        final String forbiddenEnd = "AppServerMBeanServerBuilder";
 
         String val = sysProps.get(key);
 
-        if(val != null && val.startsWith(forbiddenStart) && val.endsWith(forbiddenEnd))
+        if (val != null && val.startsWith(forbiddenStart) && val.endsWith(forbiddenEnd))
             sysProps.remove(key);
 
         if (OS.isDarwin() && System.getProperty("java.vm.vendor").equals("Apple Inc.")) {
@@ -259,17 +279,16 @@ class JvmOptions {
         String s = sysProps.get("osgi.shell.telnet.port");
 
         // not configured
-        if(!ok(s))
+        if (!ok(s))
             return;
 
         try {
             osgiPort = Integer.parseInt(s);
         }
-        catch(Exception e) {
+        catch (Exception e) {
             // already handled -- it is already set to -1
         }
     }
-
     Map<String, String> sysProps = new HashMap<String, String>();
     Map<String, String> xxProps = new HashMap<String, String>();
     Map<String, String> xProps = new HashMap<String, String>();
@@ -283,7 +302,8 @@ class JvmOptions {
 
             if (index < 0) {
                 name = s;
-            } else {
+            }
+            else {
                 name = s.substring(0, index);
                 if (index + 1 < s.length()) {
                     value = s.substring(index + 1);
@@ -294,10 +314,8 @@ class JvmOptions {
         private String value;
     }
 }
-
 /**
- * Reference Section
-<jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
-<jvm-options>-XX:+LogVMOutput</jvm-options>
-<jvm-options>-XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log</jvm-options> 
+ * Reference Section <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
+ * <jvm-options>-XX:+LogVMOutput</jvm-options>
+ * <jvm-options>-XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log</jvm-options>
  */

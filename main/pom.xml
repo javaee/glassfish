@@ -105,7 +105,7 @@
         <el-impl.version>2.2.3</el-impl.version>
         <jstl-impl.version>1.2.1</jstl-impl.version>
         <jstl-api.version>1.2.1</jstl-api.version>
-        <mojarra.version>2.2.0-m03</mojarra.version>
+        <mojarra.version>2.2.0-m04</mojarra.version>
         <jsf-ext.version>0.2</jsf-ext.version>
         <woodstock.version>4.0.2.10</woodstock.version>
         <jaxrpc-api.version>1.1</jaxrpc-api.version>
@@ -141,7 +141,7 @@
 
         <javax-persistence-api.version>2.0.4.v201112200901</javax-persistence-api.version>
         <!-- Versions for EclipseLink artifacts -->
-        <eclipselink.version>2.4.0-M19.1</eclipselink.version>
+        <eclipselink.version>2.4.0-RC2</eclipselink.version>
         <eclipselink.asm.version>3.3.1.v201107111215</eclipselink.asm.version>
         <eclipselink.antlr.version>3.2.0.v201107111232</eclipselink.antlr.version>
         <!-- End versions for EclipseLink artifacts -->
@@ -158,7 +158,7 @@
         <javadb.version>10.8.1.2</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
         <weld.version>1.1.4.Final</weld.version>
-        <jersey.version>1.12</jersey.version>
+        <jersey.version>2.0-m05</jersey.version>
         <jbi.version>1.0</jbi.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <glassfish-management-api.version>3.1.0-b001</glassfish-management-api.version>
@@ -317,7 +317,8 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version> 2.4.3 </version>
                     <configuration>
-                      <forkMode>never</forkMode>
+                        <useSystemClassLoader>true</useSystemClassLoader>
+                        <forkMode>none</forkMode>
                     </configuration>
                 </plugin>
 
@@ -380,7 +381,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>2.7</version>
-                </plugin>                
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -623,7 +624,8 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <forkMode>none</forkMode>
+                        <useSystemClassLoader>true</useSystemClassLoader>
+                        <forkMode>none</forkMode>
                 </configuration>
             </plugin>
             <plugin>
@@ -1022,23 +1024,28 @@
                 <version>${el-impl.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
+                <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-server</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-grizzly2</artifactId>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-grizzly2-http</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
+                <groupId>org.glassfish.jersey.core</groupId>
                 <artifactId>jersey-client</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-json</artifactId>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-multipart</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
@@ -1168,11 +1175,6 @@
                 <version>${mimepull.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.jersey.contribs</groupId>
-                <artifactId>jersey-multipart</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>javax.help</groupId>
                 <artifactId>javahelp</artifactId>
                 <version>2.0.02</version>
@@ -1260,7 +1262,12 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.3.1</version>
+                <version>4.10</version>
+            </dependency>
+            <dependency>
+                <groupId>com.googlecode.jmockit</groupId>
+                <artifactId>jmockit</artifactId>
+                <version>0.999.15</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.mail</groupId>
@@ -1405,32 +1412,32 @@
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-javaee-base</artifactId>
-                <version>1.0.2</version>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-web-container</artifactId>
-                <version>1.0.4</version>
+                <version>1.0.5</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-ejb-container</artifactId>
-                <version>1.0.1</version>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-jpa</artifactId>
-                <version>1.0.1</version>
+                <version>1.0.2</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-jpa-extension</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-http</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
@@ -1440,17 +1447,17 @@
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-jta</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-jdbc</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-ee-resources</artifactId>
-                <version>1.0.0</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.ha</groupId>

@@ -44,23 +44,24 @@ import java.io.InputStream;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
-import org.glassfish.admingui.common.util.RestUtil;
+import javax.ws.rs.core.Response;
 
-import com.sun.jersey.api.client.ClientResponse;
+import org.glassfish.admingui.common.util.RestUtil;
 
 /**
  *
  * @author andriy.zhdanov
  */
 public class LogViewerContentSource  implements DownloadServlet.ContentSource {
-    
+
      /**
      *  <p> This method returns a unique string used to identify this
-     *      {@link DownloadServlet#ContentSource}.  This string must be
+     *      {@link DownloadServlet#getContentSource(String)}.  This string must be
      *      specified in order to select the appropriate
-     *      {@link DownloadServlet#ContentSource} when using the
+     *      {@link DownloadServlet#getContentSource(String)} when using the
      *      {@link DownloadServlet}.</p>
      */
     public String getId() {
@@ -71,7 +72,7 @@ public class LogViewerContentSource  implements DownloadServlet.ContentSource {
      *  <p> This method is responsible for generating the content and
      *      returning an InputStream to that content.  It is also
      *      responsible for setting any attribute values in the
-     *      {@link DownloadServlet#Context}, such as {@link DownloadServlet#EXTENSION} or
+     *      {@link DownloadServlet#CONTENT_SOURCES}, such as {@link DownloadServlet#EXTENSION} or
      *      {@link DownloadServlet#CONTENT_TYPE}.</p>
      */
     public InputStream getInputStream(DownloadServlet.Context ctx) {
@@ -83,21 +84,25 @@ public class LogViewerContentSource  implements DownloadServlet.ContentSource {
         String restUrl = request.getParameter("restUrl");
         String start = request.getParameter("start");
         String instanceName = request.getParameter("instanceName");
-        
+
         // Create the tmpFile
         InputStream tmpFile = null;
         try {
             String endpoint = restUrl + "/view-log/";
             Map<String, Object> attrsMap = new HashMap<String, Object>();
-            attrsMap.put("start", start); 
+            attrsMap.put("start", start);
             attrsMap.put("instanceName", instanceName);
-            ClientResponse cr = RestUtil.getRequestFromServlet(request, endpoint, attrsMap);
+            Response cr = RestUtil.getRequestFromServlet(request, endpoint, attrsMap);
             Map<String, String> headers = new HashMap<String, String>();
-            if (cr.getHeaders().containsKey("X-Text-Append-Next")) {
-                headers.put("X-Text-Append-Next", cr.getHeaders().getFirst("X-Text-Append-Next"));
+            String xTextAppendNextHeader = cr.getHeader("X-Text-Append-Next");
+            if (!xTextAppendNextHeader.isEmpty()) {
+                StringTokenizer tokenizer = new StringTokenizer(xTextAppendNextHeader, ",");
+                if (tokenizer.hasMoreElements()) {
+                    headers.put("X-Text-Append-Next", tokenizer.nextToken());
+                }
             }
             ctx.setAttribute(DownloadServlet.HEADERS, headers);
-            tmpFile = cr.getEntityInputStream();
+            tmpFile = cr.readEntity(InputStream.class);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

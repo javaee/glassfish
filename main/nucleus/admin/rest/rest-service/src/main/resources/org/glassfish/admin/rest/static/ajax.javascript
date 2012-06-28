@@ -42,7 +42,7 @@ function ajaxSubmit(elem) {
     var form = getForm(elem);
     var method = form.method.toLowerCase();
     var url = form.action;
-    
+
     var xmlhttp = (window.XMLHttpRequest) ?
         new XMLHttpRequest() : // code for IE7+, Firefox, Chrome, Opera, Safari
         new ActiveXObject("Microsoft.XMLHTTP"); // code for IE6, IE5
@@ -65,7 +65,7 @@ function getForm(elem) {
     while (elem.tagName.toLowerCase() != 'form') {
         elem = elem.parentNode;
     }
-    
+
     return elem;
 }
 
@@ -84,10 +84,10 @@ function gatherFormParameters(form) {
         } else {
             value = element.value;
         }
-        
+
         result += sep + encodeURIComponent(name) + "=" + encodeURIComponent(value);
         sep="&";
     }
-    
+
     return result;
 }

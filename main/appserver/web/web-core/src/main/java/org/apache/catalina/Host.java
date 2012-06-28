@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -139,21 +139,6 @@ public interface Host extends Container {
 
 
     /**
-     * Set the DefaultContext
-     * for new web applications.
-     *
-     * @param defaultContext The new DefaultContext
-     */
-    public void addDefaultContext(DefaultContext defaultContext);
-
-
-    /**
-     * Retrieve the DefaultContext for new web applications.
-     */
-    public DefaultContext getDefaultContext();
-    
-    
-    /**
      * Return the value of the deploy on startup flag.  If true, it indicates 
      * that this host's child webapps should be discovered and automatically 
      * deployed.
@@ -238,14 +223,6 @@ public interface Host extends Container {
 
 
     // --------------------------------------------------------- Public Methods
-
-
-    /**
-     * Import the DefaultContext config into a web application context.
-     *
-     * @param context web application context to import default context
-     */
-    public void importDefaultContext(Context context);
 
 
     /**

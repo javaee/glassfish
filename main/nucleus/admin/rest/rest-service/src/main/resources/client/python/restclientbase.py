@@ -58,7 +58,7 @@ class RestClientBase:
 
         try:
             restResponse = self.connection.get(self.getRestUrl())
-            
+
             self.status = restResponse.getStatus()
             self.entityValues = restResponse.getEntityValues()
             self.children = restResponse.getChildren()

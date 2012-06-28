@@ -42,6 +42,7 @@ package com.sun.enterprise.web;
 
 import com.sun.enterprise.config.serverbeans.Application;
 import com.sun.enterprise.config.serverbeans.ConfigBeansUtilities;
+import com.sun.enterprise.config.serverbeans.ServerTags;
 import com.sun.enterprise.container.common.spi.util.JavaEEIOUtils;
 import com.sun.enterprise.deployment.*;
 import org.glassfish.web.deployment.annotation.handlers.ServletSecurityHandler;
@@ -494,6 +495,15 @@ public class WebModule extends PwcWebModule implements Context {
                 webFragmentMap, orderingList, hasOthers,
                 wmInfo.getAppClassLoader());
         setServletContainerInitializerInterestList(allInitializers);
+
+        DeploymentContext dc = getWebModuleConfig().getDeploymentContext();
+        if (dc != null) {
+            directoryDeployed = 
+                    Boolean.valueOf(dc.getAppProps().getProperty(ServerTags.DIRECTORY_DEPLOYED));
+        }
+        if (webBundleDescriptor != null) {
+            showArchivedRealPathEnabled = webBundleDescriptor.isShowArchivedRealPathEnabled();
+        }
 
         // Start and register Tomcat mbeans
         super.start();

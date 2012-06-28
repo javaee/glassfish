@@ -44,11 +44,12 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.io.IOException;
 
+import com.sun.ejb.containers.EjbContainerUtil;
 import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
+import com.sun.enterprise.deployment.archivist.Archivist;
 import com.sun.enterprise.deployment.archivist.ExtensionsArchivist;
 import com.sun.enterprise.deployment.archivist.ExtensionsArchivistFor;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
@@ -61,13 +62,11 @@ import org.glassfish.api.deployment.archive.WritableArchive;
 import org.glassfish.deployment.common.RootDeploymentDescriptor;
 import org.glassfish.ejb.deployment.annotation.impl.EjbInWarScanner;
 import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
-import org.glassfish.ejb.deployment.io.EjbInWarDeploymentDescriptorFile;
-import org.glassfish.ejb.deployment.io.EjbInWarRuntimeDDFile;
-import org.glassfish.ejb.deployment.io.GFEjbInWarRuntimeDDFile;
-import org.glassfish.ejb.deployment.io.WLSEjbInWarRuntimeDDFile;
+import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.glassfish.hk2.api.PerLookup;
+import org.jvnet.hk2.component.BaseServiceLocator;
+import org.jvnet.hk2.component.PerLookup;
 
 /**
  * @author Mahesh Kannan
@@ -79,9 +78,10 @@ import org.glassfish.hk2.api.PerLookup;
 public class EjbInWarArchivist extends ExtensionsArchivist {
 
     @Inject
+    BaseServiceLocator serviceLocator;
+    
+    @Inject
     Provider<EjbInWarScanner> scanner;
-
-    private EjbInWarDeploymentDescriptorFile standardDD;
 
     /**
      * @return the DeploymentDescriptorFile responsible for handling
@@ -90,7 +90,7 @@ public class EjbInWarArchivist extends ExtensionsArchivist {
     @Override
     public DeploymentDescriptorFile getStandardDDFile(RootDeploymentDescriptor descriptor) {
         if (standardDD == null) {
-            standardDD = new EjbInWarDeploymentDescriptorFile();
+            standardDD = new EjbDeploymentDescriptorFile();
         }
         return standardDD;
     }
@@ -101,10 +101,8 @@ public class EjbInWarArchivist extends ExtensionsArchivist {
      */
     public List<ConfigurationDeploymentDescriptorFile> getConfigurationDDFiles(RootDeploymentDescriptor descriptor) {
         if (confDDFiles == null) {
-            confDDFiles = new ArrayList<ConfigurationDeploymentDescriptorFile>();
-            confDDFiles.add(new WLSEjbInWarRuntimeDDFile());
-            confDDFiles.add(new GFEjbInWarRuntimeDDFile());
-            confDDFiles.add(new EjbInWarRuntimeDDFile());
+            confDDFiles = DOLUtils.getConfigurationDeploymentDescriptorFiles(serviceLocator,
+            		EjbContainerUtil.EJB_CONTAINER_NAME);
         }
         return confDDFiles;
     }
@@ -138,12 +136,12 @@ public class EjbInWarArchivist extends ExtensionsArchivist {
      * @param out the abstract archive file to write to
      */
     @Override
-    public void writeDeploymentDescriptors(BundleDescriptor descriptor, ReadableArchive in, WritableArchive out) throws IOException {
+    public void writeDeploymentDescriptors(Archivist main, BundleDescriptor descriptor, ReadableArchive in, WritableArchive out) throws IOException {
         Collection<EjbBundleDescriptorImpl> ejbExtensions =
             descriptor.getExtensionsDescriptors(EjbBundleDescriptorImpl.class);
 
         for (EjbBundleDescriptorImpl ejbBundle : ejbExtensions) {
-            super.writeDeploymentDescriptors(ejbBundle, in, out);
+            super.writeDeploymentDescriptors(main, ejbBundle, in, out);
         }
     }
 }

@@ -40,19 +40,6 @@
 
 package com.sun.enterprise.v3.services.impl;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.HttpService;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
@@ -61,13 +48,26 @@ import com.sun.enterprise.util.Result;
 import com.sun.enterprise.util.StringUtils;
 import com.sun.enterprise.v3.services.impl.monitor.GrizzlyMonitoring;
 import com.sun.logging.LogDomains;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.inject.Inject;
+import javax.inject.Named;
 import org.glassfish.api.FutureProvider;
-import org.glassfish.api.StartupRunLevel;
+import org.glassfish.api.Startup;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
 import org.glassfish.api.container.RequestDispatcher;
 import org.glassfish.api.deployment.ApplicationContainer;
+import org.glassfish.grizzly.config.dom.*;
 import org.glassfish.grizzly.config.dom.NetworkConfig;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.NetworkListeners;
@@ -76,11 +76,8 @@ import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.impl.FutureImpl;
 import org.glassfish.grizzly.impl.UnsafeFutureImpl;
-import javax.inject.Inject;
-import javax.inject.Named;
 import org.glassfish.grizzly.utils.Futures;
-
-import org.glassfish.hk2.runlevel.RunLevel;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
@@ -101,8 +98,8 @@ import org.jvnet.hk2.config.Transactions;
  * @author Jerome Dochez
  */
 @Service
-@RunLevel(value = StartupRunLevel.VAL)
-public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDestroy, FutureProvider<Result<Thread>> {
+@Scoped(Singleton.class)
+public class GrizzlyService implements Startup, RequestDispatcher, PostConstruct, PreDestroy, FutureProvider<Result<Thread>> {
 
     @Inject @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
     Config config;
@@ -250,6 +247,64 @@ public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDest
     }
 
     /**
+     * Restart {@link NetworkListener}.
+     * 
+     * @param networkListenerName
+     * @param timeout restart timeout, if timeout value is negative - then no timeout will be applied.
+     * @param timeUnit restart timeout unit
+     * 
+     * @throws TimeoutException thrown if timeout had expired before server succeeded to restart
+     * @throws IOException
+     */
+    public void restartNetworkListener(String networkListenerName,
+            long timeout, TimeUnit timeUnit) throws IOException, TimeoutException {
+        restartNetworkListener(
+                config.getNetworkConfig().getNetworkListener(networkListenerName),
+                timeout, timeUnit);
+    }
+    
+    /**
+     * Restart {@link NetworkListener}.
+     * 
+     * @param networkListener {@link NetworkListener}
+     * @param timeout restart timeout, if timeout value is negative - then no timeout will be applied.
+     * @param timeUnit restart timeout unit
+     * 
+     * @throws TimeoutException thrown if timeout had expired before server succeeded to restart
+     * @throws IOException
+     */
+    public void restartNetworkListener(NetworkListener networkListener,
+            long timeout, TimeUnit timeUnit) throws IOException, TimeoutException {
+        
+        // Restart GrizzlyProxy on the address/port
+        // Address/port/id could have been changed - so try to find
+        // corresponding proxy both ways
+        if (!removeNetworkProxy(networkListener)) {
+            removeNetworkProxy(networkListener.getName());
+        }
+        final Future future = createNetworkProxy(networkListener);
+        if (future == null) {
+            logger.log(Level.FINE, "Skipping proxy registration for the listener {0}",
+                    networkListener.getName());
+            return;
+        }
+        
+        try {
+            if (timeout <= 0) {
+                future.get();
+            } else {
+                future.get(timeout, timeUnit);
+            }
+        } catch (ExecutionException e) {
+            throw new IOException(e.getCause());
+        } catch (InterruptedException e) {
+            throw new IOException(e);
+        }
+        
+        registerContainerAdapters();
+    }
+    
+    /**
      * Is there any {@link MapperUpdateListener} registered?
      */
     public boolean hasMapperUpdateListener(){
@@ -316,6 +371,16 @@ public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDest
     }
 
     /**
+     * Returns the life expectency of the service
+     *
+     * @return the life expectency.
+     */
+    @Override
+    public Lifecycle getLifecycle() {
+        return Lifecycle.SERVER;
+    }
+
+    /**
      * The component has been injected with any dependency and
      * will be placed into commission by the subsystem.
      */
@@ -339,7 +404,7 @@ public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDest
             }
             
             if (isAtLeastOneProxyStarted) {
-                registerNetworkProxy();
+                registerContainerAdapters();
             }
         } catch(RuntimeException e) { // So far postConstruct can not throw any other exception type
             logger.log(Level.SEVERE, "Unable to start v3. Closing all ports",e);
@@ -445,7 +510,7 @@ public class GrizzlyService implements RequestDispatcher, PostConstruct, PreDest
     /*
      * Registers all proxies
      */
-    public void registerNetworkProxy() {
+    void registerContainerAdapters() {
         for (org.glassfish.api.container.Adapter subAdapter :
             habitat.<org.glassfish.api.container.Adapter>getAllServices(org.glassfish.api.container.Adapter.class)) {
             //@TODO change EndportRegistrationException processing if required

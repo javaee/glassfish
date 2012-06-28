@@ -63,8 +63,8 @@ public @interface ConfigurationDeploymentDescriptorFileFor {
     public final static String DESCRIPTOR_FOR = "DescriptorFor";
     
     /**
-     * see {@link org.glassfish.api.deployment.archive.ArchiveType} and its
-     * implementation classes for valid string values.
+     * the value of the annotation should represent the area 
+     * this configuration deployment descriptor file is for
      */
     @Metadata(DESCRIPTOR_FOR)
     String value();

@@ -1,0 +1,107 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+
+package com.sun.enterprise.config.util.zeroconfig;
+
+/**
+ * @author Masoud Kalali
+ */
+
+import org.jvnet.hk2.config.ConfigBeanProxy;
+
+import java.io.InputStream;
+
+/**
+ * Carries the default configuration values for a ConfigBeanProxy
+ */
+public class ConfigBeanDefaultValue {
+
+    private String location;
+    private String xmlConfiguration;
+    private Class configBeanClass;
+    private boolean replaceCurrentIfExists;
+
+
+    public String getLocation() {
+        return location;
+    }
+
+
+    public String getXmlConfiguration() {
+        return xmlConfiguration;
+    }
+
+    public <U extends ConfigBeanProxy> Class<U> getConfigBeanClass() {
+        return configBeanClass;
+    }
+
+    public boolean isReplaceCurrentIfExists() {
+        return replaceCurrentIfExists;
+    }
+
+    /**
+     * @param location         the location of the config bean which this configuration is intended to create
+     * @param configBeanClass  what is the type of the config bean this configuration is intended for
+     * @param xmlConfiguration the XML snippet that represent the mentioned configuration. The XML snippet should be a valid config bean configuration
+     * @param replaceCurrentIfExists    should this config bean replace an already existing one or not. Note that, this parameter will be processed only if the configuration is intended for a named configuration element. The other condition for the replace to happen is that this configuration get the chance to be processed which means it should be part of an array of config beans intended for a service that has no configuration present in the domain.xml
+     * @param <U>              Type of the config bean which is an extension of ConfigBeanProxy
+     */
+    public <U extends ConfigBeanProxy> ConfigBeanDefaultValue(String location, Class<U> configBeanClass, String xmlConfiguration, boolean replaceCurrentIfExists) {
+        this.location = location;
+        this.xmlConfiguration = xmlConfiguration;
+        this.configBeanClass = configBeanClass;
+        this.replaceCurrentIfExists = replaceCurrentIfExists;
+    }
+
+
+    /**
+     * @param location                  the location of the config bean which this configuration is intended to create
+     * @param configBeanClass           what is the type of the config bean this configuration is intended for
+     * @param xmlSnippetFileInputStream An InputStream for the actual configuration which might be a file or anything other InputStream to read the configuration from.
+     * @param replaceCurrentIfExists             should this config bean replace an already existing one or not. Note that, this parameter will be processed only if the configuration is intended for a named configuration element. The other condition for the replace to happen is that this configuration get the chance to be processed which means it should be part of an array of config beans intended for a service that has no configuration present in the domain.xml
+     * @param <U>                       Type of the config bean which is an extension of ConfigBeanProxy
+     */
+    public <U extends ConfigBeanProxy> ConfigBeanDefaultValue(String location, Class<U> configBeanClass, InputStream xmlSnippetFileInputStream, boolean replaceCurrentIfExists) {
+        this.location = location;
+        this.configBeanClass = configBeanClass;
+        this.xmlConfiguration = ZeroConfigUtils.streamToString(xmlSnippetFileInputStream, "utf-8");
+        this.replaceCurrentIfExists = replaceCurrentIfExists;
+    }
+}

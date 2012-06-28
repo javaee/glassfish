@@ -39,15 +39,18 @@
  */
 package org.glassfish.admin.rest.provider;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.glassfish.admin.rest.Constants;
-import org.jvnet.hk2.component.BaseServiceLocator;
+import org.glassfish.admin.rest.composite.RestModel;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.glassfish.admin.rest.RestConfig;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
+
 import org.glassfish.admin.rest.utils.ResourceUtil;
 import org.glassfish.admin.rest.utils.DomConfigurator;
 import org.glassfish.admin.rest.utils.ConfigModelComparator;
@@ -55,13 +58,18 @@ import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.*;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
+import org.glassfish.hk2.Factory;
 
 import static org.glassfish.admin.rest.provider.ProviderUtil.*;
 
@@ -75,29 +83,43 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     public static final String JSONP_CALLBACK = "jsoncallback";
 
     @Context
-    protected UriInfo uriInfo;
+    protected Factory<UriInfo> uriInfo;
 
     @Context
-    protected HttpHeaders requestHeaders;
+    protected Factory<HttpHeaders> requestHeaders;
 
     @Context
     protected BaseServiceLocator habitat;
 
     protected Class desiredType;
 
-    protected MediaType supportedMediaType;
+    protected MediaType[] supportedMediaTypes;
 
-    public BaseProvider(Class desiredType, MediaType mediaType) {
+    public BaseProvider(Class desiredType, MediaType ... mediaType) {
         this.desiredType = desiredType;
-        this.supportedMediaType = mediaType;
+        if (mediaType == null) {
+            mediaType = new MediaType[0];
+        }
+        this.supportedMediaTypes = mediaType;
     }
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] antns, MediaType mt) {
-        if (desiredType.equals(genericType)) {
-            return mt.isCompatible(supportedMediaType);
+        if (isGivenTypeWritable(type, genericType)) {
+            for (MediaType supportedMediaType : supportedMediaTypes) {
+                if (mt.isCompatible(supportedMediaType)) {
+                    return true;
+                }
+            }
         }
         return false;
+    }
+
+    /** Overwrite this if you need different test of type compatibility.
+     * Used from isWritable method.
+     */
+    protected boolean isGivenTypeWritable(Class<?> type, Type genericType) {
+        return desiredType.isAssignableFrom(type);
     }
 
     @Override
@@ -113,6 +135,61 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
 
     public abstract String getContent(T proxy);
 
+    protected Object getJsonObject(Object object) throws JSONException {
+        Object result = null;
+        if (object instanceof Collection) {
+            result = processCollection((Collection)object);
+        } else if (object instanceof Map) {
+            result = processMap((Map)object);
+        } else if (object == null) {
+            result = JSONObject.NULL;
+        } else if (RestModel.class.isAssignableFrom(object.getClass())) {
+            result = getJsonForRestModel((RestModel)object);
+        } else {
+            result = object;
+        }
+
+        return result;
+    }
+
+    protected JSONObject getJsonForRestModel(RestModel model) {
+        JSONObject result = new JSONObject();
+        for (Method m : model.getClass().getDeclaredMethods()) {
+            if (m.getName().startsWith("get")) { // && !m.getName().equals("getClass")) {
+                String propName = m.getName().substring(3);
+                propName = propName.substring(0,1).toLowerCase() + propName.substring(1);
+                try {
+                    result.put(propName, getJsonObject(m.invoke(model)));
+                } catch (Exception e) {
+
+                }
+            }
+        }
+
+        return result;
+    }
+
+    protected JSONArray processCollection(Collection c) throws JSONException {
+        JSONArray result = new JSONArray();
+        Iterator i = c.iterator();
+        while (i.hasNext()) {
+            Object item = getJsonObject(i.next());
+            result.put(item);
+        }
+
+        return result;
+    }
+
+    protected JSONObject processMap(Map map) throws JSONException {
+        JSONObject result = new JSONObject();
+
+        for (Map.Entry entry : (Set<Map.Entry>)map.entrySet()) {
+            result.put(entry.getKey().toString(), getJsonObject(entry.getValue()));
+        }
+
+        return result;
+    }
+
     protected int getFormattingIndentLevel() {
         RestConfig rg = ResourceUtil.getRestConfig(habitat);
         if (rg == null){
@@ -121,12 +198,12 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         else {
             return Integer.parseInt(rg.getIndentLevel());
         }
-        
+
     }
-    
-     /*
-     * returns true if the HTML viewer displays the hidden CLI command links
-     */   
+
+     /**
+      * returns true if the HTML viewer displays the hidden CLI command links
+      */
     protected boolean canShowHiddenCommands() {
 
         RestConfig rg = ResourceUtil.getRestConfig(habitat);
@@ -135,12 +212,12 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         }
         return false;
     }
-    
-    /*
+
+    /**
      * returns true if the HTML viewer displays the deprecated elements or attributes
      * of a config bean
      */
-        
+
     protected boolean canShowDeprecatedItems() {
 
         RestConfig rg = ResourceUtil.getRestConfig(habitat);
@@ -149,7 +226,8 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         }
         return false;
     }
-    /* check for the __debug request header
+    /**
+     * check for the __debug request header
      *
      */
     protected boolean isDebug() {
@@ -158,15 +236,16 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         if ((rg != null) && (rg.getDebug().equalsIgnoreCase("true"))) {
             return true;
         }
-    
+
         if (requestHeaders == null) {
             return true;
         }
-        List header = requestHeaders.getRequestHeader(HEADER_DEBUG);
+        List header = requestHeaders.get().getRequestHeader(HEADER_DEBUG);
         return (header != null) && ("true".equals(header.get(0)));
     }
 
-    /* if a query param of name "jsoncallback" is there, returns its value
+    /**
+     * if a query param of name "jsoncallback" is there, returns its value
      * or returns null otherwise.
      */
     protected String getCallBackJSONP() {
@@ -174,7 +253,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
             return null;
         }
 
-        MultivaluedMap<String, String> l = uriInfo.getQueryParameters();
+        MultivaluedMap<String, String> l = uriInfo.get().getQueryParameters();
 
         if (l == null) {
             return null;
@@ -185,7 +264,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     protected String getXmlCommandLinks(String[][] commandResourcesPaths, String indent) {
         StringBuilder result = new StringBuilder();
         for (String[] commandResourcePath : commandResourcesPaths) {
-            result.append("\n").append(indent).append(getStartXmlElement(KEY_COMMAND)).append(getElementLink(uriInfo, commandResourcePath[0])).append(getEndXmlElement(KEY_COMMAND));
+            result.append("\n").append(indent).append(getStartXmlElement(KEY_COMMAND)).append(getElementLink(uriInfo.get(), commandResourcePath[0])).append(getEndXmlElement(KEY_COMMAND));
         }
         return result.toString();
     }
@@ -204,11 +283,11 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
                 if (lcm != null) {
                     Collections.sort(lcm, new ConfigModelComparator());
                     for (ConfigModel cmodel : lcm) {
-                        links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo, cmodel.getTagName()));
+                        links.put(cmodel.getTagName(), ProviderUtil.getElementLink(uriInfo.get(), cmodel.getTagName()));
                     }
                 }
             } else {
-                links.put(elementName, ProviderUtil.getElementLink(uriInfo, elementName));
+                links.put(elementName, ProviderUtil.getElementLink(uriInfo.get(), elementName));
             }
         }
 
@@ -220,7 +299,7 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
         Collections.sort(proxyList, new DomConfigurator());
         for (Dom proxy : proxyList) { //for each element
             try {
-                links.put(proxy.getKey(), getElementLink(uriInfo, proxy.getKey()));
+                links.put(proxy.getKey(), getElementLink(uriInfo.get(), proxy.getKey()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

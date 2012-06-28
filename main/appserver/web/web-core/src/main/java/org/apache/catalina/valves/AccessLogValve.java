@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,6 +78,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>Implementation of the <b>Valve</b> interface that generates a web server
@@ -277,6 +279,9 @@ public final class AccessLogValve
     private volatile ThreadLocal<SimpleDateFormat> dateFormatter = null;
 
     private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getDefault();
+    
+    private static final Logger log = Logger.getLogger(
+        AccessLogValve.class.getName());
 
     /**
      * ThreadLocal for a date formatter to format Dates into a day string in the format
@@ -848,7 +853,9 @@ public final class AccessLogValve
         File dir = new File(directory);
         if (!dir.isAbsolute())
             dir = new File(System.getProperty("catalina.base"), directory);
-        dir.mkdirs();
+        if (!dir.mkdirs() && !dir.isDirectory()) {
+            log.log(Level.SEVERE, sm.getString("accessLogValve.openDirFail", dir));
+        }
 
         // Open the current log file
         try {

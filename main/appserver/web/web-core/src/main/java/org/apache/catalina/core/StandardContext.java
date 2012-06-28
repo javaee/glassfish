@@ -64,7 +64,6 @@ import org.glassfish.grizzly.http.server.util.MappingData;
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.*;
 import org.apache.catalina.loader.WebappLoader;
-import org.apache.catalina.mbeans.MBeanUtils;
 import org.apache.catalina.session.ManagerBase;
 import org.apache.catalina.session.PersistentManagerBase;
 import org.apache.catalina.session.StandardManager;
@@ -747,6 +746,10 @@ public class StandardContext
 
     // Created via embedded API
     private boolean isEmbedded = false;
+
+    protected boolean directoryDeployed = false;
+
+    protected boolean showArchivedRealPathEnabled = true;
 
     // ----------------------------------------------------- Context Properties
 
@@ -5324,18 +5327,6 @@ public class StandardContext
         setAvailable(false);
         setConfigured(false);
 
-        // Install DefaultContext configuration
-        if (!getOverride()) {
-            Container host = getParent();
-            if (host instanceof StandardHost) {
-                ((StandardHost)host).installDefaultContext(this);
-                Container engine = host.getParent();
-                if( engine instanceof StandardEngine ) {
-                    ((StandardEngine)engine).installDefaultContext(this);
-                }
-            }
-        }
-
         // Add missing components as necessary
         if (webappResources == null) {   // (1) Required by Loader
             if (log.isLoggable(Level.FINE)) {
@@ -6264,7 +6255,7 @@ public class StandardContext
             } catch (IOException e) {
             }
         }
-        if (!dir.exists() && !dir.mkdirs()) {
+        if (!dir.mkdirs() && !dir.isDirectory()) {
             log.log(Level.SEVERE,
                     sm.getString("standardContext.createWorkDirFailed",
                                  dir.getAbsolutePath()));
@@ -6346,8 +6337,7 @@ public class StandardContext
         List<String> results = new ArrayList<String>();
         for(ContextEnvironment env : envs) {
             try {
-                ObjectName oname =
-                    MBeanUtils.createObjectName(this.getEngineName(), env);
+                ObjectName oname = createObjectName(env);
                 results.add(oname.toString());
             } catch(MalformedObjectNameException e) {
                 IllegalArgumentException iae = new IllegalArgumentException
@@ -6371,8 +6361,7 @@ public class StandardContext
         List<String> results = new ArrayList<String>();
         for(ContextResource resource : resources) {
             try {
-                ObjectName oname =
-                    MBeanUtils.createObjectName(this.getEngineName(), resource);
+                ObjectName oname = createObjectName(resource);
                 results.add(oname.toString());
             } catch(MalformedObjectNameException e) {
                 IllegalArgumentException iae = new IllegalArgumentException
@@ -6395,8 +6384,7 @@ public class StandardContext
         List<String> results = new ArrayList<String>();
         for(ContextResourceLink link : links) {
             try {
-                ObjectName oname =
-                    MBeanUtils.createObjectName(this.getEngineName(), link);
+                ObjectName oname = createObjectName(link);
                 results.add(oname.toString());
             } catch(MalformedObjectNameException e) {
                 IllegalArgumentException iae = new IllegalArgumentException
@@ -6435,9 +6423,7 @@ public class StandardContext
         nresources.addEnvironment(env);
 
         // Return the corresponding MBean name
-        ObjectName oname =
-            MBeanUtils.createObjectName(domain, env);
-        return (oname.toString());
+        return createObjectName(env).toString();
 
     }
 
@@ -6465,8 +6451,7 @@ public class StandardContext
         nresources.addResource(resource);
 
         // Return the corresponding MBean name
-            MBeanUtils.createObjectName(domain, resource);
-        return (oname.toString());
+        return createObjectName(resource).toString();
     }
 
     /**
@@ -6495,9 +6480,7 @@ public class StandardContext
         nresources.addResourceLink(resourceLink);
 
         // Return the corresponding MBean name
-        ObjectName oname =
-            MBeanUtils.createObjectName(domain, resourceLink);
-        return (oname.toString());
+        return createObjectName(resourceLink).toString();
     }
 
     @Override
@@ -6602,7 +6585,6 @@ public class StandardContext
     public void init() throws Exception {
 
         if( this.getParent() == null ) {
-            ObjectName parentName=getParentName();
 
             ContextConfig config = new ContextConfig();
             this.addLifecycleListener(config);
@@ -6667,6 +6649,107 @@ public class StandardContext
 
     public void create() throws Exception{
         init();
+    }
+
+
+
+    /**
+     * Create an <code>ObjectName</code> for <code>ContextEnvironment</code> object.
+     *
+     * @param environment The ContextEnvironment to be named
+     *
+     * @exception MalformedObjectNameException if a name cannot be created
+     */
+    public ObjectName createObjectName(ContextEnvironment environment)
+            throws MalformedObjectNameException {
+
+        ObjectName name = null;
+        Object container =
+                environment.getNamingResources().getContainer();
+        if (container instanceof Server) {
+            name = new ObjectName(domain + ":type=Environment" +
+                    ",resourcetype=Global,name=" + environment.getName());
+        } else if (container instanceof Context) {
+            String path = ((Context)container).getPath();
+            if (path.length() < 1)
+                path = "/";
+            Host host = (Host) ((Context)container).getParent();
+            name = new ObjectName(domain + ":type=Environment" +
+                    ",resourcetype=Context,path=" + path +
+                    ",host=" + host.getName() +
+                    ",name=" + environment.getName());
+        }
+
+        return (name);
+
+    }
+
+    /**
+     * Create an <code>ObjectName</code> for <code>ContextResource</code> object.
+     *
+     * @param resource The ContextResource to be named
+     *
+     * @exception MalformedObjectNameException if a name cannot be created
+     */
+    public ObjectName createObjectName(ContextResource resource)
+            throws MalformedObjectNameException {
+
+        ObjectName name = null;
+        String encodedResourceName = urlEncoder.encode(resource.getName());
+        Object container =
+                resource.getNamingResources().getContainer();
+        if (container instanceof Server) {
+            name = new ObjectName(domain + ":type=Resource" +
+                    ",resourcetype=Global,class=" + resource.getType() +
+                    ",name=" + encodedResourceName);
+        } else if (container instanceof Context) {
+            String path = ((Context)container).getPath();
+            if (path.length() < 1)
+                path = "/";
+            Host host = (Host) ((Context)container).getParent();
+            name = new ObjectName(domain + ":type=Resource" +
+                    ",resourcetype=Context,path=" + path +
+                    ",host=" + host.getName() +
+                    ",class=" + resource.getType() +
+                    ",name=" + encodedResourceName);
+        }
+
+        return (name);
+
+    }
+
+
+    /**
+     * Create an <code>ObjectName</code> for <code>ContextResourceLink</code> object.
+     *
+     * @param resourceLink The ContextResourceLink to be named
+     *
+     * @exception MalformedObjectNameException if a name cannot be created
+     */
+    public ObjectName createObjectName(ContextResourceLink resourceLink)
+            throws MalformedObjectNameException {
+
+        ObjectName name = null;
+        String encodedResourceLinkName = urlEncoder.encode(resourceLink.getName());
+        Object container =
+                resourceLink.getNamingResources().getContainer();
+        if (container instanceof Server) {
+            name = new ObjectName(domain + ":type=ResourceLink" +
+                    ",resourcetype=Global" +
+                    ",name=" + encodedResourceLinkName);
+        } else if (container instanceof Context) {
+            String path = ((Context)container).getPath();
+            if (path.length() < 1)
+                path = "/";
+            Host host = (Host) ((Context)container).getParent();
+            name = new ObjectName(domain + ":type=ResourceLink" +
+                    ",resourcetype=Context,path=" + path +
+                    ",host=" + host.getName() +
+                    ",name=" + encodedResourceLinkName);
+        }
+
+        return (name);
+
     }
 
     // ------------------------------------------------- ServletContext Methods
@@ -6856,6 +6939,10 @@ public class StandardContext
      * translation
      */
     public String getRealPath(String path) {
+        if (!(showArchivedRealPathEnabled || directoryDeployed)) {
+            return null;
+        }
+
         if (!isFilesystemBased())
             return null;
 

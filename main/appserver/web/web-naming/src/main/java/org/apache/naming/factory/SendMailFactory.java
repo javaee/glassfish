@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -117,7 +117,7 @@ import javax.naming.spi.ObjectFactory;
 public class SendMailFactory implements ObjectFactory 
 {
     // The class name for the javamail MimeMessageDataSource
-    protected final String DataSourceClassName = 
+    protected static final String DataSourceClassName =
 	"javax.mail.internet.MimePartDataSource";
 
     public Object getObjectInstance(Object RefObj, Name Nm, Context Ctx,

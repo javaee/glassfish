@@ -43,6 +43,7 @@ package com.sun.enterprise.config.util.zeroconfig.commands;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.DomainExtension;
+import com.sun.enterprise.config.util.zeroconfig.ConfigBeanDefaultValue;
 import com.sun.enterprise.config.util.zeroconfig.ZeroConfigUtils;
 import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.SystemPropertyConstants;
@@ -61,7 +62,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.hk2.api.PerLookup;
 import javax.inject.Inject;
-import java.io.InputStream;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -105,6 +106,14 @@ public final class CreateModuleConfigCommand implements AdminCommand {
     public void execute(AdminCommandContext context) {
         final ActionReport report = context.getActionReport();
         String defaultConfigurationElements;
+        if (target != null) {
+            if (domain.getConfigNamed(target) == null) {
+                report.setMessage(localStrings.getLocalString("create.module.config.target.name.invalid",
+                        "The target name you specified is invalid. Please double check the target name and try again"));
+                report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                return;
+            }
+        }
         if (isAll && serviceName != null) {
             report.setMessage(localStrings.getLocalString("create.module.config.service.name.ignored",
                     "You can only use --all or specify a service name. These two options are exclusive."));
@@ -163,7 +172,7 @@ public final class CreateModuleConfigCommand implements AdminCommand {
                 return;
             }
         } else if (serviceName != null) {
-            String className = ZeroConfigUtils.convertConfigElementNameToClassNAme(serviceName);
+            String className = ZeroConfigUtils.convertConfigElementNameToClassName(serviceName);
             Class configBeanType = ZeroConfigUtils.getClassFor(serviceName, habitat);
             if (configBeanType == null) {
                 String msg = localStrings.getLocalString("create.module.config.not.such.a.service.found",
@@ -174,7 +183,7 @@ public final class CreateModuleConfigCommand implements AdminCommand {
             }
             try {
                 if (dryRun) {
-                    String serviceDefaultConfig = getDefaultConfigFor(configBeanType, report, serviceName);
+                    String serviceDefaultConfig = getDefaultConfigFor(configBeanType, habitat);
                     if (serviceDefaultConfig != null) {
                         report.setMessage(serviceDefaultConfig);
                     }
@@ -195,27 +204,17 @@ public final class CreateModuleConfigCommand implements AdminCommand {
         report.setActionExitCode(ActionReport.ExitCode.SUCCESS);
     }
 
-    private String getDefaultConfigFor(Class configBeanType, ActionReport report, String serviceName) throws Exception {
-        if (ZeroConfigUtils.getDefaultSnippetUrl(configBeanType) == null) {
-            report.setMessage(localStrings.getLocalString("create.module.config.config.embedded.in.class", DEFAULT_FORMAT, serviceName));
-            return ZeroConfigUtils.serializeConfigBeanByType(configBeanType, habitat);
-        } else {
-            InputStream st = ZeroConfigUtils.getDefaultSnippetUrl(configBeanType).openStream();
-            return ZeroConfigUtils.streamToString(st, "utf-8");
-        }
-    }
-
     private boolean createMissingElementFor(Class configBeanType, String serviceName, String target, ActionReport report) throws Exception {
         boolean defaultConfigCreated = false;
         if (ConfigExtension.class.isAssignableFrom(configBeanType)) {
             Config c = domain.getConfigNamed(target);
-            if (c.checkIfConfigExists(configBeanType)) {
+            if (c.checkIfExtensionExists(configBeanType)) {
                 report.setMessage(localStrings.getLocalString("create.module.config.already.exists", DEFAULT_FORMAT, serviceName));
             }
             c.getExtensionByType(configBeanType);
             defaultConfigCreated = true;
         } else if (configBeanType.isAssignableFrom(DomainExtension.class)) {
-            if (domain.checkIfConfigExists(configBeanType)) {
+            if (domain.checkIfExtensionExists(configBeanType)) {
                 report.setMessage(localStrings.getLocalString("create.module.config.already.exists", DEFAULT_FORMAT, serviceName));
             }
             domain.getExtensionByType(configBeanType);
@@ -224,6 +223,22 @@ public final class CreateModuleConfigCommand implements AdminCommand {
         return defaultConfigCreated;
     }
 
+    private String getDefaultConfigFor(Class configBeanType, Habitat habitat) throws Exception {
+        if (!ZeroConfigUtils.hasCustomConfig(configBeanType)) {
+            return ZeroConfigUtils.serializeConfigBeanByType(configBeanType, habitat);
+        } else {
+            List<ConfigBeanDefaultValue> defaults = ZeroConfigUtils.getDefaultConfigurations(configBeanType);
+            StringBuilder builder = new StringBuilder();
+            for (ConfigBeanDefaultValue value : defaults) {
+                builder.append("At location: ");
+                builder.append(value.getLocation());
+                builder.append("\r\n");
+                builder.append(value.getXmlConfiguration());
+                builder.append("\r\n");
+            }
+            return builder.toString();
+        }
+    }
 
     private void createAllMissingElements(String target) throws Exception {
         //reburies scanning and finding all snippets and then checking which

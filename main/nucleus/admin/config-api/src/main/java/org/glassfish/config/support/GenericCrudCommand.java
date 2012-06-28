@@ -44,6 +44,7 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.hk2.component.InjectionResolver;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.Param;
+import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandModelProvider;
 import org.glassfish.common.util.admin.ParamTokenizer;
 import org.jvnet.hk2.component.ComponentException;
@@ -77,6 +78,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jvnet.hk2.component.*;
 
 import javax.inject.Inject;
 
@@ -86,7 +88,7 @@ import javax.inject.Inject;
  * @author Jerome Dochez
  *
  */
-public abstract class GenericCrudCommand implements CommandModelProvider, PostConstruct {
+public abstract class GenericCrudCommand implements CommandModelProvider, PostConstruct, AccessRequired.CommandContextDependent {
     
     private InjectionResolver<Param> injector;
 
@@ -111,6 +113,18 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     	if (findInMe == null) return null;
     	
     	return findInMe.get(0);
+    }
+
+        resolver = habitat.getComponent(resolverType);
+
+        paramResolver = getInjectionResolver();
+
+        manager.inject(resolver, paramResolver);
+    }
+    
+    @Override
+    public void setCommandContext(Object adminCommandContext) {
+        prepareInjection((AdminCommandContext) adminCommandContext);
     }
 
     public void postConstruct() {

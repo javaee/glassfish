@@ -39,15 +39,18 @@
  */
 package org.glassfish.admin.rest.adapter;
 
-import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.jersey.api.json.JSONConfiguration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.jackson.map.SerializationConfig;
+
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.BaseServiceLocator;
+import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.config.Dom;
+
 import org.glassfish.admin.rest.RestResource;
 import org.glassfish.admin.rest.generator.ASMResourcesGenerator;
 import org.glassfish.admin.rest.generator.ResourcesGenerator;
@@ -56,10 +59,10 @@ import org.glassfish.admin.rest.resources.GeneratorResource;
 import org.glassfish.admin.rest.resources.StatusGenerator;
 import org.glassfish.admin.rest.resources.custom.ManagementProxyResource;
 import org.glassfish.admin.restconnector.Constants;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.BaseServiceLocator;
-import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.config.Dom;
+
+import com.sun.enterprise.config.serverbeans.Domain;
+import org.glassfish.jersey.internal.inject.AbstractModule;
+import org.glassfish.jersey.media.json.JsonJacksonModule;
 
 /**
  * Adapter for REST management interface
@@ -72,6 +75,11 @@ public class RestManagementAdapter extends RestAdapter {
     @Override
     public String getContextRoot() {
         return CONTEXT;
+    }
+
+    @Override
+    protected AbstractModule getJsonModule() {
+        return new JsonJacksonModule();
     }
 
     @Override
@@ -99,7 +107,7 @@ public class RestManagementAdapter extends RestAdapter {
         r.add(domainResourceClass);
 //        r.add(DomainResource.class);
         r.add(ManagementProxyResource.class);
-        r.add(org.glassfish.admin.rest.resources.SessionsResource.class); 
+        r.add(org.glassfish.admin.rest.resources.SessionsResource.class);
 
         //TODO this needs to be added to all rest adapters that want to be secured. Decide on it after the discussion to unify RestAdapter is concluded
         r.add(org.glassfish.admin.rest.resources.StaticResource.class);
@@ -119,6 +127,9 @@ public class RestManagementAdapter extends RestAdapter {
         r.add(org.glassfish.admin.rest.provider.ActionReportResultHtmlProvider.class);
         r.add(org.glassfish.admin.rest.provider.ActionReportResultJsonProvider.class);
         r.add(org.glassfish.admin.rest.provider.ActionReportResultXmlProvider.class);
+
+        r.add(org.glassfish.admin.rest.provider.RestCollectionProvider.class);
+        r.add(org.glassfish.admin.rest.provider.RestModelProvider.class);
 //        r.add(ProxyMessageBodyWriter.class);
 
 
@@ -137,7 +148,7 @@ public class RestManagementAdapter extends RestAdapter {
     @Override
     public Map<String, Boolean> getFeatures() {
         final Map<String, Boolean> features = super.getFeatures();
-        features.put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
+        //features.put(JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE);
         return features;
     }
 
