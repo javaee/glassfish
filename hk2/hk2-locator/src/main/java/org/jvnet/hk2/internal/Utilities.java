@@ -255,15 +255,18 @@ public class Utilities {
         ClassLoader loader;
         if (injectee != null) {
             AnnotatedElement parent = injectee.getParent();
-            
+
             if (parent instanceof Constructor) {
                 loader = ((Constructor<?>) parent).getDeclaringClass().getClassLoader();
             }
             else if (parent instanceof Method) {
                 loader = ((Method) parent).getDeclaringClass().getClassLoader();
             }
-            else {
+            else if (parent instanceof Field) {
                 loader = ((Field) parent).getDeclaringClass().getClassLoader();
+            }
+            else {
+                loader = injectee.getClass().getClassLoader();
             }
         }
         else {
