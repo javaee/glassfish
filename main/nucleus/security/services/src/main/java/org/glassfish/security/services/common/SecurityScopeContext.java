@@ -114,4 +114,13 @@ public class SecurityScopeContext implements Context<SecurityScope> {
     public boolean supportsNullCreation() {
         return false;
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        // Do nothing
+        
+    }
 }

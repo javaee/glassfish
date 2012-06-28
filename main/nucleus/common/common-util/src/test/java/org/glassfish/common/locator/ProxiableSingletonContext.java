@@ -103,4 +103,13 @@ public class ProxiableSingletonContext implements
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        // Do nothing
+        
+    }
+
 }
