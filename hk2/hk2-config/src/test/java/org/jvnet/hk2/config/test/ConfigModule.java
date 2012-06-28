@@ -96,6 +96,7 @@ public class ConfigModule {
         configurator.bind(BuilderHelper.link(DummyPopulator.class)
                 .to(Populator.class).in(Singleton.class.getName())
                 .build());
+        configurator.addActiveDescriptor(ConfigErrorService.class);
         bindInjector(configurator, "simple-connector", SimpleConnector.class, SimpleConnectorInjector.class);
         bindInjector(configurator, "ejb-container-availability", EjbContainerAvailability.class, EjbContainerAvailabilityInjector.class);
         bindInjector(configurator, "web-container-availability", WebContainerAvailability.class, WebContainerAvailabilityInjector.class);
