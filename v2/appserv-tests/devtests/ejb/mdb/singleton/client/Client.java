@@ -69,7 +69,7 @@ public class Client {
     }
 
     public void fooTest() {
-        final Set<String> fooBeans = new HashSet<String>();
+        final Set<String> fooBeans = Collections.synchronizedSet(new HashSet<String>());
         Thread[] threads = new Thread[numOfCalls];
         for (int i = 0; i < threads.length; i++) {
             threads[i] = new Thread(new Runnable() {
