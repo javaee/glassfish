@@ -112,7 +112,7 @@
                 </executions>
                 <configuration>
                     <instructions>
-			<Export-Package>com.sun.hk2.component,org.jvnet.hk2.component,org.jvnet.hk2.tracing,org.glassfish.hk2,org.glassfish.hk2.deprecated.utilities,org.glassfish.hk2.inject,org.jvnet.hk2.component.concurrent,org.jvnet.hk2.deprecated.internal,org.jvnet.tiger_types</Export-Package>
+			<Export-Package>com.sun.hk2.component;version="${project.osgi.version}",org.jvnet.hk2.component;version="${project.osgi.version}",org.jvnet.hk2.tracing;version="${project.osgi.version}",org.glassfish.hk2;version="${project.osgi.version}",org.glassfish.hk2.deprecated.utilities;version="${project.osgi.version}",org.glassfish.hk2.inject;version="${project.osgi.version}",org.jvnet.hk2.component.concurrent;version="${project.osgi.version}",org.jvnet.hk2.deprecated.internal;version="${project.osgi.version}",org.jvnet.tiger_types;version="${project.osgi.version}"</Export-Package>
                         <Fragment-Host>org.glassfish.hk2.api</Fragment-Host>
 			<Private-Package>org.glassfish.hk2.internal</Private-Package>
                     </instructions>
