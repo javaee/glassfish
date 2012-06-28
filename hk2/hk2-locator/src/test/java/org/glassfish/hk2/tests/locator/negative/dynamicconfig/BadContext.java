@@ -95,4 +95,10 @@ public class BadContext<T> implements Context<T> {
         throw new AssertionError("not called");
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public void shutdown() {
+    }
 }

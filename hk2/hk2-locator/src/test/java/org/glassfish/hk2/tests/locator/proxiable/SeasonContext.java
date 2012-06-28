@@ -105,4 +105,10 @@ public class SeasonContext implements Context<SeasonScope> {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public void shutdown() {
+    }
 }

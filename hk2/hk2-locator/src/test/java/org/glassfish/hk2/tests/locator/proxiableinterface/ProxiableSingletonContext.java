@@ -102,4 +102,10 @@ public class ProxiableSingletonContext implements Context<ProxiableSingleton> {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public void shutdown() {
+    }
 }

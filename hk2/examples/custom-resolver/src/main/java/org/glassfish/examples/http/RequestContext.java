@@ -138,4 +138,10 @@ public class RequestContext implements Context<RequestScope> {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public void shutdown() {
+    }
 }

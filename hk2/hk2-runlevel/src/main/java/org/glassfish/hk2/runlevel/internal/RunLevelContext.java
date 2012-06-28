@@ -147,6 +147,12 @@ public class RunLevelContext implements Context<RunLevel> {
         return true;
     }
 
+    /* (non-Javadoc)
+    * @see org.glassfish.hk2.api.Context#isActive()
+    */
+    @Override
+    public void shutdown() {
+    }
 
     // ----- Utility methods ------------------------------------------------
 

@@ -107,4 +107,10 @@ public class InheritedScopeContext implements Context<InheritedScope> {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public void shutdown() {
+    }
 }

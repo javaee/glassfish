@@ -106,7 +106,14 @@ public class TenantScopedContext implements Context<TenantScoped> {
     public boolean isActive() {
         return manager.getCurrentTenant() != null;
     }
-    
+
+    /* (non-Javadoc)
+    * @see org.glassfish.hk2.api.Context#isActive()
+    */
+    @Override
+    public void shutdown() {
+    }
+
     private HashMap<ActiveDescriptor<?>, Object> getCurrentContext() {
         if (manager.getCurrentTenant() == null) throw new IllegalStateException("There is no current tenant");
         
