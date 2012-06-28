@@ -385,7 +385,7 @@ public class Utilities {
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(CONTRACT_WITH_SLASHES, dotDelimitedName);
+            ContractClassVisitor ccv = new ContractClassVisitor(searchHere, CONTRACT_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
@@ -421,7 +421,7 @@ public class Utilities {
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(null, dotDelimitedName);
+            ContractClassVisitor ccv = new ContractClassVisitor(searchHere, null, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
@@ -456,7 +456,7 @@ public class Utilities {
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(SCOPE_WITH_SLASHES, dotDelimitedName);
+            ContractClassVisitor ccv = new ContractClassVisitor(searchHere, SCOPE_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
@@ -492,7 +492,7 @@ public class Utilities {
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(QUALIFIER_WITH_SLASHES, dotDelimitedName);
+            ContractClassVisitor ccv = new ContractClassVisitor(searchHere, QUALIFIER_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
@@ -578,6 +578,8 @@ public class Utilities {
                 if (isClassAContract(searchHere, dotDelimitedInterface)) {
                     retVal.add(dotDelimitedInterface);  
                 }
+                
+                addSubInterface(searchHere, dotDelimitedInterface, retVal);
             }
             
             dotDelimitedName = getSuperclass(searchHere, dotDelimitedName);
@@ -586,9 +588,23 @@ public class Utilities {
         return retVal;
     }
     
+    private void addSubInterface(File searchHere, String dotDelimitedInterface, LinkedHashSet<String> retVal) {
+        Set<String> subInterfaces = FOUND_INTERFACES.get(dotDelimitedInterface);
+        if (subInterfaces == null) return;
+        
+        for (String dotDelimitedSubInterface : subInterfaces) {
+            if (isClassAContract(searchHere, dotDelimitedSubInterface)) {
+                retVal.add(dotDelimitedSubInterface);
+            }
+            
+            addSubInterface(searchHere, dotDelimitedSubInterface, retVal);
+        }
+    }
+    
     private class ContractClassVisitor extends AbstractClassVisitorImpl {
         private final String cacheKey;
         private final String lookForMe;
+        private final File searchHere;
         
         private final Map<String, String> methodNameToMetadataKey =
                 new HashMap<String, String>();
@@ -601,7 +617,8 @@ public class Utilities {
         
         private String dotDelimitedSuperclass;
         
-        private ContractClassVisitor(String lookForMe, String cacheKey) {
+        private ContractClassVisitor(File searchHere, String lookForMe, String cacheKey) {
+            this.searchHere = searchHere;
             this.lookForMe = lookForMe;
             this.cacheKey = cacheKey;
         }
@@ -622,6 +639,9 @@ public class Utilities {
                 for (String iFace : interfaces) {
                     String iWithDots = iFace.replace('/', '.');
                     iFaces.add(iWithDots);
+                    
+                    // Fill in the cache with all sub interfaces
+                    getSuperclass(searchHere, iWithDots);
                 }
                 
                 FOUND_INTERFACES.put(cacheKey, iFaces);

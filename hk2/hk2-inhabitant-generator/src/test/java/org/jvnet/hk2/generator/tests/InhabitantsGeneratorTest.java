@@ -252,6 +252,19 @@ public class InhabitantsGeneratorTest {
         }
         
         {
+            // Another complex hierarchy
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(TwoContractImpl.class.getName());
+            di.addAdvertisedContract(TwoContractImpl.class.getName());
+            di.addAdvertisedContract(ComplexG.class.getName());
+            di.addAdvertisedContract(ComplexF.class.getName());
+            di.addAdvertisedContract(ComplexA.class.getName());
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
             // This is a descriptor with a non-defaulted Name from @Service
             DescriptorImpl di = new DescriptorImpl();
             di.setImplementation("org.jvnet.hk2.generator.tests.ContractsProvidedService");
