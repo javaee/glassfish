@@ -94,17 +94,17 @@ public class Utils {
         }
 
         Habitat habitat = getNewHabitat(test);
+        habitats.put(fileName, habitat);
         return habitat;
     }
 
     public static synchronized Habitat getNewHabitat(final ConfigApiTest test) {
 
-        final ServiceLocator sl = getNewHabitat(test.getFileName());
-        Habitat habitat = new Habitat();
+        String name = test.getFileName();
+        final ServiceLocator sl = getNewHabitat(name);
+        Habitat habitat = new Habitat(null, name);
 
         final String fileName = test.getFileName();
-
-
         ConfigParser configParser = new ConfigParser(habitat);
 
 		long now = System.currentTimeMillis();
@@ -137,7 +137,7 @@ public class Utils {
         p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_PROP_NAME, root);
         p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTANCE_ROOT_PROP_NAME, root);
         ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader(), new StartupContext(p));
-        return registry.createServiceLocator("default");
+        return registry.createServiceLocator(root);
     }
 
 	public void shutdownServiceLocator(
