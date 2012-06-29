@@ -86,7 +86,6 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
         if (startupContext==null) {
             sc = new StartupContext(new Properties());
         }
-        super.createServiceLocator("default", serviceLocator);
         
         DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
