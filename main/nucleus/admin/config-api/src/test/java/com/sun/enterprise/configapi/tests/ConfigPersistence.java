@@ -126,7 +126,7 @@ public abstract class ConfigPersistence extends ConfigApiTest {
         final String resultingXml = baos.toString();
         
         logger.fine(resultingXml);
-        assertTrue("assertResult from " + getClass().getName() + " was false", assertResult(resultingXml));
+        assertTrue("assertResult from " + getClass().getName() + " was false from " + resultingXml, assertResult(resultingXml));
     }
 
     public abstract void doTest() throws TransactionFailure;
