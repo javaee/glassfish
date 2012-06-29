@@ -45,6 +45,9 @@ import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.naming.GlassfishNamingManager;
+import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.PostStartup;
 import org.glassfish.resources.api.ResourceDeployer;
@@ -55,14 +58,13 @@ import org.glassfish.resources.util.ResourceManagerFactory;
 import org.glassfish.resources.util.ResourceUtil;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PostConstruct;
-import org.jvnet.hk2.component.PreDestroy;
-import org.jvnet.hk2.component.Singleton;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+import javax.inject.Singleton;
+
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.List;

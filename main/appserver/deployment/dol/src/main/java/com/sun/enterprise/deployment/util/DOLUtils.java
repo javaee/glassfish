@@ -492,7 +492,7 @@ public class DOLUtils {
         return allIncompatTypes;
     }
 
-    public static List<ConfigurationDeploymentDescriptorFile> getConfigurationDeploymentDescriptorFiles(BaseServiceLocator habitat, String containerType) {
+    public static List<ConfigurationDeploymentDescriptorFile> getConfigurationDeploymentDescriptorFiles(ServiceLocator habitat, String containerType) {
         List<ConfigurationDeploymentDescriptorFile> confDDFiles = new ArrayList<ConfigurationDeploymentDescriptorFile>();
         for (ServiceHandle<?> serviceHandle : habitat.getAllServiceHandles(ConfigurationDeploymentDescriptorFileFor.class)) {
             ActiveDescriptor<?> descriptor = serviceHandle.getActiveDescriptor();

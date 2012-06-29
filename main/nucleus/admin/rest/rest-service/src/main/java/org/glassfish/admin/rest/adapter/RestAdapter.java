@@ -325,6 +325,9 @@ public abstract class RestAdapter extends HttpHandler implements ProxiedRestAdap
         rc.addSingletons(r);
         rc.addClasses(ReloadResource.class);
 
+        /**
+         * JRW JRW
+         *
         rc.addModules(getJsonModule(), new MultiPartModule(), new AbstractModule() {
             @Override
             protected void configure() {
@@ -335,6 +338,7 @@ public abstract class RestAdapter extends HttpHandler implements ProxiedRestAdap
 
             }
         });
+         */
 
         //Use common classloader. Jersey artifacts are not visible through
         //module classloader

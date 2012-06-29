@@ -53,9 +53,10 @@ import org.glassfish.resources.api.ResourceDeployerInfo;
 import org.glassfish.resources.api.ResourceInfo;
 import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Singleton;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
