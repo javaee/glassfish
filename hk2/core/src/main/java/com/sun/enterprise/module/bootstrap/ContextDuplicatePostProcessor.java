@@ -43,23 +43,39 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
-import javax.inject.Singleton;
-
 /**
- * This class will weed out and duplicate implementations of Context, which can happen
- * if the same jar is on the classpath twice.  This service must be put into the
+ * This class will weed out and duplicate implementations of Context and RunLevel, which can
+ * happen if the same jar is on the classpath twice.  This service must be put into the
  * ServiceLocator prior to populating from the inhabitant files, and hence is not
  * annotated with &#64;Service
  * 
  * @author jwells
  *
  */
-@Singleton
+@PerLookup
 public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
     private final HashSet<String> contextImpl = new HashSet<String>();
+    
+    private static boolean isDupProtected(DescriptorImpl di) {
+        Set<String> contracts = di.getAdvertisedContracts();
+        if (contracts.contains(Context.class.getName())) {
+            return true;
+        }
+        
+        String scope = di.getScope();
+        if (scope == null) return false;  // PerLookup
+        
+        if (scope.equals(RunLevel.class.getName())) {
+            return true;
+        }
+        
+        return false;
+    }
     
 
     /* (non-Javadoc)
@@ -67,8 +83,7 @@ public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
      */
     @Override
     public DescriptorImpl process(DescriptorImpl descriptorImpl) {
-        Set<String> contracts = descriptorImpl.getAdvertisedContracts();
-        if (!contracts.contains(Context.class.getName())) {
+        if (!isDupProtected(descriptorImpl)) {
             return descriptorImpl;
         }
         
