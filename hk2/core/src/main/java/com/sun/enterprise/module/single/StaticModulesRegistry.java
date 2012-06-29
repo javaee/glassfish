@@ -92,6 +92,7 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
         DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         config.bind(BuilderHelper.createConstantDescriptor(sc));
+        config.bind(BuilderHelper.createConstantDescriptor(this));
         config.commit();
         
         ClassLoader cl = getClass().getClassLoader();
