@@ -41,12 +41,15 @@ package com.sun.enterprise.module.single;
 
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.ComponentException;
 
@@ -79,9 +82,8 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
 
     @Override                         
     public ServiceLocator createServiceLocator(String name) throws ComponentException {
-
         StartupContext sc = startupContext;
-        ServiceLocator serviceLocator = super.newServiceLocator();
+        ServiceLocator serviceLocator = super.newServiceLocator(null, name);
 
         if (startupContext==null) {
             sc = new StartupContext(new Properties());
@@ -91,6 +93,18 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         config.bind(BuilderHelper.createConstantDescriptor(sc));
         config.commit();
+        
+        ClassLoader cl = getClass().getClassLoader();
+        if (cl == null) {
+            cl = ClassLoader.getSystemClassLoader();
+        }
+        
+        try {
+            HK2Populator.populate(serviceLocator,
+                    new ClasspathDescriptorFileFinder(cl));
+        } catch (IOException e) {
+            throw new ComponentException(e);
+        }
         
         return serviceLocator;
     }
