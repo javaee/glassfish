@@ -61,6 +61,8 @@ import javax.ws.rs.core.MediaType;
 
 import javax.security.auth.login.LoginException;
 
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
@@ -328,17 +330,26 @@ public abstract class RestAdapter extends HttpHandler implements ProxiedRestAdap
         /**
          * JRW JRW
          *
+         */
         rc.addModules(getJsonModule(), new MultiPartModule(), new AbstractModule() {
             @Override
             protected void configure() {
-                bind(Reloader.class).toInstance(r);
-                bind(ServerContext.class).toInstance(sc);
-                bind(Habitat.class).toInstance(habitat);
-                bind(RestSessionManager.class).toInstance(habitat.getComponent(RestSessionManager.class));
+                AbstractActiveDescriptor descriptor = BuilderHelper.createConstantDescriptor(r);
+                descriptor.addContractType(Reloader.class);
+                bind(descriptor);
 
+                descriptor = BuilderHelper.createConstantDescriptor(sc);
+                descriptor.addContractType(ServerContext.class);
+                bind(descriptor);
+
+                descriptor = BuilderHelper.createConstantDescriptor(habitat);
+                descriptor.addContractType(Habitat.class);
+                bind(descriptor);
+
+                // TODO : I don't see the point
+//                bind(RestSessionManager.class).toInstance(habitat.getComponent(RestSessionManager.class));
             }
         });
-         */
 
         //Use common classloader. Jersey artifacts are not visible through
         //module classloader
