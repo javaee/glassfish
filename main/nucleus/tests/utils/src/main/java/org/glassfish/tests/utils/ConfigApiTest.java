@@ -73,8 +73,8 @@ public abstract class ConfigApiTest {
      * 
      * @return a configured Habitat
      */
-    public ServiceLocator getHabitat() {
-        ServiceLocator habitat = Utils.instance.getHabitat(this);
+    public Habitat getHabitat() {
+        Habitat habitat = Utils.instance.getHabitat(this);
         
         assertNotNull("Transactions service from Configuration subsystem is null", habitat.getService(Transactions.class));
         return habitat;

@@ -84,7 +84,7 @@ public class Utils {
     private static Map<String, Habitat> habitats = new HashMap<String, Habitat>();
     public static final Utils instance = new Utils();
 
-    public synchronized ServiceLocator getHabitat(ConfigApiTest test) {
+    public synchronized Habitat getHabitat(ConfigApiTest test) {
 
         final String fileName = test.getFileName();
         // we cache the habitat per xml file
@@ -93,11 +93,11 @@ public class Utils {
            return habitats.get(fileName);
         }
 
-        ServiceLocator habitat = getNewHabitat(test);
+        Habitat habitat = getNewHabitat(test);
         return habitat;
     }
 
-    public static synchronized ServiceLocator getNewHabitat(final ConfigApiTest test) {
+    public static synchronized Habitat getNewHabitat(final ConfigApiTest test) {
 
         final ServiceLocator sl = getNewHabitat(test.getFileName());
         Habitat habitat = new Habitat();

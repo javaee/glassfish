@@ -45,6 +45,7 @@ import com.sun.enterprise.config.serverbeans.JavaConfig;
 import com.sun.enterprise.config.serverbeans.Profiler;
 import com.sun.enterprise.config.serverbeans.AdminService;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.tests.utils.Utils;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -67,7 +68,7 @@ import java.util.Map;
  */
 public class DirectCreationTest extends ConfigPersistence {
 
-    BaseServiceLocator habitat = Utils.getNewHabitat(this);
+    Habitat habitat = Utils.getNewHabitat(this);
 
     /**
      * Returns the file name without the .xml extension to load the test configuration
@@ -80,7 +81,7 @@ public class DirectCreationTest extends ConfigPersistence {
     }
 
     @Override
-    public BaseServiceLocator getBaseServiceLocator() {
+    public ServiceLocator getBaseServiceLocator() {
         return habitat;
     }
     
@@ -102,7 +103,7 @@ public class DirectCreationTest extends ConfigPersistence {
             throw new RuntimeException(e);
         }
 
-        ConfigSupport support = getBaseServiceLocator().getComponent(ConfigSupport.class);
+        ConfigSupport support = getBaseServiceLocator().getService(ConfigSupport.class);
 
         assertNotNull("ConfigSupport not found", support);
         
