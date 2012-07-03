@@ -187,7 +187,7 @@ public class GeneratorRunner {
             noSwapFile = outputFile;
         }
         
-        File writeMeFile = writeInhabitantsFile(descriptors, noSwapFile);
+        File writeMeFile = writeInhabitantsFile(descriptors, noSwapFile, inhabitantsDir);
         
         if (!directWrite) {
             // OK, now swap it
@@ -210,12 +210,12 @@ public class GeneratorRunner {
     }
     
     private void writeToJar(File jarFile, List<DescriptorImpl> descriptors) throws IOException {
-        File writeMeFile = writeInhabitantsFile(descriptors, null);
+        File outjar = new File(outjarName);
+        File writeMeFile = writeInhabitantsFile(descriptors, null, outjar.getParentFile());
         writeMeFile.deleteOnExit();
         
         byte buffer[] = new byte[1024];
         
-        File outjar = new File(outjarName);
         File tmpJarFile = File.createTempFile(jarFile.getName(), ".tmp", outjar.getParentFile());
         
         FileInputStream fis = new FileInputStream(jarFile);
@@ -262,7 +262,6 @@ public class GeneratorRunner {
         // All went well, replace the JAR file with the new and improved jar file
         String tmpFileName = tmpJarFile.getAbsolutePath();
         
-        
         if (verbose) {
             System.out.println("Swapping jar file " + tmpFileName + " to " + outjar.getAbsolutePath());
         }
@@ -272,13 +271,13 @@ public class GeneratorRunner {
         }
     }
     
-    private File writeInhabitantsFile(List<DescriptorImpl> descriptors, File noSwapFile) throws IOException {
+    private File writeInhabitantsFile(List<DescriptorImpl> descriptors, File noSwapFile, File outDir) throws IOException {
         File outFile;
         if (noSwapFile != null) {
             outFile = noSwapFile;
         }
         else {
-            outFile = File.createTempFile(locatorName, ".tmp");
+            outFile = File.createTempFile(locatorName, ".tmp", outDir);
         }
         
         if (verbose) {
