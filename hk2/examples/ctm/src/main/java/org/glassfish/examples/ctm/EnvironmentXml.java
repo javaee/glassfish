@@ -37,62 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.ctm.runme;
+package org.glassfish.examples.ctm;
 
-import javax.inject.Singleton;
+import java.net.URL;
 
-import org.glassfish.examples.ctm.Environment;
-import org.glassfish.examples.ctm.EnvironmentFactory;
-import org.glassfish.examples.ctm.ServiceProviderEngine;
-import org.glassfish.examples.ctm.TenantManager;
-import org.glassfish.examples.ctm.TenantScoped;
-import org.glassfish.examples.ctm.TenantScopedContext;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import javax.inject.Inject;
+
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.ConfigPopulatorException;
+import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.config.Populator;
 
 /**
- * TODO:  This should be done via auto-depends (via Service and contract
- * and all that).  However, since those don't work yet with the new
- * API, we must code this up by hand.
+ * Reads Environment from xml.
  * 
- * @author jwells
+ * @author andriy.zhdanov
  *
  */
-public class CTMModule {
+@Service
+public class EnvironmentXml implements Populator {
+    @Inject
+    TenantManager tenantManager;
 
-    /**
-     * Configures the HK2 instance
-     * 
-     * @param configurator
-     */
-    public void configure(DynamicConfiguration configurator) {
-        // Bind our custom scope
-        configurator.bind(
-                BuilderHelper.link(TenantScopedContext.class).
-                              to(Context.class).
-                              in(Singleton.class.getName()).
-                              build());
-        
-        // Bind our factory
-        configurator.bind(
-                BuilderHelper.link(EnvironmentFactory.class).
-                              to(Environment.class).
-                              in(TenantScoped.class.getName()).
-                              buildFactory(Singleton.class.getName()));
-        
-        // We implemented the TenantManager as a service (nice!)
-        configurator.bind(
-                BuilderHelper.link(TenantManager.class).
-                              in(Singleton.class.getName()).
-                              build());
-        
-        // And of course, ServiceProviderEngine is a service
-        configurator.bind(
-                BuilderHelper.link(ServiceProviderEngine.class).
-                              in(Singleton.class.getName()).
-                              build());
+    @Inject
+    protected Habitat habitat;
 
+    @Override
+    public void run(ConfigParser parser) throws ConfigPopulatorException {
+        String tenantName = tenantManager.getCurrentTenant();
+        System.out.println("Running populator for tenant " + tenantName);
+        URL source = EnvironmentXml.class.getResource("/" + tenantName + ".xml");
+        @SuppressWarnings({ "rawtypes", "unused" })
+        DomDocument doc = parser.parse(source, new DomDocument(habitat));
     }
 
 }

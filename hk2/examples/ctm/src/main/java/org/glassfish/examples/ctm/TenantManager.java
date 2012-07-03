@@ -39,11 +39,8 @@
  */
 package org.glassfish.examples.ctm;
 
-import java.util.HashMap;
-
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
 
 /**

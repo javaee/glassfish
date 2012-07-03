@@ -39,16 +39,19 @@
  */
 package org.glassfish.examples.ctm.runme;
 
+import java.io.IOException;
+
 import junit.framework.Assert;
 
 import org.glassfish.examples.ctm.ServiceProviderEngine;
 import org.glassfish.examples.ctm.TenantLocatorGenerator;
 import org.glassfish.examples.ctm.TenantManager;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Before;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -61,14 +64,11 @@ public class CTMTest {
     private final static String TEST_NAME = "CTMTest";
     private final static ServiceLocator locator = ServiceLocatorFactory.getInstance().create(TEST_NAME);
     
-    @Before
-    public void before() {
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        new CTMModule().configure(config);
-        
-        config.commit();
+    @BeforeClass
+    public static void before() throws IOException {
+        HK2Populator.populate(locator,
+                new ClasspathDescriptorFileFinder(),
+                new Hk2LoaderPopulatorPostProcessor(null));
     }
     
     @Test
@@ -88,5 +88,6 @@ public class CTMTest {
         Assert.assertEquals(TenantLocatorGenerator.BOB, engine.getTenantName());
         Assert.assertEquals(TenantLocatorGenerator.BOB_MAX, engine.getTenantMax());
         Assert.assertEquals(TenantLocatorGenerator.BOB_MIN, engine.getTenantMin());
+
     }
 }
