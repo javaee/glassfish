@@ -39,20 +39,18 @@
  */
 package org.glassfish.examples.ctm;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.Populator;
 
 /**
  * This is the class that creates the service locator for each
- * known tenant
- * <p>
- * TODO:  Each of these services should instead be backed by
- * their configured instances, not what I'm doing here
+ * known tenant.
  * 
  * @author jwells
+ * @author andriy.zhdanov
  */
 public class TenantLocatorGenerator {
     private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
@@ -66,67 +64,27 @@ public class TenantLocatorGenerator {
     
     public ServiceLocator generateLocatorPerTenant(String tenantName) {
         if (tenantName == null) throw new IllegalArgumentException();
+
+        ServiceLocator parent = ServiceLocatorFactory.getInstance().find("CTMTest");
         
-        Environment env;
-        if (ALICE.equals(tenantName)) {
-            env = new EnvironmentImpl(ALICE, ALICE_MIN, ALICE_MAX);
+        ServiceLocator serviceLocator = factory.create(tenantName, parent);
+
+        // Will add itself to serviceLocator by tenantName
+        Habitat h = new Habitat(null, tenantName);
+        
+        // Populate this serviceLocator with config data.
+        //
+        // Note, populator comes from parent service locator, though it gets
+        // Habitat injected from this service locator.  But it does not work
+        // with HK2Populator.populateConfig, probably because habitat there
+        // is marked as @Optional 
+        // 
+        // CAUTION: this must be done by direct lookup of EnvironmentXml in real life,
+        // to avoid populating with everything possible.
+        for (Populator p : serviceLocator.<Populator>getAllServices(Populator.class)) {
+            p.run(new ConfigParser(h));
         }
-        else if (BOB.equals(tenantName)) {
-            env = new EnvironmentImpl(BOB, BOB_MIN, BOB_MAX);
-        }
-        else {
-            env = new EnvironmentImpl(tenantName, 0, 100);
-        }
         
-        
-        
-        ServiceLocator retVal = factory.create(tenantName);
-        DynamicConfigurationService dcs = retVal.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        config.addActiveDescriptor(
-                BuilderHelper.createConstantDescriptor(env));
-        
-        config.commit();
-        
-        return retVal;
+        return serviceLocator;
     }
-    
-    private static class EnvironmentImpl implements Environment {
-        private final String name;
-        private final int min;
-        private final int max;
-        
-        private EnvironmentImpl(String name, int min, int max) {
-            this.name = name;
-            this.min = min;
-            this.max = max;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.examples.ctm.Environment#getName()
-         */
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.examples.ctm.Environment#getMinSize()
-         */
-        @Override
-        public int getMinSize() {
-            return min;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.examples.ctm.Environment#getMaxSize()
-         */
-        @Override
-        public int getMaxSize() {
-            return max;
-        }
-        
-    }
-
 }

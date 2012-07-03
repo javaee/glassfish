@@ -39,21 +39,28 @@
  */
 package org.glassfish.examples.ctm;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 
 /**
- * TODO:  How do I say what things come from the XML file?  I don't know
+ * Comes from xml.
  * 
  * @author jwells
+ * @author andriy.zhdanov
  */
 @Configured
-@Contract
 @TenantScoped
-public interface Environment {
+public interface Environment extends ConfigBeanProxy {
+    @Attribute
     public String getName();
+    public void setName(String name);
     
+    @Attribute
     public int getMinSize();
+    public void setMinSize(int minSize);
     
+    @Attribute
     public int getMaxSize();
+    public void setMaxSize(int maxSize);
 }

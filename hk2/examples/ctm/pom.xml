@@ -90,13 +90,85 @@
             </plugin>
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
+                <artifactId>config-generator</artifactId>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <classpath>${project.build.directory}/classpath.txt</classpath>
+                        </configuration>
+
+                        <goals>
+                            <goal>generateInjectors</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-generation</id>
+                        <configuration>
+                            <classpath>${project.build.directory}/classpath.txt</classpath>
+                            <test>true</test>
+                        </configuration>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>generateInjectors</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>build-helper-maven-plugin</artifactId>
+              <version>1.7</version>
+              <executions>
+                <execution>
+                  <id>add-source</id>
+                  <phase>generate-sources</phase>
+                  <goals>
+                    <goal>add-source</goal>
+                  </goals>
+                  <configuration>
+                    <sources>
+                      <source>target/generated-sources/hk2-config-generator/src/main/java</source>
+                    </sources>
+                  </configuration>
+                </execution>
+                <execution>
+                  <id>add-test-source</id>
+                  <phase>generate-test-sources</phase>
+                  <goals>
+                    <goal>add-test-source</goal>
+                  </goals>
+                  <configuration>
+                    <sources>
+                      <source>target/generated-sources/hk2-config-generator/src/test/java</source>
+                    </sources>
+                  </configuration>
+                </execution>
+              </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
                 <artifactId>hk2-inhabitant-generator</artifactId>
                 <executions>
-                  <execution>
-                    <goals>
-                      <goal>generateInhabitants</goal>
-                    </goals>
-                  </execution>
+                    <execution>
+                        <configuration>
+                            <noswap>true</noswap>
+                            <classpath>${project.build.directory}/classpath.txt</classpath>
+                        </configuration>
+                        <goals>
+                            <goal>generateInhabitants</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test</id>
+                        <phase>process-test-classes</phase>
+                        <configuration>
+                            <test>true</test>
+                            <classpath>${project.build.directory}/classpath.txt</classpath>
+                        </configuration>
+                        <goals>
+                            <goal>generateInhabitants</goal>
+                        </goals>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
