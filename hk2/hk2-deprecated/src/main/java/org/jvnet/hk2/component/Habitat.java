@@ -853,4 +853,8 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
             Annotation... qualifiers) throws MultiException {
         return (List<ServiceHandle<?>>) delegate.getAllServiceHandles(qualifier, qualifiers);
     }
+    
+    public String toString() {
+        return "Habitat(" + delegate + "," + System.identityHashCode(this) + ")";
+    }
 }
