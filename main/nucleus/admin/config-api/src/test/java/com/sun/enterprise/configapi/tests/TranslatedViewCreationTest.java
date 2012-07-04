@@ -82,7 +82,7 @@ public class TranslatedViewCreationTest extends ConfigApiTest {
     @Before
     public void setup() {
         System.setProperty(propName, "/foo/bar/docroot");
-        habitat = Utils.getNewHabitat(this);
+        habitat = Utils.instance.getHabitat(this);
 
     }
 

@@ -40,15 +40,11 @@
 
 package com.sun.enterprise.configapi.tests;
 
-import org.glassfish.grizzly.config.GrizzlyConfig;
-import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.NetworkListeners;
 import org.glassfish.grizzly.config.dom.Transport;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
-
-import java.beans.PropertyVetoException;
 
 /**
  * Test the persistence to a file...
@@ -73,8 +69,6 @@ public class PersistenceTest extends ConfigPersistence {
     }
 
     public boolean assertResult(String s) {
-        // JRW JRW JRW This is a bogus pass until we can figure out what is wrong
-        return true;
-        // return s.contains("acceptor-threads=\"8989\"");
+        return s.contains("acceptor-threads=\"8989\"");
     }
 }

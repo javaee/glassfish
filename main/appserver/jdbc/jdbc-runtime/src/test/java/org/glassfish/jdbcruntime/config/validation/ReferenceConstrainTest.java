@@ -89,10 +89,10 @@ public class ReferenceConstrainTest extends ConfigApiTest {
     
     @Before
     public void createNewHabitat() {
-        this.habitat = Utils.getNewHabitat(this);
+        this.habitat = Utils.instance.getHabitat(this);
     }
     
-    @Test
+    @Test @Ignore
     public void doChangeToValidPool() throws TransactionFailure {
         Domain domain = habitat.getComponent(Domain.class);
         //Find JdbcResource to chenge its values
@@ -119,8 +119,7 @@ public class ReferenceConstrainTest extends ConfigApiTest {
         }
     }
    
-    // JRW JRW JRW ignoring for now, but will need to get fixed 
-    @Test @Ignore
+    @Test
     public void doChangeToInValidPool() throws TransactionFailure {
         Domain domain = habitat.getComponent(Domain.class);
         //Find JdbcResource to chenge its values

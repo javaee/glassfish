@@ -89,7 +89,7 @@ public class ReferenceConstrainClusterTest extends ConfigApiTest {
     
     @Before
     public void createNewHabitat() {
-        this.habitat = Utils.getNewHabitat(this);
+        this.habitat = Utils.instance.getHabitat(this);
     }
     
     @Test

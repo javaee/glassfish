@@ -75,7 +75,7 @@ public class ConfigListenerTest extends ConfigApiTest {
 
     @Before
     public void setup() {
-        habitat = Utils.getNewHabitat(this);
+        habitat = Utils.instance.getHabitat(this);
         
         // make sure the ConfigConfigListener exists
         Inhabitant<ConfigConfigBeanListener> i = habitat.getInhabitantByType(ConfigConfigBeanListener.class);

@@ -63,7 +63,7 @@ import java.util.Map;
  */
 public class TransactionCallBackTest extends ConfigPersistence {
 
-    Habitat habitat = Utils.getNewHabitat(this);
+    Habitat habitat = Utils.instance.getHabitat(this);
 
     /**
      * Returns the file name without the .xml extension to load the test configuration
@@ -114,8 +114,6 @@ public class TransactionCallBackTest extends ConfigPersistence {
     }
 
     public boolean assertResult(String s) {
-        // JRW JRW This is a bogus pass until we can get this test figured out
-        return true;
-        // return s.contains("Aleksey") && s.contains("localhost");
+        return s.contains("Aleksey") && s.contains("localhost");
     }    
 }

@@ -83,7 +83,7 @@ public class JavaConfigSubTypesTest extends ConfigPersistence {
         }
     }
 
-    Habitat habitat = Utils.getNewHabitat(this);
+    Habitat habitat = Utils.instance.getHabitat(this);
 
     /**
      * Returns the file name without the .xml extension to load the test configuration

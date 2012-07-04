@@ -77,7 +77,7 @@ public class ParentConfigListenerTest extends ConfigApiTest {
 
     @Before
     public void setup() {
-        habitat = Utils.getNewHabitat(this);
+        habitat = Utils.instance.getHabitat(this);
     }
     
     

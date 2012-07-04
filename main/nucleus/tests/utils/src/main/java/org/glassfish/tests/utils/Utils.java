@@ -98,7 +98,7 @@ public class Utils {
         return habitat;
     }
 
-    public static synchronized Habitat getNewHabitat(final ConfigApiTest test) {
+    private static synchronized Habitat getNewHabitat(final ConfigApiTest test) {
 
         String name = test.getFileName();
         final ServiceLocator sl = getNewHabitat(name);
