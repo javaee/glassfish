@@ -53,14 +53,14 @@ import org.jvnet.hk2.config.Configured;
 @TenantScoped
 public interface Environment extends ConfigBeanProxy {
     @Attribute
-    public String getName();
-    public void setName(String name);
+    String getName();
+    void setName(String name);
     
     @Attribute
-    public int getMinSize();
-    public void setMinSize(int minSize);
+    int getMinSize();
+    void setMinSize(int minSize);
     
     @Attribute
-    public int getMaxSize();
-    public void setMaxSize(int maxSize);
+    int getMaxSize();
+    void setMaxSize(int maxSize);
 }

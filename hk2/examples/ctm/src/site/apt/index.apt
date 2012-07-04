@@ -22,13 +22,10 @@ Tenant Managed Scope Example
  The CTM team would like to have an interface called Environment that encapsulates all the information about a tenant:
   
 +----------
-@Configured
-@Contract
 public interface Environment {
-    public String getName();
-    public int getMinSize();
-    public int getMaxSize();
-    ...
+    String getName();
+    int getMinSize();
+    int getMaxSize();
 }
 +----------
 
@@ -206,7 +203,7 @@ public class EnvironmentFactory implements Factory<Environment> {
  We will have a new ServiceLocator registry for each tenant, and that new ServiceLocator will be responsible for instantiating
  and providing the Environment implementations that we require.
  
- TBD here we would need some words about how the separate ServiceLocators will create the EnvironmentImpls based on a
+ ServiceLocators will be used as delegate for Habitat to create config instance of Environments based on a
  particular backing XML file, using the configuration subsystem of hk2.
 
  Thus the job of the EnvironmentFactory is to keep a map from tenants to their backing ServiceLocator registries.  Here is
@@ -233,12 +230,43 @@ public class EnvironmentFactory implements Factory<Environment> {
     }
 +----------
 
- The job of the TenantLocatorGenerator is to create a new ServiceLocator based on the current tenant.  TBD For
- now this generator will simply bind in an implementation of Environment that corresponds to Alice or Bob, but
- once the configuration subsystem is working over the new API the TenantLocatorGenerator will get its values from
- the proper backing XML file.
+ The job of the TenantLocatorGenerator is to create a new ServiceLocator based on the current tenant and populate it
+ with values from a backing XML file.
  
- The code of the produce method in the EnvironmentFactory is now strait-forward:
++----------
+        ServiceLocator serviceLocator = factory.create(tenantName, parent);
+
+        // Will add itself to serviceLocator by tenantName
+        Habitat h = new Habitat(null, tenantName);
+        
+        // Populate this serviceLocator with config data.
+        for (Populator p : serviceLocator.<Populator>getAllServices(Populator.class)) {
+            p.run(new ConfigParser(h));
+        }
++----------
+
+ Then it is necessary to implement Populator service, as follows below. Note, Habitat is backed by ServiceLocator for tenant.
+ 
++----------
+		@Service
+		public class EnvironmentXml implements Populator {
+		    @Inject
+		    TenantManager tenantManager;
+		
+		    @Inject
+		    protected Habitat habitat;
+		
+		    @Override
+		    public void run(ConfigParser parser) throws ConfigPopulatorException {
+		        String tenantName = tenantManager.getCurrentTenant();
+		        URL source = URL<tenantName.xml>
+		        parser.parse(source, new DomDocument(habitat));
+		    }
+		
+		}
++----------
+  
+ The code of the produce method in the EnvironmentFactory is now straightforward:
 
 +----------
     @TenantScoped
