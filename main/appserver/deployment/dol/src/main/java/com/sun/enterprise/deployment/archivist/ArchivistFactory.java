@@ -71,7 +71,7 @@ public class ArchivistFactory {
     public final static String EXTENSION_ARCHIVE_TYPE = "extensionArchiveType";
     
     @Inject
-    ServiceLocator habitat;
+    private ServiceLocator habitat;
 
     public Archivist getArchivist(String archiveType, ClassLoader cl) {
         Archivist result = getArchivist(archiveType);
@@ -84,7 +84,7 @@ public class ArchivistFactory {
     @SuppressWarnings("unchecked")
     public Archivist getArchivist(String archiveType) {
         ActiveDescriptor<Archivist> best = (ActiveDescriptor<Archivist>)
-                habitat.getBestDescriptor(new ArchivistFilter(archiveType));
+                habitat.getBestDescriptor(new ArchivistFilter(archiveType, ARCHIVE_TYPE, Archivist.class));
         if (best == null) return null;
         
         return habitat.getServiceHandle(best).getService();
@@ -104,7 +104,7 @@ public class ArchivistFactory {
         for (String containerType : containerTypes) {
             List<ActiveDescriptor<?>> descriptors =
                     habitat.getDescriptors(
-                    new ExtensionsArchivistFilter(containerType));
+                    new ArchivistFilter(containerType, EXTENSION_ARCHIVE_TYPE, ExtensionsArchivist.class));
             
             for (ActiveDescriptor<?> item : descriptors) {
                 
@@ -121,57 +121,15 @@ public class ArchivistFactory {
         return archivists;
     }
     
-    private static class ExtensionsArchivistFilter implements IndexedFilter {
-        private final String containerType;
-        
-        private ExtensionsArchivistFilter(String mustEndWith) {
-            this.containerType = mustEndWith;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
-         */
-        @Override
-        public boolean matches(Descriptor d) {
-            Map<String, List<String>> metadata = d.getMetadata();
-            
-            List<String> values = metadata.get(EXTENSION_ARCHIVE_TYPE);
-            if (values == null) {
-                return false;
-            }
-            
-            for (String value : values) {
-                if (value.endsWith(containerType)) {
-                    return true;
-                }
-            }
-            
-            return false;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
-         */
-        @Override
-        public String getAdvertisedContract() {
-            return ExtensionsArchivist.class.getName();
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.IndexedFilter#getName()
-         */
-        @Override
-        public String getName() {
-            return null;
-        }
-        
-    }
-    
     private static class ArchivistFilter implements IndexedFilter {
         private final String archiveType;
+        private final String metadataKey;
+        private final Class<?> index;
         
-        private ArchivistFilter(String archiveType) {
+        private ArchivistFilter(String archiveType, String metadataKey, Class<?> index) {
             this.archiveType = archiveType;
+            this.metadataKey = metadataKey;
+            this.index = index;
         }
 
         /* (non-Javadoc)
@@ -181,7 +139,7 @@ public class ArchivistFactory {
         public boolean matches(Descriptor d) {
             Map<String, List<String>> metadata = d.getMetadata();
             
-            List<String> values = metadata.get(ARCHIVE_TYPE);
+            List<String> values = metadata.get(metadataKey);
             if (values == null) {
                 return false;
             }
@@ -194,7 +152,7 @@ public class ArchivistFactory {
          */
         @Override
         public String getAdvertisedContract() {
-            return Archivist.class.getName();
+            return index.getName();
         }
 
         /* (non-Javadoc)
