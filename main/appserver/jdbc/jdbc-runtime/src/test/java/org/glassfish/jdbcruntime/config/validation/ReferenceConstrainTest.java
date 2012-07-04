@@ -92,7 +92,7 @@ public class ReferenceConstrainTest extends ConfigApiTest {
         this.habitat = Utils.instance.getHabitat(this);
     }
     
-    @Test @Ignore
+    @Test // @Ignore
     public void doChangeToValidPool() throws TransactionFailure {
         Domain domain = habitat.getComponent(Domain.class);
         //Find JdbcResource to chenge its values
@@ -127,7 +127,7 @@ public class ReferenceConstrainTest extends ConfigApiTest {
         JdbcResource jdbc = null;
         while (iterator.hasNext()) {
             JdbcResource res = iterator.next();
-            if ("__TimerPool".equals(res.getPoolName())) {
+            if ("DerbyPool".equals(res.getPoolName())) {
                 jdbc = res;
                 break;
             }
