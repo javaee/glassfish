@@ -507,7 +507,7 @@ public class Utilities {
     }
     
     /**
-     * Returns true if it can be determined that this class is a qualifier
+     * Returns true if it can be determined that this class is a generator
      * 
      * @param searchHere
      * @param dotDelimitedName

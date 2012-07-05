@@ -95,6 +95,8 @@ public class InhabitantsGeneratorTest {
     public final static String GENERATE_METHOD_CREATE_CONTRACT = "com.acme.api.GenerateMethod";
     public final static String GENERATE_METHOD_CREATE_NAME1 = "name1";
     public final static String GENERATE_METHOD_CREATE_NAME2 = "name2";
+    public final static String GENERATE_METHOD_CREATE_NAME3 = "name3";
+    public final static String GENERATE_METHOD_CREATE_NAME4 = "name4";
     
     public final static String GENERATE_METHOD_DELETE_IMPL = "com.acme.service.DeleteImpl";
     public final static String GENERATE_METHOD_DELETE_CONTRACT = "com.acme.api.GenerateMethod";
@@ -370,6 +372,36 @@ public class InhabitantsGeneratorTest {
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.StreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getStreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From the @CreateMe on the DecoratedTown class (using @Decorate)
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(GENERATE_METHOD_CREATE_IMPL);
+            envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_IMPL);
+            envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
+            envItself.setScope(PerLookup.class.getName());
+            envItself.setName(GENERATE_METHOD_CREATE_NAME3);
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.DecoratedTown");
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getTown");
+            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From the @CreateMe on the getZipCode method on the DecoratedTown class
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(GENERATE_METHOD_CREATE_IMPL);
+            envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_IMPL);
+            envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
+            envItself.setScope(PerLookup.class.getName());
+            envItself.setName(GENERATE_METHOD_CREATE_NAME4);
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.ZipCode");
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getZipCodes");
+            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, DecoratedTown.class.getName());
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }

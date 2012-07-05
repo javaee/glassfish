@@ -57,4 +57,7 @@ public interface AddressBean {
     
     @CreateMe(InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_NAME2)
     public List<StreetAddress> getSecondaryStreetAddress();
+    
+    // This one will be decorated by an external entity
+    public List<Town> getTown();
 }
