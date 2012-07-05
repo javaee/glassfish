@@ -132,7 +132,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @author Jerome Dochez
  */
 @Retention(RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.TYPE})
 @GenerateServiceFromMethod(implementation="org.glassfish.config.support.GenericCreateCommand",
                            advertisedContracts="org.glassfish.api.admin.AdminCommand")
 public @interface Create {
