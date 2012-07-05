@@ -59,39 +59,17 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  */
 @PerLookup
 public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
-    private final HashSet<String> contextImpl = new HashSet<String>();
-    
-    private static boolean isDupProtected(DescriptorImpl di) {
-        Set<String> contracts = di.getAdvertisedContracts();
-        if (contracts.contains(Context.class.getName())) {
-            return true;
-        }
-        
-        String scope = di.getScope();
-        if (scope == null) return false;  // PerLookup
-        
-        if (scope.equals(RunLevel.class.getName())) {
-            return true;
-        }
-        
-        return false;
-    }
-    
+    private final HashSet<DescriptorImpl> dupSet = new HashSet<DescriptorImpl>();
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.bootstrap.PopulatorPostProcessor#process(org.glassfish.hk2.utilities.DescriptorImpl)
      */
     @Override
     public DescriptorImpl process(DescriptorImpl descriptorImpl) {
-        if (!isDupProtected(descriptorImpl)) {
-            return descriptorImpl;
-        }
-        
-        String implementation = descriptorImpl.getImplementation();
-        if (contextImpl.contains(implementation)) {
+        if (dupSet.contains(descriptorImpl)) {
             return null;
         }
-        contextImpl.add(implementation);
+        dupSet.add(descriptorImpl);
         
         return descriptorImpl;
     }
