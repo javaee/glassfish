@@ -91,10 +91,14 @@ public abstract class ServiceLocatorFactory {
    * Creates or finds a ServiceLocator.
    * <p>
    * If there is already a ServiceLocator with the given
-   * name then this method will that ServiceLocator.  The
-   * parent argument will be ignored in that case
+   * name then this method will return that ServiceLocator.  The
+   * parent argument will be ignored in that case.
+   * If a null name is given then a new ServiceLocator with a
+   * generated name will be returned.
    * 
-   * @param name The name of this service locator.  May not be null
+   * @param name The name of this service locator.  Passing a null
+   * name will result in a newly created service locator with a
+   * generated name.
    * @param parent The parent of this ServiceLocator.  Services can
    * be found in the parent (and all grand-parents).  May be null
    * if the returned ServiceLocator should not be parented

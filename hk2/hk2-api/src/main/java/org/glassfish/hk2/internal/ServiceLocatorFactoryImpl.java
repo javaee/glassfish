@@ -62,6 +62,8 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
   private final ServiceLocatorGenerator defaultGenerator;
   private final Object lock = new Object();
   private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
+  private static int name_count = 0;
+  private static final String GENERATED_NAME_PREFIX = "__HK2_Generated_";
   
   /**
    * This will create a new set of name to locator mappings
@@ -152,23 +154,30 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             ServiceLocatorGenerator generator) {
  
         synchronized (lock) {
-            ServiceLocator retVal = serviceLocators.get(name);
-            if (retVal != null) return retVal;
- 
-            if (generator == null) {
-                if (defaultGenerator == null) {
-                    throw new IllegalStateException("No generator was provided and there is no default generator registered");
-                }
-                
-                generator = defaultGenerator;
+            ServiceLocator retVal;
+
+            if (name == null) {
+                name = GENERATED_NAME_PREFIX + name_count++;
+                return internalCreate(name, parent, generator);
             }
-            
-            retVal = generator.create(name, parent);
-            
+
+            retVal = serviceLocators.get(name);
+            if (retVal != null) return retVal;
+            retVal = internalCreate(name, parent, generator);
             serviceLocators.put(name, retVal);
-            
+
             return retVal;
         }
+    }
+
+    private ServiceLocator internalCreate(String name, ServiceLocator parent, ServiceLocatorGenerator generator) {
+        if (generator == null) {
+            if (defaultGenerator == null) {
+                throw new IllegalStateException("No generator was provided and there is no default generator registered");
+            }
+            generator = defaultGenerator;
+        }
+        return generator.create(name, parent);
     }
 
 }
