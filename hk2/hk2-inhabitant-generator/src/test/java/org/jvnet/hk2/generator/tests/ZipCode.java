@@ -39,25 +39,10 @@
  */
 package org.jvnet.hk2.generator.tests;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.jvnet.hk2.config.GenerateServiceFromMethod;
-import org.jvnet.hk2.config.GeneratedServiceName;
-
 /**
  * @author jwells
  *
  */
-@Retention(RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE } )
-@GenerateServiceFromMethod(implementation=InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_IMPL,
-    advertisedContracts={InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_IMPL,
-        InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_CONTRACT})
-public @interface CreateMe {
-    @GeneratedServiceName
-    public String value();
+public class ZipCode {
+
 }

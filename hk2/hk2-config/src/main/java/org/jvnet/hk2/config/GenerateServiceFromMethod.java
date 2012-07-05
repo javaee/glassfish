@@ -52,9 +52,9 @@ import java.lang.annotation.Target;
  * properties.
  * <p>
  * The user-supplied annotation must have the following properties:<UL>
- * <LI>Must only apply to methods</LI>
+ * <LI>Must only apply to methods (or classes also annotated with {@link Decorator})</LI>
  * <LI>Must be available at runtime</LI>
- * <LI>Must only be applied to methods on interfaces marked with {@link Configured}</LI>
+ * <LI>Must only be applied to interfaces marked with {@link Configured}</LI>
  * <LI>May have one or zero String fields marked with {@link GeneratedServiceName}</LI>
  * </UL>
  * Only methods of type java.util.List with a parameterized type (e.g. List<Config>) may be
@@ -75,6 +75,22 @@ import java.lang.annotation.Target;
  * <LI>It will have a metadata entry with the name of the parent {@link Configured} class with key PARENT_CONFGIURED</LI>
  * </UL>
  * <p>
+ * If a class is annotated with a user-supplied annotation marked with this annotation then that
+ * class *must* also be annotated with the {@link Decorate} annotation.  The {@link Decorate} annotation
+ * will provide the values for several of the fields as described below.
+ * <p>
+ * When a class on an {@link Configured} interface has a user-supplied annotation
+ * that is annotated with this interface the hk2-inhabitant-generator will generate
+ * a service descriptor with the following properties:<UL>
+ * <LI>The implementation class will be as specified in this annotation</LI>
+ * <LI>The available contracts will be as specified in this annotation</LI>
+ * <LI>The scope will be as specified in this annotation</LI>
+ * <LI>The name will come from the field annotated with {@link GeneratedServiceName} from the user-supplied annotation defined by
+ * the {@link Decorate#with()} method</LI>
+ * <LI>It will have a metadata entry with the {@link Decorate#targetType()} value with key METHOD_ACTUAL</LI>
+ * <LI>It will have a metadata entry with the {@link Decorate#methodName()} value with key METHOD_NAME</LI>
+ * <LI>It will have a metadata entry with the name of the parent {@link Configured} class with key PARENT_CONFGIURED</LI>
+ * </UL> 
  * 
  * @author jwells
  */

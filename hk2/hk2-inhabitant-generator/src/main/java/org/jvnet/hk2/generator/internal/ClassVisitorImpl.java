@@ -69,6 +69,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String CONTRACTS_PROVIDED_CLASS_FORM = "Lorg/jvnet/hk2/annotations/ContractsProvided;";
     private final static String RANK_CLASS_FORM = "Lorg/glassfish/hk2/api/Rank;";
     private final static String CONFIGURED_CLASS_FORM = "Lorg/jvnet/hk2/config/Configured;";
+    private final static String DECORATE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Decorate;";
     private final static String NAME = "name";
     private final static String METADATA = "metadata";
     private final static String VALUE = "value";
@@ -108,6 +109,9 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final LinkedList<DescriptorImpl> generatedDescriptors = new LinkedList<DescriptorImpl>();
     private boolean isFactory = false;
     private boolean factoryMethodFound = false;
+    private DecorateData decorateData;
+    private final Map<String, GenerateMethodAnnotationData> classLevelGenerators =
+            new HashMap<String, GenerateMethodAnnotationData>();
     
     /**
      * Creates this with the config to add to if this is a service
@@ -168,6 +172,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             isConfigured = true;
         }
         
+        if (DECORATE_CLASS_FORM.equals(desc)) {
+            return new DecorateAnnotationVisitor();
+        }
+        
         if (!desc.startsWith("L")) return null;
             
         String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
@@ -188,6 +196,17 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             return new MetadataAnnotationVisitor(loadQualifierName);
         }
         
+        GenerateMethodAnnotationData gmad = utilities.isClassAGenerator(searchHere, loadQualifierName);
+        if (gmad != null) {
+            gmad = new GenerateMethodAnnotationData(gmad);
+            classLevelGenerators.put(loadQualifierName, gmad);
+            
+            if (gmad.getNameMethodName() != null) {
+                AnnotationVisitor retVal = new GeneratedNameMethodFinderVisitor(gmad);
+                return retVal;
+            }
+        }
+        
         return null;
     }
     
@@ -204,6 +223,39 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     @Override
     public void visitEnd() {
         if (!isAService) {
+            if (decorateData != null) {
+                String with = decorateData.getWith();
+                
+                GenerateMethodAnnotationData gbad = classLevelGenerators.get(with);
+                
+                if (gbad != null) {
+                    DescriptorImpl generatedDescriptor = new DescriptorImpl();
+                    generatedDescriptor.setImplementation(gbad.getImplementation());
+                    
+                    for (String contract : gbad.getContracts()) {
+                        generatedDescriptor.addAdvertisedContract(contract);
+                    }
+                    
+                    if (gbad.getName() != null) {
+                        generatedDescriptor.setName(gbad.getName());
+                    }
+                    
+                    generatedDescriptor.addMetadata(METHOD_ACTUAL, implName);
+                    generatedDescriptor.addMetadata(METHOD_NAME, decorateData.getMethodName());
+                    generatedDescriptor.addMetadata(PARENT_CONFIGURED, decorateData.getTargetType());
+                    
+                    if (verbose) {
+                        System.out.println("Generated Descriptor for class-level GenerateServiceFromMethod annotation: " +
+                            generatedDescriptor);
+                    };
+                    
+                    generatedDescriptors.add(generatedDescriptor);
+                    
+                    return;
+                }
+                
+            }
+            
             if (verbose) {
                 System.out.println("Class " + implName + " is not annotated with @Service");
             }
@@ -633,6 +685,71 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             }
         }
         
+    }
+    
+    private final static String DECORATE_TARGET_TYPE = "targetType";
+    private final static String DECORATE_METHOD_NAME = "methodName";
+    private final static String DECORATE_WITH = "with";  // tinsel
+    
+    private class DecorateAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        private String targetType;
+        private String methodName;
+        private String with;
+        
+        /* (non-Javadoc)
+         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
+         */
+        @Override
+        public void visit(String name, Object value) {
+            if (DECORATE_TARGET_TYPE.equals(name)) {
+                Type t = (Type) value;
+                
+                targetType = t.getClassName();
+            }
+            else if (DECORATE_METHOD_NAME.equals(name)) {
+                methodName = (String) value;
+            }
+            else if (DECORATE_WITH.equals(name)) {
+                Type t = (Type) value;
+                
+                with = t.getClassName();
+            }
+        }
+        
+        @Override
+        public void visitEnd() {
+            decorateData = new DecorateData(targetType, methodName, with);
+        }
+        
+    }
+    
+    private static class DecorateData {
+        private final String targetType;
+        private final String methodName;
+        private final String with;
+        
+        private DecorateData(String targetType, String methodName, String with) {
+            this.targetType = targetType;
+            this.methodName = methodName;
+            this.with = with;
+        }
+        
+        private String getTargetType() {
+            return targetType;
+        }
+        
+        private String getMethodName() {
+            return methodName;
+        }
+        
+        private String getWith() {
+            return with;
+        }
+        
+        public String toString() {
+            return "DecorateData(" + targetType + "," + methodName + "," + with + "," +
+                System.identityHashCode(this) + ")";
+        }
     }
     
     /**

@@ -39,25 +39,22 @@
  */
 package org.jvnet.hk2.generator.tests;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.jvnet.hk2.config.GenerateServiceFromMethod;
-import org.jvnet.hk2.config.GeneratedServiceName;
+import org.jvnet.hk2.annotations.Decorate;
+import org.jvnet.hk2.config.Configured;
 
 /**
+ * This causes the getTown method of AddressBean appear to have one of these
+ * annotation on it, even though it does not have one directly
+ * 
  * @author jwells
  *
  */
-@Retention(RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE } )
-@GenerateServiceFromMethod(implementation=InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_IMPL,
-    advertisedContracts={InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_IMPL,
-        InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_CONTRACT})
-public @interface CreateMe {
-    @GeneratedServiceName
-    public String value();
+@Configured
+@CreateMe(InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_NAME3)
+@Decorate(targetType=AddressBean.class, methodName="getTown", with=CreateMe.class)
+public interface DecoratedTown extends Town {
+    @CreateMe(InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_NAME4)
+    public List<ZipCode> getZipCodes();
 }

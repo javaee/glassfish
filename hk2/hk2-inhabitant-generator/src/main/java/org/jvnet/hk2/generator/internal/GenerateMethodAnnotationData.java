@@ -62,6 +62,13 @@ public class GenerateMethodAnnotationData {
         this.contracts.addAll(contracts);
         this.scope = scope;
     }
+    
+    public GenerateMethodAnnotationData(GenerateMethodAnnotationData copyMe) {
+        this(copyMe.getImplementation(),
+                new HashSet<String>(copyMe.getContracts()),
+                copyMe.getScope());
+        nameMethodName = copyMe.getNameMethodName();
+    }
 
     /**
      * @return the implementation
