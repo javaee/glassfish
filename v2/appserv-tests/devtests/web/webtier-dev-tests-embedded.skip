@@ -95,3 +95,4 @@ singleengine
 httpResponseErrorMessage # Need Grizzly integration and a change in GlassFish for custom error message header
 programmaticLogin
 instanceHttpPortDynamicReconfig
+osgiServlet

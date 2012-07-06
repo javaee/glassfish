@@ -186,3 +186,4 @@ contextXmlLifecycleListener # trunk
 contextXmlLifecycleListenerGlobal # trunk
 contextXmlRemoteHostValve #trunk
 traceEnabled #trunk
+osgiServlet 
