@@ -41,6 +41,8 @@ package org.jvnet.hk2.testing.test;
 
 import java.util.LinkedList;
 
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,6 +59,9 @@ public class RunnerTest extends HK2Runner {
     /** Bob as a name */
     public final static String BOB = "bob";
     private final static String CAROL = "Carol";  // default Named
+    
+    @Inject
+    private SimpleService3 injectMe;
     
     @Before
     public void before() {
@@ -131,5 +136,13 @@ public class RunnerTest extends HK2Runner {
         Assert.assertNotNull(ss);
         
         Assert.assertTrue(ss instanceof Carol);
+    }
+    
+    /**
+     * Tests that the test itself gets injected
+     */
+    @Test
+    public void testTestInjection() {
+        Assert.assertNotNull(injectMe);
     }
 }
