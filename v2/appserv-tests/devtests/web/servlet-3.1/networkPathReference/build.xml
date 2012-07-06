@@ -64,13 +64,7 @@
       </delete>
     </target>
        
-    <target name="compile" depends="clean">
-        <antcall target="compile-common">
-            <param name="src" value="servlet"/>
-        </antcall>
-    </target>
-
-    <target name="build" depends="compile">
+    <target name="build" depends="clean">
         <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes"/>
         </antcall>
