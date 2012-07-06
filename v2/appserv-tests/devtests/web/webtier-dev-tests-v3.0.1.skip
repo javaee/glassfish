@@ -11,10 +11,4 @@ servlet-3.0/serveJspAndStaticResourceFromLocalJar
 servlet-3.0/servletContainerInitializer/sharedLibWithWars # comment out until https://glassfish.dev.java.net/issues/show_bug.cgi?id=12091 is fixed
 sessionPreserveAcrossRedeployDeclarative
 sessionWithCookiePersistenceType
-weblogicDD/contextRoot
-weblogicDD/delegate
-weblogicDD/sessionCookieConfigDeclarative
-weblogicDD/sessionExpired
-weblogicDD/sessionIdUrlRewriteSessionTrackingModeDeclarative
-weblogicDD/sessionPreserveAcrossRedeployDeclarative
 wrongTransport #Exclude since port unification is not supported in v3, see IT 4675

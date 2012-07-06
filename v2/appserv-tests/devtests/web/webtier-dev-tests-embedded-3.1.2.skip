@@ -132,7 +132,6 @@ singleSignOnHttpServiceDynamicReconfig
 testFormAuthenticator
 virtualServerAuthRealmProperty
 virtualServerDefaultWebModuleFormLoginJSecurityCheckDirectAccess
-weblogicDD/runAsPrincipalName
 weldJsfFormLoginHttpSessionListener
 #ear not supported web distro
 jspCustomTaglibJarInsideEarWithManifestClassPath
@@ -149,10 +148,8 @@ weldJsfFormLoginHttpSessionListener
 weldJsfLoginPage
 weldJsfServerAuthModuleRedirect
 #javax.jms
-weblogicDD/referenceDescriptor
 #javax.ejb
 servlet-3.0/webFragmentWithEjbLite
-weblogicDD/runAsPrincipalName
 #
 emptyServletPathJspInclude
 jspCachingInstanceLevel
@@ -177,7 +174,6 @@ oneSessionCookieHeader
 cacheHang
 jsessionIdParameter
 setWebContextParam
-weblogicDD
 jspTagHandlerPreDestroyAnnotation
 broken_webapp
 virtualServerDefaultWebModuleRequestPath
