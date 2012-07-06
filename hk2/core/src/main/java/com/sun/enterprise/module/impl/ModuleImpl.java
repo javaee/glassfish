@@ -291,22 +291,6 @@ public final class ModuleImpl implements Module {
      * Parses all the inhabitants descriptors of the given name in this module.
      */
     void parseInhabitants(String name) throws IOException {
-        
-        HK2Loader loader = new HK2Loader() {
-
-			@Override
-			public Class<?> loadClass(String className) throws MultiException {
-				try {
-					return getPrivateClassLoader().loadClass(className);
-				} catch (ClassNotFoundException e) {
-					throw new MultiException(e);
-				}
-			}
-        	
-        };
-
-//        for (InhabitantsDescriptor d : getMetadata().getHabitats(name))
-//            parser.parse(d.createScanner(),loader);
     }
 
     /**
