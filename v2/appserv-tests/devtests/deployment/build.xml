@@ -22,11 +22,9 @@
         <ant dir="jsr88" target="private-all">
             <property name="build" value="${build}/jsr88"/>
         </ant>
-<!--
         <ant dir="dol" target="private-all">
             <property name="build" value="${build}/dol"/>
         </ant>
--->
 <!--        <ant dir="autodeploy" target="private-all">
             <property name="build" value="${build}/autodeploy"/>
         </ant> -->

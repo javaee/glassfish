@@ -190,12 +190,11 @@
             <param name="log.id" value="5"/>
         </antcall>
 
-<!--
         <antcall target="declare-test">
             <param name="description" value="dol/validation Test WLS Ear"/>
         </antcall>
         <antcall target="run.validator">
-            <param name="arg.list" value="${validation.wlsEar} true"/>
+            <param name="arg.list" value="${validation.wlsEar}"/>
             <param name="log.id" value="6"/>
         </antcall>
         <antcall target="declare-test">
@@ -205,7 +204,7 @@
             <param name="arg.list" value="${validation.wlsEar2} true"/>
             <param name="log.id" value="7"/>
         </antcall>
--->
+
     </target>
 
     <target name="clobber" depends="clean">

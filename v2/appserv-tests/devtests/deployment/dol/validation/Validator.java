@@ -33,10 +33,10 @@ public class Validator {
           }
         }
 
-        boolean runtimeValidation = false;
+        boolean expectException = false;
         if (args.length > 1) {
           if ("true".equals(args[1])) {
-            runtimeValidation = true;
+            expectException = true;
           }
         }
 
@@ -61,13 +61,19 @@ public class Validator {
             archivist.setArchiveUri(fileName);
 	    archivist.setXMLValidation(true);
 	    archivist.setXMLValidationLevel("full");
-            if (runtimeValidation) {
-              archivist.setRuntimeXMLValidation(true);
-              archivist.setRuntimeXMLValidationLevel("full");
-            }
+            archivist.setRuntimeXMLValidation(true);
+            archivist.setRuntimeXMLValidationLevel("full");
             log("Reading/parsing the orginal archive: " + 
                 fileName);
-            Descriptor descriptor = archivist.open(archiveFile);
+            try {
+              Descriptor descriptor = archivist.open(archiveFile);
+            } catch (Exception ex) {
+              if (expectException) {
+                log("Expected exception");
+              } else {
+                throw ex;
+              }
+            }
             log("Writing out the archive to: " + 
                 outputFileName);
             archivist.write(archive, outputFileName);
@@ -96,10 +102,8 @@ public class Validator {
             archivist.setArchiveUri(outputFileName);
             archivist.setXMLValidation(true);
             archivist.setXMLValidationLevel("full");
-            if (runtimeValidation) {
-              archivist.setRuntimeXMLValidation(true);
-              archivist.setRuntimeXMLValidationLevel("full");
-            }
+            archivist.setRuntimeXMLValidation(true);
+            archivist.setRuntimeXMLValidationLevel("full");
             log("Reading/parsing the output archive" + 
                 outputFileName);
             Descriptor descriptor = archivist.open(archiveFile);
@@ -138,10 +142,8 @@ public class Validator {
             archivist.setArchiveUri(outputFileName2);
             archivist.setXMLValidation(true);
             archivist.setXMLValidationLevel("full");
-            if (runtimeValidation) {
-              archivist.setRuntimeXMLValidation(true);
-              archivist.setRuntimeXMLValidationLevel("full");
-            }
+            archivist.setRuntimeXMLValidation(true);
+            archivist.setRuntimeXMLValidationLevel("full");
             log("Reading/parsing the output archive" +
                 outputFileName2);
             Descriptor descriptor = archivist.open(archiveFile);
