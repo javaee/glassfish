@@ -126,6 +126,8 @@ public class HK2Runner {
         ServiceLocator found = ServiceLocatorFactory.getInstance().find(name);
         if (found != null) {
             testLocator = found;
+            
+            testLocator.inject(this);
             return;
         }
         
@@ -146,6 +148,8 @@ public class HK2Runner {
         }
         
         config.commit();
+        
+        testLocator.inject(this);
     }
     
     protected void setVerbosity(boolean verbose) {
