@@ -49,37 +49,41 @@ import java.security.CodeSource;
 import java.security.CodeSigner;
 import javax.security.auth.Subject;
 
-import org.glassfish.internal.api.Globals;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.security.services.api.authorization.AuthorizationService;
 import org.glassfish.security.services.api.authorization.AzAction;
-import org.glassfish.security.services.api.authorization.AzEnvironment;
-import org.glassfish.security.services.api.authorization.AzObligations;
 import org.glassfish.security.services.api.authorization.AzResource;
 import org.glassfish.security.services.api.authorization.AzResult;
 import org.glassfish.security.services.api.authorization.AzSubject;
+import org.glassfish.security.services.config.SecurityConfiguration;
 import org.glassfish.security.services.impl.ServiceFactory;
 
 
 //import org.jvnet.hk2.annotations.Inject;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.BaseServiceLocator;
 import org.glassfish.hk2.api.PostConstruct;
-import org.glassfish.hk2.api.IterableProvider;
 
 import com.sun.enterprise.config.serverbeans.Domain;
+import com.sun.logging.LogDomains;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.glassfish.security.services.api.authorization.*;
+import org.glassfish.security.services.api.authorization.AzResult.Decision;
+import org.glassfish.security.services.api.authorization.AzResult.Status;
 
 import org.glassfish.security.services.config.SecurityProvider;
-import org.glassfish.security.services.provider.authorization.AuthorizationProviderConfig;
 import org.glassfish.security.services.spi.AuthorizationProvider;
 
 
 @Service
 @Singleton
 public class AuthorizationServiceImpl implements AuthorizationService, PostConstruct {
+
+    protected static final Logger _logger = 
+        LogDomains.getLogger(AuthorizationServiceImpl.class, LogDomains.SECURITY_LOGGER);
 
     @Inject
     private Domain domain;
@@ -88,7 +92,8 @@ public class AuthorizationServiceImpl implements AuthorizationService, PostConst
     @Inject
     ServerContext serverContext;
 
-    private BaseServiceLocator serviceLocator = null;
+    @Inject
+    private BaseServiceLocator serviceLocator;
     
     private org.glassfish.security.services.config.AuthorizationService atzSvCfg;
     
@@ -99,25 +104,26 @@ public class AuthorizationServiceImpl implements AuthorizationService, PostConst
     private static final CodeSource NULL_CODESOURCE = new CodeSource(null, (CodeSigner[])null);
     
     @Override
-    public void initialize(org.glassfish.security.services.config.SecurityService serviceConfiguration) {
+    public void initialize(SecurityConfiguration securityServiceConfiguration) {
                 
         //get service level config
-        atzSvCfg = (org.glassfish.security.services.config.AuthorizationService)serviceConfiguration;
+        atzSvCfg = (org.glassfish.security.services.config.AuthorizationService) securityServiceConfiguration;
 
-        if (atzSvCfg == null) 
-            throw new RuntimeException("The Authorization service is not configured in the domain configuration file");
+        if (atzSvCfg == null) {
+            atzProvider = createDefaultProvider();
+            _logger.log(Level.WARNING, "The Authorization service is not configured in the domain configuration file; using a trivial default implementation which authorizes all access");
+        } else {
         
-        //get provider level config
-        //consider only one provider for now
-        atzPrvConfig = atzSvCfg.getAtzSecurityProviders().get(0);
+            //get provider level config
+            //consider only one provider for now
+            atzPrvConfig = atzSvCfg.getSecurityProviders().get(0);
 
-        if (atzPrvConfig == null)
-            throw new RuntimeException("No provider  configured for the Authorization service in the domain configuration file");
-        
-        serviceLocator = Globals.getDefaultBaseServiceLocator();
+            if (atzPrvConfig == null)
+                throw new RuntimeException("No provider  configured for the Authorization service in the domain configuration file");
 
-        //get the provider
-        atzProvider = serviceLocator.getComponent(AuthorizationProvider.class, atzPrvConfig.getName());
+                //get the provider
+                atzProvider = serviceLocator.getComponent(AuthorizationProvider.class, atzPrvConfig.getName());
+        }
         
         //init the provider  -- use the first config under the provider config???
         atzProvider.initialize(atzPrvConfig);
@@ -220,6 +226,23 @@ public class AuthorizationServiceImpl implements AuthorizationService, PostConst
        
         initialize(atzConfiguration);
     }
+   
+    private AuthorizationProvider createDefaultProvider() {
+        return new AuthorizationProvider() {
 
+            @Override
+            public AzResult getAuthorizationDecision(AzSubject subject, AzResource resource, AzAction action, AzEnvironment environment) {
+                return new AzResultImpl(Decision.PERMIT, Status.OK, new AzObligationsImpl());
+            }
 
+            @Override
+            public PolicyDeploymentContext findOrCreateDeployContext(String appContext) {
+                return null;
+            }
+
+            @Override
+            public void initialize(SecurityProvider providerConfig) {
+            }
+        };
+   }
 }

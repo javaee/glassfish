@@ -81,7 +81,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
-import org.glassfish.api.admin.AccessRequired;
+import org.glassfish.api.admin.AdminCommandSecurity;
 
 
 /**
@@ -90,7 +90,7 @@ import org.glassfish.api.admin.AccessRequired;
  * @author Jerome Dochez
  *
  */
-public abstract class GenericCrudCommand implements CommandModelProvider, PostConstruct, AccessRequired.CommandContextDependent {
+public abstract class GenericCrudCommand implements CommandModelProvider, PostConstruct, AdminCommandSecurity.Preauthorization {
     
     private InjectionResolver<Param> injector;
 
@@ -128,8 +128,9 @@ public abstract class GenericCrudCommand implements CommandModelProvider, PostCo
     }
 
     @Override
-    public void setCommandContext(Object adminCommandContext) {
-        prepareInjection((AdminCommandContext) adminCommandContext);
+    public boolean preAuthorization(AdminCommandContext adminCommandContext) {
+        prepareInjection(adminCommandContext);
+        return true;
     }
     
     private static String getOne(String key, Map<String, List<String>> metadata) {

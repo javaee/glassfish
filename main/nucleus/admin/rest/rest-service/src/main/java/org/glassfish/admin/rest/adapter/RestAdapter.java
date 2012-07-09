@@ -55,16 +55,11 @@ import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.security.auth.Subject;
-import javax.security.auth.login.LoginException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import javax.security.auth.login.LoginException;
 
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Optional;
-import org.jvnet.hk2.component.BaseServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 
 import org.glassfish.admin.rest.Constants;
@@ -76,19 +71,19 @@ import org.glassfish.admin.rest.provider.ActionReportResultXmlProvider;
 import org.glassfish.admin.rest.provider.BaseProvider;
 import org.glassfish.admin.rest.resources.ReloadResource;
 import org.glassfish.admin.rest.results.ActionReportResult;
-import org.glassfish.admin.rest.utils.ResourceUtil;
 import org.glassfish.common.util.admin.RestSessionManager;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.admin.restconnector.ProxiedRestAdapter;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.api.container.EndpointRegistrationException;
-import org.glassfish.grizzly.http.Cookie;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.internal.api.AdminAccessController;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.jersey.internal.inject.AbstractModule;
@@ -334,17 +329,17 @@ public abstract class RestAdapter extends HttpHandler implements ProxiedRestAdap
         rc.addModules(getJsonModule(), new MultiPartModule(), new AbstractModule() {
             @Override
             protected void configure() {
-                AbstractActiveDescriptor descriptor = BuilderHelper.createConstantDescriptor(r);
+                AbstractActiveDescriptor<Reloader> descriptor = BuilderHelper.createConstantDescriptor(r);
                 descriptor.addContractType(Reloader.class);
                 bind(descriptor);
 
-                descriptor = BuilderHelper.createConstantDescriptor(sc);
-                descriptor.addContractType(ServerContext.class);
-                bind(descriptor);
+                AbstractActiveDescriptor<ServerContext> scDescriptor = BuilderHelper.createConstantDescriptor(sc);
+                scDescriptor.addContractType(ServerContext.class);
+                bind(scDescriptor);
 
-                descriptor = BuilderHelper.createConstantDescriptor(habitat);
-                descriptor.addContractType(Habitat.class);
-                bind(descriptor);
+                AbstractActiveDescriptor<Habitat> hDescriptor = BuilderHelper.createConstantDescriptor(habitat);
+                hDescriptor.addContractType(Habitat.class);
+                bind(hDescriptor);
 
                 // TODO : I don't see the point
 //                bind(RestSessionManager.class).toInstance(habitat.getComponent(RestSessionManager.class));

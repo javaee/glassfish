@@ -58,6 +58,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.security.auth.Subject;
 import org.glassfish.api.admin.AccessRequired.AccessCheck;
+import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.api.admin.AdminCommandSecurity;
 
 /**
  * Generic create command implementation.
@@ -71,7 +73,8 @@ import org.glassfish.api.admin.AccessRequired.AccessCheck;
  * @author Jerome Dochez
  */
 @PerLookup
-public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand, AccessRequired.Authorizer {
+public class GenericCreateCommand extends GenericCrudCommand implements AdminCommand, 
+    AdminCommandSecurity.AccessCheckProvider {
 
     GenericCommandModel model;
     Create create;
@@ -123,9 +126,12 @@ public class GenericCreateCommand extends GenericCrudCommand implements AdminCom
     }
 
     @Override
-    public void setCommandContext(Object adminCommandContext) {
-        super.setCommandContext(adminCommandContext);
-        prepareInjection((AdminCommandContext) adminCommandContext);
+    public boolean preAuthorization(final AdminCommandContext adminCommandContext) {
+        if ( ! super.preAuthorization(adminCommandContext)) {
+            return false;
+        }
+        prepareInjection(adminCommandContext);
+        return true;
     }
 
     

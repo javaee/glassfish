@@ -134,6 +134,7 @@ public abstract class ActionReporter extends ActionReport {
         return subAction;
     }
 
+    @Override
     public List<ActionReporter> getSubActionsReport() {
         return subActions;
     }
@@ -241,9 +242,10 @@ public abstract class ActionReporter extends ActionReport {
         }
         if (aReport.getFailureCause() != null && aReport.getFailureCause().getMessage() != null && aReport.getFailureCause().getMessage().length() != 0) {
             failMsg = aReport.getFailureCause().getMessage();
-            if (!failMsg.equals(mainMsg))
+            if (!failMsg.equals(mainMsg)) {
                 if (sb.length() > 0) sb.append(EOL_MARKER);
                 sb.append(failMsg);
+            }
         }
         for (ActionReporter sub : aReport.subActions) {
             getCombinedMessages(sub, sb);

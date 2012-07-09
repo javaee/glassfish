@@ -39,8 +39,16 @@
  */
 package org.glassfish.admin.rest.resources.admin;
 
+import com.sun.enterprise.admin.remote.RemoteAdminCommand;
+import com.sun.enterprise.admin.remote.RestPayloadImpl;
+import com.sun.enterprise.admin.util.CachedCommandModel;
+import com.sun.enterprise.config.serverbeans.Server;
 import com.sun.enterprise.universal.collections.ManifestUtils;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import com.sun.enterprise.util.StringUtils;
+import com.sun.enterprise.util.uuid.UuidGenerator;
+import com.sun.enterprise.util.uuid.UuidGeneratorImpl;
+import com.sun.enterprise.v3.admin.AdminAdapter;
 import com.sun.logging.LogDomains;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,17 +57,19 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import org.glassfish.admin.rest.shareable.RestPayloadImpl;
 import org.glassfish.admin.rest.utils.xml.RestActionReporter;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.admin.CommandModel;
-import org.glassfish.api.admin.CommandRunner;
-import org.glassfish.api.admin.ParameterMap;
-import org.glassfish.api.admin.Payload;
+import org.glassfish.api.admin.*;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.util.CookieSerializerUtils;
 import org.glassfish.internal.api.Globals;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.jvnet.hk2.component.BaseServiceLocator;
 
@@ -72,6 +82,15 @@ public class CommandResource {
     
     private final static Logger logger = 
             LogDomains.getLogger(CommandResource.class, LogDomains.ADMIN_LOGGER);
+    private final static LocalStringManagerImpl strings = new LocalStringManagerImpl(CommandResource.class);
+    
+    public static final String SESSION_COOKIE_NAME = "JSESSIONID";
+    public static final int MAX_AGE = 86400 ;
+
+    private static UuidGenerator uuidGenerator = new UuidGeneratorImpl();
+    private static volatile String serverName;
+    
+    private CommandRunner commandRunner;
     
 //    @Context
 //    protected BaseServiceLocator habitat;
@@ -95,13 +114,15 @@ public class CommandResource {
     @Produces({MediaType.TEXT_HTML, MediaType.TEXT_PLAIN, MediaType.TEXT_XML, 
                MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, 
                "application/x-javascript"})
-    public CommandModel getCommandModel(@PathParam("command") String commandName) {
-        commandName = normalizeCommandName(commandName);
+    public Response getCommandModel(@PathParam("command") String command) throws WebApplicationException {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, "getCommandModel({0})", commandName);
         }
         CommandRunner cr = getCommandRunner();
-        return cr.getModel(commandName, logger);
+        CommandModel model = getCommandModel(commandName);
+        String eTag = CachedCommandModel.computeETag(model);
+        return Response.ok(model).tag(new EntityTag(eTag, true)).build();
     }
     
     @OPTIONS
@@ -109,19 +130,16 @@ public class CommandResource {
     @Produces({MediaType.TEXT_HTML, MediaType.TEXT_PLAIN, MediaType.TEXT_XML, 
                MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, 
                "application/x-javascript"})
-    public CommandModel optionsCommandModel(@PathParam("command") String commandName) {
-        commandName = normalizeCommandName(commandName);
-        if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "optionsCommandModel({0})", commandName);
-        }
+    public Response optionsCommandModel(@PathParam("command") String commandName) throws WebApplicationException {
         return getCommandModel(commandName);
     }
     
     @GET
     @Path("/{command:.*}/manpage")
     @Produces({MediaType.TEXT_HTML})
-    public String getManPageHtml(@PathParam("command") String commandName) throws IOException {
-        commandName = normalizeCommandName(commandName);
+    public String getManPageHtml(@PathParam("command") String command) 
+            throws IOException, WebApplicationException {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, "getManPageHtml({0})", commandName);
         }
@@ -142,10 +160,11 @@ public class CommandResource {
     @GET
     @Path("/{command:.*}/manpage")
     @Produces({MediaType.TEXT_PLAIN})
-    public String getManPageTxt(@PathParam("command") String commandName, @QueryParam("eol") String eol) throws IOException {
-        commandName = normalizeCommandName(commandName);
+    public String getManPageTxt(@PathParam("command") String command, @QueryParam("eol") String eol) 
+            throws IOException, WebApplicationException {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
         if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "getManPageTxt({0}, {1})", new String[]{commandName, eol});
+            logger.log(Level.FINEST, "getManPageTxt({0}, {1})", new Object[]{commandName, eol});
         }
         BufferedReader help = getManPageReader(commandName);
         if (help == null) {
@@ -165,75 +184,100 @@ public class CommandResource {
     @POST
     @Path("/{command:.*}/")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response execCommandSimpInSimpOut(@PathParam("command") String commandName, ParameterMap data) {
-        commandName = normalizeCommandName(commandName);
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, "actionreport/json", "actionreport/xml"})
+    public Response execCommandSimpInSimpOut(@PathParam("command") String command, 
+                @HeaderParam("X-Indent") String indent, 
+                @HeaderParam(RemoteAdminCommand.COMMAND_MODEL_MATCH_HEADER) String modelETag,
+                @CookieParam(SESSION_COOKIE_NAME) Cookie jSessionId,
+                ParameterMap data) {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, "execCommandSimpInSimpOut({0})", commandName);
-            if (data != null) {
-                for (String key : data.keySet()) {
-                    List<String> values = data.get(key);
-                    for (String value : values) {
-                        logger.log(Level.FINEST, "  -- PARAM: {0} = {1}", new Object[]{key, value});
-                    }
-                }
-            }
         }
-        return executeCommand(commandName, null, data, false);
+        return executeCommand(commandName, null, data, false, indent, modelETag, jSessionId);
     }
-//    
-//    @POST
-//    @Path("/{command}/")
-//    @Consumes(MediaType.MULTIPART_FORM_DATA)
-//    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-//    public Response execCommandMultInSimpOut(@PathParam("command") String commandName, FormDataMultiPart mp) {
-//        commandName = normalizeCommandName(commandName);
-//        ParameterMap data = new ParameterMap();
-//        Payload.Inbound inbound = RestPayloadImpl.Inbound.parseFromFormDataMultipart(mp, data);
-//        return executeCommand(commandName, inbound, data, false);
-//    }
     
     @POST
     @Path("/{command:.*}/")
-    //@Consumes("*/*")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response execCommandEmptyInSimpOut(@PathParam("command") String commandName) {
-        commandName = normalizeCommandName(commandName);
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, "actionreport/json", "actionreport/xml"})
+    public Response execCommandMultInSimpOut(@PathParam("command") String command, 
+                @HeaderParam("X-Indent") String indent, 
+                @HeaderParam(RemoteAdminCommand.COMMAND_MODEL_MATCH_HEADER) String modelETag,
+                @CookieParam(SESSION_COOKIE_NAME) Cookie jSessionId,
+                FormDataMultiPart mp) {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "execCommandMultInSimpOut({0})", commandName);
+        }
+        ParameterMap data = new ParameterMap();
+        Payload.Inbound inbound = RestPayloadImpl.Inbound.parseFromFormDataMultipart(mp, data);
+        return executeCommand(commandName, inbound, data, false, indent, modelETag, jSessionId);
+    }
+    
+    @POST
+    @Path("/{command:.*}/")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, "actionreport/json", "actionreport/xml"})
+    public Response execCommandEmptyInSimpOut(@PathParam("command") String command, 
+                @HeaderParam("X-Indent") String indent,
+                @HeaderParam(RemoteAdminCommand.COMMAND_MODEL_MATCH_HEADER) String modelETag,
+                @CookieParam(SESSION_COOKIE_NAME) Cookie jSessionId) {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
         if (logger.isLoggable(Level.FINEST)) {
             logger.log(Level.FINEST, "execCommandEmptyInSimpOut({0})", commandName);
         }
         ParameterMap data = new ParameterMap();
-        return executeCommand(commandName, null, data, false);
+        return executeCommand(commandName, null, data, false, indent, modelETag, jSessionId);
     }
     
-//    @POST
-//    @Path("/{command}/")
-//    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
-//    @Produces("multipart/mixed")
-//    public Response execCommandSimpInMultOut(@PathParam("command") String commandName, ParameterMap data) {
-//        commandName = normalizeCommandName(commandName);
-//        return executeCommand(commandName, null, data, true);
-//    }
-//    
-//    @POST
-//    @Path("/{command}/")
-//    @Consumes(MediaType.MULTIPART_FORM_DATA)
-//    @Produces("multipart/mixed")
-//    public Response execCommandMultInMultOut(@PathParam("command") String commandName, FormDataMultiPart mp) {
-//        commandName = normalizeCommandName(commandName);
-//        ParameterMap data = new ParameterMap();
-//        Payload.Inbound inbound = RestPayloadImpl.Inbound.parseFromFormDataMultipart(mp, data);
-//        return executeCommand(commandName, inbound, data, true);
-//    }
-//    
-//    @POST
-//    @Path("/{command}/")
-//    @Produces("multipart/mixed")
-//    public Response execCommandEmptyInMultOut(@PathParam("command") String commandName) {
-//        commandName = normalizeCommandName(commandName);
-//        ParameterMap data = new ParameterMap();
-//        return executeCommand(commandName, null, data, true);
-//    }
+    @POST
+    @Path("/{command:.*}/")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces("multipart/mixed")
+    public Response execCommandSimpInMultOut(@PathParam("command") String command, 
+                @HeaderParam("X-Indent") String indent, 
+                @HeaderParam(RemoteAdminCommand.COMMAND_MODEL_MATCH_HEADER) String modelETag,
+                @CookieParam(SESSION_COOKIE_NAME) Cookie jSessionId,
+                ParameterMap data) {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "execCommandSimpInMultOut({0})", commandName);
+        }
+        return executeCommand(commandName, null, data, true, indent, modelETag, jSessionId);
+    }
+    
+    @POST
+    @Path("/{command:.*}/")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces("multipart/mixed")
+    public Response execCommandMultInMultOut(@PathParam("command") String command, 
+                @HeaderParam("X-Indent") String indent, 
+                @HeaderParam(RemoteAdminCommand.COMMAND_MODEL_MATCH_HEADER) String modelETag,
+                @CookieParam(SESSION_COOKIE_NAME) Cookie jSessionId,
+                FormDataMultiPart mp) {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "execCommandMultInMultOut({0})", commandName);
+        }
+        ParameterMap data = new ParameterMap();
+        Payload.Inbound inbound = RestPayloadImpl.Inbound.parseFromFormDataMultipart(mp, data);
+        return executeCommand(commandName, inbound, data, true, indent, modelETag, jSessionId);
+    }
+    
+    @POST
+    @Path("/{command:.*}/")
+    @Produces("multipart/mixed")
+    public Response execCommandEmptyInMultOut(@PathParam("command") String command, 
+                @HeaderParam("X-Indent") String indent,
+                @HeaderParam(RemoteAdminCommand.COMMAND_MODEL_MATCH_HEADER) String modelETag,
+                @CookieParam(SESSION_COOKIE_NAME) Cookie jSessionId) {
+        CommandName commandName = new CommandName(normalizeCommandName(command));
+        if (logger.isLoggable(Level.FINEST)) {
+            logger.log(Level.FINEST, "execCommandEmptyInMultOut({0})", commandName);
+        }
+        ParameterMap data = new ParameterMap();
+        return executeCommand(commandName, null, data, true, indent, modelETag, jSessionId);
+    }
     
     private String normalizeCommandName(String str) {
         if (str == null) {
@@ -246,22 +290,30 @@ public class CommandResource {
         }
     }
     
-    private Response executeCommand(String commandName, Payload.Inbound inbound, ParameterMap params, boolean supportsMultiparResult) {
+    private Response executeCommand(CommandName commandName, Payload.Inbound inbound, 
+            ParameterMap params, boolean supportsMultiparResult, String xIndentHeader,
+            String modelETag, Cookie jSessionId) throws WebApplicationException {
         //Scope support
-        String scope = null;
-        int ind = commandName.indexOf('/');
-        if (ind > 0) {
-            scope = commandName.substring(0, ind);
-            commandName = commandName.substring(ind + 1);
-        }
         if (logger.isLoggable(Level.FINEST)) {
-            logger.log(Level.FINEST, "executeCommand(): scope = {0}, name = {1}", new Object[]{scope, commandName});
+            logger.log(Level.FINEST, "executeCommand(): ", commandName);
+        }
+        //Check command model
+        CommandModel model = getCommandModel(commandName);
+        CommandRunner cr = getHabitat().getComponent(CommandRunner.class);
+        if (StringUtils.ok(modelETag) && !cr.validateCommandModelETag(model, modelETag)) {
+            String message =
+                    strings.getLocalString("commandmodel.etag.invalid",
+                        "Cached command model for command {0} is invalid.", commandName.getName());
+            throw new WebApplicationException(Response.status(Response.Status.PRECONDITION_FAILED)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(message)
+                        .build());
         }
         //Execute it
-        CommandRunner cr = getHabitat().getComponent(CommandRunner.class);
         RestActionReporter ar = new RestActionReporter();
         final RestPayloadImpl.Outbound outbound = new RestPayloadImpl.Outbound(false);
-        final CommandRunner.CommandInvocation commandInvocation = cr.getCommandInvocation(scope, commandName, ar);
+        final CommandRunner.CommandInvocation commandInvocation = 
+                cr.getCommandInvocation(commandName.getScope(), commandName.getName(), ar);
         if (inbound != null) {
             commandInvocation.inbound(inbound);
         }
@@ -274,19 +326,62 @@ public class CommandResource {
         if (exitCode == ActionReport.ExitCode.FAILURE) {
             status = HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
-        ResponseBuilder rb = Response.status(status); // entity(ar).build();
-        if (supportsMultiparResult && outbound.size() > 0) {
+        ResponseBuilder rb = Response.status(status);
+        if (xIndentHeader != null) {
+            rb.header("X-Indent", xIndentHeader);
+        }
+        if (supportsMultiparResult) {
             MultiPart mp = new MultiPart();
-            mp.bodyPart(ar, MediaType.APPLICATION_XML_TYPE);
-            outbound.addToMultipart(mp);
+            mp.bodyPart(ar, new MediaType("actionreport", "json"));
+            if (outbound.size() > 0) {
+                outbound.addToMultipart(mp, logger);
+            }
             rb.entity(mp);
         } else {
             rb.entity(ar);
         }
+        if ( isSingleInstanceCommand(model)) {
+            rb.cookie(getJSessionCookie(jSessionId));
+        }
         return rb.build();
     }
     
-    private String leadingSpacesToNbsp(String str) {
+    /**
+     * This will create a unique SessionId, Max-Age,Version,Path to be added to the Set-Cookie header
+     */
+    public NewCookie getJSessionCookie(Cookie jSessionId) {
+        String value;
+        // If the request has a Cookie header and
+        // there is no failover then send back the same
+        // JSESSIONID
+        if (jSessionId != null && isJSessionCookieOk(jSessionId.getValue())) {
+            value = jSessionId.getValue();
+        }  else {
+            value = uuidGenerator.generateUuid() + '.' + getServerName();
+        }
+        NewCookie result = new NewCookie(SESSION_COOKIE_NAME, value, "/command", null, null, MAX_AGE, false);
+        return result;
+    }
+    
+    private boolean isJSessionCookieOk(String value) {
+        if (!StringUtils.ok(value)) {
+            return false;
+        }
+        return value.endsWith("." + getServerName());
+    }
+    
+    private static boolean isSingleInstanceCommand(CommandModel model) {
+        if (model != null ) {
+            ExecuteOn executeOn = model.getClusteringAttributes();
+            if ((executeOn != null) && (executeOn.value().length ==1) &&
+                    executeOn.value()[0].equals(RuntimeType.SINGLE_INSTANCE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private static String leadingSpacesToNbsp(String str) {
         if (str == null) {
             return null;
         }
@@ -303,21 +398,87 @@ public class CommandResource {
         return str;
     }
     
-    private BufferedReader getManPageReader(String commandName) {
+    private CommandModel getCommandModel(CommandName commandName) throws WebApplicationException {
         CommandRunner cr = getCommandRunner();
-        CommandModel model = cr.getModel(commandName, logger);
+        CommandModel model = cr.getModel(commandName.getScope(), commandName.getName(), logger);
         if (model == null) {
-            return null;
+            //Looks like not existing command. Try to get info
+            RestActionReporter ar = new RestActionReporter();
+            AdminCommand cmd = cr.getCommand(commandName.getScope(), commandName.getName(), ar, logger);
+            if (ar.hasFailures()) {
+                throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                        .type(MediaType.TEXT_PLAIN)
+                        .entity(ar.getCombinedMessage())
+                        .build());
+            } else {
+                throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+                        .build());
+            }
         }
-        return cr.getHelp(model);
+        return model;
+    }
+    
+    private BufferedReader getManPageReader(CommandName commandName) throws WebApplicationException {
+        CommandModel model = getCommandModel(commandName);
+        return getCommandRunner().getHelp(model);
     }
     
     private CommandRunner getCommandRunner() {
-        return getHabitat().getByContract(CommandRunner.class);
+        if (this.commandRunner == null) {
+            commandRunner = getHabitat().getByContract(CommandRunner.class);
+        }
+        return this.commandRunner;
     }
     
     private BaseServiceLocator getHabitat() {
         return Globals.getDefaultBaseServiceLocator();
+    }
+    
+    private String getServerName() {
+        if (serverName == null) {
+            Server server = getHabitat().getComponent(Server.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
+            if (server != null) {
+                serverName = server.getName();
+            }
+        }
+        return serverName;
+    } 
+    
+    private static class CommandName {
+        private String scope;
+        private String name;
+
+        public CommandName(String scope, String name) {
+            this.scope = scope;
+            this.name = name;
+        }
+        
+        public CommandName(String fullName) {
+            if (fullName == null) {
+                return;
+            }
+            int ind = fullName.indexOf('/');
+            if (ind > 0) {
+                this.scope = fullName.substring(0, ind);
+                this.name = fullName.substring(ind + 1);
+            } else {
+                this.name = fullName;
+            }
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getScope() {
+            return scope;
+        }
+        
+        @Override
+        public String toString() {
+            return "CommandName[" + scope + " / " + name + "]";
+        }
+        
     }
     
 }

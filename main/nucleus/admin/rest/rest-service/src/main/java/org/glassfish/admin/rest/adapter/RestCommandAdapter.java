@@ -39,6 +39,7 @@
  */
 package org.glassfish.admin.rest.adapter;
 
+import com.sun.enterprise.admin.remote.writer.PayloadPartProvider;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -48,7 +49,6 @@ import org.glassfish.admin.rest.provider.*;
 import org.glassfish.admin.rest.readers.JsonParameterMapProvider;
 import org.glassfish.admin.rest.readers.ParameterMapFormReader;
 import org.glassfish.admin.rest.resources.admin.CommandResource;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.jvnet.hk2.annotations.Service;
 
 /** Adapter for {@code asadmin} and {@code cadmin} communication.
@@ -79,6 +79,7 @@ public class RestCommandAdapter extends RestAdapter {
             put("json", MediaType.APPLICATION_JSON_TYPE);
             put("html", MediaType.TEXT_HTML_TYPE);
             put("txt", MediaType.TEXT_PLAIN_TYPE);
+            put("multi", new MediaType("multipart", null));
         }};
     }
     
@@ -86,10 +87,11 @@ public class RestCommandAdapter extends RestAdapter {
     protected Set<Class<?>> getResourceClasses() {
         final Set<Class<?>> r = new HashSet<Class<?>>();
         r.add(CommandResource.class);
-        r.add(ParameterMapFormReader.class);
         //ActionReport - providers
         r.add(ActionReportXmlProvider.class);
         r.add(ActionReportJsonProvider.class);
+//        r.add(ActionReportDtoStaxProvider.class);
+        r.add(ActionReportDtoJsonProvider.class);
         //CommandModel - providers
         r.add(CommandModelHtmlProvider.class);
         r.add(CommandModelTxtProvider.class);

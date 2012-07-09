@@ -42,6 +42,9 @@ package org.glassfish.security.services.commands;
 import java.beans.PropertyVetoException;
 
 import javax.inject.Inject;
+
+import org.glassfish.security.services.config.SecurityConfiguration;
+import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -59,7 +62,6 @@ import org.glassfish.hk2.api.PerLookup;
 
 import org.glassfish.security.services.config.SecurityConfigurations;
 import org.glassfish.security.services.config.SecurityProvider;
-import org.glassfish.security.services.config.SecurityService;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 
@@ -103,8 +105,8 @@ public class CreateSecurityProvider implements AdminCommand {
         }
 
         // Get the security service
-        SecurityService service = secConfigs.getSecurityServiceByName(serviceName);
-        if (service == null) {
+        SecurityConfiguration securityServiceConfiguration = secConfigs.getSecurityServiceByName(serviceName);
+        if (securityServiceConfiguration == null) {
             report.setMessage("Unable to locate security service: " + serviceName);
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);
             return;
@@ -113,9 +115,9 @@ public class CreateSecurityProvider implements AdminCommand {
         // Add security provider configuration to the service
         // TODO - Add validation logic required for security provider attributes
         try {
-            ConfigSupport.apply(new SingleConfigCode<SecurityService>() {
+            ConfigSupport.apply(new SingleConfigCode<SecurityConfiguration>() {
                 @Override
-                public Object run(SecurityService param) throws PropertyVetoException, TransactionFailure {
+                public Object run(SecurityConfiguration param) throws PropertyVetoException, TransactionFailure {
                 	SecurityProvider providerConfig = param.createChild(SecurityProvider.class);
                 	providerConfig.setName(name);
                 	providerConfig.setType(providerType);
@@ -123,7 +125,7 @@ public class CreateSecurityProvider implements AdminCommand {
                     param.getSecurityProviders().add(providerConfig);
                     return providerConfig;
                 }
-            }, service);
+            }, securityServiceConfiguration);
         } catch (TransactionFailure transactionFailure) {
             report.setMessage("Unable to create security provider: " + transactionFailure.getMessage());
             report.setActionExitCode(ActionReport.ExitCode.FAILURE);

@@ -39,14 +39,12 @@
  */
 package com.sun.enterprise.v3.admin;
 
-import com.sun.enterprise.admin.util.CachedCommandModel;
-import com.sun.enterprise.admin.util.CommandSecurityChecker;
+import com.sun.enterprise.admin.util.*;
+import java.lang.reflect.Method;
 import java.util.EnumSet;
 import java.util.Map;
 import javax.security.auth.Subject;
 import org.glassfish.api.admin.CommandWrapperImpl;
-import com.sun.enterprise.admin.util.ClusterOperationUtil;
-import com.sun.enterprise.admin.util.InstanceStateService;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.Cluster;
 import com.sun.enterprise.module.common_impl.LogHelper;
@@ -195,29 +193,28 @@ public class CommandRunnerImpl implements CommandRunner {
     }
     
     @Override
-    public boolean validateCommandModelETag(String commandName, AdminCommand command, String eTag) {
+    public boolean validateCommandModelETag(AdminCommand command, String eTag) {
         if (command == null) {
             return true; //Everithing is ok for unexisting command
         }
         if (eTag == null || eTag.isEmpty()) {
             return false;
         }
-//        NameCommandClassPair key = new NameCommandClassPair(commandName, command.getClass());
-//        String actualETag = commandModelEtagMap.get(key);
-//        if (actualETag == null) {
-            CommandModel model = getModel(command);
-            if (model == null) {
-                return true; //Unexisting model => it is ok (but weard in fact)
-            }
-            String actualETag = CachedCommandModel.computeETag(model);
-//            commandModelEtagMap.put(key, actualETag);
-//        } else {
-//            if (logger.isLoggable(Level.FINEST)) {
-//                logger.log(Level.FINEST, "validateCommandModelETag({0}, {1}): Found in local cache!");
-//            }
-//        }
+        CommandModel model = getModel(command);
+        return validateCommandModelETag(model, eTag);
+    }
+    
+    @Override
+    public boolean validateCommandModelETag(CommandModel model, String eTag) {
+        if (model == null) {
+            return true; //Unexisting model => it is ok (but weard in fact)
+        }
+        if (eTag == null || eTag.isEmpty()) {
+            return false;
+        }
+        String actualETag = CachedCommandModel.computeETag(model);
         return eTag.equals(actualETag);
-    } 
+    }
 
     /**
      * Obtain and return the command implementation defined by
@@ -653,7 +650,7 @@ public class CommandRunnerImpl implements CommandRunner {
     }
     
     @Override
-    public BufferedReader getHelp(CommandModel model) {
+    public BufferedReader getHelp(CommandModel model) throws CommandNotFoundException {
         BufferedReader manPage = getManPage(model.getCommandName(), model);
         if (manPage != null) {
             return manPage;
@@ -1196,12 +1193,27 @@ public class CommandRunnerImpl implements CommandRunner {
                  */
                 final Map<String,Object> env = buildEnvMap(parameters);
                 try {
-                    commandSecurityChecker.authorize(context.getSubject(), env, command, context);
+                    if ( ! commandSecurityChecker.authorize(context.getSubject(), env, command, context)) {
+                        /*
+                         * If the command class tried to prepare itself but 
+                         * could not then the return is false and the command has
+                         * set the action report accordingly.  Don't process
+                         * the command further and leave the action report alone.
+                         */
+                        return;
+                    }
                 } catch (SecurityException ex) {
                     report.setFailureCause(ex);
                     report.setActionExitCode(ActionReport.ExitCode.FAILURE);
                     report.setMessage(adminStrings.getLocalString("commandrunner.noauth",
                             "User is not authorized for this command"));
+                    progressHelper.complete(context);
+                    return;
+                } catch (Exception ex) {
+                    report.setFailureCause(ex);
+                    report.setActionExitCode(ActionReport.ExitCode.FAILURE);
+                    report.setMessage(adminStrings.getLocalString("commandrunner.errAuth",
+                            "Error during authorization"));
                     progressHelper.complete(context);
                     return;
                 }
@@ -1585,7 +1597,7 @@ public class CommandRunnerImpl implements CommandRunner {
         }
         return result;
     }
-
+    
     /*
      * Some private classes used in the implementation of CommandRunner.
      */
