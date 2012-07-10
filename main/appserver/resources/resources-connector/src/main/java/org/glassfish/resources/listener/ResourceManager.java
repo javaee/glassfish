@@ -48,8 +48,10 @@ import org.glassfish.api.naming.GlassfishNamingManager;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.internal.api.ClassLoaderHierarchy;
 import org.glassfish.internal.api.PostStartup;
+import org.glassfish.internal.api.PostStartupRunLevel;
 import org.glassfish.resources.api.ResourceDeployer;
 import org.glassfish.resources.api.ResourceInfo;
 import org.glassfish.resources.api.ResourcesBinder;
@@ -76,11 +78,11 @@ import java.util.logging.Logger;
  *
  * @author Jagadish Ramu
  */
-@Singleton
-@Service(name = "ResourceManager") // this name is used in ApplicationLoaderService
-public class ResourceManager implements PostStartup, PostConstruct, PreDestroy, ConfigListener {
+@RunLevel( value= PostStartupRunLevel.VAL, mode=RunLevel.RUNLEVEL_MODE_NON_VALIDATING)
+@Service(name="ResourceManager") // this name is used in ApplicationLoaderService
+public class ResourceManager implements PostConstruct, PreDestroy, ConfigListener {
 
-    private static final Logger logger =
+  private static final Logger logger =
             LogDomains.getLogger(ResourceManager.class, LogDomains.RESOURCE_BUNDLE);
 
     private static LocalStringManagerImpl localStrings =
