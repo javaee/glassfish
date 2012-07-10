@@ -107,23 +107,18 @@ public class RunLevelContext implements Context<RunLevel> {
 
         int mode = Utilities.getRunLevelMode(activeDescriptor);
 
-        if (mode == RunLevel.RUNLEVEL_MODE_VALIDATING) {
-            RunLevelController RunLevelController = getRunLevelController(rlsName);
+        RunLevelController RunLevelController = getRunLevelController(rlsName);
 
-            if (RunLevelController == null) {
-                throw new RunLevelException("Can't find a run level controller for " + rlsName);
-            }
-
-            validate(activeDescriptor, RunLevelController);
-            T service = activeDescriptor.create(root);
-            backingMap.put(activeDescriptor, service);
-            RunLevelController.recordActivation(activeDescriptor);
-            return service;
+        if (RunLevelController == null) {
+            throw new RunLevelException("Can't find a run level controller for " + rlsName);
         }
 
+        if (mode == RunLevel.RUNLEVEL_MODE_VALIDATING) {
+            validate(activeDescriptor, RunLevelController);
+        }
         T service = activeDescriptor.create(root);
         backingMap.put(activeDescriptor, service);
-
+        RunLevelController.recordActivation(activeDescriptor);
         return service;
     }
 
