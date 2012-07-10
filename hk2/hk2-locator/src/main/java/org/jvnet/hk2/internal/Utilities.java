@@ -72,10 +72,12 @@ import javax.inject.Scope;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
@@ -241,6 +243,52 @@ public class Utilities {
         }
         
         collector.throwIfErrors();
+    }
+    
+    /**
+     * Loads the class using the loader from the given descriptor or the
+     * classloader of the utilities class otherwise
+     * 
+     * @param loadMe The fully qualified class name
+     * @param fromMe The descriptor to use for the loader
+     * @param collector The error collector to fill in if this returns null
+     * @return null on failure to load (the failure will be added to the collector)
+     */
+    public static Class<?> loadClass(String loadMe, Descriptor fromMe, Collector collector) {
+        HK2Loader loader = fromMe.getLoader();
+        if (loader == null) {
+            ClassLoader cl = Utilities.class.getClassLoader();
+            if (cl == null) {
+                cl = ClassLoader.getSystemClassLoader();
+            }
+            
+            try {
+                return cl.loadClass(loadMe);
+            }
+            catch (Throwable th) {
+                collector.addThrowable(th);
+                return null;
+            }
+        }
+        
+        try {
+            return loader.loadClass(loadMe);
+        }
+        catch (Throwable th) {
+            if (th instanceof MultiException) {
+                MultiException me = (MultiException) th;
+                
+                for (Throwable th2 : me.getErrors()) {
+                    collector.addThrowable(th2);
+                }
+            }
+            else {
+                collector.addThrowable(th);
+            }
+            
+            return null;
+        }
+        
     }
     
     /**
@@ -431,7 +479,7 @@ public class Utilities {
         qualifiers = getAllQualifiers(clazz, name, collector);  // Fixes the @Named qualifier if it has no value
         
         contracts = getAutoAdvertisedTypes(clazz);
-        ScopeInfo scopeInfo = getScopeInfo(clazz, collector);
+        ScopeInfo scopeInfo = getScopeInfo(clazz, null, collector);
         scope = scopeInfo.getAnnoType();
             
         creator = new ClazzCreator<T>(locator, clazz, null, collector);
@@ -1070,8 +1118,10 @@ public class Utilities {
         return ((modifiers & Modifier.FINAL) != 0);
     }
     
+    @SuppressWarnings("unchecked")
     private static ScopeInfo getScopeInfo(
             AnnotatedElement annotatedGuy,
+            Descriptor defaultScope,
             Collector collector) {
         AnnotatedElement topLevelElement = annotatedGuy;
         
@@ -1121,10 +1171,19 @@ public class Utilities {
             return new ScopeInfo(winnerScope, winnerScope.annotationType());
         }
         
+        
         if (topLevelElement.isAnnotationPresent(Service.class)) {
             return new ScopeInfo(null, Singleton.class);
         }
-            
+        
+        if (defaultScope != null && defaultScope.getScope() != null) {
+            Class<? extends Annotation> descScope = (Class<? extends Annotation>)
+                    loadClass(defaultScope.getScope(), defaultScope, collector);
+            if (descScope != null) {
+                return new ScopeInfo(null, descScope);
+            }
+        }
+        
         return new ScopeInfo(null, PerLookup.class);
         
     }
@@ -1137,10 +1196,11 @@ public class Utilities {
      * found will return the dependent scope
      */
     public static Class<? extends Annotation> getScopeAnnotationType(
-            Class<?> fromThis) {
+            Class<?> fromThis,
+            Descriptor defaultScope) {
         Collector collector = new Collector();
         
-        ScopeInfo si = getScopeInfo(fromThis, collector);
+        ScopeInfo si = getScopeInfo(fromThis, defaultScope, collector);
         
         collector.throwIfErrors();
         
@@ -1157,8 +1217,9 @@ public class Utilities {
      */
     public static Class<? extends Annotation> getScopeAnnotationType(
             AnnotatedElement annotatedGuy,
+            Descriptor defaultScope,
             Collector collector) {
-        ScopeInfo si = getScopeInfo(annotatedGuy, collector);
+        ScopeInfo si = getScopeInfo(annotatedGuy, defaultScope, collector);
         return si.getAnnoType();
     }
     

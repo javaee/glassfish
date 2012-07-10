@@ -58,6 +58,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -268,6 +269,29 @@ public class LocatorTest {
         
         Assert.assertNotNull(locator.getService(IsNotAContract.class, naq));
         Assert.assertNull(locator.getService(IsNotAContract.class, new DeadImpl()));
+    }
+    
+    /**
+     * Tests that a class with no scope will take on the scope
+     * given to it in a binding
+     */
+    @Test
+    public void testNakedScope() {
+        List<ActiveDescriptor<?>> nakedScopeServices =
+                locator.getDescriptors(BuilderHelper.createContractFilter(
+                        NoScopeService.class.getName()));
+        
+        Assert.assertTrue("Size should be 2, but is " + nakedScopeServices.size(),
+                nakedScopeServices.size() == 2);
+        
+        ActiveDescriptor<?> singleton = nakedScopeServices.get(0);
+        ActiveDescriptor<?> perLookup = nakedScopeServices.get(1);
+        
+        singleton = locator.reifyDescriptor(singleton);
+        perLookup = locator.reifyDescriptor(perLookup);
+        
+        Assert.assertEquals(Singleton.class, singleton.getScopeAnnotation());
+        Assert.assertEquals(PerLookup.class, perLookup.getScopeAnnotation());
     }
 
 }

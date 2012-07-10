@@ -87,7 +87,7 @@ public class TypeChecker {
                     return true;
                 }
                 
-                Class<? extends Annotation> trueScope = Utilities.getScopeAnnotationType(beanClass);
+                Class<? extends Annotation> trueScope = Utilities.getScopeAnnotationType(beanClass, null);
                 if (trueScope.equals((Class<? extends Annotation>) requiredClass)) {
                     return true;
                 }
