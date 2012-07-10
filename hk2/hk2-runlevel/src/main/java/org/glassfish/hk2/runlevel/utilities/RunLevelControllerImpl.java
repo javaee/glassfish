@@ -40,16 +40,13 @@
 package org.glassfish.hk2.runlevel.utilities;
 
 
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.Activator;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelException;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.Sorter;
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.internal.RunLevelContext;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Service;
@@ -362,7 +359,10 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
 
     @Override
     public void activate(ActiveDescriptor<?> descriptor) {
-        serviceLocator.getServiceHandle(descriptor).getService();
+        ServiceHandle serviceHandle = serviceLocator.getServiceHandle(descriptor);
+        if ( ! serviceHandle.isActive() ) {
+          serviceHandle.getService();
+        }
     }
 
     @Override
