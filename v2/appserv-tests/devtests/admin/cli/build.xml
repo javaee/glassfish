@@ -376,7 +376,7 @@
 
     <target name="build" depends="init-path">
         <mkdir dir="build"/>
-        <javac srcdir="src" destdir="build" debug="true"
+        <javac srcdir="src" destdir="build" debug="true" fork="true"
                classpath="${test}"
                includes="**/*.java"/>
     </target>
