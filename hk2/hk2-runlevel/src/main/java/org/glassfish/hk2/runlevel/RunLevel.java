@@ -95,8 +95,7 @@ public @interface RunLevel {
      * injection into another service.  These services will not be
      * checked during activation which means that the service can be
      * activated prior to the run level service reaching the run level.
-     * The run level serves only as a fail safe for activation.  These
-     * services will not be deactivated by the run level service.
+     * The run level serves only as a fail safe for activation.
      */
     public static final int RUNLEVEL_MODE_NON_VALIDATING = 0;
 

@@ -450,7 +450,6 @@ public class RunLevelServiceTest {
     @Test
     public void dependenciesFromNonRunLevelToRunLevelController() throws Exception {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create("dependenciesFromNonRunLevelToRunLevelController");
-        HashMap<Integer, Stack<ActiveDescriptor<?>>> recorders = new LinkedHashMap<Integer, Stack<ActiveDescriptor<?>>>();
 
         configureLocator(locator, new Class[]{
                 NonRunLevelWithRunLevelDepService.class,
@@ -462,19 +461,26 @@ public class RunLevelServiceTest {
 
         final ServiceHandle<RunLevelDepService> serviceHandle = locator.getServiceHandle(descriptor);
 
-        RunLevelDepService service;
-
-        service = serviceHandle.getService();
+        RunLevelDepService service = serviceHandle.getService();
 
         RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 10);
 
+        HashMap<Integer, Stack<ActiveDescriptor<?>>> recorders = rlc.getRecorders();
+
+        assertEquals(recorders.toString(), 1, recorders.size());
+
+        Stack<ActiveDescriptor<?>> recorder = recorders.get(10);
+        assertNotNull(recorder);
+
         service.useRunLevelController();
 
         proceedToAndWait(rlc, locator, 0);
 
-        service.useRunLevelController();
+        assertEquals(recorders.toString(), 1, recorders.size());
+        assertNotNull(recorders.toString(), recorders.get(10));
+        assertTrue(recorders.toString(), recorders.get(10).isEmpty());
     }
 
     @Test
