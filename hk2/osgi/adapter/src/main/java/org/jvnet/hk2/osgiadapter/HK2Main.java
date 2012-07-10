@@ -46,9 +46,7 @@ import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 import org.glassfish.hk2.api.Descriptor;
@@ -243,7 +241,8 @@ public class HK2Main extends Main implements
 
         // Execute code in reverse order w.r.t. start()
 
-        for (HabitatInfo habitatInfo : habitatInfos.values()) {
+        // Take a copy to avoid ConcurrentModificationException. This will happen as destroHabitat removes the entry.
+        for (HabitatInfo habitatInfo : new ArrayList<HabitatInfo>(habitatInfos.values())) {
             ModuleStartup startupService =
                     habitatInfo.serviceLocator.getService(ModuleStartup.class, DEFAULT_NAME);
             if (startupService != null) {
