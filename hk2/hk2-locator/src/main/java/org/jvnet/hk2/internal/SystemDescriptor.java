@@ -553,7 +553,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             creator = new ClazzCreator<T>(locator, implClass, this, collector);
             
             if (!preAnalyzed) {
-                scope = Utilities.getScopeAnnotationType(implClass, collector);
+                scope = Utilities.getScopeAnnotationType(implClass, baseDescriptor, collector);
                 contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(implClass,
                     baseDescriptor.getAdvertisedContracts()));
             }
@@ -600,7 +600,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             }
             
             if (!preAnalyzed) {
-                scope = Utilities.getScopeAnnotationType(provideMethod, collector);
+                scope = Utilities.getScopeAnnotationType(provideMethod, baseDescriptor, collector);
 
                 contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(
                         factoryProvidedType,

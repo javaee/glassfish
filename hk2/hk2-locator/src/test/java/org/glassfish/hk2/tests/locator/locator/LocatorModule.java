@@ -44,6 +44,7 @@ import java.util.Set;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -108,6 +109,14 @@ public class LocatorModule implements TestModule {
                 to(ComputerLanguage.class).
                 in(Singleton.class.getName()).
                 build());
+        
+        // These are for a class with no scope annotation, and hence
+        // should be allowed to take on any scope
+        configurator.bind(BuilderHelper.link(NoScopeService.class.getName()).
+                in(Singleton.class.getName()).build());
+        
+        configurator.bind(BuilderHelper.link(NoScopeService.class.getName()).
+                in(PerLookup.class.getName()).build());
     }
 
 }
