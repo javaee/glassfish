@@ -108,7 +108,8 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * any modules to see these classes.
      */
     protected final Map<String,Module> providers = new HashMap<String,Module>();
-    private Map<String, ServiceLocator> habitats = new Hashtable<String, ServiceLocator>();
+
+    private Map<ServiceLocator, String> habitats = new Hashtable<ServiceLocator, String>();
 
     protected AbstractModulesRegistryImpl(AbstractModulesRegistryImpl parent) {
         this.parent = parent;
@@ -173,7 +174,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             config.bind(BuilderHelper.createConstantDescriptor(this));
             config.commit();
             
-            habitats.put(name, serviceLocator);
+            habitats.put(serviceLocator, name);
             
             return serviceLocator;
         } catch (Exception e) {
@@ -371,9 +372,9 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
                 providers.put(name,newModule);
         }
         
-        for (Map.Entry<String, ServiceLocator> entry : habitats.entrySet()) {
-            String name = entry.getKey();
-            ServiceLocator h = entry.getValue();
+        for (Map.Entry<ServiceLocator, String> entry : habitats.entrySet()) {
+            String name = entry.getValue();
+            ServiceLocator h = entry.getKey();
             try
             {
                 // TODO: should get the inhabitantsParser out of Main instead since
