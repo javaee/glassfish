@@ -51,6 +51,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.XMLEvent;
 import javax.xml.transform.stream.StreamSource;
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -94,8 +97,13 @@ public class ConfigParser {
     }
 
     public void parse(XMLStreamReader in, DomDocument document, Dom parent) throws XMLStreamException {
-        in.nextTag();
-        document.root = handleElement(in, document, parent);
+        try {
+            in.nextTag();
+            document.root = handleElement(in, document, parent);
+        }
+        finally {
+            in.close();
+        }
     }
 
     /**
@@ -111,11 +119,28 @@ public class ConfigParser {
     }
 
     public DomDocument parse(URL source, DomDocument document, Dom parent) {
+        InputStream inputStream = null;
         try {
-            parse(xif.createXMLStreamReader(new StreamSource(source.toString())), document, parent);
+            
+            inputStream = source.openStream();
+        }
+        catch (IOException e) {
+            throw new ComponentException("Failed to open "+source,e);
+        }
+        
+        try {
+            parse(xif.createXMLStreamReader(new StreamSource(inputStream)), document, parent);
             return document;
         } catch (XMLStreamException e) {
             throw new ComponentException("Failed to parse "+source,e);
+        }
+        finally {
+            try {
+                inputStream.close();
+            }
+            catch (IOException e) {
+                // ignore
+            }
         }
     }
 
