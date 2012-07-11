@@ -49,7 +49,10 @@ import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
 import org.glassfish.api.admin.config.ConfigExtension;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.config.support.GlassFishConfigBean;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigInjector;
@@ -743,6 +746,28 @@ public final class ZeroConfigUtils {
     }
 
     public static Class getClassForFullName(String configBeanClassName, Habitat habitat) {
-        return habitat.getInhabitantByType(configBeanClassName).type();
+        ActiveDescriptor<?> descriptor = habitat.getBestDescriptor(BuilderHelper.createContractFilter(configBeanClassName));
+        if (!descriptor.isReified()) {
+            descriptor = habitat.reifyDescriptor(descriptor);
+        }
+        
+        Class<?> defaultReturnValue = descriptor.getImplementationClass();
+        
+        String name = descriptor.getName();
+        if (name == null) return defaultReturnValue;
+        
+        Class<?> foundContract = null;
+        for (Type contract : descriptor.getContractTypes()) {
+            if (!(contract instanceof Class)) continue;
+            
+            Class<?> cc = (Class<?>) contract;
+            if (cc.getName().equals(name)) {
+                foundContract = cc;
+                break;
+            } 
+        }
+        
+        if (foundContract == null) return defaultReturnValue;
+        return foundContract;
     }
 }
