@@ -375,8 +375,9 @@ public class Utilities {
             return ISA_CONTRACT.get(dotDelimitedName);
         }
         
+        InputStream is = null;
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true, "isaContract");
+            is = findClass(searchHere, dotDelimitedName, true, "isaContract");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -396,6 +397,16 @@ public class Utilities {
             
             return false;
         }
+        finally {
+            if (is != null) {
+                try {
+                    is.close();
+                }
+                catch (IOException e) {
+                    // Ignore
+                }
+            }
+        }
     }
     
     /**
@@ -411,8 +422,9 @@ public class Utilities {
             return FOUND_SUPERCLASS.get(dotDelimitedName);
         }
         
+        InputStream is = null;
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true, "superclass");
+            is = findClass(searchHere, dotDelimitedName, true, "superclass");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -432,6 +444,16 @@ public class Utilities {
             
             return null;
         }
+        finally {
+            if (is != null) {
+                try {
+                    is.close();
+                }
+                catch (IOException e) {
+                    // Ignore
+                }
+            }
+        }
     }
     
     /**
@@ -446,8 +468,9 @@ public class Utilities {
             return ISA_SCOPE.get(dotDelimitedName);
         }
         
+        InputStream is = null;
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true, "isascope");
+            is = findClass(searchHere, dotDelimitedName, true, "isascope");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -468,6 +491,16 @@ public class Utilities {
             
             return false;
         }
+        finally {
+            if (is != null) {
+                try {
+                    is.close();
+                }
+                catch (IOException e) {
+                    // Ignore
+                }
+            }
+        }
     }
     
     /**
@@ -482,8 +515,9 @@ public class Utilities {
             return ISA_QUALIFIER.get(dotDelimitedName);
         }
         
+        InputStream is = null;
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true, "isaQualifier");
+            is = findClass(searchHere, dotDelimitedName, true, "isaQualifier");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -504,6 +538,16 @@ public class Utilities {
             
             return false;
         }
+        finally {
+            if (is != null) {
+                try {
+                    is.close();
+                }
+                catch (IOException e) {
+                    // Ignore
+                }
+            }
+        }
     }
     
     /**
@@ -518,8 +562,9 @@ public class Utilities {
             return FOUND_GENERATORS.get(dotDelimitedName);
         }
         
+        InputStream is = null;
         try {
-            InputStream is = findClass(searchHere, dotDelimitedName, true, "isaMethodGenerator");
+            is = findClass(searchHere, dotDelimitedName, true, "isaMethodGenerator");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -539,6 +584,16 @@ public class Utilities {
             nullCaches(dotDelimitedName);
             
             return null;
+        }
+        finally {
+            if (is != null) {
+                try {
+                    is.close();
+                }
+                catch (IOException e) {
+                    // Ignore
+                }
+            }
         }
     }
     
