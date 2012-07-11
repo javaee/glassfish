@@ -58,6 +58,7 @@
 	    <module>asm-all</module>
 	    <module>bean-validator</module>
 	    <module>jsr330</module>
+            <module>tiger-types</module>
     </modules>
     <properties>
         <findbugs.skip>true</findbugs.skip>
