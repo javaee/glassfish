@@ -70,6 +70,8 @@ public class SingletonContext implements Context<Singleton> {
         if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
         
         synchronized(activeDescriptor) {
+            if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
+            
             T t = activeDescriptor.create(root);
             activeDescriptor.setCache(t);
         
