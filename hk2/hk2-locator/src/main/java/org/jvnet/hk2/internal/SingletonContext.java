@@ -69,10 +69,12 @@ public class SingletonContext implements Context<Singleton> {
             ServiceHandle<?> root) {
         if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
         
-        T t = activeDescriptor.create(root);
-        activeDescriptor.setCache(t);
+        synchronized(activeDescriptor) {
+            T t = activeDescriptor.create(root);
+            activeDescriptor.setCache(t);
         
-        return t;
+            return t;
+        }
     }
 
     /* (non-Javadoc)
