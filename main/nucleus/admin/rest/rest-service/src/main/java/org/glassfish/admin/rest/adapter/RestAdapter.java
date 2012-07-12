@@ -340,9 +340,11 @@ public abstract class RestAdapter extends HttpHandler implements ProxiedRestAdap
                 AbstractActiveDescriptor<Habitat> hDescriptor = BuilderHelper.createConstantDescriptor(habitat);
                 hDescriptor.addContractType(Habitat.class);
                 bind(hDescriptor);
-
-                // TODO : I don't see the point
-//                bind(RestSessionManager.class).toInstance(habitat.getComponent(RestSessionManager.class));
+                
+                RestSessionManager rsm = habitat.getService(RestSessionManager.class);
+                AbstractActiveDescriptor<RestSessionManager> rmDescriptor =
+                        BuilderHelper.createConstantDescriptor(rsm);
+                bind(rmDescriptor);
             }
         });
 
