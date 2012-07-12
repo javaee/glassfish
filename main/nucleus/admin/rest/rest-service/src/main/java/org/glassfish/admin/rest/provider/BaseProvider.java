@@ -83,10 +83,10 @@ public abstract class BaseProvider<T> implements MessageBodyWriter<T> {
     public static final String JSONP_CALLBACK = "jsoncallback";
 
     @Context
-    protected Factory<UriInfo> uriInfo;
+    protected javax.inject.Provider<UriInfo> uriInfo;
 
     @Context
-    protected Factory<HttpHeaders> requestHeaders;
+    protected javax.inject.Provider<HttpHeaders> requestHeaders;
 
     @Context
     protected ServiceLocator habitat;

@@ -84,7 +84,7 @@ import javax.inject.Named;
 public class FlashlightProbeProviderFactory
         implements ProbeProviderFactory, PostConstruct {
     @Inject
-    @Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
+    //Named(ServerEnvironment.DEFAULT_INSTANCE_NAME)
     MonitoringService monitoringServiceConfig;
 
     @Inject

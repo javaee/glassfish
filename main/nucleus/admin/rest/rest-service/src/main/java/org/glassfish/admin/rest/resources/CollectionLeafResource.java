@@ -41,6 +41,8 @@
 package org.glassfish.admin.rest.resources;
 
 import com.sun.enterprise.config.serverbeans.JavaConfig;
+
+import javax.inject.Provider;
 import javax.ws.rs.PUT;
 import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.component.Habitat;
@@ -87,10 +89,10 @@ import static org.glassfish.admin.rest.utils.Util.upperCaseFirstLetter;
 @Produces({"text/html;qs=2", MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_FORM_URLENCODED})
 public abstract class CollectionLeafResource {
     @Context
-    protected Factory<HttpHeaders> requestHeaders;
+    protected Provider<HttpHeaders> requestHeaders;
 
     @Context
-    protected Factory<UriInfo> uriInfo;
+    protected Provider<UriInfo> uriInfo;
 
     @Context
     protected Habitat habitat;
