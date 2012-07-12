@@ -195,5 +195,19 @@ public interface DescriptorBuilder {
      * @throws IllegalArgumentException if the built descriptor is invalid
      */
     public FactoryDescriptors buildFactory(String factoryScope) throws IllegalArgumentException;
+    
+    /**
+     * Generates a factory descriptor that can be used in binding operations.
+     * The generated factory service will have no name, no qualifiers and the
+     * same metadata as given to this builder.  The generated service will
+     * have had the implementation class removed from its set of advertised
+     * contracts
+     * 
+     * @param factoryScope The scope the factory service itself is in.  If this is null the
+     * PerLookup scope will be used
+     * @return The descriptor that has been built up with this DescriptorBuilder
+     * @throws IllegalArgumentException if the built descriptor is invalid
+     */
+    public FactoryDescriptors buildFactory(Class<? extends Annotation> factoryScope) throws IllegalArgumentException;
 
 }
