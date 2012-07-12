@@ -382,6 +382,20 @@ public interface ServiceLocator {
      * @param preDestroyMe The object to preDestroy
      */
     public void preDestroy(Object preDestroyMe);
+    
+    /**
+     * This method creates, injects and post-constructs an object with the given
+     * class. This is equivalent to calling the {@link ServiceLocator#create(Class)}
+     * method followed by the {@link ServiceLocator#inject(Object)} method followed
+     * by the {@link ServiceLocator#postConstruct(Object)} method.
+     * <p>
+     * The object created is not managed by the locator.
+     *
+     * @param createMe The non-null class to create this object from
+     * @return An instance of the object that has been created, injected and post constructed
+     * @throws MultiException if there was an error when creating or initializing the object
+     */
+    public <U> U createAndInitialize(Class<U> createMe);
 
 }
 

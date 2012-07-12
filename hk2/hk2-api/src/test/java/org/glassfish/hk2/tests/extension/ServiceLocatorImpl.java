@@ -310,4 +310,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    public <T> T createAndInitialize(Class<T> createMe) {
+        return null;
+    }
 }

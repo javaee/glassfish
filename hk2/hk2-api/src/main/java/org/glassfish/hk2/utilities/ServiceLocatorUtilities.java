@@ -167,24 +167,4 @@ public abstract class ServiceLocatorUtilities {
         
         return retVal;
     }
-    
-    /**
-     * This method creates, injects and post-constructs an object with the given
-     * class. This is equivalent to calling the {@link ServiceLocator#create(Class)}
-     * method followed by the {@link ServiceLocator#inject(Object)} method followed
-     * by the {@link ServiceLocator#postConstruct(Object)} method.
-     * <p>
-     * The object created is not managed by the locator.
-     * 
-     * @param locator The non-null locator to use to create and initialize the object
-     * @param createMe The non-null class to create this object from
-     * @return An instance of the object that has been created, injected and post constructed
-     * @throws MultiException if there was an error when creating or initializing the object
-     */
-    public static <T> T createAndInitialize(ServiceLocator locator, Class<T> createMe) {
-        T retVal = locator.create(createMe);
-        locator.inject(retVal);
-        locator.postConstruct(retVal);
-        return retVal;
-    }
 }

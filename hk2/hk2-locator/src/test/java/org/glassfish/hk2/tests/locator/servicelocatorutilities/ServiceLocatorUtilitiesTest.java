@@ -109,7 +109,7 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testCreateAndInitialize() {
-        ServiceWithPostConstruct swpc = ServiceLocatorUtilities.createAndInitialize(locator,
+        ServiceWithPostConstruct swpc = locator.createAndInitialize(
                 ServiceWithPostConstruct.class);
         Assert.assertNotNull(swpc);
         
