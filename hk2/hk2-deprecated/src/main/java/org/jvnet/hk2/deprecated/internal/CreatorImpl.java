@@ -140,7 +140,7 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
     @SuppressWarnings("unchecked")
     @Override
     public T create(Inhabitant onBehalfOf) throws ComponentException {
-        return (T) ServiceLocatorUtilities.createAndInitialize(locator, c);
+        return (T) locator.createAndInitialize(c);
     }
 
     /* (non-Javadoc)

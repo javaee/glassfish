@@ -575,6 +575,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
+    /**
+     * Creates, injects and postConstructs, all in one
+     */
+    public <U> U createAndInitialize(Class<U> createMe) {
+        U retVal = create(createMe);
+        inject(retVal);
+        postConstruct(retVal);
+        return retVal;
+    }
+    
     @SuppressWarnings("unchecked")
     private <T> ServiceHandle<T> internalGetServiceHandle(Injectee onBehalfOf, Type contractOrImpl,
             String name,

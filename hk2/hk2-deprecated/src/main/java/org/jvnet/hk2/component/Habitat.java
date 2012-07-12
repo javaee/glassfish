@@ -835,6 +835,11 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         delegate.preDestroy(preDestroyMe);
         
     }
+    
+    @Override
+    public <U> U createAndInitialize(Class<U> createMe) {
+        return delegate.createAndInitialize(createMe);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(java.lang.annotation.Annotation, java.lang.annotation.Annotation[])
