@@ -89,7 +89,7 @@ public class FactoryModule implements TestModule {
                 to(President.class).
                 in(Singleton.class.getName()).
                 named(FactoryTest.WASHINGTON_NAME).
-                buildFactory(Singleton.class.getName()));
+                buildFactory(Singleton.class));
         
         // Jefferson
         configurator.bind(BuilderHelper.link(

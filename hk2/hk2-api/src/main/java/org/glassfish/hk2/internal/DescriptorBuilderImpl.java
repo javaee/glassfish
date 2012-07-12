@@ -305,4 +305,16 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
     public FactoryDescriptors buildFactory() throws IllegalArgumentException {
         return buildFactory(PerLookup.class.getName());
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.DescriptorBuilder#buildFactory(java.lang.Class)
+     */
+    @Override
+    public FactoryDescriptors buildFactory(
+            Class<? extends Annotation> factoryScope)
+            throws IllegalArgumentException {
+        if (factoryScope == null) factoryScope = PerLookup.class;
+        
+        return buildFactory(factoryScope.getName());
+    }
 }
