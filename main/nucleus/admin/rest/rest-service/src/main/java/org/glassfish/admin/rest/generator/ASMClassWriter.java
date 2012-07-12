@@ -124,7 +124,6 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        System.out.println("JRW(10) ASMClassWriter baseClassName=" + baseClassName);
         mv.visitFieldInsn(GETFIELD, baseClassName, INJECTOR_FIELD, FORNAME_INJECTOR_TYPE);
         mv.visitLdcInsn(Type.getType("L" + completeName + ";"));
         mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_INJECTOR_TYPE,
