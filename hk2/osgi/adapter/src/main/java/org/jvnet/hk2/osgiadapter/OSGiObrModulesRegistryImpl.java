@@ -111,7 +111,7 @@ public class OSGiObrModulesRegistryImpl extends AbstractOSGiModulesRegistryImpl 
     public void shutdown() {
         getObrHandler().close();
         List<Bundle> bundlesToUninstall = Collections.emptyList();// getBundlesToUninstall();
-                Arrays.toString(getBundleIds(bundlesToUninstall).toArray()));
+               
         logger.logp(Level.INFO, "OSGiObrModulesRegistryImpl", "shutdown", "bundlesToUninstall = {0}", new Object[]{
                 Arrays.toString(getBundleIds(bundlesToUninstall).toArray())});
         for (Bundle bundle : bundlesToUninstall) {
