@@ -46,7 +46,7 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>osgi-adapter-tests-parent</artifactId>
         <version>2.1.9-SNAPSHOT</version>
-    </parent> 
+    </parent>
 
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>osgi-adapter-test</artifactId>
@@ -110,7 +110,7 @@
         <artifactId>pax-exam-junit-extender-impl</artifactId>
         <version>${pax-exam-version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
@@ -149,4 +149,18 @@
         <version>${junit-version}</version>
       </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>com.springsource.repository.bundles.release</id>
+            <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/release</url>
+        </repository>
+
+        <repository>
+            <id>com.springsource.repository.bundles.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
+    </repositories>
 </project>
