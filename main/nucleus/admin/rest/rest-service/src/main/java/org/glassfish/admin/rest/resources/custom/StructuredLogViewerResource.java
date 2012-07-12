@@ -77,7 +77,7 @@ public class StructuredLogViewerResource {
 
     @Path("lognames/")
     public LogNamesResource getLogNamesResource() {
-        LogNamesResource resource = ServiceLocatorUtilities.createAndInitialize(injector, LogNamesResource.class);
+        LogNamesResource resource = injector.createAndInitialize(LogNamesResource.class);
         return resource;
     }
 

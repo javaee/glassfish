@@ -52,7 +52,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.glassfish.admin.rest.utils.ResourceUtil;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.component.BaseServiceLocator;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -62,6 +61,12 @@ import org.objectweb.asm.Type;
  * @author Ludovic Champenois
  */
 public class ASMClassWriter implements ClassWriter, Opcodes {
+    private final static String INJECTOR_FIELD = "injector";
+    private final static String FORNAME_INJECTOR_TYPE = "Lorg/glassfish/hk2/api/ServiceLocator;";
+    private final static String INTERFACE_INJECTOR_TYPE = "org/glassfish/hk2/api/ServiceLocator";
+    private final static String CREATE_AND_INITIALIZE = "createAndInitialize";
+    private final static String CREATE_AND_INITIALIZE_SIG = "(Ljava/lang/Class;)Ljava/lang/Object;";
+    
     private org.objectweb.asm.ClassWriter cw = new org.objectweb.asm.ClassWriter(0);
     private String className;
     private ServiceLocator habitat;
@@ -119,9 +124,11 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, baseClassName, "injector", "Lorg/glassfish/hk2/inject/Injector;");
+        System.out.println("JRW(10) ASMClassWriter baseClassName=" + baseClassName);
+        mv.visitFieldInsn(GETFIELD, baseClassName, INJECTOR_FIELD, FORNAME_INJECTOR_TYPE);
         mv.visitLdcInsn(Type.getType("L" + completeName + ";"));
-        mv.visitMethodInsn(INVOKEINTERFACE, "org/glassfish/hk2/inject/Injector", "inject", "(Ljava/lang/Class;)Ljava/lang/Object;");
+        mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_INJECTOR_TYPE,
+                CREATE_AND_INITIALIZE, CREATE_AND_INITIALIZE_SIG);
         mv.visitTypeInsn(CHECKCAST, completeName);
         mv.visitVarInsn(ASTORE, 1);
         mv.visitVarInsn(ALOAD, 1);
@@ -193,9 +200,10 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, generatedPath + className, "injector", "Lorg/glassfish/hk2/inject/Injector;");
+        mv.visitFieldInsn(GETFIELD, generatedPath + className, INJECTOR_FIELD, FORNAME_INJECTOR_TYPE);
         mv.visitLdcInsn(Type.getType("L" + generatedPath + commandResourceClassName + ";"));
-        mv.visitMethodInsn(INVOKEINTERFACE, "org/glassfish/hk2/inject/Injector", "inject", "(Ljava/lang/Class;)Ljava/lang/Object;");
+        mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_INJECTOR_TYPE,
+                CREATE_AND_INITIALIZE, CREATE_AND_INITIALIZE_SIG);
         mv.visitTypeInsn(CHECKCAST, generatedPath + commandResourceClassName);
         mv.visitVarInsn(ASTORE, 1);
         mv.visitVarInsn(ALOAD, 1);
@@ -344,9 +352,10 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, generatedPath + className, "injector", "Lorg/glassfish/hk2/inject/Injector;");
+        mv.visitFieldInsn(GETFIELD, generatedPath + className, INJECTOR_FIELD, FORNAME_INJECTOR_TYPE);
         mv.visitLdcInsn(Type.getType("L" + childClass + ";"));
-        mv.visitMethodInsn(INVOKEINTERFACE, "org/glassfish/hk2/inject/Injector", "inject", "(Ljava/lang/Class;)Ljava/lang/Object;");
+        mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_INJECTOR_TYPE,
+                CREATE_AND_INITIALIZE, CREATE_AND_INITIALIZE_SIG);
         mv.visitTypeInsn(CHECKCAST, childClass);
         mv.visitVarInsn(ASTORE, 1);
         mv.visitVarInsn(ALOAD, 1);
@@ -375,9 +384,10 @@ public class ASMClassWriter implements ClassWriter, Opcodes {
 
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
-        mv.visitFieldInsn(GETFIELD, generatedPath +"List" + childResourceClassName , "injector", "Lorg/glassfish/hk2/inject/Injector;");
+        mv.visitFieldInsn(GETFIELD, generatedPath +"List" + childResourceClassName , INJECTOR_FIELD, FORNAME_INJECTOR_TYPE);
         mv.visitLdcInsn(Type.getType("L" + generatedPath + childResourceClassName + ";"));
-        mv.visitMethodInsn(INVOKEINTERFACE, "org/glassfish/hk2/inject/Injector", "inject", "(Ljava/lang/Class;)Ljava/lang/Object;");
+        mv.visitMethodInsn(INVOKEINTERFACE, INTERFACE_INJECTOR_TYPE,
+                CREATE_AND_INITIALIZE, CREATE_AND_INITIALIZE_SIG);
         mv.visitTypeInsn(CHECKCAST, generatedPath + childResourceClassName );
         mv.visitVarInsn(ASTORE, 2);
         mv.visitVarInsn(ALOAD, 2);

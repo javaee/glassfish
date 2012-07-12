@@ -118,7 +118,7 @@ public class LogViewerResource {
 
     @Path("details/")
     public StructuredLogViewerResource getDomainUptimeResource() {
-        StructuredLogViewerResource resource = ServiceLocatorUtilities.createAndInitialize(injector, StructuredLogViewerResource.class);
+        StructuredLogViewerResource resource = injector.createAndInitialize(StructuredLogViewerResource.class);
         return resource;
     }
 

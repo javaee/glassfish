@@ -98,7 +98,7 @@ public class PropertiesBagResource {
     }
     @Path("{Name}/")
     public PropertyResource getProperty(@PathParam("Name") String id) {
-        PropertyResource resource = ServiceLocatorUtilities.createAndInitialize(habitat, PropertyResource.class);
+        PropertyResource resource = habitat.createAndInitialize(PropertyResource.class);
         resource.setBeanByKey(getEntity(), id, tagName);
         return resource;
     }
