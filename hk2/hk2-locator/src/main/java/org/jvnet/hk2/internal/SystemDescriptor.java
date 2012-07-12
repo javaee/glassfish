@@ -737,6 +737,10 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         }
     }
     
+    /* package */ Class<?> getPreAnalyzedClass() {
+        return implClass;
+    }
+    
     public String toString() {
         StringBuffer sb = new StringBuffer("SystemDescriptor(");
         

@@ -288,7 +288,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
             sd = new SystemDescriptor<Object>(descriptor, new Long(id), new Long(getNextServiceId()));
         }
         
-        Class<?> implClass = loadClass(descriptor, injectee);
+        Class<?> implClass = sd.getPreAnalyzedClass();
+        if (implClass == null) {
+            implClass = loadClass(descriptor, injectee);
+        }
+        
         Collector collector = new Collector();
         synchronized(lock) {
             sd.reify(implClass, this, collector);
