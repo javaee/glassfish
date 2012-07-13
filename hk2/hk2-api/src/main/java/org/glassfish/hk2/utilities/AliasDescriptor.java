@@ -40,17 +40,17 @@
 
 package org.glassfish.hk2.utilities;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.api.ServiceLocator;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
 
 
 /**
@@ -154,9 +154,29 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
 
     // ----- AbstractActiveDescriptor overrides -----------------------------
 
+    @Override
+    public T getCache() {
+        return descriptor.getCache();
+    }
+
+    @Override
+    public boolean isCacheSet() {
+        return descriptor.isCacheSet();
+    }
+
+    @Override
+    public void setCache(T cacheMe) {
+        descriptor.setCache(cacheMe);
+    }
+
+    @Override
+    public void releaseCache() {
+        descriptor.releaseCache();
+    }
+
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
-     */
+    * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
+    */
     @Override
     public boolean isReified() {
         // always return true to get past the addActiveDescriptor checks
@@ -249,7 +269,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
             if (!descriptor.isReified()) {
                 descriptor = (ActiveDescriptor<T>) locator.reifyDescriptor(descriptor);
             }
-            
+
             if (contract == null) {
                 initialized = true;
                 return;
@@ -271,7 +291,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
                     if (cl == null) {
                         cl = ClassLoader.getSystemClassLoader();
                     }
-                
+
                     contractType = cl.loadClass(contract);
                 }
             }
