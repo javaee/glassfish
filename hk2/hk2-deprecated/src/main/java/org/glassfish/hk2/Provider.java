@@ -57,6 +57,7 @@ import java.util.Collection;
  *  
  * @see ManagedComponentProvider
  */
+@Deprecated
 public interface Provider<T> {
 
     /**

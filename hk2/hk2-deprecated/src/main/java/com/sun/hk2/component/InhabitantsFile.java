@@ -96,6 +96,7 @@ import org.jvnet.hk2.annotations.Contract;
  *
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public class InhabitantsFile {
     public static final String PATH = "META-INF/inhabitants";
 

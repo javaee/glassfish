@@ -50,6 +50,7 @@ import java.util.Iterator;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 public class InhabitantTracing {
 
     private Deque<TracingUtilities.Node> stack = new ArrayDeque<TracingUtilities.Node>();

@@ -48,6 +48,7 @@ import org.jvnet.hk2.component.InjectionPoint;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 /*public*/ final class InjectionPointImpl implements InjectionPoint {
 
   private final Object component;

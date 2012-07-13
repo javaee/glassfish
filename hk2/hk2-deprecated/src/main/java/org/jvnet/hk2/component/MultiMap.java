@@ -51,6 +51,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
  */
+@Deprecated
 public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
 

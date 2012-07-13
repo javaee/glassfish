@@ -57,6 +57,7 @@ import java.util.Iterator;
  *
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public class InhabitantsScanner implements Iterable<InhabitantParser>, Closeable {
     private int lineNumber = 0;
     private final String systemId;

@@ -63,6 +63,7 @@ import javax.inject.Singleton;
  *
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> implements ActiveDescriptor<T> {
     /**
      * 

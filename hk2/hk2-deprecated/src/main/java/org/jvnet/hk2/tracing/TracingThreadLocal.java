@@ -44,6 +44,7 @@ package org.jvnet.hk2.tracing;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 public class TracingThreadLocal {
 
     public static final ThreadLocal<InhabitantTracing> tLocal = new ThreadLocal<InhabitantTracing>() {

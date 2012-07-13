@@ -52,6 +52,7 @@ import org.glassfish.hk2.api.Descriptor;
  *  
  * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
+@Deprecated
 public interface Binding<T> {
 
     /**

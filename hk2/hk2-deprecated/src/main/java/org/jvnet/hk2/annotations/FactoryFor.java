@@ -57,6 +57,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @see Factory
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 @Contract
 @Documented
 @Retention(RUNTIME) @Target(TYPE)

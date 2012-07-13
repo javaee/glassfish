@@ -47,6 +47,7 @@ package org.glassfish.hk2;
  * 
  * @see NamedBinder
  */
+@Deprecated
 public interface ResolvedBinder<T> {
 
     /**

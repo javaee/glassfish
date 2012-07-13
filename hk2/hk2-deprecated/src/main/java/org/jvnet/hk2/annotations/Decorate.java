@@ -48,6 +48,7 @@ import java.lang.annotation.*;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Decorate {

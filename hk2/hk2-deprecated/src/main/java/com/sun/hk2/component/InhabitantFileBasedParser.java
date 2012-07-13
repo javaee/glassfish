@@ -72,6 +72,7 @@ import static com.sun.hk2.component.InhabitantsFile.INDEX_KEY;
  *
  * "Any" above contributes to the metadata portion of the inhabitant.
  */
+@Deprecated
 public class InhabitantFileBasedParser implements InhabitantParser {
     final Map<String,List<String>> metadata;
     final KeyValuePairParser parser;

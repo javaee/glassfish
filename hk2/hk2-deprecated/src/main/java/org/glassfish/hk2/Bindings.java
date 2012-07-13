@@ -54,6 +54,7 @@ package org.glassfish.hk2;
  * @see Services#bindDynamically()
  * @see DynamicBinderFactory
  */
+@Deprecated
 // TODO: consider in the future extending this to support iteration over the actual Binding objects
 public interface Bindings extends Releasable {
     /**

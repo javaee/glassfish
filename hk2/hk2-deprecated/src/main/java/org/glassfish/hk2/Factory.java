@@ -77,6 +77,7 @@ package org.glassfish.hk2;
  *
  * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
+@Deprecated
 public interface Factory<T> {
 
     /**

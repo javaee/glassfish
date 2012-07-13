@@ -70,6 +70,7 @@ import java.util.Set;
  *
  * @author tbeerbower
  */
+@Deprecated
 public class Utilities {
 
     // ----- Constants ------------------------------------------------------

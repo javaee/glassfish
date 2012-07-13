@@ -64,6 +64,7 @@ import java.util.Set;
  * Inhabitant scanner based on introspection information rather than statically
  * generated inhabitant file
  */
+@Deprecated
 public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser> {
 
     final Types types;

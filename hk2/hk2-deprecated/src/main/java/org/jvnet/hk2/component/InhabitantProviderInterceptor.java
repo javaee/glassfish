@@ -50,6 +50,7 @@ import com.sun.hk2.component.InhabitantStore;
  *
  * @author Jeff Trent
  */
+@Deprecated
 @Contract
 public interface InhabitantProviderInterceptor {
 

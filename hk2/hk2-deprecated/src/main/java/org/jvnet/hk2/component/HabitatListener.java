@@ -53,6 +53,7 @@ import org.jvnet.hk2.component.Inhabitant;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 @Contract
 public interface HabitatListener extends EventListener {
 

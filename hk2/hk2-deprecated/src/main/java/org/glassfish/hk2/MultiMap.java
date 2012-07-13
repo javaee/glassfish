@@ -50,6 +50,7 @@ import java.util.Set;
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
  */
+@Deprecated
 public interface MultiMap<K, V> {
     
     /**

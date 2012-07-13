@@ -73,6 +73,7 @@ import com.sun.hk2.component.Holder;
  * @see Inhabitants
  */
 // TODO: Eventually get rid of auto-depend's Holder
+@Deprecated
 public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, Holder<T>, Descriptor {
     /**
      * The short-cut for {@code type().getName()}

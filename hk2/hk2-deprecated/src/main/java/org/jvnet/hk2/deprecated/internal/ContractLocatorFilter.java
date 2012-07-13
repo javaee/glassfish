@@ -51,6 +51,7 @@ import org.glassfish.hk2.api.IndexedFilter;
  * @author jwells
  *
  */
+@Deprecated
 public class ContractLocatorFilter implements IndexedFilter {
     private String contractName;
     private String name;

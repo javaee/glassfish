@@ -72,6 +72,7 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
  */
+@Deprecated
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Habitat implements ServiceLocator, SimpleServiceLocator {
     private final static String DEFAULT_NAME = "default";

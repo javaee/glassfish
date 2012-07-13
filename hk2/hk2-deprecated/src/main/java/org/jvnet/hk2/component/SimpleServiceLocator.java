@@ -47,6 +47,7 @@ import java.util.Collection;
  *
  * @author Jerome Dochez, Jeff Trent
  */
+@Deprecated
 public interface SimpleServiceLocator extends BaseServiceLocator {
 
     /**

@@ -59,6 +59,7 @@ import org.glassfish.hk2.api.TypeLiteral;
  * 
  * @author Jerome Dochez, Jeff Trent
  */
+@Deprecated
 public interface NamedBinder<U>  {
 
     /**

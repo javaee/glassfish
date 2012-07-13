@@ -54,6 +54,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
  * @author jwells
  *
  */
+@Deprecated
 public class InhabitantImpl<T> extends AbstractInhabitantImpl<T> {
     private final ActiveDescriptor<T> desc;
     private final ServiceLocator locator;

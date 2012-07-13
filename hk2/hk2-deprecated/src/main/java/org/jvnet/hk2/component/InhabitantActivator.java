@@ -54,6 +54,7 @@ import java.util.concurrent.TimeoutException;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 @Contract
 public interface InhabitantActivator {
 

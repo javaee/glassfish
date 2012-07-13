@@ -68,6 +68,7 @@ import java.util.logging.Logger;
 /**
  * InjectInjectionResolver, handles all Inject annotations
  */
+@Deprecated
 public class InjectInjectionResolver extends InjectionResolver<Inject> {
 
 //    public static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;

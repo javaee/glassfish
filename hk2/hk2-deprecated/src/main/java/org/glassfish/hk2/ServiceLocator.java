@@ -99,6 +99,7 @@ package org.glassfish.hk2;
  * 
  * @see ContractLocator
  */
+@Deprecated
 public interface ServiceLocator<T> extends Providers<T> {
 
 }

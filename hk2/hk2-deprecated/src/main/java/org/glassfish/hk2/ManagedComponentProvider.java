@@ -62,6 +62,7 @@ package org.glassfish.hk2;
  * 
  * @author Jerome Dochez, Jeff Trent
  */
+@Deprecated
 public interface ManagedComponentProvider<T> extends Provider<T>, Releasable {
 
 }

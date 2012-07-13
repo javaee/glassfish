@@ -54,6 +54,7 @@ import javax.inject.Inject;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 @SuppressWarnings("serial")
 public class UnsatisfiedDependencyException extends ComponentException {
 

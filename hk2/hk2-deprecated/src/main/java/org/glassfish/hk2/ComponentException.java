@@ -46,6 +46,7 @@ package org.glassfish.hk2;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 public class ComponentException extends RuntimeException {
 
     public ComponentException(String message) {

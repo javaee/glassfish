@@ -46,6 +46,7 @@ import javax.inject.Inject;
  * @author Jeff Trent
  * @see ContextualFactory
  */
+@Deprecated
 public interface InjectionPoint {
 
   /**

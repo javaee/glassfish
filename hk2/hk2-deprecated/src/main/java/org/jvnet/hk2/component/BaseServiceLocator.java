@@ -48,6 +48,7 @@ import org.jvnet.hk2.annotations.Contract;
  *
  * @author Mason Taube
  */
+@Deprecated
 @Contract
 public interface BaseServiceLocator {
 

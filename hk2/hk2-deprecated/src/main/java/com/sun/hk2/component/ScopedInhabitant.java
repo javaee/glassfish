@@ -52,6 +52,7 @@ import org.jvnet.hk2.component.Inhabitant;
  * @param <T> scoped inhabitant type.
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
     private final Scope scope;
 

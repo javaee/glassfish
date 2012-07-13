@@ -69,6 +69,7 @@ import sun.misc.BASE64Decoder;
  *
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implements Inhabitant<T>, Binding<T> {
 //    private static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
     
