@@ -59,4 +59,24 @@ If you see this problem, add -Xmx999m to the command that starts the ant java vm
 
 Note: partial result will show <total>-<tests-executed> as a DID NOT RUN number
 
+8. Keeping the score...
 
+   8.1 If an assertion is added to a new test, and the status is not populated from this assertion, no extra change is necessary.
+
+   8.2 If a status of the new assertion is reported explicitly via call:
+
+           stat.addStatus("XYZ", stat.PASS);
+
+       the resultCount.sh total need to be incremented by one.
+
+       NOTE: the status counter prefers that each status has its own name, so if "XYZ" had been already used, find a different name. If the same test is executed more than once, add some modifier to the name to make it unique.
+
+   8.3 If a new test suite is added, the resultCount.sh should be incremented by the number of total tests reported by the suite. See the note above for the test reporting rules.
+
+   8.4 If a test needs to be executed against web.zip, it should be referenced from the "test-lite" target, and its count added to the TOTAL_LITE. Otherwise it should be added to the "test-all" target and TOTAL count be updated.
+
+9. Clustered tests
+
+   Clustered tests are not part of this suite and are located under ee/ directory.
+
+   Only ee/timer tests are automated in their own suite at this time.
