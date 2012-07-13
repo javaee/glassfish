@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.hk2.deprecated.utilities;
+package org.glassfish.hk2.tests.locator.alias;
 
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -144,8 +144,8 @@ public class AliasDescriptorTest {
 
         Set<Type> contractTypes = aliasDescriptor.getContractTypes();
 
-        assertEquals(1, contractTypes.size());
-        assertEquals(MyInterface2.class, contractTypes.iterator().next());
+        assertSame(1, contractTypes.size());
+        assertSame(MyInterface2.class, contractTypes.iterator().next());
     }
 
     @Test
@@ -161,10 +161,10 @@ public class AliasDescriptorTest {
 
         final Set<Annotation> qualifierAnnotations = aliasDescriptor.getQualifierAnnotations();
 
-        assertEquals(1, qualifierAnnotations.size());
+        assertSame(1, qualifierAnnotations.size());
         Annotation annotation = qualifierAnnotations.iterator().next();
         assertTrue(annotation instanceof NamedImpl);
-        assertEquals("foo", ((NamedImpl)annotation).value());
+        assertSame("foo", ((NamedImpl)annotation).value());
     }
 
     @Test
