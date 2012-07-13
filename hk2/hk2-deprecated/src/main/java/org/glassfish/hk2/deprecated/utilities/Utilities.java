@@ -50,6 +50,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
+import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.component.Inhabitant;

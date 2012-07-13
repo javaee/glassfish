@@ -38,15 +38,13 @@
  * holder.
  */
 
-package org.glassfish.hk2.deprecated.utilities;
+package org.glassfish.hk2.utilities;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.glassfish.hk2.utilities.NamedImpl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
