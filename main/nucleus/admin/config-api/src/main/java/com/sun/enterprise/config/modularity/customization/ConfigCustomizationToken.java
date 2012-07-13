@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.config.util.zeroconfig;
+package com.sun.enterprise.config.modularity.customization;
 
 /**
  * Will carry a set of four strings which will be used during domain creation to find what initial values are required by a config bean to acquire them during the domain creation process.

@@ -38,62 +38,55 @@
  * holder.
  */
 
-package com.sun.enterprise.config.serverbeans;
+package com.sun.enterprise.config.modularity.parser;
 
-import com.sun.enterprise.config.util.zeroconfig.HasNoDefaultConfiguration;
-import com.sun.enterprise.config.util.zeroconfig.SnippetLoader;
-import com.sun.enterprise.config.util.zeroconfig.ZeroConfigUtils;
-import org.jvnet.hk2.config.ConfigSupport;
+import com.sun.enterprise.config.serverbeans.ConfigLoader;
+// import com.sun.enterprise.module.bootstrap.Populator;
+import com.sun.enterprise.util.LocalStringManager;
+import com.sun.enterprise.util.LocalStringManagerImpl;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Dom;
-import org.jvnet.hk2.config.SingleConfigCode;
-import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.DomDocument;
 
-import java.beans.PropertyVetoException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Responsible for creating default config beans for any ConfigExtension derived class.
+ * populate the a DomDocument from the given configuration snippet file containing a config bean configuration.
  *
+ * @author Bhakti Mehta
  * @author Masoud Kalali
  */
-public class DomainSnippetLoader extends SnippetLoader<Domain, DomainExtension> {
-    private final static Logger LOG = Logger.getLogger(DomainSnippetLoader.class.getName());
+public class ConfigurationPopulator /* implements Populator */ {
 
-    public DomainSnippetLoader(Domain configLoader) {
-        super(configLoader);
+    private final static Logger LOG = Logger.getLogger(ConfigurationPopulator.class.getName());
+    private final DomDocument doc;
+    private final ConfigLoader loader;
+    private final String xmlContent;
+
+    public ConfigurationPopulator(String xmlContent, DomDocument doc, ConfigLoader loader) {
+        this.xmlContent = xmlContent;
+        this.doc = doc;
+        this.loader = loader;
     }
 
-    @Override
-    public <U extends DomainExtension> U createConfigBeanForType(Class<U> domainExtensionType) throws TransactionFailure {
-        if (ZeroConfigUtils.hasCustomConfig(domainExtensionType)) {
-            addConfigBeanFor(domainExtensionType, configLoader);
-        } else {
-            if(domainExtensionType.getAnnotation(HasNoDefaultConfiguration.class)!=null){
-                return null;
-            }
-            final Class<U> parentElem = domainExtensionType;
-            ConfigSupport.apply(new SingleConfigCode<Domain>() {
-                @Override
-                public Object run(Domain parent) throws PropertyVetoException, TransactionFailure {
-                    U child = parent.createChild(parentElem);
-                    Dom.unwrap(child).addDefaultChildren();
-                    parent.getExtensions().add(child);
-                    return child;
-                }
-            }, configLoader);
-
+    public void run(org.jvnet.hk2.config.ConfigParser parser) {
+        try {
+            InputStream is = new ByteArrayInputStream(xmlContent.getBytes());
+            XMLStreamReader reader = XMLInputFactory.newFactory().createXMLStreamReader(is, "utf-8");
+            parser.parse(reader, doc, Dom.unwrap((ConfigBeanProxy) loader));
+        } catch (XMLStreamException e) {
+            LocalStringManager localStrings =
+                    new LocalStringManagerImpl(ConfigurationParser.class);
+            final String msg = localStrings.getLocalString(
+                    "can.not.get.default.configuration.for",
+                    "Can not read default configuration");
+            LOG.log(Level.SEVERE, msg, e);
         }
-
-        for (DomainExtension extension : configLoader.getExtensions()) {
-            try {
-                DomainExtension configExtension = domainExtensionType.cast(extension);
-                return (U) configExtension;
-            } catch (Exception e) {
-                // ignore, not the right type.
-            }
-        }
-        return null;
     }
-
 }
-

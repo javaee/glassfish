@@ -43,8 +43,10 @@ package com.sun.enterprise.glassfish.bootstrap.osgi;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -75,17 +77,23 @@ import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
 /**
-* @author Sanjeeb.Sahoo@Sun.COM
-*/
+ * Implementation of GlassFishRuntime in an OSGi environment.
+ *
+ * @author Sanjeeb.Sahoo@Sun.COM
+ */
 public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
 
-    // TODO(Sahoo): Merge with StarticGlassFishRuntime and elevate to higher package level.
+    // TODO(Sahoo): Merge with StaticGlassFishRuntime and elevate to higher package level.
+    // This can be achieved by modelling this as a GlassFishRuntimeDecorator taking StaticGlassFishRuntime
+    // as the decorated object.
 
-    Map<GlassFish, ServiceRegistration> gfs = new HashMap<GlassFish, ServiceRegistration>();
+    List<GlassFish> gfs = new ArrayList<GlassFish>();
 
     Logger logger = Logger.getLogger(getClass().getPackage().getName());
+    private final BundleContext context;
 
-    public EmbeddedOSGiGlassFishRuntime() {
+    public EmbeddedOSGiGlassFishRuntime(BundleContext context) {
+        this.context = context;
     }
     
     private void addStartupContext(ServiceLocator locator, StartupContext addMe) {
@@ -136,8 +144,7 @@ public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
             
             final ModuleStartup gfKernel = main.findStartupService(null, startupContext);
             GlassFish glassFish = createGlassFish(gfKernel, baseServiceLocator, gfProps.getProperties());
-            ServiceRegistration registration = getBundleContext().registerService(GlassFish.class.getName(), glassFish, gfProps.getProperties());
-            gfs.put(glassFish,  registration);
+            gfs.add(glassFish);
             return glassFish;
         } catch (BootException ex) {
             throw new GlassFishException(ex);
@@ -147,8 +154,8 @@ public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
     }
 
     public synchronized void shutdown() throws GlassFishException {
-        // make a copy as calling gf.dispose() causes it to remove itself from the map we are iterating
-        for (GlassFish gf : new HashSet<GlassFish>(gfs.keySet())) {
+        // make a copy to avoid ConcurrentModificationException
+        for (GlassFish gf : new ArrayList<GlassFish>(gfs)) {
             if (gf.getStatus() != GlassFish.Status.DISPOSED) {
                 try {
                     gf.dispose();
@@ -183,21 +190,10 @@ public class EmbeddedOSGiGlassFishRuntime extends GlassFishRuntime {
 
     protected GlassFish createGlassFish(ModuleStartup gfKernel, BaseServiceLocator habitat, Properties gfProps) throws GlassFishException {
         GlassFish gf = new GlassFishImpl(gfKernel, habitat, gfProps);
-        return new EmbeddedOSGiGlassFishImpl(this, gf);
+        return new EmbeddedOSGiGlassFishImpl(gf, getBundleContext());
     }
 
-    public BundleContext getBundleContext() {
-        return FrameworkUtil.getBundle(getClass()).getBundleContext();
-    }
-
-    public void remove(GlassFish gf) {
-        ServiceRegistration reg = gfs.remove(gf);
-        if (getBundleContext() != null) { // bundle is still active
-            try {
-                reg.unregister();
-            } catch (IllegalStateException e) {
-                logger.logp(Level.WARNING, "EmbeddedOSGiGlassFishRuntime", "remove", "Exception while unregistering " + gf, e);
-            }
-        }
+    private BundleContext getBundleContext() {
+        return context;
     }
 }

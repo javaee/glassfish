@@ -38,29 +38,19 @@
  * holder.
  */
 
-package com.sun.enterprise.config.util.zeroconfig;
+package com.sun.enterprise.config.modularity.annotation;
 
-import org.jvnet.hk2.annotations.Contract;
-
+import javax.inject.Qualifier;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Contract annotation to mark any config bean which accepts customization values during domain creation.
- * For example the com.sun.enterprise.connectors.jms.config.JmsService need a port number for the default JmsHost.
- * Although the JmsService or any other config bean of that sort will carry some default values for the port numbers
- * but this contract makes it easy to locate and query all config beans that has the accept customization during domain
- * creation to be located and later on queried for the SystemProperties they need.
- *
  * @author Masoud Kalali
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Contract
-public @interface CustomConfiguration {
-    String instanceConfigFileName() default "module-configuration.xml";
-    String dasConfigFileName() default "module-configuration.xml";
-    boolean usesOnTheFlyConfigGeneration() default false;
+@Qualifier()
+public @interface HasCustomizationTokens {
 }

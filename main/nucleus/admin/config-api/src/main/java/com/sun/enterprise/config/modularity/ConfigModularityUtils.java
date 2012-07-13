@@ -38,21 +38,28 @@
  * holder.
  */
 
-package com.sun.enterprise.config.util.zeroconfig;
+package com.sun.enterprise.config.modularity;
 
+import com.sun.enterprise.config.modularity.annotation.CustomConfiguration;
+import com.sun.enterprise.config.modularity.annotation.HasCustomizationTokens;
+import com.sun.enterprise.config.modularity.customization.ConfigBeanDefaultValue;
+import com.sun.enterprise.config.modularity.customization.ConfigCustomizationToken;
+import com.sun.enterprise.config.modularity.parser.ConfigurationPopulator;
+import com.sun.enterprise.config.modularity.parser.ModuleConfigurationParser;
 import com.sun.enterprise.config.serverbeans.Config;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.enterprise.config.serverbeans.DomainExtension;
 import com.sun.enterprise.config.serverbeans.Resource;
 import com.sun.enterprise.config.serverbeans.SystemProperty;
 import com.sun.enterprise.config.serverbeans.SystemPropertyBag;
+import com.sun.enterprise.util.LocalStringManager;
+import com.sun.enterprise.util.LocalStringManagerImpl;
 import org.glassfish.api.admin.config.ConfigExtension;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.config.support.GlassFishConfigBean;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigInjector;
@@ -92,8 +99,8 @@ import java.util.logging.Logger;
  *
  * @author Masoud Kalali
  */
-public final class ZeroConfigUtils {
-    private static final Logger LOG = Logger.getLogger(ZeroConfigUtils.class.getName());
+public final class ConfigModularityUtils {
+    private static final Logger LOG = Logger.getLogger(ConfigModularityUtils.class.getName());
 
     /**
      * If exists, locate and return a URL to the configuration snippet for the given config bean class.
@@ -134,9 +141,11 @@ public final class ZeroConfigUtils {
             }
         } else {
 
-            String fileName = isDas ? c.dasConfigFileName() : c.instanceConfigFileName();
+            String fileName = isDas ? c.dasConfigFileName() : c.defaultConfigFileName();
             //TODO properly handle the exceptions
-            ServiceConfigurationParser parser = new ServiceConfigurationParser();
+            LocalStringManager localStrings =
+                                new LocalStringManagerImpl(configBeanClass);
+                        ModuleConfigurationParser parser = new ModuleConfigurationParser(localStrings);
             try {
                 defaults = parser.parseServiceConfiguration(getConfigurationFileUrl(configBeanClass, fileName).openStream());
             } catch (XMLStreamException e) {
@@ -313,7 +322,7 @@ public final class ZeroConfigUtils {
             componentName = childElement.substring(childElement.lastIndexOf("[") + 1, childElement.indexOf("]"));
             Class childClass = getClassFor(elementName, habitat);
             Class parentClass = getClassFor(parentElement, habitat);
-            Method m = ZeroConfigUtils.findSuitableCollectionGetter(parentClass, childClass);
+            Method m = ConfigModularityUtils.findSuitableCollectionGetter(parentClass, childClass);
             if (m != null) {
                 try {
                     Collection col = (Collection) m.invoke(parent);
@@ -346,8 +355,8 @@ public final class ZeroConfigUtils {
 
     public static <T extends ConfigBeanProxy> void setConfigBean(T finalConfigBean, ConfigBeanDefaultValue configBeanDefaultValue, Habitat habitat, ConfigBeanProxy parent) {
 
-        Class clz = ZeroConfigUtils.getOwningClassForLocation(configBeanDefaultValue.getLocation(), habitat);
-        Class configBeanClass = ZeroConfigUtils.getClassForFullName(configBeanDefaultValue.getConfigBeanClassName(), habitat);
+        Class clz = ConfigModularityUtils.getOwningClassForLocation(configBeanDefaultValue.getLocation(), habitat);
+        Class configBeanClass = ConfigModularityUtils.getClassForFullName(configBeanDefaultValue.getConfigBeanClassName(), habitat);
         Method m = getMatchingSetterMethod(clz, configBeanClass);
         if (m != null) {
             try {
@@ -361,7 +370,7 @@ public final class ZeroConfigUtils {
             return;
         }
 
-        m = ZeroConfigUtils.findSuitableCollectionGetter(clz, configBeanClass);
+        m = ConfigModularityUtils.findSuitableCollectionGetter(clz, configBeanClass);
         if (m != null) {
             try {
                 Collection col = (Collection) m.invoke(parent);
@@ -431,9 +440,9 @@ public final class ZeroConfigUtils {
     public static <T extends ConfigBeanProxy> T getCurrentConfigBeanForDefaultValue(ConfigBeanDefaultValue defaultValue,
                                                                                     Habitat habitat)
             throws InvocationTargetException, IllegalAccessException {
-        Class parentClass = ZeroConfigUtils.getOwningClassForLocation(defaultValue.getLocation(), habitat);
-        Class configBeanClass = ZeroConfigUtils.getClassForFullName(defaultValue.getConfigBeanClassName(), habitat);
-        Method m = ZeroConfigUtils.findSuitableCollectionGetter(parentClass, configBeanClass);
+        Class parentClass = ConfigModularityUtils.getOwningClassForLocation(defaultValue.getLocation(), habitat);
+        Class configBeanClass = ConfigModularityUtils.getClassForFullName(defaultValue.getConfigBeanClassName(), habitat);
+        Method m = ConfigModularityUtils.findSuitableCollectionGetter(parentClass, configBeanClass);
         if (m != null) {
             ConfigParser configParser = new ConfigParser(habitat);
             // I don't use the GlassFish document here as I don't need persistence
@@ -445,12 +454,12 @@ public final class ZeroConfigUtils {
                 }
             };
             Domain domain = habitat.getComponent(Domain.class);
-            SnippetPopulator populator = new SnippetPopulator(defaultValue.getXmlConfiguration(), doc, domain);
+            ConfigurationPopulator populator = new ConfigurationPopulator(defaultValue.getXmlConfiguration(), doc, domain);
             populator.run(configParser);
             ConfigBeanProxy configBean = doc.getRoot().createProxy(configBeanClass);
-            ConfigBeanProxy parent = ZeroConfigUtils.getOwningObject(defaultValue.getLocation(), habitat);
+            ConfigBeanProxy parent = ConfigModularityUtils.getOwningObject(defaultValue.getLocation(), habitat);
             Collection col = (Collection) m.invoke(parent);
-            return (T) ZeroConfigUtils.getConfigBeanFromCollection(col, configBean, configBeanClass);
+            return (T) ConfigModularityUtils.getConfigBeanFromCollection(col, configBean, configBeanClass);
 
         }
         return null;
@@ -563,7 +572,7 @@ public final class ZeroConfigUtils {
 
     public static String resolveExpression(String expression){
         if(expression.startsWith("$")){
-            String name = expression.substring(2, expression.length()-1);
+            String name = expression.substring(1, expression.length());
             if(name.equalsIgnoreCase("CURRENT_INSTANCE_CONFIG_NAME"))
 //TODO P1: find out how these placeholders are being resolved
 //                expression= ServerEnvironment.DEFAULT_INSTANCE_NAME;
@@ -692,7 +701,7 @@ public final class ZeroConfigUtils {
 
 
     public static void addBeanToDomainXml(String serviceName, String target, Habitat habitat) {
-        Class configBeanType = ZeroConfigUtils.getClassFor(serviceName, habitat);
+        Class configBeanType = ConfigModularityUtils.getClassFor(serviceName, habitat);
         Domain domain = habitat.getComponent(Domain.class);
         if (ConfigExtension.class.isAssignableFrom(configBeanType)) {
             Config c = domain.getConfigNamed(target);
@@ -732,7 +741,7 @@ public final class ZeroConfigUtils {
         String name;
         ConfigBeanProxy itemToRemove;
         try {
-            Class configBeanClass = ZeroConfigUtils.getClassForFullName(defaultValue.getConfigBeanClassName(), habitat);
+            Class configBeanClass = ConfigModularityUtils.getClassForFullName(defaultValue.getConfigBeanClassName(), habitat);
             name = getNameForConfigBean(configBean, configBeanClass);
             itemToRemove = getNamedConfigBeanFromCollection(col, name, configBeanClass);
             if (itemToRemove != null) {
@@ -750,23 +759,23 @@ public final class ZeroConfigUtils {
         if (!descriptor.isReified()) {
             descriptor = habitat.reifyDescriptor(descriptor);
         }
-        
+
         Class<?> defaultReturnValue = descriptor.getImplementationClass();
-        
+
         String name = descriptor.getName();
         if (name == null) return defaultReturnValue;
-        
+
         Class<?> foundContract = null;
         for (Type contract : descriptor.getContractTypes()) {
             if (!(contract instanceof Class)) continue;
-            
+
             Class<?> cc = (Class<?>) contract;
             if (cc.getName().equals(name)) {
                 foundContract = cc;
                 break;
-            } 
+            }
         }
-        
+
         if (foundContract == null) return defaultReturnValue;
         return foundContract;
     }

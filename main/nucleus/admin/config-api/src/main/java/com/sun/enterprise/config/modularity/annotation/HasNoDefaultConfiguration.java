@@ -38,7 +38,7 @@
  * holder.
  */
 
-package com.sun.enterprise.config.util.zeroconfig;
+package com.sun.enterprise.config.modularity.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

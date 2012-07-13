@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,7 +73,7 @@ public class EmbeddedOSGiGlassFishRuntimeBuilder implements RuntimeBuilder {
     public GlassFishRuntime build(BootstrapProperties bsProps) throws GlassFishException {
         configureBundles(bsProps);
         provisionBundles(bsProps);
-        GlassFishRuntime gfr = new EmbeddedOSGiGlassFishRuntime();
+        GlassFishRuntime gfr = new EmbeddedOSGiGlassFishRuntime(getBundleContext());
         getBundleContext().registerService(GlassFishRuntime.class.getName(), gfr, bsProps.getProperties());
         return gfr;
     }
