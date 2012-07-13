@@ -360,6 +360,7 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
     @Override
     public void activate(ActiveDescriptor<?> descriptor) {
         ServiceHandle serviceHandle = serviceLocator.getServiceHandle(descriptor);
+        serviceLocator.reifyDescriptor( descriptor );
         if ( ! serviceHandle.isActive() ) {
           serviceHandle.getService();
         }
