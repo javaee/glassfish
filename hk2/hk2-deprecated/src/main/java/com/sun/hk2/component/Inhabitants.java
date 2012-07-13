@@ -53,6 +53,7 @@ import java.util.*;
  * @author Jeff Trent
  */
 // TODO: Make all Inhabitant types package private (especially ctors)
+@Deprecated
 public class Inhabitants {
 
   /**

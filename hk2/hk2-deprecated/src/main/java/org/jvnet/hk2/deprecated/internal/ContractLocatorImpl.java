@@ -58,6 +58,7 @@ import org.glassfish.hk2.deprecated.utilities.Utilities;
  * @param <T> The type of object to be returned from the Provider
  *
  */
+@Deprecated
 public class ContractLocatorImpl<T> implements ContractLocator<T> {
     private final ServiceLocator locator;
     private final String contractName;

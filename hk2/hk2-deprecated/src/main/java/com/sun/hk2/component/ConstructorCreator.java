@@ -54,6 +54,7 @@ import java.util.Map;
  * Creates an object from its constructor.
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class ConstructorCreator<T> extends AbstractCreatorImpl<T> {
 

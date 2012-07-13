@@ -44,6 +44,7 @@ package org.glassfish.hk2;
  *
  * @author Jeff Trent, Tom Beerbower
  */
+@Deprecated
 public interface Releasable {
     /**
      * Release the component/service if active.

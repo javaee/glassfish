@@ -52,6 +52,7 @@ package org.jvnet.hk2.component;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public interface ServiceContext {
   
   /**

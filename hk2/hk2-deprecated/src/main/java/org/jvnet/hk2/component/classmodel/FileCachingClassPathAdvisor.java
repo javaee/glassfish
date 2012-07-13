@@ -59,6 +59,7 @@ import java.util.logging.Logger;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public class FileCachingClassPathAdvisor implements ClassPathAdvisor {
 
   private final Logger logger = Logger.getLogger(FileCachingClassPathAdvisor.class.getName());

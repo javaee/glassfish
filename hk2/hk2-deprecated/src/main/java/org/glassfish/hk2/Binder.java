@@ -52,6 +52,7 @@ package org.glassfish.hk2;
  *
  * @author Jerome Dochez, Jeff Trent
  */
+@Deprecated
 public interface Binder<T> extends NamedBinder<T> {
 
     /**

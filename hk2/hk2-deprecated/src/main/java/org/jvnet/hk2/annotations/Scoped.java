@@ -60,6 +60,7 @@ import java.lang.annotation.Documented;
  *
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 @Retention(RUNTIME)
 @Documented
 @Target({TYPE,ANNOTATION_TYPE})

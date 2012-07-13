@@ -49,6 +49,7 @@ import java.util.Map;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 public interface InhabitantParser {
 
     Iterable<String> getIndexes();

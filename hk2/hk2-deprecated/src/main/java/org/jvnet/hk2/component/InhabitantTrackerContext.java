@@ -49,6 +49,7 @@ import java.util.Set;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public interface InhabitantTrackerContext {
 
   /**

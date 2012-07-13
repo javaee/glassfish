@@ -93,6 +93,7 @@ import org.glassfish.hk2.api.PreDestroy;
  * @author Jerome Dochez
  * @see Scope#current()
  */
+@Deprecated
 public interface ScopeInstance {
 
     /**

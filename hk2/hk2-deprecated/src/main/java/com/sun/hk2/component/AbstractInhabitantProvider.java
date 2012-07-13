@@ -45,6 +45,7 @@ import org.jvnet.hk2.component.InhabitantProviderInterceptor;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public abstract class AbstractInhabitantProvider implements InhabitantProviderInterceptor {
 
   protected static boolean contains(Set<String> indicies, String name) {

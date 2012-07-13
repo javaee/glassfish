@@ -49,6 +49,7 @@ import java.util.Map;
  * 
  * @deprecated Use {@link com.sun.hk2.component.Inhabitants} instead.
  */
+@Deprecated
 public class Inhabitants {
     /**
      * Creates a singleton wrapper around existing object.

@@ -47,6 +47,7 @@ import org.glassfish.hk2.inject.InjectionPoint;
  * 
  * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
+@Deprecated
 public interface Context {
 
     /**

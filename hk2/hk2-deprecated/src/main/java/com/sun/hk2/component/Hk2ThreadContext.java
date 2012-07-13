@@ -52,6 +52,7 @@ import org.jvnet.hk2.component.InjectionPoint;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public final class Hk2ThreadContext {
   private static final ThreadLocal<Hk2ThreadContext> tlc = new ThreadLocal<Hk2ThreadContext>();
 

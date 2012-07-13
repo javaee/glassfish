@@ -61,6 +61,7 @@ import static java.lang.annotation.ElementType.TYPE;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 @Target(TYPE)
 public @interface ContractProvided {
     Class value();

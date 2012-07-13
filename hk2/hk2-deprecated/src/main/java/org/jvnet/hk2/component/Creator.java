@@ -50,6 +50,7 @@ package org.jvnet.hk2.component;
  * @see Creators
  */
 @SuppressWarnings("unchecked")
+@Deprecated
 public interface Creator<T> extends Inhabitant<T> {
 
     /**

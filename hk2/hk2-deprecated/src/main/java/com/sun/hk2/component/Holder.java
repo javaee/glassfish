@@ -52,6 +52,7 @@ import org.jvnet.hk2.component.Factory;
  *
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public interface Holder<T> extends Factory<T> {
 
     /**

@@ -42,6 +42,7 @@ package org.glassfish.hk2.inject;
 
 import org.jvnet.hk2.annotations.Contract;
 
+@Deprecated
 @Contract
 public interface Creator {
 

@@ -50,6 +50,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @author Jerome Dochez
  */
 @Contract
+@Deprecated
 public interface IntrospectionScanner {
 
     /**

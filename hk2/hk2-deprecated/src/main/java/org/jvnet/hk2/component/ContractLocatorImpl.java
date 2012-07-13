@@ -66,6 +66,7 @@ import java.util.logging.Logger;
 //TODO: support name for byType
 //TODO: support annotation for byContract & byType
 //TODO: support metadata for byContract & byType
+@Deprecated
 public class ContractLocatorImpl<T> implements ContractLocator<T> {
 
     private static final Logger logger = Logger.getLogger(ContractLocatorImpl.class.getName());

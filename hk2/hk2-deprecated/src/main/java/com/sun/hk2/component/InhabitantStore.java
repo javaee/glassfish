@@ -44,6 +44,7 @@ import org.jvnet.hk2.component.Inhabitant;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public interface InhabitantStore {
 
   /**

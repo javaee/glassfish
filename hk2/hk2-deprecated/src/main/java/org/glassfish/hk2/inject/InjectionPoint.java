@@ -40,6 +40,7 @@
 
 package org.glassfish.hk2.inject;
 
+@Deprecated
 public interface InjectionPoint {
 
 }

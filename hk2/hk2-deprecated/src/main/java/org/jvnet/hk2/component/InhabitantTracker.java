@@ -49,6 +49,7 @@ import java.util.Collection;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public interface InhabitantTracker {
 
   /**

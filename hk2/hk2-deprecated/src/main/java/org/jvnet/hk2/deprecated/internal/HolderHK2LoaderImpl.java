@@ -48,6 +48,7 @@ import com.sun.hk2.component.Holder;
  * @author jwells
  *
  */
+@Deprecated
 public class HolderHK2LoaderImpl implements HK2Loader {
     private final Holder<ClassLoader> clHolder;
     

@@ -67,6 +67,7 @@ import java.util.StringTokenizer;
  * TODO: improved error check
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public final class KeyValuePairParser {
     private String str;
     private int idx;

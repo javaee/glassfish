@@ -50,6 +50,7 @@ import org.glassfish.hk2.api.IndexedFilter;
  * @author jwells
  *
  */
+@Deprecated
 public class MetadataIndexFilter implements IndexedFilter {
     private final Class<?> c;
     private final Map<String, List<String>> multiMap;

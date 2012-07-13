@@ -58,6 +58,7 @@ import java.lang.annotation.Annotation;
  * @see Locator
  * @see Providers
  */
+@Deprecated
 public interface ContractLocator<T> extends ServiceLocator<T> {
 
     /**

@@ -62,6 +62,7 @@ import org.jvnet.hk2.component.MultiMap;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   /**

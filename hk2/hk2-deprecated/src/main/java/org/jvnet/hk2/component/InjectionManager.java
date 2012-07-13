@@ -59,6 +59,7 @@ import org.jvnet.hk2.component.concurrent.WorkManager;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 @SuppressWarnings("unchecked")
 public class InjectionManager {
 

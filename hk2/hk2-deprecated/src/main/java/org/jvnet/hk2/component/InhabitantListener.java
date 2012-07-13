@@ -44,6 +44,7 @@ package org.jvnet.hk2.component;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public interface InhabitantListener {
   public enum EventType {
     INHABITANT_ACTIVATED,

@@ -60,6 +60,7 @@ import org.jvnet.hk2.component.Habitat;
  * 
  * @author Jerome Dochez, Jeff Trent
  */
+@Deprecated
 public abstract class ClassPath {
 
   private static Logger logger = Logger.getLogger(ClassPath.class.getName());

@@ -45,6 +45,7 @@ import java.lang.reflect.Type;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 
+@Deprecated
 public interface InjectionResolverQuery {
 
   /**

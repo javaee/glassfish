@@ -63,6 +63,7 @@ import org.jvnet.hk2.component.classmodel.ClassPath;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public interface ClassPathAdvisor extends FileFilter {
 
   /**

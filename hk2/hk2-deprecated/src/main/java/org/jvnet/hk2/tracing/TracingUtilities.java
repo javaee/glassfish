@@ -53,6 +53,7 @@ import java.util.List;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 public class TracingUtilities {
 
     private final static boolean enabled = Boolean.getBoolean("hk2.module.tracestate");

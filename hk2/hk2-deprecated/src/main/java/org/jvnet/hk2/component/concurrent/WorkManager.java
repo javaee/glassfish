@@ -66,6 +66,7 @@ import com.sun.hk2.component.Hk2ThreadContext;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public class WorkManager implements Executor {
 
   private final Executor exec;

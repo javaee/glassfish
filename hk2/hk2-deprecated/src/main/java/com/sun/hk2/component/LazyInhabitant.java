@@ -56,6 +56,7 @@ import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
 /**
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements ClassLoaderHolder {
     /**
      * 

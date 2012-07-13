@@ -49,6 +49,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Annotates an annotation which value is an array of inhabitant annotations
  * {@link InhabitantAnnotation}
  */
+@Deprecated
 @Retention(RUNTIME)
 @Target(ElementType.ANNOTATION_TYPE)
 public @interface Multiple {

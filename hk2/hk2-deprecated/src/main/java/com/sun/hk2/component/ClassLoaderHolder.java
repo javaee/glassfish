@@ -44,6 +44,7 @@ package com.sun.hk2.component;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 public interface ClassLoaderHolder {
 
   ClassLoader getClassLoader();

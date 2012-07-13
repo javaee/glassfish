@@ -49,6 +49,7 @@ import org.jvnet.hk2.annotations.Contract;
  * 
  * @author Jeff Trent
  */
+@Deprecated
 @Contract
 public interface InhabitantFilter {
 

@@ -62,6 +62,7 @@ import com.sun.hk2.component.IntrospectionScanner;
  *
  * @author Jerome Dochez, Jeff Trent
  */
+@Deprecated
 public abstract class InhabitantsFeed {
 
     private final Logger logger = Logger.getLogger(InhabitantsFeed.class.getName());

@@ -50,6 +50,7 @@ import java.util.Collection;
  * 
  * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
+@Deprecated
 public interface Providers<T> {
 
     /**

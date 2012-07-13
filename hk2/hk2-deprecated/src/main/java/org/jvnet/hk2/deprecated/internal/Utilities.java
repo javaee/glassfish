@@ -51,6 +51,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  * @author jwells
  *
  */
+@Deprecated
 public class Utilities {
     public static boolean safeEquals(Object a, Object b) {
         if (a == b) return true;

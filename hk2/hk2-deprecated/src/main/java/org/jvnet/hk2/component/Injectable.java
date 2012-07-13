@@ -47,6 +47,7 @@ package org.jvnet.hk2.component;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 public interface Injectable {
 
     /**

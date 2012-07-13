@@ -57,6 +57,7 @@ import com.sun.hk2.component.InjectionResolver;
  *
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public class Creators {
     
     /**

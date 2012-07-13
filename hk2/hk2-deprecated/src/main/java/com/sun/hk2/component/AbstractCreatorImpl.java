@@ -55,6 +55,7 @@ import org.jvnet.hk2.component.Inhabitant;
 /**
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 @SuppressWarnings("rawtypes")
 public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
     private final static Logger logger = Logger.getLogger(AbstractCreatorImpl.class.getName());

@@ -55,6 +55,7 @@ import java.lang.reflect.Method;
  *
  * @author Jerome Dochez
  */
+@Deprecated
 public abstract class InjectionResolver<U extends Annotation> implements InjectionResolverQuery {
     
     public final Class<U> type;

@@ -55,6 +55,7 @@ import java.util.Map;
  *
  * @author Kohsuke Kawaguchi
  */
+@Deprecated
 public abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitantImpl<T> {
 //    private static final Logger logger = Logger.getLogger(AbstractCreatorInhabitantImpl.class.getName());
 

@@ -87,6 +87,7 @@ import com.sun.hk2.component.InhabitantsScanner;
  *
  * @author Jerome Dochez, Jeff Trent
  */
+@Deprecated
 public abstract class InhabitantsParsingContextGenerator implements Closeable {
 
     private static final Logger logger = 

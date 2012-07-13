@@ -45,6 +45,7 @@ package org.glassfish.hk2;
  * 
  * @author Jerome Dochez, Jeff Trent
  */
+@Deprecated
 public interface DynamicBinderFactory extends BinderFactory {
     
     /**

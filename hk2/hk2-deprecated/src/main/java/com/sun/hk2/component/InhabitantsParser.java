@@ -58,6 +58,7 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
  */
+@Deprecated
 public class InhabitantsParser implements InhabitantStore {
   
     private final Logger logger = Logger.getLogger(InhabitantsParser.class.getName());

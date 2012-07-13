@@ -59,6 +59,7 @@ import org.jvnet.hk2.component.ComponentException;
  * @author jwells
  *
  */
+@Deprecated
 public class BaseServiceLocatorImpl implements BaseServiceLocator {
     private final ServiceLocator locator = ServiceLocatorFactory.getInstance().create("default");
 

@@ -54,6 +54,7 @@ import org.jvnet.hk2.annotations.Service;
  * @see Service
  * @see ContextualFactory
  */
+@Deprecated
 public interface Factory<T> extends org.glassfish.hk2.Factory<T> {
 
 }

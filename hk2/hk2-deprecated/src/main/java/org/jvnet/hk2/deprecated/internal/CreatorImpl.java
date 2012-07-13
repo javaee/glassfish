@@ -61,6 +61,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
  * @author jwells
  *
  */
+@Deprecated
 public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
     private final Class<?> c;
     private final ServiceLocator locator;

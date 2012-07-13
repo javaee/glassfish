@@ -47,6 +47,7 @@ import org.glassfish.hk2.api.IndexedFilter;
  * @author jwells
  *
  */
+@Deprecated
 public class QualifierFilter implements IndexedFilter {
     private final String qualifierName;
     private final String name;
