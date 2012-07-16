@@ -87,24 +87,25 @@
 <a class="jxr_linenumber" name="77" href="#77">77</a>  <em class="jxr_javadoccomment"> *</em>
 <a class="jxr_linenumber" name="78" href="#78">78</a>  <em class="jxr_javadoccomment"> * @author Jerome Dochez, Jeff Trent, Mason Taube</em>
 <a class="jxr_linenumber" name="79" href="#79">79</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="80" href="#80">80</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> Factory&lt;T&gt; {
-<a class="jxr_linenumber" name="81" href="#81">81</a>  
-<a class="jxr_linenumber" name="82" href="#82">82</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="83" href="#83">83</a>  <em class="jxr_javadoccomment">     * The system calls this method to obtain a reference to the </em>
-<a class="jxr_linenumber" name="84" href="#84">84</a>  <em class="jxr_javadoccomment">     * component/service.</em>
-<a class="jxr_linenumber" name="85" href="#85">85</a>  <em class="jxr_javadoccomment">     *</em>
-<a class="jxr_linenumber" name="86" href="#86">86</a>  <em class="jxr_javadoccomment">     * @return</em>
-<a class="jxr_linenumber" name="87" href="#87">87</a>  <em class="jxr_javadoccomment">     *      null is a valid return value. This is useful</em>
-<a class="jxr_linenumber" name="88" href="#88">88</a>  <em class="jxr_javadoccomment">     *      when a factory primarily does a look-up and it fails</em>
-<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment">     *      to find the specified component, yet you don't want that</em>
-<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment">     *      by itself to be an error. If the injection wants</em>
-<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">     *      a non-null value (i.e., &lt;tt&gt;@Inject(optional=false)&lt;/tt&gt;).</em>
-<a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">     * @throws ComponentException</em>
-<a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">     *      If the factory failed to get/create an instance</em>
-<a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">     *      and would like to propagate the error to the caller.</em>
-<a class="jxr_linenumber" name="95" href="#95">95</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="96" href="#96">96</a>      T get() <strong class="jxr_keyword">throws</strong> ComponentException;
-<a class="jxr_linenumber" name="97" href="#97">97</a>  }
+<a class="jxr_linenumber" name="80" href="#80">80</a>  @Deprecated
+<a class="jxr_linenumber" name="81" href="#81">81</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> Factory&lt;T&gt; {
+<a class="jxr_linenumber" name="82" href="#82">82</a>  
+<a class="jxr_linenumber" name="83" href="#83">83</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="84" href="#84">84</a>  <em class="jxr_javadoccomment">     * The system calls this method to obtain a reference to the </em>
+<a class="jxr_linenumber" name="85" href="#85">85</a>  <em class="jxr_javadoccomment">     * component/service.</em>
+<a class="jxr_linenumber" name="86" href="#86">86</a>  <em class="jxr_javadoccomment">     *</em>
+<a class="jxr_linenumber" name="87" href="#87">87</a>  <em class="jxr_javadoccomment">     * @return</em>
+<a class="jxr_linenumber" name="88" href="#88">88</a>  <em class="jxr_javadoccomment">     *      null is a valid return value. This is useful</em>
+<a class="jxr_linenumber" name="89" href="#89">89</a>  <em class="jxr_javadoccomment">     *      when a factory primarily does a look-up and it fails</em>
+<a class="jxr_linenumber" name="90" href="#90">90</a>  <em class="jxr_javadoccomment">     *      to find the specified component, yet you don't want that</em>
+<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">     *      by itself to be an error. If the injection wants</em>
+<a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">     *      a non-null value (i.e., &lt;tt&gt;@Inject(optional=false)&lt;/tt&gt;).</em>
+<a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">     * @throws ComponentException</em>
+<a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">     *      If the factory failed to get/create an instance</em>
+<a class="jxr_linenumber" name="95" href="#95">95</a>  <em class="jxr_javadoccomment">     *      and would like to propagate the error to the caller.</em>
+<a class="jxr_linenumber" name="96" href="#96">96</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="97" href="#97">97</a>      T get() <strong class="jxr_keyword">throws</strong> ComponentException;
+<a class="jxr_linenumber" name="98" href="#98">98</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

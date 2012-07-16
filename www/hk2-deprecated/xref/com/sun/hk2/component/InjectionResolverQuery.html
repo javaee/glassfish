@@ -55,28 +55,29 @@
 <a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.ComponentException;
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Inhabitant;
 <a class="jxr_linenumber" name="47" href="#47">47</a>  
-<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../../com/sun/hk2/component/InjectionResolverQuery.html">InjectionResolverQuery</a> {
-<a class="jxr_linenumber" name="49" href="#49">49</a>  
-<a class="jxr_linenumber" name="50" href="#50">50</a>    <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment">   * Returns the value to inject in the field or method of component annotated with</em>
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment">   * the annotated annotation.</em>
-<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment">   *</em>
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment">   * @param component injection target instance</em>
-<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">   * @param onBehalfOf inhabitant doing the injection for</em>
-<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment">   * @param annotated is the annotated java element {@link java.lang.reflect.Method}</em>
-<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">   * or {@link java.lang.reflect.Field}</em>
-<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">   * @param genericType the generic type of the expected return</em>
-<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">   * @param type type of the expected return</em>
-<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">   * @return the resource to be injected</em>
-<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">   * @throws ComponentException if the resource cannot be located.</em>
-<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment">   */</em>
-<a class="jxr_linenumber" name="63" href="#63">63</a>    &lt;V&gt; V getValue(Object component,
-<a class="jxr_linenumber" name="64" href="#64">64</a>        Inhabitant&lt;?&gt; onBehalfOf,
-<a class="jxr_linenumber" name="65" href="#65">65</a>        AnnotatedElement annotated,
-<a class="jxr_linenumber" name="66" href="#66">66</a>        Type genericType,
-<a class="jxr_linenumber" name="67" href="#67">67</a>        Class&lt;V&gt; type) <strong class="jxr_keyword">throws</strong> ComponentException;
-<a class="jxr_linenumber" name="68" href="#68">68</a>    
-<a class="jxr_linenumber" name="69" href="#69">69</a>  }
+<a class="jxr_linenumber" name="48" href="#48">48</a>  @Deprecated
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> <a href="../../../../com/sun/hk2/component/InjectionResolverQuery.html">InjectionResolverQuery</a> {
+<a class="jxr_linenumber" name="50" href="#50">50</a>  
+<a class="jxr_linenumber" name="51" href="#51">51</a>    <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment">   * Returns the value to inject in the field or method of component annotated with</em>
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment">   * the annotated annotation.</em>
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment">   *</em>
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <em class="jxr_javadoccomment">   * @param component injection target instance</em>
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <em class="jxr_javadoccomment">   * @param onBehalfOf inhabitant doing the injection for</em>
+<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">   * @param annotated is the annotated java element {@link java.lang.reflect.Method}</em>
+<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">   * or {@link java.lang.reflect.Field}</em>
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">   * @param genericType the generic type of the expected return</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">   * @param type type of the expected return</em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">   * @return the resource to be injected</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>  <em class="jxr_javadoccomment">   * @throws ComponentException if the resource cannot be located.</em>
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <em class="jxr_javadoccomment">   */</em>
+<a class="jxr_linenumber" name="64" href="#64">64</a>    &lt;V&gt; V getValue(Object component,
+<a class="jxr_linenumber" name="65" href="#65">65</a>        Inhabitant&lt;?&gt; onBehalfOf,
+<a class="jxr_linenumber" name="66" href="#66">66</a>        AnnotatedElement annotated,
+<a class="jxr_linenumber" name="67" href="#67">67</a>        Type genericType,
+<a class="jxr_linenumber" name="68" href="#68">68</a>        Class&lt;V&gt; type) <strong class="jxr_keyword">throws</strong> ComponentException;
+<a class="jxr_linenumber" name="69" href="#69">69</a>    
+<a class="jxr_linenumber" name="70" href="#70">70</a>  }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
