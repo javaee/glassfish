@@ -53,7 +53,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <target name="all" depends="build,setup,deploy,run,restore,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -81,6 +81,22 @@
 
     <target name="deploy" depends="init-common">
         <antcall target="deploy-war-common"/>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.max-response-headers=-1"/>
+        </antcall>
+    </target>
+
+    <target name="restore" depends="init-common">
+        <antcall target="asadmin-common-ignore-fail">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.max-response-headers=100"/>
+        </antcall>
     </target>
     
     <target name="run" depends="init-common">
