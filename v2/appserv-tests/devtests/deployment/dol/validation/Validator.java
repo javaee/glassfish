@@ -186,7 +186,8 @@ public class Validator {
         if ( (habitat == null) ) {
             // Bootstrap a hk2 environment.
             ModulesRegistry registry = new StaticModulesRegistry(Thread.currentThread().getContextClassLoader());
-            habitat = registry.createHabitat("default");
+            registry.createServiceLocator("default");
+            habitat = new Habitat();
 
             StartupContext startupContext = new StartupContext();
 
