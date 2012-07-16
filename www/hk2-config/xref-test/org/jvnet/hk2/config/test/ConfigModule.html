@@ -106,67 +106,68 @@
 <a class="jxr_linenumber" name="96" href="#96">96</a>          configurator.bind(BuilderHelper.link(DummyPopulator.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="97" href="#97">97</a>                  .to(Populator.<strong class="jxr_keyword">class</strong>).in(Singleton.<strong class="jxr_keyword">class</strong>.getName())
 <a class="jxr_linenumber" name="98" href="#98">98</a>                  .build());
-<a class="jxr_linenumber" name="99" href="#99">99</a>          bindInjector(configurator, <span class="jxr_string">"simple-connector"</span>, SimpleConnector.<strong class="jxr_keyword">class</strong>, SimpleConnectorInjector.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="100" href="#100">100</a>         bindInjector(configurator, <span class="jxr_string">"ejb-container-availability"</span>, EjbContainerAvailability.<strong class="jxr_keyword">class</strong>, EjbContainerAvailabilityInjector.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="101" href="#101">101</a>         bindInjector(configurator, <span class="jxr_string">"web-container-availability"</span>, WebContainerAvailability.<strong class="jxr_keyword">class</strong>, WebContainerAvailabilityInjector.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="102" href="#102">102</a> 
-<a class="jxr_linenumber" name="103" href="#103">103</a>     }
-<a class="jxr_linenumber" name="104" href="#104">104</a>     
-<a class="jxr_linenumber" name="105" href="#105">105</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> bindInjector(DynamicConfiguration configurator, String elementName, Class contract, <strong class="jxr_keyword">final</strong> Class clz) {
-<a class="jxr_linenumber" name="106" href="#106">106</a>         DescriptorBuilder db = BuilderHelper.link(clz).
-<a class="jxr_linenumber" name="107" href="#107">107</a>                 to(ConfigInjector.<strong class="jxr_keyword">class</strong>).to(InjectionTarget.<strong class="jxr_keyword">class</strong>).to(contract).
-<a class="jxr_linenumber" name="108" href="#108">108</a>                 in(Singleton.<strong class="jxr_keyword">class</strong>.getName()).
-<a class="jxr_linenumber" name="109" href="#109">109</a>                 qualifiedBy(clz.getAnnotation(InjectionTarget.<strong class="jxr_keyword">class</strong>)).
-<a class="jxr_linenumber" name="110" href="#110">110</a>                 named(elementName).andLoadWith(<strong class="jxr_keyword">new</strong> MyHk2Loader(clz.getClassLoader()));
-<a class="jxr_linenumber" name="111" href="#111">111</a> 
-<a class="jxr_linenumber" name="112" href="#112">112</a>         String metaData = ((Service) clz.getAnnotation(Service.<strong class="jxr_keyword">class</strong>)).metadata();
-<a class="jxr_linenumber" name="113" href="#113">113</a>         Map&lt;String, List&lt;String&gt;&gt; metaMap = <strong class="jxr_keyword">new</strong> HashMap&lt;String, List&lt;String&gt;&gt;();
-<a class="jxr_linenumber" name="114" href="#114">114</a>         <strong class="jxr_keyword">for</strong> (StringTokenizer st = <strong class="jxr_keyword">new</strong> StringTokenizer(metaData, <span class="jxr_string">","</span>); st.hasMoreTokens(); ) {
-<a class="jxr_linenumber" name="115" href="#115">115</a>             String tok = st.nextToken();
-<a class="jxr_linenumber" name="116" href="#116">116</a>             <strong class="jxr_keyword">int</strong> index = tok.indexOf('=');
-<a class="jxr_linenumber" name="117" href="#117">117</a>             <strong class="jxr_keyword">if</strong> (index &gt; 0) {
-<a class="jxr_linenumber" name="118" href="#118">118</a>                 String key = tok.substring(0, index);
-<a class="jxr_linenumber" name="119" href="#119">119</a>                 String value = tok.substring(index + 1);
-<a class="jxr_linenumber" name="120" href="#120">120</a>                 List&lt;String&gt; lst = metaMap.get(key);
-<a class="jxr_linenumber" name="121" href="#121">121</a>                 <strong class="jxr_keyword">if</strong> (lst == <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="122" href="#122">122</a>                     lst = <strong class="jxr_keyword">new</strong> LinkedList&lt;String&gt;();
-<a class="jxr_linenumber" name="123" href="#123">123</a>                     metaMap.put(key, lst);
-<a class="jxr_linenumber" name="124" href="#124">124</a>                 }
-<a class="jxr_linenumber" name="125" href="#125">125</a>                 lst.add(value);
-<a class="jxr_linenumber" name="126" href="#126">126</a>                 <em class="jxr_comment">//System.out.println("**     Added Metadata: " + tok.substring(0, index) + "  : " + tok.substring(index+1));</em>
-<a class="jxr_linenumber" name="127" href="#127">127</a>             }
-<a class="jxr_linenumber" name="128" href="#128">128</a>             <em class="jxr_comment">//db.andLoadWith(new MyHk2Loader(clz.getClassLoader()));</em>
-<a class="jxr_linenumber" name="129" href="#129">129</a>         }
-<a class="jxr_linenumber" name="130" href="#130">130</a>         
-<a class="jxr_linenumber" name="131" href="#131">131</a>         <strong class="jxr_keyword">for</strong> (String key : metaMap.keySet()) {
-<a class="jxr_linenumber" name="132" href="#132">132</a>             db.has(key, metaMap.get(key));
-<a class="jxr_linenumber" name="133" href="#133">133</a>         }
-<a class="jxr_linenumber" name="134" href="#134">134</a>         ActiveDescriptor desc = configurator.bind(db.build());
-<a class="jxr_linenumber" name="135" href="#135">135</a>         Utilities.addIndex(serviceLocator, desc, InjectionTarget.<strong class="jxr_keyword">class</strong>.getName(), contract.getName());
-<a class="jxr_linenumber" name="136" href="#136">136</a>         <em class="jxr_comment">//System.out.println("Bound descriptor : " + db.build());</em>
-<a class="jxr_linenumber" name="137" href="#137">137</a>     }
-<a class="jxr_linenumber" name="138" href="#138">138</a>     
-<a class="jxr_linenumber" name="139" href="#139">139</a>     <strong class="jxr_keyword">class</strong> MyHk2Loader
-<a class="jxr_linenumber" name="140" href="#140">140</a>         <strong class="jxr_keyword">implements</strong> HK2Loader {
-<a class="jxr_linenumber" name="141" href="#141">141</a>         
+<a class="jxr_linenumber" name="99" href="#99">99</a>          configurator.addActiveDescriptor(ConfigErrorService.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="100" href="#100">100</a>         bindInjector(configurator, <span class="jxr_string">"simple-connector"</span>, SimpleConnector.<strong class="jxr_keyword">class</strong>, SimpleConnectorInjector.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="101" href="#101">101</a>         bindInjector(configurator, <span class="jxr_string">"ejb-container-availability"</span>, EjbContainerAvailability.<strong class="jxr_keyword">class</strong>, EjbContainerAvailabilityInjector.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="102" href="#102">102</a>         bindInjector(configurator, <span class="jxr_string">"web-container-availability"</span>, WebContainerAvailability.<strong class="jxr_keyword">class</strong>, WebContainerAvailabilityInjector.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="103" href="#103">103</a> 
+<a class="jxr_linenumber" name="104" href="#104">104</a>     }
+<a class="jxr_linenumber" name="105" href="#105">105</a>     
+<a class="jxr_linenumber" name="106" href="#106">106</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> bindInjector(DynamicConfiguration configurator, String elementName, Class contract, <strong class="jxr_keyword">final</strong> Class clz) {
+<a class="jxr_linenumber" name="107" href="#107">107</a>         DescriptorBuilder db = BuilderHelper.link(clz).
+<a class="jxr_linenumber" name="108" href="#108">108</a>                 to(ConfigInjector.<strong class="jxr_keyword">class</strong>).to(InjectionTarget.<strong class="jxr_keyword">class</strong>).to(contract).
+<a class="jxr_linenumber" name="109" href="#109">109</a>                 in(Singleton.<strong class="jxr_keyword">class</strong>.getName()).
+<a class="jxr_linenumber" name="110" href="#110">110</a>                 qualifiedBy(clz.getAnnotation(InjectionTarget.<strong class="jxr_keyword">class</strong>)).
+<a class="jxr_linenumber" name="111" href="#111">111</a>                 named(elementName).andLoadWith(<strong class="jxr_keyword">new</strong> MyHk2Loader(clz.getClassLoader()));
+<a class="jxr_linenumber" name="112" href="#112">112</a> 
+<a class="jxr_linenumber" name="113" href="#113">113</a>         String metaData = ((Service) clz.getAnnotation(Service.<strong class="jxr_keyword">class</strong>)).metadata();
+<a class="jxr_linenumber" name="114" href="#114">114</a>         Map&lt;String, List&lt;String&gt;&gt; metaMap = <strong class="jxr_keyword">new</strong> HashMap&lt;String, List&lt;String&gt;&gt;();
+<a class="jxr_linenumber" name="115" href="#115">115</a>         <strong class="jxr_keyword">for</strong> (StringTokenizer st = <strong class="jxr_keyword">new</strong> StringTokenizer(metaData, <span class="jxr_string">","</span>); st.hasMoreTokens(); ) {
+<a class="jxr_linenumber" name="116" href="#116">116</a>             String tok = st.nextToken();
+<a class="jxr_linenumber" name="117" href="#117">117</a>             <strong class="jxr_keyword">int</strong> index = tok.indexOf('=');
+<a class="jxr_linenumber" name="118" href="#118">118</a>             <strong class="jxr_keyword">if</strong> (index &gt; 0) {
+<a class="jxr_linenumber" name="119" href="#119">119</a>                 String key = tok.substring(0, index);
+<a class="jxr_linenumber" name="120" href="#120">120</a>                 String value = tok.substring(index + 1);
+<a class="jxr_linenumber" name="121" href="#121">121</a>                 List&lt;String&gt; lst = metaMap.get(key);
+<a class="jxr_linenumber" name="122" href="#122">122</a>                 <strong class="jxr_keyword">if</strong> (lst == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="123" href="#123">123</a>                     lst = <strong class="jxr_keyword">new</strong> LinkedList&lt;String&gt;();
+<a class="jxr_linenumber" name="124" href="#124">124</a>                     metaMap.put(key, lst);
+<a class="jxr_linenumber" name="125" href="#125">125</a>                 }
+<a class="jxr_linenumber" name="126" href="#126">126</a>                 lst.add(value);
+<a class="jxr_linenumber" name="127" href="#127">127</a>                 <em class="jxr_comment">//System.out.println("**     Added Metadata: " + tok.substring(0, index) + "  : " + tok.substring(index+1));</em>
+<a class="jxr_linenumber" name="128" href="#128">128</a>             }
+<a class="jxr_linenumber" name="129" href="#129">129</a>             <em class="jxr_comment">//db.andLoadWith(new MyHk2Loader(clz.getClassLoader()));</em>
+<a class="jxr_linenumber" name="130" href="#130">130</a>         }
+<a class="jxr_linenumber" name="131" href="#131">131</a>         
+<a class="jxr_linenumber" name="132" href="#132">132</a>         <strong class="jxr_keyword">for</strong> (String key : metaMap.keySet()) {
+<a class="jxr_linenumber" name="133" href="#133">133</a>             db.has(key, metaMap.get(key));
+<a class="jxr_linenumber" name="134" href="#134">134</a>         }
+<a class="jxr_linenumber" name="135" href="#135">135</a>         ActiveDescriptor desc = configurator.bind(db.build());
+<a class="jxr_linenumber" name="136" href="#136">136</a>         Utilities.addIndex(serviceLocator, desc, InjectionTarget.<strong class="jxr_keyword">class</strong>.getName(), contract.getName());
+<a class="jxr_linenumber" name="137" href="#137">137</a>         <em class="jxr_comment">//System.out.println("Bound descriptor : " + db.build());</em>
+<a class="jxr_linenumber" name="138" href="#138">138</a>     }
+<a class="jxr_linenumber" name="139" href="#139">139</a>     
+<a class="jxr_linenumber" name="140" href="#140">140</a>     <strong class="jxr_keyword">class</strong> MyHk2Loader
+<a class="jxr_linenumber" name="141" href="#141">141</a>         <strong class="jxr_keyword">implements</strong> HK2Loader {
 <a class="jxr_linenumber" name="142" href="#142">142</a>         
-<a class="jxr_linenumber" name="143" href="#143">143</a>         <strong class="jxr_keyword">private</strong> ClassLoader loader;
-<a class="jxr_linenumber" name="144" href="#144">144</a> 
-<a class="jxr_linenumber" name="145" href="#145">145</a>         MyHk2Loader(ClassLoader cl) {
-<a class="jxr_linenumber" name="146" href="#146">146</a>             loader = cl;
-<a class="jxr_linenumber" name="147" href="#147">147</a>         }
-<a class="jxr_linenumber" name="148" href="#148">148</a>         
-<a class="jxr_linenumber" name="149" href="#149">149</a>         @Override
-<a class="jxr_linenumber" name="150" href="#150">150</a>         <strong class="jxr_keyword">public</strong> Class&lt;?&gt; loadClass(<strong class="jxr_keyword">final</strong> String className) <strong class="jxr_keyword">throws</strong> MultiException {
-<a class="jxr_linenumber" name="151" href="#151">151</a>             <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="152" href="#152">152</a>                 <strong class="jxr_keyword">return</strong> loader.loadClass(className);
-<a class="jxr_linenumber" name="153" href="#153">153</a>             } <strong class="jxr_keyword">catch</strong> (Exception ex) {
-<a class="jxr_linenumber" name="154" href="#154">154</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MultiException(ex);
-<a class="jxr_linenumber" name="155" href="#155">155</a>             }
-<a class="jxr_linenumber" name="156" href="#156">156</a>         }
-<a class="jxr_linenumber" name="157" href="#157">157</a>     }
-<a class="jxr_linenumber" name="158" href="#158">158</a> 
-<a class="jxr_linenumber" name="159" href="#159">159</a> }
+<a class="jxr_linenumber" name="143" href="#143">143</a>         
+<a class="jxr_linenumber" name="144" href="#144">144</a>         <strong class="jxr_keyword">private</strong> ClassLoader loader;
+<a class="jxr_linenumber" name="145" href="#145">145</a> 
+<a class="jxr_linenumber" name="146" href="#146">146</a>         MyHk2Loader(ClassLoader cl) {
+<a class="jxr_linenumber" name="147" href="#147">147</a>             loader = cl;
+<a class="jxr_linenumber" name="148" href="#148">148</a>         }
+<a class="jxr_linenumber" name="149" href="#149">149</a>         
+<a class="jxr_linenumber" name="150" href="#150">150</a>         @Override
+<a class="jxr_linenumber" name="151" href="#151">151</a>         <strong class="jxr_keyword">public</strong> Class&lt;?&gt; loadClass(<strong class="jxr_keyword">final</strong> String className) <strong class="jxr_keyword">throws</strong> MultiException {
+<a class="jxr_linenumber" name="152" href="#152">152</a>             <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="153" href="#153">153</a>                 <strong class="jxr_keyword">return</strong> loader.loadClass(className);
+<a class="jxr_linenumber" name="154" href="#154">154</a>             } <strong class="jxr_keyword">catch</strong> (Exception ex) {
+<a class="jxr_linenumber" name="155" href="#155">155</a>                 <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> MultiException(ex);
+<a class="jxr_linenumber" name="156" href="#156">156</a>             }
+<a class="jxr_linenumber" name="157" href="#157">157</a>         }
+<a class="jxr_linenumber" name="158" href="#158">158</a>     }
+<a class="jxr_linenumber" name="159" href="#159">159</a> 
+<a class="jxr_linenumber" name="160" href="#160">160</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

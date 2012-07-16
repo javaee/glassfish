@@ -120,7 +120,7 @@
 <a class="jxr_linenumber" name="110" href="#110">110</a>     <em class="jxr_comment">/*<em class="jxr_comment">package*/</em> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> buildModel(Inhabitant&lt;? <strong class="jxr_keyword">extends</strong> ConfigInjector&gt; i) {</em>
 <a class="jxr_linenumber" name="111" href="#111">111</a>         <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> m = models.get(i);
 <a class="jxr_linenumber" name="112" href="#112">112</a>         <strong class="jxr_keyword">if</strong>(m==<strong class="jxr_keyword">null</strong>)
-<a class="jxr_linenumber" name="113" href="#113">113</a>             m = <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a>(<strong class="jxr_keyword">this</strong>, i, i.metadata());
+<a class="jxr_linenumber" name="113" href="#113">113</a>             m = <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a>(<strong class="jxr_keyword">this</strong>, i, i.metadata(), habitat);
 <a class="jxr_linenumber" name="114" href="#114">114</a>         <strong class="jxr_keyword">return</strong> m;
 <a class="jxr_linenumber" name="115" href="#115">115</a>     }
 <a class="jxr_linenumber" name="116" href="#116">116</a> 
