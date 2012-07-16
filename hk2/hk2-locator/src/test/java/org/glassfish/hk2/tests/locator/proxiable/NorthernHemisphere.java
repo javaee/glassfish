@@ -37,58 +37,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
-
-import java.lang.reflect.Method;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
-
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+package org.glassfish.hk2.tests.locator.proxiable;
 
 /**
+ * This class has methods of different access to ensure that all the methods
+ * can be called by the proxy
+ * 
  * @author jwells
- *
  */
-public class MethodInterceptorImpl implements MethodInterceptor {
-    private final static String PROXY_MORE_METHOD_NAME = "__make";
-    
-    private final ServiceLocatorImpl locator;
-    private final ActiveDescriptor<?> descriptor;
-    private final ServiceHandle<?> root;
-    
-    /* package */ MethodInterceptorImpl(ServiceLocatorImpl sli, ActiveDescriptor<?> descriptor, ServiceHandle<?> root) {
-        this.locator = sli;
-        this.descriptor = descriptor;
-        this.root = root;
-    }
-
-    /* (non-Javadoc)
-     * @see net.sf.cglib.proxy.MethodInterceptor#intercept(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], net.sf.cglib.proxy.MethodProxy)
-     */
-    @Override
-    public Object intercept(Object target, Method method, Object[] params,
-            MethodProxy proxy) throws Throwable {
-        Context<?> context = locator.resolveContext(descriptor.getScopeAnnotation());
-        Object service = context.findOrCreate(descriptor, root);
-        if (service == null) {
-            throw new MultiException(new IllegalStateException("Proxiable context " +
-                    context + " findOrCreate returned a null for descriptor " + descriptor +
-                    " and handle " + root));
-        }
-        
-        if (method.getName().equals(PROXY_MORE_METHOD_NAME)) {
-            // We did what we came here to do
-            return null;
-        }
-        
-        Utilities.setAccessible(method);
-        
-        return ReflectionHelper.invoke(service, method, params);
-    }
-
+@SeasonScope
+public class NorthernHemisphere {
+	/* package */ void iAmAPackageMethod() {}
+	protected void iAmAProtectedMethod() {}
+	public void iAmAPublicMethod() {}
 }
