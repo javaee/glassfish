@@ -102,13 +102,13 @@
 <a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">     *</em>
 <a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">     * @return the mode</em>
 <a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="95" href="#95">95</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> RunLevel.Mode getRunLevelMode(Descriptor descriptor) {
+<a class="jxr_linenumber" name="95" href="#95">95</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> getRunLevelMode(Descriptor descriptor) {
 <a class="jxr_linenumber" name="96" href="#96">96</a>          List&lt;String&gt; list = descriptor.getBaseDescriptor().getMetadata().
 <a class="jxr_linenumber" name="97" href="#97">97</a>                  get(RunLevel.RUNLEVEL_MODE_META_TAG);
 <a class="jxr_linenumber" name="98" href="#98">98</a>  
 <a class="jxr_linenumber" name="99" href="#99">99</a>          <strong class="jxr_keyword">return</strong> list == <strong class="jxr_keyword">null</strong> ?
-<a class="jxr_linenumber" name="100" href="#100">100</a>                 RunLevel.Mode.VALIDATING :
-<a class="jxr_linenumber" name="101" href="#101">101</a>                 RunLevel.Mode.valueOf(list.get(0));
+<a class="jxr_linenumber" name="100" href="#100">100</a>                 RunLevel.RUNLEVEL_MODE_VALIDATING :
+<a class="jxr_linenumber" name="101" href="#101">101</a>                 Integer.valueOf(list.get(0));
 <a class="jxr_linenumber" name="102" href="#102">102</a>     }
 <a class="jxr_linenumber" name="103" href="#103">103</a> }
 </pre>
