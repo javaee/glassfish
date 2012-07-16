@@ -62,7 +62,7 @@
 <a class="jxr_linenumber" name="52" href="#52">52</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/config/DomDescriptor.html">DomDescriptor</a>(<a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> theDom, Set&lt;Type&gt; advertisedContracts,
 <a class="jxr_linenumber" name="53" href="#53">53</a>                          Class&lt;? <strong class="jxr_keyword">extends</strong> Annotation&gt; scope, String name,
 <a class="jxr_linenumber" name="54" href="#54">54</a>                          Set&lt;Annotation&gt; qualifiers) {
-<a class="jxr_linenumber" name="55" href="#55">55</a>          <strong class="jxr_keyword">super</strong>(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0);
+<a class="jxr_linenumber" name="55" href="#55">55</a>          <strong class="jxr_keyword">super</strong>(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="56" href="#56">56</a>          <strong class="jxr_keyword">super</strong>.addAdvertisedContract(ConfigBeanProxy.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="57" href="#57">57</a>          <strong class="jxr_keyword">if</strong> (theDom == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
 <a class="jxr_linenumber" name="58" href="#58">58</a>  
