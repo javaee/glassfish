@@ -298,7 +298,7 @@ public class HK2Main extends Main implements
 
         public Object addingService(final ServiceReference reference) {
             final Object object = ctx.getService(reference);
-
+            
             if (object == null) {
                 // service obuject can be null if the service is created using a factory and the factory fails to
                 // create for whatever reason. In such a case, gracefully handle the situation instead of us failing.
@@ -312,6 +312,9 @@ public class HK2Main extends Main implements
             DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
             DynamicConfiguration config = dcs.createDynamicConfiguration();
 
+            AbstractActiveDescriptor<Object> descriptor = BuilderHelper.createConstantDescriptor(object);
+            
+            
             // let's get the list of implemented contracts
             String[] contractNames = (String[]) reference.getProperty("objectclass");
             if (contractNames != null && contractNames.length > 0) {
@@ -324,15 +327,12 @@ public class HK2Main extends Main implements
                         name = (String) reference.getProperty("org.springframework.osgi.bean.name");
                     }
                       
-                    AbstractActiveDescriptor<Object> descriptor = BuilderHelper.createConstantDescriptor(object);
-                    
                     try {
 						descriptor.addContractType(object.getClass().getClassLoader().loadClass(contractName));
 						
-	                    descriptor.setName(name);
-	                    config.addActiveDescriptor(descriptor);
-	                    
-	                    
+						if (name != null)
+							descriptor.setName(name);
+
 	                    logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
 	                            "addingService", "registering service = {0}, contract = {1}, name = {2}", new Object[]{
 	                                    object, contractName, name});
@@ -341,14 +341,17 @@ public class HK2Main extends Main implements
 					}
                     
                 }
-                config.commit();
+                
             } else {
                 // this service does not implement a specific contract, let's register it by its type.
-                config.bind(BuilderHelper.createConstantDescriptor(object));
-                config.commit();
                 logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
                         "addingService", "registering service = {0}", object);
             }
+            
+            config.addActiveDescriptor(descriptor);
+
+            config.commit();
+
             return object;
         }
 

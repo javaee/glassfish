@@ -13,6 +13,9 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
 import java.io.File;
 import java.util.List;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
@@ -85,7 +88,7 @@ public class ServiceLocatorHk2MainTest {
 	}
 
 	@Test
-	public void testHK2Main() throws Throwable {
+	public <d> void testHK2Main() throws Throwable {
 
 		try {
 			Assert.assertNotNull("OSGi did not properly boot", this.bundleContext);
@@ -123,7 +126,7 @@ public class ServiceLocatorHk2MainTest {
 					.getAllServices(BuilderHelper
 							.createContractFilter("org.osgi.service.startlevel.StartLevel"));
 
-			Assert.assertEquals(1, startLevelServices.size());
+    		Assert.assertEquals(1, startLevelServices.size());
 			
 			List<?> startups = serviceLocator.getAllServices(BuilderHelper
 					.createContractFilter(ModuleStartup.class
@@ -137,7 +140,11 @@ public class ServiceLocatorHk2MainTest {
 					moduleStartup);
 
 			moduleStartup.start();
-
+	
+			List<?> configAdmin = serviceLocator.getAllServices(BuilderHelper.createContractFilter("org.osgi.service.cm.ConfigurationAdmin"));
+	
+			Assert.assertEquals(1, configAdmin.size());
+					
 		} catch (Exception ex) {
 			if (ex.getCause() != null)
 				throw ex.getCause();
