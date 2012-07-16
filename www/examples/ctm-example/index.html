@@ -30,13 +30,10 @@
     &lt;environment name=&quot;Alice&quot; minSize=&quot;1&quot; maxSize=&quot;2&quot; /&gt;
 &lt;/environments&gt;</pre></div><p>This XML contains all the data about a tenant named Bob</p><div class="source"><pre>&lt;environments&gt;
     &lt;environment name=&quot;Bob&quot; minSize=&quot;10&quot; maxSize=&quot;20&quot; /&gt;
-&lt;/environments&gt;</pre></div><p>The CTM team would like to have an interface called Environment that encapsulates all the information about a tenant:</p><div class="source"><pre>@Configured
-@Contract
-public interface Environment {
-    public String getName();
-    public int getMinSize();
-    public int getMaxSize();
-    ...
+&lt;/environments&gt;</pre></div><p>The CTM team would like to have an interface called Environment that encapsulates all the information about a tenant:</p><div class="source"><pre>public interface Environment {
+    String getName();
+    int getMinSize();
+    int getMaxSize();
 }</pre></div><p>There is code in the system that would like to inject the Environment class. However, the code that will inject this interface is in the Singleton scope, which means it never changes. And yet, depending on the state of the system the underlying tenant may change from Alice to Bob, or to any other tenant. For example, the class could look like this:</p><div class="source"><pre>@Singleton
 public class ServiceProvisioningEngine {
 
@@ -105,7 +102,7 @@ public class EnvironmentFactory implements Factory&lt;Environment&gt; {
     
     ...
 }</pre></div><p>It is interesting to notice that the factory itself is a service in the Singleton scope, and hence can be injected with the TenantManager. However, that does not mean that the EnvironmentFactory is producing objects into the Singleton scope, only that the factory itself is in the Singleton scope. We tell the system that this factory is producing items for the TenantScope by annotating the produce method, like this:</p><div class="source"><pre>    @TenantScoped
-    public Environment provide() {...}</pre></div><p>In this example, we are going to use other ServiceLocator registry's in order to create the specific Environment objects that we need. We will have a new ServiceLocator registry for each tenant, and that new ServiceLocator will be responsible for instantiating and providing the Environment implementations that we require.</p><p>TBD here we would need some words about how the separate ServiceLocators will create the EnvironmentImpls based on a particular backing XML file, using the configuration subsystem of hk2.</p><p>Thus the job of the EnvironmentFactory is to keep a map from tenants to their backing ServiceLocator registries. Here is the mapping and the code that associates a particular ServiceLocator with the current tenant:</p><div class="source"><pre>    private final HashMap&lt;String, ServiceLocator&gt; backingLocators = new HashMap&lt;String, ServiceLocator&gt;();
+    public Environment provide() {...}</pre></div><p>In this example, we are going to use other ServiceLocator registry's in order to create the specific Environment objects that we need. We will have a new ServiceLocator registry for each tenant, and that new ServiceLocator will be responsible for instantiating and providing the Environment implementations that we require.</p><p>ServiceLocators will be used as delegate for Habitat to create config instance of Environments based on a particular backing XML file, using the configuration subsystem of hk2.</p><p>Thus the job of the EnvironmentFactory is to keep a map from tenants to their backing ServiceLocator registries. Here is the mapping and the code that associates a particular ServiceLocator with the current tenant:</p><div class="source"><pre>    private final HashMap&lt;String, ServiceLocator&gt; backingLocators = new HashMap&lt;String, ServiceLocator&gt;();
     private final TenantLocatorGenerator generator = new TenantLocatorGenerator();
     
     private ServiceLocator getCurrentLocator() {
@@ -122,7 +119,30 @@ public class EnvironmentFactory implements Factory&lt;Environment&gt; {
     
     private ServiceLocator createNewLocator() {
         return generator.generateLocatorPerTenant(manager.getCurrentTenant());
-    }</pre></div><p>The job of the TenantLocatorGenerator is to create a new ServiceLocator based on the current tenant. TBD For now this generator will simply bind in an implementation of Environment that corresponds to Alice or Bob, but once the configuration subsystem is working over the new API the TenantLocatorGenerator will get its values from the proper backing XML file.</p><p>The code of the produce method in the EnvironmentFactory is now strait-forward:</p><div class="source"><pre>    @TenantScoped
+    }</pre></div><p>The job of the TenantLocatorGenerator is to create a new ServiceLocator based on the current tenant and populate it with values from a backing XML file.</p><div class="source"><pre>        ServiceLocator serviceLocator = factory.create(tenantName, parent);
+
+        // Will add itself to serviceLocator by tenantName
+        Habitat h = new Habitat(null, tenantName);
+        
+        // Populate this serviceLocator with config data.
+        for (Populator p : serviceLocator.&lt;Populator&gt;getAllServices(Populator.class)) {
+            p.run(new ConfigParser(h));
+        }</pre></div><p>Then it is necessary to implement Populator service, as follows below. Note, Habitat is backed by ServiceLocator for tenant.</p><div class="source"><pre>                @Service
+                public class EnvironmentXml implements Populator {
+                    @Inject
+                    TenantManager tenantManager;
+                
+                    @Inject
+                    protected Habitat habitat;
+                
+                    @Override
+                    public void run(ConfigParser parser) throws ConfigPopulatorException {
+                        String tenantName = tenantManager.getCurrentTenant();
+                        URL source = URL&lt;tenantName.xml&gt;
+                        parser.parse(source, new DomDocument(habitat));
+                    }
+                
+                }</pre></div><p>The code of the produce method in the EnvironmentFactory is now straightforward:</p><div class="source"><pre>    @TenantScoped
     public Environment provide() {
         ServiceLocator locator = getCurrentLocator();
         
@@ -152,8 +172,8 @@ public class EnvironmentFactory implements Factory&lt;Environment&gt; {
 
   
   
-  &nbsp;| Last Published: 05/23/2012
-  &nbsp;| Version: 2.1.4-SNAPSHOT
+  &nbsp;| Last Published: 07/14/2012
+  &nbsp;| Version: 2.1.10-SNAPSHOT
 </div>
       <div class="clear">
         <hr/>
