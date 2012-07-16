@@ -56,367 +56,548 @@
 <a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> java.io.IOException;
 <a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> java.io.InputStream;
 <a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> java.io.InputStreamReader;
-<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> java.util.jar.JarFile;
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> java.util.zip.ZipEntry;
-<a class="jxr_linenumber" name="53" href="#53">53</a>  
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> javax.inject.Named;
-<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">import</strong> javax.inject.Singleton;
-<a class="jxr_linenumber" name="56" href="#56">56</a>  
-<a class="jxr_linenumber" name="57" href="#57">57</a>  <strong class="jxr_keyword">import</strong> junit.framework.Assert;
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> java.util.HashMap;
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> java.util.HashSet;
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> java.util.Map;
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> java.util.Set;
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">import</strong> java.util.jar.JarFile;
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> java.util.zip.ZipEntry;
+<a class="jxr_linenumber" name="55" href="#55">55</a>  
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <strong class="jxr_keyword">import</strong> javax.inject.Named;
+<a class="jxr_linenumber" name="57" href="#57">57</a>  <strong class="jxr_keyword">import</strong> javax.inject.Singleton;
 <a class="jxr_linenumber" name="58" href="#58">58</a>  
-<a class="jxr_linenumber" name="59" href="#59">59</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.DescriptorType;
-<a class="jxr_linenumber" name="60" href="#60">60</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Factory;
-<a class="jxr_linenumber" name="61" href="#61">61</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.PerLookup;
-<a class="jxr_linenumber" name="62" href="#62">62</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.utilities.DescriptorImpl;
-<a class="jxr_linenumber" name="63" href="#63">63</a>  <strong class="jxr_keyword">import</strong> org.junit.Before;
-<a class="jxr_linenumber" name="64" href="#64">64</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="65" href="#65">65</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.generator.HabitatGenerator;
-<a class="jxr_linenumber" name="66" href="#66">66</a>  
-<a class="jxr_linenumber" name="67" href="#67">67</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="68" href="#68">68</a>  <em class="jxr_javadoccomment"> * Tests for the inhabitant generator</em>
-<a class="jxr_linenumber" name="69" href="#69">69</a>  <em class="jxr_javadoccomment"> * </em>
-<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment"> * @author jwells</em>
-<a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="72" href="#72">72</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/jvnet/hk2/generator/tests/InhabitantsGeneratorTest.html">InhabitantsGeneratorTest</a> {
-<a class="jxr_linenumber" name="73" href="#73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String FILE_ARGUMENT = <span class="jxr_string">"--file"</span>;
-<a class="jxr_linenumber" name="74" href="#74">74</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String OUTJAR_FILE_ARGUMENT = <span class="jxr_string">"--outjar"</span>;
-<a class="jxr_linenumber" name="75" href="#75">75</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VERBOSE_ARGUMENT = <span class="jxr_string">"--verbose"</span>;
-<a class="jxr_linenumber" name="76" href="#76">76</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String NOSWAP_ARGUMENT = <span class="jxr_string">"--noswap"</span>;
-<a class="jxr_linenumber" name="77" href="#77">77</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String LOCATOR_ARGUMENT = <span class="jxr_string">"--locator"</span>;
-<a class="jxr_linenumber" name="78" href="#78">78</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String CLASS_DIRECTORY = <span class="jxr_string">"gendir"</span>;
-<a class="jxr_linenumber" name="79" href="#79">79</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String JAR_FILE = <span class="jxr_string">"gendir.jar"</span>;
-<a class="jxr_linenumber" name="80" href="#80">80</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> File OUTJAR_FILE = <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"outgendir.jar"</span>);
-<a class="jxr_linenumber" name="81" href="#81">81</a>      
-<a class="jxr_linenumber" name="82" href="#82">82</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String META_INF_NAME = <span class="jxr_string">"META-INF"</span>;
-<a class="jxr_linenumber" name="83" href="#83">83</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String INHABITANTS = <span class="jxr_string">"hk2-locator"</span>;
-<a class="jxr_linenumber" name="84" href="#84">84</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String DEFAULT = <span class="jxr_string">"default"</span>;
-<a class="jxr_linenumber" name="85" href="#85">85</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String OTHER = <span class="jxr_string">"other"</span>;
-<a class="jxr_linenumber" name="86" href="#86">86</a>      
-<a class="jxr_linenumber" name="87" href="#87">87</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String ZIP_FILE_INHABITANT_NAME = <span class="jxr_string">"META-INF/hk2-locator/default"</span>;
-<a class="jxr_linenumber" name="88" href="#88">88</a>      
-<a class="jxr_linenumber" name="89" href="#89">89</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String MAVEN_CLASSES_DIR = <span class="jxr_string">"test-classes"</span>;
-<a class="jxr_linenumber" name="90" href="#90">90</a>      
-<a class="jxr_linenumber" name="91" href="#91">91</a>      <em class="jxr_comment">// metadata constants</em>
-<a class="jxr_linenumber" name="92" href="#92">92</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String KEY1 = <span class="jxr_string">"key1"</span>;
-<a class="jxr_linenumber" name="93" href="#93">93</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE1 = <span class="jxr_string">"value1"</span>;
-<a class="jxr_linenumber" name="94" href="#94">94</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String KEY2 = <span class="jxr_string">"key2"</span>;
-<a class="jxr_linenumber" name="95" href="#95">95</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE2 = <span class="jxr_string">"value2"</span>;
-<a class="jxr_linenumber" name="96" href="#96">96</a>      
-<a class="jxr_linenumber" name="97" href="#97">97</a>      <em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> The name for non-defaulted things */</em>
-<a class="jxr_linenumber" name="98" href="#98">98</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String NON_DEFAULT_NAME = <span class="jxr_string">"non-default-name"</span>;
-<a class="jxr_linenumber" name="99" href="#99">99</a>      
-<a class="jxr_linenumber" name="100" href="#100">100</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> Set&lt;DescriptorImpl&gt; EXPECTED_DESCRIPTORS = <strong class="jxr_keyword">new</strong> HashSet&lt;DescriptorImpl&gt;();
-<a class="jxr_linenumber" name="101" href="#101">101</a>     
-<a class="jxr_linenumber" name="102" href="#102">102</a>     <strong class="jxr_keyword">static</strong> {
-<a class="jxr_linenumber" name="103" href="#103">103</a>         {
-<a class="jxr_linenumber" name="104" href="#104">104</a>             <em class="jxr_comment">// This is the Factory that should be generated</em>
-<a class="jxr_linenumber" name="105" href="#105">105</a>             DescriptorImpl envFactory = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="106" href="#106">106</a>             envFactory.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.EnvironmentFactory"</span>);
-<a class="jxr_linenumber" name="107" href="#107">107</a>             envFactory.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.EnvironmentFactory"</span>);
-<a class="jxr_linenumber" name="108" href="#108">108</a>             envFactory.addAdvertisedContract(<span class="jxr_string">"org.glassfish.hk2.api.Factory"</span>);
-<a class="jxr_linenumber" name="109" href="#109">109</a>             envFactory.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="110" href="#110">110</a>         
-<a class="jxr_linenumber" name="111" href="#111">111</a>             EXPECTED_DESCRIPTORS.add(envFactory);
-<a class="jxr_linenumber" name="112" href="#112">112</a>         }
-<a class="jxr_linenumber" name="113" href="#113">113</a>         
-<a class="jxr_linenumber" name="114" href="#114">114</a>         {
-<a class="jxr_linenumber" name="115" href="#115">115</a>             <em class="jxr_comment">// This is the class that the Factory produces</em>
-<a class="jxr_linenumber" name="116" href="#116">116</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="117" href="#117">117</a>             envItself.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.EnvironmentFactory"</span>);
-<a class="jxr_linenumber" name="118" href="#118">118</a>             envItself.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.Environment"</span>);
-<a class="jxr_linenumber" name="119" href="#119">119</a>             envItself.setScope(<span class="jxr_string">"org.glassfish.examples.ctm.TenantScoped"</span>);
-<a class="jxr_linenumber" name="120" href="#120">120</a>             envItself.setDescriptorType(DescriptorType.FACTORY);
-<a class="jxr_linenumber" name="121" href="#121">121</a>         
-<a class="jxr_linenumber" name="122" href="#122">122</a>             EXPECTED_DESCRIPTORS.add(envItself);
-<a class="jxr_linenumber" name="123" href="#123">123</a>         }
-<a class="jxr_linenumber" name="124" href="#124">124</a>         
-<a class="jxr_linenumber" name="125" href="#125">125</a>         {
-<a class="jxr_linenumber" name="126" href="#126">126</a>             <em class="jxr_comment">// This is the class that implements the Context</em>
-<a class="jxr_linenumber" name="127" href="#127">127</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="128" href="#128">128</a>             di.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.TenantScopedContext"</span>);
-<a class="jxr_linenumber" name="129" href="#129">129</a>             di.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.TenantScopedContext"</span>);
-<a class="jxr_linenumber" name="130" href="#130">130</a>             di.addAdvertisedContract(<span class="jxr_string">"org.glassfish.hk2.api.Context"</span>);
-<a class="jxr_linenumber" name="131" href="#131">131</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="132" href="#132">132</a>         
-<a class="jxr_linenumber" name="133" href="#133">133</a>             EXPECTED_DESCRIPTORS.add(di);
-<a class="jxr_linenumber" name="134" href="#134">134</a>         }
-<a class="jxr_linenumber" name="135" href="#135">135</a>         
-<a class="jxr_linenumber" name="136" href="#136">136</a>         {
-<a class="jxr_linenumber" name="137" href="#137">137</a>             <em class="jxr_comment">// This is the service provider engine</em>
-<a class="jxr_linenumber" name="138" href="#138">138</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="139" href="#139">139</a>             di.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.ServiceProviderEngine"</span>);
-<a class="jxr_linenumber" name="140" href="#140">140</a>             di.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.ServiceProviderEngine"</span>);
-<a class="jxr_linenumber" name="141" href="#141">141</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="59" href="#59">59</a>  <strong class="jxr_keyword">import</strong> junit.framework.Assert;
+<a class="jxr_linenumber" name="60" href="#60">60</a>  
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.DescriptorType;
+<a class="jxr_linenumber" name="62" href="#62">62</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Factory;
+<a class="jxr_linenumber" name="63" href="#63">63</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.PerLookup;
+<a class="jxr_linenumber" name="64" href="#64">64</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.utilities.DescriptorImpl;
+<a class="jxr_linenumber" name="65" href="#65">65</a>  <strong class="jxr_keyword">import</strong> org.junit.Before;
+<a class="jxr_linenumber" name="66" href="#66">66</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="67" href="#67">67</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.config.GenerateServiceFromMethod;
+<a class="jxr_linenumber" name="68" href="#68">68</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.generator.HabitatGenerator;
+<a class="jxr_linenumber" name="69" href="#69">69</a>  
+<a class="jxr_linenumber" name="70" href="#70">70</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="71" href="#71">71</a>  <em class="jxr_javadoccomment"> * Tests for the inhabitant generator</em>
+<a class="jxr_linenumber" name="72" href="#72">72</a>  <em class="jxr_javadoccomment"> * </em>
+<a class="jxr_linenumber" name="73" href="#73">73</a>  <em class="jxr_javadoccomment"> * @author jwells</em>
+<a class="jxr_linenumber" name="74" href="#74">74</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="75" href="#75">75</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../org/jvnet/hk2/generator/tests/InhabitantsGeneratorTest.html">InhabitantsGeneratorTest</a> {
+<a class="jxr_linenumber" name="76" href="#76">76</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String FILE_ARGUMENT = <span class="jxr_string">"--file"</span>;
+<a class="jxr_linenumber" name="77" href="#77">77</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String OUTJAR_FILE_ARGUMENT = <span class="jxr_string">"--outjar"</span>;
+<a class="jxr_linenumber" name="78" href="#78">78</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VERBOSE_ARGUMENT = <span class="jxr_string">"--verbose"</span>;
+<a class="jxr_linenumber" name="79" href="#79">79</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String NOSWAP_ARGUMENT = <span class="jxr_string">"--noswap"</span>;
+<a class="jxr_linenumber" name="80" href="#80">80</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String LOCATOR_ARGUMENT = <span class="jxr_string">"--locator"</span>;
+<a class="jxr_linenumber" name="81" href="#81">81</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String CLASS_DIRECTORY = <span class="jxr_string">"gendir"</span>;
+<a class="jxr_linenumber" name="82" href="#82">82</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String JAR_FILE = <span class="jxr_string">"gendir.jar"</span>;
+<a class="jxr_linenumber" name="83" href="#83">83</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> File OUTJAR_FILE = <strong class="jxr_keyword">new</strong> File(<span class="jxr_string">"outgendir.jar"</span>);
+<a class="jxr_linenumber" name="84" href="#84">84</a>      
+<a class="jxr_linenumber" name="85" href="#85">85</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String META_INF_NAME = <span class="jxr_string">"META-INF"</span>;
+<a class="jxr_linenumber" name="86" href="#86">86</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String INHABITANTS = <span class="jxr_string">"hk2-locator"</span>;
+<a class="jxr_linenumber" name="87" href="#87">87</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String DEFAULT = <span class="jxr_string">"default"</span>;
+<a class="jxr_linenumber" name="88" href="#88">88</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String OTHER = <span class="jxr_string">"other"</span>;
+<a class="jxr_linenumber" name="89" href="#89">89</a>      
+<a class="jxr_linenumber" name="90" href="#90">90</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String ZIP_FILE_INHABITANT_NAME = <span class="jxr_string">"META-INF/hk2-locator/default"</span>;
+<a class="jxr_linenumber" name="91" href="#91">91</a>      
+<a class="jxr_linenumber" name="92" href="#92">92</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String MAVEN_CLASSES_DIR = <span class="jxr_string">"test-classes"</span>;
+<a class="jxr_linenumber" name="93" href="#93">93</a>      
+<a class="jxr_linenumber" name="94" href="#94">94</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_CREATE_IMPL = <span class="jxr_string">"com.acme.service.GenerateMethodImpl"</span>;
+<a class="jxr_linenumber" name="95" href="#95">95</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_CREATE_CONTRACT = <span class="jxr_string">"com.acme.api.GenerateMethod"</span>;
+<a class="jxr_linenumber" name="96" href="#96">96</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_CREATE_NAME1 = <span class="jxr_string">"name1"</span>;
+<a class="jxr_linenumber" name="97" href="#97">97</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_CREATE_NAME2 = <span class="jxr_string">"name2"</span>;
+<a class="jxr_linenumber" name="98" href="#98">98</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_CREATE_NAME3 = <span class="jxr_string">"name3"</span>;
+<a class="jxr_linenumber" name="99" href="#99">99</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_CREATE_NAME4 = <span class="jxr_string">"name4"</span>;
+<a class="jxr_linenumber" name="100" href="#100">100</a>     
+<a class="jxr_linenumber" name="101" href="#101">101</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_DELETE_IMPL = <span class="jxr_string">"com.acme.service.DeleteImpl"</span>;
+<a class="jxr_linenumber" name="102" href="#102">102</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_DELETE_CONTRACT = <span class="jxr_string">"com.acme.api.GenerateMethod"</span>;
+<a class="jxr_linenumber" name="103" href="#103">103</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String GENERATE_METHOD_DELETE_SCOPE = <span class="jxr_string">"javax.inject.Singleton"</span>;
+<a class="jxr_linenumber" name="104" href="#104">104</a>     
+<a class="jxr_linenumber" name="105" href="#105">105</a>     <em class="jxr_comment">// metadata constants</em>
+<a class="jxr_linenumber" name="106" href="#106">106</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String KEY1 = <span class="jxr_string">"key1"</span>;
+<a class="jxr_linenumber" name="107" href="#107">107</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE1 = <span class="jxr_string">"value1"</span>;
+<a class="jxr_linenumber" name="108" href="#108">108</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String KEY2 = <span class="jxr_string">"key2"</span>;
+<a class="jxr_linenumber" name="109" href="#109">109</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE2 = <span class="jxr_string">"value2"</span>;
+<a class="jxr_linenumber" name="110" href="#110">110</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String KEY3 = <span class="jxr_string">"key3"</span>;
+<a class="jxr_linenumber" name="111" href="#111">111</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE3 = <span class="jxr_string">"3"</span>;
+<a class="jxr_linenumber" name="112" href="#112">112</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String KEY4 = <span class="jxr_string">"key4"</span>;
+<a class="jxr_linenumber" name="113" href="#113">113</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE4 = InhabitantsGeneratorTest.<strong class="jxr_keyword">class</strong>.getName();
+<a class="jxr_linenumber" name="114" href="#114">114</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String KEY5 = <span class="jxr_string">"key5"</span>;
+<a class="jxr_linenumber" name="115" href="#115">115</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE5_1 = <span class="jxr_string">"5_1"</span>;
+<a class="jxr_linenumber" name="116" href="#116">116</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE5_2 = <span class="jxr_string">"5_2"</span>;
+<a class="jxr_linenumber" name="117" href="#117">117</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String VALUE5_3 = <span class="jxr_string">"5_3"</span>;
+<a class="jxr_linenumber" name="118" href="#118">118</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String KEY6 = <span class="jxr_string">"key6"</span>;
+<a class="jxr_linenumber" name="119" href="#119">119</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> VALUE6_1 = 6001L;
+<a class="jxr_linenumber" name="120" href="#120">120</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> VALUE6_2 = 6002L;
+<a class="jxr_linenumber" name="121" href="#121">121</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">long</strong> VALUE6_3 = 6003L;
+<a class="jxr_linenumber" name="122" href="#122">122</a>     
+<a class="jxr_linenumber" name="123" href="#123">123</a>     <em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> The name for non-defaulted things */</em>
+<a class="jxr_linenumber" name="124" href="#124">124</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String NON_DEFAULT_NAME = <span class="jxr_string">"non-default-name"</span>;
+<a class="jxr_linenumber" name="125" href="#125">125</a>     
+<a class="jxr_linenumber" name="126" href="#126">126</a>     <em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> The rank to use when testing for rank */</em>
+<a class="jxr_linenumber" name="127" href="#127">127</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> RANK = 13;
+<a class="jxr_linenumber" name="128" href="#128">128</a>     
+<a class="jxr_linenumber" name="129" href="#129">129</a>     <em class="jxr_javadoccomment">/**</em><em class="jxr_javadoccomment"> The rank to use when testing for rank on factory method */</em>
+<a class="jxr_linenumber" name="130" href="#130">130</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">int</strong> FACTORY_METHOD_RANK = -1;
+<a class="jxr_linenumber" name="131" href="#131">131</a>     
+<a class="jxr_linenumber" name="132" href="#132">132</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> Map&lt;DescriptorImpl, Integer&gt; EXPECTED_DESCRIPTORS = <strong class="jxr_keyword">new</strong> HashMap&lt;DescriptorImpl, Integer&gt;();
+<a class="jxr_linenumber" name="133" href="#133">133</a>     
+<a class="jxr_linenumber" name="134" href="#134">134</a>     <strong class="jxr_keyword">static</strong> {
+<a class="jxr_linenumber" name="135" href="#135">135</a>         {
+<a class="jxr_linenumber" name="136" href="#136">136</a>             <em class="jxr_comment">// This is the Factory that should be generated</em>
+<a class="jxr_linenumber" name="137" href="#137">137</a>             DescriptorImpl envFactory = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="138" href="#138">138</a>             envFactory.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.EnvironmentFactory"</span>);
+<a class="jxr_linenumber" name="139" href="#139">139</a>             envFactory.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.EnvironmentFactory"</span>);
+<a class="jxr_linenumber" name="140" href="#140">140</a>             envFactory.addAdvertisedContract(<span class="jxr_string">"org.glassfish.hk2.api.Factory"</span>);
+<a class="jxr_linenumber" name="141" href="#141">141</a>             envFactory.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="142" href="#142">142</a>         
-<a class="jxr_linenumber" name="143" href="#143">143</a>             EXPECTED_DESCRIPTORS.add(di);
+<a class="jxr_linenumber" name="143" href="#143">143</a>             EXPECTED_DESCRIPTORS.put(envFactory, 0);
 <a class="jxr_linenumber" name="144" href="#144">144</a>         }
 <a class="jxr_linenumber" name="145" href="#145">145</a>         
 <a class="jxr_linenumber" name="146" href="#146">146</a>         {
-<a class="jxr_linenumber" name="147" href="#147">147</a>             <em class="jxr_comment">// This is the tenant manager</em>
-<a class="jxr_linenumber" name="148" href="#148">148</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="149" href="#149">149</a>             di.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.TenantManager"</span>);
-<a class="jxr_linenumber" name="150" href="#150">150</a>             di.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.TenantManager"</span>);
-<a class="jxr_linenumber" name="151" href="#151">151</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="152" href="#152">152</a>         
-<a class="jxr_linenumber" name="153" href="#153">153</a>             EXPECTED_DESCRIPTORS.add(di);
-<a class="jxr_linenumber" name="154" href="#154">154</a>         }
-<a class="jxr_linenumber" name="155" href="#155">155</a>         
-<a class="jxr_linenumber" name="156" href="#156">156</a>         {
-<a class="jxr_linenumber" name="157" href="#157">157</a>             <em class="jxr_comment">// This is a descriptor with a defaulted Name and a qualifier and metadata</em>
-<a class="jxr_linenumber" name="158" href="#158">158</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="159" href="#159">159</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ServiceWithDefaultName"</span>);
-<a class="jxr_linenumber" name="160" href="#160">160</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ServiceWithDefaultName"</span>);
-<a class="jxr_linenumber" name="161" href="#161">161</a>             di.setName(<span class="jxr_string">"ServiceWithDefaultName"</span>);
-<a class="jxr_linenumber" name="162" href="#162">162</a>             di.addQualifier(Named.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="163" href="#163">163</a>             di.addQualifier(Blue.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="164" href="#164">164</a>             di.addMetadata(KEY1, VALUE1);
-<a class="jxr_linenumber" name="165" href="#165">165</a>             di.addMetadata(KEY2, VALUE2);
-<a class="jxr_linenumber" name="166" href="#166">166</a>         
-<a class="jxr_linenumber" name="167" href="#167">167</a>             EXPECTED_DESCRIPTORS.add(di);
-<a class="jxr_linenumber" name="168" href="#168">168</a>         }
-<a class="jxr_linenumber" name="169" href="#169">169</a>         
-<a class="jxr_linenumber" name="170" href="#170">170</a>         {
-<a class="jxr_linenumber" name="171" href="#171">171</a>             <em class="jxr_comment">// This is a descriptor with a non-defaulted Name from @Named</em>
-<a class="jxr_linenumber" name="172" href="#172">172</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="173" href="#173">173</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.GivenNameFromQualifier"</span>);
-<a class="jxr_linenumber" name="174" href="#174">174</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.GivenNameFromQualifier"</span>);
-<a class="jxr_linenumber" name="175" href="#175">175</a>             di.setName(NON_DEFAULT_NAME);
-<a class="jxr_linenumber" name="176" href="#176">176</a>             di.addQualifier(Named.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="177" href="#177">177</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="178" href="#178">178</a>         
-<a class="jxr_linenumber" name="179" href="#179">179</a>             EXPECTED_DESCRIPTORS.add(di);
-<a class="jxr_linenumber" name="180" href="#180">180</a>         }
-<a class="jxr_linenumber" name="181" href="#181">181</a>         
-<a class="jxr_linenumber" name="182" href="#182">182</a>         {
-<a class="jxr_linenumber" name="183" href="#183">183</a>             <em class="jxr_comment">// This is a descriptor with a non-defaulted Name from @Service</em>
-<a class="jxr_linenumber" name="184" href="#184">184</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="185" href="#185">185</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ServiceWithName"</span>);
-<a class="jxr_linenumber" name="186" href="#186">186</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ServiceWithName"</span>);
-<a class="jxr_linenumber" name="187" href="#187">187</a>             di.setName(NON_DEFAULT_NAME);
-<a class="jxr_linenumber" name="188" href="#188">188</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="189" href="#189">189</a>         
-<a class="jxr_linenumber" name="190" href="#190">190</a>             EXPECTED_DESCRIPTORS.add(di);
-<a class="jxr_linenumber" name="191" href="#191">191</a>         }
-<a class="jxr_linenumber" name="192" href="#192">192</a>         
-<a class="jxr_linenumber" name="193" href="#193">193</a>         {
-<a class="jxr_linenumber" name="194" href="#194">194</a>             <em class="jxr_comment">// ComplexFactory as a service</em>
-<a class="jxr_linenumber" name="195" href="#195">195</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="196" href="#196">196</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexFactory"</span>);
-<a class="jxr_linenumber" name="197" href="#197">197</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexFactory"</span>);
-<a class="jxr_linenumber" name="198" href="#198">198</a>             di.addAdvertisedContract(Factory.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="199" href="#199">199</a>             di.setName(<span class="jxr_string">"ComplexFactory"</span>);
-<a class="jxr_linenumber" name="200" href="#200">200</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="201" href="#201">201</a>             di.addQualifier(Named.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="202" href="#202">202</a>         
-<a class="jxr_linenumber" name="203" href="#203">203</a>             EXPECTED_DESCRIPTORS.add(di);
-<a class="jxr_linenumber" name="204" href="#204">204</a>         }
-<a class="jxr_linenumber" name="205" href="#205">205</a>         
-<a class="jxr_linenumber" name="206" href="#206">206</a>         {
-<a class="jxr_linenumber" name="207" href="#207">207</a>             <em class="jxr_comment">// ComplexFactory as a factory</em>
-<a class="jxr_linenumber" name="208" href="#208">208</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="209" href="#209">209</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexFactory"</span>);
-<a class="jxr_linenumber" name="210" href="#210">210</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexImpl"</span>);
-<a class="jxr_linenumber" name="211" href="#211">211</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexDImpl"</span>);
-<a class="jxr_linenumber" name="212" href="#212">212</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexA"</span>);
-<a class="jxr_linenumber" name="213" href="#213">213</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexC"</span>);
-<a class="jxr_linenumber" name="214" href="#214">214</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexE"</span>);
-<a class="jxr_linenumber" name="215" href="#215">215</a>             di.setName(NON_DEFAULT_NAME);
-<a class="jxr_linenumber" name="216" href="#216">216</a>             di.setScope(PerLookup.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="217" href="#217">217</a>             di.setDescriptorType(DescriptorType.FACTORY);
-<a class="jxr_linenumber" name="218" href="#218">218</a>             di.addQualifier(Blue.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="219" href="#219">219</a>             di.addQualifier(Named.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="220" href="#220">220</a>         
-<a class="jxr_linenumber" name="221" href="#221">221</a>             EXPECTED_DESCRIPTORS.add(di);
-<a class="jxr_linenumber" name="222" href="#222">222</a>         }
-<a class="jxr_linenumber" name="223" href="#223">223</a>         
-<a class="jxr_linenumber" name="224" href="#224">224</a>         {
-<a class="jxr_linenumber" name="225" href="#225">225</a>             <em class="jxr_comment">// This is a descriptor with a non-defaulted Name from @Service</em>
-<a class="jxr_linenumber" name="226" href="#226">226</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="227" href="#227">227</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ContractsProvidedService"</span>);
-<a class="jxr_linenumber" name="228" href="#228">228</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.SimpleInterface"</span>);
-<a class="jxr_linenumber" name="229" href="#229">229</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
-<a class="jxr_linenumber" name="230" href="#230">230</a>         
-<a class="jxr_linenumber" name="231" href="#231">231</a>             EXPECTED_DESCRIPTORS.add(di);
-<a class="jxr_linenumber" name="232" href="#232">232</a>         }
-<a class="jxr_linenumber" name="233" href="#233">233</a>     }
-<a class="jxr_linenumber" name="234" href="#234">234</a>     
-<a class="jxr_linenumber" name="235" href="#235">235</a>     <strong class="jxr_keyword">private</strong> File gendirDirectory;
-<a class="jxr_linenumber" name="236" href="#236">236</a>     <strong class="jxr_keyword">private</strong> File gendirJar;
-<a class="jxr_linenumber" name="237" href="#237">237</a>     <strong class="jxr_keyword">private</strong> File inhabitantsDirectory;
-<a class="jxr_linenumber" name="238" href="#238">238</a>     
-<a class="jxr_linenumber" name="239" href="#239">239</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="240" href="#240">240</a> <em class="jxr_javadoccomment">     * Setup before every test</em>
-<a class="jxr_linenumber" name="241" href="#241">241</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="242" href="#242">242</a>     @Before
-<a class="jxr_linenumber" name="243" href="#243">243</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> before() {
-<a class="jxr_linenumber" name="244" href="#244">244</a>         String buildDir = System.getProperty(<span class="jxr_string">"build.dir"</span>);
-<a class="jxr_linenumber" name="245" href="#245">245</a>         
-<a class="jxr_linenumber" name="246" href="#246">246</a>         <strong class="jxr_keyword">if</strong> (buildDir != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="247" href="#247">247</a>             File buildDirFile = <strong class="jxr_keyword">new</strong> File(buildDir);
-<a class="jxr_linenumber" name="248" href="#248">248</a>             
-<a class="jxr_linenumber" name="249" href="#249">249</a>             File mavenClassesDir = <strong class="jxr_keyword">new</strong> File(buildDirFile, MAVEN_CLASSES_DIR);
-<a class="jxr_linenumber" name="250" href="#250">250</a>             gendirDirectory = <strong class="jxr_keyword">new</strong> File(mavenClassesDir, CLASS_DIRECTORY);
-<a class="jxr_linenumber" name="251" href="#251">251</a>             gendirJar = <strong class="jxr_keyword">new</strong> File(mavenClassesDir, JAR_FILE);
-<a class="jxr_linenumber" name="252" href="#252">252</a>         }
-<a class="jxr_linenumber" name="253" href="#253">253</a>         <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="254" href="#254">254</a>             gendirDirectory = <strong class="jxr_keyword">new</strong> File(CLASS_DIRECTORY);
-<a class="jxr_linenumber" name="255" href="#255">255</a>             gendirJar = <strong class="jxr_keyword">new</strong> File(JAR_FILE);
-<a class="jxr_linenumber" name="256" href="#256">256</a>         }
-<a class="jxr_linenumber" name="257" href="#257">257</a>         
-<a class="jxr_linenumber" name="258" href="#258">258</a>         File metaInfFile = <strong class="jxr_keyword">new</strong> File(gendirDirectory, META_INF_NAME);
-<a class="jxr_linenumber" name="259" href="#259">259</a>         inhabitantsDirectory = <strong class="jxr_keyword">new</strong> File(metaInfFile, INHABITANTS);
-<a class="jxr_linenumber" name="260" href="#260">260</a>     }
-<a class="jxr_linenumber" name="261" href="#261">261</a>     
-<a class="jxr_linenumber" name="262" href="#262">262</a>     <strong class="jxr_keyword">private</strong> Set&lt;DescriptorImpl&gt; getAllDescriptorsFromInputStream(InputStream is) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="263" href="#263">263</a>         BufferedReader pr = <strong class="jxr_keyword">new</strong> BufferedReader(<strong class="jxr_keyword">new</strong> InputStreamReader(is));
-<a class="jxr_linenumber" name="264" href="#264">264</a>         
-<a class="jxr_linenumber" name="265" href="#265">265</a>         Set&lt;DescriptorImpl&gt; retVal = <strong class="jxr_keyword">new</strong> HashSet&lt;DescriptorImpl&gt;();
-<a class="jxr_linenumber" name="266" href="#266">266</a>         <strong class="jxr_keyword">while</strong> (pr.ready()) {
-<a class="jxr_linenumber" name="267" href="#267">267</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
-<a class="jxr_linenumber" name="268" href="#268">268</a>             
-<a class="jxr_linenumber" name="269" href="#269">269</a>             <strong class="jxr_keyword">if</strong> (!di.readObject(pr)) {
-<a class="jxr_linenumber" name="270" href="#270">270</a>                 <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="271" href="#271">271</a>             }
-<a class="jxr_linenumber" name="272" href="#272">272</a>             
-<a class="jxr_linenumber" name="273" href="#273">273</a>             retVal.add(di);
-<a class="jxr_linenumber" name="274" href="#274">274</a>         }
+<a class="jxr_linenumber" name="147" href="#147">147</a>             <em class="jxr_comment">// This is the class that the Factory produces</em>
+<a class="jxr_linenumber" name="148" href="#148">148</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="149" href="#149">149</a>             envItself.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.EnvironmentFactory"</span>);
+<a class="jxr_linenumber" name="150" href="#150">150</a>             envItself.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.Environment"</span>);
+<a class="jxr_linenumber" name="151" href="#151">151</a>             envItself.setScope(<span class="jxr_string">"org.glassfish.examples.ctm.TenantScoped"</span>);
+<a class="jxr_linenumber" name="152" href="#152">152</a>             envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+<a class="jxr_linenumber" name="153" href="#153">153</a>         
+<a class="jxr_linenumber" name="154" href="#154">154</a>             EXPECTED_DESCRIPTORS.put(envItself, 0);
+<a class="jxr_linenumber" name="155" href="#155">155</a>         }
+<a class="jxr_linenumber" name="156" href="#156">156</a>         
+<a class="jxr_linenumber" name="157" href="#157">157</a>         {
+<a class="jxr_linenumber" name="158" href="#158">158</a>             <em class="jxr_comment">// This is the class that implements the Context</em>
+<a class="jxr_linenumber" name="159" href="#159">159</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="160" href="#160">160</a>             di.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.TenantScopedContext"</span>);
+<a class="jxr_linenumber" name="161" href="#161">161</a>             di.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.TenantScopedContext"</span>);
+<a class="jxr_linenumber" name="162" href="#162">162</a>             di.addAdvertisedContract(<span class="jxr_string">"org.glassfish.hk2.api.Context"</span>);
+<a class="jxr_linenumber" name="163" href="#163">163</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="164" href="#164">164</a>         
+<a class="jxr_linenumber" name="165" href="#165">165</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="166" href="#166">166</a>         }
+<a class="jxr_linenumber" name="167" href="#167">167</a>         
+<a class="jxr_linenumber" name="168" href="#168">168</a>         {
+<a class="jxr_linenumber" name="169" href="#169">169</a>             <em class="jxr_comment">// This is the service provider engine</em>
+<a class="jxr_linenumber" name="170" href="#170">170</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="171" href="#171">171</a>             di.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.ServiceProviderEngine"</span>);
+<a class="jxr_linenumber" name="172" href="#172">172</a>             di.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.ServiceProviderEngine"</span>);
+<a class="jxr_linenumber" name="173" href="#173">173</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="174" href="#174">174</a>         
+<a class="jxr_linenumber" name="175" href="#175">175</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="176" href="#176">176</a>         }
+<a class="jxr_linenumber" name="177" href="#177">177</a>         
+<a class="jxr_linenumber" name="178" href="#178">178</a>         {
+<a class="jxr_linenumber" name="179" href="#179">179</a>             <em class="jxr_comment">// This is the tenant manager</em>
+<a class="jxr_linenumber" name="180" href="#180">180</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="181" href="#181">181</a>             di.setImplementation(<span class="jxr_string">"org.glassfish.examples.ctm.TenantManager"</span>);
+<a class="jxr_linenumber" name="182" href="#182">182</a>             di.addAdvertisedContract(<span class="jxr_string">"org.glassfish.examples.ctm.TenantManager"</span>);
+<a class="jxr_linenumber" name="183" href="#183">183</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="184" href="#184">184</a>         
+<a class="jxr_linenumber" name="185" href="#185">185</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="186" href="#186">186</a>         }
+<a class="jxr_linenumber" name="187" href="#187">187</a>         
+<a class="jxr_linenumber" name="188" href="#188">188</a>         {
+<a class="jxr_linenumber" name="189" href="#189">189</a>             <em class="jxr_comment">// This is a descriptor with a defaulted Name and a qualifier and metadata</em>
+<a class="jxr_linenumber" name="190" href="#190">190</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="191" href="#191">191</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ServiceWithDefaultName"</span>);
+<a class="jxr_linenumber" name="192" href="#192">192</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ServiceWithDefaultName"</span>);
+<a class="jxr_linenumber" name="193" href="#193">193</a>             di.setName(<span class="jxr_string">"ServiceWithDefaultName"</span>);
+<a class="jxr_linenumber" name="194" href="#194">194</a>             di.addQualifier(Named.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="195" href="#195">195</a>             di.addQualifier(Blue.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="196" href="#196">196</a>             di.addMetadata(KEY1, VALUE1);
+<a class="jxr_linenumber" name="197" href="#197">197</a>             di.addMetadata(KEY2, VALUE2);
+<a class="jxr_linenumber" name="198" href="#198">198</a>         
+<a class="jxr_linenumber" name="199" href="#199">199</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="200" href="#200">200</a>         }
+<a class="jxr_linenumber" name="201" href="#201">201</a>         
+<a class="jxr_linenumber" name="202" href="#202">202</a>         {
+<a class="jxr_linenumber" name="203" href="#203">203</a>             <em class="jxr_comment">// This is a descriptor with a non-defaulted Name from @Named</em>
+<a class="jxr_linenumber" name="204" href="#204">204</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="205" href="#205">205</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.GivenNameFromQualifier"</span>);
+<a class="jxr_linenumber" name="206" href="#206">206</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.GivenNameFromQualifier"</span>);
+<a class="jxr_linenumber" name="207" href="#207">207</a>             di.setName(NON_DEFAULT_NAME);
+<a class="jxr_linenumber" name="208" href="#208">208</a>             di.addQualifier(Named.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="209" href="#209">209</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="210" href="#210">210</a>         
+<a class="jxr_linenumber" name="211" href="#211">211</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="212" href="#212">212</a>         }
+<a class="jxr_linenumber" name="213" href="#213">213</a>         
+<a class="jxr_linenumber" name="214" href="#214">214</a>         {
+<a class="jxr_linenumber" name="215" href="#215">215</a>             <em class="jxr_comment">// This is a descriptor with a non-defaulted Name from @Service</em>
+<a class="jxr_linenumber" name="216" href="#216">216</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="217" href="#217">217</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ServiceWithName"</span>);
+<a class="jxr_linenumber" name="218" href="#218">218</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ServiceWithName"</span>);
+<a class="jxr_linenumber" name="219" href="#219">219</a>             di.setName(NON_DEFAULT_NAME);
+<a class="jxr_linenumber" name="220" href="#220">220</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="221" href="#221">221</a>         
+<a class="jxr_linenumber" name="222" href="#222">222</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="223" href="#223">223</a>         }
+<a class="jxr_linenumber" name="224" href="#224">224</a>         
+<a class="jxr_linenumber" name="225" href="#225">225</a>         {
+<a class="jxr_linenumber" name="226" href="#226">226</a>             <em class="jxr_comment">// ComplexFactory as a service</em>
+<a class="jxr_linenumber" name="227" href="#227">227</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="228" href="#228">228</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexFactory"</span>);
+<a class="jxr_linenumber" name="229" href="#229">229</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexFactory"</span>);
+<a class="jxr_linenumber" name="230" href="#230">230</a>             di.addAdvertisedContract(Factory.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="231" href="#231">231</a>             di.setName(<span class="jxr_string">"ComplexFactory"</span>);
+<a class="jxr_linenumber" name="232" href="#232">232</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="233" href="#233">233</a>             di.addQualifier(Named.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="234" href="#234">234</a>         
+<a class="jxr_linenumber" name="235" href="#235">235</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="236" href="#236">236</a>         }
+<a class="jxr_linenumber" name="237" href="#237">237</a>         
+<a class="jxr_linenumber" name="238" href="#238">238</a>         {
+<a class="jxr_linenumber" name="239" href="#239">239</a>             <em class="jxr_comment">// ComplexFactory as a factory</em>
+<a class="jxr_linenumber" name="240" href="#240">240</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="241" href="#241">241</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexFactory"</span>);
+<a class="jxr_linenumber" name="242" href="#242">242</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexImpl"</span>);
+<a class="jxr_linenumber" name="243" href="#243">243</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexDImpl"</span>);
+<a class="jxr_linenumber" name="244" href="#244">244</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexA"</span>);
+<a class="jxr_linenumber" name="245" href="#245">245</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexC"</span>);
+<a class="jxr_linenumber" name="246" href="#246">246</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ComplexE"</span>);
+<a class="jxr_linenumber" name="247" href="#247">247</a>             di.setName(NON_DEFAULT_NAME);
+<a class="jxr_linenumber" name="248" href="#248">248</a>             di.setScope(PerLookup.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="249" href="#249">249</a>             di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+<a class="jxr_linenumber" name="250" href="#250">250</a>             di.addQualifier(Blue.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="251" href="#251">251</a>             di.addQualifier(Named.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="252" href="#252">252</a>         
+<a class="jxr_linenumber" name="253" href="#253">253</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="254" href="#254">254</a>         }
+<a class="jxr_linenumber" name="255" href="#255">255</a>         
+<a class="jxr_linenumber" name="256" href="#256">256</a>         {
+<a class="jxr_linenumber" name="257" href="#257">257</a>             <em class="jxr_comment">// Another complex hierarchy</em>
+<a class="jxr_linenumber" name="258" href="#258">258</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="259" href="#259">259</a>             di.setImplementation(TwoContractImpl.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="260" href="#260">260</a>             di.addAdvertisedContract(TwoContractImpl.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="261" href="#261">261</a>             di.addAdvertisedContract(ComplexG.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="262" href="#262">262</a>             di.addAdvertisedContract(ComplexF.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="263" href="#263">263</a>             di.addAdvertisedContract(ComplexA.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="264" href="#264">264</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="265" href="#265">265</a>         
+<a class="jxr_linenumber" name="266" href="#266">266</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="267" href="#267">267</a>         }
+<a class="jxr_linenumber" name="268" href="#268">268</a>         
+<a class="jxr_linenumber" name="269" href="#269">269</a>         {
+<a class="jxr_linenumber" name="270" href="#270">270</a>             <em class="jxr_comment">// This is a descriptor with a non-defaulted Name from @Service</em>
+<a class="jxr_linenumber" name="271" href="#271">271</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="272" href="#272">272</a>             di.setImplementation(<span class="jxr_string">"org.jvnet.hk2.generator.tests.ContractsProvidedService"</span>);
+<a class="jxr_linenumber" name="273" href="#273">273</a>             di.addAdvertisedContract(<span class="jxr_string">"org.jvnet.hk2.generator.tests.SimpleInterface"</span>);
+<a class="jxr_linenumber" name="274" href="#274">274</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="275" href="#275">275</a>         
-<a class="jxr_linenumber" name="276" href="#276">276</a>         <strong class="jxr_keyword">return</strong> retVal;
-<a class="jxr_linenumber" name="277" href="#277">277</a>     }
-<a class="jxr_linenumber" name="278" href="#278">278</a>     
-<a class="jxr_linenumber" name="279" href="#279">279</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkDescriptors(Set&lt;DescriptorImpl&gt; dis) {
-<a class="jxr_linenumber" name="280" href="#280">280</a>         <strong class="jxr_keyword">for</strong> (DescriptorImpl di : dis) {
-<a class="jxr_linenumber" name="281" href="#281">281</a>             Assert.assertTrue(<span class="jxr_string">"Did not find "</span> + di + <span class="jxr_string">" in the expected descriptors"</span>, EXPECTED_DESCRIPTORS.contains(di));
-<a class="jxr_linenumber" name="282" href="#282">282</a>         }
-<a class="jxr_linenumber" name="283" href="#283">283</a>         
-<a class="jxr_linenumber" name="284" href="#284">284</a>         
-<a class="jxr_linenumber" name="285" href="#285">285</a>         Assert.assertEquals(<span class="jxr_string">"Expecting "</span> + EXPECTED_DESCRIPTORS.size() + <span class="jxr_string">" descriptors, but only got "</span> + dis.size(),
-<a class="jxr_linenumber" name="286" href="#286">286</a>                 EXPECTED_DESCRIPTORS.size(), dis.size());
-<a class="jxr_linenumber" name="287" href="#287">287</a>     }
-<a class="jxr_linenumber" name="288" href="#288">288</a>     
-<a class="jxr_linenumber" name="289" href="#289">289</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="290" href="#290">290</a> <em class="jxr_javadoccomment">     * Tests generating into a directory</em>
-<a class="jxr_linenumber" name="291" href="#291">291</a> <em class="jxr_javadoccomment">     * @throws IOException </em>
-<a class="jxr_linenumber" name="292" href="#292">292</a> <em class="jxr_javadoccomment">     * @throws FileNotFoundException </em>
-<a class="jxr_linenumber" name="293" href="#293">293</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="294" href="#294">294</a>     @Test
-<a class="jxr_linenumber" name="295" href="#295">295</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDefaultDirectoryGeneration() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="296" href="#296">296</a>         String argv[] = <strong class="jxr_keyword">new</strong> String[2];
-<a class="jxr_linenumber" name="297" href="#297">297</a>         
-<a class="jxr_linenumber" name="298" href="#298">298</a>         argv[0] = FILE_ARGUMENT;
-<a class="jxr_linenumber" name="299" href="#299">299</a>         argv[1] = gendirDirectory.getAbsolutePath();
-<a class="jxr_linenumber" name="300" href="#300">300</a>         
-<a class="jxr_linenumber" name="301" href="#301">301</a>         File defaultOutput = <strong class="jxr_keyword">new</strong> File(inhabitantsDirectory, DEFAULT);
-<a class="jxr_linenumber" name="302" href="#302">302</a>         <strong class="jxr_keyword">if</strong> (defaultOutput.exists()) {
-<a class="jxr_linenumber" name="303" href="#303">303</a>             <em class="jxr_comment">// Start with a clean plate</em>
-<a class="jxr_linenumber" name="304" href="#304">304</a>             Assert.assertTrue(defaultOutput.delete());
-<a class="jxr_linenumber" name="305" href="#305">305</a>         }
-<a class="jxr_linenumber" name="306" href="#306">306</a>         
-<a class="jxr_linenumber" name="307" href="#307">307</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="308" href="#308">308</a>             <strong class="jxr_keyword">int</strong> result = HabitatGenerator.embeddedMain(argv);
-<a class="jxr_linenumber" name="309" href="#309">309</a>             Assert.assertEquals(<span class="jxr_string">"Got error code: "</span> + result, 0, result);
-<a class="jxr_linenumber" name="310" href="#310">310</a>             
-<a class="jxr_linenumber" name="311" href="#311">311</a>             Assert.assertTrue(<span class="jxr_string">"did not generate "</span> + defaultOutput.getAbsolutePath(),
-<a class="jxr_linenumber" name="312" href="#312">312</a>                     defaultOutput.exists());
-<a class="jxr_linenumber" name="313" href="#313">313</a>             
-<a class="jxr_linenumber" name="314" href="#314">314</a>             Set&lt;DescriptorImpl&gt; generatedImpls = getAllDescriptorsFromInputStream(
-<a class="jxr_linenumber" name="315" href="#315">315</a>                     <strong class="jxr_keyword">new</strong> FileInputStream(defaultOutput));
-<a class="jxr_linenumber" name="316" href="#316">316</a>             
-<a class="jxr_linenumber" name="317" href="#317">317</a>             checkDescriptors(generatedImpls);
-<a class="jxr_linenumber" name="318" href="#318">318</a>         }
-<a class="jxr_linenumber" name="319" href="#319">319</a>         <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="320" href="#320">320</a>             <em class="jxr_comment">// The test should be clean</em>
-<a class="jxr_linenumber" name="321" href="#321">321</a>             defaultOutput.delete();
-<a class="jxr_linenumber" name="322" href="#322">322</a>         }
-<a class="jxr_linenumber" name="323" href="#323">323</a>     }
-<a class="jxr_linenumber" name="324" href="#324">324</a>     
-<a class="jxr_linenumber" name="325" href="#325">325</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="326" href="#326">326</a> <em class="jxr_javadoccomment">     * Tests generating into a directory</em>
-<a class="jxr_linenumber" name="327" href="#327">327</a> <em class="jxr_javadoccomment">     * @throws IOException </em>
-<a class="jxr_linenumber" name="328" href="#328">328</a> <em class="jxr_javadoccomment">     * @throws FileNotFoundException </em>
-<a class="jxr_linenumber" name="329" href="#329">329</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="330" href="#330">330</a>     @Test
-<a class="jxr_linenumber" name="331" href="#331">331</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNonDefaultDirectoryGeneration() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="332" href="#332">332</a>         String argv[] = <strong class="jxr_keyword">new</strong> String[6];
+<a class="jxr_linenumber" name="276" href="#276">276</a>             EXPECTED_DESCRIPTORS.put(di, 0);
+<a class="jxr_linenumber" name="277" href="#277">277</a>         }
+<a class="jxr_linenumber" name="278" href="#278">278</a>         
+<a class="jxr_linenumber" name="279" href="#279">279</a>         {
+<a class="jxr_linenumber" name="280" href="#280">280</a>             <em class="jxr_comment">// This is a service with a rank</em>
+<a class="jxr_linenumber" name="281" href="#281">281</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="282" href="#282">282</a>             di.setImplementation(ServiceWithRank.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="283" href="#283">283</a>             di.addAdvertisedContract(ServiceWithRank.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="284" href="#284">284</a>             di.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="285" href="#285">285</a>             di.setRanking(RANK);
+<a class="jxr_linenumber" name="286" href="#286">286</a>         
+<a class="jxr_linenumber" name="287" href="#287">287</a>             EXPECTED_DESCRIPTORS.put(di, RANK);
+<a class="jxr_linenumber" name="288" href="#288">288</a>         }
+<a class="jxr_linenumber" name="289" href="#289">289</a>         
+<a class="jxr_linenumber" name="290" href="#290">290</a>         {
+<a class="jxr_linenumber" name="291" href="#291">291</a>             <em class="jxr_comment">// This is the Factory that should be generated</em>
+<a class="jxr_linenumber" name="292" href="#292">292</a>             DescriptorImpl envFactory = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="293" href="#293">293</a>             envFactory.setImplementation(FactoryWithRanks.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="294" href="#294">294</a>             envFactory.addAdvertisedContract(FactoryWithRanks.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="295" href="#295">295</a>             envFactory.addAdvertisedContract(Factory.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="296" href="#296">296</a>             envFactory.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="297" href="#297">297</a>             envFactory.setRanking(RANK);
+<a class="jxr_linenumber" name="298" href="#298">298</a>         
+<a class="jxr_linenumber" name="299" href="#299">299</a>             EXPECTED_DESCRIPTORS.put(envFactory, RANK);
+<a class="jxr_linenumber" name="300" href="#300">300</a>         }
+<a class="jxr_linenumber" name="301" href="#301">301</a>         
+<a class="jxr_linenumber" name="302" href="#302">302</a>         {
+<a class="jxr_linenumber" name="303" href="#303">303</a>             <em class="jxr_comment">// This is a factory with a rank</em>
+<a class="jxr_linenumber" name="304" href="#304">304</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="305" href="#305">305</a>             envItself.setImplementation(FactoryWithRanks.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="306" href="#306">306</a>             envItself.addAdvertisedContract(SimpleInterface.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="307" href="#307">307</a>             envItself.setRanking(FACTORY_METHOD_RANK);
+<a class="jxr_linenumber" name="308" href="#308">308</a>             envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+<a class="jxr_linenumber" name="309" href="#309">309</a>         
+<a class="jxr_linenumber" name="310" href="#310">310</a>             EXPECTED_DESCRIPTORS.put(envItself, FACTORY_METHOD_RANK);
+<a class="jxr_linenumber" name="311" href="#311">311</a>         }
+<a class="jxr_linenumber" name="312" href="#312">312</a>         
+<a class="jxr_linenumber" name="313" href="#313">313</a>         {
+<a class="jxr_linenumber" name="314" href="#314">314</a>             <em class="jxr_comment">// This is a service with automatic metadata</em>
+<a class="jxr_linenumber" name="315" href="#315">315</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="316" href="#316">316</a>             envItself.setImplementation(ServiceWithMetadata.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="317" href="#317">317</a>             envItself.addAdvertisedContract(ServiceWithMetadata.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="318" href="#318">318</a>             envItself.setScope(ScopeWithMetadata.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="319" href="#319">319</a>             envItself.addQualifier(QualifierWithMetadata.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="320" href="#320">320</a>             envItself.addMetadata(KEY1, VALUE1);
+<a class="jxr_linenumber" name="321" href="#321">321</a>             envItself.addMetadata(KEY2, VALUE2);
+<a class="jxr_linenumber" name="322" href="#322">322</a>             envItself.addMetadata(KEY3, VALUE3);
+<a class="jxr_linenumber" name="323" href="#323">323</a>             envItself.addMetadata(KEY4, VALUE4);
+<a class="jxr_linenumber" name="324" href="#324">324</a>             envItself.addMetadata(KEY5, VALUE5_1);
+<a class="jxr_linenumber" name="325" href="#325">325</a>             envItself.addMetadata(KEY5, VALUE5_2);
+<a class="jxr_linenumber" name="326" href="#326">326</a>             envItself.addMetadata(KEY5, VALUE5_3);
+<a class="jxr_linenumber" name="327" href="#327">327</a>             envItself.addMetadata(KEY6, <strong class="jxr_keyword">new</strong> Long(VALUE6_1).toString());
+<a class="jxr_linenumber" name="328" href="#328">328</a>             envItself.addMetadata(KEY6, <strong class="jxr_keyword">new</strong> Long(VALUE6_2).toString());
+<a class="jxr_linenumber" name="329" href="#329">329</a>             envItself.addMetadata(KEY6, <strong class="jxr_keyword">new</strong> Long(VALUE6_3).toString());
+<a class="jxr_linenumber" name="330" href="#330">330</a>         
+<a class="jxr_linenumber" name="331" href="#331">331</a>             EXPECTED_DESCRIPTORS.put(envItself, 0);
+<a class="jxr_linenumber" name="332" href="#332">332</a>         }
 <a class="jxr_linenumber" name="333" href="#333">333</a>         
-<a class="jxr_linenumber" name="334" href="#334">334</a>         argv[0] = FILE_ARGUMENT;
-<a class="jxr_linenumber" name="335" href="#335">335</a>         argv[1] = gendirDirectory.getAbsolutePath();
-<a class="jxr_linenumber" name="336" href="#336">336</a>         argv[2] = VERBOSE_ARGUMENT;
-<a class="jxr_linenumber" name="337" href="#337">337</a>         argv[3] = NOSWAP_ARGUMENT;
-<a class="jxr_linenumber" name="338" href="#338">338</a>         argv[4] = LOCATOR_ARGUMENT;
-<a class="jxr_linenumber" name="339" href="#339">339</a>         argv[5] = OTHER;
-<a class="jxr_linenumber" name="340" href="#340">340</a>         
-<a class="jxr_linenumber" name="341" href="#341">341</a>         File defaultOutput = <strong class="jxr_keyword">new</strong> File(inhabitantsDirectory, OTHER);
-<a class="jxr_linenumber" name="342" href="#342">342</a>         <strong class="jxr_keyword">if</strong> (defaultOutput.exists()) {
-<a class="jxr_linenumber" name="343" href="#343">343</a>             <em class="jxr_comment">// Start with a clean plate</em>
-<a class="jxr_linenumber" name="344" href="#344">344</a>             Assert.assertTrue(defaultOutput.delete());
-<a class="jxr_linenumber" name="345" href="#345">345</a>         }
-<a class="jxr_linenumber" name="346" href="#346">346</a>         
-<a class="jxr_linenumber" name="347" href="#347">347</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="348" href="#348">348</a>             <strong class="jxr_keyword">int</strong> result = HabitatGenerator.embeddedMain(argv);
-<a class="jxr_linenumber" name="349" href="#349">349</a>             Assert.assertEquals(<span class="jxr_string">"Got error code: "</span> + result, 0, result);
-<a class="jxr_linenumber" name="350" href="#350">350</a>             
-<a class="jxr_linenumber" name="351" href="#351">351</a>             Assert.assertTrue(<span class="jxr_string">"did not generate "</span> + defaultOutput.getAbsolutePath(),
-<a class="jxr_linenumber" name="352" href="#352">352</a>                     defaultOutput.exists());
-<a class="jxr_linenumber" name="353" href="#353">353</a>             
-<a class="jxr_linenumber" name="354" href="#354">354</a>             Set&lt;DescriptorImpl&gt; generatedImpls = getAllDescriptorsFromInputStream(
-<a class="jxr_linenumber" name="355" href="#355">355</a>                     <strong class="jxr_keyword">new</strong> FileInputStream(defaultOutput));
-<a class="jxr_linenumber" name="356" href="#356">356</a>             
-<a class="jxr_linenumber" name="357" href="#357">357</a>             checkDescriptors(generatedImpls);
-<a class="jxr_linenumber" name="358" href="#358">358</a>         }
-<a class="jxr_linenumber" name="359" href="#359">359</a>         <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="360" href="#360">360</a>             <em class="jxr_comment">// The test should be clean</em>
-<a class="jxr_linenumber" name="361" href="#361">361</a>             defaultOutput.delete();
-<a class="jxr_linenumber" name="362" href="#362">362</a>         }
-<a class="jxr_linenumber" name="363" href="#363">363</a>     }
-<a class="jxr_linenumber" name="364" href="#364">364</a>     
-<a class="jxr_linenumber" name="365" href="#365">365</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="366" href="#366">366</a> <em class="jxr_javadoccomment">     * Tests generating into a directory</em>
-<a class="jxr_linenumber" name="367" href="#367">367</a> <em class="jxr_javadoccomment">     * @throws IOException On failure</em>
-<a class="jxr_linenumber" name="368" href="#368">368</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="369" href="#369">369</a>     @Test
-<a class="jxr_linenumber" name="370" href="#370">370</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDefaultJarGeneration() <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="371" href="#371">371</a>         String argv[] = <strong class="jxr_keyword">new</strong> String[4];
-<a class="jxr_linenumber" name="372" href="#372">372</a>         
-<a class="jxr_linenumber" name="373" href="#373">373</a>         argv[0] = FILE_ARGUMENT;
-<a class="jxr_linenumber" name="374" href="#374">374</a>         argv[1] = gendirJar.getAbsolutePath();
-<a class="jxr_linenumber" name="375" href="#375">375</a>         
-<a class="jxr_linenumber" name="376" href="#376">376</a>         argv[2] = OUTJAR_FILE_ARGUMENT;
-<a class="jxr_linenumber" name="377" href="#377">377</a>         argv[3] = OUTJAR_FILE.getAbsolutePath();
+<a class="jxr_linenumber" name="334" href="#334">334</a>         <em class="jxr_comment">// All the following descriptors were generated from the GenerateServiceFromMethod</em>
+<a class="jxr_linenumber" name="335" href="#335">335</a>         <em class="jxr_comment">// annotations</em>
+<a class="jxr_linenumber" name="336" href="#336">336</a>         {
+<a class="jxr_linenumber" name="337" href="#337">337</a>             <em class="jxr_comment">// From the @CreateMe on getStreetAddress on AddressBean</em>
+<a class="jxr_linenumber" name="338" href="#338">338</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="339" href="#339">339</a>             envItself.setImplementation(GENERATE_METHOD_CREATE_IMPL);
+<a class="jxr_linenumber" name="340" href="#340">340</a>             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_IMPL);
+<a class="jxr_linenumber" name="341" href="#341">341</a>             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
+<a class="jxr_linenumber" name="342" href="#342">342</a>             envItself.setScope(PerLookup.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="343" href="#343">343</a>             envItself.setName(GENERATE_METHOD_CREATE_NAME1);
+<a class="jxr_linenumber" name="344" href="#344">344</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, <span class="jxr_string">"org.jvnet.hk2.generator.tests.StreetAddress"</span>);
+<a class="jxr_linenumber" name="345" href="#345">345</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, <span class="jxr_string">"getStreetAddress"</span>);
+<a class="jxr_linenumber" name="346" href="#346">346</a>             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="347" href="#347">347</a>             
+<a class="jxr_linenumber" name="348" href="#348">348</a>             EXPECTED_DESCRIPTORS.put(envItself, 0);
+<a class="jxr_linenumber" name="349" href="#349">349</a>         }
+<a class="jxr_linenumber" name="350" href="#350">350</a>         
+<a class="jxr_linenumber" name="351" href="#351">351</a>         {
+<a class="jxr_linenumber" name="352" href="#352">352</a>             <em class="jxr_comment">// From the @CreateMe on getSecondaryStreetAddress on AddressBean</em>
+<a class="jxr_linenumber" name="353" href="#353">353</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="354" href="#354">354</a>             envItself.setImplementation(GENERATE_METHOD_CREATE_IMPL);
+<a class="jxr_linenumber" name="355" href="#355">355</a>             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_IMPL);
+<a class="jxr_linenumber" name="356" href="#356">356</a>             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
+<a class="jxr_linenumber" name="357" href="#357">357</a>             envItself.setScope(PerLookup.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="358" href="#358">358</a>             envItself.setName(GENERATE_METHOD_CREATE_NAME2);
+<a class="jxr_linenumber" name="359" href="#359">359</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, <span class="jxr_string">"org.jvnet.hk2.generator.tests.StreetAddress"</span>);
+<a class="jxr_linenumber" name="360" href="#360">360</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, <span class="jxr_string">"getSecondaryStreetAddress"</span>);
+<a class="jxr_linenumber" name="361" href="#361">361</a>             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="362" href="#362">362</a>             
+<a class="jxr_linenumber" name="363" href="#363">363</a>             EXPECTED_DESCRIPTORS.put(envItself, 0);
+<a class="jxr_linenumber" name="364" href="#364">364</a>         }
+<a class="jxr_linenumber" name="365" href="#365">365</a>         
+<a class="jxr_linenumber" name="366" href="#366">366</a>         {
+<a class="jxr_linenumber" name="367" href="#367">367</a>             <em class="jxr_comment">// From the @DeleteMe on getStreetAddress on AddressBean</em>
+<a class="jxr_linenumber" name="368" href="#368">368</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="369" href="#369">369</a>             envItself.setImplementation(GENERATE_METHOD_DELETE_IMPL);
+<a class="jxr_linenumber" name="370" href="#370">370</a>             envItself.addAdvertisedContract(GENERATE_METHOD_DELETE_CONTRACT);
+<a class="jxr_linenumber" name="371" href="#371">371</a>             envItself.setScope(Singleton.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="372" href="#372">372</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, <span class="jxr_string">"org.jvnet.hk2.generator.tests.StreetAddress"</span>);
+<a class="jxr_linenumber" name="373" href="#373">373</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, <span class="jxr_string">"getStreetAddress"</span>);
+<a class="jxr_linenumber" name="374" href="#374">374</a>             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="375" href="#375">375</a>             
+<a class="jxr_linenumber" name="376" href="#376">376</a>             EXPECTED_DESCRIPTORS.put(envItself, 0);
+<a class="jxr_linenumber" name="377" href="#377">377</a>         }
 <a class="jxr_linenumber" name="378" href="#378">378</a>         
-<a class="jxr_linenumber" name="379" href="#379">379</a>         Assert.assertTrue(<span class="jxr_string">"Could not find file "</span> + gendirJar.getAbsolutePath(),
-<a class="jxr_linenumber" name="380" href="#380">380</a>                 gendirJar.exists());
-<a class="jxr_linenumber" name="381" href="#381">381</a>         
-<a class="jxr_linenumber" name="382" href="#382">382</a>         <strong class="jxr_keyword">if</strong> (OUTJAR_FILE.exists()) {
-<a class="jxr_linenumber" name="383" href="#383">383</a>             <em class="jxr_comment">// Start with a clean plate</em>
-<a class="jxr_linenumber" name="384" href="#384">384</a>             Assert.assertTrue(OUTJAR_FILE.delete());
-<a class="jxr_linenumber" name="385" href="#385">385</a>         }
-<a class="jxr_linenumber" name="386" href="#386">386</a>         
-<a class="jxr_linenumber" name="387" href="#387">387</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="388" href="#388">388</a>             <strong class="jxr_keyword">int</strong> result = HabitatGenerator.embeddedMain(argv);
-<a class="jxr_linenumber" name="389" href="#389">389</a>             Assert.assertEquals(<span class="jxr_string">"Got error code: "</span> + result, 0, result);
+<a class="jxr_linenumber" name="379" href="#379">379</a>         {
+<a class="jxr_linenumber" name="380" href="#380">380</a>             <em class="jxr_comment">// From the @CreateMe on the DecoratedTown class (using @Decorate)</em>
+<a class="jxr_linenumber" name="381" href="#381">381</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="382" href="#382">382</a>             envItself.setImplementation(GENERATE_METHOD_CREATE_IMPL);
+<a class="jxr_linenumber" name="383" href="#383">383</a>             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_IMPL);
+<a class="jxr_linenumber" name="384" href="#384">384</a>             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
+<a class="jxr_linenumber" name="385" href="#385">385</a>             envItself.setScope(PerLookup.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="386" href="#386">386</a>             envItself.setName(GENERATE_METHOD_CREATE_NAME3);
+<a class="jxr_linenumber" name="387" href="#387">387</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, <span class="jxr_string">"org.jvnet.hk2.generator.tests.DecoratedTown"</span>);
+<a class="jxr_linenumber" name="388" href="#388">388</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, <span class="jxr_string">"getTown"</span>);
+<a class="jxr_linenumber" name="389" href="#389">389</a>             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.<strong class="jxr_keyword">class</strong>.getName());
 <a class="jxr_linenumber" name="390" href="#390">390</a>             
-<a class="jxr_linenumber" name="391" href="#391">391</a>             Assert.assertTrue(<span class="jxr_string">"did not generate JAR "</span> + OUTJAR_FILE.getAbsolutePath(),
-<a class="jxr_linenumber" name="392" href="#392">392</a>                     OUTJAR_FILE.exists());
-<a class="jxr_linenumber" name="393" href="#393">393</a>             
-<a class="jxr_linenumber" name="394" href="#394">394</a>             JarFile jar = <strong class="jxr_keyword">new</strong> JarFile(OUTJAR_FILE);
-<a class="jxr_linenumber" name="395" href="#395">395</a>             ZipEntry entry = jar.getEntry(ZIP_FILE_INHABITANT_NAME);
-<a class="jxr_linenumber" name="396" href="#396">396</a>             Assert.assertNotNull(entry);
-<a class="jxr_linenumber" name="397" href="#397">397</a>             
-<a class="jxr_linenumber" name="398" href="#398">398</a>             InputStream is = jar.getInputStream(entry);
-<a class="jxr_linenumber" name="399" href="#399">399</a>             
-<a class="jxr_linenumber" name="400" href="#400">400</a>             Set&lt;DescriptorImpl&gt; generatedImpls = getAllDescriptorsFromInputStream(is);
-<a class="jxr_linenumber" name="401" href="#401">401</a>             
-<a class="jxr_linenumber" name="402" href="#402">402</a>             checkDescriptors(generatedImpls);
-<a class="jxr_linenumber" name="403" href="#403">403</a>         }
-<a class="jxr_linenumber" name="404" href="#404">404</a>         <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="405" href="#405">405</a>             <em class="jxr_comment">// The test should be clean</em>
-<a class="jxr_linenumber" name="406" href="#406">406</a>             OUTJAR_FILE.delete();
+<a class="jxr_linenumber" name="391" href="#391">391</a>             EXPECTED_DESCRIPTORS.put(envItself, 0);
+<a class="jxr_linenumber" name="392" href="#392">392</a>         }
+<a class="jxr_linenumber" name="393" href="#393">393</a>         
+<a class="jxr_linenumber" name="394" href="#394">394</a>         {
+<a class="jxr_linenumber" name="395" href="#395">395</a>             <em class="jxr_comment">// From the @CreateMe on the getZipCode method on the DecoratedTown class</em>
+<a class="jxr_linenumber" name="396" href="#396">396</a>             DescriptorImpl envItself = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="397" href="#397">397</a>             envItself.setImplementation(GENERATE_METHOD_CREATE_IMPL);
+<a class="jxr_linenumber" name="398" href="#398">398</a>             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_IMPL);
+<a class="jxr_linenumber" name="399" href="#399">399</a>             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
+<a class="jxr_linenumber" name="400" href="#400">400</a>             envItself.setScope(PerLookup.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="401" href="#401">401</a>             envItself.setName(GENERATE_METHOD_CREATE_NAME4);
+<a class="jxr_linenumber" name="402" href="#402">402</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, <span class="jxr_string">"org.jvnet.hk2.generator.tests.ZipCode"</span>);
+<a class="jxr_linenumber" name="403" href="#403">403</a>             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, <span class="jxr_string">"getZipCodes"</span>);
+<a class="jxr_linenumber" name="404" href="#404">404</a>             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, DecoratedTown.<strong class="jxr_keyword">class</strong>.getName());
+<a class="jxr_linenumber" name="405" href="#405">405</a>             
+<a class="jxr_linenumber" name="406" href="#406">406</a>             EXPECTED_DESCRIPTORS.put(envItself, 0);
 <a class="jxr_linenumber" name="407" href="#407">407</a>         }
 <a class="jxr_linenumber" name="408" href="#408">408</a>     }
-<a class="jxr_linenumber" name="409" href="#409">409</a> }
+<a class="jxr_linenumber" name="409" href="#409">409</a>     
+<a class="jxr_linenumber" name="410" href="#410">410</a>     <strong class="jxr_keyword">private</strong> File gendirDirectory;
+<a class="jxr_linenumber" name="411" href="#411">411</a>     <strong class="jxr_keyword">private</strong> File gendirJar;
+<a class="jxr_linenumber" name="412" href="#412">412</a>     <strong class="jxr_keyword">private</strong> File inhabitantsDirectory;
+<a class="jxr_linenumber" name="413" href="#413">413</a>     
+<a class="jxr_linenumber" name="414" href="#414">414</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="415" href="#415">415</a> <em class="jxr_javadoccomment">     * Setup before every test</em>
+<a class="jxr_linenumber" name="416" href="#416">416</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="417" href="#417">417</a>     @Before
+<a class="jxr_linenumber" name="418" href="#418">418</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> before() {
+<a class="jxr_linenumber" name="419" href="#419">419</a>         String buildDir = System.getProperty(<span class="jxr_string">"build.dir"</span>);
+<a class="jxr_linenumber" name="420" href="#420">420</a>         
+<a class="jxr_linenumber" name="421" href="#421">421</a>         <strong class="jxr_keyword">if</strong> (buildDir != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="422" href="#422">422</a>             File buildDirFile = <strong class="jxr_keyword">new</strong> File(buildDir);
+<a class="jxr_linenumber" name="423" href="#423">423</a>             
+<a class="jxr_linenumber" name="424" href="#424">424</a>             File mavenClassesDir = <strong class="jxr_keyword">new</strong> File(buildDirFile, MAVEN_CLASSES_DIR);
+<a class="jxr_linenumber" name="425" href="#425">425</a>             gendirDirectory = <strong class="jxr_keyword">new</strong> File(mavenClassesDir, CLASS_DIRECTORY);
+<a class="jxr_linenumber" name="426" href="#426">426</a>             gendirJar = <strong class="jxr_keyword">new</strong> File(mavenClassesDir, JAR_FILE);
+<a class="jxr_linenumber" name="427" href="#427">427</a>         }
+<a class="jxr_linenumber" name="428" href="#428">428</a>         <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="429" href="#429">429</a>             gendirDirectory = <strong class="jxr_keyword">new</strong> File(CLASS_DIRECTORY);
+<a class="jxr_linenumber" name="430" href="#430">430</a>             gendirJar = <strong class="jxr_keyword">new</strong> File(JAR_FILE);
+<a class="jxr_linenumber" name="431" href="#431">431</a>         }
+<a class="jxr_linenumber" name="432" href="#432">432</a>         
+<a class="jxr_linenumber" name="433" href="#433">433</a>         File metaInfFile = <strong class="jxr_keyword">new</strong> File(gendirDirectory, META_INF_NAME);
+<a class="jxr_linenumber" name="434" href="#434">434</a>         inhabitantsDirectory = <strong class="jxr_keyword">new</strong> File(metaInfFile, INHABITANTS);
+<a class="jxr_linenumber" name="435" href="#435">435</a>     }
+<a class="jxr_linenumber" name="436" href="#436">436</a>     
+<a class="jxr_linenumber" name="437" href="#437">437</a>     <strong class="jxr_keyword">private</strong> Set&lt;DescriptorImpl&gt; getAllDescriptorsFromInputStream(InputStream is) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="438" href="#438">438</a>         BufferedReader pr = <strong class="jxr_keyword">new</strong> BufferedReader(<strong class="jxr_keyword">new</strong> InputStreamReader(is));
+<a class="jxr_linenumber" name="439" href="#439">439</a>         
+<a class="jxr_linenumber" name="440" href="#440">440</a>         Set&lt;DescriptorImpl&gt; retVal = <strong class="jxr_keyword">new</strong> HashSet&lt;DescriptorImpl&gt;();
+<a class="jxr_linenumber" name="441" href="#441">441</a>         <strong class="jxr_keyword">while</strong> (pr.ready()) {
+<a class="jxr_linenumber" name="442" href="#442">442</a>             DescriptorImpl di = <strong class="jxr_keyword">new</strong> DescriptorImpl();
+<a class="jxr_linenumber" name="443" href="#443">443</a>             
+<a class="jxr_linenumber" name="444" href="#444">444</a>             <strong class="jxr_keyword">if</strong> (!di.readObject(pr)) {
+<a class="jxr_linenumber" name="445" href="#445">445</a>                 <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="446" href="#446">446</a>             }
+<a class="jxr_linenumber" name="447" href="#447">447</a>             
+<a class="jxr_linenumber" name="448" href="#448">448</a>             retVal.add(di);
+<a class="jxr_linenumber" name="449" href="#449">449</a>         }
+<a class="jxr_linenumber" name="450" href="#450">450</a>         
+<a class="jxr_linenumber" name="451" href="#451">451</a>         <strong class="jxr_keyword">return</strong> retVal;
+<a class="jxr_linenumber" name="452" href="#452">452</a>     }
+<a class="jxr_linenumber" name="453" href="#453">453</a>     
+<a class="jxr_linenumber" name="454" href="#454">454</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkDescriptors(Set&lt;DescriptorImpl&gt; dis) {
+<a class="jxr_linenumber" name="455" href="#455">455</a>         <strong class="jxr_keyword">for</strong> (DescriptorImpl di : dis) {
+<a class="jxr_linenumber" name="456" href="#456">456</a>             Assert.assertTrue(<span class="jxr_string">"Did not find "</span> + di + <span class="jxr_string">" in the expected descriptors &lt;&lt;&lt;"</span> +
+<a class="jxr_linenumber" name="457" href="#457">457</a>               EXPECTED_DESCRIPTORS + <span class="jxr_string">"&gt;&gt;&gt;"</span>, EXPECTED_DESCRIPTORS.containsKey(di));
+<a class="jxr_linenumber" name="458" href="#458">458</a>             
+<a class="jxr_linenumber" name="459" href="#459">459</a>             <em class="jxr_comment">// The rank is not part of the calculated equals or hash code (since it can change</em>
+<a class="jxr_linenumber" name="460" href="#460">460</a>             <em class="jxr_comment">// over the course of the lifeycle of the object) and hence must be checked</em>
+<a class="jxr_linenumber" name="461" href="#461">461</a>             <em class="jxr_comment">// separately from the containsKey above</em>
+<a class="jxr_linenumber" name="462" href="#462">462</a>             <strong class="jxr_keyword">int</strong> expectedRank = EXPECTED_DESCRIPTORS.get(di);
+<a class="jxr_linenumber" name="463" href="#463">463</a>             Assert.assertEquals(expectedRank, di.getRanking());
+<a class="jxr_linenumber" name="464" href="#464">464</a>         }
+<a class="jxr_linenumber" name="465" href="#465">465</a>         
+<a class="jxr_linenumber" name="466" href="#466">466</a>         Assert.assertEquals(<span class="jxr_string">"Expecting "</span> + EXPECTED_DESCRIPTORS.size() + <span class="jxr_string">" descriptors, but only got "</span> + dis.size(),
+<a class="jxr_linenumber" name="467" href="#467">467</a>                 EXPECTED_DESCRIPTORS.size(), dis.size());
+<a class="jxr_linenumber" name="468" href="#468">468</a>     }
+<a class="jxr_linenumber" name="469" href="#469">469</a>     
+<a class="jxr_linenumber" name="470" href="#470">470</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="471" href="#471">471</a> <em class="jxr_javadoccomment">     * Tests generating into a directory</em>
+<a class="jxr_linenumber" name="472" href="#472">472</a> <em class="jxr_javadoccomment">     * @throws IOException </em>
+<a class="jxr_linenumber" name="473" href="#473">473</a> <em class="jxr_javadoccomment">     * @throws FileNotFoundException </em>
+<a class="jxr_linenumber" name="474" href="#474">474</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="475" href="#475">475</a>     @Test
+<a class="jxr_linenumber" name="476" href="#476">476</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDefaultDirectoryGeneration() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="477" href="#477">477</a>         String argv[] = <strong class="jxr_keyword">new</strong> String[2];
+<a class="jxr_linenumber" name="478" href="#478">478</a>         
+<a class="jxr_linenumber" name="479" href="#479">479</a>         argv[0] = FILE_ARGUMENT;
+<a class="jxr_linenumber" name="480" href="#480">480</a>         argv[1] = gendirDirectory.getAbsolutePath();
+<a class="jxr_linenumber" name="481" href="#481">481</a>         
+<a class="jxr_linenumber" name="482" href="#482">482</a>         File defaultOutput = <strong class="jxr_keyword">new</strong> File(inhabitantsDirectory, DEFAULT);
+<a class="jxr_linenumber" name="483" href="#483">483</a>         <strong class="jxr_keyword">if</strong> (defaultOutput.exists()) {
+<a class="jxr_linenumber" name="484" href="#484">484</a>             <em class="jxr_comment">// Start with a clean plate</em>
+<a class="jxr_linenumber" name="485" href="#485">485</a>             Assert.assertTrue(defaultOutput.delete());
+<a class="jxr_linenumber" name="486" href="#486">486</a>         }
+<a class="jxr_linenumber" name="487" href="#487">487</a>         
+<a class="jxr_linenumber" name="488" href="#488">488</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="489" href="#489">489</a>             <strong class="jxr_keyword">int</strong> result = HabitatGenerator.embeddedMain(argv);
+<a class="jxr_linenumber" name="490" href="#490">490</a>             Assert.assertEquals(<span class="jxr_string">"Got error code: "</span> + result, 0, result);
+<a class="jxr_linenumber" name="491" href="#491">491</a>             
+<a class="jxr_linenumber" name="492" href="#492">492</a>             Assert.assertTrue(<span class="jxr_string">"did not generate "</span> + defaultOutput.getAbsolutePath(),
+<a class="jxr_linenumber" name="493" href="#493">493</a>                     defaultOutput.exists());
+<a class="jxr_linenumber" name="494" href="#494">494</a>             
+<a class="jxr_linenumber" name="495" href="#495">495</a>             Set&lt;DescriptorImpl&gt; generatedImpls = getAllDescriptorsFromInputStream(
+<a class="jxr_linenumber" name="496" href="#496">496</a>                     <strong class="jxr_keyword">new</strong> FileInputStream(defaultOutput));
+<a class="jxr_linenumber" name="497" href="#497">497</a>             
+<a class="jxr_linenumber" name="498" href="#498">498</a>             checkDescriptors(generatedImpls);
+<a class="jxr_linenumber" name="499" href="#499">499</a>         }
+<a class="jxr_linenumber" name="500" href="#500">500</a>         <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="501" href="#501">501</a>             <em class="jxr_comment">// The test should be clean</em>
+<a class="jxr_linenumber" name="502" href="#502">502</a>             defaultOutput.delete();
+<a class="jxr_linenumber" name="503" href="#503">503</a>         }
+<a class="jxr_linenumber" name="504" href="#504">504</a>     }
+<a class="jxr_linenumber" name="505" href="#505">505</a>     
+<a class="jxr_linenumber" name="506" href="#506">506</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="507" href="#507">507</a> <em class="jxr_javadoccomment">     * Tests generating into a directory</em>
+<a class="jxr_linenumber" name="508" href="#508">508</a> <em class="jxr_javadoccomment">     * @throws IOException </em>
+<a class="jxr_linenumber" name="509" href="#509">509</a> <em class="jxr_javadoccomment">     * @throws FileNotFoundException </em>
+<a class="jxr_linenumber" name="510" href="#510">510</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="511" href="#511">511</a>     @Test
+<a class="jxr_linenumber" name="512" href="#512">512</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNonDefaultDirectoryGeneration() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="513" href="#513">513</a>         String argv[] = <strong class="jxr_keyword">new</strong> String[6];
+<a class="jxr_linenumber" name="514" href="#514">514</a>         
+<a class="jxr_linenumber" name="515" href="#515">515</a>         argv[0] = FILE_ARGUMENT;
+<a class="jxr_linenumber" name="516" href="#516">516</a>         argv[1] = gendirDirectory.getAbsolutePath();
+<a class="jxr_linenumber" name="517" href="#517">517</a>         argv[2] = VERBOSE_ARGUMENT;
+<a class="jxr_linenumber" name="518" href="#518">518</a>         argv[3] = NOSWAP_ARGUMENT;
+<a class="jxr_linenumber" name="519" href="#519">519</a>         argv[4] = LOCATOR_ARGUMENT;
+<a class="jxr_linenumber" name="520" href="#520">520</a>         argv[5] = OTHER;
+<a class="jxr_linenumber" name="521" href="#521">521</a>         
+<a class="jxr_linenumber" name="522" href="#522">522</a>         File defaultOutput = <strong class="jxr_keyword">new</strong> File(inhabitantsDirectory, OTHER);
+<a class="jxr_linenumber" name="523" href="#523">523</a>         <strong class="jxr_keyword">if</strong> (defaultOutput.exists()) {
+<a class="jxr_linenumber" name="524" href="#524">524</a>             <em class="jxr_comment">// Start with a clean plate</em>
+<a class="jxr_linenumber" name="525" href="#525">525</a>             Assert.assertTrue(defaultOutput.delete());
+<a class="jxr_linenumber" name="526" href="#526">526</a>         }
+<a class="jxr_linenumber" name="527" href="#527">527</a>         
+<a class="jxr_linenumber" name="528" href="#528">528</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="529" href="#529">529</a>             <strong class="jxr_keyword">int</strong> result = HabitatGenerator.embeddedMain(argv);
+<a class="jxr_linenumber" name="530" href="#530">530</a>             Assert.assertEquals(<span class="jxr_string">"Got error code: "</span> + result, 0, result);
+<a class="jxr_linenumber" name="531" href="#531">531</a>             
+<a class="jxr_linenumber" name="532" href="#532">532</a>             Assert.assertTrue(<span class="jxr_string">"did not generate "</span> + defaultOutput.getAbsolutePath(),
+<a class="jxr_linenumber" name="533" href="#533">533</a>                     defaultOutput.exists());
+<a class="jxr_linenumber" name="534" href="#534">534</a>             
+<a class="jxr_linenumber" name="535" href="#535">535</a>             Set&lt;DescriptorImpl&gt; generatedImpls = getAllDescriptorsFromInputStream(
+<a class="jxr_linenumber" name="536" href="#536">536</a>                     <strong class="jxr_keyword">new</strong> FileInputStream(defaultOutput));
+<a class="jxr_linenumber" name="537" href="#537">537</a>             
+<a class="jxr_linenumber" name="538" href="#538">538</a>             checkDescriptors(generatedImpls);
+<a class="jxr_linenumber" name="539" href="#539">539</a>         }
+<a class="jxr_linenumber" name="540" href="#540">540</a>         <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="541" href="#541">541</a>             <em class="jxr_comment">// The test should be clean</em>
+<a class="jxr_linenumber" name="542" href="#542">542</a>             defaultOutput.delete();
+<a class="jxr_linenumber" name="543" href="#543">543</a>         }
+<a class="jxr_linenumber" name="544" href="#544">544</a>     }
+<a class="jxr_linenumber" name="545" href="#545">545</a>     
+<a class="jxr_linenumber" name="546" href="#546">546</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="547" href="#547">547</a> <em class="jxr_javadoccomment">     * Tests generating into a directory</em>
+<a class="jxr_linenumber" name="548" href="#548">548</a> <em class="jxr_javadoccomment">     * @throws IOException On failure</em>
+<a class="jxr_linenumber" name="549" href="#549">549</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="550" href="#550">550</a>     @Test
+<a class="jxr_linenumber" name="551" href="#551">551</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testDefaultJarGeneration() <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="552" href="#552">552</a>         String argv[] = <strong class="jxr_keyword">new</strong> String[4];
+<a class="jxr_linenumber" name="553" href="#553">553</a>         
+<a class="jxr_linenumber" name="554" href="#554">554</a>         argv[0] = FILE_ARGUMENT;
+<a class="jxr_linenumber" name="555" href="#555">555</a>         argv[1] = gendirJar.getAbsolutePath();
+<a class="jxr_linenumber" name="556" href="#556">556</a>         
+<a class="jxr_linenumber" name="557" href="#557">557</a>         argv[2] = OUTJAR_FILE_ARGUMENT;
+<a class="jxr_linenumber" name="558" href="#558">558</a>         argv[3] = OUTJAR_FILE.getAbsolutePath();
+<a class="jxr_linenumber" name="559" href="#559">559</a>         
+<a class="jxr_linenumber" name="560" href="#560">560</a>         Assert.assertTrue(<span class="jxr_string">"Could not find file "</span> + gendirJar.getAbsolutePath(),
+<a class="jxr_linenumber" name="561" href="#561">561</a>                 gendirJar.exists());
+<a class="jxr_linenumber" name="562" href="#562">562</a>         
+<a class="jxr_linenumber" name="563" href="#563">563</a>         <strong class="jxr_keyword">if</strong> (OUTJAR_FILE.exists()) {
+<a class="jxr_linenumber" name="564" href="#564">564</a>             <em class="jxr_comment">// Start with a clean plate</em>
+<a class="jxr_linenumber" name="565" href="#565">565</a>             Assert.assertTrue(OUTJAR_FILE.delete());
+<a class="jxr_linenumber" name="566" href="#566">566</a>         }
+<a class="jxr_linenumber" name="567" href="#567">567</a>         
+<a class="jxr_linenumber" name="568" href="#568">568</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="569" href="#569">569</a>             <strong class="jxr_keyword">int</strong> result = HabitatGenerator.embeddedMain(argv);
+<a class="jxr_linenumber" name="570" href="#570">570</a>             Assert.assertEquals(<span class="jxr_string">"Got error code: "</span> + result, 0, result);
+<a class="jxr_linenumber" name="571" href="#571">571</a>             
+<a class="jxr_linenumber" name="572" href="#572">572</a>             Assert.assertTrue(<span class="jxr_string">"did not generate JAR "</span> + OUTJAR_FILE.getAbsolutePath(),
+<a class="jxr_linenumber" name="573" href="#573">573</a>                     OUTJAR_FILE.exists());
+<a class="jxr_linenumber" name="574" href="#574">574</a>             
+<a class="jxr_linenumber" name="575" href="#575">575</a>             JarFile jar = <strong class="jxr_keyword">new</strong> JarFile(OUTJAR_FILE);
+<a class="jxr_linenumber" name="576" href="#576">576</a>             ZipEntry entry = jar.getEntry(ZIP_FILE_INHABITANT_NAME);
+<a class="jxr_linenumber" name="577" href="#577">577</a>             Assert.assertNotNull(entry);
+<a class="jxr_linenumber" name="578" href="#578">578</a>             
+<a class="jxr_linenumber" name="579" href="#579">579</a>             InputStream is = jar.getInputStream(entry);
+<a class="jxr_linenumber" name="580" href="#580">580</a>             
+<a class="jxr_linenumber" name="581" href="#581">581</a>             Set&lt;DescriptorImpl&gt; generatedImpls = getAllDescriptorsFromInputStream(is);
+<a class="jxr_linenumber" name="582" href="#582">582</a>             
+<a class="jxr_linenumber" name="583" href="#583">583</a>             checkDescriptors(generatedImpls);
+<a class="jxr_linenumber" name="584" href="#584">584</a>         }
+<a class="jxr_linenumber" name="585" href="#585">585</a>         <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="586" href="#586">586</a>             <em class="jxr_comment">// The test should be clean</em>
+<a class="jxr_linenumber" name="587" href="#587">587</a>             OUTJAR_FILE.delete();
+<a class="jxr_linenumber" name="588" href="#588">588</a>         }
+<a class="jxr_linenumber" name="589" href="#589">589</a>     }
+<a class="jxr_linenumber" name="590" href="#590">590</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
