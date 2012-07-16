@@ -132,7 +132,7 @@
 <a class="jxr_linenumber" name="122" href="#122">122</a>         Assert.assertTrue(full.getQualifiers().contains(Green.<strong class="jxr_keyword">class</strong>.getName()));
 <a class="jxr_linenumber" name="123" href="#123">123</a>         Assert.assertTrue(full.getQualifiers().contains(Blue.<strong class="jxr_keyword">class</strong>.getName()));
 <a class="jxr_linenumber" name="124" href="#124">124</a>         
-<a class="jxr_linenumber" name="125" href="#125">125</a>         Assert.assertEquals(DescriptorType.FACTORY, full.getDescriptorType());
+<a class="jxr_linenumber" name="125" href="#125">125</a>         Assert.assertEquals(DescriptorType.PROVIDE_METHOD, full.getDescriptorType());
 <a class="jxr_linenumber" name="126" href="#126">126</a>         
 <a class="jxr_linenumber" name="127" href="#127">127</a>         Assert.assertNotNull(full.getMetadata());
 <a class="jxr_linenumber" name="128" href="#128">128</a>         Map&lt;String, List&lt;String&gt;&gt; metadata = full.getMetadata();
@@ -165,7 +165,7 @@
 <a class="jxr_linenumber" name="155" href="#155">155</a>         Assert.assertTrue(asString.contains(<span class="jxr_string">"contracts={org.glassfish.hk2.tests.api.FullDescriptorImpl,org.glassfish.hk2.tests.api.MarkerInterface}"</span>));
 <a class="jxr_linenumber" name="156" href="#156">156</a>         Assert.assertTrue(asString.contains(<span class="jxr_string">"scope=javax.inject.Singleton"</span>));
 <a class="jxr_linenumber" name="157" href="#157">157</a>         Assert.assertTrue(asString.contains(<span class="jxr_string">"name=Full"</span>));
-<a class="jxr_linenumber" name="158" href="#158">158</a>         Assert.assertTrue(asString.contains(<span class="jxr_string">"descriptorType=FACTORY"</span>));
+<a class="jxr_linenumber" name="158" href="#158">158</a>         Assert.assertTrue(asString.contains(<span class="jxr_string">"descriptorType=PROVIDE_METHOD"</span>));
 <a class="jxr_linenumber" name="159" href="#159">159</a>         
 <a class="jxr_linenumber" name="160" href="#160">160</a>     }
 <a class="jxr_linenumber" name="161" href="#161">161</a>     
@@ -309,8 +309,8 @@
 <a class="jxr_linenumber" name="299" href="#299">299</a>         <strong class="jxr_keyword">catch</strong> (IllegalArgumentException iae) {
 <a class="jxr_linenumber" name="300" href="#300">300</a>         }
 <a class="jxr_linenumber" name="301" href="#301">301</a>         
-<a class="jxr_linenumber" name="302" href="#302">302</a>         desc.setDescriptorType(DescriptorType.FACTORY);
-<a class="jxr_linenumber" name="303" href="#303">303</a>         Assert.assertEquals(DescriptorType.FACTORY, desc.getDescriptorType());
+<a class="jxr_linenumber" name="302" href="#302">302</a>         desc.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+<a class="jxr_linenumber" name="303" href="#303">303</a>         Assert.assertEquals(DescriptorType.PROVIDE_METHOD, desc.getDescriptorType());
 <a class="jxr_linenumber" name="304" href="#304">304</a>         
 <a class="jxr_linenumber" name="305" href="#305">305</a>         desc.setDescriptorType(DescriptorType.CLASS);
 <a class="jxr_linenumber" name="306" href="#306">306</a>         Assert.assertEquals(DescriptorType.CLASS, desc.getDescriptorType());

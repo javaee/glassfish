@@ -129,7 +129,7 @@
 <a class="jxr_linenumber" name="119" href="#119">119</a>             <em class="jxr_comment">// The javadoc says the return from buildFactory will have DescriptorImpl</em>
 <a class="jxr_linenumber" name="120" href="#120">120</a>             Assert.assertTrue(asFactory instanceof DescriptorImpl);
 <a class="jxr_linenumber" name="121" href="#121">121</a>         
-<a class="jxr_linenumber" name="122" href="#122">122</a>             Assert.assertEquals(DescriptorType.FACTORY, asFactory.getDescriptorType());
+<a class="jxr_linenumber" name="122" href="#122">122</a>             Assert.assertEquals(DescriptorType.PROVIDE_METHOD, asFactory.getDescriptorType());
 <a class="jxr_linenumber" name="123" href="#123">123</a>             Assert.assertEquals(FACTORY_CLASS_NAME, asFactory.getImplementation());
 <a class="jxr_linenumber" name="124" href="#124">124</a>             Assert.assertEquals(Singleton.<strong class="jxr_keyword">class</strong>.getName(), asFactory.getScope());
 <a class="jxr_linenumber" name="125" href="#125">125</a>             Assert.assertEquals(MY_RANK, asFactory.getRanking());
@@ -154,7 +154,7 @@
 <a class="jxr_linenumber" name="144" href="#144">144</a>             Assert.assertTrue(serviceContracts.contains(CONTRACT_NAME));
 <a class="jxr_linenumber" name="145" href="#145">145</a>         }
 <a class="jxr_linenumber" name="146" href="#146">146</a>         
-<a class="jxr_linenumber" name="147" href="#147">147</a>         Assert.assertTrue(fds.toString().contains(<span class="jxr_string">"descriptorType=FACTORY"</span>));
+<a class="jxr_linenumber" name="147" href="#147">147</a>         Assert.assertTrue(fds.toString().contains(<span class="jxr_string">"descriptorType=PROVIDE_METHOD"</span>));
 <a class="jxr_linenumber" name="148" href="#148">148</a>         Assert.assertTrue(fds.toString().contains(<span class="jxr_string">"descriptorType=CLASS"</span>));
 <a class="jxr_linenumber" name="149" href="#149">149</a>     }
 <a class="jxr_linenumber" name="150" href="#150">150</a>     
