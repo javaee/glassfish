@@ -268,7 +268,9 @@ public class StandaloneProcessor {
         if ( (habitat == null) ) {
             // Bootstrap a hk2 environment.
             ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
-            habitat = registry.createHabitat("default");
+            registry.createServiceLocator("default");
+            
+            habitat = new Habitat();
 
             StartupContext startupContext = new StartupContext();
             habitat.add(new ExistingSingletonInhabitant(startupContext));

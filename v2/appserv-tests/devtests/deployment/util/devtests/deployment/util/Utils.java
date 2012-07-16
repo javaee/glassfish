@@ -40,7 +40,6 @@
 
 package org.glassfish.tests.utils;
 
-import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
@@ -78,7 +77,9 @@ public class Utils {
         p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_PROP_NAME, System.getProperty("java.io.tmpdir"));
         p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTANCE_ROOT_PROP_NAME, System.getProperty("java.io.tmpdir"));
         ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader(), new StartupContext(p));
-        return registry.createHabitat("default");
+        registry.createServiceLocator("default");
+
+        return new Habitat();
     }
 }
 
