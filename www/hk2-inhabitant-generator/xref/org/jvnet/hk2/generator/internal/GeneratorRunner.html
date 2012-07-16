@@ -197,7 +197,7 @@
 <a class="jxr_linenumber" name="187" href="#187">187</a>             noSwapFile = outputFile;
 <a class="jxr_linenumber" name="188" href="#188">188</a>         }
 <a class="jxr_linenumber" name="189" href="#189">189</a>         
-<a class="jxr_linenumber" name="190" href="#190">190</a>         File writeMeFile = writeInhabitantsFile(descriptors, noSwapFile);
+<a class="jxr_linenumber" name="190" href="#190">190</a>         File writeMeFile = writeInhabitantsFile(descriptors, noSwapFile, inhabitantsDir);
 <a class="jxr_linenumber" name="191" href="#191">191</a>         
 <a class="jxr_linenumber" name="192" href="#192">192</a>         <strong class="jxr_keyword">if</strong> (!directWrite) {
 <a class="jxr_linenumber" name="193" href="#193">193</a>             <em class="jxr_comment">// OK, now swap it</em>
@@ -220,57 +220,57 @@
 <a class="jxr_linenumber" name="210" href="#210">210</a>     }
 <a class="jxr_linenumber" name="211" href="#211">211</a>     
 <a class="jxr_linenumber" name="212" href="#212">212</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> writeToJar(File jarFile, List&lt;DescriptorImpl&gt; descriptors) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="213" href="#213">213</a>         File writeMeFile = writeInhabitantsFile(descriptors, <strong class="jxr_keyword">null</strong>);
-<a class="jxr_linenumber" name="214" href="#214">214</a>         writeMeFile.deleteOnExit();
-<a class="jxr_linenumber" name="215" href="#215">215</a>         
-<a class="jxr_linenumber" name="216" href="#216">216</a>         byte buffer[] = <strong class="jxr_keyword">new</strong> byte[1024];
-<a class="jxr_linenumber" name="217" href="#217">217</a>         
-<a class="jxr_linenumber" name="218" href="#218">218</a>         File tmpJarFile = File.createTempFile(jarFile.getName(), <span class="jxr_string">".tmp"</span>);
-<a class="jxr_linenumber" name="219" href="#219">219</a>         
-<a class="jxr_linenumber" name="220" href="#220">220</a>         FileInputStream fis = <strong class="jxr_keyword">new</strong> FileInputStream(jarFile);
-<a class="jxr_linenumber" name="221" href="#221">221</a>         ZipInputStream zis = <strong class="jxr_keyword">new</strong> ZipInputStream(fis);
-<a class="jxr_linenumber" name="222" href="#222">222</a>         
-<a class="jxr_linenumber" name="223" href="#223">223</a>         FileOutputStream fos = <strong class="jxr_keyword">new</strong> FileOutputStream(tmpJarFile);
-<a class="jxr_linenumber" name="224" href="#224">224</a>         ZipOutputStream zos = <strong class="jxr_keyword">new</strong> ZipOutputStream(fos);
-<a class="jxr_linenumber" name="225" href="#225">225</a>         
-<a class="jxr_linenumber" name="226" href="#226">226</a>         ZipEntry zentry = zis.getNextEntry();
-<a class="jxr_linenumber" name="227" href="#227">227</a>         <strong class="jxr_keyword">while</strong> (zentry != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="228" href="#228">228</a>             String entryName = zentry.getName();
-<a class="jxr_linenumber" name="229" href="#229">229</a>             
-<a class="jxr_linenumber" name="230" href="#230">230</a>             <strong class="jxr_keyword">if</strong> (entryName.equals(META_INF + <span class="jxr_string">"/"</span> + INHABITANTS + <span class="jxr_string">"/"</span> + locatorName)) {
-<a class="jxr_linenumber" name="231" href="#231">231</a>                 <em class="jxr_comment">// Don't write out the old one</em>
-<a class="jxr_linenumber" name="232" href="#232">232</a>                 zentry = zis.getNextEntry();
-<a class="jxr_linenumber" name="233" href="#233">233</a>                 <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="234" href="#234">234</a>             }
-<a class="jxr_linenumber" name="235" href="#235">235</a>             
-<a class="jxr_linenumber" name="236" href="#236">236</a>             zos.putNextEntry(<strong class="jxr_keyword">new</strong> ZipEntry(entryName));
-<a class="jxr_linenumber" name="237" href="#237">237</a>             
-<a class="jxr_linenumber" name="238" href="#238">238</a>             <strong class="jxr_keyword">int</strong> len;
-<a class="jxr_linenumber" name="239" href="#239">239</a>             <strong class="jxr_keyword">while</strong> ((len = zis.read(buffer)) &gt; 0) {
-<a class="jxr_linenumber" name="240" href="#240">240</a>                 zos.write(buffer, 0, len);
-<a class="jxr_linenumber" name="241" href="#241">241</a>             }
-<a class="jxr_linenumber" name="242" href="#242">242</a>             
-<a class="jxr_linenumber" name="243" href="#243">243</a>             zentry = zis.getNextEntry();
-<a class="jxr_linenumber" name="244" href="#244">244</a>         }
-<a class="jxr_linenumber" name="245" href="#245">245</a>         
-<a class="jxr_linenumber" name="246" href="#246">246</a>         zis.close();
-<a class="jxr_linenumber" name="247" href="#247">247</a>         
-<a class="jxr_linenumber" name="248" href="#248">248</a>         <strong class="jxr_keyword">if</strong> (!descriptors.isEmpty()) {
-<a class="jxr_linenumber" name="249" href="#249">249</a>             zos.putNextEntry(<strong class="jxr_keyword">new</strong> ZipEntry(META_INF + <span class="jxr_string">"/"</span> + INHABITANTS + <span class="jxr_string">"/"</span> + locatorName));
-<a class="jxr_linenumber" name="250" href="#250">250</a>         
-<a class="jxr_linenumber" name="251" href="#251">251</a>             FileInputStream desc_os = <strong class="jxr_keyword">new</strong> FileInputStream(writeMeFile);
-<a class="jxr_linenumber" name="252" href="#252">252</a>             <strong class="jxr_keyword">int</strong> len;
-<a class="jxr_linenumber" name="253" href="#253">253</a>             <strong class="jxr_keyword">while</strong> ((len = desc_os.read(buffer)) &gt; 0) {
-<a class="jxr_linenumber" name="254" href="#254">254</a>                 zos.write(buffer, 0, len);
-<a class="jxr_linenumber" name="255" href="#255">255</a>             }
-<a class="jxr_linenumber" name="256" href="#256">256</a>             desc_os.close();
-<a class="jxr_linenumber" name="257" href="#257">257</a>         }
-<a class="jxr_linenumber" name="258" href="#258">258</a>         
-<a class="jxr_linenumber" name="259" href="#259">259</a>         zos.close();
-<a class="jxr_linenumber" name="260" href="#260">260</a>         
-<a class="jxr_linenumber" name="261" href="#261">261</a>         <em class="jxr_comment">// All went well, replace the JAR file with the new and improved jar file</em>
-<a class="jxr_linenumber" name="262" href="#262">262</a>         String tmpFileName = tmpJarFile.getAbsolutePath();
-<a class="jxr_linenumber" name="263" href="#263">263</a>         File outjar = <strong class="jxr_keyword">new</strong> File(outjarName);
+<a class="jxr_linenumber" name="213" href="#213">213</a>         File outjar = <strong class="jxr_keyword">new</strong> File(outjarName);
+<a class="jxr_linenumber" name="214" href="#214">214</a>         File writeMeFile = writeInhabitantsFile(descriptors, <strong class="jxr_keyword">null</strong>, outjar.getParentFile());
+<a class="jxr_linenumber" name="215" href="#215">215</a>         writeMeFile.deleteOnExit();
+<a class="jxr_linenumber" name="216" href="#216">216</a>         
+<a class="jxr_linenumber" name="217" href="#217">217</a>         byte buffer[] = <strong class="jxr_keyword">new</strong> byte[1024];
+<a class="jxr_linenumber" name="218" href="#218">218</a>         
+<a class="jxr_linenumber" name="219" href="#219">219</a>         File tmpJarFile = File.createTempFile(jarFile.getName(), <span class="jxr_string">".tmp"</span>, outjar.getParentFile());
+<a class="jxr_linenumber" name="220" href="#220">220</a>         
+<a class="jxr_linenumber" name="221" href="#221">221</a>         FileInputStream fis = <strong class="jxr_keyword">new</strong> FileInputStream(jarFile);
+<a class="jxr_linenumber" name="222" href="#222">222</a>         ZipInputStream zis = <strong class="jxr_keyword">new</strong> ZipInputStream(fis);
+<a class="jxr_linenumber" name="223" href="#223">223</a>         
+<a class="jxr_linenumber" name="224" href="#224">224</a>         FileOutputStream fos = <strong class="jxr_keyword">new</strong> FileOutputStream(tmpJarFile);
+<a class="jxr_linenumber" name="225" href="#225">225</a>         ZipOutputStream zos = <strong class="jxr_keyword">new</strong> ZipOutputStream(fos);
+<a class="jxr_linenumber" name="226" href="#226">226</a>         
+<a class="jxr_linenumber" name="227" href="#227">227</a>         ZipEntry zentry = zis.getNextEntry();
+<a class="jxr_linenumber" name="228" href="#228">228</a>         <strong class="jxr_keyword">while</strong> (zentry != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="229" href="#229">229</a>             String entryName = zentry.getName();
+<a class="jxr_linenumber" name="230" href="#230">230</a>             
+<a class="jxr_linenumber" name="231" href="#231">231</a>             <strong class="jxr_keyword">if</strong> (entryName.equals(META_INF + <span class="jxr_string">"/"</span> + INHABITANTS + <span class="jxr_string">"/"</span> + locatorName)) {
+<a class="jxr_linenumber" name="232" href="#232">232</a>                 <em class="jxr_comment">// Don't write out the old one</em>
+<a class="jxr_linenumber" name="233" href="#233">233</a>                 zentry = zis.getNextEntry();
+<a class="jxr_linenumber" name="234" href="#234">234</a>                 <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="235" href="#235">235</a>             }
+<a class="jxr_linenumber" name="236" href="#236">236</a>             
+<a class="jxr_linenumber" name="237" href="#237">237</a>             zos.putNextEntry(<strong class="jxr_keyword">new</strong> ZipEntry(entryName));
+<a class="jxr_linenumber" name="238" href="#238">238</a>             
+<a class="jxr_linenumber" name="239" href="#239">239</a>             <strong class="jxr_keyword">int</strong> len;
+<a class="jxr_linenumber" name="240" href="#240">240</a>             <strong class="jxr_keyword">while</strong> ((len = zis.read(buffer)) &gt; 0) {
+<a class="jxr_linenumber" name="241" href="#241">241</a>                 zos.write(buffer, 0, len);
+<a class="jxr_linenumber" name="242" href="#242">242</a>             }
+<a class="jxr_linenumber" name="243" href="#243">243</a>             
+<a class="jxr_linenumber" name="244" href="#244">244</a>             zentry = zis.getNextEntry();
+<a class="jxr_linenumber" name="245" href="#245">245</a>         }
+<a class="jxr_linenumber" name="246" href="#246">246</a>         
+<a class="jxr_linenumber" name="247" href="#247">247</a>         zis.close();
+<a class="jxr_linenumber" name="248" href="#248">248</a>         
+<a class="jxr_linenumber" name="249" href="#249">249</a>         <strong class="jxr_keyword">if</strong> (!descriptors.isEmpty()) {
+<a class="jxr_linenumber" name="250" href="#250">250</a>             zos.putNextEntry(<strong class="jxr_keyword">new</strong> ZipEntry(META_INF + <span class="jxr_string">"/"</span> + INHABITANTS + <span class="jxr_string">"/"</span> + locatorName));
+<a class="jxr_linenumber" name="251" href="#251">251</a>         
+<a class="jxr_linenumber" name="252" href="#252">252</a>             FileInputStream desc_os = <strong class="jxr_keyword">new</strong> FileInputStream(writeMeFile);
+<a class="jxr_linenumber" name="253" href="#253">253</a>             <strong class="jxr_keyword">int</strong> len;
+<a class="jxr_linenumber" name="254" href="#254">254</a>             <strong class="jxr_keyword">while</strong> ((len = desc_os.read(buffer)) &gt; 0) {
+<a class="jxr_linenumber" name="255" href="#255">255</a>                 zos.write(buffer, 0, len);
+<a class="jxr_linenumber" name="256" href="#256">256</a>             }
+<a class="jxr_linenumber" name="257" href="#257">257</a>             desc_os.close();
+<a class="jxr_linenumber" name="258" href="#258">258</a>         }
+<a class="jxr_linenumber" name="259" href="#259">259</a>         
+<a class="jxr_linenumber" name="260" href="#260">260</a>         zos.close();
+<a class="jxr_linenumber" name="261" href="#261">261</a>         
+<a class="jxr_linenumber" name="262" href="#262">262</a>         <em class="jxr_comment">// All went well, replace the JAR file with the new and improved jar file</em>
+<a class="jxr_linenumber" name="263" href="#263">263</a>         String tmpFileName = tmpJarFile.getAbsolutePath();
 <a class="jxr_linenumber" name="264" href="#264">264</a>         
 <a class="jxr_linenumber" name="265" href="#265">265</a>         <strong class="jxr_keyword">if</strong> (verbose) {
 <a class="jxr_linenumber" name="266" href="#266">266</a>             System.out.println(<span class="jxr_string">"Swapping jar file "</span> + tmpFileName + <span class="jxr_string">" to "</span> + outjar.getAbsolutePath());
@@ -281,13 +281,13 @@
 <a class="jxr_linenumber" name="271" href="#271">271</a>         }
 <a class="jxr_linenumber" name="272" href="#272">272</a>     }
 <a class="jxr_linenumber" name="273" href="#273">273</a>     
-<a class="jxr_linenumber" name="274" href="#274">274</a>     <strong class="jxr_keyword">private</strong> File writeInhabitantsFile(List&lt;DescriptorImpl&gt; descriptors, File noSwapFile) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="274" href="#274">274</a>     <strong class="jxr_keyword">private</strong> File writeInhabitantsFile(List&lt;DescriptorImpl&gt; descriptors, File noSwapFile, File outDir) <strong class="jxr_keyword">throws</strong> IOException {
 <a class="jxr_linenumber" name="275" href="#275">275</a>         File outFile;
 <a class="jxr_linenumber" name="276" href="#276">276</a>         <strong class="jxr_keyword">if</strong> (noSwapFile != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="277" href="#277">277</a>             outFile = noSwapFile;
 <a class="jxr_linenumber" name="278" href="#278">278</a>         }
 <a class="jxr_linenumber" name="279" href="#279">279</a>         <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="280" href="#280">280</a>             outFile = File.createTempFile(locatorName, <span class="jxr_string">".tmp"</span>);
+<a class="jxr_linenumber" name="280" href="#280">280</a>             outFile = File.createTempFile(locatorName, <span class="jxr_string">".tmp"</span>, outDir);
 <a class="jxr_linenumber" name="281" href="#281">281</a>         }
 <a class="jxr_linenumber" name="282" href="#282">282</a>         
 <a class="jxr_linenumber" name="283" href="#283">283</a>         <strong class="jxr_keyword">if</strong> (verbose) {
