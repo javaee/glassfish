@@ -110,4 +110,15 @@ public class ProxiableTest {
         Assert.assertTrue(PostConstructedProxiedService.wasPostConstructCalled());
         
     }
+    
+    /**
+     * Tests method access levels in proxies
+     */
+    @Test
+    public void testMethodAccessInAProxy() {
+    	SouthernHemisphere sh = locator.getService(SouthernHemisphere.class);
+    	
+    	// If this doesn't bomb, this test works
+    	sh.check();
+    }
 }

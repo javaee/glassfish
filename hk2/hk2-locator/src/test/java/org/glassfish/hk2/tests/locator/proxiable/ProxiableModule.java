@@ -71,6 +71,12 @@ public class ProxiableModule implements TestModule {
         
         // For the ProxyCtl test
         configurator.addActiveDescriptor(PostConstructedProxiedService.class);
+        
+        // For the method access test
+        configurator.bind(
+        		BuilderHelper.link(NorthernHemisphere.class).in(SeasonScope.class).build());
+        configurator.bind(
+        		BuilderHelper.link(SouthernHemisphere.class).in(Singleton.class).build());
     }
 
 }
