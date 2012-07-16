@@ -524,159 +524,161 @@
 <a class="jxr_linenumber" name="514" href="#514">514</a>         sb.append(<span class="jxr_string">"\n\tmetadata="</span>);
 <a class="jxr_linenumber" name="515" href="#515">515</a>         sb.append(ReflectionHelper.writeMetadata(d.getMetadata()));
 <a class="jxr_linenumber" name="516" href="#516">516</a>         
-<a class="jxr_linenumber" name="517" href="#517">517</a>         sb.append(<span class="jxr_string">"\n\tloader="</span> + d.getLoader());
+<a class="jxr_linenumber" name="517" href="#517">517</a>         sb.append(<span class="jxr_string">"\n\trank="</span> + d.getRanking());
 <a class="jxr_linenumber" name="518" href="#518">518</a>         
-<a class="jxr_linenumber" name="519" href="#519">519</a>         sb.append(<span class="jxr_string">"\n\tid="</span> + d.getServiceId());
+<a class="jxr_linenumber" name="519" href="#519">519</a>         sb.append(<span class="jxr_string">"\n\tloader="</span> + d.getLoader());
 <a class="jxr_linenumber" name="520" href="#520">520</a>         
-<a class="jxr_linenumber" name="521" href="#521">521</a>         sb.append(<span class="jxr_string">"\n\tlocatorId="</span> + d.getLocatorId());
+<a class="jxr_linenumber" name="521" href="#521">521</a>         sb.append(<span class="jxr_string">"\n\tid="</span> + d.getServiceId());
 <a class="jxr_linenumber" name="522" href="#522">522</a>         
-<a class="jxr_linenumber" name="523" href="#523">523</a>         sb.append(<span class="jxr_string">"\n\tidentityHashCode="</span> + System.identityHashCode(d));
-<a class="jxr_linenumber" name="524" href="#524">524</a> 	    
-<a class="jxr_linenumber" name="525" href="#525">525</a> 	}
-<a class="jxr_linenumber" name="526" href="#526">526</a> 	
-<a class="jxr_linenumber" name="527" href="#527">527</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> String toString() {
-<a class="jxr_linenumber" name="528" href="#528">528</a>         StringBuffer sb = <strong class="jxr_keyword">new</strong> StringBuffer(<span class="jxr_string">"Descriptor("</span>);
-<a class="jxr_linenumber" name="529" href="#529">529</a>         
-<a class="jxr_linenumber" name="530" href="#530">530</a>         pretty(sb, <strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="523" href="#523">523</a>         sb.append(<span class="jxr_string">"\n\tlocatorId="</span> + d.getLocatorId());
+<a class="jxr_linenumber" name="524" href="#524">524</a>         
+<a class="jxr_linenumber" name="525" href="#525">525</a>         sb.append(<span class="jxr_string">"\n\tidentityHashCode="</span> + System.identityHashCode(d));
+<a class="jxr_linenumber" name="526" href="#526">526</a> 	    
+<a class="jxr_linenumber" name="527" href="#527">527</a> 	}
+<a class="jxr_linenumber" name="528" href="#528">528</a> 	
+<a class="jxr_linenumber" name="529" href="#529">529</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">synchronized</strong> String toString() {
+<a class="jxr_linenumber" name="530" href="#530">530</a>         StringBuffer sb = <strong class="jxr_keyword">new</strong> StringBuffer(<span class="jxr_string">"Descriptor("</span>);
 <a class="jxr_linenumber" name="531" href="#531">531</a>         
-<a class="jxr_linenumber" name="532" href="#532">532</a>         sb.append(<span class="jxr_string">")"</span>);
+<a class="jxr_linenumber" name="532" href="#532">532</a>         pretty(sb, <strong class="jxr_keyword">this</strong>);
 <a class="jxr_linenumber" name="533" href="#533">533</a>         
-<a class="jxr_linenumber" name="534" href="#534">534</a>         <strong class="jxr_keyword">return</strong> sb.toString();
-<a class="jxr_linenumber" name="535" href="#535">535</a> 	}
-<a class="jxr_linenumber" name="536" href="#536">536</a> 	
-<a class="jxr_linenumber" name="537" href="#537">537</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="538" href="#538">538</a> <em class="jxr_javadoccomment">	 * This writes this object to the data output stream in a human-readable</em>
-<a class="jxr_linenumber" name="539" href="#539">539</a> <em class="jxr_javadoccomment">	 * format, excellent for writing out data files</em>
-<a class="jxr_linenumber" name="540" href="#540">540</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="541" href="#541">541</a> <em class="jxr_javadoccomment">	 * @param out The output stream to write this object out to</em>
-<a class="jxr_linenumber" name="542" href="#542">542</a> <em class="jxr_javadoccomment">	 * @throws IOException on failure</em>
-<a class="jxr_linenumber" name="543" href="#543">543</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="544" href="#544">544</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeObject(PrintWriter out) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="545" href="#545">545</a> 	
-<a class="jxr_linenumber" name="546" href="#546">546</a>         out.print(START_START);
-<a class="jxr_linenumber" name="547" href="#547">547</a>         
-<a class="jxr_linenumber" name="548" href="#548">548</a>         <em class="jxr_comment">// Implementation</em>
-<a class="jxr_linenumber" name="549" href="#549">549</a>         <strong class="jxr_keyword">if</strong> (implementation != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="550" href="#550">550</a>             out.print(implementation);
-<a class="jxr_linenumber" name="551" href="#551">551</a>         }
-<a class="jxr_linenumber" name="552" href="#552">552</a>         
-<a class="jxr_linenumber" name="553" href="#553">553</a>         out.println(END_START);
+<a class="jxr_linenumber" name="534" href="#534">534</a>         sb.append(<span class="jxr_string">")"</span>);
+<a class="jxr_linenumber" name="535" href="#535">535</a>         
+<a class="jxr_linenumber" name="536" href="#536">536</a>         <strong class="jxr_keyword">return</strong> sb.toString();
+<a class="jxr_linenumber" name="537" href="#537">537</a> 	}
+<a class="jxr_linenumber" name="538" href="#538">538</a> 	
+<a class="jxr_linenumber" name="539" href="#539">539</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="540" href="#540">540</a> <em class="jxr_javadoccomment">	 * This writes this object to the data output stream in a human-readable</em>
+<a class="jxr_linenumber" name="541" href="#541">541</a> <em class="jxr_javadoccomment">	 * format, excellent for writing out data files</em>
+<a class="jxr_linenumber" name="542" href="#542">542</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="543" href="#543">543</a> <em class="jxr_javadoccomment">	 * @param out The output stream to write this object out to</em>
+<a class="jxr_linenumber" name="544" href="#544">544</a> <em class="jxr_javadoccomment">	 * @throws IOException on failure</em>
+<a class="jxr_linenumber" name="545" href="#545">545</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="546" href="#546">546</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> writeObject(PrintWriter out) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="547" href="#547">547</a> 	
+<a class="jxr_linenumber" name="548" href="#548">548</a>         out.print(START_START);
+<a class="jxr_linenumber" name="549" href="#549">549</a>         
+<a class="jxr_linenumber" name="550" href="#550">550</a>         <em class="jxr_comment">// Implementation</em>
+<a class="jxr_linenumber" name="551" href="#551">551</a>         <strong class="jxr_keyword">if</strong> (implementation != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="552" href="#552">552</a>             out.print(implementation);
+<a class="jxr_linenumber" name="553" href="#553">553</a>         }
 <a class="jxr_linenumber" name="554" href="#554">554</a>         
-<a class="jxr_linenumber" name="555" href="#555">555</a>         <em class="jxr_comment">// Contracts</em>
-<a class="jxr_linenumber" name="556" href="#556">556</a>         <strong class="jxr_keyword">if</strong> (contracts != <strong class="jxr_keyword">null</strong> &amp;&amp; !contracts.isEmpty()) {
-<a class="jxr_linenumber" name="557" href="#557">557</a>             out.println(CONTRACT_KEY + ReflectionHelper.writeSet(contracts));
-<a class="jxr_linenumber" name="558" href="#558">558</a>         }
-<a class="jxr_linenumber" name="559" href="#559">559</a>         
-<a class="jxr_linenumber" name="560" href="#560">560</a>         <strong class="jxr_keyword">if</strong> (name != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="561" href="#561">561</a>             out.println(NAME_KEY + name);
-<a class="jxr_linenumber" name="562" href="#562">562</a>         }
-<a class="jxr_linenumber" name="563" href="#563">563</a>         
-<a class="jxr_linenumber" name="564" href="#564">564</a>         <strong class="jxr_keyword">if</strong> (scope != <strong class="jxr_keyword">null</strong> &amp;&amp; !scope.equals(PerLookup.<strong class="jxr_keyword">class</strong>.getName())) {
-<a class="jxr_linenumber" name="565" href="#565">565</a>             out.println(SCOPE_KEY + scope);
-<a class="jxr_linenumber" name="566" href="#566">566</a>         }
-<a class="jxr_linenumber" name="567" href="#567">567</a>         
-<a class="jxr_linenumber" name="568" href="#568">568</a>         <strong class="jxr_keyword">if</strong> (qualifiers != <strong class="jxr_keyword">null</strong> &amp;&amp; !qualifiers.isEmpty()) {
-<a class="jxr_linenumber" name="569" href="#569">569</a>             out.println(QUALIFIER_KEY + ReflectionHelper.writeSet(qualifiers));
-<a class="jxr_linenumber" name="570" href="#570">570</a>         }
-<a class="jxr_linenumber" name="571" href="#571">571</a>         
-<a class="jxr_linenumber" name="572" href="#572">572</a>         <strong class="jxr_keyword">if</strong> (descriptorType != <strong class="jxr_keyword">null</strong> &amp;&amp; descriptorType.equals(DescriptorType.FACTORY)) {
-<a class="jxr_linenumber" name="573" href="#573">573</a>             out.println(TYPE_KEY + FACTORY_DT);
-<a class="jxr_linenumber" name="574" href="#574">574</a>         }
-<a class="jxr_linenumber" name="575" href="#575">575</a>         
-<a class="jxr_linenumber" name="576" href="#576">576</a>         <strong class="jxr_keyword">if</strong> (rank != 0) {
-<a class="jxr_linenumber" name="577" href="#577">577</a>             out.println(RANKING_KEY + rank);
-<a class="jxr_linenumber" name="578" href="#578">578</a>         }
-<a class="jxr_linenumber" name="579" href="#579">579</a>         
-<a class="jxr_linenumber" name="580" href="#580">580</a>         <strong class="jxr_keyword">if</strong> (metadatas != <strong class="jxr_keyword">null</strong> &amp;&amp; !metadatas.isEmpty()) {
-<a class="jxr_linenumber" name="581" href="#581">581</a>             out.println(METADATA_KEY + ReflectionHelper.writeMetadata(metadatas));
-<a class="jxr_linenumber" name="582" href="#582">582</a>         }
-<a class="jxr_linenumber" name="583" href="#583">583</a>         
-<a class="jxr_linenumber" name="584" href="#584">584</a>         out.println();  <em class="jxr_comment">// This demarks the end of the section</em>
-<a class="jxr_linenumber" name="585" href="#585">585</a>     }
-<a class="jxr_linenumber" name="586" href="#586">586</a> 
-<a class="jxr_linenumber" name="587" href="#587">587</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="588" href="#588">588</a> <em class="jxr_javadoccomment">	 * This can be used to read in instances of this object that were previously written out with</em>
-<a class="jxr_linenumber" name="589" href="#589">589</a> <em class="jxr_javadoccomment">	 * writeObject.  Useful for reading from external data files</em>
-<a class="jxr_linenumber" name="590" href="#590">590</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="591" href="#591">591</a> <em class="jxr_javadoccomment">	 * @param in The reader to read from</em>
-<a class="jxr_linenumber" name="592" href="#592">592</a> <em class="jxr_javadoccomment">	 * @return true if a descriptor was read, false otherwise.  This is useful if reading a file that might have comments at the end</em>
-<a class="jxr_linenumber" name="593" href="#593">593</a> <em class="jxr_javadoccomment">	 * @throws IOException on failure</em>
-<a class="jxr_linenumber" name="594" href="#594">594</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="595" href="#595">595</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> readObject(BufferedReader in) <strong class="jxr_keyword">throws</strong> IOException {
-<a class="jxr_linenumber" name="596" href="#596">596</a>         String line = in.readLine();
-<a class="jxr_linenumber" name="597" href="#597">597</a>         
-<a class="jxr_linenumber" name="598" href="#598">598</a>         <strong class="jxr_keyword">boolean</strong> sectionStarted = false;
-<a class="jxr_linenumber" name="599" href="#599">599</a>         <strong class="jxr_keyword">while</strong> (line != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="600" href="#600">600</a>             String trimmed = line.trim();
-<a class="jxr_linenumber" name="601" href="#601">601</a>             
-<a class="jxr_linenumber" name="602" href="#602">602</a>             <strong class="jxr_keyword">if</strong> (!sectionStarted) {
-<a class="jxr_linenumber" name="603" href="#603">603</a>                 <strong class="jxr_keyword">if</strong> (trimmed.startsWith(START_START)) {
-<a class="jxr_linenumber" name="604" href="#604">604</a>                     sectionStarted = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="605" href="#605">605</a>                     
-<a class="jxr_linenumber" name="606" href="#606">606</a>                     <strong class="jxr_keyword">int</strong> endStartIndex = trimmed.indexOf(END_START_CHAR, 1);
-<a class="jxr_linenumber" name="607" href="#607">607</a>                     <strong class="jxr_keyword">if</strong> (endStartIndex &lt; 0) {
-<a class="jxr_linenumber" name="608" href="#608">608</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Start of implementation ends without ] character: "</span> +
-<a class="jxr_linenumber" name="609" href="#609">609</a>                             trimmed);
-<a class="jxr_linenumber" name="610" href="#610">610</a>                     }
-<a class="jxr_linenumber" name="611" href="#611">611</a>                     
-<a class="jxr_linenumber" name="612" href="#612">612</a>                     <strong class="jxr_keyword">if</strong> (endStartIndex &gt; 1) {
-<a class="jxr_linenumber" name="613" href="#613">613</a>                         implementation = trimmed.substring(1, endStartIndex);
-<a class="jxr_linenumber" name="614" href="#614">614</a>                     }
-<a class="jxr_linenumber" name="615" href="#615">615</a>                 }
-<a class="jxr_linenumber" name="616" href="#616">616</a>             }
-<a class="jxr_linenumber" name="617" href="#617">617</a>             <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="618" href="#618">618</a>                 <strong class="jxr_keyword">if</strong> (trimmed.length() &lt;= 0) {
-<a class="jxr_linenumber" name="619" href="#619">619</a>                     <em class="jxr_comment">// A blank line indicates end of object</em>
-<a class="jxr_linenumber" name="620" href="#620">620</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="621" href="#621">621</a>                 }
-<a class="jxr_linenumber" name="622" href="#622">622</a>                 
-<a class="jxr_linenumber" name="623" href="#623">623</a>                 <strong class="jxr_keyword">int</strong> equalsIndex = trimmed.indexOf('=');
+<a class="jxr_linenumber" name="555" href="#555">555</a>         out.println(END_START);
+<a class="jxr_linenumber" name="556" href="#556">556</a>         
+<a class="jxr_linenumber" name="557" href="#557">557</a>         <em class="jxr_comment">// Contracts</em>
+<a class="jxr_linenumber" name="558" href="#558">558</a>         <strong class="jxr_keyword">if</strong> (contracts != <strong class="jxr_keyword">null</strong> &amp;&amp; !contracts.isEmpty()) {
+<a class="jxr_linenumber" name="559" href="#559">559</a>             out.println(CONTRACT_KEY + ReflectionHelper.writeSet(contracts));
+<a class="jxr_linenumber" name="560" href="#560">560</a>         }
+<a class="jxr_linenumber" name="561" href="#561">561</a>         
+<a class="jxr_linenumber" name="562" href="#562">562</a>         <strong class="jxr_keyword">if</strong> (name != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="563" href="#563">563</a>             out.println(NAME_KEY + name);
+<a class="jxr_linenumber" name="564" href="#564">564</a>         }
+<a class="jxr_linenumber" name="565" href="#565">565</a>         
+<a class="jxr_linenumber" name="566" href="#566">566</a>         <strong class="jxr_keyword">if</strong> (scope != <strong class="jxr_keyword">null</strong> &amp;&amp; !scope.equals(PerLookup.<strong class="jxr_keyword">class</strong>.getName())) {
+<a class="jxr_linenumber" name="567" href="#567">567</a>             out.println(SCOPE_KEY + scope);
+<a class="jxr_linenumber" name="568" href="#568">568</a>         }
+<a class="jxr_linenumber" name="569" href="#569">569</a>         
+<a class="jxr_linenumber" name="570" href="#570">570</a>         <strong class="jxr_keyword">if</strong> (qualifiers != <strong class="jxr_keyword">null</strong> &amp;&amp; !qualifiers.isEmpty()) {
+<a class="jxr_linenumber" name="571" href="#571">571</a>             out.println(QUALIFIER_KEY + ReflectionHelper.writeSet(qualifiers));
+<a class="jxr_linenumber" name="572" href="#572">572</a>         }
+<a class="jxr_linenumber" name="573" href="#573">573</a>         
+<a class="jxr_linenumber" name="574" href="#574">574</a>         <strong class="jxr_keyword">if</strong> (descriptorType != <strong class="jxr_keyword">null</strong> &amp;&amp; descriptorType.equals(DescriptorType.PROVIDE_METHOD)) {
+<a class="jxr_linenumber" name="575" href="#575">575</a>             out.println(TYPE_KEY + FACTORY_DT);
+<a class="jxr_linenumber" name="576" href="#576">576</a>         }
+<a class="jxr_linenumber" name="577" href="#577">577</a>         
+<a class="jxr_linenumber" name="578" href="#578">578</a>         <strong class="jxr_keyword">if</strong> (rank != 0) {
+<a class="jxr_linenumber" name="579" href="#579">579</a>             out.println(RANKING_KEY + rank);
+<a class="jxr_linenumber" name="580" href="#580">580</a>         }
+<a class="jxr_linenumber" name="581" href="#581">581</a>         
+<a class="jxr_linenumber" name="582" href="#582">582</a>         <strong class="jxr_keyword">if</strong> (metadatas != <strong class="jxr_keyword">null</strong> &amp;&amp; !metadatas.isEmpty()) {
+<a class="jxr_linenumber" name="583" href="#583">583</a>             out.println(METADATA_KEY + ReflectionHelper.writeMetadata(metadatas));
+<a class="jxr_linenumber" name="584" href="#584">584</a>         }
+<a class="jxr_linenumber" name="585" href="#585">585</a>         
+<a class="jxr_linenumber" name="586" href="#586">586</a>         out.println();  <em class="jxr_comment">// This demarks the end of the section</em>
+<a class="jxr_linenumber" name="587" href="#587">587</a>     }
+<a class="jxr_linenumber" name="588" href="#588">588</a> 
+<a class="jxr_linenumber" name="589" href="#589">589</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="590" href="#590">590</a> <em class="jxr_javadoccomment">	 * This can be used to read in instances of this object that were previously written out with</em>
+<a class="jxr_linenumber" name="591" href="#591">591</a> <em class="jxr_javadoccomment">	 * writeObject.  Useful for reading from external data files</em>
+<a class="jxr_linenumber" name="592" href="#592">592</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="593" href="#593">593</a> <em class="jxr_javadoccomment">	 * @param in The reader to read from</em>
+<a class="jxr_linenumber" name="594" href="#594">594</a> <em class="jxr_javadoccomment">	 * @return true if a descriptor was read, false otherwise.  This is useful if reading a file that might have comments at the end</em>
+<a class="jxr_linenumber" name="595" href="#595">595</a> <em class="jxr_javadoccomment">	 * @throws IOException on failure</em>
+<a class="jxr_linenumber" name="596" href="#596">596</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="597" href="#597">597</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> readObject(BufferedReader in) <strong class="jxr_keyword">throws</strong> IOException {
+<a class="jxr_linenumber" name="598" href="#598">598</a>         String line = in.readLine();
+<a class="jxr_linenumber" name="599" href="#599">599</a>         
+<a class="jxr_linenumber" name="600" href="#600">600</a>         <strong class="jxr_keyword">boolean</strong> sectionStarted = false;
+<a class="jxr_linenumber" name="601" href="#601">601</a>         <strong class="jxr_keyword">while</strong> (line != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="602" href="#602">602</a>             String trimmed = line.trim();
+<a class="jxr_linenumber" name="603" href="#603">603</a>             
+<a class="jxr_linenumber" name="604" href="#604">604</a>             <strong class="jxr_keyword">if</strong> (!sectionStarted) {
+<a class="jxr_linenumber" name="605" href="#605">605</a>                 <strong class="jxr_keyword">if</strong> (trimmed.startsWith(START_START)) {
+<a class="jxr_linenumber" name="606" href="#606">606</a>                     sectionStarted = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="607" href="#607">607</a>                     
+<a class="jxr_linenumber" name="608" href="#608">608</a>                     <strong class="jxr_keyword">int</strong> endStartIndex = trimmed.indexOf(END_START_CHAR, 1);
+<a class="jxr_linenumber" name="609" href="#609">609</a>                     <strong class="jxr_keyword">if</strong> (endStartIndex &lt; 0) {
+<a class="jxr_linenumber" name="610" href="#610">610</a>                         <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IOException(<span class="jxr_string">"Start of implementation ends without ] character: "</span> +
+<a class="jxr_linenumber" name="611" href="#611">611</a>                             trimmed);
+<a class="jxr_linenumber" name="612" href="#612">612</a>                     }
+<a class="jxr_linenumber" name="613" href="#613">613</a>                     
+<a class="jxr_linenumber" name="614" href="#614">614</a>                     <strong class="jxr_keyword">if</strong> (endStartIndex &gt; 1) {
+<a class="jxr_linenumber" name="615" href="#615">615</a>                         implementation = trimmed.substring(1, endStartIndex);
+<a class="jxr_linenumber" name="616" href="#616">616</a>                     }
+<a class="jxr_linenumber" name="617" href="#617">617</a>                 }
+<a class="jxr_linenumber" name="618" href="#618">618</a>             }
+<a class="jxr_linenumber" name="619" href="#619">619</a>             <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="620" href="#620">620</a>                 <strong class="jxr_keyword">if</strong> (trimmed.length() &lt;= 0) {
+<a class="jxr_linenumber" name="621" href="#621">621</a>                     <em class="jxr_comment">// A blank line indicates end of object</em>
+<a class="jxr_linenumber" name="622" href="#622">622</a>                     <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="623" href="#623">623</a>                 }
 <a class="jxr_linenumber" name="624" href="#624">624</a>                 
-<a class="jxr_linenumber" name="625" href="#625">625</a>                 <strong class="jxr_keyword">if</strong> (equalsIndex &gt;= 1) {
-<a class="jxr_linenumber" name="626" href="#626">626</a>                     
-<a class="jxr_linenumber" name="627" href="#627">627</a>                     String leftHandSide = trimmed.substring(0, equalsIndex + 1);  <em class="jxr_comment">// include the =</em>
-<a class="jxr_linenumber" name="628" href="#628">628</a>                     String rightHandSide = trimmed.substring(equalsIndex + 1);
-<a class="jxr_linenumber" name="629" href="#629">629</a>                     
-<a class="jxr_linenumber" name="630" href="#630">630</a>                     <strong class="jxr_keyword">if</strong> (leftHandSide.equalsIgnoreCase(CONTRACT_KEY)) {
-<a class="jxr_linenumber" name="631" href="#631">631</a>                         contracts = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;String&gt;();
-<a class="jxr_linenumber" name="632" href="#632">632</a>                         
-<a class="jxr_linenumber" name="633" href="#633">633</a>                         ReflectionHelper.readSet(rightHandSide, contracts);
-<a class="jxr_linenumber" name="634" href="#634">634</a>                     }
-<a class="jxr_linenumber" name="635" href="#635">635</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(QUALIFIER_KEY)) {
-<a class="jxr_linenumber" name="636" href="#636">636</a>                         qualifiers = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;String&gt;();
-<a class="jxr_linenumber" name="637" href="#637">637</a>                         
-<a class="jxr_linenumber" name="638" href="#638">638</a>                         ReflectionHelper.readSet(rightHandSide, qualifiers);
-<a class="jxr_linenumber" name="639" href="#639">639</a>                     }
-<a class="jxr_linenumber" name="640" href="#640">640</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(NAME_KEY)) {
-<a class="jxr_linenumber" name="641" href="#641">641</a>                         name = rightHandSide;
-<a class="jxr_linenumber" name="642" href="#642">642</a>                     }
-<a class="jxr_linenumber" name="643" href="#643">643</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(SCOPE_KEY)) {
-<a class="jxr_linenumber" name="644" href="#644">644</a>                         scope = rightHandSide;
-<a class="jxr_linenumber" name="645" href="#645">645</a>                     }
-<a class="jxr_linenumber" name="646" href="#646">646</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(TYPE_KEY)) {
-<a class="jxr_linenumber" name="647" href="#647">647</a>                         <strong class="jxr_keyword">if</strong> (rightHandSide.equals(FACTORY_DT)) {
-<a class="jxr_linenumber" name="648" href="#648">648</a>                             descriptorType = DescriptorType.FACTORY;
-<a class="jxr_linenumber" name="649" href="#649">649</a>                         }
-<a class="jxr_linenumber" name="650" href="#650">650</a>                     }
-<a class="jxr_linenumber" name="651" href="#651">651</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(METADATA_KEY)) {
-<a class="jxr_linenumber" name="652" href="#652">652</a>                         metadatas = <strong class="jxr_keyword">new</strong> LinkedHashMap&lt;String, List&lt;String&gt;&gt;();
-<a class="jxr_linenumber" name="653" href="#653">653</a>                         
-<a class="jxr_linenumber" name="654" href="#654">654</a>                         ReflectionHelper.readMetadataMap(rightHandSide, metadatas);
-<a class="jxr_linenumber" name="655" href="#655">655</a>                     }
-<a class="jxr_linenumber" name="656" href="#656">656</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(RANKING_KEY)) {
-<a class="jxr_linenumber" name="657" href="#657">657</a>                         rank = Integer.parseInt(rightHandSide);
-<a class="jxr_linenumber" name="658" href="#658">658</a>                     }
-<a class="jxr_linenumber" name="659" href="#659">659</a>                     
-<a class="jxr_linenumber" name="660" href="#660">660</a>                     <em class="jxr_comment">// Otherwise it is an unknown type, just forget it</em>
-<a class="jxr_linenumber" name="661" href="#661">661</a>                 }
-<a class="jxr_linenumber" name="662" href="#662">662</a>             }
-<a class="jxr_linenumber" name="663" href="#663">663</a>             
-<a class="jxr_linenumber" name="664" href="#664">664</a>             line = in.readLine();
-<a class="jxr_linenumber" name="665" href="#665">665</a>         }
-<a class="jxr_linenumber" name="666" href="#666">666</a>         
-<a class="jxr_linenumber" name="667" href="#667">667</a>         <strong class="jxr_keyword">return</strong> sectionStarted;
-<a class="jxr_linenumber" name="668" href="#668">668</a>     }
-<a class="jxr_linenumber" name="669" href="#669">669</a> }
+<a class="jxr_linenumber" name="625" href="#625">625</a>                 <strong class="jxr_keyword">int</strong> equalsIndex = trimmed.indexOf('=');
+<a class="jxr_linenumber" name="626" href="#626">626</a>                 
+<a class="jxr_linenumber" name="627" href="#627">627</a>                 <strong class="jxr_keyword">if</strong> (equalsIndex &gt;= 1) {
+<a class="jxr_linenumber" name="628" href="#628">628</a>                     
+<a class="jxr_linenumber" name="629" href="#629">629</a>                     String leftHandSide = trimmed.substring(0, equalsIndex + 1);  <em class="jxr_comment">// include the =</em>
+<a class="jxr_linenumber" name="630" href="#630">630</a>                     String rightHandSide = trimmed.substring(equalsIndex + 1);
+<a class="jxr_linenumber" name="631" href="#631">631</a>                     
+<a class="jxr_linenumber" name="632" href="#632">632</a>                     <strong class="jxr_keyword">if</strong> (leftHandSide.equalsIgnoreCase(CONTRACT_KEY)) {
+<a class="jxr_linenumber" name="633" href="#633">633</a>                         contracts = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;String&gt;();
+<a class="jxr_linenumber" name="634" href="#634">634</a>                         
+<a class="jxr_linenumber" name="635" href="#635">635</a>                         ReflectionHelper.readSet(rightHandSide, contracts);
+<a class="jxr_linenumber" name="636" href="#636">636</a>                     }
+<a class="jxr_linenumber" name="637" href="#637">637</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(QUALIFIER_KEY)) {
+<a class="jxr_linenumber" name="638" href="#638">638</a>                         qualifiers = <strong class="jxr_keyword">new</strong> LinkedHashSet&lt;String&gt;();
+<a class="jxr_linenumber" name="639" href="#639">639</a>                         
+<a class="jxr_linenumber" name="640" href="#640">640</a>                         ReflectionHelper.readSet(rightHandSide, qualifiers);
+<a class="jxr_linenumber" name="641" href="#641">641</a>                     }
+<a class="jxr_linenumber" name="642" href="#642">642</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(NAME_KEY)) {
+<a class="jxr_linenumber" name="643" href="#643">643</a>                         name = rightHandSide;
+<a class="jxr_linenumber" name="644" href="#644">644</a>                     }
+<a class="jxr_linenumber" name="645" href="#645">645</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(SCOPE_KEY)) {
+<a class="jxr_linenumber" name="646" href="#646">646</a>                         scope = rightHandSide;
+<a class="jxr_linenumber" name="647" href="#647">647</a>                     }
+<a class="jxr_linenumber" name="648" href="#648">648</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(TYPE_KEY)) {
+<a class="jxr_linenumber" name="649" href="#649">649</a>                         <strong class="jxr_keyword">if</strong> (rightHandSide.equals(FACTORY_DT)) {
+<a class="jxr_linenumber" name="650" href="#650">650</a>                             descriptorType = DescriptorType.PROVIDE_METHOD;
+<a class="jxr_linenumber" name="651" href="#651">651</a>                         }
+<a class="jxr_linenumber" name="652" href="#652">652</a>                     }
+<a class="jxr_linenumber" name="653" href="#653">653</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(METADATA_KEY)) {
+<a class="jxr_linenumber" name="654" href="#654">654</a>                         metadatas = <strong class="jxr_keyword">new</strong> LinkedHashMap&lt;String, List&lt;String&gt;&gt;();
+<a class="jxr_linenumber" name="655" href="#655">655</a>                         
+<a class="jxr_linenumber" name="656" href="#656">656</a>                         ReflectionHelper.readMetadataMap(rightHandSide, metadatas);
+<a class="jxr_linenumber" name="657" href="#657">657</a>                     }
+<a class="jxr_linenumber" name="658" href="#658">658</a>                     <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (leftHandSide.equals(RANKING_KEY)) {
+<a class="jxr_linenumber" name="659" href="#659">659</a>                         rank = Integer.parseInt(rightHandSide);
+<a class="jxr_linenumber" name="660" href="#660">660</a>                     }
+<a class="jxr_linenumber" name="661" href="#661">661</a>                     
+<a class="jxr_linenumber" name="662" href="#662">662</a>                     <em class="jxr_comment">// Otherwise it is an unknown type, just forget it</em>
+<a class="jxr_linenumber" name="663" href="#663">663</a>                 }
+<a class="jxr_linenumber" name="664" href="#664">664</a>             }
+<a class="jxr_linenumber" name="665" href="#665">665</a>             
+<a class="jxr_linenumber" name="666" href="#666">666</a>             line = in.readLine();
+<a class="jxr_linenumber" name="667" href="#667">667</a>         }
+<a class="jxr_linenumber" name="668" href="#668">668</a>         
+<a class="jxr_linenumber" name="669" href="#669">669</a>         <strong class="jxr_keyword">return</strong> sectionStarted;
+<a class="jxr_linenumber" name="670" href="#670">670</a>     }
+<a class="jxr_linenumber" name="671" href="#671">671</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
