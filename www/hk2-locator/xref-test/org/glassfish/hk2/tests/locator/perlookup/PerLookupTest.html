@@ -51,40 +51,67 @@
 <a class="jxr_linenumber" name="41" href="#41">41</a>  
 <a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> junit.framework.Assert;
 <a class="jxr_linenumber" name="43" href="#43">43</a>  
-<a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
-<a class="jxr_linenumber" name="47" href="#47">47</a>  
-<a class="jxr_linenumber" name="48" href="#48">48</a>  <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="49" href="#49">49</a>  <em class="jxr_javadoccomment"> * @author jwells</em>
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <em class="jxr_javadoccomment"> *</em>
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment"> */</em>
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/PerLookupTest.html">PerLookupTest</a> {
-<a class="jxr_linenumber" name="53" href="#53">53</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String TEST_NAME = <span class="jxr_string">"PerLookupTest"</span>;
-<a class="jxr_linenumber" name="54" href="#54">54</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> ServiceLocator locator = LocatorHelper.create(TEST_NAME, <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/PerLookupModule.html">PerLookupModule</a>());
-<a class="jxr_linenumber" name="55" href="#55">55</a>      
-<a class="jxr_linenumber" name="56" href="#56">56</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="57" href="#57">57</a>  <em class="jxr_javadoccomment">     * All PerLookups should be different</em>
-<a class="jxr_linenumber" name="58" href="#58">58</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="59" href="#59">59</a>      @Test
-<a class="jxr_linenumber" name="60" href="#60">60</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testThreeDifferentValues() {
-<a class="jxr_linenumber" name="61" href="#61">61</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/ThriceInjectedService.html">ThriceInjectedService</a> tis = locator.getService(ThriceInjectedService.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="62" href="#62">62</a>          Assert.assertNotNull(tis);
-<a class="jxr_linenumber" name="63" href="#63">63</a>          
-<a class="jxr_linenumber" name="64" href="#64">64</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/SimpleService.html">SimpleService</a> byConstructor = tis.getByConstructor();
-<a class="jxr_linenumber" name="65" href="#65">65</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/SimpleService.html">SimpleService</a> byField = tis.getByField();
-<a class="jxr_linenumber" name="66" href="#66">66</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/SimpleService.html">SimpleService</a> byMethod = tis.getByMethod();
-<a class="jxr_linenumber" name="67" href="#67">67</a>          
-<a class="jxr_linenumber" name="68" href="#68">68</a>          Assert.assertNotNull(byConstructor);
-<a class="jxr_linenumber" name="69" href="#69">69</a>          Assert.assertNotNull(byField);
-<a class="jxr_linenumber" name="70" href="#70">70</a>          Assert.assertNotNull(byMethod);
-<a class="jxr_linenumber" name="71" href="#71">71</a>          
-<a class="jxr_linenumber" name="72" href="#72">72</a>          Assert.assertNotSame(<span class="jxr_string">"The constructor "</span> + byConstructor + <span class="jxr_string">" and field "</span> + byField + <span class="jxr_string">" are the same"</span>, byConstructor, byField);
-<a class="jxr_linenumber" name="73" href="#73">73</a>          Assert.assertNotSame(byConstructor, byMethod);
-<a class="jxr_linenumber" name="74" href="#74">74</a>          Assert.assertNotSame(byField, byMethod);
-<a class="jxr_linenumber" name="75" href="#75">75</a>      }
-<a class="jxr_linenumber" name="76" href="#76">76</a>  
-<a class="jxr_linenumber" name="77" href="#77">77</a>  }
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.Factory;
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceHandle;
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.TypeLiteral;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> org.junit.Test;
+<a class="jxr_linenumber" name="50" href="#50">50</a>  
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <em class="jxr_javadoccomment"> * @author jwells</em>
+<a class="jxr_linenumber" name="53" href="#53">53</a>  <em class="jxr_javadoccomment"> *</em>
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <em class="jxr_javadoccomment"> */</em>
+<a class="jxr_linenumber" name="55" href="#55">55</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/PerLookupTest.html">PerLookupTest</a> {
+<a class="jxr_linenumber" name="56" href="#56">56</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> String TEST_NAME = <span class="jxr_string">"PerLookupTest"</span>;
+<a class="jxr_linenumber" name="57" href="#57">57</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">static</strong> ServiceLocator locator = LocatorHelper.create(TEST_NAME, <strong class="jxr_keyword">new</strong> <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/PerLookupModule.html">PerLookupModule</a>());
+<a class="jxr_linenumber" name="58" href="#58">58</a>      
+<a class="jxr_linenumber" name="59" href="#59">59</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="60" href="#60">60</a>  <em class="jxr_javadoccomment">     * All PerLookups should be different</em>
+<a class="jxr_linenumber" name="61" href="#61">61</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="62" href="#62">62</a>      @Test
+<a class="jxr_linenumber" name="63" href="#63">63</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testThreeDifferentValues() {
+<a class="jxr_linenumber" name="64" href="#64">64</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/ThriceInjectedService.html">ThriceInjectedService</a> tis = locator.getService(ThriceInjectedService.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="65" href="#65">65</a>          Assert.assertNotNull(tis);
+<a class="jxr_linenumber" name="66" href="#66">66</a>          
+<a class="jxr_linenumber" name="67" href="#67">67</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/SimpleService.html">SimpleService</a> byConstructor = tis.getByConstructor();
+<a class="jxr_linenumber" name="68" href="#68">68</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/SimpleService.html">SimpleService</a> byField = tis.getByField();
+<a class="jxr_linenumber" name="69" href="#69">69</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/SimpleService.html">SimpleService</a> byMethod = tis.getByMethod();
+<a class="jxr_linenumber" name="70" href="#70">70</a>          
+<a class="jxr_linenumber" name="71" href="#71">71</a>          Assert.assertNotNull(byConstructor);
+<a class="jxr_linenumber" name="72" href="#72">72</a>          Assert.assertNotNull(byField);
+<a class="jxr_linenumber" name="73" href="#73">73</a>          Assert.assertNotNull(byMethod);
+<a class="jxr_linenumber" name="74" href="#74">74</a>          
+<a class="jxr_linenumber" name="75" href="#75">75</a>          Assert.assertNotSame(<span class="jxr_string">"The constructor "</span> + byConstructor + <span class="jxr_string">" and field "</span> + byField + <span class="jxr_string">" are the same"</span>, byConstructor, byField);
+<a class="jxr_linenumber" name="76" href="#76">76</a>          Assert.assertNotSame(byConstructor, byMethod);
+<a class="jxr_linenumber" name="77" href="#77">77</a>          Assert.assertNotSame(byField, byMethod);
+<a class="jxr_linenumber" name="78" href="#78">78</a>      }
+<a class="jxr_linenumber" name="79" href="#79">79</a>      
+<a class="jxr_linenumber" name="80" href="#80">80</a>      <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="81" href="#81">81</a>  <em class="jxr_javadoccomment">     * An injection of null is properly disposed</em>
+<a class="jxr_linenumber" name="82" href="#82">82</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="83" href="#83">83</a>      @Test
+<a class="jxr_linenumber" name="84" href="#84">84</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testNullInjectionProperlyDisposed() {
+<a class="jxr_linenumber" name="85" href="#85">85</a>          ServiceHandle&lt;NullInjectedPerLookupService&gt; serviceHandle =
+<a class="jxr_linenumber" name="86" href="#86">86</a>                  locator.getServiceHandle(NullInjectedPerLookupService.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="87" href="#87">87</a>          Assert.assertNotNull(serviceHandle);
+<a class="jxr_linenumber" name="88" href="#88">88</a>          
+<a class="jxr_linenumber" name="89" href="#89">89</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/NullInjectedPerLookupService.html">NullInjectedPerLookupService</a> nips = serviceHandle.getService();
+<a class="jxr_linenumber" name="90" href="#90">90</a>          Assert.assertNotNull(nips);
+<a class="jxr_linenumber" name="91" href="#91">91</a>          Assert.assertNull(nips.getShouldBeNull());
+<a class="jxr_linenumber" name="92" href="#92">92</a>          
+<a class="jxr_linenumber" name="93" href="#93">93</a>          <a href="../../../../../../org/glassfish/hk2/tests/locator/perlookup/NullInterfaceFactory.html">NullInterfaceFactory</a> nif = locator.getService(
+<a class="jxr_linenumber" name="94" href="#94">94</a>                  (<strong class="jxr_keyword">new</strong> TypeLiteral&lt;Factory&lt;NullInterface&gt;&gt;() {}).getType());
+<a class="jxr_linenumber" name="95" href="#95">95</a>          Assert.assertNotNull(nif);
+<a class="jxr_linenumber" name="96" href="#96">96</a>          
+<a class="jxr_linenumber" name="97" href="#97">97</a>          Assert.assertFalse(nif.getDisposeCalled());
+<a class="jxr_linenumber" name="98" href="#98">98</a>          
+<a class="jxr_linenumber" name="99" href="#99">99</a>          serviceHandle.destroy();
+<a class="jxr_linenumber" name="100" href="#100">100</a>         
+<a class="jxr_linenumber" name="101" href="#101">101</a>         Assert.assertTrue(nif.getDisposeCalled());
+<a class="jxr_linenumber" name="102" href="#102">102</a>     }
+<a class="jxr_linenumber" name="103" href="#103">103</a> 
+<a class="jxr_linenumber" name="104" href="#104">104</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
