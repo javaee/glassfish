@@ -44,15 +44,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Testing zero config related commands.
+ * Testing configuration modularity related commands.
  *
  * @author Masoud Kalali
  */
-public class ZeroConfigTest extends AdminBaseDevTest {
+public class ConfigurationModularityTest extends AdminBaseDevTest {
 
-    private static final String DEFAULT_EJB_CONTAINER =
-            "<ejb-container>\n"
+    String EJB_MULTI_PART_CONFIG =
+            "At location: domain/configs/server-config\n"
+            + "<ejb-container>\n"
             + "  <ejb-timer-service/>\n"
+            + "</ejb-container>\n"
+            + "At location: domain/resources\n"
+            + "    <jdbc-resource pool-name=\"__TimerPool\" jndi-name=\"jdbc/__TimerPool\" object-type=\"system-admin\"></jdbc-resource>\n"
+            + "At location: domain/resources\n"
+            + "    <jdbc-connection-pool datasource-classname=\"org.apache.derby.jdbc.EmbeddedXADataSource\" res-type=\"javax.sql.XADataSource\" name=\"__TimerPool\">\n"
+            + "      <property name=\"databaseName\" value=\"${com.sun.aas.instanceRoot}/lib/databases/ejbtimer\"></property>\n"
+            + "      <property name=\"connectionAttributes\" value=\";create=true\"></property>\n"
+            + "    </jdbc-connection-pool>\n"
+            + "At location: domain/servers/server[server]\n"
+            + "<resource-ref ref=\"jdbc/__TimerPool\"></resource-ref>";
+    String DEFAULT_EJB_CONTAINER_SINGLE_PART =
+            "<ejb-container>"
+            + "<ejb-timer-service/>"
             + "</ejb-container>";
     String DEFAULT_WEB_CONTAINER_COMMAND_OUT =
             "<web-container>\n"
@@ -74,14 +88,14 @@ public class ZeroConfigTest extends AdminBaseDevTest {
             + "  </session-config>\n"
             + "</web-container>";
     private static final String DEFAULT_JMS_SERVICE =
-            "<jms-service default-jms-host=\"default_JMS_host\" type=\"EMBEDDED\">\n"
-            + "  <jms-host host=\"localhost\" name=\"default_JMS_host\"/>\n"
-            + "</jms-service>";
+            "<jms-service default-jms-host=\"default_JMS_host\" type=\"EMBEDDED\">\n" +
+                "  <jms-host port=\"7676\" host=\"localhost\" name=\"default_JMS_host\"/>\n" +
+                "</jms-service>";
     private static final String DEFAULT_TRANSACTION_SERVICE = "<transaction-service automatic-recovery=\"true\"/>";
-        Map<String, String> serviceToTest = new HashMap<String, String>(4);
+    Map<String, String> serviceToTest = new HashMap<String, String>(4);
 
-    public ZeroConfigTest() {
-        serviceToTest.put("ejb-container", DEFAULT_EJB_CONTAINER);
+    public ConfigurationModularityTest() {
+        serviceToTest.put("ejb-container", DEFAULT_EJB_CONTAINER_SINGLE_PART);
         serviceToTest.put("web-container", DEFAULT_WEB_CONTAINER_COMMAND_OUT);
         serviceToTest.put("transaction-service", DEFAULT_TRANSACTION_SERVICE);
         serviceToTest.put("jms-service", DEFAULT_JMS_SERVICE);
@@ -93,7 +107,7 @@ public class ZeroConfigTest extends AdminBaseDevTest {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new ZeroConfigTest().runTests();
+        new ConfigurationModularityTest().runTests();
     }
 
     private void runTests() {
@@ -101,7 +115,7 @@ public class ZeroConfigTest extends AdminBaseDevTest {
         cleanUpModuleConfigsIfExist();
         checkCreateModuleConfigCommand();
         checkDeleteModuleConfigCommand();
-        checkCreateModuleConfigDruRunCommand();
+//        checkCreateModuleConfigDryRunCommand();
         checkDryRunNotCausingMerger();
         checkGetActiveConfigCommand();
         stopDomain();
@@ -134,7 +148,7 @@ public class ZeroConfigTest extends AdminBaseDevTest {
         }
     }
 
-    private void checkCreateModuleConfigDruRunCommand() {
+    private void checkCreateModuleConfigDryRunCommand() {
         int i = 0;
         for (Map.Entry<String, String> entry : serviceToTest.entrySet()) {
             i++;
@@ -160,14 +174,14 @@ public class ZeroConfigTest extends AdminBaseDevTest {
     private void checkGetActiveConfigCommand() {
         String customizedJMServiceConfig =
                 "<jms-service init-timeout-in-seconds=\"120\" default-jms-host=\"default_JMS_host\" type=\"EMBEDDED\">\n"
-                + "  <jms-host host=\"localhost\" name=\"default_JMS_host\"/>\n"
+                + "  <jms-host port=\"7676\" host=\"localhost\" name=\"default_JMS_host\"/>\n"
                 + "</jms-service>";
 
-        asadmin("delete-module-config", "web-container");
-        //get the active config for web container which should be the default config
-        AsadminReturn returnee = asadminWithOutput("get-active-config", "web-container");
-        compareResponseReport("Case 1: getting active config for a default web-container not present in domain.xml ",
-                returnee, DEFAULT_WEB_CONTAINER_COMMAND_OUT, DEFAULT_WEB_CONTAINER_COMMAND_OUT_ALTER_1);
+//        asadmin("delete-module-config", "web-container");
+//        //get the active config for web container which should be the default config
+//        AsadminReturn returnee = asadminWithOutput("get-active-config", "web-container");
+//        compareResponseReport("Case 1: getting active config for a default web-container not present in domain.xml ",
+//                returnee, DEFAULT_WEB_CONTAINER_COMMAND_OUT, DEFAULT_WEB_CONTAINER_COMMAND_OUT_ALTER_1);
 
 
         asadmin("delete-module-config", "jms-service");
