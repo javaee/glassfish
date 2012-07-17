@@ -41,7 +41,6 @@ package com.sun.hk2.component;
 
 import org.glassfish.hk2.Scope;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
 
@@ -109,14 +108,7 @@ public class Inhabitants {
    * Creates a {@link org.jvnet.hk2.component.Inhabitant} by wrapping {@link org.jvnet.hk2.component.Creator} to handle scoping right.
    */
   public static <T> Inhabitant<T> wrapByScope(Class<T> c, Creator<T> creator, ServiceLocator habitat) {
-      Scoped scoped = c.getAnnotation(Scoped.class);
-      if (scoped==null) {
-          return null; //TODO [Check]  ==> new SingletonInhabitant<T>(creator); // treated as singleton
-      }
-
-      Class<? extends Scope> scopeClass = scoped.value();
-
-      return wrapByScope(creator, habitat, scopeClass);
+	  throw new UnsupportedOperationException("wrapByScope in Inhabitants");
   }
 
   public static <T> Inhabitant<T> wrapByScope(Creator<T> creator, ServiceLocator habitat,
