@@ -621,31 +621,7 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
          *      Implementation class.
          */
         private void enforceContractLevelScope(TypeDeclaration ctrct, ClassDeclaration impl) {
-            // if @Scoped is on the contract, that means we are forcing a certain scope type.
-            Scoped s = ctrct.getAnnotation(Scoped.class);
-            if (s==null) {
-                return;
-            }
-
-            try {
-                s.value();
-                throw new AssertionError();
-            } catch (MirroredTypeException e) {
-                TypeMirror forcedScope = e.getTypeMirror();
-
-                s = impl.getAnnotation(Scoped.class);
-                if(s!=null) {
-                    try {
-                        s.value();
-                        throw new AssertionError();
-                    } catch (MirroredTypeException f) {
-                        if(forcedScope.equals(f.getTypeMirror()))
-                            return; // forced scope and the actual scope are consistent
-                    }
-                }
-
-                env.getMessager().printError(impl.getPosition(),"@Scoped("+forcedScope+") is required because of the contract "+ctrct.getQualifiedName());
-            }
+        	return;
         }
     }
 }
