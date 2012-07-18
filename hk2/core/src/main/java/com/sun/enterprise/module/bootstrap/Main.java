@@ -161,11 +161,9 @@ public class Main {
 					+ bootstrap);
 		}
 
-		String targetModule = findMainModuleName(bootstrap);
-
 		StartupContext context = new StartupContext(
 				ArgumentManager.argsToMap(args));
-		launch(targetModule, context);
+		launch(context.getPlatformMainServiceName(), context);
 	}
 
 	protected void createServiceLocator() {
@@ -226,6 +224,10 @@ public class Main {
     @SuppressWarnings("unchecked")
     public ModuleStartup findStartupService(String mainModuleName,
 			StartupContext context) throws BootException {
+    	if (mainModuleName == null && context.getPlatformMainServiceName() != null) {
+    		mainModuleName = context.getPlatformMainServiceName();
+    	}
+    	
 		try {
 		    ActiveDescriptor<?> best = serviceLocator.getBestDescriptor(new MainFilter(mainModuleName));
 		    if (best == null) {
@@ -310,26 +312,6 @@ public class Main {
 		HK2Populator.populate(serviceLocator, descriptorFileFinder,
 				populatorPostProcessors.toArray(new PopulatorPostProcessor[populatorPostProcessors.size()]));
 		HK2Populator.populateConfig(serviceLocator);
-	}
-
-	protected String findMainModuleName(File bootstrap) throws BootException {
-		String targetModule;
-		try {
-			JarFile jarFile = new JarFile(bootstrap);
-			Manifest manifest = jarFile.getManifest();
-
-			Attributes attr = manifest.getMainAttributes();
-			targetModule = attr.getValue(ManifestConstants.MAIN_BUNDLE);
-			if (targetModule == null) {
-				LogHelper.getDefaultLogger().warning(
-						"No Main-Bundle module found in manifest of "
-								+ bootstrap.getAbsoluteFile());
-			}
-		} catch (IOException ioe) {
-			throw new BootException("Cannot get manifest from "
-					+ bootstrap.getAbsolutePath(), ioe);
-		}
-		return targetModule;
 	}
 
 	protected void launch(ModuleStartup startupCode, StartupContext context)
