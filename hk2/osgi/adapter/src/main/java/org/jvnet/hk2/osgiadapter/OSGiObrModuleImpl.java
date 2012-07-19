@@ -45,6 +45,7 @@ import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ResolveError;
+import com.sun.enterprise.module.bootstrap.BootException;
 import org.osgi.framework.Bundle;
 
 import java.io.File;
@@ -162,6 +163,12 @@ public class OSGiObrModuleImpl extends OSGiModuleImpl {
             return Collections.emptyList();
         }
         return super.getImports();
+    }
+
+    @Override
+    void parseInhabitants(String name) throws IOException, BootException {
+        init();
+        super.parseInhabitants(name);
     }
 
     @Override
