@@ -153,10 +153,23 @@ public class GeneratorRunner {
         });
         
         for (File candidate : candidates) {
-            FileInputStream fis = new FileInputStream(candidate);
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(candidate);
                 
-            LinkedList<DescriptorImpl> dis = createDescriptorIfService(fis, parent);
-            retVal.addAll(dis);
+                LinkedList<DescriptorImpl> dis = createDescriptorIfService(fis, parent);
+                retVal.addAll(dis);
+            }
+            finally {
+                if (fis != null) {
+                    try {
+                        fis.close();
+                    }
+                    catch (IOException ioe) {
+                        // ignore
+                    }
+                }
+            }
         }
         
         return retVal;
@@ -319,8 +332,24 @@ public class GeneratorRunner {
             String entryName = entry.getName();
             if (!entryName.endsWith(DOT_CLASS)) continue;
             
-            LinkedList<DescriptorImpl> dis = createDescriptorIfService(jarFile.getInputStream(entry), jar);
-            retVal.addAll(dis);
+            InputStream is = null;
+            try {
+                is = jarFile.getInputStream(entry);
+                
+                LinkedList<DescriptorImpl> dis = createDescriptorIfService(is, jar);
+                retVal.addAll(dis);
+            }
+            finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    }
+                    catch (IOException ioe) {
+                        // ignore
+                    }
+                }
+            }
+            
         }
         
         return retVal;
