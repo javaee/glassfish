@@ -77,12 +77,13 @@ public class OSGiModulesRegistryImpl
         // This must happen before we start iterating the existing bundles.
         bctx.addBundleListener(this);
 
-        try {
-            loadCachedData();
-        } catch (Exception e) {
-            Logger.logger.log(Level.WARNING, "Cannot load cached metadata, will recreate the cache", e);
-            cachedData.clear();
-        }
+        // TODO: we need to revisit the caching scheme
+//        try {
+//            loadCachedData();
+//        } catch (Exception e) {
+//            Logger.logger.log(Level.WARNING, "Cannot load cached metadata, will recreate the cache", e);
+//            cachedData.clear();
+//        }
 
         // Populate registry with pre-installed bundles
         for (final Bundle b : bctx.getBundles()) {
@@ -246,7 +247,7 @@ public class OSGiModulesRegistryImpl
             throws IOException, URISyntaxException {
         URI key = OSGiModuleDefinition.toURI(bundle);
         if (cachedData.containsKey(key)) {
-            return OSGiModuleDefinition.class.cast(cachedData.get(key));
+        	return OSGiModuleDefinition.class.cast(cachedData.get(key));
         } else {
             this.cacheInvalidated = true;
             return new OSGiModuleDefinition(bundle);
@@ -305,14 +306,17 @@ public class OSGiModulesRegistryImpl
                  m.stop();
             }
         }
+        
+
+        // TODO: we need to revisit the caching scheme
         // Save the cache before clearing modules
-        try {
-            if (cacheInvalidated) {
-                saveCache();
-            }
-        } catch (IOException e) {
-            Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
-        }
+//        try {
+//            if (cacheInvalidated) {
+//                saveCache();
+//            }
+//        } catch (IOException e) {
+//            Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
+//        }
         super.shutdown();
     }
 
