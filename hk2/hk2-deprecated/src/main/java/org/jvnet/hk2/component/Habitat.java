@@ -51,6 +51,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
+import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.internal.IndexedFilterImpl;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.AliasDescriptor;
@@ -58,6 +59,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.deprecated.internal.QualifierFilter;
+import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -76,6 +78,7 @@ import java.util.List;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Habitat implements ServiceLocator, SimpleServiceLocator {
     private final static String DEFAULT_NAME = "default";
+    private final static ServiceLocatorGenerator GENERATOR = new ServiceLocatorGeneratorImpl();
     
     private final ServiceLocator delegate;
 
@@ -96,7 +99,7 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
             name = DEFAULT_NAME;
         }
         
-        delegate = ServiceLocatorFactory.getInstance().create(name);
+        delegate = ServiceLocatorFactory.getInstance().create(name, null, GENERATOR);
         
         ActiveDescriptor<?> foundDescriptor = delegate.getBestDescriptor(BuilderHelper.createContractFilter(Habitat.class.getName()));
         if (foundDescriptor != null) return;
