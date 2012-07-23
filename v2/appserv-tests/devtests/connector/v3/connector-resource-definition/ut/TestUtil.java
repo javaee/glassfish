@@ -8,21 +8,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.component.Habitat;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 import com.sun.enterprise.deployment.ConnectorResourceDefinitionDescriptor;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.enterprise.module.bootstrap.StartupContext;
-import com.sun.enterprise.module.single.StaticModulesRegistry;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 
 public class TestUtil {
-    private static Habitat habitat;
 
     public static void compareCRDD(Map<String,ConnectorResourceDefinitionDescriptor> expectedCRDDs, 
             Set<ConnectorResourceDefinitionDescriptor> actualCRDDs) throws Exception{
@@ -54,22 +47,13 @@ public class TestUtil {
         assertEquals("Fail to verify size of the CRDD.",  expectedCRDDs.size(), actualCRDDs.size());
     }
 
-    public static void setupHabitat(){
-        if ((habitat == null)) {
-            // Bootstrap a hk2 environment.
-            ModulesRegistry registry = new StaticModulesRegistry(Thread.currentThread().getContextClassLoader());
-            habitat = registry.createHabitat("default");
+    public static void setupHK2() throws Exception{
+        Globals.getStaticHabitat();
+        assertNotNull("The global habitat is not initialized.", Globals.getDefaultHabitat());
 
-            StartupContext startupContext = new StartupContext();
-            habitat.add(new ExistingSingletonInhabitant(startupContext));
-
-            habitat.addComponent(new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
-            Globals.setDefaultHabitat(habitat);
-            
-        }
     }
-    public static <T> T getByType(Class<T> clz){
-        setupHabitat();
-        return habitat.getByType(clz);
+    public static <T> T getByType(Class<T> clz) throws Exception{
+        setupHK2();
+        return Globals.getDefaultHabitat().getService(clz);
     }
 }

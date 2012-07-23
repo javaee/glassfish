@@ -33,7 +33,7 @@ public class DDTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        TestUtil.setupHabitat();
+        TestUtil.setupHK2();
         descriptorDir = new File(System.getProperty("workDir"), "descriptor");
 
     }

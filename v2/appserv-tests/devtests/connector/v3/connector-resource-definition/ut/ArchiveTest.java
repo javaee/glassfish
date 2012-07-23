@@ -30,7 +30,7 @@ public class ArchiveTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        TestUtil.setupHabitat();
+        TestUtil.setupHK2();
         archiveDir = System.getProperty("ArchiveDir");
     }
 
