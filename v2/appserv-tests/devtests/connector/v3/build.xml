@@ -286,6 +286,9 @@
         <echo message="@@## datasource-definition##@@"/>
         <ant dir="datasource-definition" target="${connector-target}"/>
 
+	<echo message="@@##  connector-resource-definition##@@"/>
+	<ant dir="connector-resource-definition" target="${connector-target}"/>
+	
         <echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
         <ant dir="installed-libraries" target="all-ext"/>
 
