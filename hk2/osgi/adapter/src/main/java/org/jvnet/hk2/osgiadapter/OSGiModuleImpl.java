@@ -371,15 +371,13 @@ public class OSGiModuleImpl implements Module {
         
         LinkedList<PopulatorPostProcessor> postProcessors = new LinkedList<PopulatorPostProcessor>();
         
-		postProcessors.add(new OsgiPopulatorPostProcessor(this));
-		postProcessors.addAll(registeredPostProcessors);
+	postProcessors.add(new OsgiPopulatorPostProcessor(this));
+	postProcessors.addAll(registeredPostProcessors);
 		
-        for (InhabitantsDescriptor d : md.getMetadata().getHabitats(name)) {
-            URL entry = bundle.getEntry("META-INF/hk2-locator/default");
-            if (entry == null) continue;
-            
-			HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry),
-					postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
+        URL entry = bundle.getEntry("META-INF/hk2-locator/default");
+        if (entry != null) {
+	  HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry),
+				postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
         }
     }
 
