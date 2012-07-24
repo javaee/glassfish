@@ -41,9 +41,7 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import org.apache.felix.bundlerepository.*;
-import org.osgi.framework.*;
-import org.osgi.util.tracker.ServiceTracker;
+import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -57,7 +55,19 @@ import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
-import static org.jvnet.hk2.osgiadapter.Logger.logger;
+import org.apache.felix.bundlerepository.DataModelHelper;
+import org.apache.felix.bundlerepository.Reason;
+import org.apache.felix.bundlerepository.Repository;
+import org.apache.felix.bundlerepository.RepositoryAdmin;
+import org.apache.felix.bundlerepository.Resolver;
+import org.apache.felix.bundlerepository.Resource;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Filter;
+import org.osgi.framework.InvalidSyntaxException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.framework.Version;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -199,7 +209,12 @@ class ObrHandler extends ServiceTracker {
         List<Resource> resources = new ArrayList<Resource>();
         for (File jar : findAllJars(repoDir)) {
             Resource r = dmh.createResource(jar.toURI().toURL());
-            resources.add(r);
+            
+            if (r == null) {
+            	logger.logp(Level.WARNING, "ObrHandler", "createRepository", "{0} not an OSGi bundle", jar.toURI().toURL());
+            } else {
+                resources.add(r);
+            }
         }
         Repository repository = dmh.repository(resources.toArray(new Resource[resources.size()]));
         logger.logp(Level.INFO, "ObrHandler", "createRepository", "Created {0} containing {1} resources.",
@@ -213,6 +228,7 @@ class ObrHandler extends ServiceTracker {
     private void saveRepository(File repoFile, Repository repository) throws IOException {
         assert (repoFile != null);
         final FileWriter writer = new FileWriter(repoFile);
+        
         getRepositoryAdmin().getHelper().writeRepository(repository, writer);
         writer.flush();
     }
