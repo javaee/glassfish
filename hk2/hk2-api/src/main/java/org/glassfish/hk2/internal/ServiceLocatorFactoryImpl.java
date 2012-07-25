@@ -43,6 +43,8 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ServiceConfigurationError;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -64,8 +66,10 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
   private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
   private static int name_count = 0;
   private static final String GENERATED_NAME_PREFIX = "__HK2_Generated_";
-  
-  /**
+
+  private static Logger logger = Logger.getLogger(ServiceLocatorFactoryImpl.class.getPackage().getName());
+
+    /**
    * This will create a new set of name to locator mappings
    */
   public ServiceLocatorFactoryImpl() {
@@ -88,18 +92,29 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
   
   private static ServiceLocatorGenerator getGenerator() {
       Iterable<? extends ServiceLocatorGenerator> generators = ServiceLoader.lookupProviderInstances(ServiceLocatorGenerator.class);
-      if (generators !=null) {
-          for (ServiceLocatorGenerator generator : generators) {
-              if (generator != null) return generator;
-        }
+      if (generators != null) {
+          // non-null indicates we are in OSGi environment
+          // So, we will return whatever we find. If we don't find anything here, then we assume it is a
+          // configuration error and return null.
+          // Since org.glassfish.hk2.osgiresourcelocator.ServiceLoader never throws ServiceConfigurationError,
+          // there is no need to catch it and try next item in the iterator.
+          final Iterator<? extends ServiceLocatorGenerator> iterator = generators.iterator();
+          return iterator.hasNext() ? iterator.next() : null;
+      } else {
+          // We are in non-OSGi environment, let's use JDK ServiceLoader instead.
+          Iterator<ServiceLocatorGenerator> providers = java.util.ServiceLoader.load(ServiceLocatorGenerator.class).iterator();
+          while (providers.hasNext()) {
+              try {
+                  return providers.next();
+              } catch (ServiceConfigurationError sce) {
+                  // This can happen. See the exception javadoc for more details.
+                  logger.logp(Level.FINE, "ServiceLocatorFactoryImpl", "getGenerator",
+                          "Exception while looking up service locator generator", sce);
+                  // We will try the next one
+              }
+          }
       }
-        
-      Iterator<ServiceLocatorGenerator> providers = java.util.ServiceLoader.load(ServiceLocatorGenerator.class).iterator();
-      if (providers.hasNext()) {
-          return providers.next();
-      }
-    
-      Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).info("Cannot find a default implementation of the HK2 ServiceLocatorGenerator");
+      logger.warning("Cannot find a default implementation of the HK2 ServiceLocatorGenerator");
       return null;
   }
 
