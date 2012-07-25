@@ -1,9 +1,0 @@
-This devtest tests the redeploy RAR functionality introduced in SJSAS8.0PE.
-[Changes to connector classloader as described in http://sunone200.india/j2eexml/pub/Main/S1ASConnectorWebHome/classloader.jpg
-
-Two connector module that are similar in external API, but different in internal implmentation [a getVersion() method returns version 1 or 2 based on their version] are deployed in succession and is tested if they return the right version.
-
-This test makes sure that a connector module's classes are removed and the new connector module's classes are available during a redeploy.
-
---Siva
-

@@ -1,2 +1,0 @@
-A test to check if resources produced by a class in a library jar is available in servlets and EJBs.
-[issues 11653 and 11640]

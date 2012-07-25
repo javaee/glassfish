@@ -1,8 +1,0 @@
-EJBQL*Lexer.java
-EJBQL*Parser.java
-Semantic.java
-Semantic3.java
-EJBQLTreeWalker.java
-*TokenTypes.java
-*TokenTypes.txt
-expanded*.g

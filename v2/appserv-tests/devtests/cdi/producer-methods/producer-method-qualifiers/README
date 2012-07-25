@@ -1,4 +1,0 @@
-Test
-- Use of Producer Methods to act as a source of injectable bean instances
-- Qualifiers in Producer Methods to dynamically provide an instance of a bean type for injection
-

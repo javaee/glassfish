@@ -1,6 +1,0 @@
-Test the Sun branded DD drivers with Oracle.
-test2 gets a connection from a Container auth datasource
-test3 gets a connection from an application auth datasource
-
-both tests execute a query on the connection just to be sure it
-works

@@ -1,5 +1,0 @@
-test for checking dynamic reconfig of username/password
-- Forked from "poolauth" test-case, difference being, datasource is cached in the bean
-  which will fail after pool-reconfiguration. Application is disabled and enabled
-  to test the reconfigured pool.
-

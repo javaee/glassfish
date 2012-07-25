@@ -1,5 +1,0 @@
-Directory: appserv-tests/devtests/ee/admin/configmbeans
-Purpose: Testing our configmbeans in a PE/SE/EE setup. Note that this is tricky because we have different semantics here. We have to apply judgement while testing a particular MBean.
-
-
-Contact Abhijit Kumar/ Kedar Mhaswade/ Ramakanth Kunapuli/ Kenneth Ebbs for details, enhancements.

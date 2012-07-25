@@ -1,7 +1,0 @@
-delete-jms-resource jms/jms_msgdest_jmsweb_QCF
-delete-jms-resource jms/jms_msgdest_jmsweb_ServletQueue
-delete-jmsdest --desttype javax.jms.Queue jms_msgdest_jmsweb_ServletQueue
-delete-jms-resource jms/jms_msgdest_jmsweb_mdbQueue 
-delete-jmsdest --desttype javax.jms.Queue jms_msgdest_jmsweb_mdbQueue 
-delete-jms-resource jms/jms_msgdest_jmsweb_AppclientQueue 
-delete-jmsdest --desttype javax.jms.Queue jms_msgdest_jmsweb_AppclientQueue 

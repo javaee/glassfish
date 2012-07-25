@@ -1,3 +1,0 @@
-Test
-- glassfish issue 11607
-- test to reproduce injection of SLSB into a session scoped bean

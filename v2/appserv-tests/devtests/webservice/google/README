@@ -1,3 +1,0 @@
-This test uses a J2EE application client to access Google's Beta
-web service called GoogleSearch. It also includes an implementation
-of the web service in an ejb. 

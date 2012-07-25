@@ -1,9 +1,0 @@
-cometEcho  #  until we can integrate the grizzly 2.0 changes to the glassfish trunk
-httpListenerAdminReconfig
-portUnification
-portUnificationTarget
-wrongTransport
-wrongTransportTarget
-ha/ssoFailover
-networkListenerTarget
-asadminDeletesTarget

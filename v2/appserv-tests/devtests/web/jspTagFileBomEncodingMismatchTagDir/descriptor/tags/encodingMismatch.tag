@@ -1,1 +1,0 @@
-﻿<%@ tag pageEncoding="UTF-16BE" %>

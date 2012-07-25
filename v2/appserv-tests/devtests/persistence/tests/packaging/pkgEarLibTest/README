@@ -1,9 +1,0 @@
-
-Testcase
----------
-
-pu root is ear/lib,pu is accessable to ejb. Place entity.jar(persistence.xml and classes) under
-ear/lib dir.
-ear - ejb-cmp-pkgEarTest-client.jar
-    - ejb-cmp-pkgEarTest-ejb.jar
-    - lib/entity.jar

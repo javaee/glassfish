@@ -1,5 +1,0 @@
-for i in `cat $2`
-do
-mkdir -p $1/$i
-cp -r $3/$i $1/$i/..
-done

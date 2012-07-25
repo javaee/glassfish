@@ -1,2 +1,0 @@
-delete from student;
-

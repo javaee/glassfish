@@ -1,9 +1,0 @@
-Test for transparent dynamic reconfiguration of jdbc-connection-pool :
-
-* Tests whether the connection-factory (DataSource) remains valid even after
-  a hard reconfiguration (ie., User / Password property change for pool)
-* Tests whether the changes are visible to the connection-factory
-  (Setting invalid user will fail, setting valid user will pass)
-* Tests whether in-flight transactions are allowed for completion after
-  which actual pool reconfiguration must happen
-

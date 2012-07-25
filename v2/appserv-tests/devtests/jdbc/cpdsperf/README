@@ -1,6 +1,0 @@
-this test tries to benchmark a connection pool datasource
-against a norm DataSource
-
-please note that the classpath in the build.xml
-needs to be set for the sql target to a valid oracle
-classes12.zip location

@@ -1,1 +1,0 @@
-This devtest basically tests the deployment of persistence descriptor and entity annotations in ejb container. As a deployment process, persistence descriptor(XML) will be read, annotations will be read and merged into the descriptor.

@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-
-<project xmlns:j="jelly:core" xmlns:ant="jelly:ant" xmlns:u="jelly:util"
-         default="jsf-extensions:build">
-  <goal name="jsf-extensions:build" />
-  <goal name="jsf-extensions:dist" />
-
-</project>

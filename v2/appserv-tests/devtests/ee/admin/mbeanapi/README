@@ -1,4 +1,0 @@
-Directory: appserv-tests/devtests/ee/admin/mbeanapi
-Purpose: Testing the MBeanAPI that we are planning to expose for external management clients. It is very critical that this is tested thoroughly as our internal tools (GUI/CLI) may not test them.
-
-Contact Lloyd Chambers/ Abhijit Kumar/ Kenneth Ebbs for details, enhancements.

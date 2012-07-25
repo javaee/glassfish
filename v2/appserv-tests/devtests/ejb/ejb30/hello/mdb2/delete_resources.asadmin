@@ -1,5 +1,0 @@
-delete-jms-resource jms/ejb_ejb30_hello_mdb2_QCF
-delete-jms-resource jms/ejb_ejb30_hello_mdb2_InQueue
-delete-jms-resource jms/ejb_ejb30_hello_mdb2_OutQueue
-delete-jmsdest --desttype queue ejb_ejb30_hello_mdb2_InQueue
-delete-jmsdest --desttype queue ejb_ejb30_hello_mdb2_OutQueue

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
-    <system systemId="http://kochi:19909/TestApp-com.sun.httpsoapbc-1.0-2/MiscService_schema1.xsd" uri="xml-resources/web-service-references/Misc/wsdl/kochi_19909/TestApp-com.sun.httpsoapbc-1.0-2/MiscService_schema1.xsd"/>
-    <system systemId="http://localhost:19909/TestApp/MiscService/Misc?wsdl" uri="xml-resources/web-service-references/Misc/wsdl/localhost_19909/TestApp/MiscService/Misc.wsdl"/>
-    <system systemId="http://localhost.localdomain:19909/TestApp-com.sun.httpsoapbc-1.0-2/MiscService_schema1.xsd" uri="xml-resources/web-service-references/Misc/wsdl/localhost.localdomain_19909/TestApp-com.sun.httpsoapbc-1.0-2/MiscService_schema1.xsd"/>
-</catalog>

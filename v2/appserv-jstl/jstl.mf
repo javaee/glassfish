@@ -1,8 +1,0 @@
-Extension-Name: javax.servlet.jsp.jstl
-Specification-Title: JavaServer Pages(TM) Standard Tag Library
-Specification-Version: @VERSION@
-Specification-Vendor: Sun Microsystems, Inc.
-Implementation-Version: @VERSION@
-Implementation-Vendor: Sun Microsystems, Inc.
-Implementation-Vendor-Id: org.apache
-Implementation-Title: Sun Java System Application Server

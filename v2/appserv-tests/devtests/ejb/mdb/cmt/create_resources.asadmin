@@ -1,5 +1,0 @@
-create-jms-resource --restype javax.jms.QueueConnectionFactory jms/ejb_mdb_cmt_QCF
-create-jmsdest --desttype queue ejb_mdb_cmt_InQueue 
-create-jms-resource --restype javax.jms.Queue --property imqDestinationName=ejb_mdb_cmt_InQueue jms/ejb_mdb_cmt_InQueue
-create-jmsdest --desttype queue ejb_mdb_cmt_OutQueue 
-create-jms-resource --restype javax.jms.Queue --property imqDestinationName=ejb_mdb_cmt_OutQueue jms/ejb_mdb_cmt_OutQueue

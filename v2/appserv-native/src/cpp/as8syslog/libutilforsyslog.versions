@@ -1,9 +1,0 @@
-sparc {
-    SUNWprivate;
-}
-sparcv9 {
-    SUNWprivate;
-}
-i386 {
-    SUNWprivate;
-}

@@ -1,3 +1,0 @@
-
-This tests for clients with ejb and servlet based web services packaged together in war and also with @WebserviceRefs
-for ports.
