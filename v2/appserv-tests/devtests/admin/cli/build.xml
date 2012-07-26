@@ -419,10 +419,8 @@
 
     <target name="download" depends="fetchurl">
         <echo message="gfurl == ${gfurl}"/>
+        <setproxy nonproxyhosts="gf-hudson.us.oracle.com"/>
         <get verbose="${verbose}" src="${gfurl}" dest="${asinstall_dir}/glassfish.zip"/>
-        <exec executable="C:\\files\\hudson\\tools\\handle\\handle.exe" osfamily="windows">
-            <!-- <arg value="C:\\files\\hudson\\workspace\\admin-devtests-trunk-windows\\glassfish3\\glassfish\\modules\\exception-annotation-processor.jar"/> -->
-        </exec>
         <delete dir="${asinstall_dir}/glassfish3" includeemptydirs="true"/>
         <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
         <chmod perm="a+x" file="${asinstall_dir}/glassfish3/bin/asadmin"/>
