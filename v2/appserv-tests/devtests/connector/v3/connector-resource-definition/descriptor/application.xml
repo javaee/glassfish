@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_7.xsd">
+    <display-name>connector-resource-definitionApp</display-name>
+    <module>
+        <java>connector-resource-definition-client.jar</java>
+    </module>
+    <module>
+        <ejb>connector-resource-definition-ejb.jar</ejb>
+    </module>
+    <module>
+        <web>
+            <web-uri>connector-resource-definition-web.war</web-uri>
+            <context-root>connector-resource-definition</context-root>
+        </web>
+    </module>
+
+    <connector-resource>
+       <description>global-scope resource defined in application DD</description>
+       <name>java:global/env/Global_Level_ConnectorResource</name>
+       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <property>
+         <name>transactionSupport</name>
+         <value>LocalTransaction</value>
+       </property>
+       <property>
+         <name>resource-adapter-name</name>
+         <value>RaApplicationName</value>
+       </property>
+     </connector-resource>
+
+    <connector-resource>
+       <description>application-scope resource defined in application DD</description>
+       <name>java:app/env/Application_Level_ConnectorResource</name>
+       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <property>
+         <name>transactionSupport</name>
+         <value>LocalTransaction</value>
+       </property>
+       <property>
+         <name>resource-adapter-name</name>
+         <value>RaApplicationName</value>
+       </property>
+     </connector-resource>
+
+</application>
