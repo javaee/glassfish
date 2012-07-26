@@ -130,7 +130,7 @@ public class DescriptorContentComparator {
                 return false;
             }
         } else if (p1 != null &&
-                (p1.getName().startsWith("com.sun.enterprise.deployment") || p1.getName().startsWith("org.glassfish.ejb.deployment"))
+                (p1.getName().startsWith("com.sun.enterprise.deployment") || p1.getName().startsWith("org.glassfish.ejb.deployment") || p1.getName().startsWith("org.glassfish.web.deployment"))
                 ) {
 
             if (o1 instanceof Descriptor) {
