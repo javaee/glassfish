@@ -17,6 +17,7 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.DeploymentDescriptorFile;
 import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
+import org.glassfish.web.deployment.descriptor.WebBundleDescriptorImpl;
 import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
 
@@ -110,6 +111,7 @@ public class AnnotationTest extends TestCase {
         }
 
         DescriptorContentComparator dc = new DescriptorContentComparator();
+
         Assert.assertTrue("BundleDescriptors do not match.",
             dc.compareContent(bundleDescs[0], bundleDescs[1]));
     }
@@ -165,8 +167,8 @@ public class AnnotationTest extends TestCase {
             throw new IllegalStateException(ex);
         }
 
-        BundleDescriptor[] bundleDescs = { new WebBundleDescriptor(),
-                new WebBundleDescriptor() };
+        BundleDescriptor[] bundleDescs = { new WebBundleDescriptorImpl(),
+                new WebBundleDescriptorImpl() };
         bundleDescs = loadDescriptorFiles(bundleDescs[0], bundleDescs[1],
                 new WebDeploymentDescriptorFile(),
                 new WebDeploymentDescriptorFile(),

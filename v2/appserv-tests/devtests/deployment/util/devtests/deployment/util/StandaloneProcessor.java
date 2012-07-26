@@ -42,6 +42,8 @@ import com.sun.enterprise.deployment.annotation.impl.AppClientScanner;
 import org.glassfish.apf.impl.DirectoryScanner;
 import org.glassfish.ejb.deployment.annotation.impl.EjbJarScanner;
 import org.glassfish.web.deployment.annotation.impl.WarScanner;
+import org.glassfish.web.deployment.descriptor.WebBundleDescriptorImpl;
+import org.glassfish.web.deployment.descriptor.WebComponentDescriptorImpl;
 import com.sun.enterprise.deployment.annotation.impl.ModuleScanner;
 
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
@@ -54,8 +56,8 @@ import com.sun.enterprise.deployment.util.AppClientVisitor;
 import com.sun.enterprise.deployment.util.AppClientValidator;
 import org.glassfish.ejb.deployment.util.EjbBundleValidator;
 import com.sun.enterprise.deployment.util.EjbBundleVisitor;
-import com.sun.enterprise.deployment.util.WebBundleVisitor;
-import com.sun.enterprise.deployment.util.WebBundleValidator;
+import org.glassfish.web.deployment.util.WebBundleVisitor;
+import org.glassfish.web.deployment.util.WebBundleValidator;
 
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
@@ -91,7 +93,7 @@ public class StandaloneProcessor {
             aeHandler = new EjbBundleContext((EjbBundleDescriptorImpl) bundleDescriptor);
            
         } else if (ModuleType.WAR.equals(type)) {
-            bundleDescriptor = new WebBundleDescriptor();
+            bundleDescriptor = new WebBundleDescriptorImpl();
             aeHandler = new WebBundleContext(
                     (WebBundleDescriptor)bundleDescriptor);
         } else if (ModuleType.CAR.equals(type)) {
@@ -150,7 +152,7 @@ public class StandaloneProcessor {
                                 (WebBundleDescriptor)bundleDescriptor;
                         for (String cname : compClassNames) {
                             WebComponentDescriptor webCompDesc =
-                                    new WebComponentDescriptor();
+                                    new WebComponentDescriptorImpl();
                             webCompDesc.setServlet(true);
                             webCompDesc.setWebComponentImplementation(cname);
                             webBundleDesc.addWebComponentDescriptor(webCompDesc);
