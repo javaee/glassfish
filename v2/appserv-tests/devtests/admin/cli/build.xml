@@ -419,7 +419,7 @@
 
     <target name="download" depends="fetchurl">
         <echo message="gfurl == ${gfurl}"/>
-        <setproxy nonproxyhosts="gf-hudson.us.oracle.com|gf-hudson|bat-s10-1.us.oracle.com|bat-s10-1"/>
+        <setproxy proxyhost=""/>
         <get verbose="${verbose}" src="${gfurl}" dest="${asinstall_dir}/glassfish.zip"/>
         <delete dir="${asinstall_dir}/glassfish3" includeemptydirs="true"/>
         <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
