@@ -95,7 +95,9 @@ public class ProgressStatusEventJsonProvider extends BaseProvider<ProgressStatus
         if (event.getChanged() != null && event.getChanged().length > 0) {
             out.writeArrayFieldStart("changed");
             for (ProgressStatusEvent.Changed chng : event.getChanged()) {
-                out.writeString(chng.name());
+                if (chng != null) {
+                    out.writeString(chng.name());
+                }
             }
             out.writeEndArray();
         }

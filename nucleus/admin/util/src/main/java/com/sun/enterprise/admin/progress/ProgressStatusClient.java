@@ -39,6 +39,7 @@
  */
 package com.sun.enterprise.admin.progress;
 
+import com.sun.enterprise.util.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 import org.glassfish.api.admin.ProgressStatus;
@@ -102,31 +103,43 @@ public class ProgressStatusClient {
             return;
         }
         ProgressStatus effected = map.get(event.getSource().getId());
-        for (ProgressStatusEvent.Changed chng : event.getChanged()) {
-            switch (chng) {
-                case NEW_CHILD:
-                    effected = map.get(event.getParentSourceId());
-                    if (effected != null) {
-                        ProgressStatus child = effected.createChild(event.getSource().getName(), event.getAllocatedSteps());
-                        map.put(event.getSource().getName(), child);
-                        child.setTotalStepCount(event.getSource().getTotalStepCount());
-                        child.setCurrentStepCount(event.getSource().getCurrentStepCount());
-                        if (event.getSource().isCompleted()) {
-                            child.complete();
+        if (event.getChanged() != null && event.getChanged().length > 0) {
+            for (ProgressStatusEvent.Changed chng : event.getChanged()) {
+                switch (chng) {
+                    case NEW_CHILD:
+                        effected = map.get(event.getParentSourceId());
+                        if (effected != null) {
+                            ProgressStatus child = effected.createChild(event.getSource().getName(), event.getAllocatedSteps());
+                            map.put(event.getSource().getName(), child);
+                            child.setTotalStepCount(event.getSource().getTotalStepCount());
+                            child.setCurrentStepCount(event.getSource().getCurrentStepCount());
+                            if (event.getSource().isCompleted()) {
+                                child.complete();
+                            }
                         }
-                    }
-                    break;
-                case COMPLETED:
-                    effected.complete(event.getMessage());
-                    break;
-                case STEPS:
-                    effected.setCurrentStepCount(event.getSource().getCurrentStepCount());
-                    break;
-                case TOTAL_STEPS:
-                    effected.setTotalStepCount(event.getSource().getTotalStepCount());
-                    break;
-                default:
-                    throw new AssertionError();
+                        break;
+                    case COMPLETED:
+                        effected.complete(event.getMessage());
+                        break;
+                    case STEPS:
+                        effected.setCurrentStepCount(event.getSource().getCurrentStepCount());
+                        if (StringUtils.ok(event.getMessage())) {
+                            effected.progress(event.getMessage());
+                        }
+                        break;
+                    case TOTAL_STEPS:
+                        effected.setTotalStepCount(event.getSource().getTotalStepCount());
+                        if (StringUtils.ok(event.getMessage())) {
+                            effected.progress(event.getMessage());
+                        }
+                        break;
+                    default:
+                        throw new AssertionError();
+                }
+            }
+        } else {
+            if (StringUtils.ok(event.getMessage())) {
+                effected.progress(event.getMessage());
             }
         }
     }
