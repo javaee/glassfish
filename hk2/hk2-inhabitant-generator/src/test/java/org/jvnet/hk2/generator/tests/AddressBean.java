@@ -60,4 +60,7 @@ public interface AddressBean {
     
     // This one will be decorated by an external entity
     public List<Town> getTown();
+    
+    @CreateMe(InhabitantsGeneratorTest.GENERATE_METHOD_CREATE_NAME5)
+    public void setMyAddress(StreetAddress address);
 }

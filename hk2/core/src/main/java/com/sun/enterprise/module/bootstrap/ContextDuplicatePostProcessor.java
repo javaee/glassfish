@@ -40,19 +40,22 @@
 package com.sun.enterprise.module.bootstrap;
 
 import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import org.glassfish.hk2.api.Context;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.glassfish.hk2.runlevel.RunLevel;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
- * This class will weed out and duplicate implementations of Context and RunLevel, which can
- * happen if the same jar is on the classpath twice.  This service must be put into the
- * ServiceLocator prior to populating from the inhabitant files, and hence is not
- * annotated with &#64;Service
+ * This class will weed out and duplicate implementations of anything populated into the
+ * locator.  This service must be put into the ServiceLocator prior to populating from the
+ * inhabitant files, and hence is not annotated with &#64;Service
  * 
  * @author jwells
  *
@@ -60,6 +63,9 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 @PerLookup
 public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
     private final HashSet<DescriptorImpl> dupSet = new HashSet<DescriptorImpl>();
+    
+    @Inject
+    private ServiceLocator locator;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.bootstrap.PopulatorPostProcessor#process(org.glassfish.hk2.utilities.DescriptorImpl)
@@ -72,6 +78,21 @@ public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
         dupSet.add(descriptorImpl);
         
         return descriptorImpl;
+    }
+    
+    /**
+     * This method initializes the dupSet with all of the existing descriptors
+     * in the system, so that the process method will not add any duplicates
+     */
+    @SuppressWarnings("unused")
+    @PostConstruct
+    private void postConstruct() {
+        List<ActiveDescriptor<?>> allDescriptors =
+                locator.getDescriptors(BuilderHelper.allFilter());
+        
+        for (ActiveDescriptor<?> aDescriptor : allDescriptors) {
+            dupSet.add(new DescriptorImpl(aDescriptor));
+        }
     }
 
 }

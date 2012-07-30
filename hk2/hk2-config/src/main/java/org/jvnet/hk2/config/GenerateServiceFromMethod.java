@@ -57,8 +57,10 @@ import java.lang.annotation.Target;
  * <LI>Must only be applied to interfaces marked with {@link Configured}</LI>
  * <LI>May have one or zero String fields marked with {@link GeneratedServiceName}</LI>
  * </UL>
- * Only methods of type java.util.List with a parameterized type (e.g. List<Config>) may be
- * annotated with the user-supplied annotation.  The parameterized actual type will end up being used
+ * Only methods of type java.util.List with a parameterized type (e.g. List<Config>) or
+ * which take a single parameter and a void return type may be
+ * annotated with the user-supplied annotation.  The parameterized actual type (or the type of
+ * the parameter) will end up being used
  * as a field in the descriptor.  A single method may have multiple user-supplied annotations
  * marked with this annotation, in which case a different descriptor will be generated for each
  * user-supplied annotation.
@@ -70,7 +72,7 @@ import java.lang.annotation.Target;
  * <LI>The available contracts will be as specified in this annotation</LI>
  * <LI>The scope will be as specified in this annotation</LI>
  * <LI>If the user-supplied annotation has a field marked with {@link GeneratedServiceName} it will be the name in the descriptor</LI>
- * <LI>It will have a metadata entry with the name of the actual type of the List parameterized return type with key METHOD_ACTUAL</LI>
+ * <LI>It will have a metadata entry with the name of the actual type of the List parameterized return type (or the single parametere type) with key METHOD_ACTUAL</LI>
  * <LI>It will have a metadata entry with the name of the method with key METHOD_NAME</LI>
  * <LI>It will have a metadata entry with the name of the parent {@link Configured} class with key PARENT_CONFGIURED</LI>
  * </UL>

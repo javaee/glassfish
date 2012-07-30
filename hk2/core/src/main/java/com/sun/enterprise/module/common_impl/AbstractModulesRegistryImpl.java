@@ -47,7 +47,9 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.Repository;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
+import com.sun.enterprise.module.bootstrap.ContextDuplicatePostProcessor;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -137,12 +139,18 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     }
     
     protected void initializeServiceLocator(ServiceLocator serviceLocator) throws ComponentException {
+        ContextDuplicatePostProcessor processor = serviceLocator.getService(ContextDuplicatePostProcessor.class);
+        
 		DynamicConfigurationService dcs = serviceLocator
 		.getService(DynamicConfigurationService.class);
 
 		DynamicConfiguration config = dcs.createDynamicConfiguration();
 
 		config.bind(BuilderHelper.createConstantDescriptor(Logger.getAnonymousLogger()));
+		
+		if (processor == null) {
+		    config.addActiveDescriptor(ContextDuplicatePostProcessor.class);
+		}
 
 		config.commit();
 		
@@ -274,7 +282,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             if(module!=null)        return module;
         }
         
-        ModuleId jrw = AbstractFactory.getInstance().createModuleId(name, version);
         module = modules.get(AbstractFactory.getInstance().createModuleId(name, version));
         if (module == null && version == null) {
             Collection<Module> matchingModules = getModules(name);
