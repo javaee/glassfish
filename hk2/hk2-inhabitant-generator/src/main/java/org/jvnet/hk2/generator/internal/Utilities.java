@@ -1063,4 +1063,15 @@ public class Utilities {
         
         return pType.replace('/', '.');
     }
+    
+    /* package */ static String getFirstParameterType(String desc) {
+        if (desc == null) return null;
+        if (!desc.startsWith("(L")) return null;
+        int semiColonIndex = desc.indexOf(';');
+        if (semiColonIndex < 0) return null;  // Badly formed desc?
+        
+        String postL = desc.substring(2, semiColonIndex);
+        
+        return postL.replace('/', '.');
+    }
 }

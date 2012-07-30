@@ -335,7 +335,12 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     
     private MethodVisitor visitConfiguredMethod(int access, String name, String desc, String signature, String[] exceptions) {
         String methodListActual = Utilities.getListActualType(signature);
-        if (methodListActual == null) return null;  // Nothing to see here
+        if (methodListActual == null) {
+            if (signature != null) return null;
+            
+            methodListActual = Utilities.getFirstParameterType(desc);
+            if (methodListActual == null) return null;
+        }
         
         // OK, well, we have a reasonable candidate now, lets check its annotations
         return new ConfiguredMethodVisitor(name, methodListActual, implName);
