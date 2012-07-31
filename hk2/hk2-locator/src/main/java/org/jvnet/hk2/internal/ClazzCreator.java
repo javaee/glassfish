@@ -308,7 +308,7 @@ public class ClazzCreator<T> implements Creator<T> {
             preDestroyMe(instance);
         }
         catch (Throwable th) {
-            // ignored
+            Logger.getLogger().debug("ClazzCreator", "dispose", th);
         }
 
     }

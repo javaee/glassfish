@@ -129,5 +129,15 @@ public abstract class ServiceLocatorFactory {
    * @param name The name of the ServiceLocator to destroy
    */
   public abstract void destroy(String name);
+  
+  /**
+   * Removes the given ServiceLocator
+   * <p>
+   * All services associated with this ServiceLocator will be shutdown
+   * 
+   * @param name The ServiceLocator to destroy.  If null this will do nothing.
+   * If the ServiceLocator given was already destroyed this will do nothing
+   */
+  public abstract void destroy(ServiceLocator locator);
 
 }

@@ -151,6 +151,14 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
           killMe.shutdown();
       }
   }
+  
+  public void destroy(ServiceLocator locator) {
+      if (locator == null) return;
+      
+      locator.shutdown();
+      
+      destroy(locator.getName());  // Removes it from our DB
+  }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocatorFactory#create(java.lang.String, org.glassfish.hk2.api.Module, org.glassfish.hk2.api.ServiceLocator)

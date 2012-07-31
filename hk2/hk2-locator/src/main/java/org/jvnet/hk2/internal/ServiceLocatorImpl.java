@@ -104,7 +104,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new HashMap<String, IndexedListData>();
     private final HashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
             new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
-    private final Context<Singleton> singletonContext = new SingletonContext();
+    private final Context<Singleton> singletonContext = new SingletonContext(this);
     private final Context<PerLookup> perLookupContext = new PerLookupContext();
     private final LinkedHashSet<ValidationService> allValidators =
             new LinkedHashSet<ValidationService>();
@@ -503,10 +503,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
             for (ServiceHandle<?> handle : handles){
                 if (handle.isActive()) {
-                    Context context = (Context) handle.getService();
+                    Context<?> context = (Context<?>) handle.getService();
                     context.shutdown();
                 }
             }
+            
+            singletonContext.shutdown();
 
             shutdown = true;
 

@@ -107,6 +107,8 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             new LinkedList<InstanceLifecycleListener>();
     
     private final Set<IndexedListData> myLists = new HashSet<IndexedListData>();
+    
+    private int singletonGeneration = Integer.MAX_VALUE;
 
     /* package */ @SuppressWarnings("unchecked")
     SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId) {
@@ -739,6 +741,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     
     /* package */ Class<?> getPreAnalyzedClass() {
         return implClass;
+    }
+    
+    /* package */ int getSingletonGeneration() {
+        return singletonGeneration;
+    }
+    
+    /* package */ void setSingletonGeneration(int gen) {
+        singletonGeneration = gen;
     }
     
     public String toString() {

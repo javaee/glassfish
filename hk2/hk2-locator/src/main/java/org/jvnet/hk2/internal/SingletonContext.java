@@ -40,18 +40,29 @@
 package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeSet;
 
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
 public class SingletonContext implements Context<Singleton> {
+    private int generationNumber = Integer.MIN_VALUE;
+    private final ServiceLocatorImpl locator;
+    
+    /* package */ SingletonContext(ServiceLocatorImpl impl) {
+        locator = impl;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#getScope()
@@ -64,17 +75,22 @@ public class SingletonContext implements Context<Singleton> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) {
         if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
         
-        synchronized(activeDescriptor) {
+        synchronized (activeDescriptor) {
             if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
             
             T t = activeDescriptor.create(root);
             activeDescriptor.setCache(t);
         
+            if (activeDescriptor instanceof SystemDescriptor) {
+                ((SystemDescriptor<T>) activeDescriptor).setSingletonGeneration(generationNumber++);
+            }
+            
             return t;
         }
     }
@@ -106,7 +122,49 @@ public class SingletonContext implements Context<Singleton> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#supportsNullCreation()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void shutdown() {
+        List<ActiveDescriptor<?>> all = locator.getDescriptors(BuilderHelper.allFilter());
+        
+        TreeSet<SystemDescriptor<Object>> singlesOnly = new TreeSet<SystemDescriptor<Object>>(
+                new GenerationComparator());
+        for (ActiveDescriptor<?> one : all) {
+            if (one.getScope() == null || !one.getScope().equals(Singleton.class.getName())) continue;
+            
+            if (!one.isCacheSet()) continue;
+            
+            SystemDescriptor<Object> oneAsObject = (SystemDescriptor<Object>) one;
+            
+            singlesOnly.add(oneAsObject);
+        }
+        
+        for (SystemDescriptor<Object> one : singlesOnly) {
+            Object value = one.getCache();
+            
+            try {
+                one.dispose(value);
+            }
+            catch (Throwable th) {
+                Logger.getLogger().debug("SingletonContext", "shutdown", th);
+            }
+        }
+    }
+    
+    private static class GenerationComparator implements Comparator<SystemDescriptor<Object>> {
+
+        @Override
+        public int compare(SystemDescriptor<Object> o1,
+                SystemDescriptor<Object> o2) {
+            if (o1.getSingletonGeneration() > o2.getSingletonGeneration()) {
+                return -1;
+            }
+            if (o1.getSingletonGeneration() == o2.getSingletonGeneration()) {
+                return 0;
+            }
+            
+            return 1;
+        }
+        
     }
 }
