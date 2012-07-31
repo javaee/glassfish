@@ -46,6 +46,8 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -53,40 +55,54 @@ import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.internal.PerThreadContext;
 
 /**
- * This is a set of useful utilities for using ServiceHelpers
- * 
+ * This is a set of useful utilities for working with {@link ServiceLocator}.
+ *
  * @author jwells
  */
 public abstract class ServiceLocatorUtilities {
     private final static String DEFAULT_LOCATOR_NAME = "default";
-    
+
     /**
      * This method will add the ability to use the {@link PerThread} scope to
      * the given locator.  If the locator already has a {@link Context} implementation
-     * that handles the {@link PerThread} scope this method does nothing
-     * 
+     * that handles the {@link PerThread} scope this method does nothing.
+     *
      * @param locator The non-null locator to enable the PerThread scope on
      * @throws MultiException if there were errors when committing the service
      */
     public static void enablePerThreadScope(ServiceLocator locator) {
         Context<PerThread> perThreadContext = locator.getService((new TypeLiteral<Context<PerThread>>() {}).getType());
         if (perThreadContext != null) return;
-        
+
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        config.bind(BuilderHelper.link(PerThreadContext.class).
-                                  to(Context.class).
-                                  in(Singleton.class.getName()).
-                                  build());
-        
+        final DescriptorImpl descriptor = BuilderHelper.link(PerThreadContext.class).
+                to(Context.class).
+                in(Singleton.class.getName()).
+                build();
+
+        ClassLoader loader = ServiceLocatorUtilities.class.getClassLoader();
+        final ClassLoader binderClassLoader = loader == null ? ClassLoader.getSystemClassLoader() : loader;
+        descriptor.setLoader(new HK2Loader() {
+            @Override
+            public Class<?> loadClass(String className) throws MultiException {
+                try {
+                    return binderClassLoader.loadClass(className);
+                } catch (ClassNotFoundException e) {
+                    throw new MultiException(e);
+                }
+
+            }
+        });
+
+        config.bind(descriptor);
         config.commit();
     }
-    
+
     /**
      * This method will bind all of the binders given together in a
      * single config transaction.
-     * 
+     *
      * @param locator The non-null locator to use for the configuration action
      * @param binders The non-null list of binders to be added to the locator
      * @throws MultiException if any error was encountered while binding services
@@ -94,37 +110,36 @@ public abstract class ServiceLocatorUtilities {
     public static void bind(ServiceLocator locator, Binder... binders) {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
+
         for (Binder binder : binders) {
             binder.bind(config);
         }
-        
+
         config.commit();
     }
-    
+
     /**
      * This method will create or find a ServiceLocator with the given name and
      * bind all of the binders given together in a single config transaction.
-     * 
-     * @param locator The non-null locator to use for the configuration action
+     *
+     * @param name The non-null name of the locator to use for the configuration action
      * @param binders The non-null list of binders to be added to the locator
      * @return The service locator that was either found or created
      * @throws MultiException if any error was encountered while binding services
      */
     public static ServiceLocator bind(String name, Binder... binders) {
         ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
-        
+
         ServiceLocator locator = factory.create(name);
         bind(locator, binders);
-        
+
         return locator;
     }
-    
+
     /**
      * This method will create or find a ServiceLocator with the name "default" and
      * bind all of the binders given together in a single config transaction.
-     * 
-     * @param locator The non-null locator to use for the configuration action
+     *
      * @param binders The non-null list of binders to be added to the locator
      * @return The service locator that was either found or created
      * @throws MultiException if any error was encountered while binding services
@@ -132,39 +147,39 @@ public abstract class ServiceLocatorUtilities {
     public static ServiceLocator bind(Binder... binders) {
         return bind(DEFAULT_LOCATOR_NAME, binders);
     }
-    
+
     /**
      * It is very often the case that one wishes to add a single descriptor to
      * a service locator.  This method adds that one descriptor.  If the descriptor
      * is an {@link ActiveDescriptor} and is reified, it will be added as an
      * {@link ActiveDescriptor}.  Otherwise it will be bound as a {@link Descriptor}.
-     * 
+     *
      * @param locator The non-null locator to add this descriptor to
-     * @param descriptor The non-null descrptor to add to this locator
+     * @param descriptor The non-null descriptor to add to this locator
      * @throws MultiException On a commit failure
      */
     public static ActiveDescriptor<?> addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
+
         ActiveDescriptor<?> retVal;
         if (descriptor instanceof ActiveDescriptor) {
             ActiveDescriptor<?> active = (ActiveDescriptor<?>) descriptor;
-            
+
             if (active.isReified()) {
                 retVal = config.addActiveDescriptor(active);
             }
             else {
                 retVal = config.bind(descriptor);
             }
-            
+
         }
         else {
             retVal = config.bind(descriptor);
         }
-        
+
         config.commit();
-        
+
         return retVal;
     }
 }
