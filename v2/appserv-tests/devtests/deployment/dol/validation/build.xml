@@ -43,6 +43,11 @@
         <property name="validation.wlsEar2.dir" value="${build}/wlsEar2"/>
         <property name="validation.wlsEar2" 
                   value="${validation.wlsEar2.dir}/${testName}.ear"/>
+        <property name="validation.wlsEar3.dir" value="${build}/wlsEar3"/>
+        <property name="validation.wlsEar3.wlsRar" 
+                 value="${validation.wlsEar3.dir}/${testName}.rar"/>
+        <property name="validation.wlsEar3" 
+                  value="${validation.wlsEar3.dir}/${testName}.ear"/>
 
         <mkdir dir="${build}/war"/>
         <mkdir dir="${build}/ejb"/>
@@ -53,6 +58,7 @@
         <mkdir dir="${build}/wlsRar"/>
         <mkdir dir="${build}/wlsEar"/>
         <mkdir dir="${build}/wlsEar2"/>
+        <mkdir dir="${build}/wlsEar3"/>
     </target>
 
     <target name="compile" depends="prepare">
@@ -112,6 +118,17 @@
             <fileset dir="${basedir}/wlsEar2" includes="META-INF/*"/>
         </copy>
         <jar destfile="${validation.wlsEar2}" basedir="${validation.wlsEar2.dir}"/>
+
+        <delete>
+          <fileset dir="${validation.wlsEar3.dir}" includes="*/**"/>
+        </delete>
+        <copy todir="${validation.wlsEar3.dir}">
+            <fileset dir="${basedir}/wlsEar3" includes="META-INF/*"/>
+        </copy>
+        <copy todir="${validation.wlsEar3.dir}"
+            file="${validation.wlsEar.wlsRar}">
+        </copy>
+        <jar destfile="${validation.wlsEar3}" basedir="${validation.wlsEar3.dir}"/>
 
     </target>
 
@@ -203,6 +220,13 @@
         <antcall target="run.validator">
             <param name="arg.list" value="${validation.wlsEar2} true"/>
             <param name="log.id" value="7"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="dol/validation Test WLS Ear3"/>
+        </antcall>
+        <antcall target="run.validator">
+            <param name="arg.list" value="${validation.wlsEar3}"/>
+            <param name="log.id" value="8"/>
         </antcall>
 
     </target>
