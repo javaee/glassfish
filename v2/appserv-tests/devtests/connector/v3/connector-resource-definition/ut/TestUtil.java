@@ -60,7 +60,7 @@ public class TestUtil {
         assertNotNull("The global habitat is not initialized.", Globals.getDefaultHabitat());
 
     }
-    public static <T> T getByType(Class<T> clz) throws Exception{
+    public static Object getByType(Class clz) throws Exception{
         setupHK2();
         return Globals.getDefaultHabitat().getService(clz);
     }

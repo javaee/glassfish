@@ -54,7 +54,7 @@ public class ArchiveTest extends TestCase {
         File archive = new File(archiveDir, appArchiveName);
         assertTrue("Do not fing the archive "+archive.getAbsolutePath(), archive.exists());
 
-        ApplicationArchivist reader = TestUtil.getByType(ApplicationArchivist.class);
+        ApplicationArchivist reader = (ApplicationArchivist) TestUtil.getByType(ApplicationArchivist.class);
         reader.setAnnotationProcessingRequested(true);
         ASURLClassLoader classLoader = new ASURLClassLoader(this.getClass().getClassLoader());
         classLoader.addURL(archive.toURL());
@@ -112,7 +112,7 @@ public class ArchiveTest extends TestCase {
         ASURLClassLoader classLoader = new ASURLClassLoader(this.getClass().getClassLoader());
         classLoader.addURL(archive.toURL());
 
-        WebArchivist reader = TestUtil.getByType(WebArchivist.class);
+        WebArchivist reader = (WebArchivist) TestUtil.getByType(WebArchivist.class);
         reader.setAnnotationProcessingRequested(true);
         reader.setClassLoader(classLoader);
         assertTrue("Archivist should handle annotations.", reader.isAnnotationProcessingRequested());
@@ -215,7 +215,7 @@ public class ArchiveTest extends TestCase {
         ASURLClassLoader classLoader = new ASURLClassLoader(this.getClass().getClassLoader());
         classLoader.addURL(archive.toURL());
                
-        EjbArchivist reader = TestUtil.getByType(EjbArchivist.class);
+        EjbArchivist reader = (EjbArchivist) TestUtil.getByType(EjbArchivist.class);
         reader.setClassLoader(classLoader);
         reader.setAnnotationProcessingRequested(true);
         assertTrue("Archivist should handle annotations.", reader.isAnnotationProcessingRequested());
