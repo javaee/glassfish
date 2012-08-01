@@ -41,7 +41,6 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -76,7 +75,6 @@ public class SingletonContext implements Context<Singleton> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) {
@@ -128,12 +126,16 @@ public class SingletonContext implements Context<Singleton> {
     public void shutdown() {
         List<ActiveDescriptor<?>> all = locator.getDescriptors(BuilderHelper.allFilter());
         
+        long myLocatorId = locator.getLocatorId();
+        
         TreeSet<SystemDescriptor<Object>> singlesOnly = new TreeSet<SystemDescriptor<Object>>(
                 new GenerationComparator());
         for (ActiveDescriptor<?> one : all) {
             if (one.getScope() == null || !one.getScope().equals(Singleton.class.getName())) continue;
             
             if (!one.isCacheSet()) continue;
+            
+            if (one.getLocatorId() == null || one.getLocatorId().longValue() != myLocatorId) continue;
             
             SystemDescriptor<Object> oneAsObject = (SystemDescriptor<Object>) one;
             
