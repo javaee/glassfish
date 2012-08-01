@@ -59,6 +59,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
@@ -292,10 +293,17 @@ public class ClazzCreator<T> implements Creator<T> {
         }
         catch (Throwable th) {
             if (th instanceof MultiException) {
-                throw (MultiException) th;
+                MultiException me = (MultiException) th;
+                
+                me.addError(new IllegalStateException("Unable to create or inject " + implClass.getName()));
+                
+                throw me;
             }
             
-            throw new MultiException(th);
+            MultiException me = new MultiException(th);
+            me.addError(new IllegalStateException("Unable to create or inject " + implClass.getName()));
+            
+            throw me;
         }
     }
 

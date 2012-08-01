@@ -220,7 +220,7 @@ public class ReflectionHelper {
         int i = 0;
         for (Type argType : typeArguments) {
             if (argType instanceof TypeVariable) {
-                newTypeArguments[i++] = typeArgumentsMap.get(((TypeVariable) argType).getName());
+                newTypeArguments[i++] = typeArgumentsMap.get(((TypeVariable<?>) argType).getName());
                 newArgsNeeded = true;
             } else {
                 newTypeArguments[i++] = argType;
@@ -240,7 +240,7 @@ public class ReflectionHelper {
         Type[]            typeArguments = type.getActualTypeArguments();
 
         int i = 0;
-        for (TypeVariable typeVariable : rawClass.getTypeParameters() ) {
+        for (TypeVariable<?> typeVariable : rawClass.getTypeParameters() ) {
             typeMap.put(typeVariable.getName(), typeArguments[i++]);
         }
         return typeMap;
@@ -945,7 +945,13 @@ public class ReflectionHelper {
             return m.invoke(o, args);
         }
         catch (InvocationTargetException ite) {
-            throw ite.getTargetException();
+            Throwable targetException = ite.getTargetException();
+            Logger.getLogger().debug(m.getDeclaringClass().getName(), m.getName(), targetException);
+            throw targetException;
+        }
+        catch (Throwable th) {
+            Logger.getLogger().debug(m.getDeclaringClass().getName(), m.getName(), th);
+            throw th;
         }
         finally {
             setContextClassLoader(Thread.currentThread(), currentCCL);

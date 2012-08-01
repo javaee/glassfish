@@ -82,7 +82,7 @@ public class ValidatingTest {
         catch (MultiException me) {
             List<Throwable> errors = me.getErrors();
             
-            Assert.assertEquals(me.toString(), 2, errors.size());
+            Assert.assertEquals(me.toString(), 3, errors.size());
             
             for (Throwable lookAtMe : errors) {
                 if (lookAtMe.getMessage().contains(EXCEPTION_STRING)) {
