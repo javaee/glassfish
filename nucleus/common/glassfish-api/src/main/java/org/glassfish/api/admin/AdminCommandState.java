@@ -43,14 +43,15 @@ import org.glassfish.api.ActionReport;
 
 /**
  *
- * @author mmares
+ * @author Martin Mares
+ * @author Bhakti Mehta
  */
 public interface AdminCommandState {
     
     public static final String EVENT_STATE_CHANGED = "AdminCommandInstance.stateChanged";
     
     public enum State {
-        PREPARED, RUNNING, COMPLETED, RECORDED;
+        PREPARED, RUNNING, COMPLETED, RECORDED, FAILED;
     }
     
     public State getState();
@@ -58,7 +59,7 @@ public interface AdminCommandState {
     /** Completes whole progress and records result
      * 
      * @param actionReport result message
-     * @param payload result data
+     *
      */
     public void complete(ActionReport actionReport);
     
@@ -66,8 +67,10 @@ public interface AdminCommandState {
     
     /** Are there data in outbound payload or not.
      */
-    public boolean isOutboudPayloadEmpty();
+    public boolean isOutboundPayloadEmpty();
     
     public String getId();
+
+
     
 }

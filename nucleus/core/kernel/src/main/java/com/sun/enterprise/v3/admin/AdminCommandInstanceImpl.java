@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.admin.instance;
+package com.sun.enterprise.v3.admin;
 
 import com.sun.enterprise.admin.event.AdminCommandEventBrokerImpl;
 import com.sun.enterprise.admin.remote.AdminCommandStateImpl;
@@ -47,21 +47,32 @@ import org.glassfish.api.admin.AdminCommandInstance;
 import org.glassfish.api.admin.CommandProgress;
 import org.glassfish.api.admin.Payload;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /** Represents running (or finished) command instance.
- * Will be replaced by JobManager(something). 
  *
- * @author mmares
+ *
+ * @author Martin Mares
+ * @author Bhakti Mehta
  */
-//TODO: Bhakti will replace it with JobManager entry
+
 public class AdminCommandInstanceImpl extends AdminCommandStateImpl implements AdminCommandInstance {
     
     private CommandProgress commandProgress;
     private Payload.Outbound payload;
     private final AdminCommandEventBroker broker;
 
-    protected AdminCommandInstanceImpl(String id) {
+    private final String executionDate;
+
+    private final String commandName;
+
+    protected AdminCommandInstanceImpl(String id, String name) {
         super(id);
         this.broker = new AdminCommandEventBrokerImpl();
+        this.executionDate = getExecutionInfo();
+        this.commandName = name;
+
     }
     
     @Override
@@ -81,6 +92,13 @@ public class AdminCommandInstanceImpl extends AdminCommandStateImpl implements A
     }
 
     @Override
+    public String getName() {
+        return commandName;
+    }
+
+
+
+    @Override
     protected void setState(State state) {
         if (state != null && state != getState()) {
             super.setState(state);
@@ -89,7 +107,7 @@ public class AdminCommandInstanceImpl extends AdminCommandStateImpl implements A
     }
     
     @Override
-    public boolean isOutboudPayloadEmpty() {
+    public boolean isOutboundPayloadEmpty() {
         return payload == null || payload.size() == 0;
     }
     
@@ -101,5 +119,17 @@ public class AdminCommandInstanceImpl extends AdminCommandStateImpl implements A
         this.payload = outbound;
         complete(report);
     }
-    
+
+    @Override
+    public String getExecutionDate ()  {
+        return executionDate;
+
+    }
+
+    private String getExecutionInfo() {
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date execDate = new Date();
+        String strDate = sdfDate.format(execDate);
+        return strDate;
+    }
 }

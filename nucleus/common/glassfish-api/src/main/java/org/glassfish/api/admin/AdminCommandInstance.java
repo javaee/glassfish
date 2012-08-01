@@ -42,14 +42,13 @@ package org.glassfish.api.admin;
 import org.glassfish.api.ActionReport;
 
 /** Represents running (or finished) command instance.
- * Will be replaced by JobManager(something). 
+ *
  *
  * @author mmares
  */
-//TODO: This is super basic interface. Goal is basic SSE implementation. Will continue with Bhakti ant her JobManager
 public interface AdminCommandInstance extends AdminCommandState {
     
-    /** Id of command instance. {@code null} until registration in {@link AdminCommandRegistry}
+    /** Id of command instance.
      */
     public String getId();
     
@@ -62,5 +61,11 @@ public interface AdminCommandInstance extends AdminCommandState {
     public void complete(ActionReport report, Payload.Outbound outbound);
     
     public AdminCommandEventBroker getEventBroker();
+
+    public String getName();
+
+    public String getExecutionDate();
+
+
     
 }

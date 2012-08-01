@@ -580,7 +580,7 @@ public class RemoteRestAdminCommand extends AdminCommandEventBrokerImpl<GfSseInb
                                 setActionReport(acs.getActionReport());
                             }
                             closeSse();
-                            if (!acs.isOutboudPayloadEmpty()) {
+                            if (!acs.isOutboundPayloadEmpty()) {
                                 logger.log(Level.FINEST, "Romote command holds data. Must load it");
                                 //TODO: Retrieve remote outbound data
                             }

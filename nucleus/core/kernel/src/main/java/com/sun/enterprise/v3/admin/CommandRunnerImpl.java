@@ -1695,7 +1695,7 @@ public class CommandRunnerImpl implements CommandRunner {
 
         @Override
         public void execute(AdminCommand command) {
-            AdminCommandInstance commandInstance = commandInstanceRegistry.createCommandInstance();
+            AdminCommandInstance commandInstance = commandInstanceRegistry.createCommandInstance(name());
             for (NameListerPair nameListerPair : nameListerPairs) {
                 commandInstance.getEventBroker().registerListener(nameListerPair.nameRegexp, nameListerPair.listener);
             }

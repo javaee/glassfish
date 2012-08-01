@@ -82,7 +82,7 @@ public class AdminCommandStateImpl implements AdminCommandState {
     }
 
     @Override
-    public boolean isOutboudPayloadEmpty() {
+    public boolean isOutboundPayloadEmpty() {
         return this.payloadIsEmpty;
     }
     

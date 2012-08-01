@@ -50,11 +50,11 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface AdminCommandInstanceRegistry {
     
-    public AdminCommandInstance createCommandInstance();
+    public AdminCommandInstance createCommandInstance(String name);
     
     public void register(AdminCommandInstance instance) throws IllegalArgumentException;
     
-    public Iterator<AdminCommandInstance> itarator();
+    public Iterator<AdminCommandInstance> iterator();
     
     public AdminCommandInstance get(String id);
     

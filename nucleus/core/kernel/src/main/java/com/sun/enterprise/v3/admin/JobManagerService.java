@@ -37,47 +37,58 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.v3.admin.instance;
+package com.sun.enterprise.v3.admin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.glassfish.api.admin.AdminCommandInstance;
 import org.glassfish.api.admin.AdminCommandInstanceRegistry;
 import org.glassfish.api.admin.AdminCommandState;
 import org.jvnet.hk2.annotations.Service;
 
-/** Basic implementation.
+/**
+ *  This is the implementation for the JobManagerService
+ *  The JobManager is responsible
+ *  1. generating unique ids for jobs
+ *  2. serving as a registry for jobs
+ *  3. creating threadpools for jobs
  *
- * @author mmares
+ * @author Martin Mares
+ * @author Bhakti Mehta
  */
-//TODO: Will be replaced with Bhakti's JobManager. Now only for SSE early implementation
+
 @Service
-public class AdminCommandInstanceRegistryImpl implements AdminCommandInstanceRegistry {
+public class JobManagerService implements AdminCommandInstanceRegistry {
     
-    private static final int MAX_SIZE = 36;
-    private static final int MAX_ID = Character.MAX_RADIX ^ 4;
+    private static final int MAX_SIZE = 65535;
     
     private HashMap<String, AdminCommandInstance> map = new HashMap<String, AdminCommandInstance>();
-    private List<String> ids = new ArrayList<String>(MAX_SIZE);
-    private int lastId;
+    private HashSet<String> ids = new HashSet<String>();
+    private AtomicInteger lastId = new AtomicInteger(0);
 
-    public AdminCommandInstanceRegistryImpl() {
-        lastId = (int) (System.currentTimeMillis() % MAX_ID); 
-    }
     
     protected synchronized String getNewId() {
-        lastId++;
-        if (lastId > MAX_ID) {
-            lastId = 0;
+        int nextId = lastId.incrementAndGet();
+        if (nextId > MAX_SIZE) {
+            reset();
         }
-        return Integer.toString(lastId, Character.MAX_RADIX);
+        String nextIdToUse = String.valueOf(nextId);
+        return !idInUse(nextIdToUse) ? String.valueOf(nextId): getNewId();
     }
-    
+
+
+    private void reset() {
+        lastId.set(0);
+    }
+
+    private boolean idInUse(String id) {
+        return map.containsKey(id) ;
+    }
+
     @Override
-    public AdminCommandInstance createCommandInstance() {
-        return new AdminCommandInstanceImpl(getNewId());
+    public AdminCommandInstance createCommandInstance(String name) {
+        return new AdminCommandInstanceImpl(getNewId(),name);
     }
 
     @Override
@@ -88,10 +99,7 @@ public class AdminCommandInstanceRegistryImpl implements AdminCommandInstanceReg
         if (map.containsKey(instance.getId())) {
             throw new IllegalArgumentException("Instance id is already in use.");
         }     
-        if (ids.size() >= MAX_SIZE) {
-            String rid = ids.remove(0);
-            map.remove(rid);
-        }
+       
         map.put(instance.getId(), instance);
         ids.add(instance.getId());
         if (instance instanceof AdminCommandInstanceImpl) {
@@ -100,7 +108,7 @@ public class AdminCommandInstanceRegistryImpl implements AdminCommandInstanceReg
     }
 
     @Override
-    public Iterator<AdminCommandInstance> itarator() {
+    public Iterator<AdminCommandInstance> iterator() {
         return map.values().iterator();
     }
 

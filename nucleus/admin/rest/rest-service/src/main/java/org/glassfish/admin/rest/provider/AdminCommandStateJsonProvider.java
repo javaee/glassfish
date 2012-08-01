@@ -95,7 +95,7 @@ public class AdminCommandStateJsonProvider extends BaseProvider<AdminCommandStat
         }
         out.writeStringField("state", state.getState().name());
         out.writeStringField("id", state.getId());
-        out.writeBooleanField("empty-payload", state.isOutboudPayloadEmpty());
+        out.writeBooleanField("empty-payload", state.isOutboundPayloadEmpty());
         actionReportJsonProvider.writeJson("action-report", (ActionReporter) state.getActionReport(), out);
         out.writeEndObject();
     }
