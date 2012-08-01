@@ -88,6 +88,7 @@ import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -1622,7 +1623,13 @@ public class Utilities {
             return c.newInstance(args);
         }
         catch (InvocationTargetException ite) {
-            throw ite.getTargetException();
+            Throwable targetException = ite.getTargetException();
+            Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), targetException);
+            throw targetException;
+        }
+        catch (Throwable th) {
+            Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), th);
+            throw th;
         }
         finally {
             ReflectionHelper.setContextClassLoader(Thread.currentThread(), currentCCL);

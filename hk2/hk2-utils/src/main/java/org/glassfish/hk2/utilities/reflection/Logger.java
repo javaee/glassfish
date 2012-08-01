@@ -37,7 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.utilities.reflection;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 /**
  * A logger for HK2.  Currently implemented over the JDK logger
@@ -47,8 +50,20 @@ package org.jvnet.hk2.internal;
 public class Logger {
     private static final Logger INSTANCE = new Logger();
     private static final String HK2_LOGGER_NAME = "org.jvnet.hk2.logger";
-    private static final boolean STDOUT_DEBUG = Boolean.parseBoolean(
-            System.getProperty("org.jvnet.hk2.logger.debugToStdout", "false"));
+    private static final boolean STDOUT_DEBUG;
+    
+    static {
+        STDOUT_DEBUG = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+
+            @Override
+            public Boolean run() {
+                // TODO Auto-generated method stub
+                return new Boolean(Boolean.parseBoolean(
+            System.getProperty("org.jvnet.hk2.logger.debugToStdout", "false")));
+            }
+            
+        });
+    }
     
     private final java.util.logging.Logger jdkLogger;
     
@@ -56,7 +71,11 @@ public class Logger {
         jdkLogger = java.util.logging.Logger.getLogger(HK2_LOGGER_NAME);
     }
     
-    /* package */ static Logger getLogger() {
+    /**
+     * Gets the singleton instance of the Logger
+     * @return
+     */
+    public static Logger getLogger() {
         return INSTANCE;
     }
 
