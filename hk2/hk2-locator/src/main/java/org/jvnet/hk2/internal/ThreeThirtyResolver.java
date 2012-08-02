@@ -40,7 +40,6 @@
 package org.jvnet.hk2.internal;
 
 import java.util.List;
-import java.util.SortedSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -49,7 +48,9 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
  * @author jwells
@@ -76,7 +77,21 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
             boolean modified = false;
             boolean aJITFailed = false;
             for (ServiceHandle<JustInTimeInjectionResolver> handle : jitResolvers) {
-                JustInTimeInjectionResolver jitResolver = handle.getService();
+                if (injectee.getInjecteeClass().getName().equals(
+                        handle.getActiveDescriptor().getImplementation())) {
+                    // Do not self second-chance
+                    continue; 
+                }
+                
+                JustInTimeInjectionResolver jitResolver;
+                try {
+                    jitResolver = handle.getService();
+                }
+                catch (MultiException me) {
+                    // We just ignore this for now, it may be resolvable later
+                    Logger.getLogger().debug(handle.toString(), "secondChanceResolver", me);
+                    continue;
+                }
                 
                 boolean jitModified = false;
                 try {
