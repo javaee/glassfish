@@ -65,7 +65,13 @@ public class JustInTimeModule implements TestModule {
         
         configurator.bind(BuilderHelper.link(
                 InjectedThriceService.class).in(Singleton.class.getName()).build());
-
+        
+        // This next set is for the DoubleTrouble resolver, which has its own resolution issues
+        configurator.bind(BuilderHelper.link(
+                DoubleTroubleJITResolver.class).to(JustInTimeInjectionResolver.class).in(Singleton.class.getName()).build());
+        
+        configurator.bind(BuilderHelper.link(
+                DoubleTroubleService.class).in(Singleton.class.getName()).build());
     }
 
 }

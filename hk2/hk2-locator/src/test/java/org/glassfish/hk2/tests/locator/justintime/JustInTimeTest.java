@@ -41,8 +41,11 @@ package org.glassfish.hk2.tests.locator.justintime;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
 /**
@@ -68,6 +71,27 @@ public class JustInTimeTest {
         
         Assert.assertEquals("Expected 1 JIT resolution, but got " + jitResolver.getNumTimesCalled(), 1, jitResolver.getNumTimesCalled());
         
+    }
+    
+    /**
+     * In this test the resolver itself has resolution problems.  We make sure this does not
+     * mess up the other resolver, and that once the resolution problem of the resolver has
+     * been fixed that it can do its job properly.
+     */
+    @Test
+    public void testDoubleTroubleResolution() {
+        try {
+            locator.getService(DoubleTroubleService.class);
+            Assert.fail("DoubleTrouble depends on Service2 which should not be available yet");
+        }
+        catch (MultiException me) {
+            // Good
+        }
+        
+        // SimpleService3 will fix the DoubleTrouble JIT resolver
+        ServiceLocatorUtilities.addOneDescriptor(locator, BuilderHelper.link(SimpleService3.class).build());
+        
+        Assert.assertNotNull(locator.getService(DoubleTroubleService.class));
     }
 
 }

@@ -39,56 +39,19 @@
  */
 package org.glassfish.hk2.tests.locator.justintime;
 
-import java.lang.reflect.Type;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.JustInTimeInjectionResolver;
-import org.glassfish.hk2.utilities.BuilderHelper;
-
 /**
+ * This is just here as something that will not originally be resolvable since the JIT resolver
+ * that would fix it will ALSO not be resolvable.  We will then fix the JIT resolver and then
+ * we should be able to get this service too.
+ * 
  * @author jwells
  *
  */
 @Singleton
-public class SimpleServiceJITResolver implements JustInTimeInjectionResolver {
+public class DoubleTroubleService {
     @Inject
-    private DynamicConfigurationService dcs;
-    
-    private int numTimesCalled = 0;
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Configuration, org.glassfish.hk2.api.Injectee)
-     */
-    @Override
-    public boolean justInTimeResolution(Injectee failedInjectionPoint) {
-        DynamicConfiguration configuration = dcs.createDynamicConfiguration();
-        
-        Type injectionType = failedInjectionPoint.getRequiredType();
-        if (!(injectionType instanceof Class)) return false;
-        
-        Class<?> injectionClass = (Class<?>) injectionType;
-        if (!SimpleService.class.equals(injectionClass)) return false;
-        
-        configuration.bind(BuilderHelper.link(SimpleService.class).build());
-        
-        configuration.commit();
-        
-        numTimesCalled++;
-        
-        return true;
-    }
-    
-    /**
-     * For use by the test
-     * @return The number of times this resolver has been called
-     */
-    public int getNumTimesCalled() {
-        return numTimesCalled;
-    }
-
+    private SimpleService2 simpleService2;
 }
