@@ -221,7 +221,7 @@ public class StandaloneProcessor {
 
     public void generateWebXmlFile(String dir) throws IOException {
          WebDeploymentDescriptorFile webdf = new WebDeploymentDescriptorFile();
-         webdf.write((WebBundleDescriptor)bundleDescriptor, dir);
+         webdf.write((WebBundleDescriptorImpl)bundleDescriptor, dir);
     }
 
     public void generateWebServicesXmlFile(String dir) throws IOException {
