@@ -739,8 +739,7 @@ public class Utilities {
             }
         }
         catch (Throwable th) {
-            collector.addThrowable(new IllegalStateException("Error while getting fields of class " + clazz.getName()));
-            collector.addThrowable(th);
+            collector.addThrowable(new IllegalStateException("Error while getting fields of class " + clazz.getName(), th));
         }
         
     }
