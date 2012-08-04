@@ -8,6 +8,8 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 @Service
 public class TestModuleStartup implements ModuleStartup {
 
+	public static boolean wasCalled;
+	
 	@Override
 	public void setStartupContext(StartupContext context) {
 		// TODO Auto-generated method stub
@@ -17,7 +19,8 @@ public class TestModuleStartup implements ModuleStartup {
 	@Override
 	public void start() {
 		System.out.println(">>>>>>>>>>>>>>>>> HERE");
-		
+	
+		wasCalled=true;
 	}
 
 	@Override

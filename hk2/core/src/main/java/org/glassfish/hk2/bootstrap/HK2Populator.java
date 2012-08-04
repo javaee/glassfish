@@ -72,9 +72,12 @@ public class HK2Populator {
      * @throws IOException In case of an error
      */
 	public static void populate(final ServiceLocator serviceLocator,
-			final DescriptorFileFinder fileFinder,
+			DescriptorFileFinder fileFinder,
 			final PopulatorPostProcessor... postProcessors) throws IOException {
 
+		if (fileFinder == null) {
+			fileFinder = serviceLocator.getService(DescriptorFileFinder.class);
+		}
 		List<InputStream> descriptorFileInputStreams = fileFinder
 				.findDescriptorFiles();
 

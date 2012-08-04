@@ -40,13 +40,11 @@
 
 package com.sun.enterprise.module.single;
 
-import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.common_impl.DefaultModuleDefinition;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
-import com.sun.hk2.component.Holder;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,9 +53,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * Implements a modules registry based on a class-path style of module
@@ -132,7 +128,7 @@ public class ClassPathBasedModulesRegistry extends ModulesRegistryImpl {
     }
 
     @Override
-    public void parseInhabitants(Module module, String name)
+    protected void parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
             throws IOException {
 
 //        HK2Loader loader = new HK2Loader() {

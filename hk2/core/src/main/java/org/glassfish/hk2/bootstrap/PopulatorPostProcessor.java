@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.bootstrap;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -66,6 +67,7 @@ public interface PopulatorPostProcessor {
      * the descriptor will be added to the system 
      * If this returns null then no descriptor will be added to the system.
      */
-	DescriptorImpl process(DescriptorImpl descriptorImpl);
+     DescriptorImpl process(DescriptorImpl descriptorImpl);
 
+     public void setServiceLocator(ServiceLocator serviceLocator);
 }

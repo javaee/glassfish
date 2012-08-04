@@ -41,6 +41,7 @@ package org.glassfish.hk2.bootstrap.impl;
 
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
@@ -90,6 +91,10 @@ public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 		});
 		
 		return descriptorImpl;
+	}
+
+	@Override
+	public void setServiceLocator(ServiceLocator serviceLocator) {	
 	}
 
 	

@@ -95,4 +95,8 @@ public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
         }
     }
 
+	@Override
+	public void setServiceLocator(ServiceLocator serviceLocator) {
+    }
+
 }

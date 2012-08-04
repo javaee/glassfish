@@ -41,19 +41,30 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
-import org.osgi.framework.*;
-
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
-import com.sun.enterprise.module.*;
-import com.sun.enterprise.module.common_impl.CompositeEnumeration;
-import com.sun.enterprise.module.common_impl.ModuleId;
 
-import java.io.*;
-import java.util.*;
-import java.util.logging.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleException;
+import org.osgi.framework.SynchronousBundleListener;
+
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleDefinition;
 
 /**
  * This is an implementation of {@link com.sun.enterprise.module.ModulesRegistry}.

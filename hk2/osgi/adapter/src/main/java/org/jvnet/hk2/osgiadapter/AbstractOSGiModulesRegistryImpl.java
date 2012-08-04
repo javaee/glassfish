@@ -45,7 +45,7 @@ import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 
@@ -97,9 +97,9 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
     }
 
     public void parseInhabitants(
-            Module module, String name)
+            Module module, String name, ServiceLocator serviceLocator)
             throws IOException, BootException {
-        ((OSGiModuleImpl)module).parseInhabitants(name);
+        ((OSGiModuleImpl)module).parseInhabitants(name, serviceLocator);
     }
 
     public ModulesRegistry createChild() {
