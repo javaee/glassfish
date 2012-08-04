@@ -53,6 +53,8 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.osgi.framework.BundleActivator;
@@ -104,12 +106,17 @@ public class HK2Main extends Main implements
         private ServiceRegistration moduleStartupRegistration;
     }
 
+    
     @Override
-    public ServiceLocator createServiceLocator(StartupContext context) throws BootException {
-    	
+    public ServiceLocator createServiceLocator(ModulesRegistry mr,
+                                               StartupContext context,
+                                               List<? extends PopulatorPostProcessor> postProcessors,
+                                               DescriptorFileFinder descriptorFileFinder)
+            throws BootException {
+
         HabitatInfo habitatInfo = new HabitatInfo();
         
-        habitatInfo.serviceLocator = super.createServiceLocator(context);
+        habitatInfo.serviceLocator = super.createServiceLocator(mr, context, postProcessors, descriptorFileFinder);
         createHK2ServiceTracker(habitatInfo);
         // register ServiceLocator as an OSGi service
         habitatInfo.habitatRegistration = ctx.registerService(ServiceLocator.class.getName(), habitatInfo.serviceLocator, context.getArguments());
@@ -225,7 +232,6 @@ public class HK2Main extends Main implements
         mr.dumpState(System.out);
         mrReg = ctx.registerService(ModulesRegistry.class.getName(), mr, null);
         
-        mr.createServiceLocator("default");
         return mr;
     }
 
@@ -328,7 +334,9 @@ public class HK2Main extends Main implements
                     }
                       
                     try {
-						descriptor.addContractType(object.getClass().getClassLoader().loadClass(contractName));
+                        final Class<?> contractType =
+                                Class.forName(contractName, false, object.getClass().getClassLoader());
+                        descriptor.addContractType(contractType);
 						
 						if (name != null)
 							descriptor.setName(name);
@@ -352,44 +360,29 @@ public class HK2Main extends Main implements
 
             config.commit();
 
-            return object;
+            return descriptor;
         }
 
         public void modifiedService(ServiceReference reference, Object service) {
         }
 
         public void removedService(ServiceReference reference, final Object service) {
-            // we need to unregister the service for each contract it implements.
-            String[] contractNames = (String[]) reference.getProperty("objectclass");
-            
+
             DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
             DynamicConfiguration config = dcs.createDynamicConfiguration();
             
-            if (contractNames != null && contractNames.length > 0) {
-            	
-            	config.addUnbindFilter(BuilderHelper.createNameAndContractFilter(contractNames[0], ""+service));
-            	config.commit();
-            	
-                logger.logp(Level.FINE, "HK2Main$HK2ServiceTrackerCustomizer",
-                            "removingService", "removing service = {0}, contract = {1}",
-                            new Object[]{service, contractNames[0]});
-            } else {
-                // it was registered by type
-            
-            	org.glassfish.hk2.api.Filter filter = new org.glassfish.hk2.api.Filter() {
+            org.glassfish.hk2.api.Filter filter = new org.glassfish.hk2.api.Filter() {
 
-					@Override
-					public boolean matches(Descriptor d) {
-						return d.getImplementation().equals(service.getClass().getCanonicalName());
-					}
-            		
-            	};
-            	
-            	config.addUnbindFilter(filter);
-            	
-            	config.commit();
-            	
-            }
+                @Override
+                public boolean matches(Descriptor d) {
+                    return d.equals(service); // addingServices() returns the descriptor
+                }
+
+            };
+
+            config.addUnbindFilter(filter);
+
+            config.commit();
         }
     }
     

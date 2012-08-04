@@ -42,16 +42,18 @@ package com.sun.enterprise.module.single;
 
 import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.impl.ModulesRegistryImpl;
-import com.sun.hk2.component.Holder;
 
 import java.io.IOException;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
+import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
 
 /**
  * Normal modules registry with configuration handling backed up
@@ -115,24 +117,17 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
     }
 
     @Override
-    public void parseInhabitants(Module module, String name)
+    protected void parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
             throws IOException {
+        List<PopulatorPostProcessor> registeredPostProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
 
-//        HK2Loader loader = new HK2Loader() {
-//
-//			@Override
-//			public Class<?> loadClass(String className) throws MultiException {
-//				try {
-//				  return proxyMod[0].getClassLoader().loadClass(className);
-//				} catch (ClassNotFoundException cnfe) {
-//					throw new MultiException(cnfe);
-//				}
-//			}
-//        
-//        };
-        
-//        for (InhabitantsDescriptor d : proxyMod[0].getMetadata().getHabitats(name))
-//            inhabitantsParser.parse(d.createScanner(), loader);
+        LinkedList<PopulatorPostProcessor> postProcessors = new LinkedList<PopulatorPostProcessor>();
+
+	    postProcessors.add(new Hk2LoaderPopulatorPostProcessor(singleClassLoader));
+	    postProcessors.addAll(registeredPostProcessors);
+    	HK2Populator.populate(serviceLocator,
+                new ClasspathDescriptorFileFinder(singleClassLoader),
+                postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
     }
 
 }

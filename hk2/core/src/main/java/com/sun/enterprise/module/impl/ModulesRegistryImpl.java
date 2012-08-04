@@ -54,7 +54,7 @@ import java.util.logging.Level;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.net.URL;
 
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * @author Jerome Dochez
@@ -85,8 +85,8 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
         return m;
     }
 
-    public void parseInhabitants(
-            Module module, String name)
+    protected void parseInhabitants(
+            Module module, String name, ServiceLocator serviceLocator)
             throws IOException {
         ((ModuleImpl)module).parseInhabitants(name);
     }

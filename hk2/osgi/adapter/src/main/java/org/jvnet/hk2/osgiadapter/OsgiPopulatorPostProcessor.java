@@ -47,6 +47,7 @@ import java.util.logging.Level;
 
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
@@ -93,6 +94,10 @@ public class OsgiPopulatorPostProcessor implements
         };
 		descriptorImpl.setLoader(hk2Loader);
 		return descriptorImpl;
+	}
+
+	@Override
+	public void setServiceLocator(ServiceLocator serviceLocator) {	
 	}
 	
 	

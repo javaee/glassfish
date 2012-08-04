@@ -13,9 +13,6 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
 import java.io.File;
 import java.util.List;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
@@ -26,6 +23,8 @@ import org.ops4j.pax.exam.junit.Configuration;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+
+import test.TestModuleStartup;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
@@ -112,7 +111,7 @@ public class ServiceLocatorHk2MainTest {
 					mr.getClass().getCanonicalName());
 
 			final ServiceLocator serviceLocator = main.createServiceLocator(
-					startupContext);
+                    mr, startupContext,null,null);
 
 			ModulesRegistry mrFromServiceLocator = serviceLocator
 					.getService(ModulesRegistry.class);
@@ -127,20 +126,17 @@ public class ServiceLocatorHk2MainTest {
 							.createContractFilter("org.osgi.service.startlevel.StartLevel"));
 
     		Assert.assertEquals(1, startLevelServices.size());
+
+    		Assert.assertFalse("TestModuleStartup already called", TestModuleStartup.wasCalled);
 			
-			List<?> startups = serviceLocator.getAllServices(BuilderHelper
-					.createContractFilter(ModuleStartup.class
-							.getCanonicalName()));
-			Assert.assertEquals("Cannot find ModuleStartup", 1, startups.size());
-
-			final ModuleStartup moduleStartup = main.findStartupService(null, startupContext);
-
+    		ModuleStartup moduleStartup = main.launch(mr, null, startupContext);
+			
 			Assert.assertNotNull(
 					"Expected a ModuleStartup that was provisioned as part of this test",
 					moduleStartup);
 
-			moduleStartup.start();
-	
+			Assert.assertTrue("TestModuleStartup not called", TestModuleStartup.wasCalled);
+
 			List<?> configAdmin = serviceLocator.getAllServices(BuilderHelper.createContractFilter("org.osgi.service.cm.ConfigurationAdmin"));
 	
 			Assert.assertEquals(1, configAdmin.size());
@@ -150,6 +146,8 @@ public class ServiceLocatorHk2MainTest {
 				throw ex.getCause();
 
 			throw ex;
+		} finally {
+			TestModuleStartup.wasCalled=false;
 		}
 	}
 

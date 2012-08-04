@@ -49,12 +49,12 @@ import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.ContextDuplicatePostProcessor;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
+import com.sun.enterprise.module.bootstrap.DefaultErrorService;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.bootstrap.ConfigPopulator;
+import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.inhabitants.InhabitantsParserFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -122,7 +122,9 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      *
      */
     public ServiceLocator newServiceLocator() throws ComponentException {
-        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create("default");
+        // We intentionally create an unnamed service locator, because the caller is going to
+        // manage its lifecycle.
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(null);
         initializeServiceLocator(serviceLocator);
         return serviceLocator;
     }
@@ -137,23 +139,31 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
         initializeServiceLocator(serviceLocator);
         return serviceLocator;
     }
-    
+
     protected void initializeServiceLocator(ServiceLocator serviceLocator) throws ComponentException {
+        DynamicConfigurationService dcs = serviceLocator
+                .getService(DynamicConfigurationService.class);
+
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+        config.bind(BuilderHelper.createConstantDescriptor(Logger.getAnonymousLogger()));
+
+        // default modules registry is the one that created the habitat
+        config.bind(BuilderHelper.createConstantDescriptor(this));
+
+        config.addActiveDescriptor(DefaultErrorService.class);
+
         ContextDuplicatePostProcessor processor = serviceLocator.getService(ContextDuplicatePostProcessor.class);
-        
-		DynamicConfigurationService dcs = serviceLocator
-		.getService(DynamicConfigurationService.class);
 
-		DynamicConfiguration config = dcs.createDynamicConfiguration();
-
-		config.bind(BuilderHelper.createConstantDescriptor(Logger.getAnonymousLogger()));
-		
 		if (processor == null) {
 		    config.addActiveDescriptor(ContextDuplicatePostProcessor.class);
 		}
 
-		config.commit();
-		
+        config.commit();
+
+        // Creating a new Habitat automatically registers itself with supplied ServiceLocator
+        // This is needed for compatibility reasons.
+        new Habitat(serviceLocator);
     }
 
     /**
@@ -162,36 +172,30 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * @param name
      *      Determines which descriptors are loaded.
      */
-     public ServiceLocator createServiceLocator(String name, ServiceLocator h) throws ComponentException {
-        // TODO: should get the inhabitantsParser out of Main instead since
-        // this could have been overridden
-        return createServiceLocator(name);
+     public void populateServiceLocator(String name, ServiceLocator serviceLocator) throws ComponentException {
+         try {
+             for (final Module module : getModules()) {
+                 parseInhabitants(module, name, serviceLocator);
+             }
+             populateConfig(serviceLocator);
+         } catch (Exception e) {
+             throw new ComponentException("Failed to create a habitat",e);
+         }
+     }
+
+    protected void populateConfig(ServiceLocator serviceLocator) throws BootException {
+        HK2Populator.populateConfig(serviceLocator);
     }
 
     public ServiceLocator createServiceLocator(String name) throws ComponentException {
-        try {
-            ServiceLocator serviceLocator = newServiceLocator();
-            
-            for (final Module module : getModules()) {
-                parseInhabitants(module, name);
-            }
-
-            // default modules registry is the one that created the habitat
-            DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
-            DynamicConfiguration config = dcs.createDynamicConfiguration();
-            config.bind(BuilderHelper.createConstantDescriptor(this));
-            config.commit();
-            
-            habitats.put(serviceLocator, name);
-            
-            return serviceLocator;
-        } catch (Exception e) {
-            throw new ComponentException("Failed to create a habitat",e);
-        }
+        ServiceLocator serviceLocator = newServiceLocator();
+        habitats.put(serviceLocator, name);
+        populateServiceLocator(name, serviceLocator);
+        return serviceLocator;
     }
 
-    public abstract void parseInhabitants(Module module,
-                                  String name)
+    protected abstract void parseInhabitants(Module module,
+                                             String name, ServiceLocator serviceLocator)
             throws IOException, BootException;
 
     /**
@@ -381,12 +385,12 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
         
         for (Map.Entry<ServiceLocator, String> entry : habitats.entrySet()) {
             String name = entry.getValue();
-            ServiceLocator h = entry.getKey();
+            ServiceLocator serviceLocator = entry.getKey();
             try
             {
                 // TODO: should get the inhabitantsParser out of Main instead since
                 // this could have been overridden
-                parseInhabitants(newModule, name);
+                parseInhabitants(newModule, name, serviceLocator);
             }
             catch (Exception e)
             {

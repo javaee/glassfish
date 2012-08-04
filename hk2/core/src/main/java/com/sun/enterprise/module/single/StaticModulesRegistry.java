@@ -39,6 +39,7 @@
  */
 package com.sun.enterprise.module.single;
 
+import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
 import java.io.IOException;
@@ -80,32 +81,25 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
         this.startupContext = startupContext;
     }
 
-    @Override                         
+    @Override
+    protected void populateConfig(ServiceLocator serviceLocator) throws BootException {
+        // do nothing...
+    }
+
+    @Override
     public ServiceLocator createServiceLocator(String name) throws ComponentException {
+        ServiceLocator serviceLocator = super.createServiceLocator("default");
+
         StartupContext sc = startupContext;
-        ServiceLocator serviceLocator = super.newServiceLocator(null, name);
 
         if (startupContext==null) {
             sc = new StartupContext(new Properties());
         }
-        
+
         DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         config.bind(BuilderHelper.createConstantDescriptor(sc));
-        config.bind(BuilderHelper.createConstantDescriptor(this));
         config.commit();
-        
-        ClassLoader cl = getClass().getClassLoader();
-        if (cl == null) {
-            cl = ClassLoader.getSystemClassLoader();
-        }
-        
-        try {
-            HK2Populator.populate(serviceLocator,
-                    new ClasspathDescriptorFileFinder(cl));
-        } catch (IOException e) {
-            throw new ComponentException(e);
-        }
         
         return serviceLocator;
     }

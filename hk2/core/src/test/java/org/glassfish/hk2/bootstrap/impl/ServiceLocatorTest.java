@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.impl.HK2Factory;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.HK2Loader;
@@ -56,6 +59,7 @@ public class ServiceLocatorTest {
 		} finally {
 			output.close();
 		}
+        HK2Factory.initialize();
 	}
 
 	@AfterClass
@@ -128,8 +132,12 @@ public class ServiceLocatorTest {
 
 		Main main = new Main();
 
+        ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
+
 		ServiceLocator serviceLocator = main.createServiceLocator(
-				 new StartupContext());
+                mr, new StartupContext(), null, null);
+
+                assertNotNull("Main.createServiceLocator(StartupContext) should return a ServiceLocator", serviceLocator);
 
 		assertEquals("ServiceLocator should be bound", serviceLocator,
 				serviceLocator.getService(ServiceLocator.class));
@@ -230,6 +238,12 @@ public class ServiceLocatorTest {
 
 						return null;
 					}
+
+					@Override
+					public void setServiceLocator(ServiceLocator serviceLocator) {
+						// TODO Auto-generated method stub
+						
+					}
 				});
 
 		List<ActiveDescriptor<?>> descriptors = serviceLocator
@@ -274,6 +288,12 @@ public class ServiceLocatorTest {
 						d.setImplementation("OVERRIDDEN");
 						
 						return d;
+					}
+
+					@Override
+					public void setServiceLocator(ServiceLocator serviceLocator) {
+						// TODO Auto-generated method stub
+						
 					}
 				});
 

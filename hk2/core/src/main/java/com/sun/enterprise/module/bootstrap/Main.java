@@ -45,20 +45,14 @@ import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.List;
-import java.util.jar.Attributes;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
@@ -66,10 +60,10 @@ import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
 
-import com.sun.enterprise.module.ManifestConstants;
-import com.sun.enterprise.module.common_impl.LogHelper;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.common_impl.AbstractFactory;
+import com.sun.enterprise.module.impl.HK2Factory;
 
 /**
  * CLI entry point that will setup the module subsystem and delegate the main
@@ -81,21 +75,16 @@ import com.sun.enterprise.module.common_impl.LogHelper;
  */
 public class Main {
 
-	private ServiceLocator serviceLocator;
-	private boolean created = false;
-
-	private DescriptorFileFinder descriptorFileFinder = new ClasspathDescriptorFileFinder();
-
 	private ClassLoader parentClassLoader;
 
 	public static final String DEFAULT_NAME = "default";
 
 	public Main() {
-		createServiceLocator();
 	}
-	
+
 	public static void main(final String[] args) {
-		(new Main()).run(args);
+        HK2Factory.initialize();
+        (new Main()).run(args);
 	}
 
 	public void run(final String[] args) {
@@ -161,23 +150,14 @@ public class Main {
 					+ bootstrap);
 		}
 
+        // get the ModuleStartup implementation.
+        ModulesRegistry mr = AbstractFactory.getInstance().createModulesRegistry();
 		StartupContext context = new StartupContext(
 				ArgumentManager.argsToMap(args));
-		launch(context.getPlatformMainServiceName(), context);
+		launch(mr, context.getPlatformMainServiceName(), context);
 	}
 
-	protected void createServiceLocator() {
-	    ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
-	    serviceLocator = factory.find(Main.DEFAULT_NAME);
-	    
-	    if (serviceLocator == null) {
-		    serviceLocator = ServiceLocatorFactory.getInstance().create(
-				Main.DEFAULT_NAME, null, new ServiceLocatorGeneratorImpl());
-		    created = true;
-	    }
-	}
-
-	protected void defineParentClassLoader() throws BootException {
+    protected void defineParentClassLoader() throws BootException {
 		parentClassLoader = AccessController
 				.doPrivileged(new PrivilegedAction<ClassLoader>() {
 					@Override
@@ -202,10 +182,11 @@ public class Main {
 	 *            startup context instance
 	 * @return The ModuleStartup service
 	 */
-	public ModuleStartup launch(String mainModuleName, StartupContext context)
+	public ModuleStartup launch(ModulesRegistry registry, String mainModuleName, StartupContext context)
 			throws BootException {
 		// now go figure out the start up service
-		ModuleStartup startupCode = findStartupService(mainModuleName, context);
+        ServiceLocator serviceLocator = registry.createServiceLocator(DEFAULT_NAME);
+        ModuleStartup startupCode = findStartupService(registry, serviceLocator, mainModuleName, context);
 		launch(startupCode, context);
 		return startupCode;
 	}
@@ -215,61 +196,76 @@ public class Main {
 	 * system.
 	 * 
 	 * @param registry
-	 * @param habitat
+	 * @param serviceLocator
 	 * @param mainModuleName
 	 * @param context
 	 * @return
 	 * @throws BootException
 	 */
     @SuppressWarnings("unchecked")
-    public ModuleStartup findStartupService(String mainModuleName,
+    public ModuleStartup findStartupService(ModulesRegistry registry, ServiceLocator serviceLocator, String mainModuleName,
 			StartupContext context) throws BootException {
-    	if (mainModuleName == null && context.getPlatformMainServiceName() != null) {
-    		mainModuleName = context.getPlatformMainServiceName();
-    	}
-    	
-		try {
-		    ActiveDescriptor<?> best = serviceLocator.getBestDescriptor(new MainFilter(mainModuleName));
-		    if (best == null) {
-		        throw new BootException("Cannot find main module "
-                        + (mainModuleName == null ? "" : mainModuleName)
-                        + " : no such module");
-		        
-		    }
-		    
-		    ServiceHandle<ModuleStartup> handle = (ServiceHandle<ModuleStartup>) serviceLocator.getServiceHandle(best);
-		    ModuleStartup retVal = handle.getService();
-		    return retVal;
-		} catch (MultiException e) {
-			throw new BootException("Unable to load service", e);
-		}
+        // THIS CODE HAS TO BE REVISITED. WHY IS IT SO DIFFERENT FROM EARLIER VERSION?
+
+        // ACTUALLY THIS NEW CODE IS INCORRECT. IT INTERPRETS mainModuleName AS SERVICE NAME AS OPPOSED TO THE
+        // THE NAME OF THE MODULE. THE SEMANTICS OF THE CALL ACTUALLY IS THAT USER CAN DIRECT US TO LOAD THE
+        // ModuleStartup SERVICE FROM A PARTICULAR MODULE IF THEY WANT. THAT WAY THEY DON'T HAVE TO WORRY ABOUT
+        // UNIQUENESS OF NAMES OF ModuleStartup
+//    	if (mainModuleName == null && context.getPlatformMainServiceName() != null) {
+//    		mainModuleName = context.getPlatformMainServiceName();
+//    	}
+
+        if (mainModuleName != null) {
+            throw new UnsupportedOperationException("FIX ME");
+        } else {
+            try {
+                final String mainServiceName = context.getPlatformMainServiceName();
+                
+                ModuleStartup retVal = serviceLocator.getService(ModuleStartup.class, mainServiceName);
+                
+                if (retVal == null) {
+                    throw new BootException(String.format("Cannot find %s ModuleStartup", mainServiceName));
+                }
+                return retVal;
+            } catch (MultiException e) {
+                throw new BootException("Unable to load service", e);
+            }
+        }
 	}
 
-	public ServiceLocator createServiceLocator(StartupContext context)
+	public ServiceLocator createServiceLocator(ModulesRegistry mr,
+                                               StartupContext context,
+                                               List<? extends PopulatorPostProcessor> postProcessors,
+                                               DescriptorFileFinder descriptorFileFinder)
 			throws BootException {
+        // Why is this method not just delagting to ModulesRegistry.createServiceLocator(...)?
+        // That will require changes to ModulesRegistry.createServiceLocator() to accept
+        // postProcessors and desriptorFileFinder, but that's OK IMO.
+
 		// set the parent class loader before we start loading modules
 		defineParentClassLoader();
+
+        ServiceLocator serviceLocator = mr.newServiceLocator();
 		
-		if (!created) return serviceLocator;
+		// add all the PopulatorPostProcessors to the new ServiceLocator
+		if (postProcessors != null) {
+			for (PopulatorPostProcessor postProcessor : postProcessors) {
+				postProcessor.setServiceLocator(serviceLocator);
+
+				addPopulatorPostProcessor(serviceLocator, postProcessor);
+			}
+		}
+		
+		addDescriptorFileFinder(serviceLocator, descriptorFileFinder);
 		
 		DynamicConfigurationService dcs = serviceLocator
 				.getService(DynamicConfigurationService.class);
 		
-		new Habitat();  // This will add the Habitat into the registry
-		
 		DynamicConfiguration config = dcs.createDynamicConfiguration();
-		config = dcs.createDynamicConfiguration();
 		
 		config.addActiveDescriptor(BuilderHelper
 				.createConstantDescriptor(context));
-		
-		config.addActiveDescriptor(BuilderHelper
-				.createConstantDescriptor(Logger.global));
 
-		config.addActiveDescriptor(DefaultErrorService.class);
-		
-		config.addActiveDescriptor(ContextDuplicatePostProcessor.class);
-		
 		config.commit();
 
 		final ClassLoader oldCL = AccessController
@@ -285,9 +281,7 @@ public class Main {
 				});
 
 		try {
-			populate();
-		} catch (IOException ioe) {
-			throw new BootException(ioe);
+            mr.populateServiceLocator(DEFAULT_NAME, serviceLocator);
 		} finally {
 			AccessController.doPrivileged(new PrivilegedAction<Object>() {
 				@Override
@@ -300,43 +294,32 @@ public class Main {
 		return serviceLocator;
 	}
 
-	/**
-	 * Creates {@link InhabitantsParser} to fill in {@link Habitat}. Override
-	 * for customizing the behavior.
-	 * 
-	 * @throws IOException
-	 */
-	protected void populate() throws BootException, IOException {
-		List<PopulatorPostProcessor> populatorPostProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
-
-		HK2Populator.populate(serviceLocator, descriptorFileFinder,
-				populatorPostProcessors.toArray(new PopulatorPostProcessor[populatorPostProcessors.size()]));
-		HK2Populator.populateConfig(serviceLocator);
-	}
-
-	protected void launch(ModuleStartup startupCode, StartupContext context)
+    protected void launch(ModuleStartup startupCode, StartupContext context)
 			throws BootException {
 		startupCode.setStartupContext(context);
 		startupCode.start();
 	}
 
 	public ServiceLocator getServiceLocator() {
-		return serviceLocator;
+		throw new RuntimeException("DON'T CALL THIS METHOD");
 	}
 
-	protected DescriptorFileFinder getDescriptorFileFinder() {
-		return descriptorFileFinder;
-	}
+	private void addDescriptorFileFinder(
+            ServiceLocator serviceLocator, DescriptorFileFinder descriptorFileFinder) {
+		
+		if (descriptorFileFinder != null) {
+			DynamicConfigurationService dcs = serviceLocator
+					.getService(DynamicConfigurationService.class);
+			DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-	protected void setDescriptorFileFinder(
-			DescriptorFileFinder descriptorFileFinder) {
-		this.descriptorFileFinder = descriptorFileFinder;
-	}
+			config.addActiveDescriptor(BuilderHelper
+					.createConstantDescriptor(descriptorFileFinder));
 
-	protected void addPopulatorPostProcessor(
-			PopulatorPostProcessor populatorPostProcessor) {
-	    if (!created) return;
-	    
+			config.commit();
+		}
+	}
+	private void addPopulatorPostProcessor(
+            ServiceLocator serviceLocator, PopulatorPostProcessor populatorPostProcessor) {
 		DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
 		DynamicConfiguration config = dcs.createDynamicConfiguration();
 		
@@ -344,7 +327,7 @@ public class Main {
 		
 		config.commit();
 	}
-	
+
 	/**
 	 * This filter matches against the name, including only
 	 * matching a ModuleStartup with no name if name is

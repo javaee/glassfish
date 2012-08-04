@@ -46,6 +46,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.osgi.framework.Bundle;
 
 import java.io.File;
@@ -166,9 +167,9 @@ public class OSGiObrModuleImpl extends OSGiModuleImpl {
     }
 
     @Override
-    void parseInhabitants(String name) throws IOException, BootException {
+    void parseInhabitants(String name, ServiceLocator serviceLocator) throws IOException, BootException {
         init();
-        super.parseInhabitants(name);
+        super.parseInhabitants(name, serviceLocator);
     }
 
     @Override

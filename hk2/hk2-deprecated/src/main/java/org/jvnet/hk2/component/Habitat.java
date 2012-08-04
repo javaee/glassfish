@@ -83,37 +83,41 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
     private final ServiceLocator delegate;
 
     public Habitat() {
-        this(null, null, null);
+        this(null);
+    }
+
+    public Habitat(ServiceLocator delegate) {
+        this(null, delegate, null);
     }
 
     public Habitat(Habitat parent, String name) {
-        this(parent, name, null);
+        this(parent, getServiceLocator(name), null);
     }
 
-    Habitat(Habitat parent, String name, Boolean concurrency_controls) {
+    Habitat(Habitat parent, ServiceLocator serviceLocator, Boolean concurrency_controls) {
         if (parent != null || concurrency_controls != null) {
-            throw new UnsupportedOperationException("<clinit> (" + parent + "," + name + "," + concurrency_controls + ") in Habitat");
+            throw new UnsupportedOperationException("<clinit> (" + parent + "," + concurrency_controls + ") in Habitat");
         }
         
-        if (name == null || name.length() <= 0) {
-            name = DEFAULT_NAME;
-        }
-        
-        delegate = ServiceLocatorFactory.getInstance().create(name, null, GENERATOR);
-        
+        delegate = serviceLocator != null ? serviceLocator : getServiceLocator(DEFAULT_NAME);
+
         ActiveDescriptor<?> foundDescriptor = delegate.getBestDescriptor(BuilderHelper.createContractFilter(Habitat.class.getName()));
         if (foundDescriptor != null) return;
-        
+
         // Add this habitat in, so it can be looked up!
         AbstractActiveDescriptor<Habitat> habitatDescriptor = BuilderHelper.createConstantDescriptor(this);
         habitatDescriptor.removeContractType(ServiceLocator.class);
-        
+
         DynamicConfigurationService dcs = delegate.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
+
         config.addActiveDescriptor(habitatDescriptor);
-        
+
         config.commit();
+    }
+
+    private static ServiceLocator getServiceLocator(String name) {
+        return ServiceLocatorFactory.getInstance().create(name, null, GENERATOR);
     }
 
     /*

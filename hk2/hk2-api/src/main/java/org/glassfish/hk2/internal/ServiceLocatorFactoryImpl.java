@@ -102,7 +102,10 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
           return iterator.hasNext() ? iterator.next() : null;
       } else {
           // We are in non-OSGi environment, let's use JDK ServiceLoader instead.
-          Iterator<ServiceLocatorGenerator> providers = java.util.ServiceLoader.load(ServiceLocatorGenerator.class).iterator();
+          // Make sure we use our current loader to locate the service as opposed to some arbitrary TCL
+          final ClassLoader classLoader = ServiceLocatorFactoryImpl.class.getClassLoader();
+          Iterator<ServiceLocatorGenerator> providers = java.util.ServiceLoader.load(ServiceLocatorGenerator.class,
+                  classLoader).iterator();
           while (providers.hasNext()) {
               try {
                   return providers.next();

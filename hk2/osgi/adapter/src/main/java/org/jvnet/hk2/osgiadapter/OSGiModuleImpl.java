@@ -69,7 +69,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.service.packageadmin.PackageAdmin;
 import org.osgi.service.packageadmin.RequiredBundle;
 
-import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.enterprise.module.LifecyclePolicy;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleChangeListener;
@@ -363,21 +362,23 @@ public class OSGiModuleImpl implements Module {
     /**
      * Parses all the inhabitants descriptors of the given name in this module.
      */
-    /* package */ void parseInhabitants(String name) throws IOException, BootException {   	
+    /* package */ void parseInhabitants(String name, ServiceLocator serviceLocator) throws IOException, BootException {
          
-        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().find("default");
-        
         List<PopulatorPostProcessor> registeredPostProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
         
         LinkedList<PopulatorPostProcessor> postProcessors = new LinkedList<PopulatorPostProcessor>();
         
-	postProcessors.add(new OsgiPopulatorPostProcessor(this));
-	postProcessors.addAll(registeredPostProcessors);
-		
-        URL entry = bundle.getEntry("META-INF/hk2-locator/default");
+	    postProcessors.add(new OsgiPopulatorPostProcessor(this));
+	    postProcessors.addAll(registeredPostProcessors);
+
+		// This needs to be fixed to bring in the cache
+
+        final String path = "META-INF/hk2-locator/" + name;
+        URL entry = bundle.getEntry(path);
+//        System.out.println("OSGiModuleImpl.parseInhabitants - for " + bundle + ".getEntry(" + path + "), returned " + entry);
         if (entry != null) {
-	  HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry),
-				postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
+	    HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry),
+            postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
         }
     }
 

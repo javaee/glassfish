@@ -40,16 +40,16 @@
 
 package com.sun.enterprise.module;
 
+import java.io.PrintStream;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.ComponentException;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Logger;
-import java.io.PrintStream;
-import java.net.URL;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -62,13 +62,15 @@ public interface ModulesRegistry extends ModuleChangeListener {
     ModulesRegistry createChild();
 
     /**
-     * Creates an uninitialized {@link Habitat}
+     * Creates an uninitialized {@link ServiceLocator}
      *
      */
     ServiceLocator newServiceLocator() throws ComponentException;
 
     /**
-     * Creates a {@link Habitat} from all the modules in this registry
+     * Creates a {@link ServiceLocator} from all the modules in this registry
+     * Cal;ling this method has the same effect of calling {@link #newServiceLocator()} followed by
+     * {@link #populateServiceLocator(String, ServiceLocator)}.
      *
      * @param name
      *      Determines which inhabitants descriptors are loaded.
@@ -78,7 +80,7 @@ public interface ModulesRegistry extends ModuleChangeListener {
     ServiceLocator createServiceLocator(String name) throws ComponentException;
 
     /**
-     * Creates a {@link Habitat} from all the modules in this registry.
+     * Populates a {@link ServiceLocator} from all the modules in this registry.
      *
      * <p>
      * Default {@link InhabitantsParser} is used.
@@ -92,7 +94,7 @@ public interface ModulesRegistry extends ModuleChangeListener {
      *
      * @return initialized Habitat
      */
-    ServiceLocator createServiceLocator(String name, ServiceLocator h) throws ComponentException;
+    void populateServiceLocator(String name, ServiceLocator h) throws ComponentException;
 
     /**
      * Add a new <code>Repository</code> to this registry. From now on
