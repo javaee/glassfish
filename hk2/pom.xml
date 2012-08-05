@@ -270,17 +270,6 @@
             that are not part of the default reactor 
           -->
             <id>release-phase-all</id>
-            <modules>
-                <module>apt-test</module>
-                <module>config</module>
-                <module>hk2-jsr330</module>
-                <module>auto-depends</module>
-                <module>hk2-maven-plugin</module>
-                <module>auto-depends-tests</module>
-                <module>auto-depends-tests/test-config</module>
-                <module>external/tiger-types</module>
-                <module>test-harness</module>
-            </modules>
         </profile>
     </profiles>
 
