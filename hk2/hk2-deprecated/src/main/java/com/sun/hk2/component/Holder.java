@@ -39,7 +39,7 @@
  */
 package com.sun.hk2.component;
 
-import org.jvnet.hk2.component.Factory;
+import org.glassfish.hk2.Factory;
 
 /**
  * Indirection to a value. That is, instead of referring to the value itself,
@@ -54,20 +54,4 @@ import org.jvnet.hk2.component.Factory;
  */
 @Deprecated
 public interface Holder<T> extends Factory<T> {
-
-    /**
-     * {@link Holder} implementation that doesn't do any deferred computation,
-     * where the value is given in the constructor.
-     */
-    public static final class Impl<T> implements Holder<T> {
-        private final T t;
-
-        public Impl(T t) {
-            this.t = t;
-        }
-
-        public T get() {
-            return t;
-        }
-    }
 }
