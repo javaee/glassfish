@@ -76,7 +76,7 @@ import java.util.List;
  */
 @Deprecated
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class Habitat implements ServiceLocator, SimpleServiceLocator {
+public class Habitat implements ServiceLocator, BaseServiceLocator {
     private final static String DEFAULT_NAME = "default";
     private final static ServiceLocatorGenerator GENERATOR = new ServiceLocatorGeneratorImpl();
     
@@ -619,7 +619,6 @@ public class Habitat implements ServiceLocator, SimpleServiceLocator {
         return (T) delegate.getServiceHandle(best).getService();
     }
 
-    @Override
     public <T> Inhabitant<T> getProvider(Type type, String name) {
         ServiceHandle<T> handle = delegate.getServiceHandle(type, name);
         
