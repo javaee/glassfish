@@ -63,6 +63,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
 import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.api.ServiceLocator;
 import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
@@ -270,9 +271,9 @@ public class StandaloneProcessor {
         if ( (habitat == null) ) {
             // Bootstrap a hk2 environment.
             ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
-            registry.createServiceLocator("default");
+            ServiceLocator serviceLocator = registry.createServiceLocator("default");
             
-            habitat = new Habitat();
+            habitat = new Habitat(serviceLocator);
 
             StartupContext startupContext = new StartupContext();
             habitat.add(new ExistingSingletonInhabitant(startupContext));
