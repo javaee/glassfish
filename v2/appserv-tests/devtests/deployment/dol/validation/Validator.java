@@ -14,7 +14,7 @@ import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.internal.api.Globals;
-
+import org.glassfish.hk2.api.ServiceLocator;
 
 public class Validator {
 
@@ -186,8 +186,8 @@ public class Validator {
         if ( (habitat == null) ) {
             // Bootstrap a hk2 environment.
             ModulesRegistry registry = new StaticModulesRegistry(Thread.currentThread().getContextClassLoader());
-            registry.createServiceLocator("default");
-            habitat = new Habitat();
+            ServiceLocator serviceLocator = registry.createServiceLocator("default");
+            habitat = new Habitat(serviceLocator);
 
             StartupContext startupContext = new StartupContext();
 
