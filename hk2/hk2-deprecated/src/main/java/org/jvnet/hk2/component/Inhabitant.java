@@ -43,8 +43,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.hk2.Binding;
+import org.glassfish.hk2.Context;
 import org.glassfish.hk2.ManagedComponentProvider;
+import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.annotations.Service;
 
@@ -73,7 +74,7 @@ import com.sun.hk2.component.Holder;
  */
 // TODO: Eventually get rid of auto-depend's Holder
 @Deprecated
-public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, Holder<T>, Descriptor {
+public interface Inhabitant<T> extends ManagedComponentProvider<T>, Holder<T>, Descriptor {
     /**
      * The short-cut for {@code type().getName()}
      * but this allows us to defer loading the actual types.
@@ -238,6 +239,42 @@ public interface Inhabitant<T> extends Binding<T>, ManagedComponentProvider<T>, 
      * This method is only meant to be invoked by {@link ServiceLocator}.
      */
     void setCompanions(Collection<Inhabitant> companions);
+    
+    /**
+     * The {@link Descriptor} fully characterizes the attributes
+     * of this Provider.
+     * 
+     * @return 
+     *  a non-null Descriptor describing the complete set of
+     *  attributes of the provider.
+     */
+    Descriptor getDescriptor();
+  
+    /**
+     * Return a {@link Provider} optionally providing contextual
+     * information for how the component provider will be used (e.g., for
+     * contextual injection, etc).
+     * 
+     * <p/>
+     * The return value may be unique based on the provided contextual
+     * information. Caller's should therefore not assume identity equality
+     * in the return value.
+     *
+     * @param ctx
+     *      contextual information for how the provider will be used, or null
+     * 
+     * @return a non-null component provider instance
+     */
+    Provider<T> getProvider(Context ctx);
+
+    /**
+     * Return a {@link Provider} with providing contextual information
+     * on how the provider will be used. Equivalent to calling 
+     * <i>getProvider(null)</i>.
+     * 
+     * @return a non-null component provider instance
+     */
+    Provider<T> getProvider();
 
 //    /**
 //     * Gets or creates an inhabitant instance that is functionally equivalent to the
