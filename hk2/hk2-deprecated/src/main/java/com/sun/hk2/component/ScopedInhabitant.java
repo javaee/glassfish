@@ -84,7 +84,7 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
                     if(store.contains(this)) {
                     return store.get(this);
                     } else {
-                        T o = creator.get(onBehalfOf);
+                        T o = (T) creator.get(onBehalfOf);
                         store.put(this,o);
                         return o;
                     }
