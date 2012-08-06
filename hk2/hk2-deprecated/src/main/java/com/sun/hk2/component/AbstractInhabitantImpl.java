@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.Context;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.Descriptor;
@@ -70,7 +69,7 @@ import sun.misc.BASE64Decoder;
  * @author Kohsuke Kawaguchi
  */
 @Deprecated
-public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implements Inhabitant<T>, Binding<T> {
+public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implements Inhabitant<T> {
 //    private static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
     
     protected static final Logger logger = Logger.getLogger(AbstractInhabitantImpl.class.getName());
