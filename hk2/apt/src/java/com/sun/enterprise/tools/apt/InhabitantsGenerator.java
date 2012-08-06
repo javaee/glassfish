@@ -178,21 +178,6 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                     if (debug) {
                         env.getMessager().printWarning("Found component annotation " + a + " on "+d.getQualifiedName());
                     }
-                    String service=null;
-                    ServiceProvider sp = a.getAnnotationType().getDeclaration().getAnnotation(ServiceProvider.class);
-                    if (sp!=null) {
-                        try {
-                            sp.value();
-                        } catch (MirroredTypeException e) {
-                            service = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
-                        }
-                    }
-
-                    InhabitantsDescriptor descriptor = list.get(ia.value());
-
-                    if (service!=null) {
-                        processGenericImpl(service, descriptor, d, a);
-                    }
                 }
             }
         }
@@ -288,36 +273,6 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
                 env.getMessager().printWarning("Visiting " + d.getSimpleName());
             }
             for (AnnotationMirror am : d.getAnnotationMirrors()) {
-                Multiple multiple = am.getAnnotationType().getDeclaration().getAnnotation(Multiple.class);
-                if (multiple!=null) {
-                    Collection<AnnotationTypeElementDeclaration> members = am.getAnnotationType().getDeclaration().getMethods();
-
-                    AnnotationTypeElementDeclaration valueMember=null;
-                    for (AnnotationTypeElementDeclaration aMember : members) {
-                        if (aMember.getSimpleName().endsWith("value")) {
-                            valueMember = aMember;
-                            break;
-                        }
-                    }
-                    if (valueMember==null) return;
-
-                    AnnotationValue valueVal = am.getElementValues().get(valueMember);
-                    Object annotationValue = valueVal.getValue();
-                    if (annotationValue instanceof Collection) {
-                        Collection<AnnotationValue> values = (Collection<AnnotationValue>) annotationValue;
-                        for (AnnotationValue aVal : values) {
-                            AnnotationMirror aValMirror = (AnnotationMirror) aVal.getValue();
-                            // check if the annotation contained in the multiple declaration is itself annotated
-                            // with InhabitantAnnotation
-                            InhabitantAnnotation ia = aValMirror.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
-                            if (ia!=null) {
-                                generateInhabitantEntry(d, aValMirror, ia);
-                            }
-                        }
-                    } else {
-                        System.err.println("Ignoring " + am + " which is annotated with @Multiple, yet it's value() method is not collection");                        
-                    }
-                }
 
                 InhabitantAnnotation ia = am.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
                 if (ia!=null) {
@@ -331,79 +286,8 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
 
             InhabitantsDescriptor descriptor = list.get(ia.value());
 
-            String service=null;
-            ServiceProvider sp = a.getAnnotationType().getDeclaration().getAnnotation(ServiceProvider.class);
-            if (sp!=null) {
-                try {
-                    sp.value();
-                } catch (MirroredTypeException e) {
-                    service = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
-                }
-            }
-
-/*            String service=null;
-            // I cannot use a.getAnnotationType().getDeclaration().getAnnotation() because the value() is a class
-            // which cannot be loaded by the classloader at compile time.
-
-            for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
-                if (am.getAnnotationType().getDeclaration().getSimpleName().equals(ServiceProvider.class.getSimpleName())) {
-                    for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : am.getElementValues().entrySet()) {
-                        service = entry.getValue()toString();
-                        service = ((DeclaredType)entry.).getDeclaration().getQualifiedName()
-                    }
-                }
-            }
-            */
-            if (service!=null) {
-                List<String> names = getIndexValues(a);
-
-                String contract=null;
-                ContractProvided cp = a.getAnnotationType().getDeclaration().getAnnotation(ContractProvided.class);
-                if (cp!=null) {
-                    try {
-                        cp.value();
-                    } catch (MirroredTypeException e) {
-                        contract = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
-                    }
-                }
-                /*String contract="";
-                // we should support getting the @ContractProvided from the ServiceProvider
-                for (AnnotationMirror am : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
-                    if (am.getAnnotationType().getDeclaration().getSimpleName().equals(ContractProvided.class.getSimpleName())) {
-                        for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : am.getElementValues().entrySet()) {
-                            contract = entry.getValue().toString();
-                        }
-                    }
-                } */
-
-                StringBuilder buf = new StringBuilder();
-                buf.append(InhabitantsFile.CLASS_KEY).append('=').append(service);
-                if (null == names) {
-                  buf.append(",").append(INDEX_KEY).append("=").append(contract);
-                } else {
-                  for (String name : names) {
-                    buf.append(",").append(INDEX_KEY).append("=").append(contract).append(":").append(name);
-                  }
-                }
-                buf.append(",").append(TARGET_TYPE).append("=").append(d.getDeclaringType().getQualifiedName());
-                buf.append(",").append(METHOD_NAME).append('=').append(d.getSimpleName());
-                for (AnnotationTypeElementDeclaration ated : a.getAnnotationType().getDeclaration().getMethods()) {
-                    for (AnnotationMirror am : ated.getAnnotationMirrors()) {
-                        if (am.getAnnotationType().getDeclaration().getSimpleName().equals(Metadata.class.getSimpleName())) {
-                            for (Map.Entry<AnnotationTypeElementDeclaration, AnnotationValue> entry : a.getElementValues().entrySet()) {
-                                if (entry.getKey().getSimpleName().equals(ated.getSimpleName())) {
-                                    buf.append(",").append(ated.getSimpleName()).append("=").append(entry.getValue().toString());
-                                }
-                            }
-                        }
-                    }
-                }
-
-                descriptor.put(contract+":"+names, buf.toString());
-            } else {
-                descriptor.put(d.getDeclaringType().getQualifiedName(),
+            descriptor.put(d.getDeclaringType().getQualifiedName(),
                         getInhabitantDeclaration(a, (ClassDeclaration) d.getDeclaringType()));
-            }
         }
 
         /**
