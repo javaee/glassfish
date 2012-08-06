@@ -45,7 +45,6 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
 import com.sun.hk2.component.ConstructorCreator;
-import com.sun.hk2.component.InjectInjectionResolver;
 import com.sun.hk2.component.InjectionResolver;
 import com.sun.hk2.component.InjectionResolverQuery;
 
@@ -88,21 +87,6 @@ import com.sun.hk2.component.InjectionResolverQuery;
       throw new ComponentException("unable to find appropriate ctor for: " + clazz, 
           new ComponentException(e.getMessage(), e));
     }
-  }
-
-  @SuppressWarnings("unchecked")
-  protected InjectionResolver[] getInjectionResolvers(T t,Habitat h) {
-    InjectionResolver[] resolvers = super.getInjectionResolvers(t, h);
-    if (null != resolvers) {
-      // replace the inject injection resolver with one that has a view into the transaction
-      for (int i = 0; i < resolvers.length; i++) {
-        if (InjectInjectionResolver.class.isInstance(resolvers[i])) {
-          resolvers[i] = new ConfigInjectInjectionResolver(txnContextResolver, InjectInjectionResolver.class.cast(resolvers[i]));
-        }
-      }
-    }
-    
-    return resolvers;
   }
   
 }

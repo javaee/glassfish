@@ -45,7 +45,6 @@ import java.util.Map;
 
 import org.glassfish.hk2.Binding;
 import org.glassfish.hk2.ManagedComponentProvider;
-import org.glassfish.hk2.ServiceLocator;
 import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.annotations.Service;
 
