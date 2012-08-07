@@ -39,21 +39,15 @@
  */
 package org.jvnet.hk2.deprecated.internal;
 
-import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.hk2.Context;
-import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.MultiMap;
 
 import com.sun.hk2.component.AbstractInhabitantImpl;
 

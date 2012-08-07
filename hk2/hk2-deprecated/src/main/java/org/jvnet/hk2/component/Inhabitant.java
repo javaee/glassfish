@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.hk2.Context;
 import org.glassfish.hk2.ManagedComponentProvider;
 import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.Descriptor;
@@ -249,32 +248,6 @@ public interface Inhabitant<T> extends ManagedComponentProvider<T>, Holder<T>, D
      *  attributes of the provider.
      */
     Descriptor getDescriptor();
-  
-    /**
-     * Return a {@link Provider} optionally providing contextual
-     * information for how the component provider will be used (e.g., for
-     * contextual injection, etc).
-     * 
-     * <p/>
-     * The return value may be unique based on the provided contextual
-     * information. Caller's should therefore not assume identity equality
-     * in the return value.
-     *
-     * @param ctx
-     *      contextual information for how the provider will be used, or null
-     * 
-     * @return a non-null component provider instance
-     */
-    Provider<T> getProvider(Context ctx);
-
-    /**
-     * Return a {@link Provider} with providing contextual information
-     * on how the provider will be used. Equivalent to calling 
-     * <i>getProvider(null)</i>.
-     * 
-     * @return a non-null component provider instance
-     */
-    Provider<T> getProvider();
 
 //    /**
 //     * Gets or creates an inhabitant instance that is functionally equivalent to the

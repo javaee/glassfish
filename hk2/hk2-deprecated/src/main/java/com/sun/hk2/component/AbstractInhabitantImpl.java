@@ -52,8 +52,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.glassfish.hk2.Context;
-import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -90,17 +88,6 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
             return AbstractInhabitantImpl.class.cast(i).getDescriptor();
         }
         return null;
-    }
-    
-    // TODO: handle Context
-    @Override
-    public Provider<T> getProvider(Context ctx) {
-        return this;
-    }
-    
-    @Override
-    public Provider<T> getProvider() {
-        return getProvider(null);
     }
     
     public boolean matches(Descriptor matchTo) {
