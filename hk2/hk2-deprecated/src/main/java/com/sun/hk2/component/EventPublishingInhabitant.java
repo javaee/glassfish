@@ -53,7 +53,6 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.InhabitantListener;
 import org.jvnet.hk2.component.MultiMap;
 
 /**
@@ -74,31 +73,18 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
    * For use in getting services
    */
   private final ServiceLocator serviceLocator;
-
-  /**
-   * Those that will receive events
-   */
-  private volatile CopyOnWriteArraySet<InhabitantListener> listeners;
-
   
   public EventPublishingInhabitant(ServiceLocator serviceLocator, Descriptor descriptor) {
       super(descriptor);
       this.serviceLocator = serviceLocator;
       this.real = null;
   }
-  
-  public EventPublishingInhabitant(ServiceLocator serviceLocator, Inhabitant<?> delegate) {
-      this(serviceLocator, delegate, null);
-  }
 
   @SuppressWarnings("unchecked")
-  public EventPublishingInhabitant(ServiceLocator serviceLocator, Inhabitant<?> delegate, InhabitantListener listener) {
+  public EventPublishingInhabitant(ServiceLocator serviceLocator, Inhabitant<?> delegate) {
       super(getDescriptorFor(delegate));
       this.real = (Inhabitant<T>) delegate;
       this.serviceLocator = serviceLocator;
-      if (null != listener) {
-          addInhabitantListener(listener);
-      }
   }
 
   @Override
@@ -117,9 +103,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     if (null != real) {
       real.release();
     }
-    if (wasActive && !isActive()) {
-      notify(InhabitantListener.EventType.INHABITANT_RELEASED);
-    }
   }
 
   @Override
@@ -132,9 +115,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     if (null == real) throw new IllegalStateException();
     final boolean wasActive = real.isActive();
     Class<? extends T> t = real.type();
-    if (!wasActive && real.isActive()) {
-      notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
-    }
     return t;
   }
 
@@ -162,62 +142,11 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     boolean wasActive = handle.isActive();
     T result = handle.getService();
     
-    if (!wasActive) {
-        notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
-    }
-    
     return result;
   }
 
   protected void fetch() {
     throw new IllegalStateException();  // responsibility on derived classes
-  }
-
-//@Override // for EventPublishingInhabitant
-  public void addInhabitantListener(InhabitantListener listener) {
-    if (null == listener) {
-      throw new IllegalArgumentException();
-    }
-    
-    getListeners();
-    
-    if (!listeners.contains(listener)) {
-        listeners.add(listener);
-    }
-  }
-
-  private Collection<InhabitantListener> getListeners() {
-    if (null == listeners) {
-      synchronized (this) {
-        if (null == listeners) {
-          listeners = new CopyOnWriteArraySet<InhabitantListener>();
-        }
-      }
-    }
-    
-    return listeners;
-  }
-  
-  public boolean removeInhabitantListener(InhabitantListener listener) {
-    return (null == listeners) ? false : listeners.remove(listener);
-  }
-
-  protected void notify(InhabitantListener.EventType eventType) {
-    if (null != listeners) {
-      Iterator<InhabitantListener> iter = listeners.iterator();
-      while (iter.hasNext()) {
-        InhabitantListener listener = iter.next();
-        try {
-          boolean keepListening = listener.inhabitantChanged(eventType, this);
-          if (!keepListening) {
-            removeInhabitantListener(listener);
-          }
-        } catch (Exception e) {
-          // don't percolate the exception since it may negatively impact processing
-          Logger.getAnonymousLogger().log(Level.WARNING, "exception caught from listener", e);
-        }
-      }
-    }
   }
   
   public ServiceLocator getServiceLocator() {
