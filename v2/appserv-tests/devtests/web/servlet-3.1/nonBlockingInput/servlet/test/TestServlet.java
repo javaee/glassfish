@@ -40,6 +40,8 @@
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletException;
@@ -56,28 +58,38 @@ public class TestServlet extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
+        CountDownLatch cdl = new CountDownLatch(2);
         ServletOutputStream output = res.getOutputStream();
         ServletInputStream input = req.getInputStream();
-        ReadListenerImpl readListener = new ReadListenerImpl(input, output);
+        ReadListenerImpl readListener = new ReadListenerImpl(input, output, cdl);
         input.setReadListener(readListener);
 
         int b = -1;
-        System.out.println("--> Start");
         while (input.isReady() && ((b = input.read()) != -1)) {
             System.out.print((char)b);
             output.write(b);
         }
-        System.out.println("--> End");
-        try { Thread.sleep(3* 1000); } catch(Exception ex) { }
+
+        try {
+            if (cdl.await(8, TimeUnit.SECONDS)) {
+                System.out.println("SUCCESS");
+            } else {
+                System.out.println("TIMEOUT: " + cdl.getCount());
+            }
+        } catch(InterruptedException ie) {
+        }
     }
 
     class ReadListenerImpl implements ReadListener {
         private ServletInputStream input = null;
         private ServletOutputStream output = null;
+        private CountDownLatch cdl = null;
 
-        ReadListenerImpl(ServletInputStream in, ServletOutputStream out) {
+        ReadListenerImpl(ServletInputStream in, ServletOutputStream out,
+                CountDownLatch latch) {
             input = in;
             output = out;
+            cdl = latch;
         }
 
         public void onDataAvailable() {
@@ -93,6 +105,8 @@ public class TestServlet extends HttpServlet {
                 output.print(sb.toString());
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
+            } finally {
+                cdl.countDown();
             }
         }
 
@@ -102,6 +116,8 @@ public class TestServlet extends HttpServlet {
                 output.println("-onAllDataRead");
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
+            } finally {
+                cdl.countDown();
             }
         }
 
