@@ -53,7 +53,6 @@ import com.sun.mirror.util.DeclarationVisitor;
 import com.sun.mirror.util.DeclarationVisitors;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.ContractProvided;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
@@ -161,9 +160,6 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
                 env.getMessager().printNotice("Service annotation = " + service);
             }
             if (service != null) {
-
-                // look for @ContractProvided interface
-                checkContractProvided(d);
                 
                 // look for contract in interfaces
                 for (InterfaceType intf : d.getSuperinterfaces()) {
@@ -209,26 +205,6 @@ public class ServiceAnnotationProcessor implements AnnotationProcessor, RoundCom
                     createContractImplementation(atd.getQualifiedName(),d);
                 }
             }
-        }
-
-
-        private void checkContractProvided(ClassDeclaration impl) {
-            ContractProvided provided = impl.getAnnotation(ContractProvided.class);
-
-            String intfName = null;
-            if (provided != null) {
-
-                try {
-                    provided.value();
-                } catch (MirroredTypeException e) {
-                    intfName = e.getQualifiedName();
-                }
-                if (debug) {
-                    System.out.println("Provided is " + intfName);
-                }
-                createContractImplementation(intfName, impl);
-            }
-
         }
 
         private void checkContract(TypeDeclaration type, ClassDeclaration impl) {
