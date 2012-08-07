@@ -232,8 +232,9 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
                 // siblings will contain all ConnectorConnectionPools under
                 // Resources
-                List<Dom> siblings = 
-                    parent.domNodeByTypeElements(thisview.getProxyType());
+                List<Dom> siblings = parent != null
+                        ? parent.domNodeByTypeElements(thisview.getProxyType())
+                        : new ArrayList<Dom>();
 
                 // Iterate through each sibling element and see if anyone has
                 // same key. If true throw an exception after unlocking this
