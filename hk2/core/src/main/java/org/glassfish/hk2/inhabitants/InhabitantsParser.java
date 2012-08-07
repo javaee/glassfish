@@ -50,7 +50,6 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.InhabitantProviderInterceptor;
 import org.jvnet.hk2.component.MultiMap;
 
 import com.sun.hk2.component.Holder;
@@ -144,10 +143,6 @@ public class InhabitantsParser implements InhabitantStore {
     public void parse(Iterable<InhabitantParser> scanner, HK2Loader classLoader) throws IOException {
         if (scanner==null)
             return;
-        
-        Collection<InhabitantProviderInterceptor> interceptors = 
-            (null == serviceLocator) ? Collections.EMPTY_LIST :
-              serviceLocator.getAllServices(InhabitantProviderInterceptor.class);
         
         if (serviceLocator==null) {
         	throw new RuntimeException("ServiceLocator not available");

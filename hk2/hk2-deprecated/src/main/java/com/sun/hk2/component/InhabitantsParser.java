@@ -41,7 +41,6 @@ package com.sun.hk2.component;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.InhabitantProviderInterceptor;
 
 import java.io.IOException;
 import java.util.*;
@@ -125,10 +124,6 @@ public class InhabitantsParser implements InhabitantStore {
         if (scanner==null)
             return;
         
-        Collection<InhabitantProviderInterceptor> interceptors = 
-            (null == serviceLocator) ? Collections.EMPTY_LIST :
-              serviceLocator.getAllServices(InhabitantProviderInterceptor.class);
-        
         for (InhabitantParser inhabitantParser : scanner) {
             if (isFilteredInhabitant(inhabitantParser)) {
                 continue;    
@@ -165,7 +160,7 @@ public class InhabitantsParser implements InhabitantStore {
                 }
                 Inhabitant<?> i = null;
                 try {
-                  i = Inhabitants.createInhabitant(serviceLocator, interceptors.iterator(),
+                  i = Inhabitants.createInhabitant(serviceLocator,
                         classLoader, typeName,
                         inhabitantParser.getMetaData(),
                         this,

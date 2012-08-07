@@ -64,27 +64,18 @@ public class Inhabitants {
       String typeName,
       Map<String, List<String>> metadata,
       Set<String> indicies) {
-    Iterator<InhabitantProviderInterceptor> interceptors =
-      (null == serviceLocator) ? Collections.EMPTY_LIST.iterator() :
-        serviceLocator.getAllServices(InhabitantProviderInterceptor.class).iterator();
-    return createInhabitant(serviceLocator, interceptors,
+    return createInhabitant(serviceLocator,
         classLoader, typeName, metadata, null, indicies);
   }
   
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public static Inhabitant<?> createInhabitant(ServiceLocator serviceLocator,
-      Iterator<InhabitantProviderInterceptor> interceptors,
       Holder<ClassLoader> classLoader,
       String typeName,
       Map<String, List<String>> metadata,
       InhabitantStore store,
       Set<String> indicies) {
     AbstractInhabitantImpl<?> i = new LazyInhabitant(serviceLocator, new HolderHK2LoaderImpl(classLoader), typeName, metadata);
-    InhabitantProviderInterceptor interceptor = 
-        (null != interceptors && interceptors.hasNext()) ? interceptors.next() : null;
-    if (null != interceptor) {
-      i = interceptor.visit(i, typeName, indicies, interceptors, store);
-    }
     return i;
   }
   
