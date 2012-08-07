@@ -47,7 +47,6 @@ package org.jvnet.hk2.component;
  */
 @Deprecated
 public class ComponentException extends org.glassfish.hk2.ComponentException {
-    private ServiceContext ctx;
 
     public ComponentException(String message) {
         super(message);
@@ -61,17 +60,8 @@ public class ComponentException extends org.glassfish.hk2.ComponentException {
         super(message, origin);
     }
 
-    public ComponentException(String message, ServiceContext ctx, Throwable origin) {
-        super(message, origin);
-        this.ctx = ctx;
-    }
-
     public ComponentException(String format, Object... args) {
         super(String.format(format,args));
-    }
-
-    public ServiceContext getFailureContext() {
-      return ctx;
     }
 
 }
