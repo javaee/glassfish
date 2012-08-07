@@ -40,6 +40,8 @@
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -51,15 +53,17 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/test")
 public class TestServlet extends HttpServlet {
-    private static final int MAX = 600000;
+    private static final int MAX = 10;
     
-    //private static final int LENGTH = 587952;
+    private static final int LENGTH = 587952;
 
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
+        CountDownLatch latch = new CountDownLatch(1);
+
         ServletOutputStream output = res.getOutputStream();
-        WriteListenerImpl writeListener = new WriteListenerImpl(output);
+        WriteListenerImpl writeListener = new WriteListenerImpl(output, latch);
         output.setWriteListener(writeListener);
 
         output.write("START\n".getBytes());    
@@ -69,19 +73,34 @@ public class TestServlet extends HttpServlet {
         System.out.println("--> Begin for loop");
         boolean prevCanWrite = true;
         while ((prevCanWrite = output.canWrite()) && count < MAX) {
+            if (count == 550000) {
+                System.out.println("550000");
+            }
             writeData(output, count);
             count++;
         }
-        output.flush();
+        //output.flush();
         System.out.println("--> prevCanWriite = " + prevCanWrite + 
                 ", count = " + count);
+
+         try {
+            if (latch.await(10, TimeUnit.SECONDS)) {
+                System.out.println("SUCCESS");
+            } else {
+                System.out.println("TIMEOUT");
+            }
+        } catch (InterruptedException e) {
+        }
     }
 
     class WriteListenerImpl implements WriteListener {
         private ServletOutputStream output = null;
+        private CountDownLatch latch = null;
 
-        WriteListenerImpl(ServletOutputStream sos) {
+        WriteListenerImpl(ServletOutputStream sos,
+                CountDownLatch l) {
             output = sos;
+            latch = l;
         }
 
         public void onWritePossible() {
@@ -91,6 +110,8 @@ public class TestServlet extends HttpServlet {
                 output.write(message.getBytes());
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
+            } finally {
+                latch.countDown();
             }
         }
 
@@ -100,7 +121,6 @@ public class TestServlet extends HttpServlet {
     }
 
     void writeData(ServletOutputStream output, int count) throws IOException {
-        /*
         System.out.println("--> calling writeData " + count);
         char[] cs = String.valueOf(count).toCharArray();
         byte[] b = new byte[LENGTH];
@@ -109,8 +129,5 @@ public class TestServlet extends HttpServlet {
         }
         Arrays.fill(b, cs.length, LENGTH, (byte)'a');
         output.write(b);
-        */
-
-        output.write((byte)'a');
     }
 }
