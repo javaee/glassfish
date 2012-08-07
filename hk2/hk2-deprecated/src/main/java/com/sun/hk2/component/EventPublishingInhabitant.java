@@ -39,13 +39,8 @@
  */
 package com.sun.hk2.component;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
@@ -53,7 +48,6 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.Inhabitant;
-import org.jvnet.hk2.component.MultiMap;
 
 /**
  * An inhabitant that implements InhabitantEventPublisher, and maintains a list
@@ -99,7 +93,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   @Override
   public void release() {
-    final boolean wasActive = isActive();
+    isActive();
     if (null != real) {
       real.release();
     }
@@ -113,7 +107,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   @Override
   public Class<? extends T> type() {
     if (null == real) throw new IllegalStateException();
-    final boolean wasActive = real.isActive();
+    real.isActive();
     Class<? extends T> t = real.type();
     return t;
   }
@@ -139,7 +133,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     
     ServiceHandle<T> handle = serviceLocator.getServiceHandle(activeDescriptor);
     
-    boolean wasActive = handle.isActive();
+    handle.isActive();
     T result = handle.getService();
     
     return result;

@@ -207,37 +207,6 @@ public interface Inhabitant<T> extends ManagedComponentProvider<T>, Holder<T>, D
      * is invoked.
      */
     void release();
-
-//
-// methods below here are more or less used for book-keeping purpose by ServiceLocator,
-// and implementations of Inhabitant should implement them just by using
-// AbstractInhabitantImpl
-//
-
-    /**
-     * If this inhabitant is a companion to another inhabitant (called "lead"),
-     * This method returns that inhabitant. Otherwise null.
-     */
-    Inhabitant lead();
-
-    /**
-     * Returns the companion inhabitants associated with this inhabitant.
-     *
-     * <p>
-     * This method works with the {@link #lead()} method in pairs, such
-     * that the following condition always holds:
-     *
-     * <pre>x.companions().contains(y) &lt;-> y.lead()==x</pre>
-     *
-     * @return
-     *      Can be empty but never null.
-     */
-    Collection<Inhabitant> companions();
-
-    /**
-     * This method is only meant to be invoked by {@link ServiceLocator}.
-     */
-    void setCompanions(Collection<Inhabitant> companions);
     
     /**
      * The {@link Descriptor} fully characterizes the attributes

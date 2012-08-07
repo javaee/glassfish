@@ -167,8 +167,7 @@ public class InhabitantsParser implements InhabitantStore {
                 try {
                   i = Inhabitants.createInhabitant(serviceLocator, interceptors.iterator(),
                         classLoader, typeName,
-                        inhabitantParser.getMetaData(), 
-                        /*lead*/null,
+                        inhabitantParser.getMetaData(),
                         this,
                         Collections.unmodifiableSet(indicies));
                 } catch (Exception e) {

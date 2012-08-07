@@ -62,24 +62,10 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
      * 
      */
     private static final long serialVersionUID = 6404544098462796138L;
-    
-    private final Inhabitant<?> lead;
 
-    
-    public LazyInhabitant(ServiceLocator serviceLocator, HK2Loader hk2CL, String typeName, Map<String, List<String>> metadata) {
-        this(serviceLocator, hk2CL, typeName, metadata, null);
-    }
-
-    public LazyInhabitant(ServiceLocator serviceLocator, HK2Loader cl, String typeName, Map<String, List<String>> metadata, Inhabitant<?> lead) {
+    public LazyInhabitant(ServiceLocator serviceLocator, HK2Loader cl, String typeName, Map<String, List<String>> metadata) {
         super(serviceLocator, org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(typeName, cl, metadata));
 
-        this.lead = lead;
-    }
-
-
-    @Override
-    public Inhabitant<?> lead() {
-        return lead;
     }
     
     @Override
@@ -147,7 +133,6 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
         }
     }
     
-    @SuppressWarnings("unchecked")
     protected Class<T> loadClass() {
         return loadClass(null);
     }

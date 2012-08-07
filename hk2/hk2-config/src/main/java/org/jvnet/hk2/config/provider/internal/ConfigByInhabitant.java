@@ -36,7 +36,6 @@ import java.util.Map;
     this.managedServiceCreator = managedServiceCreator;
   }
   
-  @Override
   public ConfigByMetaInhabitant lead() {
       return lead;
   }
