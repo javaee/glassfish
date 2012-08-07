@@ -1363,10 +1363,6 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
         boolean wasActive = serviceHandle.isActive();
         Object result = serviceHandle.getService();
         
-        if (!wasActive) {
-            notify(InhabitantListener.EventType.INHABITANT_ACTIVATED);
-        }
-        
         return result;
     }
 }
