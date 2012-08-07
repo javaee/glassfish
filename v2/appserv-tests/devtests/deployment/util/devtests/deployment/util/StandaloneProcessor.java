@@ -273,7 +273,7 @@ public class StandaloneProcessor {
             ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
             ServiceLocator serviceLocator = registry.createServiceLocator("default");
             
-            habitat = new Habitat(serviceLocator);
+            habitat = serviceLocator.getService(Habitat.class);
 
             StartupContext startupContext = new StartupContext();
             habitat.add(new ExistingSingletonInhabitant(startupContext));

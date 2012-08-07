@@ -80,7 +80,7 @@ public class Utils {
         ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader(), new StartupContext(p));
         ServiceLocator serviceLocator = registry.createServiceLocator("default");
 
-        return new Habitat(serviceLocator);
+        return serviceLocator.getService(Habitat.class);
     }
 }
 

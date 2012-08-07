@@ -187,7 +187,7 @@ public class Validator {
             // Bootstrap a hk2 environment.
             ModulesRegistry registry = new StaticModulesRegistry(Thread.currentThread().getContextClassLoader());
             ServiceLocator serviceLocator = registry.createServiceLocator("default");
-            habitat = new Habitat(serviceLocator);
+            habitat = serviceLocator.getService(Habitat.class);
 
             StartupContext startupContext = new StartupContext();
 
