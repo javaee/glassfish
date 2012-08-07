@@ -327,6 +327,7 @@
         <ant dir="standalonewar" target="all"/>  
         <ant dir="sessionWithoutCookie" target="all"/>  
         <ant dir="servlet-3.1/networkPathReference" target="all"/>
+        <ant dir="servlet-3.1/nonBlockingOutputByteByByte" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
