@@ -182,110 +182,12 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
         return getSerializedMetadata(type,type.getName());
     }
 
-    @Override
-    public Inhabitant lead() {
-        return null;
-    }
-
-    @Override
-    public final Collection<Inhabitant> companions() {
-        if (companions == null) {
-            return Collections.emptyList();
-        } else {
-            return companions;
-        }
-    }
-
-    @Override
-    public final void setCompanions(Collection<Inhabitant> companions) {
-        this.companions = companions;
-    }
-    
-//    @Override
-//    public Inhabitant<T> scopedClone() {
-//      return new ReferenceCountedLazyInhabitant<T>(this);
-//    }
-
-//    public synchronized int getManagedCount() {
-//      if (null == managed) {
-//        return 0;
-//      }
-//
-//      cleanManaged();
-//      return managed.size();
-//    }
-//    
-//    @Override
-//    public synchronized void manage(Inhabitant<?> managedInhabitant) {
-//      if (!MANAGED_ENABLED) {
-//        return;
-//      }
-//      
-//      assert(null != managedInhabitant);
-//      assert(ReferenceCountedLazyInhabitant.class.isInstance(managedInhabitant));
-//      assert(this != managedInhabitant);
-//      
-////      ReferenceCountedLazyInhabitant<?> rcli = ReferenceCountedLazyInhabitant.class.cast(managedInhabitant);
-////      if (rcli.getReal() == this) {
-////        return;
-////      }
-//      
-//      if (null == managed) {
-//        managed = new ArrayList<Inhabitant<?>>();
-//      } else {
-//        cleanManaged();
-//      }
-//      
-//      managed.add(managedInhabitant);
-//    }
-//
-//    /**
-//     * Clean out old, gc-collected managed inhabitants
-//     */
-//    private void cleanManaged() {
-//      Iterator<Inhabitant<?>> iter = managed.iterator();
-//      while (iter.hasNext()) {
-//        if (!iter.next().isInstantiated()) {
-//          iter.remove();
-//        }
-//      }
-//    }
-//
-//    @Override
-//    public void release() {
-//      if (null != managed) {
-//        releaseManaged();
-//      }
-//    }
-//
     public void dispose(T object) {
       if (object instanceof PreDestroy) {
           logger.log(Level.FINER, "calling PreDestroy on {0}", object);
           ((PreDestroy)object).preDestroy();
       }
     }
-//    
-//    protected synchronized void releaseManaged() {
-//      if (null != managed) {
-//        RuntimeException lastException = null;
-//        
-//        for (Inhabitant<?> i : managed) {
-//          logger.log(Level.FINER, "releasing {0} on behalf of {1}", new Object[] {i, this});
-//          try {
-//            i.release();
-//          } catch (RuntimeException e) {
-//            logger.log(Level.FINE, "error encountered", e);
-//            lastException = e;
-//          }
-//        }
-//        
-//        managed = null;
-//        
-//        if (null != lastException) {
-//          throw lastException;
-//        }
-//      }
-//    }
     
     public <V extends Annotation> V getAnnotation(Class<V> annotation) {
         return getAnnotation(type(), annotation, false);
