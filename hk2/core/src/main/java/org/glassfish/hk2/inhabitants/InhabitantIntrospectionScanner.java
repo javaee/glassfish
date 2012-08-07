@@ -42,8 +42,6 @@ package org.glassfish.hk2.inhabitants;
 import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.ContractProvided;
-import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
@@ -108,12 +106,7 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
             findInterfaceContracts(im.getParent(), interfaces, annInterfaces);
         }
         if (isContract(im)) {
-            if (im instanceof AnnotationType) {
-              String name = im.getName();
-              if (!name.equals(FactoryFor.class.getName())) {
-                annInterfaces.add(name);
-              }
-            } else {
+            if (!(im instanceof AnnotationType)) {
               interfaces.add(im.getName());
             }
         }
@@ -124,30 +117,6 @@ public class InhabitantIntrospectionScanner implements Iterable<InhabitantParser
         for (AnnotationModel am : ae.getAnnotations()) {
             AnnotationType at = am.getType();
             findInterfaceContracts(at, interfaces, annInterfaces);
-            
-            String name = at.getName();
-            if (name.equals(ContractProvided.class.getName())) {
-              String val = scrub(am.getValues().get("value"));
-              if (null != val) {
-                interfaces.add(val);
-              }
-            } else if (name.equals(FactoryFor.class.getName())) {
-              Object rawObj = am.getValues().get("value");
-              if (Collection.class.isInstance(rawObj)) {
-                Collection<?> coll = (Collection<?>) am.getValues().get("value");
-                for (Object obj : coll) {
-                  String val = scrub(obj);
-                  if (null != val) {
-                    annInterfaces.add(name + ":" + val);
-                  }
-                }
-              } else {
-                String val = scrub(rawObj);
-                if (null != val) {
-                  annInterfaces.add(name + ":" + val);
-                }
-              }
-            }
         }
     }
     

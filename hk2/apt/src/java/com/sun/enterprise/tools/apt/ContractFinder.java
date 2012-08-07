@@ -47,7 +47,6 @@ import com.sun.mirror.type.InterfaceType;
 import com.sun.mirror.type.MirroredTypeException;
 import com.sun.mirror.type.ClassType;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.ContractProvided;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -79,8 +78,6 @@ public class ContractFinder {
     }
 
     private ContractFinder check(TypeDeclaration d) {
-        // look for @ContractProvided interface
-        checkContractProvided(d);
 
         // traverse up the inheritance tree and find all supertypes that have @Contract
         while(true) {
@@ -96,17 +93,6 @@ public class ContractFinder {
         }
 
         return this;
-    }
-
-    private void checkContractProvided(TypeDeclaration impl) {
-        ContractProvided provided = impl.getAnnotation(ContractProvided.class);
-        if (provided != null) {
-            try {
-                provided.value();
-            } catch (MirroredTypeException e) {
-                result.add(((DeclaredType)e.getTypeMirror()).getDeclaration());
-            }
-        }
     }
 
     private void checkContract(TypeDeclaration type) {

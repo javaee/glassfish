@@ -185,14 +185,6 @@ public class InhabitantsGenerator implements AnnotationProcessor, RoundCompleteL
         public void processGenericImpl(String service, InhabitantsDescriptor descriptor, TypeDeclaration d, AnnotationMirror a) {
                 List<String> names = getIndexValues(a);
                 String contract=null;
-                ContractProvided cp = a.getAnnotationType().getDeclaration().getAnnotation(ContractProvided.class);
-                if (cp!=null) {
-                    try {
-                        cp.value();
-                    } catch (MirroredTypeException e) {
-                        contract = ((DeclaredType)e.getTypeMirror()).getDeclaration().getQualifiedName();
-                    }
-                }
 
                 String qualifiedName = d.getQualifiedName();
                 
