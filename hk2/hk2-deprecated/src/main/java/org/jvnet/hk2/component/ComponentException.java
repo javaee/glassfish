@@ -46,7 +46,7 @@ package org.jvnet.hk2.component;
  * @author Jerome Dochez
  */
 @Deprecated
-public class ComponentException extends org.glassfish.hk2.ComponentException {
+public class ComponentException extends RuntimeException {
 
     public ComponentException(String message) {
         super(message);
