@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet("/test")
 public class TestServlet extends HttpServlet {
-    private static final int MAX = 600000;
+    private static final int MAX_TIME_MILLIS = 10 * 1000;
     
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
@@ -67,12 +67,19 @@ public class TestServlet extends HttpServlet {
         output.write("START\n".getBytes());    
         output.flush();
 
-        int count = 0;
+        long count = 0;
         System.out.println("--> Begin for loop");
         boolean prevCanWrite = true;
-        while ((prevCanWrite = output.canWrite()) && count < MAX) {
+        final long startTimeMillis = System.currentTimeMillis();
+
+        while ((prevCanWrite = output.canWrite())) {
             writeData(output);
             count++;
+
+            if (System.currentTimeMillis() - startTimeMillis > MAX_TIME_MILLIS) {
+                System.out.println("Error: can't overload output buffer");
+                return;
+            }
         }
         System.out.println("--> prevCanWriite = " + prevCanWrite + 
                 ", count = " + count);
