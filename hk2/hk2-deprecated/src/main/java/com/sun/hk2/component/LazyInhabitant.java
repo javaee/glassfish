@@ -85,11 +85,6 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
         }
     }
 
-    @Override
-    public Map<String, List<String>> metadata() {
-        return getDescriptor().getMetadata();
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected synchronized void fetch() {
@@ -142,7 +137,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
      * Creates {@link Creator} for instantiating objects.
      */
     protected Creator<T> createCreator(Class<T> c) {
-        Map<String, List<String>> metadata = metadata();
+        Map<String, List<String>> metadata = getMetadata();
         return Creators.create(c, getServiceLocator(), metadata);
     }
 

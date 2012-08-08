@@ -84,14 +84,6 @@ public class InhabitantImpl<T> extends AbstractInhabitantImpl<T> {
     }
 
     /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Inhabitant#metadata()
-     */
-    @Override
-    public Map<String, List<String>> metadata() {
-        return getMetadata();
-    }
-
-    /* (non-Javadoc)
      * @see org.jvnet.hk2.component.Inhabitant#release()
      */
     @Override

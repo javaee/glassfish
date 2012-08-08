@@ -322,7 +322,7 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
      *      Otherwise this can be null.
      */
     public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
-        super(habitat, model.injector.getLoader(), model.targetTypeName, model.injector.metadata());
+        super(habitat, model.injector.getLoader(), model.targetTypeName, model.injector.getMetadata());
         if (in!=null) {
             this.location =  new LocationImpl(in.getLocation());
         } else {
@@ -1166,7 +1166,7 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     @Override
     @SuppressWarnings("unchecked")
     protected Creator createCreator(Class c) {
-        return (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyCreator(c, metadata(), this):new ConfiguredCreator(super.createCreator(c),this));
+        return (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyCreator(c, getMetadata(), this):new ConfiguredCreator(super.createCreator(c),this));
         // turning off @Configured and @CagedBy until we get a clear picture on how this should work together.
 /*        Womb womb = (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));
         if (cagedBy==null) {

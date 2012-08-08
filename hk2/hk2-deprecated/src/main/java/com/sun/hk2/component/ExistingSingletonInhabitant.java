@@ -99,11 +99,6 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> im
         return type;
     }
 
-    @Override
-    public Map<String, List<String>> metadata() {
-        return (Map<String, List<String>>) getDescriptor().getMetadata();
-    }
-
     public T get(Inhabitant onBehalfOf) throws ComponentException {
         return object;
     }

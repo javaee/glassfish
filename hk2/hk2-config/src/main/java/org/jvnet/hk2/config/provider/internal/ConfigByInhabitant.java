@@ -72,11 +72,6 @@ import java.util.Map;
   }
 
   @Override
-  public Map<String, List<String>> metadata() {
-    return getDescriptor().getMetadata();
-  }
-
-  @Override
   public synchronized Class type() {
     return (null == managedService) ? null : managedService.getClass();
   }

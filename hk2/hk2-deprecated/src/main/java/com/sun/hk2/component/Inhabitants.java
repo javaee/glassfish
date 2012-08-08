@@ -137,7 +137,7 @@ public class Inhabitants {
    */
   // TODO: Does this really belong here?
   public static <T> Collection<String> getNamesFor(Inhabitant<T> i, String indexName) {
-    Map<String, List<String>> metadata = i.metadata();
+    Map<String, List<String>> metadata = i.getMetadata();
 	List<String> list = null;
 	
 	if (metadata != null) {

@@ -97,7 +97,7 @@ import com.sun.hk2.component.InjectionResolverQuery;
     }
 
     // actualize the inhabitant instance from this meta inhabitant
-    ConfigByCreator creator = new ConfigByCreator(txnContextResolver, configBean, real.type(), h, real.metadata());
+    ConfigByCreator creator = new ConfigByCreator(txnContextResolver, configBean, real.type(), h, real.getMetadata());
     ConfigByInhabitant managedInhabitantInstance = new ConfigByInhabitant(store, this, creator, null);
 
     Inhabitant<?> old = configured.put(configBean, managedInhabitantInstance);

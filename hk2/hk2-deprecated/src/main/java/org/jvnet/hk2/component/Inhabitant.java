@@ -133,23 +133,6 @@ public interface Inhabitant<T> extends Provider<T>, Holder<T>, Descriptor {
     T get(Inhabitant onBehalfOf);
 
     /**
-     * Gets the metadata associated with this inhabitant.
-     *
-     * <p>
-     * This data is usually used by a sub-system of HK2, and not really meant to
-     * be used by applications. (At least for now.)
-     * The main benefit of metadata is that it's available right away
-     * as soon as the {@link ServiceLocator} is properly initialized, even before
-     * component classes are loaded. In contrast, accessing annotations would require
-     * classes to be loaded and resolved.
-     *
-     * @return
-     *      can be empty but never null. The values are read-only.
-     * @see Service#metadata() 
-     */
-    Map<String, List<String>> metadata();
-
-    /**
      * Called to orderly shutdown {@link ServiceLocator}.
      * <p>
      * The expected behavior is for objects to get its {@link org.glassfish.hk2.api.PreDestroy}
