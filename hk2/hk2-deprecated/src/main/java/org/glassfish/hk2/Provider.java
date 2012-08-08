@@ -42,6 +42,8 @@ package org.glassfish.hk2;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
+import org.jvnet.hk2.component.ComponentException;
+
 /**
  * Similar to the {@link Factory} contract, providing a means to access the
  * class type instance. The scope of the instances produces by the provider

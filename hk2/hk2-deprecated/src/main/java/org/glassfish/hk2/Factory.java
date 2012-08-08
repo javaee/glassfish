@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2;
 
+import org.jvnet.hk2.component.ComponentException;
+
 /**
  * Provides an instance of T either by creating a new one at each request
  * or by returning an existing one.
