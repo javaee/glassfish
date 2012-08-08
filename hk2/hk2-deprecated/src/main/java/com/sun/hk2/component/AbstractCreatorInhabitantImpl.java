@@ -62,7 +62,7 @@ public abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitan
     protected final Creator<T> creator;
 
     protected AbstractCreatorInhabitantImpl(Creator<T> creator) {
-        this(getDescriptorFor(creator), creator);
+        this(creator, creator);
     }
 
     public AbstractCreatorInhabitantImpl(Descriptor descriptor, Creator<T> creator) {

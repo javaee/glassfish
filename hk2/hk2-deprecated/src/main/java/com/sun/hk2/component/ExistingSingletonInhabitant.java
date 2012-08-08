@@ -85,13 +85,13 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> im
 
     public ExistingSingletonInhabitant(Class<T> type, T object, Map<String, List<String>> metadata) {
         this(type, object);
-        super.getDescriptor().getMetadata().putAll(metadata);
+        super.getMetadata().putAll(metadata);
     }
     
     @Override
     public String toString() {
         return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-          "(value=" + get(null) + ", " + getDescriptor() + ")\n";
+          "(value=" + get(null) + ", " + super.toString() + ")\n";
     }
 
     @Override

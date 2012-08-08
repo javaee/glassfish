@@ -76,7 +76,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   @SuppressWarnings("unchecked")
   public EventPublishingInhabitant(ServiceLocator serviceLocator, Inhabitant<?> delegate) {
-      super(getDescriptorFor(delegate));
+      super(delegate);
       this.real = (Inhabitant<T>) delegate;
       this.serviceLocator = serviceLocator;
   }

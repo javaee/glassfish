@@ -135,31 +135,6 @@ public class Habitat implements ServiceLocator, BaseServiceLocator {
      */
 
     /**
-     * Removes all inhabitants for a particular type
-     *
-     * @param type of the component
-     * @return true if any inhabitants were removed
-     */
-    public boolean removeAllByType(Class<?> type) {
-        if (type == null) return false;
-        
-        Filter filter = BuilderHelper.createContractFilter(type.getName());
-        List<ActiveDescriptor<?>> descriptors = delegate.getDescriptors(filter);
-        if (descriptors.isEmpty()) {
-            return false;
-        }
-        
-        DynamicConfigurationService dcs = delegate.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        config.addUnbindFilter(filter);
-        
-        config.commit();
-        
-        return true;
-    }
-
-    /**
      * Adds a new inhabitant.
      * <p/>
      * <p/>
