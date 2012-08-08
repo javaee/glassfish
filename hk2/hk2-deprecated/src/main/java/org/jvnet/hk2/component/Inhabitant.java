@@ -74,30 +74,6 @@ import com.sun.hk2.component.Holder;
 public interface Inhabitant<T> extends Provider<T>, Holder<T>, Descriptor {
 
     /**
-     * Type of the inhabitant.
-     *
-     * <p>
-     * The only binding contract that needs to be honored is that the {@link #get()}
-     * method returns an instance assignable to this type. That is,
-     * {@code get().getClass()==type()} doesn't necessarily have to hold,
-     * but {@code type().isInstance(get())} must.
-     *
-     * <p>
-     * This is particularly true when {@link Factory} is involved, as in such
-     * case HK2 has no way of knowing the actual type.
-     *
-     * That said, this method is not designed for the semantics of
-     * contract/implementation split --- implementations of a contract
-     * should return the concrete type from this method, and use
-     * {@link ServiceLocator#addIndex(Inhabitant, String, String) habitat index}
-     * to support look-up by contract. 
-     *
-     * @return
-     *      Always non-null, same value.
-     */
-    Class<? extends T> type();
-
-    /**
      * Returns the instance of this inhabitant.
      *
      * <p>
@@ -143,15 +119,4 @@ public interface Inhabitant<T> extends Provider<T>, Holder<T>, Descriptor {
      * is invoked.
      */
     void release();
-    
-    /**
-     * The {@link Descriptor} fully characterizes the attributes
-     * of this Provider.
-     * 
-     * @return 
-     *  a non-null Descriptor describing the complete set of
-     *  attributes of the provider.
-     */
-    Descriptor getDescriptor();
-
 }

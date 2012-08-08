@@ -57,7 +57,7 @@ import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
  * @author Kohsuke Kawaguchi
  */
 @Deprecated
-public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements ClassLoaderHolder {
+public class LazyInhabitant<T> extends EventPublishingInhabitant<T> {
     /**
      * 
      */
@@ -93,10 +93,6 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
             
             real = (Inhabitant<T>) reified.getBaseDescriptor();
         }
-    }
-    
-    public final ClassLoader getClassLoader() {
-        return ((HolderHK2LoaderImpl) getLoader()).getClassLoader();
     }
     
     @SuppressWarnings("unchecked")

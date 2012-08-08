@@ -58,24 +58,10 @@ import org.jvnet.hk2.deprecated.internal.Utilities;
  */
 @Deprecated
 public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implements Inhabitant<T> {
-//    private static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
-    
     protected static final Logger logger = Logger.getLogger(AbstractInhabitantImpl.class.getName());
-
-    protected final Descriptor descriptor = this;
-    
-//    private Collection<Inhabitant<?>> managed;
-
     
     public AbstractInhabitantImpl(Descriptor descriptorOfSelf) {
         super((descriptorOfSelf == null) ? new DescriptorImpl() : descriptorOfSelf);
-    }
-    
-    protected static Descriptor getDescriptorFor(Inhabitant<?> i) {
-        if (AbstractInhabitantImpl.class.isInstance(i)) {
-            return AbstractInhabitantImpl.class.cast(i).getDescriptor();
-        }
-        return null;
     }
     
     public boolean matches(Descriptor matchTo) {
@@ -89,15 +75,10 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
     }
 
     @Override
-    public Descriptor getDescriptor() {
-        return descriptor;
-    }
-
-    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(getClass().getSimpleName() + "-" + System.identityHashCode(this) + "(");
         
-        DescriptorImpl.pretty(sb, descriptor);
+        DescriptorImpl.pretty(sb, this);
         
         sb.append(")\n");
         
