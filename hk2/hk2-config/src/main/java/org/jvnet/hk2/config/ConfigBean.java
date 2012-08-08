@@ -161,7 +161,7 @@ public class ConfigBean extends Dom implements ConfigView {
 
     protected void setter(ConfigModel.Property target, Object value) throws Exception  {
         if (!writeLock) {
-            throw new PropertyVetoException("Instance of " + typeName() + " named '" + getKey() +
+            throw new PropertyVetoException("Instance of " + getImplementation() + " named '" + getKey() +
                     "' is not locked for writing when changing attribute " + target.xmlName()
                     + ", you must use transaction semantics to access it.", null);
         }

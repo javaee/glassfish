@@ -95,11 +95,6 @@ public class ExistingSingletonInhabitant<T> extends AbstractInhabitantImpl<T> im
     }
 
     @Override
-    public String typeName() {
-        return type.getName();
-    }
-
-    @Override
     public Class<T> type() {
         return type;
     }

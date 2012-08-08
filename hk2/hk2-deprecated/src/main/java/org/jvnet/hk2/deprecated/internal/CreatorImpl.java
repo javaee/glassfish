@@ -76,14 +76,6 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
     }
 
     /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Inhabitant#typeName()
-     */
-    @Override
-    public String typeName() {
-        return getImplementation();
-    }
-
-    /* (non-Javadoc)
      * @see org.jvnet.hk2.component.Inhabitant#type()
      */
     @Override

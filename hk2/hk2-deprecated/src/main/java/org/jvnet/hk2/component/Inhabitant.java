@@ -72,12 +72,6 @@ import com.sun.hk2.component.Holder;
 // TODO: Eventually get rid of auto-depend's Holder
 @Deprecated
 public interface Inhabitant<T> extends Provider<T>, Holder<T>, Descriptor {
-    /**
-     * The short-cut for {@code type().getName()}
-     * but this allows us to defer loading the actual types.
-     */
-
-    String typeName();
 
     /**
      * Type of the inhabitant.

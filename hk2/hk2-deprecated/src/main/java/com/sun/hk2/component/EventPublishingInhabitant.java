@@ -82,11 +82,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   }
 
   @Override
-  public String typeName() {
-    return (null == real) ? null : real.typeName();
-  }
-
-  @Override
   public Map<String, List<String>> metadata() {
     return (null == real) ? null : real.metadata();
   }
@@ -158,6 +153,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   @Override
   public String toString() {
       return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-          "(" + typeName() + ", active: " + real + ")";
+          "(" + getImplementation() + ", active: " + real + ")";
   }
 }

@@ -125,7 +125,7 @@ public class TracingUtilities {
                         Module m = null;
                         try {
                             if (reason.isActive()) {
-                                m = registry.find(loader.loadClass(reason.typeName()));
+                                m = registry.find(loader.loadClass(reason.getImplementation()));
                             }
                         } catch (ClassNotFoundException e) {
                             m = null;
