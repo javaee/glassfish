@@ -185,7 +185,7 @@ public class ConfigTransactionCoordinator
         if (null == index) {
           // intentionally do not register byType since that is reserved for the meta inhabitant entry
 //          habitat.add(i);
-          habitat.addIndex(i, i.typeName(), name);
+          habitat.addIndex(i, i.getImplementation(), name);
         } else {
           habitat.addIndex(i, index, name);
         }
@@ -232,7 +232,7 @@ public class ConfigTransactionCoordinator
         if (null == index) {
           // intentionally do not register byType since that is reserved for the meta inhabitant entry
 //          habitat.add(i);
-          removed = habitat.removeIndex(i.typeName(), i);
+          removed = habitat.removeIndex(i.getImplementation(), i);
         } else {
           removed = habitat.removeIndex(index, i);
         }

@@ -87,7 +87,7 @@ public class TracingUtilities {
                 buffer.append("|");
             }
             buffer.append("->");
-            buffer.append(" Inhabitant : ").append(t.typeName()).append(" initialized at ").
+            buffer.append(" Inhabitant : ").append(t.getImplementation()).append(" initialized at ").
                     append(inception).append(" took ").append(elapsed());
             ps.println(buffer);
             
@@ -112,7 +112,7 @@ public class TracingUtilities {
     public static void dump(String typeName, Node node, PrintStream ps) {
 
         for (Node child : new ArrayList<Node>(node.children)) {
-            if (child.t.typeName().equals(typeName)) {
+            if (child.t.getImplementation().equals(typeName)) {
                 child.dump("", ps);
                 return;
             } else {

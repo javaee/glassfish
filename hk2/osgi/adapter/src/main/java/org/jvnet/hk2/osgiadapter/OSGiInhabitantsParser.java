@@ -109,7 +109,7 @@ public class OSGiInhabitantsParser extends InhabitantsParser {
                 fqcnContractNames.add(contract.substring(0, idx));
             }
         }
-        fqcnContractNames.add(i.typeName());
+        fqcnContractNames.add(i.getImplementation());
         Properties props = new Properties();
         // todo : check what service name should be applied, watch out index can have
         // difference service name like for companionOf

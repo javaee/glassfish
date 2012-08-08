@@ -81,10 +81,4 @@ import java.util.Map;
     return (null == managedService) ? null : managedService.getClass();
   }
 
-  @Override
-  public String typeName() {
-    // TODO: this might be the wrong decision
-    return lead().typeName();
-  }
-
 }

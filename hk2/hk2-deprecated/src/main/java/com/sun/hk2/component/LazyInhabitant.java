@@ -69,11 +69,6 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     }
     
     @Override
-    public String typeName() {
-        return getImplementation();
-    }
-    
-    @Override
     public Class<? extends T> type() {
         return type(null);
     }
@@ -111,7 +106,7 @@ public class LazyInhabitant<T> extends EventPublishingInhabitant<T> implements C
     
     @SuppressWarnings("unchecked")
     private Class<T> loadClass(HK2Loader loader) {
-        String typeName = typeName();
+        String typeName = getImplementation();
         logger.log(Level.FINER, "loading class for: {0}", typeName);
         
         //final ClassLoader cl = getClassLoader();

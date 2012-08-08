@@ -67,14 +67,6 @@ public class InhabitantImpl<T> extends AbstractInhabitantImpl<T> {
     }
 
     /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Inhabitant#typeName()
-     */
-    @Override
-    public String typeName() {
-        return desc.getImplementation();
-    }
-
-    /* (non-Javadoc)
      * @see org.jvnet.hk2.component.Inhabitant#type()
      */
     @Override

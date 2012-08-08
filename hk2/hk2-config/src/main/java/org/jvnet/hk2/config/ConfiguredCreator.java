@@ -69,7 +69,7 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
     }
 
     public String typeName() {
-        return core.typeName();
+        return core.getImplementation();
     }
 
     public Class<? extends T> type() {

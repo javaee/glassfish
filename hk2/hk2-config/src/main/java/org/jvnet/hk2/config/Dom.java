@@ -179,7 +179,7 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
         ctrs.add(type(loader));
         ctrs.add(ConfigBean.class);
         DomDescriptor domDesc = new DomDescriptor(this, ctrs, PerLookup.class,
-                typeName(), new HashSet<Annotation>());
+                getImplementation(), new HashSet<Annotation>());
         domDesc.setLoader(loader);
         ActiveDescriptor<Dom> addedDescriptor = dc.addActiveDescriptor(domDesc);
 
@@ -195,7 +195,7 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
         
         final long locatorId = addedDescriptor.getLocatorId();
         final long serviceId = addedDescriptor.getServiceId();
-        final String name = typeName();
+        final String name = getImplementation();
         
         ActiveDescriptor<Dom> myDescriptor = (ActiveDescriptor<Dom>) getHabitat().getBestDescriptor(new IndexedFilter() {
 
@@ -1055,7 +1055,7 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
             // getter
             return getter(p, method.getGenericReturnType());
         } else {
-            throw new PropertyVetoException("Instance of " + typeName() + " named '" + getKey() +
+            throw new PropertyVetoException("Instance of " + getImplementation() + " named '" + getKey() +
                     "' is not locked for writing when invoking method " + method.getName()
                     + " you must use transaction semantics to access it.", null);
         }
