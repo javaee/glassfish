@@ -39,16 +39,8 @@
  */
 package com.sun.hk2.component;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectStreamClass;
 import java.lang.annotation.Annotation;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,8 +49,6 @@ import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.deprecated.internal.Utilities;
-
-import sun.misc.BASE64Decoder;
 
 /**
  * Partial implementation of {@link Inhabitant} that defines methods whose
@@ -71,8 +61,6 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
 //    private static final boolean MANAGED_ENABLED = Habitat.MANAGED_INJECTION_POINTS_ENABLED;
     
     protected static final Logger logger = Logger.getLogger(AbstractInhabitantImpl.class.getName());
-
-    private Collection<Inhabitant> companions;
 
     protected final Descriptor descriptor = this;
     
@@ -131,55 +119,6 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
     @Override
     public <U> U getByType(Class<U> type) {
         return (U) get();
-    }
-
-    @Override
-    public <T> T getSerializedMetadata(final Class<T> type, String key) {
-        List<String> lst = metadata().get(key);
-        if (lst == null || lst.isEmpty()) {
-            return null;
-        }
-        String v = lst.get(0);
-        if (v==null) {
-            return null;
-        }
-
-        try {
-            ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(new BASE64Decoder().decodeBuffer(v))) {
-                final ClassLoader cl = System.getSecurityManager()!=null?
-                        AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                            @Override
-                            public ClassLoader run() {
-                                return type.getClassLoader();
-                            }
-                        }):
-                        type.getClassLoader();
-
-                /**
-                 * Use ClassLoader of the given type. Otherwise by default we end up using the classloader
-                 * that loaded HK2, which won't be able to see most of the user classes.
-                 */
-                protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
-                    String name = desc.getName();
-                    try {
-                        return Class.forName(name,false,cl);
-                    } catch (ClassNotFoundException ex) {
-                        return super.resolveClass(desc);
-                    }
-                }
-            };
-
-            return type.cast(is.readObject());
-        } catch (ClassNotFoundException e) {
-            throw new Error(e);
-        } catch (IOException e) {
-            throw new Error(e);
-        }
-    }
-
-    @Override
-    public final <T> T getSerializedMetadata(Class<T> type) {
-        return getSerializedMetadata(type,type.getName());
     }
 
     public void dispose(T object) {
