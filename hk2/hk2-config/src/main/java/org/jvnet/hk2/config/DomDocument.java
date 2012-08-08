@@ -110,7 +110,7 @@ public class DomDocument<T extends Dom> {
     /*package*/ ConfigModel buildModel(Inhabitant<? extends ConfigInjector> i) {
         ConfigModel m = models.get(i);
         if(m==null)
-            m = new ConfigModel(this, i, i.metadata(), habitat);
+            m = new ConfigModel(this, i, i.getMetadata(), habitat);
         return m;
     }
 

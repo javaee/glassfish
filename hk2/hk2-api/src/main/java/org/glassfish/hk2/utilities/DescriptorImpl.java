@@ -314,6 +314,16 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    return ReflectionHelper.removeAllMetadata(metadatas, key);
 	}
 	
+	/**
+     * Removes all metadata values
+     * 
+     * @param key The key of the metadata values to remove
+     * @return true if any value was removed
+     */
+    public synchronized void clearMetadata() {
+        metadatas.clear();
+    }
+	
 	/* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getLoader()
      */

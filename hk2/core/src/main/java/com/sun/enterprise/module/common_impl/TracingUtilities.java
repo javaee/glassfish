@@ -140,7 +140,7 @@ public class TracingUtilities {
                             currentBundleName = m.getName();
 
                         w.append(reason + " called from " + caller.getClassName()
-                                + "." + caller.getMethodName() + ":" + caller.getLineNumber()+" metadata \n" + reason.metadata()+"\n");
+                                + "." + caller.getMethodName() + ":" + caller.getLineNumber()+" metadata \n" + reason.getMetadata()+"\n");
                         w.append("\n");
 
                     }

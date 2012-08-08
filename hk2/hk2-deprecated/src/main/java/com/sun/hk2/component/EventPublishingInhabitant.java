@@ -82,11 +82,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   }
 
   @Override
-  public Map<String, List<String>> metadata() {
-    return (null == real) ? null : real.metadata();
-  }
-
-  @Override
   public void release() {
     isActive();
     if (null != real) {

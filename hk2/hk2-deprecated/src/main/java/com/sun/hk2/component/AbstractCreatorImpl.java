@@ -62,7 +62,6 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
 
     protected final Class<? extends T> type;
     protected final ServiceLocator serviceLocator;
-    private final Map<String, List<String>> metadata;
 
     public AbstractCreatorImpl(Class<? extends T> type, ServiceLocator serviceLocator, Map<String, List<String>> metadata) {
         super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(type.getName(), null, metadata));
@@ -70,7 +69,16 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         this.type = type;
         this.serviceLocator = serviceLocator;
         
-        this.metadata = metadata;
+        clearMetadata();
+        
+        if (metadata != null) {
+            for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
+                String key = entry.getKey();
+                for (String value : entry.getValue()) {
+                    addMetadata(key, value);
+                }
+            }
+        }
         
     }
 
@@ -109,11 +117,6 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
     public void release() {
         // Creator creates a new instance every time,
         // so there's nothing to release here.
-    }
-
-    @Override
-    public Map<String, List<String>> metadata() {
-        return metadata;
     }
 
     /**

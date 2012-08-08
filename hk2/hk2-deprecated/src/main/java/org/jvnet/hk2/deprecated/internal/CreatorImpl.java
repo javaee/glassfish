@@ -59,7 +59,6 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
 public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
     private final Class<?> c;
     private final ServiceLocator locator;
-    private final Map<String, List<String>> metadata;
     
     /**
      * 
@@ -72,7 +71,18 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
         super(d);
         this.c = c;
         this.locator = locator;
-        this.metadata = metadata;
+        
+        clearMetadata();
+        
+        if (metadata != null) {
+            for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
+                String key = entry.getKey();
+                for (String value : entry.getValue()) {
+                    addMetadata(key, value);
+                }
+            }
+        }
+        
     }
 
     /* (non-Javadoc)
@@ -91,14 +101,6 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
     public T get(Inhabitant onBehalfOf) {
         Object retVal = locator.getService(c);
         return (T) retVal;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Inhabitant#metadata()
-     */
-    @Override
-    public Map<String, List<String>> metadata() {
-        return metadata;
     }
 
     /* (non-Javadoc)

@@ -77,10 +77,6 @@ public abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitan
     public final Class<? extends T> type() {
         return creator.type();
     }
-
-    public Map<String, List<String>> metadata() {
-        return creator.metadata();
-    }
     
     public Creator<T> getCreator() {
         return creator;

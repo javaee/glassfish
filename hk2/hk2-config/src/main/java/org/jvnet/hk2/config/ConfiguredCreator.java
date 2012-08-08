@@ -100,10 +100,6 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
         dom.inject(t);
     }
 
-    public Map<String, List<String>> metadata() {
-        return core.metadata();
-    }
-
     public void release() {
         core.release();
     }
