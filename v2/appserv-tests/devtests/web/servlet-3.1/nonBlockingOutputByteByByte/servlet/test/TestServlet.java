@@ -38,6 +38,8 @@
  * holder.
  */
 
+package test;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -86,7 +88,7 @@ public class TestServlet extends HttpServlet {
 
          try {
             if (latch.await(10, TimeUnit.SECONDS)) {
-                System.out.println("SUCCESS");
+                System.out.println("COMPLETED");
             } else {
                 System.out.println("TIMEOUT");
             }
@@ -94,7 +96,7 @@ public class TestServlet extends HttpServlet {
         }
     }
 
-    class WriteListenerImpl implements WriteListener {
+    static class WriteListenerImpl implements WriteListener {
         private ServletOutputStream output = null;
         private CountDownLatch latch = null;
 
