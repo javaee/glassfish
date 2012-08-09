@@ -41,11 +41,14 @@ package com.sun.enterprise.module.bootstrap;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
@@ -77,22 +80,45 @@ public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
         }
         dupSet.add(descriptorImpl);
         
-        return descriptorImpl;
-    }
-    
-    /**
-     * This method initializes the dupSet with all of the existing descriptors
-     * in the system, so that the process method will not add any duplicates
-     */
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        List<ActiveDescriptor<?>> allDescriptors =
-                locator.getDescriptors(BuilderHelper.allFilter());
-        
-        for (ActiveDescriptor<?> aDescriptor : allDescriptors) {
-            dupSet.add(new DescriptorImpl(aDescriptor));
+        Set<String> contracts = descriptorImpl.getAdvertisedContracts();
+        String contract = null;
+        for (String candidate : contracts) {
+            if (candidate.equals(descriptorImpl.getImplementation())) {
+                // Prefer this one over anything else
+                contract = candidate;
+                break;
+            }
+            
+            contract = candidate;
         }
+        
+        final String fContract = contract;
+        final String fName = descriptorImpl.getName();
+        final DescriptorImpl fDescriptorImpl = descriptorImpl;
+        
+        if (locator.getBestDescriptor(new IndexedFilter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                return fDescriptorImpl.equals(d);
+            }
+
+            @Override
+            public String getAdvertisedContract() {
+                return fContract;
+            }
+
+            @Override
+            public String getName() {
+                return fName;
+            }
+            
+        }) != null) {
+            // Already in the locator, do not add again
+            return null;
+        }
+        
+        return descriptorImpl;
     }
 
 	@Override
