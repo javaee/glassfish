@@ -606,12 +606,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
-        synchronized (lock) {
-            List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true);
-            results = narrow(candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
-            if (!results.getErrors().isEmpty()) {
-                currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-            }
+        List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true);
+        results = narrow(this, candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
+        if (!results.getErrors().isEmpty()) {
+            currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
         }
         
         if (currentErrorHandlers != null) {
@@ -666,12 +664,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Filter filter = BuilderHelper.createContractFilter(rawClass.getName());
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
-        synchronized (lock) {
-            List<ActiveDescriptor<?>> candidates = getDescriptors(filter);
-            results = narrow(candidates, contractOrImpl, null, true, null, qualifiers);
-            if (!results.getErrors().isEmpty()) {
-                currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-            }
+        List<ActiveDescriptor<?>> candidates = getDescriptors(filter);
+        results = narrow(this, candidates, contractOrImpl, null, true, null, qualifiers);
+        if (!results.getErrors().isEmpty()) {
+            currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
         }
         
         if (currentErrorHandlers != null) {
@@ -708,12 +704,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
-        synchronized (lock) {
-            List<ActiveDescriptor<?>> candidates = getDescriptors(searchCriteria);
-            results = narrow(candidates, null, null, true, null);
-            if (!results.getErrors().isEmpty()) {
-                currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-            }
+        List<ActiveDescriptor<?>> candidates = getDescriptors(searchCriteria);
+        results = narrow(this, candidates, null, null, true, null);
+        if (!results.getErrors().isEmpty()) {
+            currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
         }
         
         if (currentErrorHandlers != null) {
@@ -1108,7 +1102,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return retVal;
     }
 
-    private NarrowResults narrow(List<ActiveDescriptor<?>> candidates,
+    private static NarrowResults narrow(ServiceLocator locator, List<ActiveDescriptor<?>> candidates,
             Type requiredType, String name, boolean getAll, Injectee injectee, Annotation... qualifiers) {
         NarrowResults retVal = new NarrowResults();
         
@@ -1118,7 +1112,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             // We will not reify them all, we will only reify until we match
             if (!candidate.isReified()) {
                 try {
-                    candidate = reifyDescriptor(candidate, injectee);
+                    candidate = locator.reifyDescriptor(candidate, injectee);
                 }
                 catch (MultiException me) {
                     retVal.addError(candidate, injectee, me);
