@@ -1,1 +1,3 @@
 instanceHttpPortDynamicReconfig #investigate random failures
+servlet-3.1/nonBlockingOutput #wait for Grizzly integration
+servlet-3.1/nonBlockingInput #wait for Grizzly integration
