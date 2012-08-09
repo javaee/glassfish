@@ -532,7 +532,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return retVal;
     }
     
-    /* package */ void reify(Class<?> implClass, ServiceLocatorImpl locator, Collector collector) {
+    /* package */ synchronized void reify(Class<?> implClass, ServiceLocatorImpl locator, Collector collector) {
         if (!preAnalyzed) {
             this.implClass = implClass;
         }
