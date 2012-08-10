@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Injectee;
@@ -116,7 +118,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         
         setRanking(ranking);
         setDescriptorType(descriptorType);
-        setName(name);
+        setName(name);  // This MUST be called after the qualifiers have already been set
         
         if (scope != null) {
             setScope(scope.getName());
@@ -143,6 +145,25 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
                 addMetadata(key, value);
             }
         }
+    }
+    
+    private void removeNamedQualifier() {
+        for (Annotation qualifier : qualifiers) {
+            if (qualifier.annotationType().equals(Named.class)) {
+                removeQualifierAnnotation(qualifier);
+                return;
+            }
+        }
+    }
+    
+    public synchronized void setName(String name) {
+        super.setName(name);
+        
+        removeNamedQualifier();
+        
+        if (name == null) return;
+        
+        addQualifierAnnotation(new NamedImpl(name));        
     }
 
     /* (non-Javadoc)

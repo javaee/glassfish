@@ -44,6 +44,8 @@ import javax.inject.Named;
 import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
+ * This is an implementation of the {@link Named} annotation.
+ * 
  * @author jwells
  */
 public class NamedImpl extends AnnotationLiteral<Named> implements Named {

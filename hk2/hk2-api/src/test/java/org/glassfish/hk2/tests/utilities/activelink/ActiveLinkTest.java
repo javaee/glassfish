@@ -39,8 +39,10 @@
  */
 package org.glassfish.hk2.tests.utilities.activelink;
 
+import java.lang.annotation.Annotation;
 import java.util.Set;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import junit.framework.Assert;
@@ -123,8 +125,39 @@ public class ActiveLinkTest {
         testSetOfOne(desc.getAdvertisedContracts(), SimpleInterface1.class.getName());
         testSetOfOne(desc.getContractTypes(), SimpleInterface1.class);
         
-        testSetOfOne(desc.getQualifierAnnotations(), sq1);
-        testSetOfOne(desc.getQualifiers(), SimpleQualifier1.class.getName());
+        boolean foundSQ1 = false;
+        boolean foundName = false;
+        for (Annotation anno : desc.getQualifierAnnotations()) {
+            if (anno.annotationType().equals(SimpleQualifier1.class)) {
+                foundSQ1 = true;
+            }
+            else if (anno.annotationType().equals(Named.class)) {
+                String annoName = ((Named) anno).value();
+                Assert.assertSame(annoName, NAME);
+                foundName = true;
+            }
+            else {
+                Assert.fail("Unknown annotation found " + anno);
+            }
+        }
+        Assert.assertTrue(foundName);
+        Assert.assertTrue(foundSQ1);
+        
+        foundSQ1 = false;
+        foundName = false;
+        for (String anno : desc.getQualifiers()) {
+            if (anno.equals(SimpleQualifier1.class.getName())) {
+                foundSQ1 = true;
+            }
+            else if (anno.equals(Named.class.getName())) {
+                foundName = true;
+            }
+            else {
+                Assert.fail("Unknown annotation found " + anno);
+            }
+        }
+        Assert.assertTrue(foundName);
+        Assert.assertTrue(foundSQ1);
         
         Assert.assertNull(desc.getBaseDescriptor());
         Assert.assertNotNull(desc.getLoader());
