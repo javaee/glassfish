@@ -41,7 +41,10 @@ package org.glassfish.hk2.utilities;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -256,6 +259,30 @@ public class BuilderHelper {
     public static <T> AbstractActiveDescriptor<T> createConstantDescriptor(T constant) {
         if (constant == null) throw new IllegalArgumentException();
         
+        Set<Type> contracts = ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.class);
+        
+        return createConstantDescriptor(constant,
+                ReflectionHelper.getName(constant.getClass()),
+                contracts.toArray(new Type[contracts.size()]));
+    }
+    
+    /**
+     * This creates a descriptor that will always return the given object.
+     * The advertised contracts is given in the incoming parameter and the
+     * name on the descriptor also comes from the incoming parameter.
+     * 
+     * @param constant The non-null constant that should always be returned from
+     * the create method of this ActiveDescriptor.
+     * @param name The possibly null name that should be associated with this constant descriptor
+     * @param contracts The possibly empty set of contracts that should be associated with this
+     * descriptor 
+     * @return The descriptor returned can be used in calls to
+     * DynamicConfiguration.addActiveDescriptor
+     * @throws IllegalArgumentException if constant is null
+     */
+    public static <T> AbstractActiveDescriptor<T> createConstantDescriptor(T constant, String name, Type... contracts) {
+        if (constant == null) throw new IllegalArgumentException();
+        
         Annotation scope =
                 ReflectionHelper.getScopeAnnotationFromObject(constant);
         Class<? extends Annotation> scopeClass = (scope == null) ? PerLookup.class :
@@ -273,11 +300,16 @@ public class BuilderHelper {
             getMetadataValues(qualifier, metadata);
         }
         
+        Set<Type> contractsAsSet = new LinkedHashSet<Type>();
+        for (Type cType : contracts) {
+            contractsAsSet.add(cType);
+        }
+        
         return new ConstantActiveDescriptor<T>(
                 constant,
-                ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.class),
+                contractsAsSet,
                 scopeClass,
-                ReflectionHelper.getName(constant.getClass()),
+                name,
                 qualifiers,
                 metadata);
     }
