@@ -121,8 +121,4 @@ public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
         return descriptorImpl;
     }
 
-	@Override
-	public void setServiceLocator(ServiceLocator serviceLocator) {
-    }
-
 }

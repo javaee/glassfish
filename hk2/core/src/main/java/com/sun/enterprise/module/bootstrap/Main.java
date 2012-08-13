@@ -44,8 +44,6 @@ import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.List;
-import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -54,12 +52,9 @@ import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
-import org.glassfish.hk2.bootstrap.HK2Populator;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
@@ -235,7 +230,7 @@ public class Main {
 
 	public ServiceLocator createServiceLocator(ModulesRegistry mr,
                                                StartupContext context,
-                                               List<? extends PopulatorPostProcessor> postProcessors,
+                                               Binder postProcessorBinder,
                                                DescriptorFileFinder descriptorFileFinder)
 			throws BootException {
         // Why is this method not just delagting to ModulesRegistry.createServiceLocator(...)?
@@ -248,12 +243,8 @@ public class Main {
         ServiceLocator serviceLocator = mr.newServiceLocator();
 		
 		// add all the PopulatorPostProcessors to the new ServiceLocator
-		if (postProcessors != null) {
-			for (PopulatorPostProcessor postProcessor : postProcessors) {
-				postProcessor.setServiceLocator(serviceLocator);
-
-				addPopulatorPostProcessor(serviceLocator, postProcessor);
-			}
+		if (postProcessorBinder != null) {
+				ServiceLocatorUtilities.bind(serviceLocator, postProcessorBinder);
 		}
 		
 		addDescriptorFileFinder(serviceLocator, descriptorFileFinder);
@@ -317,15 +308,6 @@ public class Main {
 
 			config.commit();
 		}
-	}
-	private void addPopulatorPostProcessor(
-            ServiceLocator serviceLocator, PopulatorPostProcessor populatorPostProcessor) {
-		DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
-		DynamicConfiguration config = dcs.createDynamicConfiguration();
-		
-		config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(populatorPostProcessor));
-		
-		config.commit();
 	}
 
 	/**

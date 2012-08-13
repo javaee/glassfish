@@ -49,11 +49,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
+import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * Normal modules registry with configuration handling backed up
@@ -119,15 +122,16 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
     @Override
     protected void parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
             throws IOException {
-        List<PopulatorPostProcessor> registeredPostProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
 
-        LinkedList<PopulatorPostProcessor> postProcessors = new LinkedList<PopulatorPostProcessor>();
-
-	    postProcessors.add(new Hk2LoaderPopulatorPostProcessor(singleClassLoader));
-	    postProcessors.addAll(registeredPostProcessors);
+        Binder postProcessorBinder = new Binder() {
+			@Override
+			public void bind(DynamicConfiguration config) {
+				config.bind(BuilderHelper.createConstantDescriptor(new Hk2LoaderPopulatorPostProcessor(singleClassLoader)));
+			}};
+    
     	HK2Populator.populate(serviceLocator,
                 new ClasspathDescriptorFileFinder(singleClassLoader),
-                postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
+                postProcessorBinder);
     }
 
 }

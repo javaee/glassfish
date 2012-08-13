@@ -46,11 +46,14 @@ import junit.framework.Assert;
 import org.glassfish.examples.ctm.ServiceProviderEngine;
 import org.glassfish.examples.ctm.TenantLocatorGenerator;
 import org.glassfish.examples.ctm.TenantManager;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
+import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -68,7 +71,14 @@ public class CTMTest {
     public static void before() throws IOException {
         HK2Populator.populate(locator,
                 new ClasspathDescriptorFileFinder(),
-                new Hk2LoaderPopulatorPostProcessor(null));
+                new Binder() {
+
+					@Override
+					public void bind(DynamicConfiguration config) {
+						// TODO Auto-generated method stub
+						config.bind(BuilderHelper.createConstantDescriptor(new Hk2LoaderPopulatorPostProcessor(null)));
+					}}
+                );
     }
     
     @Test

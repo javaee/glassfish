@@ -21,6 +21,7 @@ import com.sun.enterprise.module.common_impl.AbstractFactory;
 import com.sun.enterprise.module.impl.HK2Factory;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -30,6 +31,7 @@ import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.inhabitants.InhabitantsScanner;
+import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.AfterClass;
@@ -167,7 +169,7 @@ public class ServiceLocatorTest {
 						return returnList;
 					}
 
-				});
+				}, null);
 
 		List<ActiveDescriptor<?>> descriptors = serviceLocator
 				.getDescriptors(BuilderHelper
@@ -203,48 +205,47 @@ public class ServiceLocatorTest {
 		ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
 				.create("" + new Random().nextInt());
 
-		HK2Populator.populate(serviceLocator,
-				new DescriptorFileFinder() {
+		final PopulatorPostProcessor pp = new PopulatorPostProcessor() {
 
-					@Override
-					public List<InputStream> findDescriptorFiles()
-							throws IOException {
-						ArrayList<InputStream> returnList = new ArrayList<InputStream>();
+			@Override
+			public DescriptorImpl process(DescriptorImpl d) {
+				postProcessorWasCalled = true;
 
-						InputStream is = new ByteArrayInputStream(
-								descriptorText.getBytes());
-						returnList.add(is);
-						return returnList;
-					}
+				assertEquals(
+						"org.jvnet.hk2.config.provider.internal.ConfigTransactionImpl",
+						d.getImplementation());
+				assertEquals("javax.inject.Singleton", d.getScope());
 
-				}, new PopulatorPostProcessor() {
+				Set<String> advertisedContracts = d
+						.getAdvertisedContracts();
 
-					@Override
-					public DescriptorImpl process(DescriptorImpl d) {
-						postProcessorWasCalled = true;
+				assertEquals(1, advertisedContracts.size());
 
-						assertEquals(
-								"org.jvnet.hk2.config.provider.internal.ConfigTransactionImpl",
-								d.getImplementation());
-						assertEquals("javax.inject.Singleton", d.getScope());
+				assertTrue(advertisedContracts
+						.contains("org.jvnet.hk2.config.provider.internal.ConfigTransactionImpl"));
 
-						Set<String> advertisedContracts = d
-								.getAdvertisedContracts();
+				return null;
+			}};
+			
+		HK2Populator.populate(serviceLocator, new DescriptorFileFinder() {
 
-						assertEquals(1, advertisedContracts.size());
+			@Override
+			public List<InputStream> findDescriptorFiles() throws IOException {
+				ArrayList<InputStream> returnList = new ArrayList<InputStream>();
 
-						assertTrue(advertisedContracts
-								.contains("org.jvnet.hk2.config.provider.internal.ConfigTransactionImpl"));
+				InputStream is = new ByteArrayInputStream(descriptorText
+						.getBytes());
+				returnList.add(is);
+				return returnList;
+			}
 
-						return null;
-					}
+		}, new Binder() {
 
-					@Override
-					public void setServiceLocator(ServiceLocator serviceLocator) {
-						// TODO Auto-generated method stub
-						
-					}
-				});
+			@Override
+			public void bind(DynamicConfiguration config) {
+				config.bind(BuilderHelper.createConstantDescriptor(pp));
+			}
+		});
 
 		List<ActiveDescriptor<?>> descriptors = serviceLocator
 				.getDescriptors(BuilderHelper
@@ -265,37 +266,38 @@ public class ServiceLocatorTest {
 		ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance()
 				.create("" + new Random().nextInt());
 
-		HK2Populator.populate(serviceLocator,
-				new DescriptorFileFinder() {
+		final PopulatorPostProcessor pp = new PopulatorPostProcessor() {
 
-					@Override
-					public List<InputStream> findDescriptorFiles()
-							throws IOException {
-						ArrayList<InputStream> returnList = new ArrayList<InputStream>();
+			@Override
+			public DescriptorImpl process(DescriptorImpl d) {
+				postProcessorWasCalled = true;
 
-						InputStream is = new ByteArrayInputStream(
-								descriptorText.getBytes());
-						returnList.add(is);
-						return returnList;
-					}
+				d.setImplementation("OVERRIDDEN");
 
-				}, new PopulatorPostProcessor() {
+				return d;
+			}
 
-					@Override
-					public DescriptorImpl process(DescriptorImpl d) {
-						postProcessorWasCalled = true;
+		};
 
-						d.setImplementation("OVERRIDDEN");
-						
-						return d;
-					}
+		HK2Populator.populate(serviceLocator, new DescriptorFileFinder() {
 
-					@Override
-					public void setServiceLocator(ServiceLocator serviceLocator) {
-						// TODO Auto-generated method stub
-						
-					}
-				});
+			@Override
+			public List<InputStream> findDescriptorFiles() throws IOException {
+				ArrayList<InputStream> returnList = new ArrayList<InputStream>();
+
+				InputStream is = new ByteArrayInputStream(descriptorText
+						.getBytes());
+				returnList.add(is);
+				return returnList;
+			}
+
+		}, new Binder() {
+
+			@Override
+			public void bind(DynamicConfiguration config) {
+				config.bind(BuilderHelper.createConstantDescriptor(pp));
+			}
+		});
 
 		List<ActiveDescriptor<?>> descriptors = serviceLocator
 				.getDescriptors(BuilderHelper

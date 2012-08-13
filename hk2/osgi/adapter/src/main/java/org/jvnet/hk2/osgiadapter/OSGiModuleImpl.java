@@ -59,11 +59,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.bootstrap.impl.URLDescriptorFileFinder;
+import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.service.packageadmin.PackageAdmin;
@@ -363,13 +366,6 @@ public class OSGiModuleImpl implements Module {
      * Parses all the inhabitants descriptors of the given name in this module.
      */
     /* package */ void parseInhabitants(String name, ServiceLocator serviceLocator) throws IOException, BootException {
-         
-        List<PopulatorPostProcessor> registeredPostProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
-        
-        LinkedList<PopulatorPostProcessor> postProcessors = new LinkedList<PopulatorPostProcessor>();
-        
-	    postProcessors.add(new OsgiPopulatorPostProcessor(this));
-	    postProcessors.addAll(registeredPostProcessors);
 
 		// This needs to be fixed to bring in the cache
 
@@ -377,8 +373,16 @@ public class OSGiModuleImpl implements Module {
         URL entry = bundle.getEntry(path);
 //        System.out.println("OSGiModuleImpl.parseInhabitants - for " + bundle + ".getEntry(" + path + "), returned " + entry);
         if (entry != null) {
-	    HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry),
-            postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
+        	final OSGiModuleImpl module = this;
+        	
+        	Binder postProcessorBinder = new Binder () {
+
+				@Override
+				public void bind(DynamicConfiguration config) {
+					config.bind(BuilderHelper.createConstantDescriptor(new OsgiPopulatorPostProcessor(module)));
+				}};
+        	
+    	    HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), postProcessorBinder);
         }
     }
 
