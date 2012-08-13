@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -110,13 +111,13 @@ public class HK2Main extends Main implements
     @Override
     public ServiceLocator createServiceLocator(ModulesRegistry mr,
                                                StartupContext context,
-                                               List<? extends PopulatorPostProcessor> postProcessors,
+                                               Binder postProcessorBinder,
                                                DescriptorFileFinder descriptorFileFinder)
             throws BootException {
 
         HabitatInfo habitatInfo = new HabitatInfo();
         
-        habitatInfo.serviceLocator = super.createServiceLocator(mr, context, postProcessors, descriptorFileFinder);
+        habitatInfo.serviceLocator = super.createServiceLocator(mr, context, postProcessorBinder, descriptorFileFinder);
         createHK2ServiceTracker(habitatInfo);
         // register ServiceLocator as an OSGi service
         habitatInfo.habitatRegistration = ctx.registerService(ServiceLocator.class.getName(), habitatInfo.serviceLocator, context.getArguments());

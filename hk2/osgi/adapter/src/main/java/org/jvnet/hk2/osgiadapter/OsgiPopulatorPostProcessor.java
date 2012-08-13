@@ -94,11 +94,5 @@ public class OsgiPopulatorPostProcessor implements
         };
 		descriptorImpl.setLoader(hk2Loader);
 		return descriptorImpl;
-	}
-
-	@Override
-	public void setServiceLocator(ServiceLocator serviceLocator) {	
-	}
-	
-	
+	}	
 }

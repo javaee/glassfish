@@ -91,13 +91,6 @@ public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 		});
 		
 		return descriptorImpl;
-	}
+	}	
 
-	@Override
-	public void setServiceLocator(ServiceLocator serviceLocator) {	
-	}
-
-	
-
-	
 }

@@ -49,7 +49,9 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
+import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import com.sun.enterprise.module.bootstrap.BootException;
 
@@ -73,8 +75,12 @@ public class HK2Populator {
      */
 	public static void populate(final ServiceLocator serviceLocator,
 			DescriptorFileFinder fileFinder,
-			final PopulatorPostProcessor... postProcessors) throws IOException {
+			final Binder postProcessorBinder) throws IOException {
 
+		if (postProcessorBinder != null) {
+			ServiceLocatorUtilities.bind(serviceLocator, postProcessorBinder);
+		}
+		
 		if (fileFinder == null) {
 			fileFinder = serviceLocator.getService(DescriptorFileFinder.class);
 		}
@@ -86,6 +92,8 @@ public class HK2Populator {
 
 		DynamicConfiguration config = dcs.createDynamicConfiguration();
 
+		List<PopulatorPostProcessor> postProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
+		
 		for (InputStream is : descriptorFileInputStreams) {
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -135,7 +143,7 @@ public class HK2Populator {
 	 */
 	public static void populate(final ServiceLocator serviceLocator)
 			throws IOException {
-		populate(serviceLocator, new ClasspathDescriptorFileFinder());
+		populate(serviceLocator, new ClasspathDescriptorFileFinder(), null);
 	}
 
     public static void populateConfig(ServiceLocator serviceLocator) throws BootException {
