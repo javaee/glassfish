@@ -181,6 +181,8 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
          } catch (Exception e) {
              throw new ComponentException("Failed to create a habitat",e);
          }
+         // From now on, we will keep this service registry up-to-date with module system state
+         habitats.put(serviceLocator, name);
      }
 
     protected void populateConfig(ServiceLocator serviceLocator) throws BootException {
@@ -189,7 +191,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
 
     public ServiceLocator createServiceLocator(String name) throws ComponentException {
         ServiceLocator serviceLocator = newServiceLocator();
-        habitats.put(serviceLocator, name);
         populateServiceLocator(name, serviceLocator);
         return serviceLocator;
     }
