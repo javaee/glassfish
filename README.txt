@@ -1,6 +1,6 @@
 This file describes the subdirectories of
 https://svn.java.net/svn/glassfish~svn/trunk/
-Last updated: 6/19/2012 by bill.shannon@oracle.com
+Last updated: 8/14/2012 by romain.grecourt@oracle.com
 
 
 - api
@@ -34,9 +34,9 @@ Last updated: 6/19/2012 by bill.shannon@oracle.com
 	as well as related tools used in scripts in Hudson jobs.
 
 
-- glassfishbuild-maven-plugin
+- maven-plugins
 
-	A maven plugin used during the GlassFish build.
+	A directory containing various maven plugin used during the GlassFish build.
 
 
 - hudson-plugin
