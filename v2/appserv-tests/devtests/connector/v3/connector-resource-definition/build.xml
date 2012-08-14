@@ -16,6 +16,7 @@
 
     <target name="clean" depends="init-common">
         <antcall target="clean-common"/>
+        <ant dir="ra" target="clean"/>
     </target>
 
     <target name="info" depends="init-common">
@@ -34,6 +35,7 @@
     <target name="build-ut" depends="init-common">
       <!-- build a special ear which only includes deployment descriptors-->
       <mkdir dir="${assemble.dir}"/>
+      <mkdir dir="${assemble.dir}/temp"/>
       <mkdir dir="${build.classes.dir}/META-INF"/>   
       <copy file="${basedir}/descriptor/ut-application.xml" tofile="${build.classes.dir}/META-INF/application.xml"  failonerror="false"/> 
       <jar jarfile="${assemble.dir}/${appname}App-UT.ear"> 
@@ -46,7 +48,6 @@
       </jar>
 
       <!-- unpack war, jar, ear files, otherwise annotations will not be processed. -->
-      <mkdir dir="${assemble.dir}/temp"/>
       <unjar src="${assemble.dir}/${appname}-ejb.jar" dest="${assemble.dir}/temp/${appname}-ejb"/>
       <unjar src="${assemble.dir}/${appname}-web.war" dest="${assemble.dir}/temp/${appname}-web"/>
       <unjar src="${assemble.dir}/${appname}-client.jar" dest="${assemble.dir}/temp/${appname}-client"/>
@@ -100,7 +101,12 @@
             <param name="ejbjar.classes"
                    value="**/Hello**.class"/>
         </antcall>
+        
+        <antcall target="ear-common"/>
+
         <antcall target="build-ut"/>
+        
+        <ant dir="ra" target="all"/>
     </target>
 
     <target name="setup" depends="init-common">
@@ -109,17 +115,27 @@
     <target name="unsetup" depends="init-common">
     </target>
 
-    <target name="deploy"
-            depends="init-common">
+    <target name="deploy" depends="init-common">
+        <ant dir="ra" inheritAll="false" target="deploy"/>
+        <ant dir="ra" inheritAll="false" target="testAddAdmin"/>
         <antcall target="deploy-common"/>
+
     </target>
 
     <target name="run" depends="init-common">
         <antcall target="run-ut"/>
+        <antcall target="run-it"/>
+    </target>
+
+    <target name="run-it" depends="init-common">
+        <antcall target="runclient-common">
+            <param name="appclient.application.args" value="${http.host} ${http.port}"/>
+        </antcall>
     </target>
 
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-common"/>
+        <ant dir="ra" inheritAll="false" target="undeploy"/>
     </target>
 
     <target name="usage">

@@ -5,7 +5,7 @@
 	<description>global-scope resource defined in application DD</description>
 	<name>java:global/env/Application_Level_ConnectorResource</name>
 	<class-name>javax.resource.cci.ConnectionFactory</class-name>
-	<resource-adapter-name>RaApplicationName</resource-adapter-name>
+	<resource-adapter-name>crd-ra</resource-adapter-name>
 	<property>
 		<name>transactionSupport</name>
 		<value>LocalTransaction</value>

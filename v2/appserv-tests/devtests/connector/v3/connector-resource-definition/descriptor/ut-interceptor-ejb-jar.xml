@@ -14,11 +14,11 @@
         <name>java:global/env/Interceptor_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
           <value>RaApplicationName</value>
         </property>
       </connector-resource>
@@ -28,11 +28,11 @@
         <name>java:module/env/Interceptor_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
           <value>RaApplicationName</value>
         </property>
       </connector-resource>
@@ -42,11 +42,11 @@
         <name>java:comp/env/Interceptor_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
           <value>RaApplicationName</value>
         </property>
       </connector-resource>

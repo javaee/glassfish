@@ -44,7 +44,7 @@ public class DDTest extends TestCase {
     
     public void testApplicationDD() throws Exception{
         
-        String tcName = "connectore-resource-definition-application-DD-test";
+        String tcName = "connector-resource-definition-application-DD-test";
         InputStream ddIS=null;
         try{
             String ddFileName = "ut-application.xml";
@@ -65,16 +65,16 @@ public class DDTest extends TestCase {
             desc.setName("java:global/env/ConnectorResource");
             desc.setClassName("javax.resource.cci.ConnectionFactory");
             desc.setDescription("global-scope resource defined in application DD");
-            desc.addProperty("transactionSupport", "LocalTransaction");
-            desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+            desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+            desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
             expectedCRDDs.put(desc.getName(), desc);
             
             desc = new ConnectorResourceDefinitionDescriptor();
             desc.setName("java:app/env/ConnectorResource");
             desc.setClassName("javax.resource.cci.ConnectionFactory");
             desc.setDescription("application-scope resource defined in application DD");
-            desc.addProperty("transactionSupport", "LocalTransaction");
-            desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+            desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+            desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
             expectedCRDDs.put(desc.getName(), desc);
 
             TestUtil.compareCRDD(expectedCRDDs, actualCRDDs);
@@ -94,7 +94,7 @@ public class DDTest extends TestCase {
 
     public void testSessionEJBDD() throws Exception{
         
-        String tcName = "connectore-resource-definition-Session-EJB-DD-test";
+        String tcName = "connector-resource-definition-Session-EJB-DD-test";
         InputStream ddIS=null;
         try{
             String ddFileName = "ut-session-ejb-jar.xml";
@@ -138,24 +138,24 @@ public class DDTest extends TestCase {
         desc.setDescription("global-scope resource defined in EJB DD");
         desc.setName("java:global/env/StatefulEJB_ConnectorResource");
         desc.setClassName("javax.resource.cci.ConnectionFactory");
-        desc.addProperty("transactionSupport", "LocalTransaction");
-        desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+        desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+        desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
         
         desc = new ConnectorResourceDefinitionDescriptor();
         desc.setDescription("module-scope resource defined in EJB DD");
         desc.setName("java:module/env/StatefulEJB_ConnectorResource");
         desc.setClassName("javax.resource.cci.ConnectionFactory");
-        desc.addProperty("transactionSupport", "LocalTransaction");
-        desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+        desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+        desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
 
         desc = new ConnectorResourceDefinitionDescriptor();
         desc.setDescription("component-scope resource defined in EJB DD");
         desc.setName("java:comp/env/StatefulEJB_ConnectorResource");
         desc.setClassName("javax.resource.cci.ConnectionFactory");
-        desc.addProperty("transactionSupport", "LocalTransaction");
-        desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+        desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+        desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
 
         TestUtil.compareCRDD(expectedCRDDs, ejb.getConnectorResourceDefinitionDescriptors());
@@ -170,24 +170,24 @@ public class DDTest extends TestCase {
         desc.setDescription("global-scope resource defined in EJB DD");
         desc.setName("java:global/env/HelloEJB_ConnectorResource");
         desc.setClassName("javax.resource.cci.ConnectionFactory");
-        desc.addProperty("transactionSupport", "LocalTransaction");
-        desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+        desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+        desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
         
         desc = new ConnectorResourceDefinitionDescriptor();
         desc.setDescription("module-scope resource defined in EJB DD");
         desc.setName("java:module/env/HelloEJB_ConnectorResource");
         desc.setClassName("javax.resource.cci.ConnectionFactory");
-        desc.addProperty("transactionSupport", "LocalTransaction");
-        desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+        desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+        desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
 
         desc = new ConnectorResourceDefinitionDescriptor();
         desc.setDescription("component-scope resource defined in EJB DD");
         desc.setName("java:comp/env/HelloEJB_ConnectorResource");
         desc.setClassName("javax.resource.cci.ConnectionFactory");
-        desc.addProperty("transactionSupport", "LocalTransaction");
-        desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+        desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+        desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
 
         TestUtil.compareCRDD(expectedCRDDs, ejb.getConnectorResourceDefinitionDescriptors());
@@ -196,7 +196,7 @@ public class DDTest extends TestCase {
     
     public void testEntityEJBDD() throws Exception{
         
-        String tcName = "connectore-resource-definition-Entity-EJB-DD-test";
+        String tcName = "connector-resource-definition-Entity-EJB-DD-test";
         InputStream ddIS=null;
         try{
             String ddFileName = "ut-entity-ejb-jar.xml";
@@ -215,24 +215,24 @@ public class DDTest extends TestCase {
                 desc.setDescription("global-scope resource defined in EJB DD");
                 desc.setName("java:global/env/Entity_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
                 
                 desc = new ConnectorResourceDefinitionDescriptor();
                 desc.setDescription("module-scope resource defined in EJB DD");
                 desc.setName("java:module/env/Entity_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
                 desc = new ConnectorResourceDefinitionDescriptor();
                 desc.setDescription("component-scope resource defined in EJB DD");
                 desc.setName("java:comp/env/Entity_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
                 TestUtil.compareCRDD(expectedCRDDs, ejbDescriptor.getConnectorResourceDefinitionDescriptors());
@@ -254,7 +254,7 @@ public class DDTest extends TestCase {
 
     public void testMDBEJBDD() throws Exception{
         
-        String tcName = "connectore-resource-definition-MDB-EJB-DD-test";
+        String tcName = "connector-resource-definition-MDB-EJB-DD-test";
         InputStream ddIS=null;
         try{
             String ddFileName = "ut-mdb-ejb-jar.xml";
@@ -273,24 +273,24 @@ public class DDTest extends TestCase {
                 desc.setDescription("global-scope resource defined in EJB DD");
                 desc.setName("java:global/env/MDB_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
                 
                 desc = new ConnectorResourceDefinitionDescriptor();
                 desc.setDescription("module-scope resource defined in EJB DD");
                 desc.setName("java:module/env/MDB_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
                 desc = new ConnectorResourceDefinitionDescriptor();
                 desc.setDescription("component-scope resource defined in EJB DD");
                 desc.setName("java:comp/env/MDB_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
                 TestUtil.compareCRDD(expectedCRDDs, ejbDescriptor.getConnectorResourceDefinitionDescriptors());
@@ -312,7 +312,7 @@ public class DDTest extends TestCase {
 
     public void testInterceptorEJBDD() throws Exception{
         
-        String tcName = "connectore-resource-definition-Interceptor-EJB-DD-test";
+        String tcName = "connector-resource-definition-Interceptor-EJB-DD-test";
         InputStream ddIS=null;
         try{
             String ddFileName = "ut-interceptor-ejb-jar.xml";
@@ -331,24 +331,24 @@ public class DDTest extends TestCase {
                 desc.setDescription("global-scope resource defined in EJB DD");
                 desc.setName("java:global/env/Interceptor_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
                 
                 desc = new ConnectorResourceDefinitionDescriptor();
                 desc.setDescription("module-scope resource defined in EJB DD");
                 desc.setName("java:module/env/Interceptor_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
                 desc = new ConnectorResourceDefinitionDescriptor();
                 desc.setDescription("component-scope resource defined in EJB DD");
                 desc.setName("java:comp/env/Interceptor_ConnectorResource");
                 desc.setClassName("javax.resource.cci.ConnectionFactory");
-                desc.addProperty("transactionSupport", "LocalTransaction");
-                desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+                desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+                desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
                 TestUtil.compareCRDD(expectedCRDDs, interceptor.getConnectorResourceDefinitionDescriptors());
@@ -370,7 +370,7 @@ public class DDTest extends TestCase {
 
     public void testWebDD() throws Exception{
         
-        String tcName = "connectore-resource-definition-Web-DD-test";
+        String tcName = "connector-resource-definition-Web-DD-test";
         InputStream ddIS=null;
         try{
             String ddFileName = "ut-web.xml";
@@ -388,24 +388,24 @@ public class DDTest extends TestCase {
             desc.setDescription("global-scope resource defined in Web DD");
             desc.setName("java:global/env/ConnectorResource");
             desc.setClassName("javax.resource.cci.ConnectionFactory");
-            desc.addProperty("transactionSupport", "LocalTransaction");
-            desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+            desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+            desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
             expectedCRDDs.put(desc.getName(), desc);
             
             desc = new ConnectorResourceDefinitionDescriptor();
             desc.setDescription("application-scope resource defined in Web DD");
             desc.setName("java:app/env/ConnectorResource");
             desc.setClassName("javax.resource.cci.ConnectionFactory");
-            desc.addProperty("transactionSupport", "LocalTransaction");
-            desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+            desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+            desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
             expectedCRDDs.put(desc.getName(), desc);
 
             desc = new ConnectorResourceDefinitionDescriptor();
             desc.setDescription("module-scope resource defined in Web DD");
             desc.setName("java:module/env/ConnectorResource");
             desc.setClassName("javax.resource.cci.ConnectionFactory");
-            desc.addProperty("transactionSupport", "LocalTransaction");
-            desc.addProperty(TagNames.CONNECTOR_RESOURCE_ADAPTER_NAME, "RaApplicationName");
+            desc.addProperty("org.glassfish.connector-connection-pool.transaction-support", "LocalTransaction");
+            desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
             expectedCRDDs.put(desc.getName(), desc);
 
             TestUtil.compareCRDD(expectedCRDDs, webBundle.getConnectorResourceDefinitionDescriptors());

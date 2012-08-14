@@ -23,12 +23,12 @@
        <name>java:global/env/Servlet_ModByDD_ConnectorResource</name>
        <class-name>javax.resource.cci.ConnectionFactory</class-name>
        <property>
-         <name>transactionSupport</name>
-         <value>NOTransaction</value>
+         <name>org.glassfish.connector-connection-pool.transaction-support</name>
+         <value>NoTransaction</value>
        </property>
        <property>
-         <name>resource-adapter-name</name>
-         <value>RaApplicationName</value>
+         <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+         <value>crd-ra</value>
        </property>
      </connector-resource>
 
@@ -37,12 +37,12 @@
        <name>java:global/env/Web_DD_ConnectorResource</name>
        <class-name>javax.resource.cci.ConnectionFactory</class-name>
        <property>
-         <name>transactionSupport</name>
+         <name>org.glassfish.connector-connection-pool.transaction-support</name>
          <value>LocalTransaction</value>
        </property>
        <property>
-         <name>resource-adapter-name</name>
-         <value>RaApplicationName</value>
+         <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+         <value>crd-ra</value>
        </property>
      </connector-resource>
 
@@ -51,12 +51,12 @@
        <name>java:app/env/Web_DD_ConnectorResource</name>
        <class-name>javax.resource.cci.ConnectionFactory</class-name>
        <property>
-         <name>transactionSupport</name>
+         <name>org.glassfish.connector-connection-pool.transaction-support</name>
          <value>LocalTransaction</value>
        </property>
        <property>
-         <name>resource-adapter-name</name>
-         <value>RaApplicationName</value>
+         <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+         <value>crd-ra</value>
        </property>
      </connector-resource>
     
@@ -65,12 +65,12 @@
         <name>java:module/env/Web_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
 

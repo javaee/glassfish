@@ -8,6 +8,8 @@ import java.io.*;
 
 import javax.resource.ConnectorResourceDefinitions;
 import javax.resource.ConnectorResourceDefinition;
+import javax.resource.cci.Connection;
+import javax.resource.cci.ConnectionFactory;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
@@ -16,11 +18,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBs;
 import javax.ejb.EJBException;
 import javax.annotation.Resource;
-import javax.sql.DataSource;
-import java.sql.Connection;
 import javax.transaction.UserTransaction;
-
-
 
 @EJB(name = "helloStateless3", beanInterface = Hello.class)
 @EJBs({@EJB(name = "helloStateless4", beanName = "HelloEJB",
@@ -34,75 +32,58 @@ import javax.transaction.UserTransaction;
                         description="global-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:global/env/Servlet_ModByDD_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 ),
 
                 @ConnectorResourceDefinition(
                         description="global-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:global/env/Servlet_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 ),
 
                 @ConnectorResourceDefinition(
                         description="application-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:app/env/Servlet_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 ),
                 
                 @ConnectorResourceDefinition(
                         description="module-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:module/env/Servlet_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 ),
                 
                 @ConnectorResourceDefinition(
                         description="component-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:comp/env/Servlet_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 )
         }
 )
-@WebServlet(name = "Servlet",
-        urlPatterns = {"/servlet"}
-)
+@WebServlet(name = "Servlet", urlPatterns = {"/servlet"})
 public class Servlet extends HttpServlet {
 
-    private
     @EJB
-    Hello helloStateless;
-    private
+    private  Hello helloStateless;
+    
     @EJB(beanName = "HelloStatefulEJB")
-    HelloStateful helloStateful;
+    private  HelloStateful helloStateful;
 
-/*
-    private Hello helloStateless2;
-    private HelloStateful helloStateful2;
-
-*/
-    private
     @Resource
-    UserTransaction ut;
-
-/*
-    @EJB(beanName = "HelloEJB")
-    private void setHelloStateless2(Hello h) {
-        helloStateless2 = h;
-    }
-
-    @EJB
-    private void setHelloStateful2(HelloStateful hf) {
-        helloStateful2 = hf;
-    }
-*/
+    private UserTransaction ut;
 
     public void init(ServletConfig config) throws ServletException {
-
         super.init(config);
-        System.out.println("In DataSource-Definition-Test::servlet... init()");
+        System.out.println("In Connector-Resource-Definition-Test::servlet... init()");
     }
 
     public void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -112,40 +93,42 @@ public class Servlet extends HttpServlet {
 
         try {
 
-            InitialContext ic = new InitialContext();
+            // Connector-Resource-Definition through Annotation
+            lookupConnectorResource("java:global/env/Servlet_ConnectorResource", true);
+            lookupConnectorResource("java:app/env/Servlet_ConnectorResource", true);
+            lookupConnectorResource("java:module/env/Servlet_ConnectorResource", true);
+            lookupConnectorResource("java:comp/env/Servlet_ConnectorResource", true);
 
-//            boolean global = lookupConnectorResource("java:global/env/Servlet_ConnectorResource", true);
-//            boolean comp = lookupConnectorResource("java:comp/env/Servlet_ConnectorResource", true);
-//            boolean appServletDataSource = lookupConnectorResource("java:app/env/Servlet_ConnectorResource", true);
-//            boolean moduleServletDataSource = lookupConnectorResource("java:module/env/Servlet_ConnectorResource", true);
-//
-//            boolean globalHelloSfulEJB = lookupConnectorResource("java:global/env/HelloStatefulEJB_DataSource", true);
-//            boolean compHelloSfulEJB = lookupConnectorResource("java:comp/env/HelloStatefulEJB_DataSource", false);
-//            boolean appHelloStatefulEjb = lookupConnectorResource("java:app/env/HelloStatefulEJB_DataSource", true);
-//
-//            boolean globalHelloEJB = lookupConnectorResource("java:global/env/HelloEJB_DataSource", true);
-//            boolean compHelloEJB = lookupConnectorResource("java:comp/env/HelloEJB_DataSource", false);
-//            boolean moduleHelloEjb = lookupConnectorResource("java:module/env/HelloEJB_DataSource", false);
-//
-//            boolean globalServlet_DD_DataSource = lookupConnectorResource("java:global/env/Servlet_DD_DataSource", true);
-//            boolean compServlet_DD_DataSource = lookupConnectorResource("java:comp/env/Servlet_DD_DataSource", false);
-//
-//            boolean globalHelloStateful_DD_DataSource = lookupConnectorResource("java:global/env/HelloStatefulEJB_DD_DataSource", true);
-//            boolean compHelloStateful_DD_DataSource = lookupConnectorResource("java:comp/env/HelloStatefulEJB_DD_DataSource", false);
-//
-//            boolean globalHello_DD_DataSource = lookupConnectorResource("java:global/env/HelloEJB_DD_DataSource", true);
-//            boolean compHello_DD_DataSource = lookupConnectorResource("java:comp/env/HelloEJB_DD_DataSource", false);
+            lookupConnectorResource("java:global/env/HelloStatefulEJB_Annotation_ConnectorResource", true);
+            lookupConnectorResource("java:app/env/HelloStatefulEJB_Annotation_ConnectorResource", true);
+            lookupConnectorResource("java:module/env/HelloStatefulEJB_Annotation_ConnectorResource", false);
+            lookupConnectorResource("java:comp/env/HelloStatefulEJB_Annotation_ConnectorResource", false);
 
+            lookupConnectorResource("java:global/env/HelloEJB_Annotation_ConnectorResource", true);
+            lookupConnectorResource("java:app/env/HelloEJB_Annotation_ConnectorResource", false);
+            lookupConnectorResource("java:module/env/HelloEJB_Annotation_ConnectorResource", false);
+            lookupConnectorResource("java:comp/env/HelloEJB_Annotation_ConnectorResource", false);
 
-//            if (global && comp && appServletDataSource && globalHelloSfulEJB && globalServlet_DD_DataSource && compServlet_DD_DataSource
-//                    && !compHelloSfulEJB && globalHelloEJB && !compHelloEJB && globalHelloStateful_DD_DataSource
-//                    && !compHelloStateful_DD_DataSource && globalHello_DD_DataSource && !compHello_DD_DataSource
-//                    && appHelloStatefulEjb && !moduleHelloEjb && moduleServletDataSource) {
-//                System.out.println("Servlet successful lookup of datasource-definitions !");
-//            } else {
-//                throw new RuntimeException("Servlet failure");
-//            }
+            // Connector-Resource-Definition through DD
+            lookupConnectorResource("java:global/env/EAR_ConnectorResource", true);
+            lookupConnectorResource("java:app/env/EAR_ConnectorResource", true);
 
+            lookupConnectorResource("java:global/env/Web_DD_ConnectorResource", true);
+            lookupConnectorResource("java:app/env/Web_DD_ConnectorResource", true);
+            lookupConnectorResource("java:module/env/Web_DD_ConnectorResource", true);
+            lookupConnectorResource("java:comp/env/Web_DD_ConnectorResource", true);
+
+            lookupConnectorResource("java:global/env/HelloStatefulEJB_DD_ConnectorResource", true);
+            lookupConnectorResource("java:app/env/HelloStatefulEJB_DD_ConnectorResource", true);
+            lookupConnectorResource("java:module/env/HelloStatefulEJB_DD_ConnectorResource", false);
+            lookupConnectorResource("java:comp/env/HelloStatefulEJB_DD_ConnectorResource", false);
+
+            lookupConnectorResource("java:global/env/HelloEJB_DD_ConnectorResource", true);
+            lookupConnectorResource("java:app/env/HelloEJB_DD_ConnectorResource", true);
+            lookupConnectorResource("java:module/env/HelloEJB_DD_ConnectorResource", false);
+            lookupConnectorResource("java:comp/env/HelloEJB_DD_ConnectorResource", false);
+
+            System.out.println("Servlet successful lookup of connector-resource-definitions !");
 
             System.out.println("beginning tx");
             ut.begin();
@@ -153,7 +136,6 @@ public class Servlet extends HttpServlet {
             // invoke method on the EJB
             System.out.println("invoking stateless ejb");
             helloStateless.hello();
-//            helloStateless2.hello();
 
             System.out.println("committing tx");
             ut.commit();
@@ -162,26 +144,11 @@ public class Servlet extends HttpServlet {
 
             System.out.println("invoking stateless ejb");
             helloStateful.hello();
-  //          helloStateful2.hello();
 
-    /*        Hello helloStateless3 = (Hello)
-                    ic.lookup("java:comp/env/helloStateless3");
-
-            helloStateless3.hello();
-
-            Hello helloStateless4 = (Hello)
-                    ic.lookup("java:comp/env/helloStateless4");
-
-            helloStateless4.hello();
-
-            HelloStateful helloStateful3 = (HelloStateful)
-                    ic.lookup("java:comp/env/helloStateful3");
-
-            helloStateful3.hello();
-*/
             System.out.println("successfully invoked ejbs");
 
             System.out.println("accessing connections");
+
             try {
                 MyThread thread = new MyThread(helloStateful);
                 thread.start();
@@ -195,10 +162,10 @@ public class Servlet extends HttpServlet {
                 throw new EJBException("Got some wierd exception: " + th);
             }
 
-            System.out.println("successfully accessed datasource definitions");
+            System.out.println("successfully accessed connector resource definitions");
 
-            out.println("<HTML> <HEAD> <TITLE> JMS Servlet Output </TITLE> </HEAD> <BODY BGCOLOR=white>");
-            out.println("<CENTER> <FONT size=+1 COLOR=blue>DatabaseServlet :: All information I can give </FONT> </CENTER> <p> ");
+            out.println("<HTML> <HEAD> <TITLE> Servlet Output </TITLE> </HEAD> <BODY BGCOLOR=white>");
+            out.println("<CENTER> <FONT size=+1 COLOR=blue>Servlet :: All information I can give </FONT> </CENTER> <p> ");
             out.println("<FONT size=+1 color=red> Context Path :  </FONT> " + req.getContextPath() + "<br>");
             out.println("<FONT size=+1 color=red> Servlet Path :  </FONT> " + req.getServletPath() + "<br>");
             out.println("<FONT size=+1 color=red> Path Info :  </FONT> " + req.getPathInfo() + "<br>");
@@ -206,14 +173,14 @@ public class Servlet extends HttpServlet {
 
         } catch (Exception ex) {
             ex.printStackTrace();
-            System.out.println("DataSource-Definition-Test servlet test failed");
+            System.out.println("Connector-Resource-Definition-Test servlet test failed");
             throw new ServletException(ex);
         }
     }
 
 
     public void destroy() {
-        System.out.println("in DataSource-Definition-Test client::servlet destroy");
+        System.out.println("in Connectore-Resource-Definition-Test client::servlet destroy");
     }
 
     class MyThread extends Thread {
@@ -243,20 +210,19 @@ public class Servlet extends HttpServlet {
         }
     }
 
-    private boolean lookupConnectorResource(String dataSourceName, boolean expectSuccess) {
+    private void lookupConnectorResource(String jndiName, boolean expectSuccess) throws Exception{
         Connection c = null;
         try {
-            System.out.println("lookup dataSource : " + dataSourceName);
             InitialContext ic = new InitialContext();
-            DataSource ds = (DataSource) ic.lookup(dataSourceName);
+            ConnectionFactory ds = (ConnectionFactory) ic.lookup(jndiName);
             c = ds.getConnection();
-            System.out.println("got connection : " + c);
-            return true;
+            System.out.println("Servlet can access connector resource : " + jndiName);
         } catch (Exception e) {
             if(expectSuccess){
-                e.printStackTrace();
+                throw new RuntimeException("Fail to access connector resource: "+jndiName, e);
+            }else{
+                System.out.println("Servlet cannot access connector resource : " + jndiName);
             }
-            return false;
         } finally {
             try {
                 if (c != null) {

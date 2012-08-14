@@ -18,12 +18,12 @@
         <name>java:global/env/HelloStatefulEJB_ModByDD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
-          <value>NOTransaction</value>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
+          <value>NoTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
 
@@ -32,12 +32,12 @@
         <name>java:global/env/HelloStatefulEJB_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
       
@@ -46,12 +46,12 @@
         <name>java:module/env/HelloStatefulEJB_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
       
@@ -60,12 +60,12 @@
         <name>java:app/env/HelloStatefulEJB_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
       
@@ -74,12 +74,12 @@
         <name>java:comp/env/HelloStatefulEJB_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
       
@@ -95,12 +95,12 @@
         <name>java:global/env/HelloEJB_ModByDD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
-          <value>NOTransaction</value>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
+          <value>NoTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
 
@@ -109,12 +109,12 @@
         <name>java:global/env/HelloEJB_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
       
@@ -123,12 +123,12 @@
         <name>java:app/env/HelloEJB_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
 
@@ -137,12 +137,12 @@
         <name>java:module/env/HelloEJB_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
 
@@ -151,12 +151,12 @@
         <name>java:comp/env/HelloEJB_DD_ConnectorResource</name>
         <class-name>javax.resource.cci.ConnectionFactory</class-name>
         <property>
-          <name>transactionSupport</name>
+          <name>org.glassfish.connector-connection-pool.transaction-support</name>
           <value>LocalTransaction</value>
         </property>
         <property>
-          <name>resource-adapter-name</name>
-          <value>RaApplicationName</value>
+          <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+          <value>crd-ra</value>
         </property>
       </connector-resource>
       

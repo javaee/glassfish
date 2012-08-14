@@ -5,24 +5,23 @@
 package com.sun.s1asdev.ejb.ejb30.hello.session3;
 
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.BufferedReader;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.ConnectorResourceDefinitionDescriptor;
-import com.sun.enterprise.deployment.DataSourceDefinitionDescriptor;
-import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 
 public class Client {
 
     private static SimpleReporterAdapter stat =  new SimpleReporterAdapter("appserv-tests");
+    private String host;
+    private String port;
 
     public Client(String[] args) {
+        host = (args.length > 0) ? args[0] : "localhost";
+        port = (args.length > 1) ? args[1] : "4848";
     }
 
     public static void main(String[] args) throws Exception {
@@ -33,51 +32,20 @@ public class Client {
     }
 
     private void doTestDD() throws Exception{
-        doTestDD_APP();
-    }
-    
-    private void doTestDD_APP() throws Exception {
-        String tcName = "connectore-resource-definition-DD-application-test";
+        String tcName = "connectore-resource-definition-web-ejb-test";
         InputStream ddIS=null;
         try{
-            String ddFileName = "crd-application.xml";
-            File ddFile = new File("./descriptor", ddFileName);
-            ddIS = new FileInputStream(ddFile);
-            ApplicationDeploymentDescriptorFile ddReader = new ApplicationDeploymentDescriptorFile();
-            Application application = (Application) ddReader.read( ddIS);
-            
-            Set<DataSourceDefinitionDescriptor> dsds = application.getDataSourceDefinitionDescriptors();
-            for(DataSourceDefinitionDescriptor desc : dsds){
-                System.out.println("DSD's Description is "+desc.getDescription());
+            String url = "http://" + host + ":" + port + "/connector-resource-definition/servlet";
+            System.out.println("invoking connector-resource-definition test servlet at " + url);
+            int code = invokeServlet(url);
+
+
+            if (code != 200) {
+                System.out.println("Incorrect return code: " + code);
+                stat.addStatus(tcName, stat.FAIL);
+            } else {
+                stat.addStatus(tcName, stat.PASS);
             }
-            
-            Set<ConnectorResourceDefinitionDescriptor> actualCRDDs = application.getConnectorResourceDefinitionDescriptors();
-            for(ConnectorResourceDefinitionDescriptor desc : actualCRDDs){
-                System.out.println("CRD's Description is "+desc.getDescription());
-            }
-
-            Map<String,ConnectorResourceDefinitionDescriptor> expectedCRDDs = 
-                    new HashMap<String,ConnectorResourceDefinitionDescriptor>();
-            ConnectorResourceDefinitionDescriptor desc;
-
-            desc = new ConnectorResourceDefinitionDescriptor();
-            desc.setName("java:global/env/Application_Level_ConnectorResource");
-            desc.setClassName("javax.resource.cci.ConnectionFactory");
-            desc.setDescription("global-scope resource defined in application DD");
-            desc.addProperty("transactionSupport", "LocalTransaction");
-            desc.addProperty("resource-adatper-name", "RaApplicationName");
-            expectedCRDDs.put(desc.getName(), desc);
-            
-            desc = new ConnectorResourceDefinitionDescriptor();
-            desc.setName("java:app/env/Application_Level_ConnectorResource");
-            desc.setClassName("javax.resource.cci.ConnectionFactory");
-            desc.setDescription("application-scope resource defined in application DD");
-            desc.addProperty("transactionSupport", "LocalTransaction");
-            desc.addProperty("resource-adatper-name", "RaApplicationName");
-            expectedCRDDs.put(desc.getName(), desc);
-
-//            ClientDescriptorUtil.compareCRDD(expectedCRDDs, actualCRDDs);
-            stat.addStatus(tcName, stat.PASS);
             
         }catch(Exception e){
             stat.addStatus(tcName, stat.FAIL);
@@ -87,11 +55,26 @@ public class Client {
                 ddIS.close();
             }
         }
-
         return;
-
     }
 
+    private int invokeServlet(String url) throws Exception {
+
+        URL u = new URL(url);
+
+        HttpURLConnection c1 = (HttpURLConnection) u.openConnection();
+        int code = c1.getResponseCode();
+        InputStream is = c1.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String line = null;
+        
+        while ((line = input.readLine()) != null)
+            System.out.println(line);
+        if (code != 200) {
+            System.out.println("Incorrect return code: " + code);
+        }
+        return code;
+    }
 
 }
 

@@ -17,29 +17,29 @@
 
     <connector-resource>
        <description>global-scope resource defined in application DD</description>
-       <name>java:global/env/Global_Level_ConnectorResource</name>
+       <name>java:global/env/EAR_ConnectorResource</name>
        <class-name>javax.resource.cci.ConnectionFactory</class-name>
        <property>
-         <name>transactionSupport</name>
+         <name>org.glassfish.connector-connection-pool.transaction-support</name>
          <value>LocalTransaction</value>
        </property>
        <property>
-         <name>resource-adapter-name</name>
-         <value>RaApplicationName</value>
+         <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+         <value>crd-ra</value>
        </property>
      </connector-resource>
 
     <connector-resource>
        <description>application-scope resource defined in application DD</description>
-       <name>java:app/env/Application_Level_ConnectorResource</name>
+       <name>java:app/env/EAR_ConnectorResource</name>
        <class-name>javax.resource.cci.ConnectionFactory</class-name>
        <property>
-         <name>transactionSupport</name>
+         <name>org.glassfish.connector-connection-pool.transaction-support</name>
          <value>LocalTransaction</value>
        </property>
        <property>
-         <name>resource-adapter-name</name>
-         <value>RaApplicationName</value>
+         <name>org.glassfish.connector-connection-pool.resource-adapter-name</name>
+         <value>crd-ra</value>
        </property>
      </connector-resource>
 

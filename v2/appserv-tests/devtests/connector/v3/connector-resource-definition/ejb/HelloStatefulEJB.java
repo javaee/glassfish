@@ -4,8 +4,9 @@ import javax.ejb.Stateful;
 import javax.annotation.PostConstruct;
 import javax.resource.ConnectorResourceDefinitions;
 import javax.resource.ConnectorResourceDefinition;
-import java.sql.*;
-import javax.sql.*;
+import javax.resource.cci.Connection;
+import javax.resource.cci.ConnectionFactory;
+
 import javax.naming.*;
 
 @ConnectorResourceDefinitions(
@@ -14,35 +15,40 @@ import javax.naming.*;
                         description="global-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:global/env/HelloStatefulEJB_ModByDD_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 ),
 
                 @ConnectorResourceDefinition(
                         description="global-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:global/env/HelloStatefulEJB_Annotation_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 ),
 
                 @ConnectorResourceDefinition(
                         description="application-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:app/env/HelloStatefulEJB_Annotation_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 ),
 
                 @ConnectorResourceDefinition(
                         description="module-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:module/env/HelloStatefulEJB_Annotation_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 ),
 
                 @ConnectorResourceDefinition(
                         description="component-scope resource defined by @ConnectorResourceDefinition",
                         name = "java:comp/env/HelloStatefulEJB_Annotation_ConnectorResource",
                         className = "javax.resource.cci.ConnectionFactory",
-                        properties = {"transactionSupport=LocalTransaction","resource-adapter-name=RaApplicationName"}
+                        properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction",
+                                      "org.glassfish.connector-connection-pool.resource-adapter-name=crd-ra"}
                 )
         }
 )
@@ -56,42 +62,44 @@ public class HelloStatefulEJB implements HelloStateful {
     }
 
     public void hello() {
-        boolean global = lookupConnectorResource("java:global/env/HelloStatefulEJB_DataSource", true);
-        boolean comp = lookupConnectorResource("java:comp/env/HelloStatefulEJB_DataSource", true);
-        boolean appHelloStatefulEjb = lookupConnectorResource("java:app/env/HelloStatefulEJB_DataSource", true);
 
-        boolean globalHelloEJB = lookupConnectorResource("java:global/env/HelloEJB_DataSource", true);
-        boolean compHelloEJB = lookupConnectorResource("java:comp/env/HelloEJB_DataSource",false);
-        boolean moduleHelloEjb = lookupConnectorResource("java:module/env/HelloEJB_DataSource", true);
+        // Connector-Resource-Definition through Annotation
+        lookupConnectorResource("java:global/env/Servlet_ConnectorResource", true);
+        lookupConnectorResource("java:app/env/Servlet_ConnectorResource", true);
+        lookupConnectorResource("java:module/env/Servlet_ConnectorResource", false);
+        lookupConnectorResource("java:comp/env/Servlet_ConnectorResource", false);
 
-        boolean globalServlet = lookupConnectorResource("java:global/env/Servlet_DataSource", true);
-        boolean compServlet = lookupConnectorResource("java:comp/env/Servlet_DataSource",false);
-        boolean appServletDataSource = lookupConnectorResource("java:app/env/Servlet_DataSource", true);
-        boolean moduleServletDataSource = lookupConnectorResource("java:module/env/Servlet_DataSource", false);
+        lookupConnectorResource("java:global/env/HelloStatefulEJB_Annotation_ConnectorResource", true);
+        lookupConnectorResource("java:app/env/HelloStatefulEJB_Annotation_ConnectorResource", true);
+        lookupConnectorResource("java:module/env/HelloStatefulEJB_Annotation_ConnectorResource", true);
+        lookupConnectorResource("java:comp/env/HelloStatefulEJB_Annotation_ConnectorResource", true);
 
-        boolean globalServlet_DD_DataSource = lookupConnectorResource("java:global/env/Servlet_DD_DataSource", true);
-        boolean compServlet_DD_DataSource = lookupConnectorResource("java:comp/env/Servlet_DD_DataSource",false);
+        lookupConnectorResource("java:global/env/HelloEJB_Annotation_ConnectorResource", true);
+        lookupConnectorResource("java:app/env/HelloEJB_Annotation_ConnectorResource", true);
+        lookupConnectorResource("java:module/env/HelloEJB_Annotation_ConnectorResource", true);
+        lookupConnectorResource("java:comp/env/HelloEJB_Annotation_ConnectorResource", false);
 
-        boolean globalHelloStateful_DD_DataSource = lookupConnectorResource("java:global/env/HelloStatefulEJB_DD_DataSource", true);
-        boolean compHelloStateful_DD_DataSource = lookupConnectorResource("java:comp/env/HelloStatefulEJB_DD_DataSource",false);
+        // Connector-Resource-Definition through DD
+        lookupConnectorResource("java:global/env/EAR_ConnectorResource", true);
+        lookupConnectorResource("java:app/env/EAR_ConnectorResource", true);
 
-        boolean globalHello_DD_DataSource = lookupConnectorResource("java:global/env/HelloEJB_DD_DataSource", true);
-        boolean compHello_DD_DataSource = lookupConnectorResource("java:comp/env/HelloEJB_DD_DataSource",false);
+        lookupConnectorResource("java:global/env/Web_DD_ConnectorResource", true);
+        lookupConnectorResource("java:app/env/Web_DD_ConnectorResource", true);
+        lookupConnectorResource("java:module/env/Web_DD_ConnectorResource", false);
+        lookupConnectorResource("java:comp/env/Web_DD_ConnectorResource", false);
 
-        boolean globalAppLevel_DD_DataSource = lookupConnectorResource("java:global/env/Application_Level_DataSource", true);
-        boolean appAppLevel_DD_DataSource = lookupConnectorResource("java:app/env/Application_Level_DataSource", true);
+        lookupConnectorResource("java:global/env/HelloStatefulEJB_DD_ConnectorResource", true);
+        lookupConnectorResource("java:app/env/HelloStatefulEJB_DD_ConnectorResource", true);
+        lookupConnectorResource("java:module/env/HelloStatefulEJB_DD_ConnectorResource", true);
+        lookupConnectorResource("java:comp/env/HelloStatefulEJB_DD_ConnectorResource", true);
 
-        if (global && comp && globalHelloEJB && !compHelloEJB && globalServlet && appServletDataSource && !compServlet &&
-                globalServlet_DD_DataSource && !compServlet_DD_DataSource && globalHelloStateful_DD_DataSource
-                && compHelloStateful_DD_DataSource && globalHello_DD_DataSource && !compHello_DD_DataSource
-                && appHelloStatefulEjb && moduleHelloEjb && !moduleServletDataSource
-                && globalAppLevel_DD_DataSource && appAppLevel_DD_DataSource) {
-            System.out.println("StatefulEJB datasource-definitions Success");
+        lookupConnectorResource("java:global/env/HelloEJB_DD_ConnectorResource", true);
+        lookupConnectorResource("java:app/env/HelloEJB_DD_ConnectorResource", true);
+        lookupConnectorResource("java:module/env/HelloEJB_DD_ConnectorResource", true);
+        lookupConnectorResource("java:comp/env/HelloEJB_DD_ConnectorResource", false);
+        
+        System.out.println("StatefulEJB datasource-definitions Success");
 
-        } else {
-            System.out.println("StatefulEJB datasource-definitions Failure");
-            throw new RuntimeException("StatefulEJB datasource-definitions Failure");
-        }
     }
 
     public void sleepFor(int sec) {
@@ -106,20 +114,21 @@ public class HelloStatefulEJB implements HelloStateful {
     public void ping() {
     }
 
-    private boolean lookupConnectorResource(String dataSourceName, boolean expectSuccess) {
+    private void lookupConnectorResource(String jndiName, boolean expectSuccess) throws RuntimeException{
         Connection c = null;
         try {
             InitialContext ic = new InitialContext();
-            System.out.println("lookup dataSource : " + dataSourceName);
-            DataSource ds = (DataSource) ic.lookup(dataSourceName);
+            ConnectionFactory ds = (ConnectionFactory) ic.lookup(jndiName);
             c = ds.getConnection();
-            System.out.println("got connection : " + c);
-            return true;
+            System.out.println("Stateful EJB: can access connector resource : " + jndiName);
         } catch (Exception e) {
             if(expectSuccess){
-                 e.printStackTrace();
+                e.printStackTrace();
+                throw new RuntimeException("Fail to access connector resource: "+jndiName, e);
+            }else{
+                System.out.println("Stateful EJB: can not access connector resource : " + jndiName);
             }
-            return false;
+
         } finally {
             try {
                 if (c != null) {
