@@ -46,26 +46,64 @@
         <groupId>net.java</groupId>
         <artifactId>jvnet-parent</artifactId>
         <version>3</version>
-        <relativePath>../../..pom.xml</relativePath>
     </parent>
-    
 
-    <artifactId>command-security-plugin</artifactId>
-    <version>1.0.0</version>
+    <artifactId>command-security-maven-plugin</artifactId>
+    <version>1.0-SNAPSHOT</version>
     <packaging>maven-plugin</packaging>
 
     <name>Command Security Plug-in</name>
     <description>Maven plug-in for checking that AdminCommand implementers address command authorization</description>
-    
-    <contributors>
-        <contributor>
+
+    <developers>
+        <developer>
             <name>Tim Quinn</name>
+            <id>tjquinn</id>
             <roles>
                 <role>lead</role>
                 <role>developer</role>
             </roles>
-        </contributor>
-    </contributors>
+            <organization>Oracle, Inc</organization>
+        </developer>
+    </developers>
+    
+    <url>http://glassfish.java.net</url>
+    <organization>
+        <name>GlassFish Community</name>
+        <url>http://glassfish.org</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>CDDL + GPLv2 with classpath exception</name>
+            <url>http://glassfish.java.net/nonav/public/CDDL+GPL_1_1.html</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <issueManagement>
+        <system>jira</system>
+        <url>http://java.net/jira/browse/glassfish</url>
+    </issueManagement>
+    <mailingLists>
+        <mailingList>
+            <name>GlassFish Developer</name>
+            <archive>dev@glassfish.java.net</archive>
+        </mailingList>
+    </mailingLists>
+    <scm>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/maven-plugins/command-security-maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/maven-plugins/command-security-maven-plugin</developerConnection>
+        <url>http://java.net/projects/glassfish/sources/svn/show</url>
+    </scm>
+
+    <distributionManagement>
+        <!-- eventually find a better permanent home -->
+        <site>
+            <id>command-security-maven-plugin.website</id>
+            <name>Command Security Maven Plugin Website</name>
+            <url>java-net:/glassfish-svn/trunk/www/command-security-maven-plugin/</url>
+        </site>
+    </distributionManagement>
     
     <dependencies>
         <dependency>
