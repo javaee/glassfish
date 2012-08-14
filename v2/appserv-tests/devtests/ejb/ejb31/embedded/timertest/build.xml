@@ -15,7 +15,8 @@
     &testproperties;
 
     <target name="all" depends="build,run"/>
-    <target name="lite" depends="build,run-non-persistent"/>
+    <!-- target name="lite" depends="build,run-non-persistent"/ -->
+    <target name="lite" depends="build,run"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
