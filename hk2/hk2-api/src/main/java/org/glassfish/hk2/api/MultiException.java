@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.api;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,7 +49,7 @@ import java.util.List;
  * This exception can contain multiple other exceptions.
  * However, it will also have the causal chain of the
  * first exception added to the list of exceptions
- * 
+ *
  * @author jwells
  *
  */
@@ -56,77 +58,78 @@ public class MultiException extends RuntimeException {
      * For serialization
      */
     private static final long serialVersionUID = 2112432697858621044L;
-    
     private final List<Throwable> throwables = new LinkedList<Throwable>();
-    
+
     /**
      * Creates an empty MultiException
      */
     public MultiException() {
         super();
     }
-    
+
     /**
      * This list must have at least one element in it.
      * The first element of the list will become the
      * cause of this exception, and its message will become
      * the message of this exception
-     * 
+     *
      * @param th A non-null, non-empty list of exceptions
      */
     public MultiException(List<Throwable> th) {
         super(th.get(0).getMessage(), th.get(0));
-        
+
         throwables.addAll(th);
     }
-    
+
     /**
      * This allows for construction of a MultiException
      * with one element in its list
-     * 
+     *
      * @param th May not be null
      */
     public MultiException(Throwable th) {
         super(th.getMessage(), th);
-        
+
         throwables.add(th);
     }
-    
+
     /**
      * Gets all the errors associated with this MultiException
-     * 
+     *
      * @return All the errors associated with this MultiException. Will
      * not return null, but may return an empty object
      */
     public List<Throwable> getErrors() {
         return Collections.unmodifiableList(throwables);
     }
-    
+
     /**
      * Adds an error to an existing exception
-     * 
+     *
      * @param error The exception to add
      */
     public void addError(Throwable error) {
         throwables.add(error);
     }
-    
+
     public String toString() {
-        StringBuffer sb = new StringBuffer("MultiException(");
-        
+        final StringWriter stringWriter = new StringWriter();
+        final PrintWriter printWriter = new PrintWriter(stringWriter);
+
+        printWriter.print("MultiException [" + System.identityHashCode(this) + "] {");
+
         int lcv = 1;
         for (Throwable th : throwables) {
-            sb.append("\n" + lcv++ + ". " + th.getMessage());
+            printWriter.print("\n" + lcv++ + ". ");
+            th.printStackTrace(printWriter);
         }
-        
-        if (throwables.isEmpty()) {
-            sb.append(System.identityHashCode(this) + ")");
+
+        if (!throwables.isEmpty()) {
+            printWriter.println();
         }
-        else {
-            sb.append("\n" + System.identityHashCode(this) + ")");
-        }
-        
-        return sb.toString();
+        printWriter.println("}");
+
+        return stringWriter.toString();
     }
 
 }
