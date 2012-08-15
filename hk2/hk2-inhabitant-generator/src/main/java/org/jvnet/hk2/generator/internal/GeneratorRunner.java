@@ -47,10 +47,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
@@ -68,6 +65,7 @@ public class GeneratorRunner {
     private final static String DOT_CLASS = ".class";
     private final static String META_INF = "META-INF";
     private final static String INHABITANTS = "hk2-locator";
+    private final static String TARGET_HABITATS = "target-habitats";  //Should be same as ConfigMetadata.TARGET_HABITATS
     
     private final Utilities utilities;  // For caching
     private final String fileOrDirectory;
@@ -174,51 +172,79 @@ public class GeneratorRunner {
         
         return retVal;
     }
-    
-    
-    
-    private void writeToDirectory(File parent, List<DescriptorImpl> descriptors) throws IOException {
-        File META_INF_dir = new File(parent, META_INF);
-        File inhabitantsDir = new File(META_INF_dir, INHABITANTS);
-        File outputFile = new File(inhabitantsDir, locatorName);
-        
-        if (!inhabitantsDir.exists()) {
-            inhabitantsDir.mkdirs();
+
+
+    private void writeToDirectory(File parent, List<DescriptorImpl> allDescriptors) throws IOException {
+        Map<String, List<DescriptorImpl>> targetHabitatMap = new HashMap<String, List<DescriptorImpl>>();
+        targetHabitatMap.put(locatorName, new ArrayList<DescriptorImpl>());
+        for (DescriptorImpl d : allDescriptors) {
+            List<String> habitats = d.getMetadata().get(TARGET_HABITATS);
+            if (habitats != null) {
+                StringTokenizer tokenizer = new StringTokenizer(habitats.get(0), ";");
+                while (tokenizer.hasMoreTokens()) {
+                    String habitatName = tokenizer.nextToken();
+                    List<DescriptorImpl> descriptorsForHabitat = targetHabitatMap.get(habitatName);
+                    if (descriptorsForHabitat == null) {
+                        descriptorsForHabitat = new ArrayList<DescriptorImpl>();
+                        targetHabitatMap.put(habitatName, descriptorsForHabitat);
+                    }
+                    descriptorsForHabitat.add(d);
+                    System.out.println(d.getName() + " Will be an inhabitant of ==> " + habitatName);
+                }
+            } else {
+                List<DescriptorImpl> descriptorsForHabitat = targetHabitatMap.get(locatorName);
+                descriptorsForHabitat.add(d);
+            }
         }
-        
-        File noSwapFile = null;
-        boolean directWrite = false;
-        if (noSwap || !outputFile.exists()) {
-            directWrite = true;
-            if (outputFile.exists()) {
-                if (!outputFile.delete()) {
-                    throw new IOException("Could not delete existing inhabitant file " +
-                        outputFile.getAbsolutePath() + " in the noSwap case");
+
+        for (String targetHabitatName : targetHabitatMap.keySet()) {
+            List<DescriptorImpl> descriptors = targetHabitatMap.get(targetHabitatName);
+            if (descriptors.size() == 0) {
+                continue;
+            }
+            File META_INF_dir = new File(parent, META_INF);
+            File inhabitantsDir = new File(META_INF_dir, INHABITANTS);
+            File outputFile = new File(inhabitantsDir, targetHabitatName);
+
+            if (!inhabitantsDir.exists()) {
+                inhabitantsDir.mkdirs();
+            }
+
+            File noSwapFile = null;
+            boolean directWrite = false;
+            if (noSwap || !outputFile.exists()) {
+                directWrite = true;
+                if (outputFile.exists()) {
+                    if (!outputFile.delete()) {
+                        throw new IOException("Could not delete existing inhabitant file " +
+                                outputFile.getAbsolutePath() + " in the noSwap case");
+                    }
+                }
+
+                noSwapFile = outputFile;
+            }
+
+            File writeMeFile = writeInhabitantsFile(descriptors, noSwapFile, inhabitantsDir);
+
+            if (!directWrite) {
+                // OK, now swap it
+                if (outputFile.exists()) {
+                    if (!outputFile.delete()) {
+                        throw new IOException("Could not delete existing inhabitant file " + outputFile.getAbsolutePath());
+                    }
+                }
+
+                String tmpFileAbsolutePath = writeMeFile.getAbsolutePath();
+                if (verbose) {
+                    System.out.println("Swapping " + tmpFileAbsolutePath + " to " + outputFile.getAbsolutePath());
+                }
+
+                if (!writeMeFile.renameTo(outputFile)) {
+                    throw new IOException("Could not move generated inhabitant file " + tmpFileAbsolutePath +
+                            " to " + outputFile.getAbsolutePath());
                 }
             }
-            
-            noSwapFile = outputFile;
-        }
-        
-        File writeMeFile = writeInhabitantsFile(descriptors, noSwapFile, inhabitantsDir);
-        
-        if (!directWrite) {
-            // OK, now swap it
-            if (outputFile.exists()) {
-                if (!outputFile.delete()) {
-                    throw new IOException("Could not delete existing inhabitant file " + outputFile.getAbsolutePath());
-                }
-            }
-        
-            String tmpFileAbsolutePath = writeMeFile.getAbsolutePath();
-            if (verbose) {
-                System.out.println("Swapping " + tmpFileAbsolutePath + " to " + outputFile.getAbsolutePath());
-            }
-            
-            if (!writeMeFile.renameTo(outputFile)) {
-                throw new IOException("Could not move generated inhabitant file " + tmpFileAbsolutePath +
-                        " to " + outputFile.getAbsolutePath());
-            }
+
         }
     }
     
