@@ -93,8 +93,6 @@ public class FactoryCreator<T> implements Creator<T> {
         
         Factory<T> retVal = handle.getService();
         
-        handle.destroy();
-        
         return new InstanceLifecycleEventImpl(
                 InstanceLifecycleEventType.POST_PRODUCTION, retVal.provide());
     }

@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.destroy;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Factory;
@@ -50,13 +51,16 @@ import org.glassfish.hk2.api.PerLookup;
  */
 @Singleton
 public class SprocketFactory implements Factory<Sprocket> {
+    private boolean destroyed = false;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#provide()
      */
     @Override @PerLookup
     public Sprocket provide() {
-        return new SprocketImpl();
+        if (destroyed) throw new IllegalStateException();
+        
+        return new SprocketImpl(this);
     }
 
     /* (non-Javadoc)
@@ -66,5 +70,14 @@ public class SprocketFactory implements Factory<Sprocket> {
     public void dispose(Sprocket instance) {
         ((SprocketImpl) instance).close();
     }
-
+    
+    @SuppressWarnings("unused")
+    @PreDestroy
+    private void destroyMe() {
+        destroyed = true;
+    }
+    
+    public boolean isDestroyed() {
+        return destroyed;
+    }
 }

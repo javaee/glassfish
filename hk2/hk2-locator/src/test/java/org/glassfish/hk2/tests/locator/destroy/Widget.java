@@ -88,4 +88,9 @@ public class Widget {
     public void badUse() {
         sprocket.useMe();
     }
+    
+    public SprocketFactory getSprocketFactory() {
+        return sprocket.getCreator();
+        
+    }
 }

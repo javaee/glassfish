@@ -117,4 +117,8 @@ public class FruitContext implements Context<FruitScope> {
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+    }
 }

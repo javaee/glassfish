@@ -113,4 +113,8 @@ public class InheritedScopeContext implements Context<InheritedScope> {
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+    }
 }

@@ -234,4 +234,12 @@ public class RunLevelContext implements Context<RunLevel> {
     public boolean supportsNullCreation() {
         return false;
     }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        // In this context services are only destroyed when the run-level
+        // goes below a certain number.  Hence we willfully ignore
+        // any other request to destroy a run-level service
+        
+    }
 }
