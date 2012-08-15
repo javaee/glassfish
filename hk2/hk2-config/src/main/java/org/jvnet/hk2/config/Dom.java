@@ -85,6 +85,29 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     private DomDescriptor domDescriptor;
     
     private ServiceHandle<Dom> serviceHandle;
+    /**
+     * This flag indicates whether a Dom object should be
+     * written to domain.xml. By default everything is written
+     * to domain.xml unless someone explicitly calls the
+     * skipFromXml method
+     */
+    private boolean writeToXml = true;
+
+    /**
+     * This method should be invoked if this Dom should not be persisted
+     * to the domain.xml file.
+     */
+    public void skipFromXml() {
+        writeToXml = false;
+    }
+
+    /**
+     * This method should be invoked if this Dom needs to be persisted to
+     * domain.xml file
+     */
+    public void writeToXml() {
+        writeToXml = true;
+    }
 
     static abstract class Child {
         final String name;
@@ -1262,6 +1285,13 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
         if(tagName==null)
             throw new IllegalArgumentException("Trying t write a local element "+this+" w/o a tag name");
 
+        /**
+         * If someone has explicitly called the skipFromXml then dont write the element to
+         * domain.xml
+         */
+        if (! writeToXml)  {
+            return;
+        }
         w.writeStartElement(tagName);
         
         for (Map.Entry<String, String> attributeToWrite : attributesToWrite().entrySet()) {
