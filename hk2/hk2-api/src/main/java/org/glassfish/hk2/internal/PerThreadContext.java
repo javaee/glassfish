@@ -90,7 +90,6 @@ public class PerThreadContext implements Context<PerThread> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.ActiveDescriptor)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
         HashMap<ActiveDescriptor<?>, Object> database = threadMap.get();
@@ -119,5 +118,12 @@ public class PerThreadContext implements Context<PerThread> {
     @Override
     public void shutdown() {
         threadMap = null;
+    }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        // per-thread instances live for the life of the thread,
+        // so we will ignore any request to destroy a descriptor
+        
     }
 }

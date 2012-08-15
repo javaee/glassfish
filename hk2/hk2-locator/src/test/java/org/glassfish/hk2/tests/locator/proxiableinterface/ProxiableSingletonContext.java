@@ -108,4 +108,9 @@ public class ProxiableSingletonContext implements Context<ProxiableSingleton> {
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        
+    }
 }

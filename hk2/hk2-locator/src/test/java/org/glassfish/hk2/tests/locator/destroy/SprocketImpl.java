@@ -44,7 +44,12 @@ package org.glassfish.hk2.tests.locator.destroy;
  *
  */
 public class SprocketImpl implements Sprocket {
+    private final SprocketFactory creator;
     private boolean closed = false;
+    
+    /* package */ SprocketImpl(SprocketFactory creator) {
+        this.creator = creator;
+    }
     
     /* package */ void close() {
         closed = true;
@@ -58,4 +63,10 @@ public class SprocketImpl implements Sprocket {
         if (closed) throw new IllegalStateException();
     }
 
+    @Override
+    public SprocketFactory getCreator() {
+        return creator;
+    }
+
+    
 }

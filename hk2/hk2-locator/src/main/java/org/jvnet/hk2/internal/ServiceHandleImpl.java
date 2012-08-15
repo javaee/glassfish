@@ -44,6 +44,8 @@ import java.security.PrivilegedAction;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
 
@@ -193,6 +195,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceHandle#destroy()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void destroy() {
         synchronized (lock) {
@@ -206,10 +209,23 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             // Otherwise it is the scope responsible for the lifecycle
             root.dispose(service);
         }
+        else {
+            Context<?> context;
+            try {
+                context = locator.resolveContext(root.getScopeAnnotation());
+            }
+            catch (Throwable th) {
+                return;
+            }
+            
+            context.destroyOne(root);
+        }
         
         for (ServiceHandleImpl<?> subHandle : subHandles) {
             subHandle.destroy();
         }
+        
+
     }
     
     /**

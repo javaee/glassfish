@@ -51,5 +51,7 @@ public interface Sprocket {
      * @throws IllegalStateException
      */
     public void useMe() throws IllegalStateException;
+    
+    public SprocketFactory getCreator();
 
 }

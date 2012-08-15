@@ -101,4 +101,8 @@ public class BadContext<T> implements Context<T> {
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+    }
 }

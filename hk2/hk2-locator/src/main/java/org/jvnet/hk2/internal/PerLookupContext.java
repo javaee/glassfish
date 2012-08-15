@@ -99,4 +99,10 @@ public class PerLookupContext implements Context<PerLookup> {
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        // Do nothing, this is a special case
+        
+    }
 }

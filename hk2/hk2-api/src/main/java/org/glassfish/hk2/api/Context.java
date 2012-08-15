@@ -88,6 +88,16 @@ public interface Context<T> {
     public boolean containsKey(ActiveDescriptor<?> descriptor);
     
     /**
+     * This method is called when {@link ServiceHandle#destroy()} method is called.
+     * It is up to the context implementation whether or not to honor this destruction
+     * request based on the lifecycle requirements of the context
+     * 
+     * @param descriptor A non-null descriptor upon which {@link ServiceHandle#destroy()}
+     * has been called
+     */
+    public void destroyOne(ActiveDescriptor<?> descriptor);
+    
+    /**
      * Returns true if the findOrCreate method can return null
      * 
      * @return true if null is a legal value from the findOrCreate method

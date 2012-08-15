@@ -110,6 +110,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new LinkedHashSet<ValidationService>();
     private final LinkedList<ErrorService> errorHandlers =
             new LinkedList<ErrorService>();
+    private final HashMap<Class<? extends Annotation>, Context<?>> contextCache =
+            new HashMap<Class<? extends Annotation>, Context<?>>();
     
     private boolean shutdown = false;
     
@@ -993,6 +995,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         else {
             reupInstanceListenersHandlers(thingsAdded);
         }
+        
+        contextCache.clear();
     }
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
@@ -1040,15 +1044,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (scope.equals(Singleton.class)) return singletonContext;
         if (scope.equals(PerLookup.class)) return perLookupContext;
         
-        Type actuals[] = new Type[1];
-        actuals[0] = scope;
-        ParameterizedType findContext = new ParameterizedTypeImpl(Context.class, actuals);
+        synchronized (lock) {
+            Context<?> retVal = contextCache.get(scope);
+            if (retVal != null) return retVal;
         
-        List<ServiceHandle<Context<?>>> contextHandles = Utilities.<List<ServiceHandle<Context<?>>>>cast(
+            Type actuals[] = new Type[1];
+            actuals[0] = scope;
+            ParameterizedType findContext = new ParameterizedTypeImpl(Context.class, actuals);
+        
+            List<ServiceHandle<Context<?>>> contextHandles = Utilities.<List<ServiceHandle<Context<?>>>>cast(
                 protectedGetAllServiceHandles(findContext));
         
-        try {
-            Context<?> retVal = null;
             for (ServiceHandle<Context<?>> contextHandle : contextHandles) {
                 Context<?> context = contextHandle.getService();
                 
@@ -1064,12 +1070,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             if (retVal == null) {
                 throw new IllegalStateException("Could not find an active context for " + scope.getName());
             }
+            
+            contextCache.put(scope, retVal);
+            
             return retVal;
-        }
-        finally {
-            for (ServiceHandle<Context<?>> contextHandle : contextHandles) {
-                contextHandle.destroy();
-            }
         }
     }
     

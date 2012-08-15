@@ -143,15 +143,29 @@ public class SingletonContext implements Context<Singleton> {
         }
         
         for (SystemDescriptor<Object> one : singlesOnly) {
-            Object value = one.getCache();
-            
-            try {
-                one.dispose(value);
-            }
-            catch (Throwable th) {
-                Logger.getLogger().debug("SingletonContext", "shutdown", th);
-            }
+            destroyOne(one);
         }
+    }
+    
+    /**
+     * Release one system descriptor
+     * 
+     * @param one The descriptor to release (may not be null).  Further, the cache MUST be set
+     */
+    @SuppressWarnings("unchecked")
+    public void destroyOne(ActiveDescriptor<?> one) {
+        if (!one.isCacheSet()) return;
+        
+        Object value = one.getCache();
+        one.releaseCache();
+        
+        try {
+            ((ActiveDescriptor<Object>) one).dispose(value);
+        }
+        catch (Throwable th) {
+            Logger.getLogger().debug("SingletonContext", "releaseOne", th);
+        }
+        
     }
     
     private static class GenerationComparator implements Comparator<SystemDescriptor<Object>> {

@@ -93,7 +93,7 @@ public class DestroyTest {
      * Tests the destroy on a per-lookup factory produced object is called
      */
     @Test
-    public void testFactoryDestruction() {
+    public void testFactoryCreatedServiceDestruction() {
         ServiceHandle<Widget> widgetHandle = locator.getServiceHandle(Widget.class);
         Assert.assertNotNull(widgetHandle);
         
@@ -111,6 +111,43 @@ public class DestroyTest {
         catch (IllegalStateException ise) {
             // This is good
         }
+        
+        // Now test that the factory itself was not destroyed
+        SprocketFactory sprocketFactory = locator.getService(SprocketFactory.class);
+        Assert.assertNotNull(sprocketFactory);
+        
+        Assert.assertFalse(sprocketFactory.isDestroyed());
+        
+        Assert.assertSame(sprocketFactory, widget.getSprocketFactory());
+    }
+    
+    /**
+     * Tests a real destruction of a singleton factory but ensure it still works
+     * (with a different factory) after the explicit user destruction
+     */
+    @Test
+    public void testUserDestructionOfFactory() {
+        ServiceHandle<SprocketFactory> sprocketFactoryHandle1 = locator.getServiceHandle(SprocketFactory.class);
+        Assert.assertNotNull(sprocketFactoryHandle1);
+        
+        SprocketFactory sprocketFactory1 = sprocketFactoryHandle1.getService();
+        
+        Widget widget1 = locator.getService(Widget.class);
+        Assert.assertNotNull(widget1);
+        
+        Assert.assertSame(sprocketFactory1, widget1.getSprocketFactory());
+        
+        Assert.assertFalse(sprocketFactory1.isDestroyed());
+        
+        sprocketFactoryHandle1.destroy();
+        
+        Assert.assertTrue(sprocketFactory1.isDestroyed());
+        
+        // Now ensure we can still get a widget!
+        Widget widget2 = locator.getService(Widget.class);
+        Assert.assertNotNull(widget2);
+        
+        Assert.assertNotSame(sprocketFactory1, widget2.getSprocketFactory());
     }
 
 }

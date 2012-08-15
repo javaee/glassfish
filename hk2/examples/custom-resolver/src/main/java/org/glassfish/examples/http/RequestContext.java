@@ -144,4 +144,9 @@ public class RequestContext implements Context<RequestScope> {
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+    }
+
 }

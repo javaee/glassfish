@@ -111,4 +111,9 @@ public class SeasonContext implements Context<SeasonScope> {
     @Override
     public void shutdown() {
     }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        
+    }
 }

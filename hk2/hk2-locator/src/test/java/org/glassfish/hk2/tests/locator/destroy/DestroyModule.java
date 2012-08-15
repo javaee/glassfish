@@ -65,7 +65,7 @@ public class DestroyModule implements TestModule {
         configurator.bind(BuilderHelper.link(Registrar.class).in(Singleton.class.getName()).build());
         
         // This is for the factory destruction test
-        configurator.bind(BuilderHelper.link(SprocketFactory.class).
+        configurator.bind(BuilderHelper.link(SprocketFactory.class, true).
                 to(Sprocket.class).
                 in(PerLookup.class.getName()).buildFactory(Singleton.class.getName()));
         configurator.addActiveDescriptor(Widget.class);
