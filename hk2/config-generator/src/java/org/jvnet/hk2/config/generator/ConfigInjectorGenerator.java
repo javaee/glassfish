@@ -58,19 +58,11 @@ import com.sun.istack.tools.APTTypeVisitor;
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.*;
-import com.sun.mirror.type.ArrayType;
-import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.MirroredTypeException;
-import com.sun.mirror.type.PrimitiveType;
-import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.TypeVariable;
-import com.sun.mirror.type.VoidType;
-import com.sun.mirror.type.WildcardType;
+import com.sun.mirror.type.*;
 import com.sun.mirror.util.SimpleDeclarationVisitor;
 import com.sun.mirror.util.Types;
 import com.sun.tools.xjc.api.util.FilerCodeWriter;
+import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.hk2.config.Attribute;
@@ -211,6 +203,17 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
             service = injector.annotate(Service.class).param("name",elementName);
             injector.annotate(InjectionTarget.class).param("value",targetType);
+
+            Set<String> targetHabitats = new HashSet<String>();
+            if (c != null) {
+                for (AnnotationMirror am : clz.getAnnotationMirrors()) {
+                    InhabitantAnnotation ia = am.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
+                    if (ia != null) {
+                        targetHabitats.add(ia.value());
+                    }
+                }
+            }
+
             if(generateNoopConfigInjector) {
                 injector._extends(cm.ref(NoopConfigInjector.class));
                 injectAttributeMethod = null;
@@ -238,6 +241,27 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             // locate additional contracts for the target.
             for (TypeDeclaration t : ContractFinder.find(clz))
                 metadata.add(ConfigMetadata.TARGET_CONTRACTS,t.getQualifiedName());
+            if (targetHabitats.size() > 0) {
+                StringBuilder sb = new StringBuilder();
+                for (String h : targetHabitats) {
+                    sb.append(h).append(";");
+                }
+                metadata.add(ConfigMetadata.TARGET_HABITATS, sb.toString());
+            }
+        }
+
+        private boolean isSubAnnotationOf(String base, AnnotationMirror sub) {
+            if (sub.toString().equals(base)) {
+                return true;
+            }
+
+            for (AnnotationMirror am : sub.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
+                if (isSubAnnotationOf(base, am)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void addReinjectionParam(JMethod method) {

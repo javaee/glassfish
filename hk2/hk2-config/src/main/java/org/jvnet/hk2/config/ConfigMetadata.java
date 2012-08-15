@@ -56,6 +56,11 @@ public class ConfigMetadata {
     public static final String TARGET_CONTRACTS = "target-contracts";
 
     /**
+     * Target habitats in which this service should reside.
+     */
+    public static final String TARGET_HABITATS = "target-habitats"; //Should be same as GeneratorRunner.TARGET_HABITATS
+
+    /**
      * If the {@link #TARGET target type} is keyed, the FQCN that defines
      * the key field. This type is always assignable from the target type.
      *
