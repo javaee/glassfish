@@ -38,6 +38,8 @@
  * holder.
  */
 
+package test;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -58,7 +60,7 @@ public class TestServlet extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        CountDownLatch cdl = new CountDownLatch(2);
+        CountDownLatch cdl = new CountDownLatch(1);
         ServletOutputStream output = res.getOutputStream();
         ServletInputStream input = req.getInputStream();
         ReadListenerImpl readListener = new ReadListenerImpl(input, output, cdl);
@@ -72,15 +74,15 @@ public class TestServlet extends HttpServlet {
 
         try {
             if (cdl.await(8, TimeUnit.SECONDS)) {
-                System.out.println("SUCCESS");
+                System.out.println("COMPLETED");
             } else {
-                System.out.println("TIMEOUT: " + cdl.getCount());
+                System.out.println("TIMEOUT");
             }
         } catch(InterruptedException ie) {
         }
     }
 
-    class ReadListenerImpl implements ReadListener {
+    static class ReadListenerImpl implements ReadListener {
         private ServletInputStream input = null;
         private ServletOutputStream output = null;
         private CountDownLatch cdl = null;
@@ -94,19 +96,20 @@ public class TestServlet extends HttpServlet {
 
         public void onDataAvailable() {
             try {
-                StringBuilder sb = new StringBuilder("onDataAvailable-");
+                StringBuilder sb = new StringBuilder();
                 System.out.println("--> onDataAvailable");
                 int len = -1;
                 byte b[] = new byte[1024];
-                while ((len = input.read(b)) != -1) {
-                    System.out.println("--> " + new String(b, 0, len));
-                    sb.append(new String(b, 0, len));
+                while (input.isReady() 
+                        && (len = input.read(b)) != -1) {
+                    String data = new String(b, 0, len);
+                    System.out.println("--> " + data);
+                    sb.append('/' + data);
+                    //output.print('/' + data);
                 }
                 output.print(sb.toString());
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
-            } finally {
-                cdl.countDown();
             }
         }
 

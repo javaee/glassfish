@@ -50,7 +50,7 @@ import com.sun.ejte.ccl.reporter.*;
 public class WebTest {
 
     private static String TEST_NAME = "non-blocking-Input";
-    private static String EXPECTED_RESPONSE = "onDataAvailable-Hello-onAllDataRead";
+    private static String EXPECTED_RESPONSE = "HelloWorld-onAllDataRead";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -90,7 +90,9 @@ public class WebTest {
                 String line = null;
                 while ((line = input.readLine()) != null) {
                     System.out.println(line);
-                    expected = EXPECTED_RESPONSE.equals(line);
+                    expected = line.contains("/")
+                        && (line.indexOf("/") < line.indexOf("d"))
+                        && line.replace("/", "").equals(EXPECTED_RESPONSE);
                     if (expected) {
                         break;
                     }
