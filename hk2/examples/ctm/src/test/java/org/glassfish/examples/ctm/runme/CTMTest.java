@@ -56,6 +56,7 @@ import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.jvnet.hk2.component.Habitat;
 
 /**
  * This runs a simple test to be sure that the ServiceProviderEngine
@@ -64,11 +65,13 @@ import org.junit.Test;
  * @author jwells
  */
 public class CTMTest {
-    private final static String TEST_NAME = "CTMTest";
+    private final static String TEST_NAME = TenantLocatorGenerator.CTM_LOCATOR_NAME;
     private final static ServiceLocator locator = ServiceLocatorFactory.getInstance().create(TEST_NAME);
     
     @BeforeClass
     public static void before() throws IOException {
+        new Habitat(null, TEST_NAME);  // Adds a habitat to the base CTM locator
+        
         HK2Populator.populate(locator,
                 new ClasspathDescriptorFileFinder(),
                 new Binder() {

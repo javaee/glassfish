@@ -80,7 +80,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         checkDescriptor(key);
 
         SystemDescriptor<?> sd = new SystemDescriptor<Object>(key,
-                new Long(locator.getLocatorId()),
+                locator,
                 new Long(locator.getNextServiceId()));
 
         allDescriptors.add(sd);
@@ -118,12 +118,12 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         }
         
         final SystemDescriptor<?> boundAsService = new SystemDescriptor<Object>(asService,
-                new Long(locator.getLocatorId()),
+                locator,
                 new Long(locator.getNextServiceId()));
 
         // Link the factory descriptor to the service descriptor for the factory
         final SystemDescriptor<?> boundAsFactory = new SystemDescriptor<Object>(asFactory,
-                new Long(locator.getLocatorId()),
+                locator,
                 new Long(locator.getNextServiceId()));
         
         if (asService instanceof ActiveDescriptor) {
@@ -164,7 +164,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         }
         
         SystemDescriptor<T> retVal = new SystemDescriptor<T>(activeDescriptor,
-                new Long(locator.getLocatorId()),
+                locator,
                 new Long(locator.getNextServiceId()));
         
         allDescriptors.add(retVal);

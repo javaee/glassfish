@@ -49,7 +49,6 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -138,8 +137,10 @@ public class ParentedTest {
      * First looks up a service in a parent-defined context
      * from the child, the closes the child and looks it up
      * again from the parent.
+     * 
+     * This test was inspired by http://fuegotracker.ar.oracle.com/browse/FPP-480
      */
-    @Test @Ignore
+    @Test
     public void testContextInParent() {
         ServiceLocator child2 = factory.create(CHILD2, locator);
         

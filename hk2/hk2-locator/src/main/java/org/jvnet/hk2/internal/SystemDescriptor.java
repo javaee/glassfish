@@ -83,7 +83,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final Long id;
     private final ActiveDescriptor<T> activeDescriptor;
     
-    private final Long locatorId;
+    private final ServiceLocatorImpl sdLocator;
     private boolean reified;
     private boolean preAnalyzed = false;
     
@@ -111,10 +111,10 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private int singletonGeneration = Integer.MAX_VALUE;
 
     /* package */ @SuppressWarnings("unchecked")
-    SystemDescriptor(Descriptor baseDescriptor, Long locatorId, Long serviceId) {
+    SystemDescriptor(Descriptor baseDescriptor, ServiceLocatorImpl locator, Long serviceId) {
         this.originalDescriptor = baseDescriptor;
         this.baseDescriptor = BuilderHelper.deepCopyDescriptor(baseDescriptor);
-        this.locatorId = locatorId;
+        this.sdLocator = locator;
         this.id = serviceId;
  
         if (baseDescriptor instanceof ActiveDescriptor) {
@@ -532,7 +532,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return retVal;
     }
     
-    /* package */ synchronized void reify(Class<?> implClass, ServiceLocatorImpl locator, Collector collector) {
+    /* package */ synchronized void reify(Class<?> implClass, Collector collector) {
         if (!preAnalyzed) {
             this.implClass = implClass;
         }
@@ -552,7 +552,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                             collector));
             }
             
-            creator = new ClazzCreator<T>(locator, implClass, this, collector);
+            creator = new ClazzCreator<T>(sdLocator, implClass, this, collector);
             
             if (!preAnalyzed) {
                 scope = Utilities.getScopeAnnotationType(implClass, baseDescriptor, collector);
@@ -594,11 +594,11 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             
             ActiveDescriptor<?> factoryDescriptor = getFactoryDescriptor(provideMethod,
                     factoryProvidedType,
-                    locator,
+                    sdLocator,
                     collector);
             
             if (factoryDescriptor != null) {
-                creator = new FactoryCreator<T>(locator, factoryDescriptor);
+                creator = new FactoryCreator<T>(sdLocator, factoryDescriptor);
             }
             
             if (!preAnalyzed) {
@@ -640,8 +640,8 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         int low32 = id.intValue();
         int high32 = (int) (id.longValue() >> 32);
         
-        int locatorLow32 = locatorId.intValue();
-        int locatorHigh32 = (int) (locatorId.longValue() >> 32);
+        int locatorLow32 = new Long(sdLocator.getLocatorId()).intValue();
+        int locatorHigh32 = (int) (sdLocator.getLocatorId() >> 32);
         
         return baseDescriptor.hashCode() ^ low32 ^ high32 ^ locatorLow32 ^ locatorHigh32;
     }
@@ -656,7 +656,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         
         if (!sd.getServiceId().equals(id)) return false;
         
-        if (!sd.getLocatorId().equals(locatorId)) return false;
+        if (!sd.getLocatorId().equals(sdLocator.getLocatorId())) return false;
         
         return sd.baseDescriptor.equals(baseDescriptor);
     }
@@ -666,7 +666,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
      */
     @Override
     public Long getLocatorId() {
-        return locatorId;
+        return new Long(sdLocator.getLocatorId());
     }
     
     /**
