@@ -39,8 +39,11 @@
  */
 package org.glassfish.examples.ctm;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.Populator;
@@ -62,10 +65,12 @@ public class TenantLocatorGenerator {
     public final static int BOB_MIN = 10;
     public final static int BOB_MAX = 20;
     
+    public final static String CTM_LOCATOR_NAME = "CTMTest";
+    
     public ServiceLocator generateLocatorPerTenant(String tenantName) {
         if (tenantName == null) throw new IllegalArgumentException();
 
-        ServiceLocator parent = ServiceLocatorFactory.getInstance().find("CTMTest");
+        ServiceLocator parent = ServiceLocatorFactory.getInstance().find(CTM_LOCATOR_NAME);
         
         ServiceLocator serviceLocator = factory.create(tenantName, parent);
 
