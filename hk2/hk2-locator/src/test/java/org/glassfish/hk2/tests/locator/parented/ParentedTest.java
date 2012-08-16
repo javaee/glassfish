@@ -43,8 +43,13 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -54,9 +59,15 @@ import org.junit.Test;
 public class ParentedTest {
     private final ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
     
+    private final static String TEST_NAME = "ParentedTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new ParentedModule());
+    
     private final static String GRANDPA = "Grandpa";
     private final static String DAD = "Dad";
     private final static String ME = "Me";
+    
+    private final static String CHILD1 = "Child1";
+    private final static String CHILD2 = "Child2";
     
     /**
      * Tests three generations of locators
@@ -89,5 +100,55 @@ public class ParentedTest {
         // Make sure the most normal case returns the right guy
         Assert.assertEquals(me, me.getService(ServiceLocator.class));
     }
+    
+    /**
+     * Tests that a child getting shutdown will not adversly affect the services
+     * in the parent
+     */
+    @Test
+    public void testShutdownOfChild() {
+        ServiceLocator child1 = factory.create(CHILD1, locator);
+        
+        ServiceLocatorUtilities.bind(child1, new Binder() {
 
+            @Override
+            public void bind(DynamicConfiguration config) {
+                config.addActiveDescriptor(SingletonServiceInChild.class);
+                
+            }
+            
+        });
+        
+        SingletonServiceInParent ssip = child1.getService(SingletonServiceInParent.class);
+        Assert.assertNotNull(ssip);
+        Assert.assertFalse(ssip.isShutdown());
+        
+        SingletonServiceInChild ssic = child1.getService(SingletonServiceInChild.class);
+        Assert.assertNotNull(ssic);
+        Assert.assertFalse(ssic.isShutdown());
+        
+        // Shutting down the child should NOT shutdown the service in the parent
+        factory.destroy(child1);
+        
+        Assert.assertFalse(ssip.isShutdown());
+        Assert.assertTrue(ssic.isShutdown());
+    }
+    
+    /**
+     * First looks up a service in a parent-defined context
+     * from the child, the closes the child and looks it up
+     * again from the parent.
+     */
+    @Test @Ignore
+    public void testContextInParent() {
+        ServiceLocator child2 = factory.create(CHILD2, locator);
+        
+        ServiceWithParentContextInjectionPoint swpcip = child2.getService(ServiceWithParentContextInjectionPoint.class);
+        Assert.assertNotNull(swpcip);
+        
+        factory.destroy(child2);
+        
+        swpcip = locator.getService(ServiceWithParentContextInjectionPoint.class);
+        Assert.assertNotNull(swpcip);
+    }
 }
