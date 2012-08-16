@@ -74,6 +74,8 @@
     </target>
 
     <target name="run-test" depends="init-common">
+      <antcall target="deploy-to-domain"/>
+      <antcall target="undeploy"/>
       <antcall target="deploy"/>
       <antcall target="verify"/>
       <antcall target="add-cluster"/>
@@ -83,20 +85,6 @@
       <ant target="stopDomain"/>
       <ant target="startDomain"/>
       <antcall target="undeploy"/>
-    </target>
-
-    <target name="redeploy" depends="init-common">
-      <antcall target="undeploy-or-redeploy">
-          <param name="op" value="redeploy"/>
-          <param name="path" value="${assemble.dir}/${appname}-web.war"/>
-      </antcall>
-    </target>
-
-    <target name="undeploy" depends="init-common">
-      <antcall target="undeploy-or-redeploy">
-          <param name="op" value="undeploy"/>
-          <param name="path" value="${appname}-web"/>
-      </antcall>
     </target>
 
     <target name="add-cluster" depends="init-common">
@@ -109,7 +97,7 @@
     </target>
 
     <target name="setup-cluster" depends="init-common">
-        <echo message="Starting cluster"/>
+        <echo message="Starting cluster ${cname}"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
@@ -120,18 +108,43 @@
     </target>
 
     <target name="deploy-to-domain" depends="init-common">
-        <echo message="deploying application"/>
+      <antcall target="deploy-to-target">
+          <param name="dtarget" value="domain"/>
+      </antcall>
+    </target>
+
+    <target name="deploy-to-target" depends="init-common">
+        <echo message="deploying application to ${dtarget}"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <arg line="deploy"/>
+           <arg line="${dtarget}"/>
            <arg line="${assemble.dir}/${appname}-web.war"/>
         </java>
     </target>
 
+    <target name="undeploy" depends="init-common">
+      <antcall target="undeploy-from-target">
+          <param name="utarget" value="domain"/>
+      </antcall>
+    </target>
+
+    <target name="undeploy-from-target" depends="init-common">
+        <echo message="undeploying application from ${utarget}"/>
+        <java  fork="on"
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="undeploy"/>
+           <arg line="${utarget}"/>
+           <arg line="${appname}-web"/>
+        </java>
+    </target>
+
     <target name="add-app-ref-for-target" depends="init-common">
-        <echo message="calling add-app-ref for application"/>
+        <echo message="calling add-app-ref for application to ${cname}"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
@@ -156,7 +169,7 @@
     </target>
 
     <target name="unsetup-cluster" depends="init-common">
-        <echo message="Stopping cluster"/>
+        <echo message="Stopping cluster ${cname}"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
@@ -166,14 +179,14 @@
         </java>
     </target>
 
-    <target name="undeploy-or-redeploy" depends="init-common">
-        <echo message="${op}ing application"/>
+    <target name="redeploy" depends="init-common">
+        <echo message="redeploying application"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
-           <arg line="${op}"/>
-           <arg line="${path}"/>
+           <arg line="redeploy"/>
+           <arg line="${assemble.dir}/${appname}-web.war"/>
         </java>
     </target>
 

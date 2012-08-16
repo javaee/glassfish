@@ -60,7 +60,7 @@ public class Client extends AdminBaseDevTest {
         if ("prepare".equals(args[0])) {
             (new Client()).prepare(args[1]);
         } else if ("deploy".equals(args[0])) {
-            (new Client()).deploy(args[1]);
+            (new Client()).deploy(args[1], args[2]);
         } else if ("add-app-ref".equals(args[0])) {
             (new Client()).addAppRef(args[1], args[2]);
         } else if ("clean".equals(args[0])) {
@@ -68,7 +68,7 @@ public class Client extends AdminBaseDevTest {
         } else if ("redeploy".equals(args[0])) {
             (new Client()).redeploy(args[1]);
         } else if ("undeploy".equals(args[0])) {
-            (new Client()).undeploy(args[1]);
+            (new Client()).undeploy(args[1], args[2]);
         } else if ("verify".equals(args[0])) {
             (new Client()).verify(args[1], args[2], args[0]);
         } else {
@@ -94,9 +94,9 @@ public class Client extends AdminBaseDevTest {
         }
     }
 
-    public void deploy(String path) {
+    public void deploy(String target, String path) {
         try {
-            asadmin("deploy", "--target", "domain", path);
+            asadmin("deploy", "--target", target, path);
             System.out.println("Deployed " + path);
         } catch (Exception e) {
             e.printStackTrace();
@@ -131,9 +131,9 @@ public class Client extends AdminBaseDevTest {
 
     }
 
-    public void undeploy(String name) {
+    public void undeploy(String target, String name) {
         try {
-            asadmin("undeploy", "--target", "domain", name);
+            asadmin("undeploy", "--target", target, name);
             System.out.println("Undeployed " + name);
         } catch (Exception e) {
             e.printStackTrace();
