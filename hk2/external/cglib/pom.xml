@@ -70,7 +70,7 @@
                         -->
                         <!-- We set a mandatory attribute for these packages, because we don't
                              want them to be visible to just anyone. An importer must specify
-                             the mandatory attribute for it to be able to import. See 
+                             the mandatory attribute for it to be able to import. See
                              section #3.6.5 of OSGi R4 spec.
                              Why is this required?
                              See https://glassfish.dev.java.net/issues/show_bug.cgi?id=5385
@@ -134,9 +134,9 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>asm</groupId>
-                                    <artifactId>asm-debug-all</artifactId>
-                                    <version>${asm.version}</version>
+                                    <groupId>cglib</groupId>
+                                    <artifactId>cglib</artifactId>
+                                    <version>${cglib.version}</version>
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
@@ -157,7 +157,7 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar-no-fork</goal> 
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                  </executions>
@@ -171,7 +171,7 @@
         <dependency>
           <groupId>cglib</groupId>
           <artifactId>cglib</artifactId>
-          <version>2.2</version> 
+          <version>${cglib.version}</version>
           <optional>true</optional>
         </dependency>
     </dependencies>
