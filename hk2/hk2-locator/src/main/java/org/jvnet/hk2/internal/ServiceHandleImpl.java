@@ -198,18 +198,25 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void destroy() {
+        boolean localServiceSet;
+        boolean serviceActive;
+        
         synchronized (lock) {
+            serviceActive = isActive();
+            
             if (serviceDestroyed) return;
             serviceDestroyed = true;
             
-            if (!serviceSet) return;
+            localServiceSet = serviceSet;
         }
         
         if (root.getScopeAnnotation().equals(PerLookup.class)) {
-            // Otherwise it is the scope responsible for the lifecycle
-            root.dispose(service);
+            if (localServiceSet) {
+                // Otherwise it is the scope responsible for the lifecycle
+                root.dispose(service);
+            }
         }
-        else {
+        else if (serviceActive) {
             Context<?> context;
             try {
                 context = locator.resolveContext(root.getScopeAnnotation());
