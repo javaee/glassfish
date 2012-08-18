@@ -46,6 +46,7 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerThread;
@@ -147,6 +148,24 @@ public abstract class ServiceLocatorUtilities {
     public static ServiceLocator bind(Binder... binders) {
         return bind(DEFAULT_LOCATOR_NAME, binders);
     }
+    
+    /**
+     * This method adds one existing object to the given service locator.  The caller
+     * of this will not get a chance to customize the descriptor that goes into the
+     * locator, and hence must rely completly on the analysis of the system to determine
+     * the set of contracts and metadata associated with the descriptor.  The same algorithm
+     * is used in this method as in the {@link BuilderHelper#createConstantDescriptor(Object)}
+     * method.
+     * 
+     * @param locator The non-null locator to add this descriptor to
+     * @param constant The non-null constant to add to the service locator
+     * @return The descriptor that was added to the service locator
+     */
+    public static ActiveDescriptor<?> addOneConstant(ServiceLocator locator, Object constant) {
+        if (locator == null || constant == null) throw new IllegalArgumentException();
+        
+        return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant));
+    }
 
     /**
      * It is very often the case that one wishes to add a single descriptor to
@@ -181,5 +200,55 @@ public abstract class ServiceLocatorUtilities {
         config.commit();
 
         return retVal;
+    }
+    
+    /**
+     * This method will attempt to remove descriptors matching the passed in descriptor from
+     * the given locator.  If the descriptor has its locatorId and serviceId values set then
+     * only a descriptor matching those exact locatorId and serviceId will be removed.  Otherwise
+     * any descriptor that returns true from the {@link DescriptorImpl#equals(Object)} method
+     * will be removed from the locator.  Note that if more than one descriptor matches they
+     * will all be removed.  Hence more than one descriptor may be removed by this method.
+     * 
+     * @param locator The non-null locator to remove the descriptor from
+     * @param descriptor The non-null descriptor to remove from the locator
+     */
+    public static void removeOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
+        if (locator == null || descriptor == null) throw new IllegalArgumentException();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        if (descriptor.getLocatorId() != null && descriptor.getServiceId() != null) {
+            Filter destructionFilter = BuilderHelper.createSpecificDescriptorFilter(descriptor);
+            
+            config.addUnbindFilter(destructionFilter);
+            
+            config.commit();
+            
+            return;
+        }
+        
+        // Must use second algorithm, which is not as precise, but which still mainly works
+        final DescriptorImpl di;
+        if (descriptor instanceof DescriptorImpl) {
+            di = (DescriptorImpl) descriptor;
+        }
+        else {
+            di = new DescriptorImpl(descriptor);
+        }
+        
+        Filter destructionFilter = new Filter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                return di.equals(d);
+            }
+            
+        };
+        
+        config.addUnbindFilter(destructionFilter);
+        
+        config.commit();
     }
 }

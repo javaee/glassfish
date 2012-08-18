@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.locator.servicelocatorutilities;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -114,6 +116,56 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNotNull(swpc);
         
         swpc.check();
+    }
+    
+    /**
+     * Tests adding a constant with {@link ServiceLocatorUtilities#addOneConstant(ServiceLocator, Object)}
+     */
+    @Test
+    public void testAddAndRemoveConstant() {
+        SimpleService3 ss3 = new SimpleService3();
+        
+        ActiveDescriptor<?> ss3Descriptor = ServiceLocatorUtilities.addOneConstant(locator, ss3);
+        
+        Assert.assertEquals(ss3.getClass().getName(), ss3Descriptor.getImplementation());
+        Assert.assertEquals(ss3.getClass(), ss3Descriptor.getImplementationClass());
+        
+        // Should be findable with both contracts
+        SimpleService3 ss3_via_impl = locator.getService(SimpleService3.class);
+        Assert.assertEquals(ss3_via_impl, ss3);
+        
+        SimpleContract ss3_via_contract = locator.getService(SimpleContract.class);
+        Assert.assertEquals(ss3_via_contract, ss3);
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, ss3Descriptor);
+        
+        // Should now be gone
+        ss3_via_impl = locator.getService(SimpleService3.class);
+        Assert.assertNull(ss3_via_impl);
+        
+        ss3_via_contract = locator.getService(SimpleContract.class);
+        Assert.assertNull(ss3_via_contract);
+    }
+    
+    /**
+     * Tests removing a descriptor with a non-specific descriptor
+     */
+    @Test
+    public void testRemoveNonSpecificDescriptor() {
+        Descriptor d = BuilderHelper.link(SimpleService4.class.getName()).
+                to(SimpleContract.class).
+                in(Singleton.class.getName()).build();
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, d);
+        
+        SimpleService4 ss4 = locator.getService(SimpleService4.class);
+        Assert.assertNotNull(ss4);
+        
+        // This one does NOT have service-id and locator-id set
+        ServiceLocatorUtilities.removeOneDescriptor(locator, d);
+        
+        ss4 = locator.getService(SimpleService4.class);
+        Assert.assertNull(ss4);
     }
     
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
