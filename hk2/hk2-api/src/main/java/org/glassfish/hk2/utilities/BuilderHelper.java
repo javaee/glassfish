@@ -114,7 +114,7 @@ public class BuilderHelper {
      * @param descriptor The descriptor from which to create a filter
      * @return A filter to use that will match this descriptor exactly
      */
-    public static IndexedFilter createSpecificDescriptorFilter(ActiveDescriptor<?> descriptor) {
+    public static IndexedFilter createSpecificDescriptorFilter(Descriptor descriptor) {
         Set<String> contracts = descriptor.getAdvertisedContracts();
         
         String contract = null;
