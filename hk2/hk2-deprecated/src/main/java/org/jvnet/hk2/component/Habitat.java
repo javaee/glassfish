@@ -76,7 +76,7 @@ import java.util.List;
  */
 @Deprecated
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class Habitat implements ServiceLocator, BaseServiceLocator {
+public class Habitat implements ServiceLocator {
     private final static String DEFAULT_NAME = "default";
     private final static ServiceLocatorGenerator GENERATOR = new ServiceLocatorGeneratorImpl();
     
@@ -346,7 +346,6 @@ public class Habitat implements ServiceLocator, BaseServiceLocator {
         return (T) delegate.getService(clazz);
     }
 
-    @Override
     public <T> T getComponent(final Class<T> contract, String name)
             throws ComponentException {
         if (name != null && name.length() <= 0) name = null;
@@ -354,7 +353,6 @@ public class Habitat implements ServiceLocator, BaseServiceLocator {
         return (T) delegate.getService(contract, name);
     }
 
-    @Override
     public <T> T getComponent(String fullQualifiedName, String name) {
         if (name != null && name.length() <= 0) name = null;
         
@@ -581,12 +579,10 @@ public class Habitat implements ServiceLocator, BaseServiceLocator {
         return retVal;
     }
 
-    @Override
     public <T> T getByType(Class<T> implType) {
         return (T) delegate.getService(implType);
     }
 
-    @Override
     public <T> T getByType(String implType) {
         ActiveDescriptor<T> best = (ActiveDescriptor<T>)
                 delegate.getBestDescriptor(BuilderHelper.createContractFilter(implType));

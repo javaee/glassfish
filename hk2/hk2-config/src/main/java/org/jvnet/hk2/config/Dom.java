@@ -1083,10 +1083,6 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
                     + " you must use transaction semantics to access it.", null);
         }
     }
-    
-    public BaseServiceLocator getBaseServiceLocator() {
-        return getHabitat();
-    }
 
     /**
      * Another version of the {@link #invoke(Object, Method, Object[])},
