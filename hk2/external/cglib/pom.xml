@@ -57,6 +57,31 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <id>step1-unpack-dependency</id>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>cglib</groupId>
+                                    <artifactId>cglib</artifactId>
+                                    <version>${cglib.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
@@ -94,22 +119,19 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
+                        <id>step2-osgi-bundle</id>
+                        <phase>process-classes</phase>
                         <goals>
                             <goal>bundle</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>add-source</id>
-                        <phase>package</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
@@ -123,31 +145,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>get-sources</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>cglib</groupId>
-                                    <artifactId>cglib</artifactId>
-                                    <version>${cglib.version}</version>
-                                    <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>2.1.2</version>
                 <configuration>
@@ -155,7 +152,6 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>attach-sources</id>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
