@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.utilities;
 
+import java.lang.reflect.Type;
+
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -152,7 +154,7 @@ public abstract class ServiceLocatorUtilities {
     /**
      * This method adds one existing object to the given service locator.  The caller
      * of this will not get a chance to customize the descriptor that goes into the
-     * locator, and hence must rely completly on the analysis of the system to determine
+     * locator, and hence must rely completely on the analysis of the system to determine
      * the set of contracts and metadata associated with the descriptor.  The same algorithm
      * is used in this method as in the {@link BuilderHelper#createConstantDescriptor(Object)}
      * method.
@@ -161,10 +163,30 @@ public abstract class ServiceLocatorUtilities {
      * @param constant The non-null constant to add to the service locator
      * @return The descriptor that was added to the service locator
      */
-    public static ActiveDescriptor<?> addOneConstant(ServiceLocator locator, Object constant) {
+    public static <T> ActiveDescriptor<T> addOneConstant(ServiceLocator locator, Object constant) {
         if (locator == null || constant == null) throw new IllegalArgumentException();
         
         return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant));
+    }
+    
+    /**
+     * This method adds one existing object to the given service locator.  The caller
+     * of this will not get a chance to customize the descriptor that goes into the
+     * locator, and hence must rely completely on the analysis of the system to determine
+     * the set of contracts and metadata associated with the descriptor.  The same algorithm
+     * is used in this method as in the {@link BuilderHelper#createConstantDescriptor(Object)}
+     * method.
+     * 
+     * @param locator The non-null locator to add this descriptor to
+     * @param constant The non-null constant to add to the service locator
+     * @param name The name this descriptor should take (may be null)
+     * @param contracts The full set of contracts this descriptor should take
+     * @return The descriptor that was added to the service locator
+     */
+    public static <T> ActiveDescriptor<T> addOneConstant(ServiceLocator locator, Object constant, String name, Type... contracts) {
+        if (locator == null || constant == null) throw new IllegalArgumentException();
+        
+        return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant, name, contracts));
     }
 
     /**
@@ -177,13 +199,14 @@ public abstract class ServiceLocatorUtilities {
      * @param descriptor The non-null descriptor to add to this locator
      * @throws MultiException On a commit failure
      */
-    public static ActiveDescriptor<?> addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
+    @SuppressWarnings("unchecked")
+    public static <T> ActiveDescriptor<T> addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-        ActiveDescriptor<?> retVal;
+        ActiveDescriptor<T> retVal;
         if (descriptor instanceof ActiveDescriptor) {
-            ActiveDescriptor<?> active = (ActiveDescriptor<?>) descriptor;
+            ActiveDescriptor<T> active = (ActiveDescriptor<T>) descriptor;
 
             if (active.isReified()) {
                 retVal = config.addActiveDescriptor(active);

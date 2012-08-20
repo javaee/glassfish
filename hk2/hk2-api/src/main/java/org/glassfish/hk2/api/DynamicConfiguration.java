@@ -63,7 +63,7 @@ public interface DynamicConfiguration {
      * of the Descriptor filled in by the system as appropriate
      * @throws IllegalArgumentException if there is an error in the key
      */
-    public ActiveDescriptor<?> bind(Descriptor key);
+    public <T> ActiveDescriptor<T> bind(Descriptor key);
     
     /**
      * This method will bind the descriptors found in the

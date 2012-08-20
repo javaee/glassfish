@@ -168,6 +168,53 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNull(ss4);
     }
     
+    /**
+     * Tests adding constants with constrained contracts and multiple names
+     */
+    @Test
+    public void testAddContractWithSpecificContracts() {
+        SimpleService3 ss3 = new SimpleService3();
+        
+        ActiveDescriptor<?> ad = ServiceLocatorUtilities.addOneConstant(locator, ss3, null, SimpleContract.class);
+        
+        // Should NOT be able to look it up with SimpleService3
+        Assert.assertNull(locator.getService(SimpleService3.class));
+        
+        SimpleContract ss3_lookup = locator.getService(SimpleContract.class);
+        Assert.assertSame(ss3, ss3_lookup);
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, ad);
+    }
+    
+    private final static String ALICE = "alice";
+    private final static String BOB = "bob";
+    
+    /**
+     * Tests adding constants with constrained contracts and multiple names
+     */
+    @Test
+    public void testAddContractWithDifferentNames() {
+        SimpleService3 ss3_alice = new SimpleService3();
+        SimpleService3 ss3_bob = new SimpleService3();
+        
+        ActiveDescriptor<?> ad_alice = ServiceLocatorUtilities.addOneConstant(
+                locator, ss3_alice, ALICE, SimpleContract.class);
+        ActiveDescriptor<?> ad_bob = ServiceLocatorUtilities.addOneConstant(
+                locator, ss3_bob, BOB, SimpleContract.class);
+        
+        // Should NOT be able to look it up with SimpleService3
+        Assert.assertNull(locator.getService(SimpleService3.class));
+        
+        SimpleContract ss3_lookup_bob = locator.getService(SimpleContract.class, BOB);
+        Assert.assertSame(ss3_bob, ss3_lookup_bob);
+        
+        SimpleContract ss3_lookup_alice = locator.getService(SimpleContract.class, ALICE);
+        Assert.assertSame(ss3_alice, ss3_lookup_alice);
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, ad_bob);
+        ServiceLocatorUtilities.removeOneDescriptor(locator, ad_alice);
+    }
+    
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
         /**
          * 

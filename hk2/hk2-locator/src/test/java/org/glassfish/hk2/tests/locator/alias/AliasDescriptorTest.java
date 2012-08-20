@@ -79,7 +79,7 @@ public class AliasDescriptorTest {
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
         ActiveDescriptor<MyService> descriptor =
-                (ActiveDescriptor<MyService>)config.bind(BuilderHelper.link(MyService.class).
+                (ActiveDescriptor<MyService>) config.<MyService>bind(BuilderHelper.link(MyService.class).
                         to(MyInterface1.class).in(Singleton.class.getName()).build());
 
         config.commit();
@@ -134,7 +134,7 @@ public class AliasDescriptorTest {
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
         ActiveDescriptor<MyService> descriptor =
-                (ActiveDescriptor<MyService>)config.bind(BuilderHelper.link(MyService.class).
+                (ActiveDescriptor<MyService>)config.<MyService>bind(BuilderHelper.link(MyService.class).
                         to(MyInterface1.class).in(Singleton.class.getName()).build());
 
         config.commit();
@@ -186,7 +186,7 @@ public class AliasDescriptorTest {
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
         ActiveDescriptor<MyService> descriptor =
-                (ActiveDescriptor<MyService>)config.bind(BuilderHelper.link(MyService.class).
+                (ActiveDescriptor<MyService>)config.<MyService>bind(BuilderHelper.link(MyService.class).
                         to(MyInterface1.class).in(Singleton.class.getName()).build());
 
         AliasDescriptor<MyService> aliasDescriptor =
@@ -210,7 +210,7 @@ public class AliasDescriptorTest {
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
         ActiveDescriptor<MyService> descriptor =
-                (ActiveDescriptor<MyService>)config.bind(BuilderHelper.link(MyService.class).
+                (ActiveDescriptor<MyService>)config.<MyService>bind(BuilderHelper.link(MyService.class).
                         to(MyInterface1.class).in(Singleton.class.getName()).build());
 
         config.commit();
