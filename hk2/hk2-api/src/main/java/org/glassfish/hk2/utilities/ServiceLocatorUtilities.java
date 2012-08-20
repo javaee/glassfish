@@ -274,4 +274,22 @@ public abstract class ServiceLocatorUtilities {
         
         config.commit();
     }
+    
+    /**
+     * Removes all the descriptors from the given locator that match the
+     * given filter
+     * 
+     * @param locator The non-null locator to remove the descriptors from
+     * @param filter The non-null filter which will determine what descriptors to remove
+     */
+    public static void removeFilter(ServiceLocator locator, Filter filter) {
+        if (locator == null || filter == null) throw new IllegalArgumentException();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addUnbindFilter(filter);
+        
+        config.commit();
+    }
 }
