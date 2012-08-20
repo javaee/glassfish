@@ -197,9 +197,9 @@ public class ServiceLocatorUtilitiesTest {
         SimpleService3 ss3_alice = new SimpleService3();
         SimpleService3 ss3_bob = new SimpleService3();
         
-        ActiveDescriptor<?> ad_alice = ServiceLocatorUtilities.addOneConstant(
+        ServiceLocatorUtilities.addOneConstant(
                 locator, ss3_alice, ALICE, SimpleContract.class);
-        ActiveDescriptor<?> ad_bob = ServiceLocatorUtilities.addOneConstant(
+        ServiceLocatorUtilities.addOneConstant(
                 locator, ss3_bob, BOB, SimpleContract.class);
         
         // Should NOT be able to look it up with SimpleService3
@@ -211,8 +211,16 @@ public class ServiceLocatorUtilitiesTest {
         SimpleContract ss3_lookup_alice = locator.getService(SimpleContract.class, ALICE);
         Assert.assertSame(ss3_alice, ss3_lookup_alice);
         
-        ServiceLocatorUtilities.removeOneDescriptor(locator, ad_bob);
-        ServiceLocatorUtilities.removeOneDescriptor(locator, ad_alice);
+        ServiceLocatorUtilities.removeFilter(locator,
+                BuilderHelper.createNameAndContractFilter(SimpleContract.class.getName(), BOB));
+        
+        Assert.assertNull(locator.getService(SimpleContract.class, BOB));
+        Assert.assertNotNull(locator.getService(SimpleContract.class, ALICE));
+        
+        ServiceLocatorUtilities.removeFilter(locator,
+                BuilderHelper.createNameAndContractFilter(SimpleContract.class.getName(), ALICE));
+        
+        Assert.assertNull(locator.getService(SimpleContract.class, ALICE));
     }
     
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
