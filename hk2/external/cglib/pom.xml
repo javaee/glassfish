@@ -61,7 +61,12 @@
                 <artifactId>maven-clean-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>validate</phase>
+			<id>enforce-clean</id>
+			<!--
+			    maven-source-plugin invokes generate-sources phase prior to itself
+			    we use process-sources phase to clean only once...
+			-->
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>clean</goal>
                         </goals>
