@@ -41,8 +41,17 @@ package org.jvnet.hk2.config;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.IntrospectionScanner;
 import com.sun.hk2.component.LazyInhabitant;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.classmodel.reflect.*;
+import org.glassfish.hk2.utilities.AliasDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
@@ -86,9 +95,20 @@ public class ConfiguredScanner implements IntrospectionScanner {
             addToMetadata(metadata, ConfigMetadata.TARGET, ae.getName());
 
             // register the injector.
-            LazyInhabitant inhabitant = new LazyInhabitant(habitat, new HolderHK2LoaderImpl(loader), NoopConfigInjector.class.getName(), metadata);
-            habitat.addIndex(inhabitant, InjectionTarget.class.getName(), ae.getName());
-            habitat.addIndex(inhabitant, ConfigInjector.class.getName(), elementName);
+            DescriptorImpl di = BuilderHelper.link(NoopConfigInjector.class).
+                    in(Singleton.class.getName()).
+                    andLoadWith(new HolderHK2LoaderImpl(loader)).build();
+            di.setMetadata(metadata);
+            
+            ActiveDescriptor<NoopConfigInjector> added = ServiceLocatorUtilities.addOneDescriptor(habitat, di);
+            
+            AliasDescriptor<NoopConfigInjector> injectionTargetAlias = new AliasDescriptor<NoopConfigInjector>(habitat, added,
+                    InjectionTarget.class.getName(), ae.getName());
+            AliasDescriptor<NoopConfigInjector> configInjectorAlias = new AliasDescriptor<NoopConfigInjector>(habitat, added,
+                    ConfigInjector.class.getName(), elementName);
+            
+            ServiceLocatorUtilities.addOneDescriptor(habitat, injectionTargetAlias);
+            ServiceLocatorUtilities.addOneDescriptor(habitat, configInjectorAlias);
         }
     }
 

@@ -42,7 +42,9 @@ package org.jvnet.hk2.config;
 import com.sun.hk2.component.LazyInhabitant;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
+import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
 
@@ -567,6 +569,18 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
     public String leafElement(String name) {
         return t(rawLeafElement(name));
     }
+    
+    private static void addWithAlias(ServiceLocator locator, ActiveDescriptor<?> descriptor, Class<?> contract, String name) {
+        ActiveDescriptor<Object> added = ServiceLocatorUtilities.findOneDescriptor(locator, descriptor);
+        
+        if (added == null) {
+            added = ServiceLocatorUtilities.addOneDescriptor(locator, descriptor);
+        }
+        
+        AliasDescriptor<Object> alias = new AliasDescriptor<Object>(locator, added, contract.getName(), name);
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, alias);
+    }
 
     /**
      * Inserts a new {@link Dom} node right after the given DOM element.
@@ -587,7 +601,7 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
         }
         if(reference==null) {
             children.add(0, newChild);
-            getHabitat().addIndex(newNode, newNode.getProxyType().getName(), newNode.getKey());
+            addWithAlias(getHabitat(), newNode, newNode.getProxyType(), newNode.getKey());
             return;
         }
 
@@ -598,8 +612,8 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.add(newChild);
-                    getHabitat().addIndex(newNode, newNode.getProxyType().getName(), newNode.getKey());
-                    //habitat.add(newNode);
+                    addWithAlias(getHabitat(), newNode, newNode.getProxyType(), newNode.getKey());
+                    
                     return;
                 }
             }
@@ -619,8 +633,10 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
             if (child instanceof NodeChild) {
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
-                    getHabitat().removeIndex(reference.getProxyType().getName(), reference.getKey());
-                    getHabitat().addIndex(newNode, newNode.getProxyType().getName(), newNode.getKey());
+                    ServiceLocatorUtilities.removeFilter(getHabitat(), BuilderHelper.createNameAndContractFilter(
+                            reference.getProxyType().getName(), reference.getKey()));
+                    addWithAlias(getHabitat(), newNode,newNode.getProxyType(), newNode.getKey());
+                    
                     itr.set(new NodeChild(name,newNode));
                     return;
                 }
@@ -641,7 +657,8 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.remove();
-                    getHabitat().removeIndex(reference.getProxyType().getName(), reference.getKey());
+                    ServiceLocatorUtilities.removeFilter(getHabitat(), BuilderHelper.createNameAndContractFilter(
+                            reference.getProxyType().getName(), reference.getKey()));
                     reference.release();
                     return;
                 }

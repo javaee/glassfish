@@ -226,6 +226,50 @@ public abstract class ServiceLocatorUtilities {
     }
     
     /**
+     * Finds a descriptor in the given service locator.  If the descriptor has the serviceId and
+     * locatorId set then it will first attempt to use those values to get the exact descriptor
+     * described by the input descriptor.  Failing that (or if the input descriptor does not have
+     * those values set) then it will use the equals algorithm of {@DescriptorImpl} to determine
+     * the equality of the descriptor.
+     * 
+     * @param locator The non-null locator in which to find the descriptor
+     * @param descriptor The non-null descriptor to search for
+     * @return The descriptor as found in the locator, or null if no such descriptor could be found
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ActiveDescriptor<T> findOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
+        if (locator == null || descriptor == null) throw new IllegalArgumentException();
+        
+        if (descriptor.getServiceId() != null && descriptor.getLocatorId() != null) {
+            ActiveDescriptor<T> retVal = (ActiveDescriptor<T>) locator.getBestDescriptor(
+                    BuilderHelper.createSpecificDescriptorFilter(descriptor));
+            
+            if (retVal != null) return retVal;
+            
+            // Fall back to DescriptorImpl.equals
+        }
+        
+        final DescriptorImpl di;
+        if (descriptor instanceof DescriptorImpl) {
+            di = (DescriptorImpl) descriptor;
+        }
+        else {
+            di = new DescriptorImpl(descriptor);
+        }
+        
+        ActiveDescriptor<T> retVal = (ActiveDescriptor<T>) locator.getBestDescriptor(new Filter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                return di.equals(d);
+            }
+            
+        });
+        
+        return retVal;
+    }
+    
+    /**
      * This method will attempt to remove descriptors matching the passed in descriptor from
      * the given locator.  If the descriptor has its locatorId and serviceId values set then
      * only a descriptor matching those exact locatorId and serviceId will be removed.  Otherwise

@@ -223,6 +223,38 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNull(locator.getService(SimpleContract.class, ALICE));
     }
     
+    @Test
+    public void testFindOneDescriptor() {
+        Descriptor addMe = BuilderHelper.link(SimpleService3.class).
+                to(SimpleContract.class).build();
+        
+        ActiveDescriptor<?> ss3Desc1 = ServiceLocatorUtilities.addOneDescriptor(locator, addMe);
+        ActiveDescriptor<?> ss3Desc2 = ServiceLocatorUtilities.addOneDescriptor(locator, addMe);
+        
+        // Look up two ways, with the specific and the non-specific descriptor
+        ActiveDescriptor<?> found1 = ServiceLocatorUtilities.findOneDescriptor(locator, addMe);
+        Assert.assertSame(ss3Desc1, found1);
+        
+        ActiveDescriptor<?> found2 = ServiceLocatorUtilities.findOneDescriptor(locator, ss3Desc1);
+        Assert.assertSame(ss3Desc1, found2);
+        
+        ActiveDescriptor<?> found3 = ServiceLocatorUtilities.findOneDescriptor(locator, ss3Desc2);
+        Assert.assertSame(ss3Desc2, found3);
+        
+        // Now remove first one, ensure I can still get with the not-found specific descriptor
+        ServiceLocatorUtilities.removeOneDescriptor(locator, ss3Desc1);
+        
+        ActiveDescriptor<?> found4 = ServiceLocatorUtilities.findOneDescriptor(locator, ss3Desc1);
+        Assert.assertSame(ss3Desc2, found4);
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, ss3Desc2);
+        
+        Assert.assertNull(ServiceLocatorUtilities.findOneDescriptor(locator, addMe));
+        Assert.assertNull(ServiceLocatorUtilities.findOneDescriptor(locator, ss3Desc1));
+        Assert.assertNull(ServiceLocatorUtilities.findOneDescriptor(locator, ss3Desc2));
+        
+    }
+    
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
         /**
          * 

@@ -85,7 +85,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private String implementation;
 	private String name;
 	private String scope = PerLookup.class.getName();
-	private Map<String, List<String>> metadatas = new LinkedHashMap<String, List<String>>();
+	private final Map<String, List<String>> metadatas = new LinkedHashMap<String, List<String>>();
 	private Set<String> qualifiers = new LinkedHashSet<String>();
 	private DescriptorType descriptorType = DescriptorType.CLASS;
 	private HK2Loader loader;
@@ -281,6 +281,21 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	@Override
 	public synchronized Map<String, List<String>> getMetadata() {
 		return Collections.unmodifiableMap(metadatas);
+	}
+	
+	/**
+	 * Sets the metadata of this DescriptorImpl to exactly the set
+	 * of metadata in the incoming map.  Any previous metadata values
+	 * will be removed.  A deep copy of the incoming map will be made,
+	 * so it is safe to use the input map after use of this API
+	 * 
+	 * @param metadata The non-null metadata that this descriptor
+	 * should have
+	 */
+	public synchronized void setMetadata(Map<String, List<String>> metadata) {
+	    metadatas.clear();
+	    
+	    metadatas.putAll(ReflectionHelper.deepCopyMetadata(metadata));
 	}
 	
 	/**
@@ -661,7 +676,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
                         }
                     }
                     else if (leftHandSide.equals(METADATA_KEY)) {
-                        metadatas = new LinkedHashMap<String, List<String>>();
+                        metadatas.clear();
                         
                         ReflectionHelper.readMetadataMap(rightHandSide, metadatas);
                     }

@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.tracing;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.component.Inhabitant;
 
 import java.util.ArrayDeque;
@@ -55,15 +57,15 @@ public class InhabitantTracing {
 
     private Deque<TracingUtilities.Node> stack = new ArrayDeque<TracingUtilities.Node>();
 
-    public void push(Inhabitant i) {
+    public void push(ActiveDescriptor<?> i) {
         TracingUtilities.Node parent = (stack.isEmpty()?TracingUtilities.rootNode:stack.peek());
         TracingUtilities.Node newNode = new TracingUtilities.Node(i);
         parent.children.add(newNode);
         stack.push(newNode);
     }
 
-    public Iterator<Inhabitant> inOrder() {
-        return new Iterator<Inhabitant>() {
+    public Iterator<ActiveDescriptor<?>> inOrder() {
+        return new Iterator<ActiveDescriptor<?>>() {
             final Iterator<TracingUtilities.Node> itr = stack.iterator();
             @Override
             public boolean hasNext() {
@@ -71,7 +73,7 @@ public class InhabitantTracing {
             }
 
             @Override
-            public Inhabitant next() {
+            public ActiveDescriptor<?> next() {
                 return itr.next().t;
             }
 
