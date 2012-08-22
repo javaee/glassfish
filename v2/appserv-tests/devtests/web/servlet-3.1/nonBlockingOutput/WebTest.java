@@ -85,7 +85,7 @@ public class WebTest {
                     System.out.println();
                     if (first) {
                         int sleepInSec = 5;
-                        System.out.println("Sleeping " + sleepInSec + " sec");
+                        System.out.format("Sleeping %s sec\n", sleepInSec);
                         Thread.sleep(sleepInSec * 1000);
                         first = false;
                     }

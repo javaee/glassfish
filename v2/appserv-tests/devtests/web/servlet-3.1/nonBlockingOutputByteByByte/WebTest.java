@@ -74,7 +74,7 @@ public class WebTest {
                 boolean first = true;
                 while ((line = input.readLine()) != null) {
                     expected = expected || line.endsWith(EXPECTED_RESPONSE);
-                    System.out.println("\n " + (count++) + ": " + line.length());
+                    System.out.format("\n %d: %d\n", count++, line.length());
                     int length = line.length();
                     int lengthToPrint = 20;
                     int end = ((length > lengthToPrint) ? lengthToPrint : length);
@@ -85,7 +85,7 @@ public class WebTest {
                     System.out.println();
                     if (first) {
                         int sleepInSec = 5;
-                        System.out.println("Sleeping " + sleepInSec + " sec");
+                        System.out.format("Sleeping %d sec\n", sleepInSec);
                         Thread.sleep(sleepInSec * 1000);
                         first = false;
                     }
