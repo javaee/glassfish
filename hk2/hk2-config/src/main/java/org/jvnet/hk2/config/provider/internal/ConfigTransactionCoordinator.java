@@ -57,13 +57,16 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.InhabitantActivator;
 import org.jvnet.hk2.component.MultiMap;
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.hk2.utilities.AliasDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfiguredBy;
 import org.jvnet.hk2.config.provider.ConfigTransaction;
 import org.jvnet.hk2.config.provider.ConfigTransactionFactory;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.hk2.component.InhabitantsParser;
 
 /**
@@ -164,9 +167,8 @@ public class ConfigTransactionCoordinator
     
     // put the bean itself into the habitat
     if (null != beanContracts && !beanContracts.isEmpty()) {
-      Inhabitant<?> configBeanInhabitant = new ExistingSingletonInhabitant<Object>(bean);
       for (Class<?> beanContract : beanContracts) {
-        habitat.addIndex(configBeanInhabitant, beanContract.getName(), name);
+          ServiceLocatorUtilities.addOneConstant(habitat, bean, name, beanContract);
       }
     }
 
@@ -182,12 +184,18 @@ public class ConfigTransactionCoordinator
       }
       
       for (ConfigByInhabitant i : cbi.getValue()) {
+          ActiveDescriptor<Object> added = ServiceLocatorUtilities.addOneDescriptor(habitat, i);
+          
         if (null == index) {
           // intentionally do not register byType since that is reserved for the meta inhabitant entry
 //          habitat.add(i);
-          habitat.addIndex(i, i.getImplementation(), name);
+            AliasDescriptor<Object> alias = new AliasDescriptor<Object>(habitat, added, i.getImplementation(), name);
+            
+            ServiceLocatorUtilities.addOneDescriptor(habitat, alias);
         } else {
-          habitat.addIndex(i, index, name);
+            AliasDescriptor<Object> alias = new AliasDescriptor<Object>(habitat, added, index, name);
+            
+            ServiceLocatorUtilities.addOneDescriptor(habitat, alias);
         }
 
         // force activation
@@ -223,30 +231,31 @@ public class ConfigTransactionCoordinator
     MultiMap<String, ConfigByInhabitant> managed = beanToManagedConfigBy.remove(bean);
     for (Entry<String, List<ConfigByInhabitant>> cbi : managed.entrySet()) {
       String index = cbi.getKey();
+      
       if (null != index) {
-        index = InhabitantsParser.parseIndex(index, null);
+          index = InhabitantsParser.parseIndex(index, null);
       }
       
       for (ConfigByInhabitant i : cbi.getValue()) {
-        boolean removed;
         if (null == index) {
           // intentionally do not register byType since that is reserved for the meta inhabitant entry
 //          habitat.add(i);
-          removed = habitat.removeIndex(i.getImplementation(), i);
+            ServiceLocatorUtilities.removeFilter(habitat, BuilderHelper.createNameAndContractFilter(
+                    i.getImplementation(), name));
         } else {
-          removed = habitat.removeIndex(index, i);
+            ServiceLocatorUtilities.removeFilter(habitat, BuilderHelper.createNameAndContractFilter(
+                    index, name));
         }
-        assert(removed);
         
-        i.release();
+        ServiceLocatorUtilities.removeOneDescriptor(habitat, i);
       }
     }
     
     // remove the bean itself from the habitat
     if (null != beanContracts) {
       for (Class<?> beanContract : beanContracts) {
-        boolean removed = habitat.removeIndex(beanContract.getName(), bean);
-        assert(removed);
+          ServiceLocatorUtilities.removeFilter(habitat, BuilderHelper.createNameAndContractFilter(
+                  beanContract.getName(), name));
         
         // TODO: should we release it too?
       }

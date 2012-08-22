@@ -40,8 +40,8 @@
 
 package org.jvnet.hk2.tracing;
 
-import com.sun.hk2.component.ExistingSingletonInhabitant;
-import org.jvnet.hk2.component.Inhabitant;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -63,13 +63,13 @@ public class TracingUtilities {
     }
 
     public static class Node {
-        final Inhabitant t;
+        final ActiveDescriptor<?> t;
         final long inception = System.currentTimeMillis();
         long completion;
 
         final List<Node> children = new ArrayList<Node>();
 
-        public Node(Inhabitant t) {
+        public Node(ActiveDescriptor<?> t) {
             this.t = t;
         }
 
@@ -97,7 +97,7 @@ public class TracingUtilities {
         }
     }
 
-    public static final Node rootNode = new Node(new ExistingSingletonInhabitant<TracingUtilities>(new TracingUtilities()));
+    public static final Node rootNode = new Node(BuilderHelper.createConstantDescriptor(new TracingUtilities()));
 
     public static void dump(PrintStream ps) {
         for (Node node : new ArrayList<Node>(rootNode.children))  {

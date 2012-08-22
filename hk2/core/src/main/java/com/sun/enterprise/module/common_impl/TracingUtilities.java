@@ -42,6 +42,9 @@ package com.sun.enterprise.module.common_impl;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.hk2.component.AbstractInhabitantImpl;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.tracing.InhabitantTracing;
 import org.jvnet.hk2.tracing.TracingThreadLocal;
 import org.jvnet.hk2.component.Inhabitant;
@@ -98,7 +101,7 @@ public class TracingUtilities {
             String prefix="-";
             StackTraceElement[] stack = Thread.currentThread().getStackTrace();
             InhabitantTracing tracing = TracingThreadLocal.get();
-            Iterator<Inhabitant> itr = tracing.inOrder();
+            Iterator<ActiveDescriptor<?>> itr = tracing.inOrder();
 
             w.append("\n");
             w.append("-----------------------------------\n");
@@ -120,11 +123,11 @@ public class TracingUtilities {
                         }
                     }
                     if (itr.hasNext()) {
-                        Inhabitant reason = itr.next();
+                        ActiveDescriptor<?> reason = itr.next();
                         StackTraceElement caller = stack[j];
                         Module m = null;
                         try {
-                            if (reason.isActive()) {
+                            if (reason.isReified()) {
                                 m = registry.find(loader.loadClass(reason.getImplementation()));
                             }
                         } catch (ClassNotFoundException e) {
@@ -155,7 +158,7 @@ public class TracingUtilities {
             w.append("-----------------------------------\n");
             itr = tracing.inOrder();
             while (itr.hasNext()) {
-                Inhabitant i = itr.next();
+                Descriptor i = itr.next();
                 w.append(prefix +"> requested from "+ i+"\n");
                 prefix=prefix+"-";
             }

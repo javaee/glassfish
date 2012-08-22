@@ -41,7 +41,6 @@
 package org.jvnet.hk2.component;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Filter;
@@ -52,11 +51,8 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
-import org.glassfish.hk2.internal.IndexedFilterImpl;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.deprecated.internal.QualifierFilter;
 import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
@@ -134,131 +130,12 @@ public class Habitat implements ServiceLocator {
      * habitat after the builder.
      */
 
-    /**
-     * Adds a new inhabitant.
-     * <p/>
-     * <p/>
-     * See {@link Inhabitants} for typical ways to create {@link Inhabitant}s.
-     */
-    public void add(final Inhabitant<?> i) {
-        Utilities.add(delegate, i);
-    }
-
-    /**
-     * Adds a new index to look up the given inhabitant.
-     *
-     * @param index Primary index name, such as contract FQCN.
-     * @param name  Name that identifies the inhabitant among other inhabitants in
-     *              the same index. Can be null for unnamed inhabitants.
-     */
-    public void addIndex(Inhabitant<?> i, String index, String name) {
-        addIndex(i, index, name, true);
-    }
-
-    protected void addIndex(Inhabitant<?> i, String index, String name, boolean notify) {
-
-        // Need the descriptorImp because the inhabitant likely has equals overridden
-        final Descriptor matchDescriptor = new DescriptorImpl(i);
-        List<ActiveDescriptor<?>> activeDescriptors = getDescriptors(new Filter(){
-            @Override
-            public boolean matches(Descriptor d) {
-                return matchDescriptor.equals(d);
-            }
-        });
-
-        ActiveDescriptor<?> activeDescriptor = null;
-        for (ActiveDescriptor candidate : activeDescriptors) {
-            Descriptor d = candidate.getBaseDescriptor();
-            if (d == null) continue;
-            
-            if (d == i) {
-                activeDescriptor = candidate;
-                break;
-            }
-            
-        }
-        
-        if (activeDescriptor == null) {
-            activeDescriptor = Utilities.add(delegate, i);
-        }
-
-        Utilities.addIndex(delegate, activeDescriptor, index, name);
-
-        if (notify) {
-            // TODO : notify not currently supported
-        }
-    }
 
     protected static Long getServiceRanking(Inhabitant<?> i, boolean wantNonNull) {
         int rank = i.getRanking();
         Long retVal = new Long(rank);
         
         return retVal;
-    }
-
-    /**
-     * Removes an inhabitant
-     *
-     * @param inhabitant inhabitant to be removed
-     */
-    public boolean remove(Inhabitant<?> inhabitant) {
-        final Descriptor matchDescriptor = new DescriptorImpl(inhabitant);
-        final Filter filter = new Filter() {
-            @Override
-            public boolean matches(Descriptor d) {
-                return matchDescriptor.equals(d);
-            }
-        };
-
-        // TODO : notify not currently supported
-
-        return Utilities.remove(delegate, filter);
-    }
-
-    /**
-     * Removes a NamedInhabitant for a specific contract
-     *
-     * @param index contract name
-     * @param name  instance name
-     * @return true if the removal was successful
-     */
-    public boolean removeIndex(String index, String name) {
-        // TODO : notify not currently supported
-
-        return Utilities.remove(delegate, new IndexedFilterImpl(index, name));
-    }
-
-    /**
-     * Removes a Contracted service
-     *
-     * @param index               the contract name
-     * @param serviceOrInhabitant the service instance, or an Inhabitant instance
-     */
-    public boolean removeIndex(String index, Object serviceOrInhabitant) {
-        final Object o        = serviceOrInhabitant;
-        final String contract = index;
-        final Filter filter = new Filter() {
-            @Override
-            public boolean matches(Descriptor d) {
-                if (d.getAdvertisedContracts().contains(contract)) {
-                    Descriptor baseDescriptor = d.getBaseDescriptor();
-                    if (baseDescriptor instanceof AliasDescriptor<?>) {
-                        if (((AliasDescriptor<?>)baseDescriptor).getDescriptor().getBaseDescriptor().equals(o)) {
-                            return true;
-                        }
-                    }
-                    ActiveDescriptor<?> activeDescriptor = (ActiveDescriptor<?>)d;
-
-                    return (activeDescriptor.isReified() &&
-                            delegate.getServiceHandle(activeDescriptor).getService().equals(o));
-                }
-                return false;
-            }
-        };
-
-        // TODO : notify not currently supported
-
-        return Utilities.remove(delegate, filter);
     }
 
     /**
@@ -294,37 +171,6 @@ public class Habitat implements ServiceLocator {
      */
     public <T> Collection<T> getAllByType(Class<T> implType) {
         return delegate.getAllServices(implType);
-    }
-
-    /**
-     * Add an already instantiated component to this manager. The component has
-     * been instantiated by external code, however dependency injection,
-     * PostConstruct invocation and dependency extraction will be performed on
-     * this instance before it is store in the relevant scope's resource
-     * manager.
-     *
-     * @param component component instance
-     * @throws ComponentException if the passed object is not an HK2 component or
-     *                            injection/extraction failed.
-     */
-    public <T> void addComponent(T component) throws ComponentException {
-        if (component == null) return;
-        
-        DynamicConfigurationService dcs = delegate.getService(DynamicConfigurationService.class);
-        if (dcs == null) {
-            throw new ComponentException("No DynamicConfigurationService available");
-        }
-        
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        config.addActiveDescriptor(BuilderHelper.createConstantDescriptor(component));
-        
-        try {
-            config.commit();
-        }
-        catch (MultiException me) {
-            throw new ComponentException(me);
-        }
     }
 
     /**
