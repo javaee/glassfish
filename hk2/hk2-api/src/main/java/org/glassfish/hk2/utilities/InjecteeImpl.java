@@ -93,7 +93,7 @@ public class InjecteeImpl implements Injectee, Serializable {
         qualifiers = Collections.unmodifiableSet(copyMe.getRequiredQualifiers());
         isOptional = copyMe.isOptional();
         isSelf = copyMe.isSelf();
-        unqualified = copyMe.getUnqualified();
+        // unqualified = copyMe.getUnqualified();
         
         if (parent instanceof Field) {
             pClass = ((Field) parent).getDeclaringClass();
