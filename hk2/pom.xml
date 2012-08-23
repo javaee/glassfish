@@ -348,7 +348,7 @@
 	<repository>
 	    <id>spring-external</id>
 	    <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
-	    <url>http://repository.springsource.com/maven/libraries/external</url>
+	    <url>http://repository.springsource.com/maven/bundles/external</url>
 	</repository>
     </repositories>
 
