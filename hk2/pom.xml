@@ -345,11 +345,11 @@
     </reporting>
 
     <repositories>
-        <repository>
-            <id>springsource-repo</id>
-            <name>Springsource Repo</name>
-            <url>http://repository.springsource.com/maven/bundles/release</url>
-        </repository>
+	<repository>
+	    <id>spring-external</id>
+	    <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+	    <url>http://repository.springsource.com/maven/libraries/external</url>
+	</repository>
     </repositories>
 
     <pluginRepositories>
