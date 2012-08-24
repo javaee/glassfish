@@ -68,9 +68,7 @@ benchmark_commands() {
   bench list-applications
   bench stop-domain $DOMAIN
   bench start-domain $DOMAIN
-  export AS_DEBUG=true
-  asadmin restart-domain $DOMAIN
-  export AS_DEBUG=false
+  bench restart-domain $DOMAIN
   grep 'time to parse domain.xml' $GFHOME/glassfish/domains/$DOMAIN/logs/server.log | 
     sed -e 's/^.*Total //' -e 's/|#]//' | tail -1
   echo 'size of domain.xml: ' `ls -l $GFHOME/glassfish/domains/$DOMAIN/config/domain.xml | awk '{ print $5 }'`

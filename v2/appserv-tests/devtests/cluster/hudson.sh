@@ -21,7 +21,6 @@ echo "Installing GlassFish..."
 wget -q --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip || exit 1
 
-export AS_TRACE=true
 export S1AS_HOME="$ROOT/glassfish3/glassfish"
 export AS_LOGFILE="$S1AS_HOME/cli.log"
 asadmin start-domain || exit 1
