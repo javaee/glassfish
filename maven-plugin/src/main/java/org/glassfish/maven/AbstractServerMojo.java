@@ -81,7 +81,7 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     private static final String NETWORK_LISTENER_KEY = "embedded-glassfish-config." +
             "server.network-config.network-listeners.network-listener.%s";
 
-    public static String thisArtifactId = "org.glassfish:maven-embedded-glassfish-plugin";
+    public static String thisArtifactId = "org.glassfish.embedded:maven-embedded-glassfish-plugin";
 
     private static String SHELL_JAR = "lib/embedded/glassfish-embedded-static-shell.jar";
     private static String FELIX_JAR = "osgi/felix/bin/felix.jar";
