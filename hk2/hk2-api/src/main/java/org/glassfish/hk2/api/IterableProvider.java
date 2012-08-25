@@ -57,6 +57,24 @@ import javax.inject.Provider;
  */
 public interface IterableProvider<T> extends Provider<T>, Iterable<T> {
     /**
+     * This method will wait an indefinite amount of time for the
+     * service to become available
+     * 
+     * @return The service, or null if the system is shutdown or the
+     * thread is interrupted
+     */
+    public T waitForService();
+    
+    /**
+     * This method will wait the given amount of time for the
+     * service to become available
+     * 
+     * @return The service, or null if the system is shutdown or the
+     * thread is interrupted or the waitTime has expired
+     */
+    public T waitForService(long waitTime);
+    
+    /**
      * Rather than getting the service directly with get (in which
      * case the returned service cannot be disposed of) this method
      * will instead return a service handle for the current best service.
@@ -65,6 +83,28 @@ public interface IterableProvider<T> extends Provider<T>, Iterable<T> {
      * currently no service definition available
      */
     public ServiceHandle<T> getHandle();
+    
+    /**
+     * Rather than getting the service directly with get (in which
+     * case the returned service cannot be disposed of) this method
+     * will instead wait indefinitely for a service handle for the
+     * best service.
+     * 
+     * @return The serviceHandle for the service, or null if the system
+     * is shutdown or the thread is interrupted
+     */
+    public ServiceHandle<T> waitForHandle();
+    
+    /**
+     * Rather than getting the service directly with get (in which
+     * case the returned service cannot be disposed of) this method
+     * will instead wait the given amount of time for a service handle for
+     * the best service.
+     * 
+     * @return The serviceHandle for the service, or null if the system
+     * is shutdown or the thread is interrupted or the waitTime has expired
+     */
+    public ServiceHandle<T> waitForHandle(long waitTime);
     
     /**
      * Returns the size of the iterator that would be returned

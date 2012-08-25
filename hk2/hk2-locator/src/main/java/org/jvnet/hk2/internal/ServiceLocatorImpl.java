@@ -247,6 +247,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return getDescriptors(filter, null, true);
     }
     
+    @Override
     public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         checkState();
@@ -254,6 +255,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
         List<ActiveDescriptor<?>> sorted = getDescriptors(filter);
         
         return Utilities.getFirstThingInList(sorted);
+    }
+    
+    @Override
+    public ActiveDescriptor<?> waitForBestDescriptor(Filter filter) {
+        throw new AssertionError("not implemented");
+    }
+    
+    @Override
+    public ActiveDescriptor<?> waitForBestDescriptor(long waitTime, Filter filter) {
+        throw new AssertionError("not implemented");
     }
 
     /* (non-Javadoc)
@@ -462,6 +473,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ServiceHandle<T> handle = getServiceHandle(contractOrImpl, name, qualifiers);
         if (handle == null) return null;
         return handle.getService();
+    }
+    
+    @Override
+    public <T> T waitForService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException {
+        throw new AssertionError("not implemented");
+    }
+    
+    @Override
+    public <T> T waitForService(long waitTime, Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException {
+        throw new AssertionError("not implemented");
     }
 
     /* (non-Javadoc)
@@ -692,6 +713,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
         checkState();
         
         return internalGetServiceHandle(null, contractOrImpl, name, qualifiers);
+    }
+    
+    @Override
+    public <T> ServiceHandle<T> waitForServiceHandle(Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException {
+        throw new AssertionError("not implemented");
+    }
+    
+    @Override
+    public <T> ServiceHandle<T> waitForServiceHandle(long waitTime, Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException {
+        throw new AssertionError("not implemented");
     }
 
     /* (non-Javadoc)

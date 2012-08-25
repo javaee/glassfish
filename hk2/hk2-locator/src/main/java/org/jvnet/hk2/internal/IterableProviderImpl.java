@@ -84,6 +84,26 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
     }
     
+    @Override
+    public T waitForService() {
+        throw new AssertionError("not implemented");
+    }
+
+    @Override
+    public T waitForService(long waitTime) {
+        throw new AssertionError("not implemented");
+    }
+
+    @Override
+    public ServiceHandle<T> waitForHandle() {
+        throw new AssertionError("not implemented");
+    }
+
+    @Override
+    public ServiceHandle<T> waitForHandle(long waitTime) {
+        throw new AssertionError("not implemented");
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.IterableProvider#getHandle()
      */
@@ -246,6 +266,8 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
         return "IterableProviderImpl(" + Pretty.type(requiredType) + "," + Pretty.collection(requiredQualifiers) + "," +
             System.identityHashCode(this) + ")";
     }
+
+    
 
     
 
