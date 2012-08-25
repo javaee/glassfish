@@ -673,6 +673,42 @@ public class Habitat implements ServiceLocator {
             Annotation... qualifiers) throws MultiException {
         return (List<T>) delegate.getAllServices(qualifier, qualifiers);
     }
+    
+    @Override
+    public <T> T waitForService(Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException {
+        return delegate.waitForService(contractOrImpl, name, qualifiers);
+    }
+
+    @Override
+    public <T> T waitForService(long waitTime, Type contractOrImpl,
+            String name, Annotation... qualifiers) throws MultiException {
+        return delegate.waitForService(waitTime, contractOrImpl, name, qualifiers);
+    }
+
+    @Override
+    public <T> ServiceHandle<T> waitForServiceHandle(Type contractOrImpl,
+            String name, Annotation... qualifiers) throws MultiException {
+        return delegate.waitForServiceHandle(contractOrImpl, name, qualifiers);
+    }
+
+    @Override
+    public <T> ServiceHandle<T> waitForServiceHandle(long waitTime,
+            Type contractOrImpl, String name, Annotation... qualifiers)
+            throws MultiException {
+        return delegate.waitForServiceHandle(waitTime, contractOrImpl, name, qualifiers);
+    }
+
+    @Override
+    public ActiveDescriptor<?> waitForBestDescriptor(Filter filter) {
+        return delegate.waitForBestDescriptor(filter);
+    }
+
+    @Override
+    public ActiveDescriptor<?> waitForBestDescriptor(long waitTime,
+            Filter filter) {
+        return delegate.waitForBestDescriptor(waitTime, filter);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.annotation.Annotation, java.lang.annotation.Annotation[])
@@ -686,4 +722,6 @@ public class Habitat implements ServiceLocator {
     public String toString() {
         return "Habitat(" + delegate + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

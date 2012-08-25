@@ -78,7 +78,7 @@ public interface ServiceLocator {
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
-     * @param name May not be null, and is the name of the
+     * @param name May be null (to indicate any name is ok), and is the name of the
      * implementation to be returned
      * @param qualifiers The set of qualifiers that must match this service
      * definition
@@ -88,6 +88,66 @@ public interface ServiceLocator {
      * @throws MultiException if there was an error during service creation
      */
     public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets the best service from this locator that implements
+     * this contract or has this implementation and has the given
+     * name.  This method will wait indefinitely for a service to arrive.
+     * <p>
+     * Use this method only if destroying the service is not important
+     * <p>
+     * This service is waiting for a matching descriptor.  It does not take
+     * into account any state changes in context or in descriptors themselves.
+     * Only doing a dynamic change to the set of descriptors in the
+     * system will cause this method to re-check the service registry
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param name May be null (to indicate any name is ok), and is the name of the
+     * implementation to be returned
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return An instance of the service.  May return null if the context
+     * from which this service comes allows null service returns
+     * @throws MultiException if there was an error during service creation or
+     * if the thread was interrupted while waiting, in which case one of the exceptions
+     * in the MultiException will contain the {@link InterruptedException}
+     * @throws IllegalArgumentException if contractOrImpl is null
+     * @throws IllegalStateException if this is called on a locator that has been shut down or the
+     * locator is shut down prior to the timeout
+     */
+    public <T> T waitForService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets the best service from this locator that implements
+     * this contract or has this implementation and has the given
+     * name.  This method will wait the given amount of time for a service to arrive.
+     * <p>
+     * Use this method only if destroying the service is not important
+     * <p>
+     * This service is waiting for a matching descriptor.  It does not take
+     * into account any state changes in context or in descriptors themselves.
+     * Only doing a dynamic change to the set of descriptors in the
+     * system will cause this method to re-check the service registry
+     * 
+     * @paramTime The amount of time to wait (in milliseconds) for the service
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param name May be null (to indicate any name is ok), and is the name of the
+     * implementation to be returned
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return An instance of the service.  May return null if the context
+     * from which this service comes allows null service returns.  Will
+     * also return null if the service is not found in the given amount of time
+     * @throws MultiException if there was an error during service creation or
+     * if the thread was interrupted while waiting, in which case one of the exceptions
+     * in the MultiException will contain the {@link InterruptedException}
+     * @throws IllegalArgumentException if contractOrImpl is null
+     * @throws IllegalStateException if this is called on a locator that has been shut down or the
+     * locator is shut down prior to the timeout
+     */
+    public <T> T waitForService(long waitTime, Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
     
     /**
      * Gets the all the services from this locator that implements
@@ -168,7 +228,8 @@ public interface ServiceLocator {
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
-     * @param name The name to use to further qualify the search (may be null)
+     * @param name The name to use to further qualify the search (may be null,
+     * indicating that any name will match)
      * @param qualifiers The set of qualifiers that must match this service
      * definition
      * @return Will the service handle for the best service matching the
@@ -177,6 +238,64 @@ public interface ServiceLocator {
      * @throws IllegalArgumentException if contractOrImpl is null
      */
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  This method will wait an indefinite amount of time for
+     * a suitable service to be found
+     * <p>
+     * This service is waiting for a matching descriptor.  It does not take
+     * into account any state changes in context or in descriptors themselves.
+     * Only doing a dynamic change to the set of descriptors in the
+     * system will cause this method to re-check the service registry
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param name The name to use to further qualify the search (may be null,
+     * indicating that any name will match)
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return the service handle for the best service matching the
+     * given criteria
+     * @throws MultiException if there was an error during service creation or
+     * if the thread was interrupted while waiting.  One of the exceptions
+     * in the MultiException will contain the {@link InterruptedException}
+     * @throws IllegalArgumentException if contractOrImpl is null
+     * @throws IllegalStateException if this is called on a locator that has been shut down or the
+     * locator is shut down prior to the timeout
+     */
+    public <T> ServiceHandle<T> waitForServiceHandle(Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a service handle that can be used to get and destroy the returned
+     * service.  This method will wait an the given amount of time for
+     * a suitable service to be found
+     * <p>
+     * This service is waiting for a matching descriptor.  It does not take
+     * into account any state changes in context or in descriptors themselves.
+     * Only doing a dynamic change to the set of descriptors in the
+     * system will cause this method to re-check the service registry
+     * 
+     * @param waitTime The time in milliseconds to wait for the service
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param name The name to use to further qualify the search (may be null,
+     * indicating that any name will match)
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return the service handle for the best service matching the
+     * given criteria, or null if no matching service could be found
+     * in the given time
+     * @throws MultiException if there was an error during service creation or
+     * if the thread was interrupted while waiting, in which case one of the exceptions
+     * in the MultiException will contain the {@link InterruptedException}
+     * @throws IllegalArgumentException if contractOrImpl is null
+     * @throws IllegalStateException if this is called on a locator that has been shut down or the
+     * locator is shutdown prior to the timeout
+     */
+    public <T> ServiceHandle<T> waitForServiceHandle(long waitTime, Type contractOrImpl, String name,
             Annotation... qualifiers) throws MultiException;
     
     /**
@@ -241,11 +360,49 @@ public interface ServiceLocator {
      * Gets the descriptor that best matches this filter, taking ranking
      * and service id into account
      * 
-     * @param filter The filter to use to retrieve the set of descriptors
+     * @param filter The non-null filter to use to retrieve the best descriptor
      * @return The best descriptor matching the filter, or null if there
      * is no descriptor that matches the filter
      */
     public ActiveDescriptor<?> getBestDescriptor(Filter filter);
+    
+    /**
+     * This method will wait indefinitely for there to be a descriptor
+     * that matches this filter.
+     * <p>
+     * This service is waiting for a matching descriptor.  It does not take
+     * into account any state changes in context or in descriptors themselves.
+     * Only doing a dynamic change to the set of descriptors in the
+     * system will cause this method to re-check the service registry
+     * 
+     * @param filter The non-null filter to use to retrieve the best descriptor
+     * @return The best descriptor matching the filter
+     * @throws MultiException if the thread was interrupted while waiting, in which case one
+     * of the exceptions in the MultiException will contain the {@link InterruptedException}
+     * @throws IllegalStateException if this is called on a locator that has been shut down or the
+     * locator is shutdown prior to the timeout
+     */
+    public ActiveDescriptor<?> waitForBestDescriptor(Filter filter) throws MultiException;
+    
+    /**
+     * This method will wait the given amount of time for there to be a descriptor
+     * that matches this filter.
+     * <p>
+     * This service is waiting for a matching descriptor.  It does not take
+     * into account any state changes in context or in descriptors themselves.
+     * Only doing a dynamic change to the set of descriptors in the
+     * system will cause this method to re-check the service registry
+     * 
+     * @param waitTime The time in milliseconds to wait for a descriptor matching this filter
+     * @param filter The non-null filter to use to retrieve the best descriptor
+     * @return The best descriptor matching the filter or null if the timeout occurred and no
+     * match was found
+     * @throws MultiException if the thread was interrupted while waiting in which case one of
+     * the exceptions in the MultiException will contain the {@link InterruptedException}
+     * @throws IllegalStateException if this is called on a locator that has been shut down or the
+     * locator is shutdown prior to the timeout
+     */
+    public ActiveDescriptor<?> waitForBestDescriptor(long waitTime, Filter filter) throws MultiException;
     
     /**
      * Converts a descriptor to an ActiveDescriptor.  Will use the registered
