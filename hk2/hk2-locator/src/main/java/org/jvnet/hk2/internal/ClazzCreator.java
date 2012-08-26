@@ -73,200 +73,199 @@ public class ClazzCreator<T> implements Creator<T> {
     private final Set<ResolutionInfo> myInitializers = new HashSet<ResolutionInfo>();
     private final Set<ResolutionInfo> myFields = new HashSet<ResolutionInfo>();
     private final ActiveDescriptor<?> selfDescriptor;
-    
+
     private final ResolutionInfo myConstructor;
     private List<Injectee> allInjectees;
-    
+
     private Method postConstructMethod;
     private Method preDestroyMethod;
-    
+
     /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, ActiveDescriptor<?> selfDescriptor, Collector collector) {
         this.locator = locator;
         this.implClass = implClass;
         this.selfDescriptor = selfDescriptor;
-        
+
         List<Injectee> baseAllInjectees = new LinkedList<Injectee>();
-        
+
         AnnotatedElement element;
         List<Injectee> injectees;
-        
+
         element = Utilities.findProducerConstructor(implClass, locator, collector);
         if (element == null) {
             myConstructor = null;
             return;
         }
-        
+
         injectees = Utilities.getConstructorInjectees((Constructor<?>) element);
         if (injectees == null) {
             myConstructor = null;
             return;
         }
-        
+
         baseAllInjectees.addAll(injectees);
-        
+
         myConstructor = new ResolutionInfo(element, injectees);
-        
+
         Set<Method> initMethods = Utilities.findInitializerMethods(implClass, locator, collector);
         for (Method initMethod : initMethods) {
             element = initMethod;
-            
+
             injectees = Utilities.getMethodInjectees(initMethod);
             if (injectees == null) return;
-            
+
             baseAllInjectees.addAll(injectees);
-            
+
             myInitializers.add(new ResolutionInfo(element, injectees));
         }
-        
+
         Set<Field> fields = Utilities.findInitializerFields(implClass, locator, collector);
         for (Field field : fields) {
             element = field;
-            
+
             injectees = Utilities.getFieldInjectees(field);
             if (injectees == null) return;
-            
+
             baseAllInjectees.addAll(injectees);
-            
+
             myFields.add(new ResolutionInfo(element, injectees));
         }
-        
+
         postConstructMethod = Utilities.findPostConstruct(implClass, collector);
         preDestroyMethod = Utilities.findPreDestroy(implClass, collector);
-        
+
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
-        
+
         Utilities.validateSelfInjectees(selfDescriptor, allInjectees, collector);
     }
-    
+
     private void resolve(Map<Injectee, Object> addToMe,
-            InjectionResolver<?> resolver,
-            Injectee injectee,
-            ServiceHandle<?> root,
-            Collector errorCollection) {
+                         InjectionResolver<?> resolver,
+                         Injectee injectee,
+                         ServiceHandle<?> root,
+                         Collector errorCollection) {
         if (injectee.isSelf()) {
             addToMe.put(injectee, selfDescriptor);
             return;
         }
-        
+
         Object addIn = null;
         try {
             addIn = resolver.resolve(injectee, root);
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             errorCollection.addThrowable(th);
         }
-        
+
         if (addIn != null) {
             addToMe.put(injectee, addIn);
         }
     }
-    
+
     private Map<Injectee, Object> resolveAllDependencies(ServiceHandle<?> root) throws IllegalStateException {
         Collector errorCollector = new Collector();
-        
+
         Map<Injectee, Object> retVal = new HashMap<Injectee, Object>();
-        
+
         InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, myConstructor.baseElement);
         for (Injectee injectee : myConstructor.injectees) {
             resolve(retVal, resolver, injectee, root, errorCollector);
         }
-        
+
         for (ResolutionInfo fieldRI : myFields) {
             resolver = Utilities.getInjectionResolver(locator, fieldRI.baseElement);
             for (Injectee injectee : fieldRI.injectees) {
                 resolve(retVal, resolver, injectee, root, errorCollector);
             }
         }
-        
+
         for (ResolutionInfo methodRI : myInitializers) {
             resolver = Utilities.getInjectionResolver(locator, methodRI.baseElement);
             for (Injectee injectee : methodRI.injectees) {
                 resolve(retVal, resolver, injectee, root, errorCollector);
             }
         }
-        
+
         if (errorCollector.hasErrors()) {
             errorCollector.addThrowable(new IllegalArgumentException("While attempting to resolve the dependencies of " +
-              implClass.getName() + " errors were found"));
-            
+                    implClass.getName() + " errors were found"));
+
             errorCollector.throwIfErrors();
         }
-        
+
         return retVal;
     }
-    
+
     private Object createMe(Map<Injectee, Object> resolved) throws Throwable {
         Constructor<?> c = (Constructor<?>) myConstructor.baseElement;
         List<Injectee> injectees = myConstructor.injectees;
-        
+
         Object args[] = new Object[injectees.size()];
         for (Injectee injectee : injectees) {
             args[injectee.getPosition()] = resolved.get(injectee);
         }
-        
+
         Utilities.setAccessible(c);
-        
+
         return Utilities.makeMe(c, args);
     }
-    
+
     private void fieldMe(Map<Injectee, Object> resolved, T t) throws Throwable {
         for (ResolutionInfo ri : myFields) {
             Field field = (Field) ri.baseElement;
             List<Injectee> injectees = ri.injectees;  // Should be only one injectee, itself!
-            
+
             Injectee fieldInjectee = null;
             for (Injectee candidate : injectees) {
                 fieldInjectee = candidate;
             }
-            
+
             Object putMeIn = resolved.get(fieldInjectee);
-            
+
             Utilities.setAccessible(field);
-            
+
             field.set(t, putMeIn);
         }
     }
-    
+
     private void methodMe(Map<Injectee, Object> resolved, T t) throws Throwable {
         for (ResolutionInfo ri : myInitializers) {
             Method m = (Method) ri.baseElement;
             List<Injectee> injectees = ri.injectees;
-            
+
             Object args[] = new Object[injectees.size()];
             for (Injectee injectee : injectees) {
                 args[injectee.getPosition()] = resolved.get(injectee);
             }
-            
+
             Utilities.setAccessible(m);
-            
+
             ReflectionHelper.invoke(t, m, args);
         }
     }
-    
+
     private void postConstructMe(T t) throws Throwable {
         if (t == null) return;
-        
+
         if (t instanceof PostConstruct) {
             ((PostConstruct) t).postConstruct();
             return;
         }
-        
+
         if (postConstructMethod == null) return;
-        
+
         Utilities.setAccessible(postConstructMethod);
         ReflectionHelper.invoke(t, postConstructMethod, new Object[0]);
     }
-    
+
     private void preDestroyMe(T t) throws Throwable {
         if (t == null) return;
-        
+
         if (t instanceof PreDestroy) {
             ((PreDestroy) t).preDestroy();
             return;
         }
-        
+
         if (preDestroyMethod == null) return;
-        
+
         Utilities.setAccessible(preDestroyMethod);
         ReflectionHelper.invoke(t, preDestroyMethod, new Object[0]);
     }
@@ -279,30 +278,29 @@ public class ClazzCreator<T> implements Creator<T> {
     public InstanceLifecycleEventImpl create(ServiceHandle<?> root) {
         try {
             Map<Injectee, Object> allResolved = resolveAllDependencies(root);
-            
+
             T retVal = (T) createMe(allResolved);
-            
+
             fieldMe(allResolved, retVal);
-            
+
             methodMe(allResolved, retVal);
-            
+
             postConstructMe(retVal);
-            
+
             return new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
                     retVal, allResolved);
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             if (th instanceof MultiException) {
                 MultiException me = (MultiException) th;
-                
+
                 me.addError(new IllegalStateException("Unable to create or inject " + implClass.getName()));
-                
+
                 throw me;
             }
-            
+
             MultiException me = new MultiException(th);
             me.addError(new IllegalStateException("Unable to create or inject " + implClass.getName()));
-            
+
             throw me;
         }
     }
@@ -314,25 +312,24 @@ public class ClazzCreator<T> implements Creator<T> {
     public void dispose(T instance) {
         try {
             preDestroyMe(instance);
-        }
-        catch (Throwable th) {
+        } catch (Throwable th) {
             Logger.getLogger().debug("ClazzCreator", "dispose", th);
         }
 
     }
-    
+
     /* (non-Javadoc)
-     * @see org.jvnet.hk2.internal.Creator#getInjectees()
-     */
+    * @see org.jvnet.hk2.internal.Creator#getInjectees()
+    */
     @Override
     public List<Injectee> getInjectees() {
         return allInjectees;
     }
-    
+
     private static class ResolutionInfo {
         private final AnnotatedElement baseElement;
         private final List<Injectee> injectees = new LinkedList<Injectee>();
-        
+
         private ResolutionInfo(AnnotatedElement baseElement, List<Injectee> injectees) {
             this.baseElement = baseElement;
             this.injectees.addAll(injectees);

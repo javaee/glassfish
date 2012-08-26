@@ -39,11 +39,12 @@
  */
 package org.glassfish.hk2.tests.locator.customresolver;
 
-import junit.framework.Assert;
-
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+
 import org.junit.Test;
+
+import junit.framework.Assert;
 
 /**
  * @author jwells
@@ -52,7 +53,7 @@ import org.junit.Test;
 public class CustomResolverTest {
     private final static String TEST_NAME = "CustomResolverTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new CustomResolverModule());
-    
+
     /**
      * Tests custom resolution
      */
@@ -60,10 +61,10 @@ public class CustomResolverTest {
     public void testCustomInjectResolver() {
         ServiceWithCustomInjections cwci = locator.getService(ServiceWithCustomInjections.class);
         Assert.assertNotNull(cwci);
-        
+
         Assert.assertTrue(cwci.isValid());
     }
-    
+
     /**
      * Tests custom resolution with the resolver on the constuctor (and only valid on the constructor)
      */
@@ -71,11 +72,11 @@ public class CustomResolverTest {
     public void testConstructorOnly() {
         ConstructorOnlyInjectedService service = locator.getService(ConstructorOnlyInjectedService.class);
         Assert.assertNotNull(service);
-        
+
         Assert.assertNotNull(service.getViaConstructor());
         Assert.assertNull(service.getViaMethod());
     }
-    
+
     /**
      * Tests custom resolution with the resolver on the method (and only valid on the method)
      */
@@ -83,11 +84,11 @@ public class CustomResolverTest {
     public void testMethodOnly() {
         MethodOnlyInjectedService service = locator.getService(MethodOnlyInjectedService.class);
         Assert.assertNotNull(service);
-        
+
         Assert.assertNull(service.getViaConstructor());
         Assert.assertNotNull(service.getViaMethod());
     }
-    
+
     /**
      * Tests custom resolution with the resolver on both the constructor and the method
      */
@@ -95,7 +96,7 @@ public class CustomResolverTest {
     public void testBothMethodAndConstructor() {
         ParameterInjectionService service = locator.getService(ParameterInjectionService.class);
         Assert.assertNotNull(service);
-        
+
         Assert.assertNotNull(service.getViaConstructor());
         Assert.assertNotNull(service.getViaMethod());
     }
