@@ -677,13 +677,13 @@ public class Habitat implements ServiceLocator {
     @Override
     public <T> T waitForService(Type contractOrImpl, String name,
             Annotation... qualifiers) throws MultiException {
-        return delegate.waitForService(contractOrImpl, name, qualifiers);
+        return (T) delegate.waitForService(contractOrImpl, name, qualifiers);
     }
 
     @Override
     public <T> T waitForService(long waitTime, Type contractOrImpl,
             String name, Annotation... qualifiers) throws MultiException {
-        return delegate.waitForService(waitTime, contractOrImpl, name, qualifiers);
+        return (T) delegate.waitForService(waitTime, contractOrImpl, name, qualifiers);
     }
 
     @Override
