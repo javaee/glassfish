@@ -41,44 +41,41 @@ package org.glassfish.hk2.tests.locator.customresolver;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
+ * @author Miroslav Fuksa (miroslav.fuksa at oracle.com)
  *
  */
-public class CustomResolverModule implements TestModule {
+@Singleton
+public class ParameterBInjectionResolver implements
+        InjectionResolver<ParameterBInjectionPoint> {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.addActiveDescriptor(ServiceWithCustomInjections.class);
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        return "Parameter B";
+    }
 
-        // Setting it to rank 1 makes it supercede the system injection resolver
-        configurator.bind(BuilderHelper.link(CustomInjectResolver.class).
-                to(InjectionResolver.class).
-                in(Singleton.class.getName()).
-                ofRank(1).build());
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isConstructorParameterIndicator()
+     */
+    @Override
+    public boolean isConstructorParameterIndicator() {
+        return true;
+    }
 
-        configurator.addActiveDescriptor(ConstructorOnlyInjectionResolver.class);
-        configurator.addActiveDescriptor(MethodOnlyInjectionResolver.class);
-        configurator.addActiveDescriptor(ParameterOnlyInjectionResolver.class);
-
-        configurator.addActiveDescriptor(ParameterAInjectionResolver.class);
-        configurator.addActiveDescriptor(ParameterBInjectionResolver.class);
-
-        configurator.bind(BuilderHelper.link(ConstructorOnlyInjectedService.class.getName()).build());
-        configurator.bind(BuilderHelper.link(MethodOnlyInjectedService.class.getName()).build());
-        configurator.bind(BuilderHelper.link(ParameterInjectionService.class.getName()).build());
-
-        configurator.bind(BuilderHelper.link(ParameterABInjectionService.class.getName()).build());
-
-        configurator.addActiveDescriptor(SimpleService.class);
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isMethodParameterIndicator()
+     */
+    @Override
+    public boolean isMethodParameterIndicator() {
+        return true;
     }
 
 }

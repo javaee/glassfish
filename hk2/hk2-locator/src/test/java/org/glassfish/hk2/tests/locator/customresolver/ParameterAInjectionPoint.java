@@ -39,46 +39,21 @@
  */
 package org.glassfish.hk2.tests.locator.customresolver;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
+ * This custom resolution point only works on constructor
+ * parameters
+ *
  * @author jwells
+ * @author Miroslav Fuksa (miroslav.fuksa at oracle.com)
  *
  */
-public class CustomResolverModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.addActiveDescriptor(ServiceWithCustomInjections.class);
-
-        // Setting it to rank 1 makes it supercede the system injection resolver
-        configurator.bind(BuilderHelper.link(CustomInjectResolver.class).
-                to(InjectionResolver.class).
-                in(Singleton.class.getName()).
-                ofRank(1).build());
-
-        configurator.addActiveDescriptor(ConstructorOnlyInjectionResolver.class);
-        configurator.addActiveDescriptor(MethodOnlyInjectionResolver.class);
-        configurator.addActiveDescriptor(ParameterOnlyInjectionResolver.class);
-
-        configurator.addActiveDescriptor(ParameterAInjectionResolver.class);
-        configurator.addActiveDescriptor(ParameterBInjectionResolver.class);
-
-        configurator.bind(BuilderHelper.link(ConstructorOnlyInjectedService.class.getName()).build());
-        configurator.bind(BuilderHelper.link(MethodOnlyInjectedService.class.getName()).build());
-        configurator.bind(BuilderHelper.link(ParameterInjectionService.class.getName()).build());
-
-        configurator.bind(BuilderHelper.link(ParameterABInjectionService.class.getName()).build());
-
-        configurator.addActiveDescriptor(SimpleService.class);
-    }
+@Retention(RUNTIME)
+@Target( PARAMETER )
+public @interface ParameterAInjectionPoint {
 
 }

@@ -101,4 +101,17 @@ public class CustomResolverTest {
         Assert.assertNotNull(service.getViaMethod());
     }
 
+    /**
+     * Tests custom resolution with two different resolvers and injection annotations
+     */
+    @Test
+    public void testDifferentParametersInConstructor() {
+        ParameterABInjectionService service = locator.getService(ParameterABInjectionService.class);
+        Assert.assertNotNull(service);
+
+        Assert.assertEquals("Parameter A", service.getParameterA());
+        Assert.assertEquals("Parameter B", service.getParameterB());
+        Assert.assertEquals("Parameter A", service.getAnotherParameterA());
+    }
+
 }
