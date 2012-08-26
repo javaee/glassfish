@@ -165,21 +165,21 @@ public class ClazzCreator<T> implements Creator<T> {
 
         Map<Injectee, Object> retVal = new HashMap<Injectee, Object>();
 
-        InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, myConstructor.baseElement);
         for (Injectee injectee : myConstructor.injectees) {
+            InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, injectee);
             resolve(retVal, resolver, injectee, root, errorCollector);
         }
 
         for (ResolutionInfo fieldRI : myFields) {
-            resolver = Utilities.getInjectionResolver(locator, fieldRI.baseElement);
+            InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, fieldRI.baseElement);
             for (Injectee injectee : fieldRI.injectees) {
                 resolve(retVal, resolver, injectee, root, errorCollector);
             }
         }
 
         for (ResolutionInfo methodRI : myInitializers) {
-            resolver = Utilities.getInjectionResolver(locator, methodRI.baseElement);
             for (Injectee injectee : methodRI.injectees) {
+                InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, injectee);
                 resolve(retVal, resolver, injectee, root, errorCollector);
             }
         }
@@ -319,8 +319,8 @@ public class ClazzCreator<T> implements Creator<T> {
     }
 
     /* (non-Javadoc)
-    * @see org.jvnet.hk2.internal.Creator#getInjectees()
-    */
+     * @see org.jvnet.hk2.internal.Creator#getInjectees()
+     */
     @Override
     public List<Injectee> getInjectees() {
         return allInjectees;
