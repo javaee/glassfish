@@ -122,21 +122,19 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      *
      */
     public ServiceLocator newServiceLocator() throws ComponentException {
-        // We intentionally create an unnamed service locator, because the caller is going to
-        // manage its lifecycle.
-        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(null);
-        initializeServiceLocator(serviceLocator);
-        return serviceLocator;
+        return newServiceLocator(null, null);
     }
     
     /**
      * Create a new Habitat optionally providing a parent Services as well as a name.
      */
-    public ServiceLocator newServiceLocator(ServiceLocator parent, String name) throws ComponentException {
-    	ServiceLocator serviceLocator =  ServiceLocatorFactory.getInstance().create(name);
-    	//TODO: Add parent
+    public ServiceLocator newServiceLocator(ServiceLocator parent, String serviceLocatorName) throws ComponentException {
+        // We intentionally create an unnamed service locator, because the caller is going to
+        // manage its lifecycle.
     	
-        initializeServiceLocator(serviceLocator);
+    	ServiceLocator serviceLocator =  ServiceLocatorFactory.getInstance().create(serviceLocatorName, parent);
+ 
+    	initializeServiceLocator(serviceLocator);
         return serviceLocator;
     }
 
@@ -189,11 +187,16 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
         HK2Populator.populateConfig(serviceLocator);
     }
 
-    public ServiceLocator createServiceLocator(String name) throws ComponentException {
-        ServiceLocator serviceLocator = newServiceLocator();
+    public ServiceLocator createServiceLocator(ServiceLocator parent, String name) throws ComponentException {
+        ServiceLocator serviceLocator = newServiceLocator(parent, name);
         populateServiceLocator(name, serviceLocator);
         return serviceLocator;
     }
+
+	public ServiceLocator createServiceLocator(String name) throws ComponentException {
+    	return createServiceLocator(null, name);
+    }
+
 
     protected abstract void parseInhabitants(Module module,
                                              String name, ServiceLocator serviceLocator)

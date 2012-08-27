@@ -79,6 +79,17 @@ public interface ModulesRegistry extends ModuleChangeListener {
      */
     ServiceLocator createServiceLocator(String name) throws ComponentException;
 
+
+    /**
+     * Creates a {@link ServiceLocator} with the provided parent.
+     *  
+     * @param serviceLocator
+     * @param name
+     * @return
+     */
+	ServiceLocator createServiceLocator(ServiceLocator serviceLocator,
+			String name);
+	
     /**
      * Populates a {@link ServiceLocator} from all the modules in this registry.
      *
@@ -323,4 +334,5 @@ public interface ModulesRegistry extends ModuleChangeListener {
      * Gets the {@link Module} that provides the provider of the given name.
      */
     Module getProvidingModule(String providerClassName);
+
 }
