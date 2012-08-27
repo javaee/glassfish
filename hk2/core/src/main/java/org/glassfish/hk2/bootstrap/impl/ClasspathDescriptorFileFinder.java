@@ -12,11 +12,12 @@ import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
 public class ClasspathDescriptorFileFinder implements
 		DescriptorFileFinder {
 	private final ClassLoader classLoader;
+	private String name;
 
 	@Override
 	public List<InputStream> findDescriptorFiles() throws IOException {
 		ArrayList<InputStream> returnList = new ArrayList<InputStream>();
-		Enumeration<URL> e = classLoader.getResources(RESOURCE_NAME);
+		Enumeration<URL> e = classLoader.getResources(RESOURCE_BASE+name);
 
 		for (; e.hasMoreElements();) {
 			URL url = e.nextElement();
@@ -26,7 +27,12 @@ public class ClasspathDescriptorFileFinder implements
 	}
 	
 	public ClasspathDescriptorFileFinder (ClassLoader cl) {
+		this(cl, "default");
+	}
+	
+	public ClasspathDescriptorFileFinder (ClassLoader cl, String name) {
 		this.classLoader = cl;
+		this.name = name;
 	}
 	
 	public ClasspathDescriptorFileFinder() {

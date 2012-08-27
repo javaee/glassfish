@@ -130,7 +130,7 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
 			}};
     
     	HK2Populator.populate(serviceLocator,
-                new ClasspathDescriptorFileFinder(singleClassLoader),
+                new ClasspathDescriptorFileFinder(singleClassLoader, name),
                 postProcessorBinder);
     }
 

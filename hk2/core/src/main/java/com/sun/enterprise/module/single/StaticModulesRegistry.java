@@ -88,7 +88,7 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
 
     @Override
     public ServiceLocator createServiceLocator(String name) throws ComponentException {
-        ServiceLocator serviceLocator = super.createServiceLocator("default");
+        ServiceLocator serviceLocator = super.createServiceLocator(name);
 
         StartupContext sc = startupContext;
 
