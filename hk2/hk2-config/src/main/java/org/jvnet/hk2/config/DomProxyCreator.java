@@ -55,13 +55,23 @@ import java.util.Map;
 final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractCreatorImpl<T> {
     private final Dom dom;
 
+    private volatile T proxyInstance;
+
     public DomProxyCreator(Class<T> type, Map<String, List<String>> metadata, Dom dom) {
         super(type, null, metadata);
         this.dom = dom;
     }
 
     public T create(Inhabitant onBehalfOf) throws ComponentException {
-        return dom.createProxy(type());
+        if (proxyInstance == null) {
+            synchronized (this) {
+                if (proxyInstance == null) {
+                    proxyInstance = dom.createProxy(type());
+                }
+            }
+        }
+
+        return proxyInstance;
     }
 }
 

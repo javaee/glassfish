@@ -340,6 +340,17 @@ public class ConfigTest {
         assert(pop.isPopulateCalled());
     }
 
+    @Test
+    public void testSingletonProxy() {
+        SimpleConnector simpleConnector1 = habitat.getService(SimpleConnector.class);
+        SimpleConnector simpleConnector2 = habitat.getService(SimpleConnector.class);
+
+        System.out.println("[testSingleProxy] Got simpleConnector1 : " + simpleConnector1.getClass().getName());
+        System.out.println("[testSingleProxy] Got simpleConnector2 : " + simpleConnector2.getClass().getName());
+
+        assert(simpleConnector1 != null && simpleConnector1 == simpleConnector2);
+    }
+
     private static void printEjb(String message, EjbContainerAvailability ejb) {
         StringBuilder sb = new StringBuilder(ejb.getClass().getName());
         sb.append(" : " ).append(ejb.getAvailabilityEnabled())
