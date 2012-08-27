@@ -98,7 +98,7 @@ public class LocatorWaitersTest {
         ActiveDescriptor<?> removeMe = ServiceLocatorUtilities.addOneDescriptor(locator, d);
         try {
             ActiveDescriptor<?> foreverResult = (ActiveDescriptor<?>) waitForever.waitForResult(20 * 1000);
-            ActiveDescriptor<?> thirtySecondsResult = (ActiveDescriptor<?>) waitForever.waitForResult(20 * 1000);
+            ActiveDescriptor<?> thirtySecondsResult = (ActiveDescriptor<?>) waitThirtySeconds.waitForResult(20 * 1000);
             
             Assert.assertNotNull(foreverResult);
             Assert.assertNotNull(thirtySecondsResult);
@@ -146,7 +146,7 @@ public class LocatorWaitersTest {
         ActiveDescriptor<?> removeMe = ServiceLocatorUtilities.addOneDescriptor(locator, d);
         try {
             SimpleService1 foreverResult = (SimpleService1) waitForever.waitForResult(20 * 1000);
-            SimpleService1 thirtySecondsResult = (SimpleService1) waitForever.waitForResult(20 * 1000);
+            SimpleService1 thirtySecondsResult = (SimpleService1) waitThirtySeconds.waitForResult(20 * 1000);
             
             Assert.assertNotNull(foreverResult);
             Assert.assertNotNull(thirtySecondsResult);
@@ -193,7 +193,7 @@ public class LocatorWaitersTest {
         ActiveDescriptor<?> removeMe = ServiceLocatorUtilities.addOneDescriptor(locator, d);
         try {
             ServiceHandle<SimpleService1> foreverResult = (ServiceHandle<SimpleService1>) waitForever.waitForResult(20 * 1000);
-            ServiceHandle<SimpleService1> thirtySecondsResult = (ServiceHandle<SimpleService1>) waitForever.waitForResult(20 * 1000);
+            ServiceHandle<SimpleService1> thirtySecondsResult = (ServiceHandle<SimpleService1>) waitThirtySeconds.waitForResult(20 * 1000);
             
             Assert.assertNotNull(foreverResult);
             Assert.assertNotNull(thirtySecondsResult);
