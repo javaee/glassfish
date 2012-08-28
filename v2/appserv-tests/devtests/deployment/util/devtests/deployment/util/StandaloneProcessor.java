@@ -64,7 +64,7 @@ import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
 import org.jvnet.hk2.component.Habitat;
 import org.glassfish.hk2.api.ServiceLocator;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.api.admin.ProcessEnvironment;
@@ -276,9 +276,10 @@ public class StandaloneProcessor {
             habitat = serviceLocator.getService(Habitat.class);
 
             StartupContext startupContext = new StartupContext();
-            habitat.add(new ExistingSingletonInhabitant(startupContext));
 
-            habitat.addComponent(new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
+            ServiceLocatorUtilities.addOneConstant(habitat, startupContext);
+            ServiceLocatorUtilities.addOneConstant(habitat,
+                new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
         }
     }
 

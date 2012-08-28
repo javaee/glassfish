@@ -8,13 +8,13 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
 import org.jvnet.hk2.component.Habitat;
-import com.sun.hk2.component.ExistingSingletonInhabitant;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.api.admin.ProcessEnvironment;
 import org.glassfish.api.admin.ProcessEnvironment.ProcessType;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 public class Validator {
 
@@ -191,9 +191,10 @@ public class Validator {
 
             StartupContext startupContext = new StartupContext();
 
-            habitat.add(new ExistingSingletonInhabitant(startupContext));
+            ServiceLocatorUtilities.addOneConstant(habitat, startupContext);
+            ServiceLocatorUtilities.addOneConstant(habitat, 
+                new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
 
-            habitat.addComponent(new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
             Globals.setDefaultHabitat(habitat);
         }
     }
