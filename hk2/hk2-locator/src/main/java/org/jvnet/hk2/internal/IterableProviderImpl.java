@@ -84,34 +84,6 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
     }
     
-    @SuppressWarnings("unchecked")
-    @Override
-    public T waitForService() {
-        return (T) locator.waitForService(requiredType, null,
-                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public T waitForService(long waitTime) {
-        return (T) locator.waitForService(waitTime, requiredType, null,
-                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public ServiceHandle<T> waitForHandle() {
-        return (ServiceHandle<T>) locator.waitForServiceHandle(requiredType, null,
-                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public ServiceHandle<T> waitForHandle(long waitTime) {
-        return (ServiceHandle<T>) locator.waitForServiceHandle(waitTime, requiredType, null,
-                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
-    }
-    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.IterableProvider#getHandle()
      */

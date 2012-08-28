@@ -87,7 +87,6 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 public class ServiceLocatorImpl implements ServiceLocator {
     private final static Object sLock = new Object();
     private static long currentLocatorId = 0L;
-    private static long FOREVER = Long.MAX_VALUE;
     
     /* package */ final static DescriptorComparator DESCRIPTOR_COMPARATOR = new DescriptorComparator();
     private final static ServiceHandleComparator HANDLE_COMPARATOR = new ServiceHandleComparator();
@@ -150,112 +149,80 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return true;
     }
     
-    /**
-     * Lock must be held
-     * 
-     * @param filter
-     * @param onBehalfOf
-     * @param getParents
-     * @return
-     */
-    private List<ActiveDescriptor<?>> internalGetDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents) {
-        List<SystemDescriptor<?>> sortMeOut;
-        if (filter instanceof IndexedFilter) {
-            IndexedFilter df = (IndexedFilter) filter;
-            
-            if (df.getName() != null) {
-                List<SystemDescriptor<?>> scopedByName;
+    private List<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents) {
+        if (filter == null) throw new IllegalArgumentException("filter is null");
+        
+        synchronized (lock) {
+            List<SystemDescriptor<?>> sortMeOut;
+            if (filter instanceof IndexedFilter) {
+                IndexedFilter df = (IndexedFilter) filter;
                 
-                String name = df.getName();
-                
-                IndexedListData ild = descriptorsByName.get(name);
-                scopedByName = (ild == null) ? null : ild.getSortedList();
-                if (scopedByName == null) {
-                    scopedByName = Collections.emptyList();
-                }
-                
-                if (df.getAdvertisedContract() != null) {
-                    sortMeOut = new LinkedList<SystemDescriptor<?>>();
+                if (df.getName() != null) {
+                    List<SystemDescriptor<?>> scopedByName;
                     
-                    for (SystemDescriptor<?> candidate : scopedByName) {
-                        if (candidate.getAdvertisedContracts().contains(df.getAdvertisedContract())) {
-                            sortMeOut.add(candidate);
+                    String name = df.getName();
+                    
+                    IndexedListData ild = descriptorsByName.get(name);
+                    scopedByName = (ild == null) ? null : ild.getSortedList();
+                    if (scopedByName == null) {
+                        scopedByName = Collections.emptyList();
+                    }
+                    
+                    if (df.getAdvertisedContract() != null) {
+                        sortMeOut = new LinkedList<SystemDescriptor<?>>();
+                        
+                        for (SystemDescriptor<?> candidate : scopedByName) {
+                            if (candidate.getAdvertisedContracts().contains(df.getAdvertisedContract())) {
+                                sortMeOut.add(candidate);
+                            }
                         }
+                    }
+                    else {
+                        sortMeOut = scopedByName;
+                    }
+                }
+                else if (df.getAdvertisedContract() != null) {
+                    String advertisedContract = df.getAdvertisedContract();
+                    
+                    IndexedListData ild = descriptorsByAdvertisedContract.get(advertisedContract);
+                    sortMeOut = (ild == null) ? null : ild.getSortedList();
+                    if (sortMeOut == null) {
+                        sortMeOut = Collections.emptyList();
+                        
                     }
                 }
                 else {
-                    sortMeOut = scopedByName;
-                }
-            }
-            else if (df.getAdvertisedContract() != null) {
-                String advertisedContract = df.getAdvertisedContract();
-                
-                IndexedListData ild = descriptorsByAdvertisedContract.get(advertisedContract);
-                sortMeOut = (ild == null) ? null : ild.getSortedList();
-                if (sortMeOut == null) {
-                    sortMeOut = Collections.emptyList();
-                    
+                    sortMeOut = allDescriptors.getSortedList();
                 }
             }
             else {
                 sortMeOut = allDescriptors.getSortedList();
             }
-        }
-        else {
-            sortMeOut = allDescriptors.getSortedList();
-        }
-        
-        LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
-        
-        for (SystemDescriptor<?> candidate : sortMeOut) {
-            if (!validate(candidate, onBehalfOf, filter)) continue;
             
-            if (filter.matches(candidate)) {
-                retVal.add(candidate);
+            LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
+            
+            for (SystemDescriptor<?> candidate : sortMeOut) {
+                if (!validate(candidate, onBehalfOf, filter)) continue;
+                
+                if (filter.matches(candidate)) {
+                    retVal.add(candidate);
+                }
             }
-        }
-        
-        if (getParents && parent != null) {
-            TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
             
-            sorter.addAll(retVal);
-            sorter.addAll(parent.getDescriptors(filter));
-            
-            retVal.clear();
-            
-            retVal.addAll(sorter);
-        }
-        
-        return retVal;
-        
-    }
-    
-    private List<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents, long waitTime) {
-        if (filter == null) throw new IllegalArgumentException("filter is null");
-        
-        synchronized (lock) {
-            List<ActiveDescriptor<?>> retVal = internalGetDescriptors(filter, onBehalfOf, getParents);
-            
-            while ((retVal.size() <= 0) && (waitTime > 0L)) {
-                long elapsedTime = System.currentTimeMillis();
+            if (getParents && parent != null) {
+                TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
                 
-                try {
-                    lock.wait(waitTime);
-                }
-                catch (InterruptedException e) {
-                    throw new MultiException(e);
-                }
+                sorter.addAll(retVal);
+                sorter.addAll(parent.getDescriptors(filter));
                 
-                checkState();
+                retVal.clear();
                 
-                elapsedTime = System.currentTimeMillis() - elapsedTime;
-                waitTime -= elapsedTime;
-                
-                retVal = internalGetDescriptors(filter, onBehalfOf, getParents);
+                retVal.addAll(sorter);
             }
             
             return retVal;
         }
+        
     }
     
     private List<ActiveDescriptor<?>> protectedGetDescriptors(final Filter filter) {
@@ -277,30 +244,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public List<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         checkState();
         
-        return getDescriptors(filter, null, true, -1L);
+        return getDescriptors(filter, null, true);
     }
     
-    @Override
     public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         checkState();
         
         List<ActiveDescriptor<?>> sorted = getDescriptors(filter);
-        
-        return Utilities.getFirstThingInList(sorted);
-    }
-    
-    @Override
-    public ActiveDescriptor<?> waitForBestDescriptor(Filter filter) {
-        return waitForBestDescriptor(FOREVER, filter);
-    }
-    
-    @Override
-    public ActiveDescriptor<?> waitForBestDescriptor(long waitTime, Filter filter) {
-        if (filter == null) throw new IllegalArgumentException("filter is null");
-        checkState();
-        
-        List<ActiveDescriptor<?>> sorted = getDescriptors(filter, null, true, waitTime);
         
         return Utilities.getFirstThingInList(sorted);
     }
@@ -512,21 +463,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (handle == null) return null;
         return handle.getService();
     }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T waitForService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException {
-        return (T) waitForService(FOREVER, contractOrImpl, name, qualifiers);
-    }
-    
-    @Override
-    public <T> T waitForService(long waitTime, Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException {
-        checkState();
-        
-        ServiceHandle<T> handle = waitForServiceHandle(waitTime, contractOrImpl, name, qualifiers);
-        if (handle == null) return null;
-        return handle.getService();
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServices(org.glassfish.hk2.api.Filter)
@@ -562,6 +498,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         synchronized (lock) {
             if (shutdown) return;
             
+
             List<ServiceHandle<?>> handles = getAllServiceHandles(BuilderHelper.createContractFilter(Context.class.getName()));
 
             for (ServiceHandle<?> handle : handles){
@@ -581,8 +518,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
             allResolvers.clear();
             allValidators.clear();
             errorHandlers.clear();
-            
-            lock.notifyAll();
         }
 
     }
@@ -671,67 +606,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
-        List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, -1L);
+        List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true);
         results = narrow(this, candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
-        if (!results.getErrors().isEmpty()) {
-            currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-        }
-        
-        if (currentErrorHandlers != null) {
-            // Do this next call OUTSIDE of the lock
-            Utilities.handleErrors(results, currentErrorHandlers);
-        }
-        
-        ActiveDescriptor<?> topDog = Utilities.getFirstThingInList(results.getResults());
-        if (topDog == null) return null;
-        
-        return getServiceHandle((ActiveDescriptor<T>) topDog);
-    }
-    
-    @SuppressWarnings("unchecked")
-    private <T> ServiceHandle<T> internalWaitForServiceHandle(long waitTime,
-            Type contractOrImpl,
-            String name,
-            Annotation... qualifiers) throws MultiException {
-        if (contractOrImpl == null) throw new IllegalArgumentException();
-        
-        Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
-        if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
-        Utilities.checkLookupType(rawClass);
-        
-        rawClass = Utilities.translatePrimitiveType(rawClass);
-        
-        Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
-        NarrowResults results;
-        LinkedList<ErrorService> currentErrorHandlers = null;
-        
-        List<ActiveDescriptor<?>> candidates;
-        synchronized (lock) {
-            candidates = getDescriptors(filter, null, true, -1L);
-            results = narrow(this, candidates, contractOrImpl, name, false, null, qualifiers);
-            
-            while ((waitTime > 0L) &&
-                    (results.getResults().size() <= 0) &&
-                    (results.getErrors().size() <= 0)) {
-                long elapsedTime = System.currentTimeMillis();
-                
-                try {
-                    lock.wait(waitTime);
-                }
-                catch (InterruptedException ie) {
-                    throw new MultiException(ie);
-                }
-                
-                checkState();
-                
-                elapsedTime = System.currentTimeMillis() - elapsedTime;
-                waitTime -= elapsedTime;
-                
-                candidates = getDescriptors(filter, null, true, waitTime);
-                results = narrow(this, candidates, contractOrImpl, name, false, null, qualifiers);
-            }
-        }
-        
         if (!results.getErrors().isEmpty()) {
             currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
         }
@@ -817,20 +693,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         return internalGetServiceHandle(null, contractOrImpl, name, qualifiers);
     }
-    
-    @Override
-    public <T> ServiceHandle<T> waitForServiceHandle(Type contractOrImpl, String name,
-            Annotation... qualifiers) throws MultiException {
-        return waitForServiceHandle(FOREVER, contractOrImpl, name, qualifiers);
-    }
-    
-    @Override
-    public <T> ServiceHandle<T> waitForServiceHandle(long waitTime, Type contractOrImpl, String name,
-            Annotation... qualifiers) throws MultiException {
-        checkState();
-        
-        return internalWaitForServiceHandle(waitTime, contractOrImpl, name, qualifiers);
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(org.glassfish.hk2.api.Filter)
@@ -906,7 +768,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         boolean addOrRemoveOfErrorHandler = false;
         
         for (Filter unbindFilter : dci.getUnbindFilters()) {
-            List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false, -1L);
+            List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false);
             
             for (ActiveDescriptor<?> result : results) {
                 SystemDescriptor<?> candidate = (SystemDescriptor<?>) result;
@@ -1150,8 +1012,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     checkData.getInstanceLifecycleModificationsMade(),
                     checkData.getInjectionResolverModificationMade(),
                     checkData.getErrorHandlerModificationMade());
-            
-            lock.notifyAll();
         }
     }
     
