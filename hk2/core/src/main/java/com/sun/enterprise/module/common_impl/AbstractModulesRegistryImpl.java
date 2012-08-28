@@ -122,17 +122,16 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      *
      */
     public ServiceLocator newServiceLocator() throws ComponentException {
-        return newServiceLocator(null, null);
+    	return newServiceLocator(null);
     }
     
     /**
-     * Create a new Habitat optionally providing a parent Services as well as a name.
+     * Create a new Habitat optionally providing a parent Services 
      */
-    public ServiceLocator newServiceLocator(ServiceLocator parent, String serviceLocatorName) throws ComponentException {
+    public ServiceLocator newServiceLocator(ServiceLocator parent) throws ComponentException {
         // We intentionally create an unnamed service locator, because the caller is going to
         // manage its lifecycle.
-    	
-    	ServiceLocator serviceLocator =  ServiceLocatorFactory.getInstance().create(serviceLocatorName, parent);
+    	ServiceLocator serviceLocator =  ServiceLocatorFactory.getInstance().create(null, parent);
  
     	initializeServiceLocator(serviceLocator);
         return serviceLocator;
@@ -188,7 +187,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     }
 
     public ServiceLocator createServiceLocator(ServiceLocator parent, String name) throws ComponentException {
-        ServiceLocator serviceLocator = newServiceLocator(parent, name);
+        ServiceLocator serviceLocator = newServiceLocator(parent);
         populateServiceLocator(name, serviceLocator);
         return serviceLocator;
     }
