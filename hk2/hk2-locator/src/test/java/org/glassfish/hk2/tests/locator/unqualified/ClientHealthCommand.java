@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,36 +37,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+package org.glassfish.hk2.tests.locator.unqualified;
 
 /**
- * Marker annotation indicating that an instance variable or method marked with {@link javax.inject.Inject}
- * is not required to be present at run-time. If the service is not present, there will be no error and 
- * injection will not be performed.
- * 
- *  <p>
- * Example:<br>
- * <pre> 
- *      &#064;Inject
- *      &#064;Optional  
- *      MyContract myOptionalService;
- * </pre>
- *
- * @author Mason Taube
+ * @author jwells
  *
  */
-@Documented
-@Retention(RUNTIME)
-@Target({METHOD, FIELD, PARAMETER})
-public @interface Optional {
+public class ClientHealthCommand implements Command {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.tests.locator.unqualified.Command#getName()
+     */
+    @Override
+    public String getName() {
+        return UnqualifiedTest.CLIENT_HEALTH_COMMAND;
+    }
 
 }

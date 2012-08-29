@@ -45,6 +45,7 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Unqualified;
 
 /**
  * @author jwells
@@ -106,6 +107,11 @@ public class InjecteeImpl implements Injectee {
      */
     @Override
     public Class<?> getInjecteeClass() {
+        throw new AssertionError("never called");
+    }
+
+    @Override
+    public Unqualified getUnqualified() {
         throw new AssertionError("never called");
     }
 

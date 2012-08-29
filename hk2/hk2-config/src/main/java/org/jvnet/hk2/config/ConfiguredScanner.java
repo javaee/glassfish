@@ -40,7 +40,6 @@
 package org.jvnet.hk2.config;
 import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.IntrospectionScanner;
-import com.sun.hk2.component.LazyInhabitant;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.classmodel.reflect.*;

@@ -123,4 +123,14 @@ public interface Injectee {
      * false otherwise
      */
     public boolean isSelf();
+    
+    /**
+     * This method returns the {@link Unqualified} annotation if it is present
+     * on the injection point.  This can be used to determine what qualifiers
+     * should NOT be given to the injection point.
+     * 
+     * @return The {@link Unqualified} annotation on the injection point, or null
+     * if there is no {@link Unqualified} annotation on the injection point
+     */
+    public Unqualified getUnqualified();
 }
