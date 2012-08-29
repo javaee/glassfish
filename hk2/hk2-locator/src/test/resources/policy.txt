@@ -118,3 +118,9 @@ grant codeBase "file:${build.dir}/classes/-" {
   permission java.util.PropertyPermission "cglib.*", "read";
   permission java.util.PropertyPermission "org.jvnet.*", "read";
 };
+
+// This is the grant that should contain the minimal grants necessary
+// for hk2-locator to run under maven.
+grant codeBase "file:${build.dir}/test-classes/-" {
+  permission java.lang.RuntimePermission "createClassLoader";
+};
