@@ -230,6 +230,7 @@ public class InjecteeImpl implements Injectee, Serializable {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Injectee#getUnqualified()
      */
+    @Override
     public Unqualified getUnqualified() {
         return unqualified;
     }

@@ -50,7 +50,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
@@ -60,17 +60,20 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
  * @param <T> The type for this provider
  */
 public class IterableProviderImpl<T> implements IterableProvider<T> {
-    private final ServiceLocator locator;
+    private final ServiceLocatorImpl locator;
     private final Type requiredType;
     private final Set<Annotation> requiredQualifiers;
+    private final Unqualified unqualified;
     
     /* package */ IterableProviderImpl(
-            ServiceLocator locator,
+            ServiceLocatorImpl locator,
             Type requiredType,
-            Set<Annotation> requiredQualifiers) {
+            Set<Annotation> requiredQualifiers,
+            Unqualified unqualified) {
         this.locator = locator;
         this.requiredType = requiredType;
         this.requiredQualifiers = Collections.unmodifiableSet(requiredQualifiers);
+        this.unqualified = unqualified;
     }
 
     /* (non-Javadoc)
@@ -80,7 +83,12 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     @Override
     public T get() {
         // Must do this in this way to ensure that the generated item is properly associated with the root
-        return (T) locator.getService(requiredType,
+        if (unqualified == null) {
+            return (T) locator.getService(requiredType,
+                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
+        }
+        
+        return (T) locator.getUnqualifiedService(requiredType, unqualified,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
     }
     
@@ -90,7 +98,12 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     @SuppressWarnings("unchecked")
     @Override
     public ServiceHandle<T> getHandle() {
-        return (ServiceHandle<T>) locator.getServiceHandle(requiredType,
+        if (unqualified == null) {
+            return (ServiceHandle<T>) locator.getServiceHandle(requiredType,
+                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
+        }
+        
+        return (ServiceHandle<T>) locator.getUnqualifiedServiceHandle(requiredType, unqualified,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
     }
     
@@ -100,8 +113,15 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public Iterator<T> iterator() {
-        List<ServiceHandle<T>> handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
+        List<ServiceHandle<T>> handles;
+        if (unqualified == null) {
+            handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
+        }
+        else {
+            handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllUnqualifiedServiceHandles(requiredType,
+                    unqualified, requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
+        }
         
         return new MyIterator<T>(handles);
     }
@@ -111,7 +131,12 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public int getSize() {
-        return locator.getAllServiceHandles(requiredType,
+        if (unqualified == null) {
+            return locator.getAllServiceHandles(requiredType,
+                requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])).size();
+        }
+        
+        return locator.getAllUnqualifiedServiceHandles(requiredType, unqualified,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])).size();
     }
 
@@ -128,7 +153,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public <U> IterableProvider<U> ofType(Type type) {
-        return new IterableProviderImpl<U>(locator, type, requiredQualifiers);
+        return new IterableProviderImpl<U>(locator, type, requiredQualifiers, unqualified);
     }
 
     /* (non-Javadoc)
@@ -141,7 +166,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
             moreAnnotations.add(qualifier);
         }
         
-        return new IterableProviderImpl<T>(locator, requiredType, moreAnnotations);
+        return new IterableProviderImpl<T>(locator, requiredType, moreAnnotations, unqualified);
     }
     
     /* (non-Javadoc)

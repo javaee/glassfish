@@ -49,9 +49,12 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
+ * This is an implementation of Injectee that is used by the system.
+ * 
  * @author jwells
  *
  */
@@ -63,6 +66,7 @@ public class InjecteeImpl implements Injectee {
     private final AnnotatedElement parent;
     private final boolean isOptional;
     private final boolean isSelf;
+    private final Unqualified unqualified;
     
     /* package */ InjecteeImpl(
             Type requiredType,
@@ -70,13 +74,15 @@ public class InjecteeImpl implements Injectee {
             int position,
             AnnotatedElement parent,
             boolean isOptional,
-            boolean isSelf) {
+            boolean isSelf,
+            Unqualified unqualified) {
         this.requiredType = requiredType;
         this.position = position;
         this.parent = parent;
         this.qualifiers = Collections.unmodifiableSet(qualifiers);
         this.isOptional = isOptional;
         this.isSelf = isSelf;
+        this.unqualified = unqualified;
         
         if (parent instanceof Field) {
             pClass = ((Field) parent).getDeclaringClass();
@@ -143,7 +149,12 @@ public class InjecteeImpl implements Injectee {
     @Override
     public boolean isSelf() {
         return isSelf;
-    } 
+    }
+    
+    @Override
+    public Unqualified getUnqualified() {
+        return unqualified;
+    }
     
     public String toString() {
         return "Injectee(requiredType=" + Pretty.type(requiredType) +
@@ -152,6 +163,9 @@ public class InjecteeImpl implements Injectee {
                 ",position=" + position +
                 ",optional=" + isOptional +
                 ",self=" + isSelf +
+                ",unqualified=" + unqualified +
                 "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

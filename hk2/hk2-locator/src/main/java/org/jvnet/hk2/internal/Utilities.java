@@ -86,6 +86,7 @@ import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.reflection.Logger;
@@ -1507,6 +1508,7 @@ public class Utilities {
     public static List<Injectee> getConstructorInjectees(Constructor<?> c) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
+        Unqualified unqualified = c.getAnnotation(Unqualified.class);
 
         List<Injectee> retVal = new LinkedList<Injectee>();
 
@@ -1516,7 +1518,8 @@ public class Utilities {
                     lcv,
                     c,
                     isOptional(paramAnnotations[lcv]),
-                    isSelf(paramAnnotations[lcv])));
+                    isSelf(paramAnnotations[lcv]),
+                    unqualified));
         }
 
         return retVal;
@@ -1530,6 +1533,7 @@ public class Utilities {
     public static List<Injectee> getMethodInjectees(Method c) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
+        Unqualified unqualified = c.getAnnotation(Unqualified.class);
 
         List<Injectee> retVal = new LinkedList<Injectee>();
 
@@ -1539,7 +1543,8 @@ public class Utilities {
                     lcv,
                     c,
                     isOptional(paramAnnotations[lcv]),
-                    isSelf(paramAnnotations[lcv])));
+                    isSelf(paramAnnotations[lcv]),
+                    unqualified));
         }
 
         return retVal;
@@ -1552,13 +1557,15 @@ public class Utilities {
      */
     public static List<Injectee> getFieldInjectees(Field f) {
         List<Injectee> retVal = new LinkedList<Injectee>();
+        Unqualified unqualified = f.getAnnotation(Unqualified.class);
 
         retVal.add(new InjecteeImpl(f.getGenericType(),
                 ReflectionHelper.getQualifierAnnotations(f),
                 -1,
                 f,
                 isOptional(f.getAnnotations()),
-                isSelf(f.getAnnotations())));
+                isSelf(f.getAnnotations()),
+                unqualified));
 
         return retVal;
     }
