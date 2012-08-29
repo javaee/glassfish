@@ -94,12 +94,11 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     return (null != real && real.isActive());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public Class<? extends T> type() {
-    if (null == real) throw new IllegalStateException();
-    real.isActive();
-    Class<? extends T> t = real.type();
-    return t;
+      ActiveDescriptor<?> ad = serviceLocator.reifyDescriptor(this);
+      return (Class<? extends T>) ad.getImplementationClass();
   }
 
   @SuppressWarnings("unchecked")

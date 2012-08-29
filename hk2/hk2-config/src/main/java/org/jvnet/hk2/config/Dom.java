@@ -39,7 +39,7 @@
  */
 package org.jvnet.hk2.config;
 
-import com.sun.hk2.component.LazyInhabitant;
+import com.sun.hk2.component.EventPublishingInhabitant;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.utilities.AliasDescriptor;
@@ -76,7 +76,7 @@ import java.util.regex.Pattern;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationHandler, ObservableBean {
+public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, InvocationHandler, ObservableBean {
     /**
      * Model drives the interpretation of this DOM.
      */
@@ -194,14 +194,18 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
 
     /* package */ @SuppressWarnings({ "unchecked" })
     void register() {
-        DynamicConfigurationService dcs = getHabitat().getService(DynamicConfigurationService.class);
+        ServiceLocator locator = getServiceLocator();
+        
+        ActiveDescriptor<?> myselfReified = locator.reifyDescriptor(this);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
 
         //        habitat.add(this);
         HK2Loader loader = new HolderHK2LoaderImpl(this.model.classLoaderHolder);
         
         Set<Type> ctrs = new HashSet<Type>();
-        ctrs.add(type(loader));
+        ctrs.add(myselfReified.getImplementationClass());
         ctrs.add(ConfigBean.class);
         DomDescriptor domDesc = new DomDescriptor(this, ctrs, PerLookup.class,
                 getImplementation(), new HashSet<Annotation>());
@@ -210,10 +214,10 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
 
         String key = getKey();
         for (String contract : model.contracts) {
-            Utilities.addIndex(getServiceLocator(), domDesc, contract, key);
+            Utilities.addIndex(locator, domDesc, contract, key);
         }
         if (key!=null) {
-            Utilities.addIndex(getServiceLocator(), domDesc, model.targetTypeName, key);
+            Utilities.addIndex(locator, domDesc, model.targetTypeName, key);
         }
 
         dc.commit();
@@ -347,7 +351,9 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
      *      Otherwise this can be null.
      */
     public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
-        super(habitat, model.injector.getLoader(), model.targetTypeName, model.injector.getMetadata());
+        super(habitat, org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(
+                model.targetTypeName, model.injector.getLoader(), model.injector.getMetadata()));
+        
         if (in!=null) {
             this.location =  new LocationImpl(in.getLocation());
         } else {
@@ -1199,20 +1205,12 @@ public class Dom extends LazyInhabitant implements ActiveDescriptor, InvocationH
      * where @{@link Configured} is on {@link ConfigBeanProxy} subtype,
      * in which case the proxy to {@link Dom} will be placed into the habitat.
      */
-    @Override
     @SuppressWarnings("unchecked")
     protected Creator createCreator(Class c) {
-        return (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyCreator(c, getMetadata(), this):new ConfiguredCreator(super.createCreator(c),this));
-        // turning off @Configured and @CagedBy until we get a clear picture on how this should work together.
-/*        Womb womb = (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyWomb(c,metadata(),this):new ConfiguredWomb(super.createWomb(c),this));
-        if (cagedBy==null) {
-            return womb;
-        } else {
-            Class<? extends CageBuilder> value = cagedBy.value();
-            CageBuilder builder = habitat.getByType(value);
-            return new CagedConfiguredWomb(womb, this, builder);
-        }
-        */
+        Map<String, List<String>> metadata = getMetadata();
+        Creator creator = Creators.create(c, getServiceLocator(), metadata);
+        
+        return (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyCreator(c, getMetadata(), this):new ConfiguredCreator(creator,this));
     }
 
     public static <T extends Annotation> T digAnnotation(Class<?> target, Class<T> annotationType) {
