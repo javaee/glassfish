@@ -39,8 +39,14 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.io.IOException;
+import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -87,11 +93,35 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     private Object secureCreate(final Class<?> superclass,
             final Class<?>[] interfaces,
             final Callback callback) {
+    	
+    	/* construct the classloader where the generated proxy will be created --
+    	 * this classloader must have visibility into the cglib classloader as well as
+    	 * the superclass' classloader
+    	 */
+		final ClassLoader delegatingLoader = (ClassLoader) AccessController
+				.doPrivileged(new PrivilegedAction<Object>() {
+
+					@Override
+					public Object run() {
+						// create a delegating classloader that attempts to
+						// load from the superclass' classloader first,
+						// then hk2-locator's classloader second.
+						return new DelegatingClassLoader<T>(
+								Enhancer.class.getClassLoader(), superclass.getClassLoader());
+					}
+				});
+
         return AccessController.doPrivileged(new PrivilegedAction<Object>() {
 
             @Override
             public Object run() {
-                return Enhancer.create(superclass, interfaces, callback);
+            	EnhancerWithClassLoader<T> e = new EnhancerWithClassLoader<T>(delegatingLoader);
+            	
+                e.setSuperclass(superclass);
+                e.setInterfaces(interfaces);
+                e.setCallback(callback);
+                
+                return e.create();
             }
             
         });
@@ -114,8 +144,8 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             }
         
             if (Utilities.isProxiableScope(root.getScopeAnnotation())) {
-                Class<?> proxyClass = Utilities.getFactoryAwareImplementationClass(root);
-                
+                final Class<?> proxyClass = Utilities.getFactoryAwareImplementationClass(root);
+              
                 T proxy;
                 try {
                     proxy = (T) secureCreate(proxyClass,
@@ -247,5 +277,6 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     public String toString() {
         return "ServiceHandle(" + root + "," + System.identityHashCode(this) + ")"; 
     }
+	
 
 }
