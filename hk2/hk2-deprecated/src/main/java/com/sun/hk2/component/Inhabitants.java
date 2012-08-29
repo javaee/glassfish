@@ -68,14 +68,17 @@ public class Inhabitants {
         classLoader, typeName, metadata, null, indicies);
   }
   
-  @SuppressWarnings({ "unchecked", "rawtypes" })
+  @SuppressWarnings("rawtypes")
   public static Inhabitant<?> createInhabitant(ServiceLocator serviceLocator,
       Holder<ClassLoader> classLoader,
       String typeName,
       Map<String, List<String>> metadata,
       InhabitantStore store,
       Set<String> indicies) {
-    AbstractInhabitantImpl<?> i = new LazyInhabitant(serviceLocator, new HolderHK2LoaderImpl(classLoader), typeName, metadata);
+    AbstractInhabitantImpl<?> i = new EventPublishingInhabitant(serviceLocator,
+            org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(
+                    typeName, new HolderHK2LoaderImpl(classLoader), metadata));
+    
     return i;
   }
   
