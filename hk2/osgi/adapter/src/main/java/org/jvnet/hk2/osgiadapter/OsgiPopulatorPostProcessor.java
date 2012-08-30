@@ -82,8 +82,8 @@ public class OsgiPopulatorPostProcessor implements
 						} catch (Throwable e) {
 							logger.logp(Level.SEVERE, "OSGiModuleImpl",
 									"loadClass",
-									"Exception in module " + osgiModule.getBundle().toString()
-											+ " : " + e.toString());
+									"Exception in module " + osgiModule.getBundle().toString(), e);
+
 							throw new MultiException(e);
 						}
 					}
