@@ -121,7 +121,7 @@ public class Transaction {
         // any ConfigBean in our transactor should result in sending transaction events, but only once.
         for (Transactor t : participants) {
             if (t instanceof WriteableView) {
-                ((WriteableView) t).getMasterView().getHabitat().getComponent(Transactions.class).addTransaction(transactionChanges);
+                ((WriteableView) t).getMasterView().getHabitat().<Transactions>getService(Transactions.class).addTransaction(transactionChanges);
                 break;
             }
         }

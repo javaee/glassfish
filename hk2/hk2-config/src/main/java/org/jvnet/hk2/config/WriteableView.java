@@ -467,7 +467,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             throw new TransactionFailure("Not part of a transaction", null);
         }
         ConfigBean newBean = bean.allocate(type);
-        WriteableView writeableView = bean.getHabitat().getComponent(ConfigSupport.class).getWriteableView(newBean.getProxy(type), newBean);
+        WriteableView writeableView = bean.getHabitat().<ConfigSupport>getService(ConfigSupport.class).getWriteableView(newBean.getProxy(type), newBean);
         writeableView.join(currentTx);
 
         return writeableView.getProxy(type);

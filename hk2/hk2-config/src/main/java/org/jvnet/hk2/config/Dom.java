@@ -71,7 +71,7 @@ import java.util.regex.Pattern;
  *
  * <p>
  * This is the {@link Inhabitant} that gets registered into {@link Habitat},
- * so one can access this object by {@link Habitat#getInhabitant(Class, String)} family
+ * so one can access this object by {@link ServiceLocator#getServiceHandle(Class, String)} family
  * of methods.
  *
  * @author Kohsuke Kawaguchi
