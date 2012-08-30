@@ -68,6 +68,17 @@ public interface ModulesRegistry extends ModuleChangeListener {
     ServiceLocator newServiceLocator() throws ComponentException;
 
     /**
+     * Creates the default {@link ServiceLocator} from all the modules in this registry
+     * Calling this method has the same effect of calling {@link #createServiceLocator("default")}
+     *
+     * @param name
+     *      Determines which inhabitants descriptors are loaded.
+     *      (so that different parallel habitats can be
+     *      created over the same modules registry.)
+     */
+    ServiceLocator createServiceLocator() throws ComponentException;
+
+    /**
      * Creates a {@link ServiceLocator} from all the modules in this registry
      * Cal;ling this method has the same effect of calling {@link #newServiceLocator()} followed by
      * {@link #populateServiceLocator(String, ServiceLocator)}.
