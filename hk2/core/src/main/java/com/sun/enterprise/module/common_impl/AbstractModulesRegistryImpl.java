@@ -196,6 +196,9 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     	return createServiceLocator(null, name);
     }
 
+	public ServiceLocator createServiceLocator() throws ComponentException {
+    	return createServiceLocator("default");
+    }
 
     protected abstract void parseInhabitants(Module module,
                                              String name, ServiceLocator serviceLocator)
