@@ -44,7 +44,6 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.ConfiguredBy;
 
 import com.sun.hk2.component.EventPublishingInhabitant;
-import com.sun.hk2.component.InhabitantStore;
 import com.sun.hk2.component.InhabitantsParser;
 import com.sun.hk2.component.InjectionResolverQuery;
 
@@ -91,42 +90,16 @@ import com.sun.hk2.component.InjectionResolverQuery;
     return configuredBeanClass;
   }
 
-  synchronized void managePrepare(Object configBean, InhabitantStore store, InjectionResolverQuery txnContextResolver) {
+  synchronized void managePrepare(Object configBean, InjectionResolverQuery txnContextResolver) {
     if (null == configured) {
       configured = new HashMap<Object, Inhabitant<?>>();
     }
 
     // actualize the inhabitant instance from this meta inhabitant
     ConfigByCreator creator = new ConfigByCreator(txnContextResolver, configBean, real.type(), h, real.getMetadata());
-    ConfigByInhabitant managedInhabitantInstance = new ConfigByInhabitant(store, this, creator, null);
+    ConfigByInhabitant managedInhabitantInstance = new ConfigByInhabitant(this, creator, null);
 
     Inhabitant<?> old = configured.put(configBean, managedInhabitantInstance);
     assert(null == old);
-
-    // dynamically add it to whatever the backing store is
-    store.add(managedInhabitantInstance);
-    if (!indicies.isEmpty()) {
-      StringBuilder name = new StringBuilder();
-      for (String index : indicies) {
-        String contract = InhabitantsParser.parseIndex(index, name);
-        store.addIndex(managedInhabitantInstance, contract, (0 == name.length()) ? null : name.toString());
-        name.setLength(0);
-      }
-    }
   }
-
-  synchronized void manageRelease(ConfigByInhabitant configByInhabitant, InhabitantStore store) {
-//    // dynamically remove it from the habitat
-//    boolean removed = store.remove(configByInhabitant);
-//    
-//    if (!indicies.isEmpty()) {
-//      StringBuilder name = new StringBuilder();
-//      for (String index : indicies) {
-//        String contract = InhabitantsParser.parseIndex(index, null);
-//        removed = store.removeIndex(contract, configByInhabitant);
-//        name.setLength(0);
-//      }
-//    }
-  }
-  
 }
