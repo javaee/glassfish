@@ -253,7 +253,7 @@ public class DomDocument<T extends Dom> {
             if (validator != null)
                 return (validator);
         }
-        Collection<DataType> dtfh = habitat.getAllByContract(DataType.class);
+        Collection<DataType> dtfh = habitat.getAllServices(DataType.class);
         synchronized(validators) {
             for (DataType dt : dtfh) {
                 validators.put(dt.getClass().getName(), dt);
