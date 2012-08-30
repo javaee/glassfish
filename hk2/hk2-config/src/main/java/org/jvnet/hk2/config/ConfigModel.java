@@ -662,7 +662,7 @@ public final class ConfigModel {
         }
         protected Object convertLeafValue(Dom parent, Class<?> returnType, String v) {
             // let's look first the fast way.
-            Object candidate = parent.getHabitat().getComponent(returnType, v);
+            Object candidate = parent.getHabitat().getService(returnType, v);
             if (candidate!=null) {
                 return returnType.cast(candidate);
             }
@@ -769,7 +769,7 @@ public final class ConfigModel {
             Class<?> type = Types.erasure(returnType);
             
             // let's look first the fast way.
-            Object candidate = dom.getHabitat().getComponent(type, id);
+            Object candidate = dom.getHabitat().getService(type, id);
             if (candidate!=null) {
                 return type.cast(candidate);
             }
@@ -825,7 +825,7 @@ public final class ConfigModel {
             Class<?> type = Types.erasure(returnType);
 
             // let's look first the fast way.
-            Object candidate = dom.getHabitat().getComponent(type, id);
+            Object candidate = dom.getHabitat().getService(type, id);
             if (candidate!=null) {
                 return type.cast(candidate);
             }

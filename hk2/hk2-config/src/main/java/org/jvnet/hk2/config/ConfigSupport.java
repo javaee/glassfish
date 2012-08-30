@@ -131,7 +131,7 @@ public class ConfigSupport {
             throws TransactionFailure {
 
         ConfigBean source = (ConfigBean) ConfigBean.unwrap(objects[0]);
-        return source.getHabitat().getComponent(ConfigSupport.class)._apply(code, objects);
+        return source.getHabitat().<ConfigSupport>getService(ConfigSupport.class)._apply(code, objects);
     }
 
     /**
@@ -513,7 +513,7 @@ public class ConfigSupport {
                 final TransactionCallBack<WriteableView> runnable)
         throws TransactionFailure {
 
-        return parent.getHabitat().getComponent(ConfigSupport.class).
+        return parent.getHabitat().<ConfigSupport>getService(ConfigSupport.class).
                 _createAndSet(parent, childType, attributes, runnable);
     }
 
