@@ -60,7 +60,6 @@ import org.jvnet.hk2.config.provider.ConfigTransaction;
 import org.jvnet.hk2.config.provider.ConfigTransactionException;
 import org.jvnet.hk2.config.provider.ConfigTransactionRejectedException;
 
-import com.sun.hk2.component.InhabitantStore;
 import com.sun.hk2.component.InjectionResolverQuery;
 
 /**
@@ -118,7 +117,7 @@ public class ConfigTransactionImpl implements ConfigTransaction, InjectionResolv
       // iterate over each meta inhabitant, actualizing the corresponding managed inhabitant instance
       // and send out prepare notifications to applicable interested instances
       for (ConfigByMetaInhabitant cbi : value.configuredByMeta) {
-        cbi.managePrepare(configBean, (InhabitantStore)value, this);
+        cbi.managePrepare(configBean, this);
         // TODO: send out a prepare event
       }
     } else if (Change.UPDATE == value.change) {
@@ -180,8 +179,6 @@ public class ConfigTransactionImpl implements ConfigTransaction, InjectionResolv
       
       Set<Class<?>> beanContracts = new HashSet<Class<?>>();
       ReflectionHelper.annotatedWith(beanContracts, configBean, Contract.class);
-      
-      coordinator.manage(configBean, beanContracts, value.suggestedName, value.configuredBy);
     } else if (Change.UPDATE == value.change) {
       
       // TODO:
@@ -375,7 +372,7 @@ public class ConfigTransactionImpl implements ConfigTransaction, InjectionResolv
     DELETE
   }
   
-  private static class ConfigEntry implements InhabitantStore {
+  private static class ConfigEntry {
     private final Change change;
     private String suggestedName;
     private Collection<ConfigByMetaInhabitant> configuredByMeta;
@@ -390,40 +387,6 @@ public class ConfigTransactionImpl implements ConfigTransaction, InjectionResolv
     
     public void setConfiguredByMeta(Collection<ConfigByMetaInhabitant> configuredByInhabitants) {
       configuredByMeta = configuredByInhabitants;
-    }
-
-    private void initConfiguredByCollection() {
-      if (null == configuredBy) {
-        configuredBy = new MultiMap<String, ConfigByInhabitant>();
-      }
-    }
-
-    @Override
-    public void add(Inhabitant<?> managed) {
-      // TODO: we should ignore these because we don't want any unnamed inhabitants in the habitat
-      initConfiguredByCollection();
-      configuredBy.add(null, (ConfigByInhabitant) managed);
-    }
-
-    @Override
-    public void addIndex(Inhabitant<?> managed, String typeName, String name) {
-      initConfiguredByCollection();
-      configuredBy.add(typeName + (null == name ? "" : (":" + name)), (ConfigByInhabitant) managed);
-    }
-
-    @Override
-    public boolean remove(Inhabitant<?> managed) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeIndex(String index, String name) {
-      throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean removeIndex(String index, Object serviceOrInhabitant) {
-      throw new UnsupportedOperationException();
     }
   }
 

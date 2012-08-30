@@ -5,7 +5,6 @@ import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
 import com.sun.hk2.component.EventPublishingInhabitant;
-import com.sun.hk2.component.InhabitantStore;
 
 import java.util.List;
 import java.util.Map;
@@ -19,19 +18,17 @@ import java.util.Map;
 /*public*/ class ConfigByInhabitant extends EventPublishingInhabitant<Object> {
 
   private final ConfigByMetaInhabitant lead;
-  private final InhabitantStore store;
   
   private final ConfigByCreator managedServiceCreator;
 
   private volatile Object managedService;
   
   
-  ConfigByInhabitant(InhabitantStore store,
+  ConfigByInhabitant(
         ConfigByMetaInhabitant lead,
         ConfigByCreator managedServiceCreator,
         MultiMap<String, String> md) {
     super(lead.getServiceLocator(), (Descriptor) null); // TODO: handle descriptor
-    this.store = store;
     this.lead = lead;
     this.managedServiceCreator = managedServiceCreator;
   }
@@ -57,7 +54,6 @@ import java.util.Map;
   @Override
   public synchronized void release() {
     if (null != managedService) {
-      lead().manageRelease(this, store);
 
       dispose(managedService);
       managedService = null;

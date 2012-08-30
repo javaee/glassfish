@@ -160,7 +160,7 @@ public class ConfigTransactionCoordinator
   /**
    * Called when we are committing the txn to manage new beans and the services inhabitants for those beans
    */
-  void manage(Object bean, Set<Class<?>> beanContracts, String name, MultiMap<String, ConfigByInhabitant> managed) {
+  void manageBob(Object bean, Set<Class<?>> beanContracts, String name, MultiMap<String, ConfigByInhabitant> managed) {
     if (logger.isLoggable(Level.FINE)) {
       logger.log(Level.FINE, "managing: {0}, {1}, {2}, {3}", new Object[] {bean, name, beanContracts, managed});
     }
