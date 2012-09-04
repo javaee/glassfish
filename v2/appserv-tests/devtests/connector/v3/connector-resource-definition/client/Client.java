@@ -25,14 +25,14 @@ public class Client {
     }
 
     public static void main(String[] args) throws Exception {
-        stat.addDescription("connectore-resource-definitionclient");
+        stat.addDescription("connector-resource-definitionclient");
         Client client = new Client(args);
         client.doTestDD();
-        stat.printSummary("connectore-resource-definitionclient");
+        stat.printSummary("connector-resource-definitionclient");
     }
 
     private void doTestDD() throws Exception{
-        String tcName = "connectore-resource-definition-web-ejb-test";
+        String tcName = "connector-resource-definition-web-ejb-test";
         InputStream ddIS=null;
         try{
             String url = "http://" + host + ":" + port + "/connector-resource-definition/servlet";

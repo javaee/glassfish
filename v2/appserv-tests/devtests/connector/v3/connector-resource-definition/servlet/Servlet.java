@@ -105,7 +105,7 @@ public class Servlet extends HttpServlet {
             lookupConnectorResource("java:comp/env/HelloStatefulEJB_Annotation_ConnectorResource", false);
 
             lookupConnectorResource("java:global/env/HelloEJB_Annotation_ConnectorResource", true);
-            lookupConnectorResource("java:app/env/HelloEJB_Annotation_ConnectorResource", false);
+            lookupConnectorResource("java:app/env/HelloEJB_Annotation_ConnectorResource", true);
             lookupConnectorResource("java:module/env/HelloEJB_Annotation_ConnectorResource", false);
             lookupConnectorResource("java:comp/env/HelloEJB_Annotation_ConnectorResource", false);
 
