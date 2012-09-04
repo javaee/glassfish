@@ -78,4 +78,8 @@ public class ServiceProviderEngine {
     public int getTenantMax() {
         return environment.getMaxSize();
     }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
 }
