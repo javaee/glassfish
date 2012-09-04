@@ -83,7 +83,7 @@ public class MethodInterceptorImpl implements MethodInterceptor {
         
         if (method.getName().equals(PROXY_MORE_METHOD_NAME)) {
             // We did what we came here to do
-            return null;
+            return service;
         }
         
         Utilities.setAccessible(method);
