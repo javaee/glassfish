@@ -21,6 +21,7 @@
     </target>
  
     <target name="compile" depends="clean">
+        <antcall target="compile-util"/>
         <antcall target="compile-common">
             <param name="src" value="ejb"/>
         </antcall>
@@ -60,7 +61,7 @@
               failonerror="true"
               classpath="${assemble.dir}/${appname}-ejb.jar:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
-           <arg line="${jndiroot}"/>
+           <arg line="${module}"/>
         </java>
     </target>
 

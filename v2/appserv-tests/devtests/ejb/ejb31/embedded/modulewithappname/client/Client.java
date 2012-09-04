@@ -37,6 +37,7 @@
 package com.acme;
 
 import org.glassfish.tests.ejb.sample.SimpleEjb;
+import embedded.util.ZipUtil;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -72,10 +73,11 @@ public class Client {
         p.put(EJBContainer.MODULES, "sample");
         p.put(EJBContainer.APP_NAME, "foo");
 
-        EJBContainer c = EJBContainer.createEJBContainer(p);
-        // ok now let's look up the EJB...
-        Context ic = c.getContext();
+        EJBContainer c = null;
         try {
+            c = EJBContainer.createEJBContainer(p);
+            // ok now let's look up the EJB...
+            Context ic = c.getContext();
             System.out.println("Looking up EJB...");
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/foo/sample/SimpleEjb");
             System.out.println("Invoking EJB...");
@@ -87,10 +89,13 @@ public class Client {
             stat.addStatus("EJB embedded with JPA", stat.FAIL);
             System.out.println("ERROR calling EJB:");
             e.printStackTrace();
+            System.out.println("Saving the temp dir...:");
+            ZipUtil.zipInstanceDirectory(appName);
         }
         System.out.println("Done calling EJB");
 
-        c.close();
+        if (c != null)
+            c.close();
 
         System.out.println("..........FINISHED Embedded test");
     }
