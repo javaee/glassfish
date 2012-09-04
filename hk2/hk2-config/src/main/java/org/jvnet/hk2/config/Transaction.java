@@ -151,9 +151,9 @@ public class Transaction {
      */
     public <T extends ConfigBeanProxy> T enroll(final T source)
         throws TransactionFailure {
-
-        ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
-        WriteableView writeableView = ConfigSupport.getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
+        T configBeanProxy = ConfigSupport.revealProxy(source);
+        ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(configBeanProxy);
+        WriteableView writeableView = ConfigSupport.getWriteableView(configBeanProxy, (ConfigBean) sourceBean.getMasterView());
         if (!writeableView.join(this)) {
             throw new TransactionFailure("Cannot join transaction : " + sourceBean.getProxyType());
         }

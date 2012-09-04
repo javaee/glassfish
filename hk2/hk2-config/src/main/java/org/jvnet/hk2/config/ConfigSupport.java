@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.config;
 
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ProxyCtl;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import org.jvnet.hk2.component.Habitat;
@@ -229,9 +231,9 @@ public class ConfigSupport {
      */
     public <T extends ConfigBeanProxy> T getWriteableView(final T source)
         throws TransactionFailure {
-
-        ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
-        WriteableView writeableView = getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
+        T configBeanProxy = revealProxy(source);
+        ConfigView sourceBean = (ConfigView) Proxy.getInvocationHandler(configBeanProxy);
+        WriteableView writeableView = getWriteableView(configBeanProxy, (ConfigBean) sourceBean.getMasterView());
         return (T) writeableView.getProxy(sourceBean.getProxyType());
     }
 
@@ -890,5 +892,20 @@ public class ConfigSupport {
         }
 
         return null;
+    }
+
+    /**
+     * Unwrap HK2 proxy to ConfigBeanProxy.
+     * @param ConfigBeanProxy probably proxied by HK2.
+     * @return actual ConfigBeanProxy.
+     * @throws MultiException If there was an error resolving the proxy.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends ConfigBeanProxy> T revealProxy(T proxy) {
+        if (proxy instanceof ProxyCtl) {
+            ProxyCtl proxyCtl = (ProxyCtl) proxy;
+            proxy = (T) proxyCtl.__make();
+        }
+        return proxy;
     }
  }

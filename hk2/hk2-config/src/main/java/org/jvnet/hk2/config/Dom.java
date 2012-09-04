@@ -404,7 +404,8 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
      *      null if the given instance is not actually a proxy to a DOM.
      */
     public static Dom unwrap(ConfigBeanProxy proxy) {
-        InvocationHandler ih = Proxy.getInvocationHandler(proxy);
+        ConfigBeanProxy configBeanProxy = ConfigSupport.revealProxy(proxy);
+        InvocationHandler ih = Proxy.getInvocationHandler(configBeanProxy);
         if (ih instanceof Dom)
             return (Dom) ih;
         if (ih instanceof ConfigView) {

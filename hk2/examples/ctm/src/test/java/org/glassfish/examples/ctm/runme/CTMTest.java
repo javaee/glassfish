@@ -39,10 +39,12 @@
  */
 package org.glassfish.examples.ctm.runme;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 
 import junit.framework.Assert;
 
+import org.glassfish.examples.ctm.Environment;
 import org.glassfish.examples.ctm.ServiceProviderEngine;
 import org.glassfish.examples.ctm.TenantLocatorGenerator;
 import org.glassfish.examples.ctm.TenantManager;
@@ -57,6 +59,10 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.Transaction;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * This runs a simple test to be sure that the ServiceProviderEngine
@@ -85,7 +91,7 @@ public class CTMTest {
     }
     
     @Test
-    public void testProviderEngineUsesCorrectTenant() {
+    public void testProviderEngineUsesCorrectTenant() throws TransactionFailure {
         TenantManager tenantManager = locator.getService(TenantManager.class);
         ServiceProviderEngine engine = locator.getService(ServiceProviderEngine.class);
         
@@ -102,5 +108,20 @@ public class CTMTest {
         Assert.assertEquals(TenantLocatorGenerator.BOB_MAX, engine.getTenantMax());
         Assert.assertEquals(TenantLocatorGenerator.BOB_MIN, engine.getTenantMin());
 
+        // just make sure we can modify it also (HK2-78)
+        // caution, it implicitly uses SimpleConfigBeanDomDecorator
+        // from config-api.test-jar
+        Environment env = engine.getEnvironment();
+        ConfigSupport.apply(new SingleConfigCode<Environment>() {
+
+            @Override
+            public Object run(Environment param) throws PropertyVetoException,
+                    TransactionFailure {
+                return null;
+            }
+            
+        }, env);
+
+        new Transaction().enroll(env);
     }
 }
