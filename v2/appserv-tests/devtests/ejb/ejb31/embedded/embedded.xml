@@ -45,3 +45,10 @@
        <fileset dir="." includes="*.output"/>
     </delete>
 </target>
+
+<target name="compile-util">
+    <antcall target="compile-common">
+        <param name="src" value="../util/src"/>
+    </antcall>
+</target>
+
