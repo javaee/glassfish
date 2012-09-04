@@ -56,6 +56,6 @@ public interface ProxyCtl {
      * @throws MultiException If there was an error creating the proxy a MultiException will
      * be thrown containing the underlying cause or causes
      */
-    public void __make() throws MultiException;
+    public Object __make() throws MultiException;
 
 }

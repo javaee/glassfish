@@ -105,7 +105,10 @@ public class ProxiableTest {
         
         Assert.assertFalse(PostConstructedProxiedService.wasPostConstructCalled());
         
-        pc.__make();
+        Object o = pc.__make();
+        
+        Assert.assertNotNull(o);
+        Assert.assertTrue(o instanceof PostConstructedProxiedService);
         
         Assert.assertTrue(PostConstructedProxiedService.wasPostConstructCalled());
         
