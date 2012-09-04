@@ -21,6 +21,7 @@
     </target>
  
     <target name="compile" depends="clean">
+        <antcall target="compile-util"/>
         <antcall target="compile-common">
             <param name="src" value="ejb"/>
         </antcall>
@@ -80,6 +81,7 @@
         <antcall target="run_test">
             <param name="test-path" value="${assemble.dir}/${appname}-web.war"/>
             <param name="test" value="ejb"/>
+            <param name="packaging" value="war"/>
         </antcall>
     </target>
  
@@ -87,6 +89,7 @@
         <antcall target="run_test">
             <param name="test-path" value="${assemble.dir}/${appname}-web.war"/>
             <param name="test" value="rest"/>
+            <param name="packaging" value="war"/>
         </antcall>
     </target>
  
@@ -94,6 +97,7 @@
         <antcall target="run_test">
             <param name="test-path" value="${assemble.dir}/tmp"/>
             <param name="test" value="ejb"/>
+            <param name="packaging" value="dir"/>
         </antcall>
     </target>
  
@@ -101,6 +105,7 @@
         <antcall target="run_test">
             <param name="test-path" value="${assemble.dir}/tmp"/>
             <param name="test" value="rest"/>
+            <param name="packaging" value="dir"/>
         </antcall>
     </target>
  
@@ -111,6 +116,7 @@
               classname="${se.client}">
            <arg line="${appname}"/>
            <arg line="${test}"/>
+           <arg line="${packaging}"/>
         </java>
     </target>
 

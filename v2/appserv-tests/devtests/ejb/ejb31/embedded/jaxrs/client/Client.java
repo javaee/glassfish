@@ -37,6 +37,7 @@
 package com.acme;
 
 import org.glassfish.tests.ejb.sample.Simple;
+import embedded.util.ZipUtil;
 
 import javax.ejb.*;
 import javax.ejb.embeddable.EJBContainer;
@@ -54,10 +55,12 @@ public class Client {
         new SimpleReporterAdapter("appserv-tests");
 
     private static String appName;
+    private static String type = "xxx";
     private static final String LOCALHOST = "http://localhost:8080/";
 
     public static void main(String[] s) {
         appName = s[0];
+        type = s[2];
         stat.addDescription(appName);
         Client t = new Client();
         if (s[1].equals("ejb")) {
@@ -79,7 +82,7 @@ public class Client {
             System.out.println("WRONG TEST TYPE: " + s[1]);
         }
 
-        stat.printSummary(appName + "ID");
+        stat.printSummary(appName + "-" + type);
     }
 
     private void testEJB(String[] args) {
@@ -99,6 +102,9 @@ public class Client {
             pass = false;
             System.out.println("ERROR calling EJB:");
             e.printStackTrace();
+            System.out.println("Saving temp instance dir...");
+            ZipUtil.zipInstanceDirectory(appName + "-" + type);
+
         } finally {
             if (c != null) {
                 try {
