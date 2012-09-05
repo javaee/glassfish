@@ -53,6 +53,7 @@ public interface ProxyCtl {
      * cycle at a specific time, but do not wish to invoke any specific method on
      * the object.
      * 
+     * @return The underlying instance of the service (not wrapped by the proxy)
      * @throws MultiException If there was an error creating the proxy a MultiException will
      * be thrown containing the underlying cause or causes
      */
