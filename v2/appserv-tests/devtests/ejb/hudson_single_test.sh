@@ -1,4 +1,4 @@
-if [ -n $1 ]; then
+if [ -z $1 ]; then
         echo "Must specify the test path"
         exit 1
 fi
