@@ -255,6 +255,15 @@ public class ServiceLocatorUtilitiesTest {
         
     }
     
+    @Test
+    public void testGetServiceWithString() {
+        ServiceLocator sl = ServiceLocatorUtilities.getService(locator, ServiceLocator.class.getName());
+        Assert.assertNotNull(sl);
+        Assert.assertSame(sl, locator);
+        
+        Assert.assertNull(ServiceLocatorUtilities.getService(locator, "not.really.There"));
+    }
+    
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
         /**
          * 

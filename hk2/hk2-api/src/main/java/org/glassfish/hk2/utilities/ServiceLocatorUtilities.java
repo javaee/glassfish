@@ -336,4 +336,22 @@ public abstract class ServiceLocatorUtilities {
         
         config.commit();
     }
+    
+    /**
+     * Returns the best service matching the passed in fully qualified
+     * class name of the service
+     * 
+     * @param locator The locator to find the service in
+     * @param className The fully qualified class name of the service
+     * @return The found service, or null if there is no service with this class name
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getService(ServiceLocator locator, String className) {
+        if (locator == null || className == null) throw new IllegalArgumentException();
+        
+        ActiveDescriptor<T> ad = (ActiveDescriptor<T>) locator.getBestDescriptor(BuilderHelper.createContractFilter(className));
+        if (ad == null) return null;
+        
+        return locator.getServiceHandle(ad).getService();
+    }
 }
