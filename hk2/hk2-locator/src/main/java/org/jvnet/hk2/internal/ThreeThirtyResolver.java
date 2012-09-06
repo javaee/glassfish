@@ -52,6 +52,7 @@ import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.UnsatisfiedDependencyException;
 import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
@@ -69,7 +70,7 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
     private Object secondChanceResolve(Injectee injectee, ServiceHandle<?> root) {
         // OK, lets do the second chance protocol
         Collector collector = new Collector();
-        collector.addThrowable(new IllegalStateException("There was no object available for injection at " + injectee));
+        collector.addThrowable(new UnsatisfiedDependencyException(injectee));
         
         List<ServiceHandle<JustInTimeInjectionResolver>> jitResolvers =
                 Utilities.<List<ServiceHandle<JustInTimeInjectionResolver>>>cast(
