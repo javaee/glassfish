@@ -1,3 +1,8 @@
+if [ -n $1 ]; then
+        echo "Must specify the test path"
+        exit 1
+fi
+
 date
 
 java -version
