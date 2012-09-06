@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.negative.injector;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -46,10 +47,12 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.UnsatisfiedDependencyException;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
@@ -317,6 +320,45 @@ public class NegativeInjectorTest {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(
                     " annotated with @PreDestroy must not have any arguments"));
         }
+    }
+    
+    /**
+     * Tests that a service that tries to inject an unknown service will get
+     * the proper failure
+     */
+    @Test
+    public void testInvalidInjectionPoint() {
+        InjectsAClassThatIsNotAService iactinas = locator.create(InjectsAClassThatIsNotAService.class);
+        Assert.assertNotNull(iactinas);
+        
+        Injectee badInjectee = null;
+        try {
+            locator.inject(iactinas);
+            Assert.fail("This injection should have failed");
+        }
+        catch (MultiException me) {
+            for (Throwable th : me.getErrors()) {
+                if (th instanceof UnsatisfiedDependencyException) {
+                    Assert.assertNull(badInjectee);  // Should only be one of these
+                    
+                    UnsatisfiedDependencyException ude = (UnsatisfiedDependencyException) th;
+                    
+                    badInjectee = ude.getInjectee();
+                }
+            }
+        }
+        
+        Assert.assertNotNull(badInjectee);
+        
+        // OK, lets do a check of its fields
+        Assert.assertEquals(NotAService.class, badInjectee.getRequiredType());
+        Assert.assertTrue(badInjectee.getRequiredQualifiers().isEmpty());
+        Assert.assertSame(-1, badInjectee.getPosition());
+        Assert.assertEquals(InjectsAClassThatIsNotAService.class, badInjectee.getInjecteeClass());
+        Assert.assertTrue(badInjectee.getParent() instanceof Field);
+        Assert.assertFalse(badInjectee.isOptional());
+        Assert.assertFalse(badInjectee.isSelf());
+        Assert.assertNull(badInjectee.getUnqualified());
     }
 
 }
