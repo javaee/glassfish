@@ -48,9 +48,14 @@
 
 		<delete file="${build}/earwithejb-portable.jar"/>
 		<delete file="${build}/META-INF/application.xml"/>
+		<delete file="${build}/META-INF/sun-ejb-jar.xml"/>
+		<delete file="${build}/META-INF/ejb-jar.xml"/>
+		<delete file="${build}/earwithejb-portable.jar"/>
 		<copy file="application.xml" todir="${build}/META-INF"/>
+		<copy file="alt-ejbjar.xml" todir="${build}"/>
+		<copy file="sun-alt-ejbjar.xml" todir="${build}" failonerror="false"/>
 		<copy file="${all.jar}" todir="${build}"/>
-		<jar destfile="${all.ear}" basedir="${build}" excludes="**ejb-jar.xml"/>
+		<jar destfile="${all.ear}" basedir="${build}" excludes="**/archives/**"/>
     </target>
 
     <target name="deploy.asadmin" depends="prepare">

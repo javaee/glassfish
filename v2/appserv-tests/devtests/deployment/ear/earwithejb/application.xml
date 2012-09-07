@@ -4,5 +4,6 @@
   <display-name>EARwithEJBOnly</display-name>
   <module>
      <ejb>earwithejb.jar</ejb>
+     <alt-dd>alt-ejbjar.xml</alt-dd>
   </module>
 </application>
