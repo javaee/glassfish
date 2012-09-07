@@ -55,10 +55,12 @@ import org.jvnet.hk2.annotations.Service;
 @Service @Singleton
 public class EnvironmentFactory implements Factory<Environment> {
     private final HashMap<String, ServiceLocator> backingLocators = new HashMap<String, ServiceLocator>();
-    private final TenantLocatorGenerator generator = new TenantLocatorGenerator();
     
     @Inject
     private TenantManager manager;
+
+    @Inject
+    TenantLocatorGenerator generator;
 
     /**
      * This method creates environments based on the current tenant.

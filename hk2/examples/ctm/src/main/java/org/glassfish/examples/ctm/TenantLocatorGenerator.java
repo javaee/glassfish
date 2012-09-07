@@ -39,14 +39,14 @@
  */
 package org.glassfish.examples.ctm;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
+import javax.inject.Inject;
+
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.utilities.Binder;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
-import org.jvnet.hk2.config.Populator;
+
+import com.sun.enterprise.module.ModulesRegistry;
 
 /**
  * This is the class that creates the service locator for each
@@ -55,8 +55,8 @@ import org.jvnet.hk2.config.Populator;
  * @author jwells
  * @author andriy.zhdanov
  */
+@Service
 public class TenantLocatorGenerator {
-    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
     public final static String ALICE = "Alice";
     public final static int ALICE_MIN = 1;
     public final static int ALICE_MAX = 2;
@@ -65,31 +65,25 @@ public class TenantLocatorGenerator {
     public final static int BOB_MIN = 10;
     public final static int BOB_MAX = 20;
     
-    public final static String CTM_LOCATOR_NAME = "CTMTest";
-    
     public ServiceLocator generateLocatorPerTenant(String tenantName) {
         if (tenantName == null) throw new IllegalArgumentException();
-
-        ServiceLocator parent = ServiceLocatorFactory.getInstance().find(CTM_LOCATOR_NAME);
         
-        ServiceLocator serviceLocator = factory.create(tenantName, parent);
+        ServiceLocator serviceLocator =
+            systemModulesRegistry.createServiceLocator(systemServiceLocator, "tenant-scoped");
 
-        // Will add itself to serviceLocator by tenantName
-        Habitat h = new Habitat(null, tenantName);
-        
-        // Populate this serviceLocator with config data.
-        //
-        // Note, populator comes from parent service locator, though it gets
-        // Habitat injected from this service locator.  But it does not work
-        // with HK2Populator.populateConfig, probably because habitat there
-        // is marked as @Optional 
-        // 
-        // CAUTION: this must be done by direct lookup of EnvironmentXml in real life,
-        // to avoid populating with everything possible.
-        for (Populator p : serviceLocator.<Populator>getAllServices(Populator.class)) {
-            p.run(new ConfigParser(h));
-        }
+        // FIXME: use serviceLocator or at least getService(Habitat.class)
+        Habitat h = new Habitat(serviceLocator);
+
+        EnvironmentXml populator = systemServiceLocator.getService(EnvironmentXml.class);
+
+        populator.run(new ConfigParser(h));        
         
         return serviceLocator;
     }
+
+    @Inject
+    ServiceLocator systemServiceLocator;
+
+    @Inject
+    ModulesRegistry systemModulesRegistry;
 }

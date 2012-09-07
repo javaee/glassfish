@@ -57,14 +57,15 @@ import org.jvnet.hk2.config.Populator;
  *
  */
 @Service
-public class EnvironmentXml implements Populator {
+public class EnvironmentXml /*implements Populator*/ {
     @Inject
     TenantManager tenantManager;
 
     @Inject
     protected Habitat habitat;
 
-    @Override
+    // do not implement Populator to avoid execution in system service locator
+    //@Override
     public void run(ConfigParser parser) throws ConfigPopulatorException {
         String tenantName = tenantManager.getCurrentTenant();
         System.out.println("Running populator for tenant " + tenantName);
