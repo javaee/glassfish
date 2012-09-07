@@ -184,16 +184,16 @@ public class ConfigurationModularityTest extends AdminBaseDevTest {
 //                returnee, DEFAULT_WEB_CONTAINER_COMMAND_OUT, DEFAULT_WEB_CONTAINER_COMMAND_OUT_ALTER_1);
 
 
-        asadmin("delete-module-config", "jms-service");
-        asadmin("create-module-config", "jms-service");
-        AsadminReturn returnee2 = asadminWithOutput("get-active-config", "jms-service");
-        compareResponseReport("Case 2: getting active config for jms-service present in domain.xml ",
-                returnee2, DEFAULT_JMS_SERVICE);
+//        asadmin("delete-module-config", "jms-service");
+//        asadmin("create-module-config", "jms-service");
+//        AsadminReturn returnee2 = asadminWithOutput("get-active-config", "jms-service");
+//        compareResponseReport("Case 2: getting active config for jms-service present in domain.xml ",
+//                returnee2, DEFAULT_JMS_SERVICE);
 
-        asadmin("set", "server-config.jms-service.init-timeout-in-seconds=120");
-        AsadminReturn returnee3 = asadminWithOutput("get-active-config", "jms-service");
-        compareResponseReport("Case 3: getting a customized active configuration for jms-service",
-                returnee3, customizedJMServiceConfig);
+//        asadmin("set", "server-config.jms-service.init-timeout-in-seconds=120");
+//        AsadminReturn returnee3 = asadminWithOutput("get-active-config", "jms-service");
+//        compareResponseReport("Case 3: getting a customized active configuration for jms-service",
+//                returnee3, customizedJMServiceConfig);
 
     }
 
