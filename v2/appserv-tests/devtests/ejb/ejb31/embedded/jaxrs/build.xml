@@ -114,6 +114,7 @@
               failonerror="true"
               classpath="${test-path}:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
+           <jvmarg value="-Dorg.glassfish.ejb.embedded.keep-temporary-files=true"/>
            <arg line="${appname}"/>
            <arg line="${test}"/>
            <arg line="${packaging}"/>
