@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../../report.xml">
+]>
+
+<project name="jms-injection" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="sessionBeanInjection"/>
+        <antcall target="ejbInterceptorInjection"/>
+        <antcall target="servletInjection"/>
+        <antcall target="jspInjection"/>
+        <antcall target="jsfInjection"/>
+        <antcall target="wsInjection"/>
+    </target>
+
+    <target name="sessionBeanInjection">
+        <record name="sessionBeanInjection.output" action="start" />
+        <ant dir="sessionBeanInjection" target="all"/>
+        <record name="sessionBeanInjection.output" action="stop" />
+    </target>
+
+    <target name="ejbInterceptorInjection">
+        <record name="ejbInterceptorInjection.output" action="start" />
+        <ant dir="ejbInterceptorInjection" target="all"/>
+        <record name="ejbInterceptorInjection.output" action="stop" />
+    </target>
+
+    <target name="servletInjection">
+        <record name="servletInjection.output" action="start" />
+        <ant dir="servletInjection" target="all"/>
+        <record name="servletInjection.output" action="stop" />
+    </target>
+
+    <target name="jspInjection">
+        <record name="jspInjection.output" action="start" />
+        <ant dir="jspInjection" target="all"/>
+        <record name="jspInjection.output" action="stop" />
+    </target>
+
+    <target name="jsfInjection">
+        <record name="jsfInjection.output" action="start" />
+        <ant dir="jsfInjection" target="all"/>
+        <record name="jsfInjection.output" action="stop" />
+    </target>
+
+    <target name="wsInjection">
+        <record name="wsInjection.output" action="start" />
+        <ant dir="wsInjection" target="all"/>
+        <record name="wsInjection.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the jms tests)
+	</echo>
+    </target>
+</project>

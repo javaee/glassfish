@@ -1,0 +1,7 @@
+create-jms-resource --restype javax.jms.QueueConnectionFactory jms/ejb_jms_jmsejb_QCF
+
+create-jmsdest --desttype queue ejb_jms_jmsejb_Queue
+create-jms-resource --restype javax.jms.Queue --property imqDestinationName=ejb_jms_jmsejb_Queue jms/ejb_jms_jmsejb_Queue
+
+
+quit
