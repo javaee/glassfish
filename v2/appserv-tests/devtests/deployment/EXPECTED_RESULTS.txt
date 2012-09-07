@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 261 
+PASS: 264 
 FAIL: 0
 UNKNOWN: 0
 
@@ -141,6 +141,10 @@ UNKNOWN: 0
 [PASSED] validation : dol/validation Test standalone rar
 [PASSED] validation : dol/validation Test standalone car
 [PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test WLS Ear
+[PASSED] validation : dol/validation Test WLS Ear2
+[PASSED] validation : dol/validation Test WLS Ear3
 [PASSED] session : ejb30/session Test asadmin deploy  
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
@@ -274,7 +278,7 @@ UNKNOWN: 0
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 190
+PASS: 193
 FAIL: 0
 UNKNOWN: 0
 
@@ -369,6 +373,10 @@ UNKNOWN: 0
 [PASSED] validation : dol/validation Test standalone rar
 [PASSED] validation : dol/validation Test standalone car
 [PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test WLS Ear
+[PASSED] validation : dol/validation Test WLS Ear2
+[PASSED] validation : dol/validation Test WLS Ear3
 [PASSED] session : ejb30/session Test asadmin deploy  
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
@@ -473,7 +481,7 @@ UNKNOWN: 0
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 346
+PASS: 349
 FAIL: 0
 UNKNOWN: 0
 
@@ -647,6 +655,10 @@ UNKNOWN: 0
 [PASSED] validation : dol/validation Test standalone rar
 [PASSED] validation : dol/validation Test standalone car
 [PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test WLS Ear
+[PASSED] validation : dol/validation Test WLS Ear2
+[PASSED] validation : dol/validation Test WLS Ear3
 [PASSED] session : ejb30/session Test asadmin deploy
 [PASSED] session : ejb30/session Test asadmin redeploy
 [PASSED] session2 : ejb30/session2 Test asadmin deploy
