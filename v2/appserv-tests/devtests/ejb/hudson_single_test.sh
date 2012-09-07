@@ -92,4 +92,15 @@ pushd $APS_HOME/devtests/ejb
 rm count.txt || true
 
 cd $1
-ant clean-result all dev-report -Ddb.port=${DB_PORT} -Ddb.port.2=${DB_PORT_2} |tee log.txt
+ant clean-result 
+
+i=0
+while [ $i -lt $COUNT ]
+do
+     echo $i
+     ant all -Ddb.port=${DB_PORT} -Ddb.port.2=${DB_PORT_2} |tee log.txt
+     i=$[$i+1]
+
+done
+
+ant dev-report 
