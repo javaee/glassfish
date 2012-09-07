@@ -40,7 +40,6 @@
 package org.glassfish.examples.ctm.runme;
 
 import java.beans.PropertyVetoException;
-import java.io.IOException;
 
 import junit.framework.Assert;
 
@@ -48,21 +47,16 @@ import org.glassfish.examples.ctm.Environment;
 import org.glassfish.examples.ctm.ServiceProviderEngine;
 import org.glassfish.examples.ctm.TenantLocatorGenerator;
 import org.glassfish.examples.ctm.TenantManager;
-import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.bootstrap.HK2Populator;
-import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
-import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
-import org.glassfish.hk2.utilities.Binder;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.Transaction;
 import org.jvnet.hk2.config.TransactionFailure;
+
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.single.StaticModulesRegistry;
 
 /**
  * This runs a simple test to be sure that the ServiceProviderEngine
@@ -71,31 +65,15 @@ import org.jvnet.hk2.config.TransactionFailure;
  * @author jwells
  */
 public class CTMTest {
-    private final static String TEST_NAME = TenantLocatorGenerator.CTM_LOCATOR_NAME;
-    private final static ServiceLocator locator = ServiceLocatorFactory.getInstance().create(TEST_NAME);
-    
-    @BeforeClass
-    public static void before() throws IOException {
-        new Habitat(null, TEST_NAME);  // Adds a habitat to the base CTM locator
-        
-        HK2Populator.populate(locator,
-                new ClasspathDescriptorFileFinder(),
-                new Binder() {
-
-					@Override
-					public void bind(DynamicConfiguration config) {
-						// TODO Auto-generated method stub
-						config.bind(BuilderHelper.createConstantDescriptor(new Hk2LoaderPopulatorPostProcessor(null)));
-					}}
-                );
-    }
+    // StaticModulesRegistry does nothing for populateConfig!
+    private final static ModulesRegistry modulesRegistry = new StaticModulesRegistry(CTMTest.class.getClassLoader());
+    private final static ServiceLocator locator = modulesRegistry.createServiceLocator();
     
     @Test
     public void testProviderEngineUsesCorrectTenant() throws TransactionFailure {
         TenantManager tenantManager = locator.getService(TenantManager.class);
         ServiceProviderEngine engine = locator.getService(ServiceProviderEngine.class);
         
-        // TODO:  Eventually these hard-coded names would go away...
         tenantManager.setCurrentTenant(TenantLocatorGenerator.ALICE);
         
         Assert.assertEquals(TenantLocatorGenerator.ALICE, engine.getTenantName());
