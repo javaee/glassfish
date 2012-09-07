@@ -92,7 +92,15 @@ pushd $APS_HOME/devtests/ejb
 rm count.txt || true
 
 cd $1
+
+COUNT=1
+if [ $# -eq 2 ]; then
+    COUNT=$2
+fi
+
 ant clean-result 
+
+echo Running test $COUNT times
 
 i=0
 while [ $i -lt $COUNT ]
