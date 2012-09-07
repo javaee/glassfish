@@ -41,11 +41,8 @@ package org.jvnet.hk2.config;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.ConfigPopulator;
-import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-
-import javax.inject.Inject;
 
 /**
  * Populates configuration entities
@@ -56,28 +53,9 @@ import javax.inject.Inject;
 public class ConfigurationPopulator
     implements ConfigPopulator {
     
-    private final Habitat habitat;
-    
-    /**
-     * This may be called before any Habitat has been put into
-     * the service registry, so the Habitat is optional.  If
-     * not there already one it goes ahead and puts one in by
-     * calling new Habitat
-     * 
-     * @param habitat The optional habitat, for cases where this
-     * is called prior to the Habitat having been created
-     */
-    @Inject
-    private ConfigurationPopulator(@Optional Habitat habitat) {
-        if (habitat == null) {
-            this.habitat = new Habitat();
-        }
-        else {
-            this.habitat = habitat;
-        }
-    }
-
     public void populateConfig(ServiceLocator serviceLocator) {
+    	Habitat habitat = new Habitat(serviceLocator);
+    	
         for (Populator p : serviceLocator.<Populator>getAllServices(Populator.class)) {
             System.out.println("Found populator: " + p.getClass().getName());
             p.run(new ConfigParser(habitat));
