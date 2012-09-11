@@ -331,6 +331,7 @@
         <ant dir="servlet-3.1/nonBlockingOutputByteByByte" target="all"/>
         <ant dir="servlet-3.1/nonBlockingInput" target="all"/>
         <ant dir="servlet-3.1/upgrade" target="all"/>
+        <ant dir="servlet-3.1/changeSessionId" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
