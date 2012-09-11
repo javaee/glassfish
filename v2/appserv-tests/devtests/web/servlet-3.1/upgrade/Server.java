@@ -38,37 +38,44 @@
  * holder.
  */
 
-package test;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-import java.io.IOException;
-import java.util.Arrays;
+public class Server {
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.ProtocolHandler;
+    int port;
 
-@WebServlet("/test")
-public class TestServlet extends HttpServlet {
-
-    public void service(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
-  
-        String query = req.getQueryString();
-        String portStr = query.substring(5);
-        int port = 7777;
-        try {
-           port = Integer.parseInt(portStr);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }    
-        ProtocolHandler handler = new TestProtocolHandler(port);
-        req.upgrade(handler);
+    public Server(int port) {
+        this.port = port;
     }
 
+    public void run() throws Exception {
+        String requestMessageLine;
+
+        ServerSocket listenSocket = new ServerSocket (port);
+        
+        System.out.println ("Server waiting for request on port " + port);
+        Socket connectionSocket = listenSocket.accept();
+
+        BufferedReader inFromClient = new BufferedReader (
+            new InputStreamReader(connectionSocket.getInputStream()));
+        DataOutputStream outToClient = new DataOutputStream (
+            connectionSocket.getOutputStream());
+    
+        outToClient.writeBytes("Content-Type: text/plain");
+        outToClient.writeBytes("Servlet 3.1 Upgrade Test");
+
+        requestMessageLine = inFromClient.readLine();
+        System.out.println ("Request: " + requestMessageLine);
+
+        requestMessageLine = inFromClient.readLine();
+        while (requestMessageLine.length() >= 5) {
+            System.out.println ("Request: " + requestMessageLine);
+            requestMessageLine = inFromClient.readLine();
+        }
+        System.out.println ("Request: " + requestMessageLine);
+
+        connectionSocket.close();
+    }
 }

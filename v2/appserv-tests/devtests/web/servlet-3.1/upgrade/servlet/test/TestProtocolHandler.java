@@ -78,25 +78,28 @@ import org.glassfish.grizzly.websockets.*;
 
 public class TestProtocolHandler implements ProtocolHandler {
 
-    protected static final int PORT = 1725;
+    private int port;
+
+    public TestProtocolHandler(int port) {
+        this.port = port;
+    }
 
     public void init(WebConnection wc) {
 
         try {
-            run();
-            /*TestTread test = new TestThread("test", wc.getOutputStream());
-            test.start();  */
+            wc.getOutputStream().println("Servlet 3.1 Upgrade Processing Test");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
 
     }
 
-    private class TestTread extends Thread {
+/*
+    private class TestThread extends Thread {
         String name;
         ServletOutputStream outputStream;
 
-        TestTread(String name, ServletOutputStream out) {
+        TestThread(String name, ServletOutputStream out) {
             this.name = name;
             this.outputStream = out;
         }
@@ -145,8 +148,7 @@ public class TestProtocolHandler implements ProtocolHandler {
             //httpServer.stop();
         }
     }
-
-    /*
+    
     public static class CountDownAdapter extends WebSocketAdapter {
         private final Set<String> sent;
         private final CountDownLatch received;

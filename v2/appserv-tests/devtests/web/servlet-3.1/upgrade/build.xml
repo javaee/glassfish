@@ -94,6 +94,7 @@
             <arg value="${http.host}"/>
             <arg value="${http.port}"/>
             <arg value="${contextroot}"/>
+            <arg value="${http.alternate.port}"/>
             <classpath>
                 <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
                 <pathelement location="${env.APS_HOME}/lib/webtest.jar"/>
