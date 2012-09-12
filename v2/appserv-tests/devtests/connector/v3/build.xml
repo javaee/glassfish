@@ -289,6 +289,12 @@
         <echo message="@@## connector-resource-definition##@@"/>
         <ant dir="connector-resource-definition" target="${connector-target}"/>
 
+        <echo message="@@## jms-connection-factory-definition##@@"/>
+        <ant dir="jms-connection-factory-definition" target="${connector-target}"/>
+
+        <echo message="@@## jms-destination-definition##@@"/>
+        <ant dir="jms-destination-definition" target="${connector-target}"/>
+
         <echo message="@@## installed libraries EXTENSION_LIST ##@@"/>
         <ant dir="installed-libraries" target="all-ext"/>
 
