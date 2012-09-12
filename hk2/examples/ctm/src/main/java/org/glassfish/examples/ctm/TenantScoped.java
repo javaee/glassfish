@@ -49,6 +49,7 @@ import java.lang.annotation.Target;
 import javax.inject.Scope;
 
 import org.glassfish.hk2.api.Proxiable;
+import org.jvnet.hk2.annotations.InhabitantAnnotation;
 
 /**
  * This is the scope annotation for the TenantScoped.  Descriptors
@@ -63,5 +64,6 @@ import org.glassfish.hk2.api.Proxiable;
 @Proxiable
 @Retention(RUNTIME)
 @Target( { TYPE, METHOD })
+@InhabitantAnnotation("tenant-scoped")
 public @interface TenantScoped {
 }

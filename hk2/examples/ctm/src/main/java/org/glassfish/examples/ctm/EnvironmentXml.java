@@ -43,12 +43,12 @@ import java.net.URL;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.ConfigPopulatorException;
 import org.jvnet.hk2.config.DomDocument;
-import org.jvnet.hk2.config.Populator;
 
 /**
  * Reads Environment from xml.
