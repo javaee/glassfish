@@ -117,6 +117,10 @@ public class LocatorModule implements TestModule {
         
         configurator.bind(BuilderHelper.link(NoScopeService.class.getName()).
                 in(PerLookup.class.getName()).build());
+        
+        // For the performance check of the cache
+        configurator.bind(BuilderHelper.link(PerformanceService.class).
+                in(Singleton.class.getName()).build());
     }
 
 }
