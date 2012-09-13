@@ -46,16 +46,17 @@
         <artifactId>external</artifactId>
         <version>2.1.30-SNAPSHOT</version>
     </parent>
-    <groupId>org.glassfish.hk2.external</groupId>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glassfish.hk2.external</groupId>
     <artifactId>bean-validator</artifactId>
     <!-- Don't use bundle packaging. There are issues in using
          maven-bundle-plugin and hk2-maven-plugin together -->
     <packaging>jar</packaging>
     <properties>
-      <hibernate-validator.version>4.1.0.Final</hibernate-validator.version>
-      <javax.validation.version>1.0</javax.validation.version>
-      <slf4j.version>1.5.6</slf4j.version>
+       <hibernate-validator.version>4.3.0.Final</hibernate-validator.version>
+       <javax.validation.version>1.0</javax.validation.version>
+       <slf4j.version>1.6</slf4j.version>
+       <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
       <jtype.version>0.1.0</jtype.version>
     </properties>
     <name>Validation API (JSR 303) version ${javax.validation.version}, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
@@ -67,74 +68,64 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <!-- READ THIS: 
-                             1. how slf4j is handled:
-                             We optionally import slf4j APIs (i.e. packages that are part of slf4j-api.jar).
-                             We also bundle them privately along with the jdk14-logging binding. 
-                             This allows us to function even when there is no separate slf4j bundle.
-                             When there is a separate slf4j bundle, because of our optional Import-Package header,
-                             we will get wired to that bundle. Please also note that we don't import impl package,
-                             as it is sufficient to import just the api. In some other environment, user can
-                             deploy slf4j-api bundle and their desired binding bundle. The binding bundle is
-                             a fragement which attaches itself to the api bundle. We will get wired to the 
-                             api bundle and everything will work.
-                             We also bundle all the slf4j extension to avoid having dependency
-                             on foreign bundles.
-
-                             2. how com.googlecode.jtype is handled:
-                             Although hibernate validator uses maven-shade-plugin to repackage com.googlecode.jtype classes
-                             bu org.hibernate.validator.jtype classes, the shade plugin seems to leave behind some 
-                             constant pool entries referring to google classes, so we need to package google jtype classes as well.
-                        -->
                         <Embed-Dependency>
                             <!-- Only specify root artifacts that need to be embedded, everything else
                                  will be pulled in automatically based on Private-Package settings. -->
-                            *; artifactId=hibernate-validator|slf4j-api|slf4j-jdk14; inline=true
+                            *; artifactId=hibernate-validator; inline=true
                         </Embed-Dependency>
                         <Export-Package>
-                             <!-- 
-                                 Actually there is no need to any of the implementation stuff, but 
-                                 because of a bug in Hibernate Validator, where in it uses thread's context
-                                 class loader to load implementation classes, we have to export implementation
-                                 packages so that our special context class loader can find them.
-                                 See http://opensource.atlassian.com/projects/hibernate/browse/HV-363
-                             -->
-                             javax.validation.*; version=${javax.validation.version}, 
-                             org.hibernate.validator.*; version=${hibernate-validator.version}
+                            <!--
+                                Actually there is no need to any of the implementation stuff, but
+                                because of a bug in Hibernate Validator, where in it uses thread's context
+                                class loader to load implementation classes, we have to export implementation
+                                packages so that our special context class loader can find them.
+                                See http://opensource.atlassian.com/projects/hibernate/browse/HV-363
+                            -->
+                            javax.validation.*; version=${javax.validation.version},
+                            org.hibernate.validator.*; version=${hibernate-validator.version}
                         </Export-Package>
 
                         <Private-Package>
-                             <!-- Have a private copy of external non-standard dependencies -->
-                             org.slf4j.*; com.googlecode.jtype.*
+                            <!-- JBoss logging is used by Hibernate Validator as of version 4.3.0.Final.
+                                 We must repackage it privately in this bundle.
+                            -->
+                            org.jboss.logging.*
                         </Private-Package>
 
                         <Import-Package>
-                           <!-- 
-                               even though we bundle slf4j api, we want to import it optionally as well. 
-                               read previous comments.
-                               bean validator has optional dependency on JPA API. More over, it relies on
-                               JPA 2.0, as it tries to dynamically load javax.persistence.PersistenceUtil.class,
-                               which is a JPA 2 class.
-                           -->
-                           org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=${slf4j.version}; resolution:=optional,
-                           javax.persistence.*; version="2.0"; resolution:=optional,
-                           *
-                       </Import-Package>
-                       <!--
-                       See https://hibernate.onjira.com/browse/HV-562 which I have filed against hibernate validator.
-                       It's a bug in hibernate validator the way it detects JPA. It uses thread's context classloader to
-                       see if JPA classes are available and then goes onto instantiate its JPATraversableResolver which
-                       has staic dependency on JPA classes. It should have used its own class loader to detect existence 
-                       of JPA classes. If we don't add this DynamicImport-Package, what could happen is that at the time
-                       of resolution of hibernate-validator, it's optional dependency on javax.persistence may not be
-                       satisfied, so this bundle won't be able to load jpa classes, yet when it uses TCL to detect JPA,
-                       that might return true. Based on this outcome, it could go onto use JPATraversableResolver and 
-                       eventually fail with NCDFE. Adding a DynamicImport-Package helps rewiring this bundle to JPA late.
-                       -->
-                       <DynamicImport-Package>javax.persistence; javax.persistence.*;  version="2.0"</DynamicImport-Package>
-                       <Implementation-Version>
-                         ${hibernate-validator.version}
-                       </Implementation-Version>
+                            <!--
+                                - bean validator has optional dependency on JPA API. More over, it relies on
+                                JPA 2.0, as it tries to dynamically load javax.persistence.PersistenceUtil.class,
+                                which is a JPA 2 class.
+                                - jboss.logging has the following optional dependencies (see manifest in
+                                jboss-logging-*.jar):
+                                org.apache.log4j, org.jboss.logmanager, org.slf4j, org.slf4j.spi
+                                - Hibernate Validator has optional dependencies on (see manifest in
+                                hibernate-validator-*.jar): javax.persistence, org.joda.time, org.jsoup, org.jsoup.safety
+                            -->
+                            org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=${slf4j.version}; resolution:=optional,
+                            javax.persistence.*; version="2.0"; resolution:=optional,
+                            org.joda.time; resolution:=optional; version="[1.6.0,2.0.0)",
+                            org.jsoup.*; resolution:=optional; version="[1.5.2,2.0.0)",
+                            org.apache.log4j; resolution:=optional,
+                            org.jboss.logmanager; resolution:=optional,
+                            *
+                        </Import-Package>
+                        <!--
+                        See https://hibernate.onjira.com/browse/HV-562 which I have filed against hibernate validator.
+                        It's a bug in hibernate validator the way it detects JPA. It uses thread's context classloader to
+                        see if JPA classes are available and then goes onto instantiate its JPATraversableResolver which
+                        has staic dependency on JPA classes. It should have used its own class loader to detect existence
+                        of JPA classes. If we don't add this DynamicImport-Package, what could happen is that at the time
+                        of resolution of hibernate-validator, it's optional dependency on javax.persistence may not be
+                        satisfied, so this bundle won't be able to load jpa classes, yet when it uses TCL to detect JPA,
+                        that might return true. Based on this outcome, it could go onto use JPATraversableResolver and
+                        eventually fail with NCDFE. Adding a DynamicImport-Package helps rewiring this bundle to JPA late.
+                        -->
+                        <DynamicImport-Package>javax.persistence; javax.persistence.*;  version="2.0"</DynamicImport-Package>
+                        <Implementation-Version>
+                            ${hibernate-validator.version}
+                        </Implementation-Version>
                     </instructions>
                     <!-- Maven uses the output directory (target/classes)
                     rather than the final bundle, when compiling against
@@ -194,22 +185,6 @@
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.googlecode.jtype</groupId>
-                                    <artifactId>jtype</artifactId>
-                                    <version>${jtype.version}</version>
-                                    <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.slf4j</groupId>
-                                    <artifactId>slf4j-jdk14</artifactId>
-                                    <version>${slf4j.version}</version>
-                                    <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
-                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -226,11 +201,11 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar-no-fork</goal> 
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
-                 </executions>
-             </plugin>
+                </executions>
+            </plugin>
 
         </plugins>
     </build>
@@ -257,14 +232,13 @@
             <groupId>com.googlecode.jtype</groupId>
             <artifactId>jtype</artifactId>
             <version>${jtype.version}</version>
+            <optional>true</optional>
         </dependency>
-
-        <!-- We bundle jdk binding inside this OSGi bundle -->
         <dependency>
-           <groupId>org.slf4j</groupId>
-           <artifactId>slf4j-jdk14</artifactId>
-           <version>${slf4j.version}</version>
-           <scope>provided</scope>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>${org.jboss.logging.version}</version>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>
