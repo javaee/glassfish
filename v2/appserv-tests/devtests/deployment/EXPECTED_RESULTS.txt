@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 264 
+PASS: 265 
 FAIL: 0
 UNKNOWN: 0
 
@@ -92,6 +92,7 @@ UNKNOWN: 0
 [PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)  
 [PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)  
 [PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)  
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy with altdd (server)
 [PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)  
 [PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)  
 [PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)  
@@ -278,7 +279,7 @@ UNKNOWN: 0
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 193
+PASS: 194
 FAIL: 0
 UNKNOWN: 0
 
@@ -339,6 +340,7 @@ UNKNOWN: 0
 [PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)
 [PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)
 [PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy with altdd (server)
 [PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)
 [PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)
 [PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)
@@ -481,7 +483,7 @@ UNKNOWN: 0
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 349
+PASS: 352
 FAIL: 0
 UNKNOWN: 0
 
@@ -595,6 +597,8 @@ UNKNOWN: 0
 [PASSED] earwithwar : ear/earwithwar Test asadmin disable (cluster-inst1)
 [PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)
 [PASSED] earwithwar : ear/earwithwar Test asadmin enable (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy with altdd (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy with altdd (cluster-inst1)
 [PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)
 [PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (cluster-inst1)
 [PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)

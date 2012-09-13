@@ -9,6 +9,7 @@
     &commonBuild;
 
     <property name="contextRoot" value="war"/>
+    <property name="altContextRoot" value="altwar"/>
     <property name="testName" value="servletonly"/>
 
     <target name="prepare" depends="init">
@@ -37,6 +38,7 @@
             <classes dir="${build}/war"/>
         </war>
         <copy file="portable-app.xml" tofile="${build}/archive/META-INF/application.xml"/>
+        <copy file="altapplication.xml" tofile="${build}/archive/altapplication.xml"/>
         <copy file="${portable.war}" todir="${build}/archive"/>
         <jar destfile="${portable.ear}" basedir="${build}/archive"/>
         <delete file="${build}/archive/${testName}-portable.war"/>
@@ -49,6 +51,13 @@
     <target name="deploy.asadmin" depends="prepare">
         <antcall target="common.deploy.asadmin">
             <param name="arg.list" value="${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.asadmin.altdd" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--altdd ${build}/archive/altapplication.xml ${all.ear}"/>
             <param name="testName" value="${testName}"/>
         </antcall>
     </target>
@@ -126,6 +135,13 @@
         </antcall>
     </target>
 
+    <target name="run.positive.altdd" depends="setHttpPort">
+        <antcall target="common.run.positive">
+            <param name="link" value="${altContextRoot}/${testName}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
     <target name="run.negative" depends="setHttpPort">
         <antcall target="common.run.negative">
             <param name="link" value="${contextRoot}/${testName}"/>
@@ -189,36 +205,44 @@
 
         <antcall target="undeploy.asadmin"/>
 
+        <antcall target="deploy.asadmin.altdd"/>
+        <antcall target="run.positive.altdd">
+            <param name="log.id" value="5"/>
+            <param name="desc" value="ear/earwithwar Test asadmin deploy with altdd"/>
+        </antcall>
+
+        <antcall target="undeploy.asadmin"/>
+
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
-            <param name="log.id" value="3"/>
+            <param name="log.id" value="6"/>
             <param name="desc" value="ear/earwithwar Test jsr88 deploy"/>
         </antcall>
 
         <antcall target="stop.jsr88"/>
         <antcall target="run.negative">
             <param name="desc" value="ear/earwithwar Test jsr88 stopped state"/>
-            <param name="log.id" value="4"/>
+            <param name="log.id" value="7"/>
         </antcall>
 
         <antcall target="start.jsr88"/>
         <antcall target="run.positive">
             <param name="desc" value="ear/earwithwar Test jsr88 started state"/>
-            <param name="log.id" value="5"/>
+            <param name="log.id" value="8"/>
         </antcall>
 
         <antcall target="stop.jsr88"/>
         <antcall target="redeploy.jsr88"/>
         <antcall target="run.negative">
             <param name="desc" value="ear/earwithwar Test jsr88 redeploy stop"/>
-            <param name="log.id" value="6"/>
+            <param name="log.id" value="9"/>
         </antcall>
 
         <antcall target="start.jsr88"/>
         <antcall target="redeploy.jsr88"/>
         <antcall target="run.positive">
             <param name="desc" value="ear/earwithwar Test jsr88 redeploy start"/>
-            <param name="log.id" value="7"/>
+            <param name="log.id" value="10"/>
         </antcall>
         <antcall target="undeploy.jsr88"/>
     </target>
