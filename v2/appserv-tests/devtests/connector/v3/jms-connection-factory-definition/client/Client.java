@@ -8,11 +8,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import javax.annotation.jms.JMSConnectionFactoryDefinition;
-import javax.annotation.jms.JMSConnectionFactoryDefinitions;
-import javax.naming.InitialContext;
-import javax.jms.ConnectionFactory;
 import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSConnectionFactoryDefinition;
+import javax.jms.JMSConnectionFactoryDefinitions;
+import javax.naming.InitialContext;
 
 @JMSConnectionFactoryDefinitions(
         value = {

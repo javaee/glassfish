@@ -5,11 +5,11 @@ import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.jms.JMSConnectionFactoryDefinition;
-import javax.annotation.jms.JMSConnectionFactoryDefinitions;
 import javax.ejb.Stateful;
-import javax.jms.ConnectionFactory;
 import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSConnectionFactoryDefinition;
+import javax.jms.JMSConnectionFactoryDefinitions;
 import javax.naming.InitialContext;
 
 @JMSConnectionFactoryDefinitions(

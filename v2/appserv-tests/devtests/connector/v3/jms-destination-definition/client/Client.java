@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import javax.annotation.jms.JMSDestinationDefinition;
-import javax.annotation.jms.JMSDestinationDefinitions;
-import javax.naming.InitialContext;
 import javax.jms.Destination;
+import javax.jms.JMSDestinationDefinition;
+import javax.jms.JMSDestinationDefinitions;
+import javax.naming.InitialContext;
 
 @JMSDestinationDefinitions(
         value = {

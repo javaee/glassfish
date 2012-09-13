@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.annotation.Resource;
-import javax.annotation.jms.JMSConnectionFactoryDefinition;
-import javax.annotation.jms.JMSConnectionFactoryDefinitions;
 import javax.ejb.EJB;
 import javax.ejb.EJBs;
-import javax.jms.ConnectionFactory;
 import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSConnectionFactoryDefinition;
+import javax.jms.JMSConnectionFactoryDefinitions;
 import javax.naming.InitialContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

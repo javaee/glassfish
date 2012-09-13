@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.annotation.Resource;
-import javax.annotation.jms.JMSDestinationDefinition;
-import javax.annotation.jms.JMSDestinationDefinitions;
 import javax.ejb.EJB;
 import javax.ejb.EJBs;
 import javax.jms.Destination;
+import javax.jms.JMSDestinationDefinition;
+import javax.jms.JMSDestinationDefinitions;
 import javax.naming.InitialContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
