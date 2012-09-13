@@ -113,8 +113,8 @@ public class ConfigurationModularityTest extends AdminBaseDevTest {
     private void runTests() {
         startDomain();
         cleanUpModuleConfigsIfExist();
-        checkCreateModuleConfigCommand();
-        checkDeleteModuleConfigCommand();
+//        checkCreateModuleConfigCommand();
+//        checkDeleteModuleConfigCommand();
 //        checkCreateModuleConfigDryRunCommand();
         checkDryRunNotCausingMerger();
         checkGetActiveConfigCommand();
