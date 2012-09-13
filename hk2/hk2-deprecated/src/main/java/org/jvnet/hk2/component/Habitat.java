@@ -139,76 +139,6 @@ public class Habitat implements ServiceLocator {
     }
 
     /**
-     * FOR INTERNAL USE ONLY
-     */
-    public synchronized void initialized() {
-        return;
-    }
-
-    public boolean isInitialized() {
-        return true;
-    }
-    
-    /**
-     * Gets all the inhabitants registered under the given {@link Contract}.
-     * This is an example of heterogeneous type-safe container.
-     *
-     * @return can be empty but never null.
-     */
-    public <T> Collection<T> getAllByContract(Class<T> contractType) {
-        return delegate.getAllServices(contractType);
-    }
-
-    public <T> Collection<T> getAllByContract(String contractType) {
-        List<?> allServices = delegate.getAllServices(BuilderHelper.createContractFilter(contractType));
-        return (Collection<T>) allServices;
-    }
-
-    /**
-     * Gets the object of the given type.
-     *
-     * @return can be empty but never null.
-     */
-    public <T> Collection<T> getAllByType(Class<T> implType) {
-        return delegate.getAllServices(implType);
-    }
-
-    /**
-     * Obtains a reference to the component inside the manager.
-     * <p/>
-     * <p/>
-     * This is the "new Foo()" equivalent in the IoC world.
-     * <p/>
-     * <p/>
-     * Depending on the {@link Scope} of the component, a new instance might be
-     * created, or an existing instance might be returned.
-     *
-     * @return non-null.
-     * @throws ComponentException If failed to obtain a requested instance. In practice,
-     *                            failure only happens when we try to create a new instance of
-     *                            the component.
-     */
-    public <T> T getComponent(Class<T> clazz) throws ComponentException {
-        return (T) delegate.getService(clazz);
-    }
-
-    public <T> T getComponent(final Class<T> contract, String name)
-            throws ComponentException {
-        if (name != null && name.length() <= 0) name = null;
-        
-        return (T) delegate.getService(contract, name);
-    }
-
-    public <T> T getComponent(String fullQualifiedName, String name) {
-        if (name != null && name.length() <= 0) name = null;
-        
-        ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(fullQualifiedName, name));
-        if (best == null) return null;
-        
-        return (T) delegate.getServiceHandle(best).getService();
-    }
-
-    /**
      * Gets a lazy reference to the component.
      * <p/>
      * <p/>
@@ -425,37 +355,11 @@ public class Habitat implements ServiceLocator {
         return retVal;
     }
 
-    public <T> T getByType(Class<T> implType) {
-        return (T) delegate.getService(implType);
-    }
-
-    public <T> T getByType(String implType) {
-        ActiveDescriptor<T> best = (ActiveDescriptor<T>)
-                delegate.getBestDescriptor(BuilderHelper.createContractFilter(implType));
-        
-        return (T) delegate.getServiceHandle(best).getService();
-    }
-
     public <T> Inhabitant<T> getProvider(Type type, String name) {
         ServiceHandle<T> handle = delegate.getServiceHandle(type, name);
         
         ActiveDescriptor<T> best = handle.getActiveDescriptor();
         return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
-    }
-
-    /**
-     * Gets the object that has the given contract.
-     * <p/>
-     * <p/>
-     * If there are more than one of them, this method arbitrarily return one of
-     * them.
-     */
-    public <T> T getByContract(Class<T> contractType) {
-        return (T) delegate.getService(contractType);
-    }
-
-    public <T> T getByContract(String contractType) {
-        return (T) getByType(contractType);
     }
 
     /* (non-Javadoc)
