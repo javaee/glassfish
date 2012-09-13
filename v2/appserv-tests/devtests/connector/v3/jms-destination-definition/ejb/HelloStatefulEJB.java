@@ -3,8 +3,8 @@ package com.sun.s1asdev.ejb.ejb30.hello.session3;
 import javax.annotation.PostConstruct;
 import javax.ejb.Stateful;
 import javax.jms.Destination;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
+import javax.annotation.jms.JMSDestinationDefinition;
+import javax.annotation.jms.JMSDestinationDefinitions;
 import javax.naming.InitialContext;
 
 @JMSDestinationDefinitions(
