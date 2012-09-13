@@ -293,5 +293,41 @@ public class LocatorTest {
         Assert.assertEquals(Singleton.class, singleton.getScopeAnnotation());
         Assert.assertEquals(PerLookup.class, perLookup.getScopeAnnotation());
     }
+    
+    private final static int BIG_NUMBER = 100000;
+    
+    /**
+     * This test assumes that the cached version of the lookup is *much* faster
+     * than the non-cached version, which actually seems to be true.  For information
+     * the results are printed out
+     */
+    @Test
+    public void testPerformance() {
+        // The Filter version of getAllServices should be a lot slower than the
+        // cache version
+        
+        // First just look it up to create it and initialize the cache
+        Assert.assertNotNull(locator.getService(PerformanceService.class));
+        Filter f = BuilderHelper.createContractFilter(PerformanceService.class.getName());
+        
+        long filterElapsedTime = System.currentTimeMillis();
+        for (int lcv = 0; lcv < BIG_NUMBER; lcv++) {
+            locator.getAllServices(f);
+        }
+        filterElapsedTime = System.currentTimeMillis() - filterElapsedTime;
+        
+        long cacheElapsedTime = System.currentTimeMillis();
+        for (int lcv = 0; lcv < BIG_NUMBER; lcv++) {
+            locator.getAllServices(PerformanceService.class);
+        }
+        cacheElapsedTime = System.currentTimeMillis() - cacheElapsedTime;
+        
+        Assert.assertTrue("The non-cached (" + filterElapsedTime + ") was faster than cached (" +
+            cacheElapsedTime + ")", filterElapsedTime > cacheElapsedTime);
+        
+        System.out.println("Non-cached time: " + filterElapsedTime + " cached time: " + cacheElapsedTime +
+                " savings of: " + (filterElapsedTime - cacheElapsedTime));
+        
+    }
 
 }

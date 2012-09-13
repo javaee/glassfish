@@ -79,6 +79,7 @@ import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.cache.LRUCache;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -87,6 +88,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  *
  */
 public class ServiceLocatorImpl implements ServiceLocator {
+    private final static int CACHE_SIZE = 20000;
     private final static Object sLock = new Object();
     private static long currentLocatorId = 0L;
     
@@ -114,6 +116,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new LinkedList<ErrorService>();
     private final HashMap<Class<? extends Annotation>, Context<?>> contextCache =
             new HashMap<Class<? extends Annotation>, Context<?>>();
+    private final LRUCache<CacheKey, NarrowResults> cache = LRUCache.createCache(CACHE_SIZE);
     
     private boolean shutdown = false;
     
@@ -151,7 +154,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return true;
     }
     
-    private List<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents) {
+    private List<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents, boolean doValidation) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
@@ -204,7 +207,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
             
             for (SystemDescriptor<?> candidate : sortMeOut) {
-                if (!validate(candidate, onBehalfOf, filter)) continue;
+                if (doValidation && !validate(candidate, onBehalfOf, filter)) continue;
                 
                 if (filter.matches(candidate)) {
                     retVal.add(candidate);
@@ -246,7 +249,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public List<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         checkState();
         
-        return getDescriptors(filter, null, true);
+        return getDescriptors(filter, null, true, true);
     }
     
     public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
@@ -616,20 +619,45 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         rawClass = Utilities.translatePrimitiveType(rawClass);
         
+        boolean useCache = false;
         Filter filter;
         if (unqualified == null) {
             filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
+            useCache = true;
         }
         else {
             filter = new UnqualifiedIndexedFilter(rawClass.getName(), name, unqualified);
         }
         
-        NarrowResults results;
+        NarrowResults results = null;
         LinkedList<ErrorService> currentErrorHandlers = null;
-        List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true);
-        results = narrow(this, candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
-        if (!results.getErrors().isEmpty()) {
-            currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+        
+        synchronized (lock) {
+          CacheKey ck = null;
+          if (useCache) {
+            ck = new CacheKey(contractOrImpl, name, qualifiers);
+              
+            results = cache.get(ck);
+          }
+          
+          if (results == null) {
+            List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false);
+            results = narrow(this, candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
+            if (!results.getErrors().isEmpty()) {
+                currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+            }
+            else if (ck != null) {
+                cache.put(ck, results);
+            }
+          }
+        }
+        
+        // Must do validation here in order to allow for caching
+        List<ActiveDescriptor<?>> postValidateResults = new LinkedList<ActiveDescriptor<?>>();
+        for (ActiveDescriptor<?> validateMe : results.getResults()) {
+            if (!validate((SystemDescriptor<?>) validateMe, onBehalfOf, filter)) continue;
+            
+            postValidateResults.add(validateMe);
         }
         
         if (currentErrorHandlers != null) {
@@ -637,7 +665,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Utilities.handleErrors(results, currentErrorHandlers);
         }
         
-        ActiveDescriptor<?> topDog = Utilities.getFirstThingInList(results.getResults());
+        ActiveDescriptor<?> topDog = Utilities.getFirstThingInList(postValidateResults);
         if (topDog == null) return null;
         
         return getServiceHandle((ActiveDescriptor<T>) topDog);
@@ -699,19 +727,37 @@ public class ServiceLocatorImpl implements ServiceLocator {
             throw new MultiException(new IllegalArgumentException("Type must be a class or parameterized type, it was " + contractOrImpl));
         }
         
+        boolean useCache = false;
         Filter filter;
         if (unqualified == null) {
             filter = BuilderHelper.createContractFilter(rawClass.getName());
+            useCache = true;
         }
         else {
             filter = new UnqualifiedIndexedFilter(rawClass.getName(), null, unqualified);
         }
-        NarrowResults results;
+        
+        NarrowResults results = null;
         LinkedList<ErrorService> currentErrorHandlers = null;
-        List<ActiveDescriptor<?>> candidates = getDescriptors(filter);
-        results = narrow(this, candidates, contractOrImpl, null, true, null, qualifiers);
-        if (!results.getErrors().isEmpty()) {
-            currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+        
+        synchronized (lock) {
+          CacheKey ck = null;
+          if (useCache) {
+              ck = new CacheKey(contractOrImpl, null, qualifiers);
+                
+              results = cache.get(ck);
+          }
+          
+          if (results == null) {
+              List<ActiveDescriptor<?>> candidates = getDescriptors(filter, null, true, false);
+              results = narrow(this, candidates, contractOrImpl, null, true, null, qualifiers);
+              if (!results.getErrors().isEmpty()) {
+                  currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+              }
+          }
+          else if (ck != null) {
+              cache.put(ck, results);
+          }
         }
         
         if (currentErrorHandlers != null) {
@@ -721,6 +767,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         LinkedList<ServiceHandle<?>> retVal = new LinkedList<ServiceHandle<?>>();
         for (ActiveDescriptor<?> candidate : results.getResults()) {
+            if (!validate((SystemDescriptor<?>) candidate, null, filter)) continue;
+            
             retVal.add(getServiceHandle(candidate));
         }
         
@@ -812,7 +860,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         boolean addOrRemoveOfErrorHandler = false;
         
         for (Filter unbindFilter : dci.getUnbindFilters()) {
-            List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false);
+            List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false, false);
             
             for (ActiveDescriptor<?> result : results) {
                 SystemDescriptor<?> candidate = (SystemDescriptor<?>) result;
@@ -1041,6 +1089,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         contextCache.clear();
+        cache.releaseCache();
     }
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
