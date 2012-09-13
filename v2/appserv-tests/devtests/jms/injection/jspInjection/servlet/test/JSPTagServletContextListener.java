@@ -7,11 +7,11 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 public class JSPTagServletContextListener implements ServletContextListener {
-//    @Resource(mappedName = "jms/ejb_jms_jmsejb_Queue")
+//    @Resource(mappedName = "jms/jms_unit_test_Queue")
 //    private Queue queue;
 //
 //    @Inject
-//    @JMSConnectionFactory("jms/ejb_jms_jmsejb_QCF")
+//    @JMSConnectionFactory("jms/jms_unit_test_QCF")
 //    @JMSSessionMode(JMSContext.AUTO_ACKNOWLEDGE)
 //    private JMSContext jmsContext;
 

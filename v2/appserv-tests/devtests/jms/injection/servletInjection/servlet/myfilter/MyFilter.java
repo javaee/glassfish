@@ -49,11 +49,11 @@ import javax.naming.*;
 import javax.annotation.*;
 
 public class MyFilter implements Filter {
-    @Resource(mappedName = "jms/ejb_jms_jmsejb_Queue")
+    @Resource(mappedName = "jms/jms_unit_test_Queue")
     private Queue queue;
 
     @Inject
-    @JMSConnectionFactory("jms/ejb_jms_jmsejb_QCF")
+    @JMSConnectionFactory("jms/jms_unit_test_QCF")
     @JMSSessionMode(JMSContext.AUTO_ACKNOWLEDGE)
     private JMSContext jmsContext;
     

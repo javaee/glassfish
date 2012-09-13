@@ -19,11 +19,11 @@ import javax.servlet.jsp.tagext.TagSupport;
 public class JmsTagHandler extends TagSupport {
     private String text;
 
-    @Resource(mappedName = "jms/ejb_jms_jmsejb_Queue")
+    @Resource(mappedName = "jms/jms_unit_test_Queue")
     private Queue queue;
 
     @Inject
-    @JMSConnectionFactory("jms/ejb_jms_jmsejb_QCF")
+    @JMSConnectionFactory("jms/jms_unit_test_QCF")
     @JMSSessionMode(JMSContext.AUTO_ACKNOWLEDGE)
     private JMSContext jmsContext;
 

@@ -7,8 +7,6 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 public class Client {
     private final static SimpleReporterAdapter STAT = new SimpleReporterAdapter("appserv-tests");
-    private final static String FACTORY_JNDI_NAME = "jms/ejb_jms_jmsejb_QCF";
-    private final static String QUEUE_JNDI_NAME = "jms/ejb_jms_jmsejb_Queue";
 
     public static void main (String[] args) {
         STAT.addDescription("jms-injection-stateless-ejb");
