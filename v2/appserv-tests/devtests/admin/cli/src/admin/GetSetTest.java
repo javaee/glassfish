@@ -151,6 +151,7 @@ public class GetSetTest extends AdminBaseDevTest {
         // cannot set the primary key
         if (line.contains("jndi-name")) return null;
         if (line.contains("jdbc-connection-pool") && line.contains("name")) return null;
+        if (line.contains("connector-connection-pool") && line.contains("name")) return null;
         // cannot set the jvm options
         if (line.contains("jvm-options")) return null;
         // bug ????? - there currently is no set method for this, remove once the bug is fixed
