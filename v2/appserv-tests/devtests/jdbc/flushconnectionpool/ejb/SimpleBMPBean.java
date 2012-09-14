@@ -107,7 +107,7 @@ public class SimpleBMPBean implements EntityBean {
 
     private boolean flushConnectionPool() throws Exception {
         Habitat habitat = Globals.getDefaultHabitat();
-	GlassFish gf = habitat.getComponent(GlassFish.class);
+	GlassFish gf = habitat.getService(GlassFish.class);
 	CommandRunner runner = gf.getCommandRunner();
 	CommandResult res = runner.run("flush-connection-pool", poolName);
 	System.out.println("res= " + res.getOutput());
