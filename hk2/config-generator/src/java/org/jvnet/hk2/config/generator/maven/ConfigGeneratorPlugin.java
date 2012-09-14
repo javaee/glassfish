@@ -39,168 +39,121 @@
  */
 package org.jvnet.hk2.config.generator.maven;
 
-import java.io.BufferedReader;
+import com.sun.tools.apt.Main;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.LinkedList;
-
+import java.util.*;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.FileUtils;
 import org.jvnet.hk2.config.generator.AnnotationProcessorFactoryImpl;
-
-import com.sun.tools.apt.Main;
 
 /**
  * @author jwells
  * 
  * @goal generateInjectors
- * @phase generate-sources
+ * @phase generate-sources 
+ * @requiresDependencyResolution test
  */
 public class ConfigGeneratorPlugin extends AbstractMojo {
-    private final static String GENERATED_SOURCES = "generated-sources";
-    private final static String APT_GENERATED = "hk2-config-generator";
-    private final static String SRC_NAME = "src";
+    private final static String GENERATED_SOURCES = "generated-sources/hk2-config-generator/src";
     private final static String MAIN_NAME = "main";
     private final static String TEST_NAME = "test";
     private final static String JAVA_NAME = "java";
-    
+
     /**
-     * @parameter expression="${basedir}"
+     * The maven project.
+     *
+     * @parameter expression="${project}" @required @readonly
      */
-    private String basedir;
+    protected MavenProject project;
     
     /**
      * @parameter expression="${project.build.directory}"
      */
-    private String buildDirectory;
+    private File buildDirectory;
+    
+    /**
+     * @parameter expression="${project.build.sourceDirectory}"
+     */
+    private File sourceDirectory;
+    
+    /**
+     * @parameter expression="${project.build.testSourceDirectory}"
+     */
+    private File testSourceDirectory;
     
     /**
      * @parameter expression="${project.build.outputDirectory}"
      */
-    private String outputDirectory;
-    
-    /**
-     * @parameter
-     */
-    private String classpath;
+    private File outputDirectory;
     
     /**
      * @parameter
      */
     private boolean test;
     
-    private void getAllJavaFiles(File directory, final LinkedList<String> foundFiles) {
-        File allJavaFiles[] = directory.listFiles(new FileFilter() {
-
-            @Override
-            public boolean accept(File name) {
-                if (name.isDirectory()) {
-                    getAllJavaFiles(name, foundFiles);
-                    return false;
-                }
-                
-                if (name.getName().endsWith(".java")) {
-                    return true;
-                }
-                
-                return false;
-            }
-            
-        });
-        
-        for (File aJavaFile : allJavaFiles) {
-            foundFiles.add(aJavaFile.getAbsolutePath());
-        }
-        
-    }
+    /**
+     * @parameter
+     */
+    private boolean verbose;
     
-    private boolean getAllSources(LinkedList<String> args) throws MojoFailureException {
-        File dotMe = new File(basedir);
-        File src = new File(dotMe, SRC_NAME);
-        File main = (test) ? new File(src, TEST_NAME) : new File(src, MAIN_NAME);
-        File java = new File(main, JAVA_NAME);
-        
-        if (!java.exists() && !java.isDirectory()) {
-            return false;
-        }
-        
-        getAllJavaFiles(java, args);
-        
-        return true;
-    }
-    
-    private String getClasspathFromFile() throws MojoFailureException {
-        File classpathFile = new File(classpath);
-        if (!classpathFile.exists() || classpathFile.isDirectory() || !classpathFile.canRead()) {
-            throw new MojoFailureException("Could not find or read file " + classpathFile.getAbsolutePath());
-        }
-        
-        try {
-            InputStream is = new FileInputStream(classpathFile);
-            Reader reader = new InputStreamReader(is);
-            BufferedReader bis = new BufferedReader(reader);
-            
-            String line = bis.readLine();
-            
-            bis.close();
-            reader.close();
-            is.close();
-            
-            if (test) {
-                File outputDirectoryFile = new File(outputDirectory);
-                
-                // Make sure to add in the directory that has been built
-                return outputDirectoryFile.getAbsolutePath() + File.pathSeparator + line;
-            }
-            
-            return line;
-        }
-        catch (IOException ioe) {
-            throw new MojoFailureException(ioe.getMessage());
-        }
-        
-    }
-    
-    private void generateMinusSOption(LinkedList<String> args) {
-        File buildDirectoryFile = new File(buildDirectory);
-        File generatedSources = new File(buildDirectoryFile, GENERATED_SOURCES);
-        File aptGeneratedFile = new File(generatedSources, APT_GENERATED);
-        File srcGeneratedFile = new File(aptGeneratedFile, SRC_NAME);
-        File phaseGeneratedFile = (test) ? new File(srcGeneratedFile, TEST_NAME) : new File(srcGeneratedFile, MAIN_NAME);
-        File javaGeneratedFile = new File(phaseGeneratedFile, JAVA_NAME);
-        
-        aptGeneratedFile.mkdirs();
-        
-        args.add("-s");
-        args.add(javaGeneratedFile.getAbsolutePath());
-    }
-    
-    private void generateMinusCPOption(LinkedList<String> args) throws MojoFailureException {
-        if (classpath == null) throw new MojoFailureException("classpath argument may not be null");
-        args.add("-cp");
-        args.add(getClasspathFromFile());
-    }
+    /**
+     * @parameter expression="${supportedProjectTypes}" default-value="jar"
+     */
+    private String supportedProjectTypes;    
     
     /* (non-Javadoc)
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     private void internalExecute() throws Throwable {
+        List<String> projectTypes = Arrays.asList(supportedProjectTypes.split(","));
+        File srcDir = (test) ? testSourceDirectory : sourceDirectory;
+        if(!projectTypes.contains(project.getPackaging())
+                || !srcDir.exists() 
+                || !srcDir.isDirectory()){
+            return;
+        }
+        
+        // prepare the generated source directory
+        File generatedSources = new File(buildDirectory, GENERATED_SOURCES);
+        File phaseGeneratedFile = (test) ? new File(generatedSources, TEST_NAME) : new File(generatedSources, MAIN_NAME);
+        File javaGeneratedFile = new File(phaseGeneratedFile, JAVA_NAME);
+        javaGeneratedFile.mkdirs();
+        
+        // prepare command line arguments
         LinkedList<String> args = new LinkedList<String>();
-        
         args.add("-nocompile");
-        
-        generateMinusSOption(args);
-        generateMinusCPOption(args);
-        if (!getAllSources(args)) return;  // No src/main/java
+        args.add("-s");
+        args.add(javaGeneratedFile.getAbsolutePath());
+        args.add("-cp");
+        args.add(getBuildClasspath());
+        args.addAll(FileUtils.getFileNames(srcDir, "**/*.java", "",true));
         
         String[] cmdLine = args.toArray(new String[args.size()]);
+        if(verbose){
+            getLog().info("");
+            getLog().info("-- Apt Command Line --");
+            getLog().info("");
+            getLog().info(Arrays.toString(cmdLine));
+            getLog().info("");
+        }
         Main.process(new AnnotationProcessorFactoryImpl(), cmdLine);
+        
+        // make the generated source directory visible for compilation
+        if(test){
+            project.addTestCompileSourceRoot(javaGeneratedFile.getAbsolutePath());
+            if (getLog().isInfoEnabled()) {
+                getLog().info("Test Source directory: " + javaGeneratedFile + " added.");
+            }            
+        } else {
+            project.addCompileSourceRoot(javaGeneratedFile.getAbsolutePath());
+            if (getLog().isInfoEnabled()) {
+                getLog().info("Source directory: " + javaGeneratedFile + " added.");
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -222,7 +175,7 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
             Throwable cause = th;
             int lcv = 0;
             while (cause != null) {
-                System.out.println("Exception from hk2-config-generator[" + lcv++ + "]=" + cause.getMessage());
+                getLog().error("Exception from hk2-config-generator[" + lcv++ + "]=" + cause.getMessage());
                 cause.printStackTrace();
                 
                 cause = cause.getCause();
@@ -231,5 +184,35 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
             throw new MojoExecutionException(th.getMessage(), th);
         }
     }
+    
+    private String getBuildClasspath() {
+        StringBuilder sb = new StringBuilder();
+        // Make sure to add in the directory that has been built
+        if (test) {
+            sb.append(outputDirectory.getAbsolutePath());
+            sb.append(File.pathSeparator);
+        }        
+        
+        List<Artifact> artList = new ArrayList<Artifact>(project.getArtifacts());
+        Iterator<Artifact> i = artList.iterator();
+        
+        if (i.hasNext()) {
+            sb.append(i.next().getFile().getPath());
 
+            while (i.hasNext()) {
+                sb.append(File.pathSeparator);
+                sb.append(i.next().getFile().getPath());
+            }
+        }
+        
+        String classpath = sb.toString();
+        if(verbose){
+            getLog().info("");
+            getLog().info("-- Classpath --");
+            getLog().info("");
+            getLog().info(classpath);
+            getLog().info("");
+        }
+        return classpath;
+    } 
 }

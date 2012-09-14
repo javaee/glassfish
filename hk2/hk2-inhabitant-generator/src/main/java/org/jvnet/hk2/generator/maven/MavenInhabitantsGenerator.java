@@ -39,35 +39,42 @@
  */
 package org.jvnet.hk2.generator.maven;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
-
+import java.util.List;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.jvnet.hk2.generator.HabitatGenerator;
 
 /**
  * Calls the generator with maven
  * 
  * @goal generateInhabitants
- * @phase process-classes
+ * @phase process-classes 
+ * @requiresDependencyResolution test
  */
 public class MavenInhabitantsGenerator extends AbstractMojo {
     /**
+     * The maven project.
+     *
+     * @parameter expression="${project}" @required @readonly
+     */
+    protected MavenProject project;
+    
+    /**
      * @parameter expression="${project.build.outputDirectory}"
      */
-    private String outputDirectory;
+    private File outputDirectory;
     
     /**
      * @parameter expression="${project.build.testOutputDirectory}"
      */
-    private String testOutputDirectory;
+    private File testOutputDirectory;
     
     /**
      * @parameter
@@ -87,36 +94,37 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
     /**
      * @parameter
      */
-    private String classpath;
+    private boolean noswap;
     
     /**
-     * @parameter
+     * @parameter expression="${supportedProjectTypes}" default-value="jar"
      */
-    private boolean noswap;
-
+    private String supportedProjectTypes;
+    
     /**
      * This method will compile the inhabitants file based on
      * the classes just compiled
      */
+    @Override
     public void execute() throws MojoFailureException {
-        File output;
-        if (!test) {
-            output = new File(outputDirectory);
-        }
-        else {
-            output = new File(testOutputDirectory);
+        List<String> projectTypes = Arrays.asList(supportedProjectTypes.split(","));
+        if(!projectTypes.contains(project.getPackaging())){
+            return;
         }
         
+        File output = (test)? testOutputDirectory : outputDirectory;
+        output.mkdirs();
+        
         if (!output.exists()) {
-            if (verbose) {
-                System.out.println("Exiting hk2-inhabitant-generator because could not find output directory " +
+            getLog().info("Exiting hk2-inhabitant-generator because could not find output directory " +
                   output.getAbsolutePath());
-            }
             return;
         }
         
         if (verbose) {
-            System.out.println("hk2-inhabitant-generator generating into location " + output.getAbsolutePath());
+            getLog().info("");
+            getLog().info("hk2-inhabitant-generator generating into location " + output.getAbsolutePath());
+            getLog().info("");
         }
         
         LinkedList<String> arguments = new LinkedList<String>();
@@ -133,15 +141,8 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
             arguments.add(locator);
         }
         
-        if (classpath != null) {
-            String classpathValue = getClasspathFromFile();
-            if (classpathValue == null) {
-                throw new MojoFailureException("Found the file, but it did not contain a line with the classpath");
-            }
-            
-            arguments.add(HabitatGenerator.SEARCHPATH_ARG);
-            arguments.add(classpathValue);
-        }
+        arguments.add(HabitatGenerator.SEARCHPATH_ARG);
+        arguments.add(getBuildClasspath());
         
         if (noswap) {
             arguments.add(HabitatGenerator.NOSWAP_ARG);
@@ -157,35 +158,34 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
         }
     }
     
-    private String getClasspathFromFile() throws MojoFailureException {
-        File classpathFile = new File(classpath);
-        if (!classpathFile.exists() || classpathFile.isDirectory() || !classpathFile.canRead()) {
-            throw new MojoFailureException("Could not find or read file " + classpathFile.getAbsolutePath());
-        }
+    private String getBuildClasspath() {
+        StringBuilder sb = new StringBuilder();
+        // Make sure to add in the directory that has been built
+        if (test) {
+            sb.append(outputDirectory.getAbsolutePath());
+            sb.append(File.pathSeparator);
+        }        
         
-        try {
-            InputStream is = new FileInputStream(classpathFile);
-            Reader reader = new InputStreamReader(is);
-            BufferedReader bis = new BufferedReader(reader);
-            
-            String line = bis.readLine();
-            
-            bis.close();
-            reader.close();
-            is.close();
-            
-            if (test) {
-                File buildDirectoryFile = new File(outputDirectory);
-                
-                // Make sure to add in the directory that has been built
-                return buildDirectoryFile.getAbsolutePath() + File.pathSeparator + line;
+        List<Artifact> artList = new ArrayList<Artifact>(project.getArtifacts());
+        Iterator<Artifact> i = artList.iterator();
+        
+        if (i.hasNext()) {
+            sb.append(i.next().getFile().getPath());
+
+            while (i.hasNext()) {
+                sb.append(File.pathSeparator);
+                sb.append(i.next().getFile().getPath());
             }
-            
-            return line;
-        }
-        catch (IOException ioe) {
-            throw new MojoFailureException(ioe.getMessage());
         }
         
-    }
+        String classpath = sb.toString();
+        if(verbose){
+            getLog().info("");
+            getLog().info("-- Classpath --");
+            getLog().info("");
+            getLog().info(classpath);
+            getLog().info("");
+        }
+        return classpath;
+    }      
 }
