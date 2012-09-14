@@ -103,5 +103,11 @@
             <version>3.3.0-v20070604</version>
         </dependency>
         -->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-project</artifactId>
+            <version>3.0-alpha-2</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 </project>

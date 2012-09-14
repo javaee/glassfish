@@ -79,33 +79,9 @@
                 <version>${project.version}</version>
                 <executions>
                     <execution>
-                        <configuration>
-                            <classpath>${project.build.directory}/classpath.txt</classpath>
-                        </configuration>
-
                         <goals>
                             <goal>generateInjectors</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>1.7</version>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>target/generated-sources/hk2-config-generator</source>
-                            </sources>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
