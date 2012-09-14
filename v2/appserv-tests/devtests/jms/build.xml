@@ -15,6 +15,7 @@
 
     <target name="all">
         <antcall target="setup"/>
+        <antcall target="DefaultConnectionFactory"/>
         <antcall target="Injection"/>
         <antcall target="unsetup"/>
         <antcall target="report"/>
@@ -48,6 +49,12 @@
         <record name="Injection.output" action="start" />
             <ant dir="injection" target="all"/>
         <record name="Injection.output" action="stop" />
+    </target>
+
+    <target name="DefaultConnectionFactory">
+        <record name="DefaultCF.output" action="start" />
+            <ant dir="defaultCF" target="all"/>
+        <record name="DefaultCF.output" action="stop" />
     </target>
 
     <target name="usage">
