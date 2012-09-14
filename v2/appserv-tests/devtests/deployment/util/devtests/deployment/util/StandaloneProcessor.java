@@ -131,7 +131,7 @@ public class StandaloneProcessor {
             if (f.exists()) {
                 try {
                     prepareHabitat();
-                    ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
+                    ArchiveFactory archiveFactory = habitat.getService(ArchiveFactory.class);
                     ReadableArchive archive = archiveFactory.openArchive(f);
                     ClassLoader classLoader = null;
                     if (ModuleType.WAR.equals(type)) {
@@ -145,7 +145,7 @@ public class StandaloneProcessor {
                     if (ModuleType.EJB.equals(type)) {
                         EjbBundleDescriptorImpl ejbBundleDesc =
                                 (EjbBundleDescriptorImpl)bundleDescriptor;
-                        scanner = habitat.getComponent(EjbJarScanner.class);
+                        scanner = habitat.getService(EjbJarScanner.class);
                         scanner.process(archive, ejbBundleDesc, classLoader, null);
                         
                     } else if (ModuleType.WAR.equals(type)) {
@@ -158,7 +158,7 @@ public class StandaloneProcessor {
                             webCompDesc.setWebComponentImplementation(cname);
                             webBundleDesc.addWebComponentDescriptor(webCompDesc);
                         }
-                        scanner = habitat.getComponent(WarScanner.class);
+                        scanner = habitat.getService(WarScanner.class);
                         scanner.process(archive, webBundleDesc, classLoader, null);
                         
                     } else if (ModuleType.CAR.equals(type)) {
@@ -166,12 +166,12 @@ public class StandaloneProcessor {
                         ApplicationClientDescriptor appClientDesc = 
                                 (ApplicationClientDescriptor)bundleDescriptor;
                         appClientDesc.setMainClassName(mainClassName);
-                        scanner = habitat.getComponent(AppClientScanner.class);
+                        scanner = habitat.getService(AppClientScanner.class);
                         scanner.process(archive, appClientDesc, classLoader, null);
                         
                     }
 
-                    AnnotationProcessor ap = habitat.getComponent(SJSASFactory.class).getAnnotationProcessor();
+                    AnnotationProcessor ap = habitat.<SJSASFactory>getService(SJSASFactory.class).getAnnotationProcessor();
                     
                     
                     // if the user indicated a directory for handlers, time to add the                    

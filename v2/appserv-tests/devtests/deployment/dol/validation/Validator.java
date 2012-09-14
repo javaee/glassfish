@@ -45,8 +45,8 @@ public class Validator {
 
         prepareHabitat();
 
-        ArchivistFactory archivistFactory = habitat.getComponent(ArchivistFactory.class);
-        ArchiveFactory archiveFactory = habitat.getComponent(ArchiveFactory.class);
+        ArchivistFactory archivistFactory = habitat.getService(ArchivistFactory.class);
+        ArchiveFactory archiveFactory = habitat.getService(ArchiveFactory.class);
         Archivist archivist = null;
 
         ReadableArchive archive = null;
