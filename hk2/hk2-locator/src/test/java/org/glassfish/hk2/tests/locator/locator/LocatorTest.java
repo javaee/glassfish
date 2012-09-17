@@ -60,6 +60,7 @@ import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
@@ -301,7 +302,7 @@ public class LocatorTest {
      * than the non-cached version, which actually seems to be true.  For information
      * the results are printed out
      */
-    @Test
+    @Test @Ignore
     public void testPerformance() {
         // The Filter version of getAllServices should be a lot slower than the
         // cache version
