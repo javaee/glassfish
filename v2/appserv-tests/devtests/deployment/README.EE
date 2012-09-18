@@ -12,13 +12,9 @@ run on DAS and cluster.
 
 ** It is assumed that the masster password is changeit **
 
-Note: The admin secure connection is not implemented yet, so we always run in 
-      non-secure mode now. The SECURE variable will be ignored.
-
 FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ DAS :
 --------------------------------------------------
-1. In addition to setting APS_HOME, S1AS_HOME (see README for more details), 
-   set environment variable SECURE to true (e.g. export SECURE=true on ksh)
+1. Set APS_HOME, S1AS_HOME (see README for more details). 
 
 2. Start the DAS (i.e. domain1 in the default case.) using command
    asadmin start-domain --user <user> --password <pwd>
@@ -29,8 +25,7 @@ FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ DAS :
 FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ remote instance:
 ---------------------------------------------------------------
 
-1. In addition to setting APS_HOME, S1AS_HOME (see README for more details), 
-   set environment variable SECURE to true (e.g. export SECURE=true on ksh)
+1. Set APS_HOME, S1AS_HOME (see README for more details). 
 
 2. Set DEPL_TARGET to SERVER (e.g. export DEPL_TARGET=SERVER on ksh)
 
@@ -44,8 +39,7 @@ NOTE : no need to to start a domain manually before starting the tests; setting
 FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ cluster and remote instance :
 --------------------------------------------------------------------------
 
-1. In addition to setting APS_HOME, S1AS_HOME (see README for more details), 
-   set environment variable SECURE to true (e.g. export SECURE=true on ksh)
+1. Set APS_HOME, S1AS_HOME (see README for more details). 
 
 2. Set DEPL_TARGET to CLUSTER (e.g. export DEPL_TARGET=CLUSTER on ksh)
 
