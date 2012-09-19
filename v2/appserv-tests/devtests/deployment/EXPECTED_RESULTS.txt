@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 265 
+PASS: 266 
 FAIL: 0
 UNKNOWN: 0
 
@@ -21,6 +21,7 @@ UNKNOWN: 0
 [PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and enable application (server)
 [PASSED] servletonly : war/servletonly Test asadmin dotted disable application and enable ref (server)
 [PASSED] servletonly : war/servletonly Test asadmin dotted enable application and enable ref (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy with runtime altdd (server)
 [PASSED] servletonly : war/servletonly Test jsr88 deploy (server)  
 [PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)  
 [PASSED] servletonly : war/servletonly Test jsr88 started state (server)  
@@ -279,7 +280,7 @@ UNKNOWN: 0
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 194
+PASS: 195
 FAIL: 0
 UNKNOWN: 0
 
@@ -296,6 +297,7 @@ UNKNOWN: 0
 [PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and enable application (server)
 [PASSED] servletonly : war/servletonly Test asadmin dotted disable application and enable ref (server)
 [PASSED] servletonly : war/servletonly Test asadmin dotted enable application and enable ref (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy with runtime altdd (server)
 [PASSED] servletonly : war/servletonly Test jsr88 deploy (server)
 [PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)
 [PASSED] servletonly : war/servletonly Test jsr88 started state (server)
@@ -483,7 +485,7 @@ UNKNOWN: 0
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 352
+PASS: 353
 FAIL: 0
 UNKNOWN: 0
 
@@ -513,6 +515,8 @@ UNKNOWN: 0
 [PASSED] servletonly : war/servletonly Test asadmin dotted disable application and enable ref (cluster-inst1)
 [PASSED] servletonly : war/servletonly Test asadmin dotted enable application and enable ref (server)
 [PASSED] servletonly : war/servletonly Test asadmin dotted enable application and enable ref (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin deploy with runtime altdd (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy with runtime altdd (cluster-inst1)
 [PASSED] servletonly : war/servletonly Test jsr88 deploy (server)
 [PASSED] servletonly : war/servletonly Test jsr88 deploy (cluster-inst1)
 [PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)
