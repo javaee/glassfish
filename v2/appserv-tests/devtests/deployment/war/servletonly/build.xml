@@ -9,6 +9,7 @@
     &commonBuild;
 
     <property name="contextRoot" value="war"/>
+    <property name="altContextRoot" value="altwar"/>
     <property name="testName" value="servletonly"/>
     <property name="initial.changeable.value" value="first"/>
     <property name="second.changeable.value" value="second"/>
@@ -57,11 +58,19 @@ public class ChangeableClass {
             <webinf dir="." includes="glassfish-web.xml, sun-web.xml"/>
             <classes dir="${build}" excludes="**-portable.war, **-deployplan.jar"/>
         </war>
+        <copy file="alt-glassfish-web.xml" tofile="${build}/archive/alt-glassfish-web.xml"/>
     </target>
 
     <target name="deploy.asadmin" depends="prepare">
         <antcall target="common.deploy.asadmin">
             <param name="arg.list" value="${all.war}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.asadmin.altdd" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--runtimealtdd ${build}/archive/alt-glassfish-web.xml ${all.war}"/>
             <param name="testName" value="${testName}"/>
         </antcall>
     </target>
@@ -145,6 +154,15 @@ public class ChangeableClass {
         </antcall>
     </target>
 
+    <target name="run.positive.altdd" depends="setHttpPort">
+        <property name="extra.args" value=""/>
+        <antcall target="common.run.positive">
+            <param name="link" value="${altContextRoot}/${testName}"/>
+            <param name="log.id" value="${log.id}"/>
+            <param name="extra.args" value="${extra.args}"/>
+        </antcall>
+    </target>
+
     <target name="run.negative" depends="setHttpPort">
         <property name="extra.args" value=""/>
         <antcall target="common.run.negative">
@@ -153,6 +171,7 @@ public class ChangeableClass {
             <param name="extra.args" value="${extra.args}"/>
         </antcall>
     </target>
+
 
     <target name="runclient" depends="init">
         <property name="extra.args" value=""/>
@@ -224,28 +243,28 @@ public class ChangeableClass {
             <param name="testName" value="${testName}"/>
         </antcall>
         <antcall target="run.negative">
-            <param name="log.id" value="11"/>
+            <param name="log.id" value="6"/>
             <param name="desc" value="war/servletonly Test asadmin dotted disable ref"/>
         </antcall>
         <antcall target="common.dotted.enable.ref.asadmin">
             <param name="testName" value="${testName}"/>
         </antcall>
         <antcall target="run.positive">
-            <param name="log.id" value="12"/>
+            <param name="log.id" value="7"/>
             <param name="desc" value="war/servletonly Test asadmin dotted enableref "/>
         </antcall>
         <antcall target="common.dotted.disable.application.asadmin">
             <param name="testName" value="${testName}"/>
         </antcall>
         <antcall target="run.negative">
-            <param name="log.id" value="13"/>
+            <param name="log.id" value="8"/>
             <param name="desc" value="war/servletonly Test asadmin dotted disable application"/>
         </antcall>
         <antcall target="common.dotted.enable.application.asadmin">
             <param name="testName" value="${testName}"/>
         </antcall>
         <antcall target="run.positive">
-            <param name="log.id" value="14"/>
+            <param name="log.id" value="9"/>
             <param name="desc" value="war/servletonly Test asadmin dotted enable application"/>
         </antcall>
        <antcall target="common.dotted.disable.application.asadmin">
@@ -255,14 +274,14 @@ public class ChangeableClass {
             <param name="testName" value="${testName}"/>
         </antcall>
         <antcall target="run.negative">
-            <param name="log.id" value="15"/>
+            <param name="log.id" value="10"/>
             <param name="desc" value="war/servletonly Test asadmin dotted disable ref and application"/>
         </antcall>
         <antcall target="common.dotted.enable.application.asadmin">
             <param name="testName" value="${testName}"/>
         </antcall>
         <antcall target="run.negative">
-            <param name="log.id" value="16"/>
+            <param name="log.id" value="11"/>
             <param name="desc" value="war/servletonly Test asadmin dotted disable ref and enable application"/>
         </antcall>
         <antcall target="common.dotted.disable.application.asadmin">
@@ -272,45 +291,53 @@ public class ChangeableClass {
             <param name="testName" value="${testName}"/>
        </antcall>
         <antcall target="run.negative">
-            <param name="log.id" value="17"/>
+            <param name="log.id" value="12"/>
             <param name="desc" value="war/servletonly Test asadmin dotted disable application and enable ref"/>
         </antcall>
         <antcall target="common.dotted.enable.application.asadmin">
             <param name="testName" value="${testName}"/>
         </antcall>
         <antcall target="run.positive">
-            <param name="log.id" value="18"/>
+            <param name="log.id" value="13"/>
             <param name="desc" value="war/servletonly Test asadmin dotted enable application and enable ref"/>
         </antcall>
         <antcall target="undeploy.asadmin"/>
+
+        <antcall target="deploy.asadmin.altdd"/>
+        <antcall target="run.positive.altdd">
+            <param name="log.id" value="14"/>
+            <param name="desc" value="war/servletonly Test asadmin deploy with runtime altdd"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+
         <antcall target="deploy.jsr88"/>
         <antcall target="run.positive">
-            <param name="log.id" value="6"/>
+            <param name="log.id" value="15"/>
             <param name="desc" value="war/servletonly Test jsr88 deploy"/>
         </antcall>
 
         <antcall target="stop.jsr88"/>
         <antcall target="run.negative">
-            <param name="log.id" value="7"/>
+            <param name="log.id" value="16"/>
             <param name="desc" value="war/servletonly Test jsr88 stopped state"/>
         </antcall>
         <antcall target="start.jsr88"/>
         <antcall target="run.positive">
-            <param name="log.id" value="8"/>
+            <param name="log.id" value="17"/>
             <param name="desc" value="war/servletonly Test jsr88 started state"/>
         </antcall>
 
         <antcall target="stop.jsr88"/>
         <antcall target="redeploy.jsr88"/>
         <antcall target="run.negative">
-            <param name="log.id" value="9"/>
+            <param name="log.id" value="18"/>
             <param name="desc" value="war/servletonly Test jsr88 redeploy stop"/>
         </antcall>
 
         <antcall target="start.jsr88"/>
         <antcall target="redeploy.jsr88"/>
         <antcall target="run.positive">
-            <param name="log.id" value="10"/>
+            <param name="log.id" value="19"/>
             <param name="desc" value="war/servletonly Test jsr88 redeploy start"/>
         </antcall>
 
