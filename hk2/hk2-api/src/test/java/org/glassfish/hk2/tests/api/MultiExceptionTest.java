@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -107,6 +110,104 @@ public class MultiExceptionTest {
         
         Assert.assertTrue(me.toString().contains(E1));
         Assert.assertTrue(me.toString().contains(E2));
+    }
+    
+    /**
+     * Tests that I can create a multi throwable multi exception
+     */
+    @Test
+    public void testPrintException() {
+        List<Throwable> putMeIn = new LinkedList<Throwable>();
+        
+        IllegalArgumentException iae = new IllegalArgumentException(E1);
+        IllegalStateException ise = new IllegalStateException(E2);
+        
+        putMeIn.add(iae);
+        putMeIn.add(ise);
+        
+        MultiException me = new MultiException(putMeIn);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream writer = new PrintStream(baos);
+        
+        me.printStackTrace(writer);
+        
+        writer.close();
+        
+        String asString = baos.toString();
+        
+        Assert.assertTrue(asString.contains(E1));
+        Assert.assertTrue(asString.contains(E2));
+    }
+    
+    /**
+     * Tests that I can create a multi throwable multi exception
+     */
+    @Test
+    public void testPrintExceptionPrintWriter() {
+        List<Throwable> putMeIn = new LinkedList<Throwable>();
+        
+        IllegalArgumentException iae = new IllegalArgumentException(E1);
+        IllegalStateException ise = new IllegalStateException(E2);
+        
+        putMeIn.add(iae);
+        putMeIn.add(ise);
+        
+        MultiException me = new MultiException(putMeIn);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter writer = new PrintWriter(baos);
+        
+        me.printStackTrace(writer);
+        
+        writer.close();
+        
+        String asString = baos.toString();
+        
+        Assert.assertTrue(asString.contains(E1));
+        Assert.assertTrue(asString.contains(E2));
+    }
+    
+    /**
+     * Tests that I can create a multi throwable multi exception
+     */
+    @Test
+    public void testGetMessage() {
+        List<Throwable> putMeIn = new LinkedList<Throwable>();
+        
+        IllegalArgumentException iae = new IllegalArgumentException(E1);
+        IllegalStateException ise = new IllegalStateException(E2);
+        
+        putMeIn.add(iae);
+        putMeIn.add(ise);
+        
+        MultiException me = new MultiException(putMeIn);
+        
+        String asString = me.getMessage();
+        
+        Assert.assertTrue(asString.contains(E1));
+        Assert.assertTrue(asString.contains(E2));
+    }
+    
+    /**
+     * Tests that I can create a multi throwable multi exception
+     */
+    @Test
+    public void testToString() {
+        List<Throwable> putMeIn = new LinkedList<Throwable>();
+        
+        IllegalArgumentException iae = new IllegalArgumentException(E1);
+        IllegalStateException ise = new IllegalStateException(E2);
+        
+        putMeIn.add(iae);
+        putMeIn.add(ise);
+        
+        MultiException me = new MultiException(putMeIn);
+        
+        String asString = me.toString();
+        
+        Assert.assertTrue(asString.contains(E1));
+        Assert.assertTrue(asString.contains(E2));
     }
 
 }

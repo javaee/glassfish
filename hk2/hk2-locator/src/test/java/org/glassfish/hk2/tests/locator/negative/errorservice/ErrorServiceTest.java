@@ -92,7 +92,7 @@ public class ErrorServiceTest {
         MultiException me = esi.getMe();
         Assert.assertNotNull(me);
         
-        Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+        Assert.assertTrue("Expected " + EXCEPTION_STRING + " but got " + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING));
     }
     
     private void testLookupInjecteePriorToFixing(ErrorServiceImpl esi) {
@@ -121,7 +121,7 @@ public class ErrorServiceTest {
         MultiException me = esi.getMe();
         Assert.assertNotNull(me);
         
-        Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+        Assert.assertTrue("Expected " + EXCEPTION_STRING + " but got " + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
     }
     
     private void testLookupHandlesPriorToFixing(ErrorServiceImpl esi) {
@@ -144,7 +144,7 @@ public class ErrorServiceTest {
         MultiException me = esi.getMe();
         Assert.assertNotNull(me);
         
-        Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+        Assert.assertTrue("Expected " + EXCEPTION_STRING + " but got " + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
     }
     
     private void testLookupHandlesWithContractPriorToFixing(ErrorServiceImpl esi) {
@@ -166,7 +166,7 @@ public class ErrorServiceTest {
         MultiException me = esi.getMe();
         Assert.assertNotNull(me);
         
-        Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+        Assert.assertTrue("Expected " + EXCEPTION_STRING + " but got " + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
     }
     
     private void testLookupPriorToFixingButThrowing(ErrorServiceImpl esi) {
@@ -178,7 +178,8 @@ public class ErrorServiceTest {
             Assert.fail("The error service now throws an assertion error");
         }
         catch (MultiException me) {
-            Assert.assertEquals(me.getMessage(), EXCEPTION_STRING_DUEX, me.getMessage());
+            Assert.assertTrue("Expected " + EXCEPTION_STRING_DUEX + " but got " + me.getMessage(),
+                    me.getMessage().contains(EXCEPTION_STRING_DUEX));
             
         }
         
@@ -190,7 +191,7 @@ public class ErrorServiceTest {
         MultiException me = esi.getMe();
         Assert.assertNotNull(me);
         
-        Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+        Assert.assertTrue("Expected " + EXCEPTION_STRING + " but got " + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
     }
     
     private void testLookupPriorToFixingButReThrowing(ErrorServiceImpl esi) {
@@ -202,7 +203,7 @@ public class ErrorServiceTest {
             Assert.fail("The error service now rethrows the ME error");
         }
         catch (MultiException me) {
-            Assert.assertEquals(me.getMessage(), EXCEPTION_STRING, me.getMessage());
+            Assert.assertTrue("Expected " + EXCEPTION_STRING + " but got " + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING));
         }
         
         ActiveDescriptor<?> fromError = esi.getDescriptor();
@@ -213,7 +214,7 @@ public class ErrorServiceTest {
         MultiException me = esi.getMe();
         Assert.assertNotNull(me);
         
-        Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+        Assert.assertTrue("Expected " + EXCEPTION_STRING + " but got " + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
     }
     
     private void testLookupAfterFixing() {
