@@ -113,7 +113,7 @@ public class NegativeInjectorTest {
             Assert.fail("ThrowyC throws in its constructor");
         }
         catch (MultiException me) {
-            Assert.assertEquals(LocatorHelper.EXPECTED, me.getMessage());
+            Assert.assertTrue("Expected " + LocatorHelper.EXPECTED + " but got " + me.getMessage(), me.getMessage().contains(LocatorHelper.EXPECTED));
         }
     }
     
@@ -147,7 +147,8 @@ public class NegativeInjectorTest {
             Assert.fail("ThrowyPC throws in its post construct");
         }
         catch (MultiException me) {
-            Assert.assertEquals(LocatorHelper.EXPECTED, me.getMessage());
+            Assert.assertTrue("Expected " + LocatorHelper.EXPECTED + " but got " + me.getMessage(),
+                    me.getMessage().contains(LocatorHelper.EXPECTED));
         }
     }
     
@@ -163,7 +164,8 @@ public class NegativeInjectorTest {
             Assert.fail("ThrowyPC throws in its pre destroy");
         }
         catch (MultiException me) {
-            Assert.assertEquals(LocatorHelper.EXPECTED, me.getMessage());
+            Assert.assertTrue("Expected " + LocatorHelper.EXPECTED + " but got " + me.getMessage(),
+                    me.getMessage().contains(LocatorHelper.EXPECTED));
         }
     }
     
@@ -179,7 +181,8 @@ public class NegativeInjectorTest {
             Assert.fail("ThrowyM throws in its initializer method");
         }
         catch (MultiException me) {
-            Assert.assertEquals(LocatorHelper.EXPECTED, me.getMessage());
+            Assert.assertTrue("Expected " + LocatorHelper.EXPECTED + " but got " + me.getMessage(),
+                    me.getMessage().contains(LocatorHelper.EXPECTED));
         }
     }
     

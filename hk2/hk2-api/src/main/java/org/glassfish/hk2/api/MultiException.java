@@ -39,8 +39,8 @@
  */
 package org.glassfish.hk2.api;
 
+import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +58,7 @@ public class MultiException extends RuntimeException {
      * For serialization
      */
     private static final long serialVersionUID = 2112432697858621044L;
+    private final Object lock = new Object();
     private final List<Throwable> throwables = new LinkedList<Throwable>();
 
     /**
@@ -100,7 +101,9 @@ public class MultiException extends RuntimeException {
      * not return null, but may return an empty object
      */
     public List<Throwable> getErrors() {
-        return Collections.unmodifiableList(throwables);
+        synchronized (lock) {
+            return Collections.unmodifiableList(throwables);
+        }
     }
 
     /**
@@ -109,27 +112,55 @@ public class MultiException extends RuntimeException {
      * @param error The exception to add
      */
     public void addError(Throwable error) {
-        throwables.add(error);
+        synchronized (lock) {
+            throwables.add(error);
+        }
+    }
+    
+    public String getMessage() {
+        List<Throwable> listCopy = getErrors();
+        StringBuffer sb = new StringBuffer("A MultiException has " + listCopy.size() + " exceptions.  They are:\n");
+        
+        int lcv = 1;
+        for (Throwable th : listCopy) {
+            sb.append(lcv++ + ". " + th.getMessage() + "\n");
+        }
+        
+        return sb.toString();
+    }
+    
+    public void printStackTrace(PrintStream s) {
+        List<Throwable> listCopy = getErrors();
+        
+        if (listCopy.size() <= 0) {
+            super.printStackTrace(s);
+            return;
+        }
+        
+        int lcv = 1;
+        for (Throwable th : listCopy) {
+            s.println("MultiException stack " + lcv++ + " of " + listCopy.size());
+            th.printStackTrace(s);
+        }
+    }
+    
+    public void printStackTrace(PrintWriter s) {
+        List<Throwable> listCopy = getErrors();
+        
+        if (listCopy.size() <= 0) {
+            super.printStackTrace(s);
+            return;
+        }
+        
+        int lcv = 1;
+        for (Throwable th : listCopy) {
+            s.println("MultiException stack " + lcv++ + " of " + listCopy.size());
+            th.printStackTrace(s);
+        }
     }
 
     public String toString() {
-        final StringWriter stringWriter = new StringWriter();
-        final PrintWriter printWriter = new PrintWriter(stringWriter);
-
-        printWriter.print("MultiException [" + System.identityHashCode(this) + "] {");
-
-        int lcv = 1;
-        for (Throwable th : throwables) {
-            printWriter.print("\n" + lcv++ + ". ");
-            th.printStackTrace(printWriter);
-        }
-
-        if (!throwables.isEmpty()) {
-            printWriter.println();
-        }
-        printWriter.println("}");
-
-        return stringWriter.toString();
+        return getMessage();
     }
 
 }
