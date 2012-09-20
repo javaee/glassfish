@@ -28,4 +28,4 @@
  7. Usage : (Take ejb component for example)
       ant all -> ant enable.emma all emma.gen.coverage.report -Demma.enabled=true
 
- 8. Browse the result in 'report' foler
+ 8. Browse the result in 'report' folder
