@@ -39,9 +39,12 @@
  */
 package org.glassfish.hk2.utilities.cache.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 
 import org.glassfish.hk2.utilities.cache.LRUCache;
+import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
  * The implementation of the LRUCache
@@ -50,6 +53,23 @@ import org.glassfish.hk2.utilities.cache.LRUCache;
  *
  */
 public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
+    private final static String CACHING_PROPERTY = "org.jvnet.hk2.properties.caching";
+    private final static boolean CACHING;
+    static {
+        CACHING = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+
+            @Override
+            public Boolean run() {
+                return Boolean.parseBoolean(System.getProperty(CACHING_PROPERTY, "true"));
+            }
+            
+        });
+        
+        if (!CACHING) {
+            Logger.getLogger().debug("HK2 Caching has been disabled");
+        }
+    }
+    
     private final int maxCacheSize;
     private final HashMap<K, CacheEntry<K, V>> entries =
             new HashMap<K, CacheEntry<K, V>>();
@@ -117,6 +137,8 @@ public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
     @Override
     public synchronized void put(K key, V value) {
         if (key == null || value == null) throw new IllegalArgumentException();
+        
+        if (!CACHING) return;
         
         CacheEntry<K, V> addMe = new CacheEntry<K, V>(value);
         addMe.setKey(key);   // For debugging

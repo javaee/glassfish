@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.hk2.component;
+package org.jvnet.hk2.config;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -55,7 +55,6 @@ import java.lang.reflect.Method;
  *
  * @author Jerome Dochez
  */
-@Deprecated
 public abstract class InjectionResolver<U extends Annotation> implements InjectionResolverQuery {
     
     public final Class<U> type;

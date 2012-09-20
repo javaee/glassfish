@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component;
+package org.jvnet.hk2.config;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -46,7 +46,7 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
 
-import javax.inject.Inject;
+import org.jvnet.hk2.component.ComponentException;
 
 /**
  * Exception thrown by the injection manager when a dependency is not satisfied when
@@ -54,7 +54,6 @@ import javax.inject.Inject;
  *
  * @author Jerome Dochez
  */
-@Deprecated
 @SuppressWarnings("serial")
 public class UnsatisfiedDependencyException extends ComponentException {
 
