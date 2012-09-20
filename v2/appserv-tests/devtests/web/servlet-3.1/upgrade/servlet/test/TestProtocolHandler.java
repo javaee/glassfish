@@ -48,7 +48,6 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-
 import javax.servlet.Servlet;
 import javax.servlet.ReadListener;
 import javax.servlet.ServletException;
@@ -60,21 +59,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.ProtocolHandler;
 import javax.servlet.http.WebConnection;
-
-import org.glassfish.grizzly.GrizzlyFuture;
-
-
-import org.glassfish.grizzly.GrizzlyFuture;
-import org.glassfish.grizzly.http.HttpRequestPacket;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
-import org.glassfish.grizzly.http.server.ServerConfiguration;
-import org.glassfish.grizzly.impl.FutureImpl;
-import org.glassfish.grizzly.impl.SafeFutureImpl;
-import org.glassfish.grizzly.servlet.ServletRegistration;
-import org.glassfish.grizzly.servlet.WebappContext;
-import org.glassfish.grizzly.websockets.*;
-
 
 public class TestProtocolHandler implements ProtocolHandler {
 
@@ -94,7 +78,6 @@ public class TestProtocolHandler implements ProtocolHandler {
 
     }
 
-/*
     private class TestThread extends Thread {
         String name;
         ServletOutputStream outputStream;
@@ -119,57 +102,5 @@ public class TestProtocolHandler implements ProtocolHandler {
             }
         }
     }
-
-    private void run() throws Exception {
-
-        final CountDownLatch latch = new CountDownLatch(1);
-        final EchoWebSocketApplication app = new EchoWebSocketApplication();
-        WebSocketEngine.getEngine().register(app);
-        HttpServer httpServer = HttpServer.createSimpleServer(".", PORT);
-        httpServer.getServerConfiguration().setHttpServerName("WebSocket Server");
-        httpServer.getServerConfiguration().setName("WebSocket Server");
-        for (NetworkListener networkListener : httpServer.getListeners()) {
-            networkListener.registerAddOn(new WebSocketAddOn());
-        }
-        httpServer.start();
-
-        try {
-            WebSocketClient socket = new WebSocketClient(String.format("ws://localhost:%s/echo", PORT),
-                    new WebSocketAdapter() {
-                        public void onMessage(WebSocket socket, String frame) {
-                            latch.countDown();
-                        }
-                    });
-            socket.connect();
-            socket.send("echo me back");
-            //Assert.assertTrue(latch.await(WebSocketEngine.DEFAULT_TIMEOUT, TimeUnit.SECONDS));
-        } finally {
-            //WebSocketEngine.getEngine().unregister(app);
-            //httpServer.stop();
-        }
-    }
-    
-    public static class CountDownAdapter extends WebSocketAdapter {
-        private final Set<String> sent;
-        private final CountDownLatch received;
-        private final CountDownLatch connected;
-
-        public CountDownAdapter(Set<String> sent, CountDownLatch received, CountDownLatch connected) {
-            this.sent = sent;
-            this.received = received;
-            this.connected = connected;
-        }
-
-        @Override
-        public void onMessage(WebSocket socket, String data) {
-            sent.remove(data);
-            received.countDown();
-        }
-
-        @Override
-        public void onConnect(WebSocket socket) {
-            connected.countDown();
-        }
-    } */
 
 }
