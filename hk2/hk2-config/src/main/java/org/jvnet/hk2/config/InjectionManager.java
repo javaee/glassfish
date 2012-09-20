@@ -37,9 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component;
-
-import com.sun.hk2.component.InjectionResolver;
+package org.jvnet.hk2.config;
 
 import java.lang.reflect.*;
 import java.lang.annotation.Annotation;
@@ -51,7 +49,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jvnet.hk2.component.concurrent.WorkManager;
+import org.glassfish.hk2.api.MultiException;
+
+import org.jvnet.hk2.component.Injectable;
 
 /**
  * InjectionManager is responsible for injecting resources into a component.
@@ -59,21 +59,8 @@ import org.jvnet.hk2.component.concurrent.WorkManager;
  *
  * @author Jerome Dochez
  */
-@Deprecated
 @SuppressWarnings("unchecked")
 public class InjectionManager {
-
-   /**
-     * Initializes the component by performing injection.
-     *
-     * @param component component instance to inject
-     * @param targets the injection resolvers to resolve all injection points
-     * @throws ComponentException
-     *      if injection failed for some reason.
-     */
-    public void inject(Object component, InjectionResolver... targets) {
-        syncDoInject(component, null, component.getClass(), targets);
-    }
   
    /**
      * Initializes the component by performing injection.
@@ -84,8 +71,8 @@ public class InjectionManager {
      * @throws ComponentException
      *      if injection failed for some reason.
      */    
-    public void inject(Object component, Inhabitant<?> onBehalfOf, InjectionResolver... targets) {
-        syncDoInject(component, onBehalfOf, component.getClass(), targets);
+    public void inject(Object component, InjectionResolver... targets) {
+        syncDoInject(component, component.getClass(), targets);
     }
 
     /**
@@ -98,40 +85,36 @@ public class InjectionManager {
      * @throws ComponentException
      *      if injection failed for some reason.
      */    
-    public void inject(Object component, Inhabitant<?> onBehalfOf, ExecutorService es, InjectionResolver... targets) {
+    public void inject(Object component, ExecutorService es, InjectionResolver... targets) {
       try {
         if (null == es) {
-          syncDoInject(component, onBehalfOf, component.getClass(), targets);
+          syncDoInject(component, component.getClass(), targets);
         } else {
-          syncDoInject(component, onBehalfOf, component.getClass(), targets);
+          syncDoInject(component, component.getClass(), targets);
           // syncDoInject(new InjectContext(component, onBehalfOf, component.getClass(), es, targets));
         }
       } catch (Exception e) {
         // we do this to bolster debugging
-        if (ComponentException.class.isInstance(e)) {
-          // it's presumed that there will be sufficient causes already present for these types of exceptions, no need to do more
-          throw ComponentException.class.cast(e);
+        if (e instanceof MultiException) {
+            throw (MultiException) e;
         }
 
-        throw new ComponentException("injection failed on " + component + "; onBehalfOf: " + onBehalfOf, e);
+        throw new MultiException(e);
       }
     }
     
     protected static class InjectContext {
       public final Object component;
-      public final Inhabitant<?> onBehalfOf;
       public final Class<?> type;
       public final ExecutorService es;
       public final InjectionResolver[] targets;
 
       public InjectContext(final Object component,
-          final Inhabitant<?> onBehalfOf,
           final Class type,
           final ExecutorService es,
           final InjectionResolver[] targets) {
         assert(null != component);
         this.component = component;
-        this.onBehalfOf = onBehalfOf;
         this.type = type;
         this.es = es;
         this.targets = targets;
@@ -150,7 +133,7 @@ public class InjectionManager {
      public void inject(Object component,
                 Class type,
                 InjectionResolver... targets) {
-        syncDoInject(component, null, type, targets);
+        syncDoInject(component, type, targets);
     }
 
     /**
@@ -164,7 +147,6 @@ public class InjectionManager {
       *      if injection failed for some reason.
       */
     protected void syncDoInject(Object component,
-                Inhabitant<?> onBehalfOf,
                 Class type,
                 InjectionResolver... targets) {
         assert component!=null;
@@ -185,7 +167,7 @@ public class InjectionManager {
                         Class fieldType = field.getType();
 
                         try {
-                            Object value = target.getValue(component, onBehalfOf, field, genericType, fieldType);
+                            Object value = target.getValue(component, field, genericType, fieldType);
                             if (value != null) {
                                 field.setAccessible(true);
                                 field.set(component, value);
@@ -197,7 +179,7 @@ public class InjectionManager {
                                     nonOptionalAnnotation = inject;
                                 }
                             }
-                        } catch (ComponentException e) {
+                        } catch (MultiException e) {
                             error_injectionException(target, inject, field, e);
                         } catch (IllegalAccessException e) {
                             error_injectionException(target, inject, field, e);
@@ -223,7 +205,7 @@ public class InjectionManager {
                         if (setter.getReturnType() != void.class) {
                             if (Collection.class.isAssignableFrom(setter.getReturnType())) {
                                 injectCollection(component, setter, 
-                                    target.getValue(component, onBehalfOf, method, null, setter.getReturnType()));
+                                    target.getValue(component, method, null, setter.getReturnType()));
                                 continue;
                             }
                             
@@ -236,7 +218,7 @@ public class InjectionManager {
                         if (allowInjection(method, paramTypes)) {
                             try {
                                 if (1 == paramTypes.length) {
-                                  Object value = target.getValue(component, onBehalfOf, method, genericParamTypes[0], paramTypes[0]);
+                                  Object value = target.getValue(component, method, genericParamTypes[0], paramTypes[0]);
                                   if (value != null) {
                                       setter.setAccessible(true);
                                       setter.invoke(component, value);
@@ -254,7 +236,7 @@ public class InjectionManager {
                                   
                                   Object params[] = new Object[paramTypes.length]; 
                                   for (int i = 0; i < paramTypes.length; i++) {
-                                    Object value = target.getValue(component, onBehalfOf, method, gparamType[i], paramTypes[i]);
+                                    Object value = target.getValue(component, method, gparamType[i], paramTypes[i]);
                                     if (value != null) {
                                       params[i] = value;
                                     } else {
@@ -269,7 +251,7 @@ public class InjectionManager {
                                   handleInjectable(component, value);
                                 }
                               }
-                            } catch (ComponentException e) {
+                            } catch (MultiException e) {
                                 error_injectionException(target, inject, setter, e);
                             } catch (IllegalAccessException e) {
                                 error_injectionException(target, inject, setter, e);
@@ -438,7 +420,7 @@ public class InjectionManager {
         Type genericType = field.getGenericType();
         Class fieldType = field.getType();
         try {
-          Object value = target.getValue(ic.component, ic.onBehalfOf, field, genericType, fieldType);
+          Object value = target.getValue(ic.component, field, genericType, fieldType);
           if (value != null) {
             field.setAccessible(true);
             field.set(ic.component, value);
@@ -448,7 +430,7 @@ public class InjectionManager {
               throw new UnsatisfiedDependencyException(field, inject);
             }
           }
-        } catch (ComponentException e) {
+        } catch (MultiException e) {
           error_injectionException(target, inject, field, e);
         } catch (IllegalAccessException e) {
           error_injectionException(target, inject, field, e);
@@ -477,7 +459,7 @@ public class InjectionManager {
         if (void.class != setter.getReturnType()) {
           if (Collection.class.isAssignableFrom(setter.getReturnType())) {
             injectCollection(ic.component, setter, 
-                target.getValue(ic.component, ic.onBehalfOf, method, null, setter.getReturnType()));
+                target.getValue(ic.component, method, null, setter.getReturnType()));
           } else {
             error_InjectMethodIsNotVoid(method);
           }
@@ -487,7 +469,7 @@ public class InjectionManager {
         if (allowInjection(method, paramTypes)) {
           try {
             if (1 == paramTypes.length) {
-              Object value = target.getValue(ic.component, ic.onBehalfOf, method, null, paramTypes[0]);
+              Object value = target.getValue(ic.component, method, null, paramTypes[0]);
               if (value != null) {
                 setter.setAccessible(true);
                 setter.invoke(ic.component, value);
@@ -504,7 +486,7 @@ public class InjectionManager {
               Type gparamType[] = setter.getGenericParameterTypes();
               Object params[] = new Object[paramTypes.length];
               for (int i = 0; i < paramTypes.length; i++) {
-                Object value = target.getValue(ic.component, ic.onBehalfOf,
+                Object value = target.getValue(ic.component,
                     method, gparamType[i], paramTypes[i]);
                 if (value != null) {
                   params[i] = value;
@@ -520,7 +502,7 @@ public class InjectionManager {
                 handleInjectable(ic.component, value);
               }
             }
-          } catch (ComponentException e) {
+          } catch (MultiException e) {
             error_injectionException(target, inject, setter, e);
           } catch (IllegalAccessException e) {
             error_injectionException(target, inject, setter, e);
@@ -535,14 +517,11 @@ public class InjectionManager {
 
     
     protected void handleInjectable(final Object component, final Object value) {
-      try {
-        Injectable injectable = Injectable.class.cast(value);
-        if (injectable != null) {
-          injectable.injectedInto(component);
+        if (value == null) return;
+        if (value instanceof Injectable) {
+            Injectable injectable = (Injectable) value;
+            injectable.injectedInto(component);
         }
-      } catch (Exception e) {
-        Logger.getAnonymousLogger().log(Level.FINER, "swallowing error", e);
-      }
     }
     
     
@@ -566,7 +545,7 @@ public class InjectionManager {
         e = e.getCause();
       }
       
-      throw new ComponentException(UnsatisfiedDependencyException.injection_failed_msg(injectionPoint, inject, e), e);
+      throw new MultiException(e);
     }
 
     /**
@@ -599,7 +578,7 @@ public class InjectionManager {
 //    }
 
     protected void error_InjectMethodIsNotVoid(Method method) {
-      throw new ComponentException("Injection failed on %s : setter method is not declared with a void return type", method.toGenericString());
+      throw new MultiException(new IllegalStateException("Injection failed on " + method.getName() + " : setter method is not declared with a void return type"));
     }
 
     private void injectCollection(Object component, Method method, Object value) {

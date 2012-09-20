@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,34 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.hk2.component;
+package org.jvnet.hk2.config;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Type;
+/**
+ *
+ * A resource that can be injected into a component might optionally want to be notified of such
+ * injection. This can be useful to track usage or to set up a notification mechanism
+ * for change happening in the injected resource.
+ *
+ * @author Jerome Dochez
+ */
+public interface Injectable extends org.jvnet.hk2.component.Injectable {
 
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Inhabitant;
+    /**
+     * notification of injection into a component
+     * @param target the component in which we are injected.
+     */
+    public void injectedInto(Object target);
 
-@Deprecated
-public interface InjectionResolverQuery {
-
-  /**
-   * Returns the value to inject in the field or method of component annotated with
-   * the annotated annotation.
-   *
-   * @param component injection target instance
-   * @param onBehalfOf inhabitant doing the injection for
-   * @param annotated is the annotated java element {@link java.lang.reflect.Method}
-   * or {@link java.lang.reflect.Field}
-   * @param genericType the generic type of the expected return
-   * @param type type of the expected return
-   * @return the resource to be injected
-   * @throws ComponentException if the resource cannot be located.
-   */
-  <V> V getValue(Object component,
-      Inhabitant<?> onBehalfOf,
-      AnnotatedElement annotated,
-      Type genericType,
-      Class<V> type) throws ComponentException;
-  
 }

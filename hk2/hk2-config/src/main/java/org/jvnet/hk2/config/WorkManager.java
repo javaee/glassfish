@@ -34,7 +34,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component.concurrent;
+package org.jvnet.hk2.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,7 +66,6 @@ import com.sun.hk2.component.Hk2ThreadContext;
  * 
  * @author Jeff Trent
  */
-@Deprecated
 public class WorkManager implements Executor {
 
   private final Executor exec;

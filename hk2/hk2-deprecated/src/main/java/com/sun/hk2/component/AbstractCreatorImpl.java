@@ -149,7 +149,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
      * @param t
      * @param h
      * @return
-     */
+     *
     protected InjectionResolver[] getInjectionResolvers(T t, ServiceLocator h) {
         Collection<Inhabitant<? extends InjectionResolver>> targets = Creators.getAllInjectionResolvers(h);
         List<InjectionResolver> result = new ArrayList<InjectionResolver>();
@@ -165,6 +165,7 @@ public abstract class AbstractCreatorImpl<T> extends AbstractInhabitantImpl<T> i
         assert (!result.isEmpty());
         return result.toArray(new InjectionResolver[result.size()]);
     }
+     */
 
     /**
      * TODO:  This one is also removed, if needed by config we will have to think about it

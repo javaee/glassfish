@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,56 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component;
+package org.jvnet.hk2.config;
 
-import java.util.*;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Type;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.deprecated.internal.CreatorImpl;
-import org.jvnet.hk2.deprecated.internal.MetadataIndexFilter;
-import org.jvnet.hk2.deprecated.internal.Utilities;
 
-/**
- * {@link Creator} factory.
- *
- * @author Kohsuke Kawaguchi
- */
-@Deprecated
-public class Creators {
-    
-    /**
-     * This will be implemented as a find or create
-     * @param c
-     * @param habitat
-     * @param metadata
-     * @return
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <T> Creator<T> create(Class<T> c, ServiceLocator habitat, Map<String, List<String>> metadata) {
-        MetadataIndexFilter mif = new MetadataIndexFilter(c, metadata);
-        
-        List<ActiveDescriptor<?>> descriptors = habitat.getDescriptors(mif);
-        
-        ActiveDescriptor<?> foundDescriptor;
-        if (descriptors.isEmpty()) {
-            try {
-                foundDescriptor = ServiceLocatorUtilities.addOneDescriptor(habitat,
-                        BuilderHelper.createDescriptorFromClass(c));
-            }
-            catch (MultiException me) {
-                Utilities.printThrowable(me);
-                
-                return null;
-            }
-        }
-        else {
-            foundDescriptor = descriptors.get(0);
-        }
-        
-        return new CreatorImpl(c, habitat, metadata, foundDescriptor);
-    }
+public interface InjectionResolverQuery {
+
+  /**
+   * Returns the value to inject in the field or method of component annotated with
+   * the annotated annotation.
+   *
+   * @param component injection target instance
+   * @param onBehalfOf inhabitant doing the injection for
+   * @param annotated is the annotated java element {@link java.lang.reflect.Method}
+   * or {@link java.lang.reflect.Field}
+   * @param genericType the generic type of the expected return
+   * @param type type of the expected return
+   * @return the resource to be injected
+   * @throws MultiException if the resource cannot be located.
+   */
+  <V> V getValue(Object component,
+      AnnotatedElement annotated,
+      Type genericType,
+      Class<V> type) throws MultiException;
+  
 }
