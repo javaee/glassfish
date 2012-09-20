@@ -6,6 +6,7 @@
 <!ENTITY commonBuild SYSTEM "../../config/common.xml">
 <!ENTITY commonRun SYSTEM "../../config/run.xml">
 <!ENTITY reporting   SYSTEM "report.xml">
+<!ENTITY emma SYSTEM "../../config/emma.xml">
 ]>
 
 <project name="ejb" default="usage" basedir=".">
@@ -14,6 +15,14 @@
     &commonBuild;
     &commonRun;
     &reporting;
+    &emma;
+
+    <patternset id="emma.instrument.jar.files">
+      <include name="ejb-full-container.jar"/>
+      <include name="ejb-container.jar"/>
+      <include name="ejb-internal-api.jar"/>
+      <include name="gf-ejb-connector.jar"/>
+    </patternset>
 
     <target name="all">
 
