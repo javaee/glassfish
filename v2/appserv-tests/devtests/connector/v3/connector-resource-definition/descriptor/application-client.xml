@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application-client xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    version="6"
-                    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_6.xsds">
+                    version="7"
+                    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_7.xsd">
     <display-name>connector-resource-definitionClient</display-name>
 
 </application-client>
