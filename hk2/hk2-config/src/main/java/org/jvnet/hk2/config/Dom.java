@@ -1093,6 +1093,13 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
         if(method.getAnnotation(DuckTyped.class)!=null) {
             return invokeDuckMethod(method,proxy,args);
         }
+        if(method.getAnnotation(ConfigExtensionMethod.class) != null) {
+            ConfigExtensionMethod cem = method.getAnnotation(ConfigExtensionMethod.class);
+            ConfigExtensionHandler handler = (ConfigExtensionHandler) ((cem.value() != null)
+                ? getServiceLocator().getService(ConfigExtensionHandler.class, cem.value())
+                : getServiceLocator().getService(ConfigExtensionHandler.class));
+            return invokeConfigExtensionMethod(handler, this, model.getProxyType(), args);
+        }
 
         ConfigModel.Property p = model.toProperty(method);
         if(p==null)
@@ -1142,6 +1149,15 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
                 throw (Error) t;
             throw e;
         }
+    }
+    /**
+     * Invoke the user defined static method in the nested "Duck" class so that
+     * the user can define convenience methods on the config beans.
+     */
+    <T extends ConfigBeanProxy> T invokeConfigExtensionMethod(ConfigExtensionHandler<T> handler, Dom dom,
+                                                              Class<T> clazz, Object[] args) throws Exception {
+
+        return handler.handleExtension(dom, clazz, args);
     }
 
     protected Object getter(ConfigModel.Property target, Type t) {
