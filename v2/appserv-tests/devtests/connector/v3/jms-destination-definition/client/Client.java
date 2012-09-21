@@ -9,8 +9,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.jms.Destination;
-import javax.annotation.jms.JMSDestinationDefinition;
-import javax.annotation.jms.JMSDestinationDefinitions;
+import javax.jms.JMSDestinationDefinition;
+import javax.jms.JMSDestinationDefinitions;
 import javax.naming.InitialContext;
 
 @JMSDestinationDefinitions(
