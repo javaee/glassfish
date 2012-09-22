@@ -258,7 +258,7 @@
         </parallel>
 
         <!-- wait a little -->
-        <sleep seconds="35"/>
+        <sleep seconds="65"/>
 
         <antcall target="verify-results"/>
 
@@ -319,7 +319,7 @@
     </target>
 
     <target name="kill-instance">
-      <sleep seconds="20"/>
+      <sleep seconds="10"/>
       <exec executable="./kill_instance.sh" failonerror="true">
         <arg line="in1"/>
       </exec>
@@ -364,6 +364,26 @@
           <param name="sql.file" value="sql/delete.sql"/>
           <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
         </antcall>
+    </target>
+
+    <property name="db.root" value="${env.S1AS_HOME}/../javadb"/>
+    <property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar"/>
+    <property name="db.host" value="localhost"/>
+
+    <target name="startNtwDerby" depends="init-common">
+        <echo message="Starting Derby in the Network Mode on port ${db.port}"/>
+        <java classname="org.apache.derby.drda.NetworkServerControl"
+          classpath="${db.classpath}" fork="true" spawn="true">
+          <arg line="-h ${db.host} -p ${db.port} start"/>
+        </java>
+    </target>
+
+    <target name="stopNtwDerby" depends="init-common">
+        <echo message="Stopping Network Derby DB servers on port ${db.port}"/>
+        <java classname="org.apache.derby.drda.NetworkServerControl"
+          classpath="${db.classpath}" failonerror="false" fork="true">
+          <arg line="-h ${db.host} -p ${db.port} shutdown"/>
+        </java>
     </target>
 
 </project>
