@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application-client xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     version="6"
-                    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_6.xsds">
+                    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_6.xsd">
     <display-name>datasource-definitionClient</display-name>
 
     <data-source>
