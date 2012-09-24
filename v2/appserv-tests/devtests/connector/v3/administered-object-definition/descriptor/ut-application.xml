@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_7.xsd">
+    <display-name>administered-object-definitionApp</display-name>
+    
+    <module>
+        <java>administered-object-definition-client.jar</java>
+    </module>
+
+    <administered-object>
+       <description>global-scope resource defined in application DD</description>
+       <name>java:global/env/AdminObject</name>
+       <class-name>connector.MyAdminObject</class-name>
+       <resource-adapter-name>aod-ra</resource-adapter-name>
+       <property>
+         <name>org.glassfish.admin-object.resType</name>
+         <value>connector.MyAdminObject</value>
+       </property>
+     </administered-object>
+
+    <administered-object>
+       <description>application-scope resource defined in application DD</description>
+       <name>java:app/env/AdminObject</name>
+       <class-name>connector.MyAdminObject</class-name>
+       <resource-adapter-name>aod-ra</resource-adapter-name>
+       <property>
+         <name>org.glassfish.admin-object.resType</name>
+         <value>connector.MyAdminObject</value>
+       </property>
+     </administered-object>
+
+</application>
