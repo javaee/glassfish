@@ -201,7 +201,7 @@
           <arg line="${instance}"/>
         </exec>
 
-        <sleep seconds="95"/>
+        <sleep seconds="125"/>
         <echo message="Verifying timeouts"/>
         <loadfile property="port-fail" srcFile="error"/>
         <java  fork="on"
