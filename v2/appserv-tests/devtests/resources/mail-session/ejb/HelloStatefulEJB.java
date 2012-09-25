@@ -1,8 +1,8 @@
 package com.sun.s1asdev.ejb.ejb30.hello.session3;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.mail.MailSessionDefinition;
-import javax.annotation.mail.MailSessionDefinitions;
+import org.glassfish.resources.javamail.annotation.MailSessionDefinition;
+import org.glassfish.resources.javamail.annotation.MailSessionDefinitions;
 import javax.ejb.Stateful;
 import javax.naming.InitialContext;
 

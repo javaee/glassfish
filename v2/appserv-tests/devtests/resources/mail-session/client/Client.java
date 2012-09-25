@@ -6,8 +6,8 @@ package com.sun.s1asdev.ejb.ejb30.hello.session3;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
-import javax.annotation.mail.MailSessionDefinition;
-import javax.annotation.mail.MailSessionDefinitions;
+import org.glassfish.resources.javamail.annotation.MailSessionDefinition;
+import org.glassfish.resources.javamail.annotation.MailSessionDefinitions;
 import javax.naming.InitialContext;
 import java.io.BufferedReader;
 import java.io.InputStream;

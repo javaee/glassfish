@@ -5,8 +5,8 @@
 package com.sun.s1asdev.ejb.ejb30.hello.session3;
 
 import javax.annotation.Resource;
-import javax.annotation.mail.MailSessionDefinition;
-import javax.annotation.mail.MailSessionDefinitions;
+import org.glassfish.resources.javamail.annotation.MailSessionDefinition;
+import org.glassfish.resources.javamail.annotation.MailSessionDefinitions;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.EJBs;
