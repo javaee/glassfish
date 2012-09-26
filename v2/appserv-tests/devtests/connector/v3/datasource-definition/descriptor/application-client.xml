@@ -2,21 +2,20 @@
 <application-client xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     version="6"
                     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_6.xsd">
-    <display-name>datasource-definitionClient</display-name>
-
-    <data-source>
-      <name>java:comp/env/Appclient_DD_DataSource</name>
-      <class-name>org.apache.derby.jdbc.EmbeddedXADataSource</class-name>
-      <database-name>hello-client-comp-dd</database-name>
-      <user>APP</user>
-      <password>APP</password>
-      <property>
-        <name>connectionAttributes</name>
-        <value>;create=true</value>
-      </property>
-      <isolation-level>TRANSACTION_READ_COMMITTED</isolation-level>
-    </data-source>
-      <data-source>
+  <display-name>datasource-definitionClient</display-name>
+  <data-source>
+    <name>java:comp/env/Appclient_DD_DataSource</name>
+    <class-name>org.apache.derby.jdbc.EmbeddedXADataSource</class-name>
+    <database-name>hello-client-comp-dd</database-name>
+    <user>APP</user>
+    <password>APP</password>
+    <property>
+      <name>connectionAttributes</name>
+      <value>;create=true</value>
+    </property>
+    <isolation-level>TRANSACTION_READ_COMMITTED</isolation-level>
+  </data-source>
+  <data-source>
     <name>java:global/env/ts/datasource/appclient/globalds</name>
     <class-name>org.apache.derby.jdbc.ClientDataSource</class-name>
     <server-name>localhost</server-name>
@@ -24,12 +23,12 @@
     <database-name>testdb</database-name>
     <user>cts1</user>
     <password>cts1</password>
-    <login-timeout>0</login-timeout>
-    <transactional>true</transactional>
     <property>
         <name>connectionAttributes</name>
         <value>;create=true</value>
-      </property>
+    </property>
+    <login-timeout>0</login-timeout>
+    <transactional>true</transactional>        
     <isolation-level>TRANSACTION_REPEATABLE_READ</isolation-level>
     <initial-pool-size>-1</initial-pool-size>
     <max-pool-size>-1</max-pool-size>
@@ -45,13 +44,13 @@
     <database-name>testdb</database-name>
     <user>cts1</user>
     <password>cts1</password>
-    <login-timeout>0</login-timeout>
-    <transactional>true</transactional>
-    <isolation-level>TRANSACTION_REPEATABLE_READ</isolation-level>
     <property>
         <name>connectionAttributes</name>
         <value>;create=true</value>
-      </property>
+    </property>
+    <login-timeout>0</login-timeout>
+    <transactional>true</transactional>        
+    <isolation-level>TRANSACTION_REPEATABLE_READ</isolation-level>
     <initial-pool-size>-1</initial-pool-size>
     <max-pool-size>-1</max-pool-size>
     <min-pool-size>-1</min-pool-size>
@@ -66,12 +65,12 @@
     <database-name>testdb</database-name>
     <user>cts1</user>
     <password>cts1</password>
-    <login-timeout>0</login-timeout>
-    <transactional>true</transactional>
     <property>
         <name>connectionAttributes</name>
         <value>;create=true</value>
-      </property>
+    </property>
+    <login-timeout>0</login-timeout>
+    <transactional>true</transactional>        
     <isolation-level>TRANSACTION_REPEATABLE_READ</isolation-level>
     <initial-pool-size>-1</initial-pool-size>
     <max-pool-size>-1</max-pool-size>
@@ -88,12 +87,12 @@
     <database-name>testdb</database-name>
     <user>cts1</user>
     <password>cts1</password>
-    <login-timeout>300</login-timeout>
-    <transactional>false</transactional>
     <property>
         <name>connectionAttributes</name>
         <value>;create=true</value>
-      </property>
+    </property>
+    <login-timeout>300</login-timeout>
+    <transactional>false</transactional>    
     <isolation-level>TRANSACTION_REPEATABLE_READ</isolation-level>
     <initial-pool-size>1</initial-pool-size>
     <max-pool-size>2</max-pool-size>
@@ -109,12 +108,12 @@
     <database-name>testdb</database-name>
     <user>cts1</user>
     <password>cts1</password>
-    <login-timeout>0</login-timeout>
-    <transactional>true</transactional>
     <property>
         <name>connectionAttributes</name>
         <value>;create=true</value>
-      </property>
+    </property>
+    <login-timeout>0</login-timeout>
+    <transactional>true</transactional>    
     <isolation-level>TRANSACTION_REPEATABLE_READ</isolation-level>
     <initial-pool-size>-1</initial-pool-size>
     <max-pool-size>-1</max-pool-size>
