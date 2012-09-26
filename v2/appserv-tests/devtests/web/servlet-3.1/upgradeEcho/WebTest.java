@@ -45,11 +45,11 @@ import java.util.Map;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
- * Unit test for Non blocking Input
+ * Unit test for upgrade echo 
  */
 public class WebTest {
 
-    private static String TEST_NAME = "non-blocking-Input";
+    private static String TEST_NAME = "upgrade-echo";
     private static String EXPECTED_RESPONSE = "HelloWorld-onAllDataRead";
 
     private static SimpleReporterAdapter stat

@@ -62,6 +62,12 @@ public class EchoProtocolHandler implements ProtocolHandler {
             ServletOutputStream output = wc.getOutputStream();
             ReadListenerImpl readListener = new ReadListenerImpl(input, output);
             input.setReadListener(readListener);
+
+        int b = -1;
+        while (input.isReady() && ((b = input.read()) != -1)) {
+            System.out.print((char)b);
+            output.write(b);
+        }
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -97,6 +103,7 @@ public class EchoProtocolHandler implements ProtocolHandler {
         public void onAllDataRead() {
             try {
                 System.out.println("--> onAllDataRead");
+                output.println("-onAllDataRead");
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
             }
