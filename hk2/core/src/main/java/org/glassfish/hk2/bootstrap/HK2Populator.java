@@ -45,11 +45,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
@@ -109,6 +112,7 @@ public class HK2Populator {
 					if (readOne) {
 
 						if (postProcessors != null) {
+							
 							for (PopulatorPostProcessor pp : postProcessors) {
 								descriptorImpl = pp.process(descriptorImpl);
 
@@ -129,6 +133,8 @@ public class HK2Populator {
 			}
 		}
 
+		config.addUnbindFilter(BuilderHelper.createContractFilter(PopulatorPostProcessor.class.getName()));
+				
 		config.commit();
 
 	}

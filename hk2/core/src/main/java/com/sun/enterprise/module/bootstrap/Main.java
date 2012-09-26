@@ -273,6 +273,7 @@ public class Main {
 
 		try {
             mr.populateServiceLocator(DEFAULT_NAME, serviceLocator);
+            mr.populateConfig(serviceLocator);
 		} finally {
 			AccessController.doPrivileged(new PrivilegedAction<Object>() {
 				@Override

@@ -82,7 +82,7 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
     }
 
     @Override
-    protected void populateConfig(ServiceLocator serviceLocator) throws BootException {
+    public void populateConfig(ServiceLocator serviceLocator) throws ComponentException {
         // do nothing...
     }
 

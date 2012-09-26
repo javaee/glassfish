@@ -65,7 +65,7 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
 
     /*package*/ final List<ModuleLifecycleListener> lifecycleListeners = new CopyOnWriteArrayList<ModuleLifecycleListener>();
 
-    public ModulesRegistryImpl(AbstractModulesRegistryImpl parent) {
+    public ModulesRegistryImpl(ModulesRegistry parent) {
         super(parent);
         
     }

@@ -136,6 +136,7 @@ public class OSGiModulesRegistryImpl
                 case BundleEvent.UNINSTALLED :
                 {
                     final Module m = getModule(bundle);
+                    
                     if (m!=null) {
                         // getModule can return null if some bundle got uninstalled
                         // before we have finished initialization. This can
@@ -276,6 +277,9 @@ public class OSGiModulesRegistryImpl
 
     @Override
     public synchronized void remove(Module module) {
+    	
+    	((OSGiModuleImpl)module).dispose();
+    	
         // It is overridden to make it synchronized as it is called from
         // BundleListener.
         super.remove(module);

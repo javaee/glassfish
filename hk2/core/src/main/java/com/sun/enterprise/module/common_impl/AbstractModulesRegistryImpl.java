@@ -93,7 +93,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * It works in a way similar to the classloader tree. Modules defined in the parent
      * are visible to children. 
      */
-    protected final AbstractModulesRegistryImpl parent;
+    protected final ModulesRegistry parent;
     protected final ConcurrentMap<ModuleId,Module> modules = new ConcurrentHashMap<ModuleId,Module>();
 
     protected final Map<Integer,Repository> repositories = new TreeMap<Integer,Repository>();
@@ -113,7 +113,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
 
     private Map<ServiceLocator, String> habitats = new Hashtable<ServiceLocator, String>();
 
-    protected AbstractModulesRegistryImpl(AbstractModulesRegistryImpl parent) {
+    protected AbstractModulesRegistryImpl(ModulesRegistry parent) {
         this.parent = parent;
     }
 
@@ -121,14 +121,16 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * Creates an uninitialized {@link Habitat}
      *
      */
+    @Override
     public ServiceLocator newServiceLocator() throws ComponentException {
     	return newServiceLocator(null);
     }
     
     /**
-     * Create a new Habitat optionally providing a parent Services 
+     * Create a new ServiceLocator optionally providing a parent Services 
      */
-    public ServiceLocator newServiceLocator(ServiceLocator parent) throws ComponentException {
+    @Override
+	public ServiceLocator newServiceLocator(ServiceLocator parent) throws ComponentException {
         // We intentionally create an unnamed service locator, because the caller is going to
         // manage its lifecycle.
     	ServiceLocator serviceLocator =  ServiceLocatorFactory.getInstance().create(null, parent);
@@ -174,7 +176,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
              for (final Module module : getModules()) {
                  parseInhabitants(module, name, serviceLocator);
              }
-             populateConfig(serviceLocator);
          } catch (Exception e) {
              throw new ComponentException("Failed to create a habitat",e);
          }
@@ -182,8 +183,13 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
          habitats.put(serviceLocator, name);
      }
 
-    protected void populateConfig(ServiceLocator serviceLocator) throws BootException {
+    @Override
+	public void populateConfig(ServiceLocator serviceLocator) {
+    	try {
         HK2Populator.populateConfig(serviceLocator);
+    	} catch (BootException be) {
+    		throw new ComponentException(be);
+    	}
     }
 
     public ServiceLocator createServiceLocator(ServiceLocator parent, String name) throws ComponentException {
