@@ -69,5 +69,10 @@ public class NarrowResults {
     /* package */ List<ErrorResults> getErrors() {
         return errors;
     }
+    
+    public String toString() {
+        return "NarrowResults(goodResultsSize=" + goodResults.size() + ",errorsSize=" + errors.size() +
+                "," + System.identityHashCode(this) + ")";
+    }
 
 }

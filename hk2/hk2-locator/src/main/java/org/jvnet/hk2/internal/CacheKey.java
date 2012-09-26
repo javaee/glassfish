@@ -132,7 +132,7 @@ public class CacheKey {
     }
     
     public String toString() {
-        return "CacheKey(" + Pretty.type(lookupType) + "," + name + "," + System.identityHashCode(this) + ")";
+        return "CacheKey(" + Pretty.type(lookupType) + "," + name + "," + qualifiers + "," + System.identityHashCode(this) + ")";
     }
 
 }

@@ -74,8 +74,9 @@ public abstract class LRUCache<K,V> {
      * 
      * @param key Must be a non-null key, appropriate for use as the key to a hash map
      * @param value Must be a non-null value
+     * @return A cache entry that can be used to remove this entry from the cache.  Will not return null
      */
-    public abstract void put(K key, V value);
+    public abstract CacheEntry put(K key, V value);
     
     /**
      * Clears all entries in the cache, for use when a known event makes the cache incorrect

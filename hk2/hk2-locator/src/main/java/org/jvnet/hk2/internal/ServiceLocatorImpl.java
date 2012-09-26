@@ -79,6 +79,7 @@ import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.cache.CacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUCache;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -117,6 +118,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final HashMap<Class<? extends Annotation>, Context<?>> contextCache =
             new HashMap<Class<? extends Annotation>, Context<?>>();
     private final LRUCache<CacheKey, NarrowResults> cache = LRUCache.createCache(CACHE_SIZE);
+    private final HashMap<String, List<CacheEntry>> cacheEntries = new HashMap<String, List<CacheEntry>>();
     
     private boolean shutdown = false;
     
@@ -513,7 +515,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         synchronized (lock) {
             if (shutdown) return;
             
-
             List<ServiceHandle<?>> handles = getAllServiceHandles(BuilderHelper.createContractFilter(Context.class.getName()));
 
             for (ServiceHandle<?> handle : handles){
@@ -533,6 +534,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             allResolvers.clear();
             allValidators.clear();
             errorHandlers.clear();
+            cache.releaseCache();
+            cacheEntries.clear();
         }
 
     }
@@ -647,7 +650,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
             }
             else if (ck != null) {
-                cache.put(ck, results);
+                CacheEntry entry = cache.put(ck, results);
+                
+                String releaseKey = rawClass.getName();
+                List<CacheEntry> addToMe = cacheEntries.get(releaseKey);
+                if (addToMe == null) {
+                    addToMe = new LinkedList<CacheEntry>();
+                    cacheEntries.put(releaseKey, addToMe);
+                }
+                
+                addToMe.add(entry);
             }
           }
         }
@@ -754,10 +766,20 @@ public class ServiceLocatorImpl implements ServiceLocator {
               if (!results.getErrors().isEmpty()) {
                   currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
               }
+              else if (ck != null) {
+                  CacheEntry entry = cache.put(ck, results);
+                  
+                  String releaseKey = rawClass.getName();
+                  List<CacheEntry> addToMe = cacheEntries.get(releaseKey);
+                  if (addToMe == null) {
+                      addToMe = new LinkedList<CacheEntry>();
+                      cacheEntries.put(releaseKey, addToMe);
+                  }
+                  
+                  addToMe.add(entry);
+              }
           }
-          else if (ck != null) {
-              cache.put(ck, results);
-          }
+          
         }
         
         if (currentErrorHandlers != null) {
@@ -858,11 +880,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
         boolean addOrRemoveOfInstanceListener = false;
         boolean addOrRemoveOfInjectionResolver = false;
         boolean addOrRemoveOfErrorHandler = false;
+        HashSet<String> affectedContracts = new HashSet<String>();
         
         for (Filter unbindFilter : dci.getUnbindFilters()) {
             List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false, false);
             
             for (ActiveDescriptor<?> result : results) {
+                affectedContracts.addAll(result.getAdvertisedContracts());
+                
                 SystemDescriptor<?> candidate = (SystemDescriptor<?>) result;
                 
                 if (retVal.contains(candidate)) continue;
@@ -890,6 +915,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
+            affectedContracts.addAll(sd.getAdvertisedContracts());
+            
             boolean checkScope = false;
             if (sd.getAdvertisedContracts().contains(ValidationService.class.getName()) ||
                 sd.getAdvertisedContracts().contains(ErrorService.class.getName()) ||
@@ -951,7 +978,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return new CheckConfigurationData(retVal,
                 addOrRemoveOfInstanceListener,
                 addOrRemoveOfInjectionResolver,
-                addOrRemoveOfErrorHandler);
+                addOrRemoveOfErrorHandler,
+                affectedContracts);
     }
     
     @SuppressWarnings("unchecked")
@@ -1072,7 +1100,20 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private void reup(List<SystemDescriptor<?>> thingsAdded,
             boolean instanceListenersModified,
             boolean injectionResolversModified,
-            boolean errorHandlersModified) {
+            boolean errorHandlersModified,
+            HashSet<String> affectedContracts) {
+        
+        // This MUST come before the other re-ups, in case the other re-ups look for
+        // items that may have previously been cached
+        for (String affectedContract : affectedContracts) {
+            List<CacheEntry> entries = cacheEntries.remove(affectedContract);
+            if (entries == null) continue;
+            
+            for (CacheEntry entry : entries) {
+                entry.removeFromCache();
+            }
+        }
+        
         if (injectionResolversModified) {
             reupInjectionResolvers();
         }
@@ -1089,7 +1130,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         contextCache.clear();
-        cache.releaseCache();
+        
+        
     }
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
@@ -1104,7 +1146,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             reup(thingsAdded,
                     checkData.getInstanceLifecycleModificationsMade(),
                     checkData.getInjectionResolverModificationMade(),
-                    checkData.getErrorHandlerModificationMade());
+                    checkData.getErrorHandlerModificationMade(),
+                    checkData.getAffectedContracts());
         }
     }
     
@@ -1281,15 +1324,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
         private final boolean instanceLifeycleModificationMade;
         private final boolean injectionResolverModificationMade;
         private final boolean errorHandlerModificationMade;
+        private final HashSet<String> affectedContracts;
         
         private CheckConfigurationData(SortedSet<SystemDescriptor<?>> unbinds,
                 boolean instanceLifecycleModificationMade,
                 boolean injectionResolverModificationMade,
-                boolean errorHandlerModificationMade) {
+                boolean errorHandlerModificationMade,
+                HashSet<String> affectedContracts) {
             this.unbinds = unbinds;
             this.instanceLifeycleModificationMade = instanceLifecycleModificationMade;
             this.injectionResolverModificationMade = injectionResolverModificationMade;
             this.errorHandlerModificationMade = errorHandlerModificationMade;
+            this.affectedContracts = affectedContracts;
         }
         
         private SortedSet<SystemDescriptor<?>> getUnbinds() {
@@ -1306,6 +1352,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         private boolean getErrorHandlerModificationMade() {
             return errorHandlerModificationMade;
+        }
+        
+        private HashSet<String> getAffectedContracts() {
+            return affectedContracts;
         }
     }
     

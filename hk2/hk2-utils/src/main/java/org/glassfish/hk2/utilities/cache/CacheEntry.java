@@ -37,53 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
+package org.glassfish.hk2.utilities.cache;
 
 /**
+ * This can be used to remove a specific cache entry from the cache,
+ * for better control of the caching release semantics
+ * 
  * @author jwells
- *
  */
-public class ErrorResults {
-    private final ActiveDescriptor<?> descriptor;
-    private final Injectee injectee;
-    private final MultiException me;
-    
-    /* package */ ErrorResults(
-            ActiveDescriptor<?> descriptor,
-            Injectee injectee,
-            MultiException me) {
-        this.descriptor = descriptor;
-        this.injectee = injectee;
-        this.me = me;
-    }
-
+public interface CacheEntry {
     /**
-     * @return the descriptor
+     * Call this method on this entry to remove it from the LRUCache.  If this
+     * entry has already been removed this method will do nothing.
      */
-    ActiveDescriptor<?> getDescriptor() {
-        return descriptor;
-    }
-
-    /**
-     * @return the injectee
-     */
-    Injectee getInjectee() {
-        return injectee;
-    }
-
-    /**
-     * @return the me
-     */
-    MultiException getMe() {
-        return me;
-    }
-    
-    public String toString() {
-        return "ErrorResult(" + descriptor + "," + injectee + "," + me + "," + System.identityHashCode(this) + ")";
-    }
-    
+    public void removeFromCache();
 }
