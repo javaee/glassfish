@@ -62,6 +62,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
@@ -74,6 +75,7 @@ import org.glassfish.hk2.bootstrap.impl.URLDescriptorFileFinder;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.service.packageadmin.PackageAdmin;
@@ -104,7 +106,7 @@ public class OSGiModuleImpl implements Module {
     
 	private ServiceLocator serviceLocator;
 	
-    final ArrayList<DescriptorImpl> descriptors = new ArrayList<DescriptorImpl>();
+    List<ActiveDescriptor> descriptors;
 
     /* TODO (Sahoo): Change hk2-apt to generate an equivalent BundleActivator
        corresponding to LifecyclerPolicy class. That way, LifecyclePolicy class
@@ -392,17 +394,9 @@ public class OSGiModuleImpl implements Module {
 				@Override
 				public void bind(DynamicConfiguration config) {
 					config.bind(BuilderHelper.createConstantDescriptor(new OsgiPopulatorPostProcessor(module)));
-					config.bind(BuilderHelper.createConstantDescriptor(new PopulatorPostProcessor() {
-						
-						@Override
-						public DescriptorImpl process(DescriptorImpl descriptorImpl) {
-							descriptors.add(descriptorImpl);
-							return descriptorImpl;
-						}
-					}));
 				}};
         	this.serviceLocator = serviceLocator;
-    	    HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), postProcessorBinder);
+    	    this.descriptors = HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), postProcessorBinder);
         }
     }
 
@@ -561,22 +555,15 @@ public class OSGiModuleImpl implements Module {
     }
     
     public void dispose() {
+        DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
     	
     	for (final Descriptor descriptor : descriptors) {
-    	
-            DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
-            DynamicConfiguration config = dcs.createDynamicConfiguration();
-
-            config.addUnbindFilter(new Filter() {
-				
-				@Override
-				public boolean matches(Descriptor d) {
-					return d.getImplementation().equals(descriptor.getImplementation());
-				}
-			});
-
-            config.commit();
+            ServiceLocatorUtilities.removeOneDescriptor(serviceLocator, descriptor);
     	}
+    	
+        config.commit();
+
     }
 }
 
