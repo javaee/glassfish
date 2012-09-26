@@ -43,8 +43,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
@@ -76,10 +78,12 @@ public class HK2Populator {
      * read in are those that are used to populate the serviceLocator
      * @throws IOException In case of an error
      */
-	public static void populate(final ServiceLocator serviceLocator,
+	public static List<ActiveDescriptor> populate(final ServiceLocator serviceLocator,
 			DescriptorFileFinder fileFinder,
 			final Binder postProcessorBinder) throws IOException {
 
+		List<ActiveDescriptor> descriptors = new ArrayList<ActiveDescriptor> ();
+		
 		if (postProcessorBinder != null) {
 			ServiceLocatorUtilities.bind(serviceLocator, postProcessorBinder);
 		}
@@ -121,7 +125,7 @@ public class HK2Populator {
 								}
 							}
 							if (descriptorImpl != null) {
-								config.bind(descriptorImpl);
+								descriptors.add(config.bind(descriptorImpl));
 							}
 						}
 
@@ -137,6 +141,7 @@ public class HK2Populator {
 				
 		config.commit();
 
+		return descriptors;
 	}
 
 	/**
