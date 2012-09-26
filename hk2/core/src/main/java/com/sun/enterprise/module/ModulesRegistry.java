@@ -346,4 +346,9 @@ public interface ModulesRegistry extends ModuleChangeListener {
      */
     Module getProvidingModule(String providerClassName);
 
+	public ServiceLocator newServiceLocator(ServiceLocator parent)
+			throws ComponentException;
+
+	public void populateConfig(ServiceLocator serviceLocator)
+			throws ComponentException;
 }

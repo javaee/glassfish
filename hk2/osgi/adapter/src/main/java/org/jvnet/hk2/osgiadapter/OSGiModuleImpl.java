@@ -43,8 +43,11 @@ package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URL;
@@ -59,7 +62,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
@@ -67,6 +73,7 @@ import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.bootstrap.impl.URLDescriptorFileFinder;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.service.packageadmin.PackageAdmin;
@@ -94,6 +101,10 @@ public class OSGiModuleImpl implements Module {
     private AbstractOSGiModulesRegistryImpl registry;
 
     private boolean isTransientlyActive = false;
+    
+	private ServiceLocator serviceLocator;
+	
+    final ArrayList<DescriptorImpl> descriptors = new ArrayList<DescriptorImpl>();
 
     /* TODO (Sahoo): Change hk2-apt to generate an equivalent BundleActivator
        corresponding to LifecyclerPolicy class. That way, LifecyclePolicy class
@@ -371,8 +382,9 @@ public class OSGiModuleImpl implements Module {
 
         final String path = "META-INF/hk2-locator/" + name;
         URL entry = bundle.getEntry(path);
-//        System.out.println("OSGiModuleImpl.parseInhabitants - for " + bundle + ".getEntry(" + path + "), returned " + entry);
+        
         if (entry != null) {
+
         	final OSGiModuleImpl module = this;
         	
         	Binder postProcessorBinder = new Binder () {
@@ -380,8 +392,16 @@ public class OSGiModuleImpl implements Module {
 				@Override
 				public void bind(DynamicConfiguration config) {
 					config.bind(BuilderHelper.createConstantDescriptor(new OsgiPopulatorPostProcessor(module)));
+					config.bind(BuilderHelper.createConstantDescriptor(new PopulatorPostProcessor() {
+						
+						@Override
+						public DescriptorImpl process(DescriptorImpl descriptorImpl) {
+							descriptors.add(descriptorImpl);
+							return descriptorImpl;
+						}
+					}));
 				}};
-        	
+        	this.serviceLocator = serviceLocator;
     	    HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), postProcessorBinder);
         }
     }
@@ -534,9 +554,29 @@ public class OSGiModuleImpl implements Module {
                     "] is already associated with bundle [" + this.bundle + "]");
         } else {
             this.bundle = bundle;
+            
             logger.logp(Level.INFO, "OSGiModuleImpl", "setBundle", "module [{0}] is now associated with bundle [{1}]",
                     new Object[]{this, bundle});
         }
+    }
+    
+    public void dispose() {
+    	
+    	for (final Descriptor descriptor : descriptors) {
+    	
+            DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+            DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+            config.addUnbindFilter(new Filter() {
+				
+				@Override
+				public boolean matches(Descriptor d) {
+					return d.getImplementation().equals(descriptor.getImplementation());
+				}
+			});
+
+            config.commit();
+    	}
     }
 }
 

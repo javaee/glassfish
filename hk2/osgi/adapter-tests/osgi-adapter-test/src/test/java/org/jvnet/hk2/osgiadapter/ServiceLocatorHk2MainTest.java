@@ -1,6 +1,7 @@
 package org.jvnet.hk2.osgiadapter;
 
 
+import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.felix;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -150,6 +152,58 @@ public class ServiceLocatorHk2MainTest {
 			TestModuleStartup.wasCalled=false;
 		}
 	}
+	
+	@Test
+	public <d> void testRemovalOfBundle() throws Throwable {
+
+		try {
+				
+			final StartupContext startupContext = new StartupContext();
+			final ServiceTracker hk2Tracker = new ServiceTracker(
+					this.bundleContext, Main.class.getName(), null);
+			hk2Tracker.open();
+			final Main main = (Main) hk2Tracker.waitForService(0);
+
+			hk2Tracker.close();
+			final ModulesRegistry mr = ModulesRegistry.class.cast(bundleContext
+					.getService(bundleContext
+							.getServiceReference(ModulesRegistry.class
+									.getName())));
+
+			final ServiceLocator serviceLocator = main.createServiceLocator(
+                    mr, startupContext,null,null);
+
+			ModuleStartup m = serviceLocator.getService(ModuleStartup.class);
+			
+			assertNotNull("ModuleStartup expected", m);
+			
+				
+			for ( Bundle b: bundleContext.getBundles() ) {
+				
+				if ("org.glassfish.hk2.test-module-startup".equals(b.getSymbolicName())) {
+					b.stop();
+					b.uninstall();
+				
+					break;
+				}
+			}
+			
+			Thread.currentThread().sleep(2000l);
+			
+		    m = serviceLocator.getService(ModuleStartup.class);
+		    
+		    assertNull("ModuleStartup should have been removed from hk2 registry when bundle was uninstalled", m);
+			
+		} catch (Exception ex) {
+			if (ex.getCause() != null)
+				throw ex.getCause();
+
+			throw ex;
+		} finally {
+			TestModuleStartup.wasCalled=false;
+		}
+	}
+
 
 	private void checkServiceLocatorOSGiRegistration(
 			final ServiceLocator serviceLocator) {
