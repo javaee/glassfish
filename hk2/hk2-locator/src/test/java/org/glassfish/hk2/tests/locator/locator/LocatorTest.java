@@ -302,7 +302,7 @@ public class LocatorTest {
      * than the non-cached version, which actually seems to be true.  For information
      * the results are printed out
      */
-    @Test @Ignore
+    @Test // @Ignore
     public void testPerformance() {
         // The Filter version of getAllServices should be a lot slower than the
         // cache version

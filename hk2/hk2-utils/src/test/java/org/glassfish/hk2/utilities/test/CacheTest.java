@@ -41,6 +41,7 @@ package org.glassfish.hk2.utilities.test;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.utilities.cache.CacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUCache;
 import org.junit.Test;
 
@@ -172,6 +173,95 @@ public class CacheTest {
         Assert.assertNull(cache.get(1));
         Assert.assertNull(cache.get(2));
         Assert.assertNull(cache.get(3));
+    }
+    
+    /**
+     * Tests that removing directly from the cache using the CacheEntry works
+     */
+    @Test
+    public void testRemoveFirstFromCache() {
+        LRUCache<Integer, Integer> cache = LRUCache.createCache(3);
+        
+        CacheEntry entry = cache.put(1, 1);
+        cache.put(2, 2);
+        cache.put(3, 3);
+        
+        entry.removeFromCache();
+        
+        Assert.assertNull(cache.get(1));
+        Assert.assertNotNull(cache.get(2));
+        Assert.assertNotNull(cache.get(3));
+    }
+    
+    /**
+     * Tests that removing directly from the cache using the CacheEntry works
+     */
+    @Test
+    public void testRemoveMiddleFromCache() {
+        LRUCache<Integer, Integer> cache = LRUCache.createCache(3);
+        
+        cache.put(1, 1);
+        CacheEntry entry = cache.put(2, 2);
+        cache.put(3, 3);
+        
+        entry.removeFromCache();
+        
+        Assert.assertNotNull(cache.get(1));
+        Assert.assertNull(cache.get(2));
+        Assert.assertNotNull(cache.get(3));
+    }
+    
+    /**
+     * Tests that removing directly from the cache using the CacheEntry works
+     */
+    @Test
+    public void testRemoveLastFromCache() {
+        LRUCache<Integer, Integer> cache = LRUCache.createCache(3);
+        
+        cache.put(1, 1);
+        cache.put(2, 2);
+        CacheEntry entry = cache.put(3, 3);
+        
+        entry.removeFromCache();
+        
+        Assert.assertNotNull(cache.get(1));
+        Assert.assertNotNull(cache.get(2));
+        Assert.assertNull(cache.get(3));
+    }
+    
+    @Test
+    public void testChangeEntries() {
+        LRUCache<Integer, Integer> cache = LRUCache.createCache(3);
+        
+        cache.put(1, 1);
+        cache.put(2, 2);
+        cache.put(3, 3);
+        
+        cache.put(1, 4);
+        cache.put(2, 5);
+        cache.put(3, 6);
+        
+        Assert.assertEquals(new Integer(4), cache.get(1));
+        Assert.assertEquals(new Integer(5), cache.get(2));
+        Assert.assertEquals(new Integer(6), cache.get(3));
+    }
+    
+    /**
+     * This was an error case found in ServiceLocatorImpl
+     */
+    @Test
+    public void testRemoveMovedEntry() {
+        LRUCache<Integer, Integer> cache = LRUCache.createCache(3);
+        
+        cache.put(1, 1);
+        CacheEntry entry = cache.put(2, 2);
+        cache.put(3, 3);
+        
+        Assert.assertEquals(new Integer(2), cache.get(2));  // Moves 2
+        
+        entry.removeFromCache();
+        
+        Assert.assertNull(cache.get(2));
     }
 
 }

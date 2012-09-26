@@ -43,6 +43,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
 
+import org.glassfish.hk2.utilities.cache.CacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUCache;
 import org.glassfish.hk2.utilities.reflection.Logger;
 
@@ -54,6 +55,7 @@ import org.glassfish.hk2.utilities.reflection.Logger;
  */
 public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
     private final static String CACHING_PROPERTY = "org.jvnet.hk2.properties.caching";
+    private final static String REPORT_INTERVAL_PROPERTY = "org.jvnet.hk2.properties.caching.reportInterval";
     private final static boolean CACHING;
     static {
         CACHING = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
@@ -71,21 +73,55 @@ public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
     }
     
     private final int maxCacheSize;
-    private final HashMap<K, CacheEntry<K, V>> entries =
-            new HashMap<K, CacheEntry<K, V>>();
+    private final HashMap<K, CacheEntryImpl> entries =
+            new HashMap<K, CacheEntryImpl>();
     
-    private CacheEntry<K, V> first;
-    private CacheEntry<K, V> last;
+    private CacheEntryImpl first;
+    private CacheEntryImpl last;
     
-    public LRUCacheImpl(int maxCacheSize) {
+    private final long cacheHitRateReportingInterval;
+    private long hits;
+    private long queries;
+    
+    private LRUCacheImpl(int maxCacheSize, long userInterval) {
         if (maxCacheSize <= 2) throw new IllegalArgumentException();
         
         this.maxCacheSize = maxCacheSize;
+        
+        cacheHitRateReportingInterval = (userInterval < 0) ? 0 : userInterval;
     }
     
-    private void removeEntry(CacheEntry<K, V> removeMe) {
-        CacheEntry<K, V> previous = removeMe.getPrevious();
-        CacheEntry<K, V> next = removeMe.getNext();
+    public LRUCacheImpl(int maxCacheSize) {
+        this(maxCacheSize, AccessController.doPrivileged(new PrivilegedAction<Long>() {
+
+            @Override
+            public Long run() {
+                return Long.parseLong(System.getProperty(REPORT_INTERVAL_PROPERTY, "0"));
+            }
+            
+        }));
+    }
+    
+    private synchronized void removeEntryFromRemove(CacheEntryImpl removeMe) {
+        if (removeEntry(removeMe, true)) {
+            entries.remove(removeMe.getKey());
+        }
+    }
+    
+    /**
+     * Needs to be synchronized because it could be entered from
+     * {@link CacheEntry#removeFromCache()}
+     * 
+     * @param removeMe
+     */
+    private synchronized boolean removeEntry(CacheEntryImpl removeMe, boolean trulyRemove) {
+        if (removeMe.isRemoved()) return false;
+        if (trulyRemove) {
+            removeMe.remove();
+        }
+        
+        CacheEntryImpl previous = removeMe.getPrevious();
+        CacheEntryImpl next = removeMe.getNext();
         
         if (previous == null) {
             // I am first
@@ -105,9 +141,11 @@ public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
         
         removeMe.setNext(null);
         removeMe.setPrevious(null);
+        
+        return true;
     }
     
-    private void addToFront(CacheEntry<K, V> addMe) {
+    private void addToFront(CacheEntryImpl addMe) {
         addMe.setNext(first);
         
         if (first != null) {
@@ -124,34 +162,53 @@ public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
     @Override
     public synchronized V get(K key) {
         if (key == null) throw new IllegalArgumentException();
+        if ((cacheHitRateReportingInterval > 0L) && (queries > 0L) &&
+                (queries % cacheHitRateReportingInterval) == 0) {
+            double rate = (((double) hits) / ((double) queries));
+            
+            Logger.getLogger().debug("LRUCacheHitRate is Rate=" + rate + " hits=" + hits + " queries=" + queries + " entries=" +
+                entries.size());
+        }
         
-        CacheEntry<K, V> entry = entries.get(key);
+        queries++;
+        CacheEntryImpl entry = entries.get(key);
         if (entry == null) return null;
+        hits++;
         
-        removeEntry(entry);
+        removeEntry(entry, false);
         addToFront(entry);
         
         return entry.getValue();
     }
 
+    
     @Override
-    public synchronized void put(K key, V value) {
+    public synchronized CacheEntry put(K key, V value) {
         if (key == null || value == null) throw new IllegalArgumentException();
         
-        if (!CACHING) return;
+        if (!CACHING) return new CacheEntry() {
+            public void removeFromCache() {
+            }
+            
+        };
         
-        CacheEntry<K, V> addMe = new CacheEntry<K, V>(value);
+        CacheEntryImpl addMe = new CacheEntryImpl(value);
         addMe.setKey(key);   // For debugging
         
-        entries.put(key, addMe);
+        CacheEntryImpl cei = entries.put(key, addMe);
+        if (cei != null) {
+            removeEntry(cei, true);
+        }
         
         addToFront(addMe);
         if (entries.size() > maxCacheSize) {
             K removeMe = last.getKey();
             entries.remove(removeMe);
             
-            removeEntry(last);
+            removeEntry(last, true);
         }
+        
+        return addMe;
     }
 
     @Override
@@ -160,6 +217,9 @@ public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
         
         first = null;
         last = null;
+        
+        hits = 0L;
+        queries = 0L;
     }
 
     @Override
@@ -167,27 +227,32 @@ public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
         return maxCacheSize;
     }
     
-    private static class CacheEntry<K, V> {
+    private class CacheEntryImpl implements CacheEntry {
         private K key;
         private final V value;
+        private boolean removed = false;
         
-        private CacheEntry<K, V> next;
-        private CacheEntry<K, V> previous;
+        private CacheEntryImpl next;
+        private CacheEntryImpl previous;
         
-        private CacheEntry(V value) {
+        private CacheEntryImpl(V value) {
             this.value = value;
         }
         
         private V getValue() { return value; }
         
-        private CacheEntry<K, V> getNext() { return next; }
-        private CacheEntry<K, V> getPrevious() { return previous; }
+        private boolean isRemoved() { return removed; }
         
-        private void setNext(CacheEntry<K, V> next) {
+        private void remove() { removed = true; }
+        
+        private CacheEntryImpl getNext() { return next; }
+        private CacheEntryImpl getPrevious() { return previous; }
+        
+        private void setNext(CacheEntryImpl next) {
             this.next = next;
         }
         
-        private void setPrevious(CacheEntry<K, V> previous) {
+        private void setPrevious(CacheEntryImpl previous) {
             this.previous = previous;
         }
         
@@ -199,8 +264,13 @@ public class LRUCacheImpl<K,V> extends LRUCache<K, V> {
             return key;
         }
         
+        @Override
+        public void removeFromCache() {
+            removeEntryFromRemove(this);
+        }
+        
         public String toString() {
-            return "CacheEntry(" + key + "=" + value + "," + System.identityHashCode(this) + ")";
+            return "CacheEntry(" + key + "=" + value + "," + removed + "," + System.identityHashCode(this) + ")";
         }
     }
     

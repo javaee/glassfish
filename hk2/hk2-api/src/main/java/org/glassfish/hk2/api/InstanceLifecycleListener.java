@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.api;
 
-import java.util.Map;
-
 import org.jvnet.hk2.annotations.Contract;
 
 /**
