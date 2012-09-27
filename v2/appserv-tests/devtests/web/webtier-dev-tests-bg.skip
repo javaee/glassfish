@@ -1,3 +1,2 @@
 instanceHttpPortDynamicReconfig #investigate random failures
-servlet-3.1/upgradeEcho #fix in GlassFish
 servlet-3.1/resetCharacterEncoding #wait for Grizzly integration and fix in GlassFish

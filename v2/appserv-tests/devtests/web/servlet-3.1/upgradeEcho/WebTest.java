@@ -50,7 +50,7 @@ import com.sun.ejte.ccl.reporter.*;
 public class WebTest {
 
     private static String TEST_NAME = "upgrade-echo";
-    private static String EXPECTED_RESPONSE = "HelloWorld-onAllDataRead";
+    private static String EXPECTED_RESPONSE = "HelloWorld";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -77,22 +77,29 @@ public class WebTest {
                     String data = "Hello";
                     output.write(data);
                     output.flush();
+                    output.write("\r");
+                    output.flush();
                     int sleepInSeconds = 3;
                     System.out.format("Sleeping %d sec\n", sleepInSeconds);
                     Thread.sleep(sleepInSeconds * 1000);
                     data = "World";
                     output.write(data);
                     output.flush();
+                    output.write("\r");
+                    output.flush();
                     output.close();
                 } catch(Exception ex) {
                 }
                 input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String line = null;
+                StringBuffer sb = new StringBuffer("");
                 while ((line = input.readLine()) != null) {
                     System.out.println(line);
+                    sb.append(line);
                     expected = line.contains("/")
                         && (line.indexOf("/") < line.indexOf("d"))
                         && line.replace("/", "").equals(EXPECTED_RESPONSE);
+                    expected = sb.toString().equals(EXPECTED_RESPONSE);
                     if (expected) {
                         break;
                     }
