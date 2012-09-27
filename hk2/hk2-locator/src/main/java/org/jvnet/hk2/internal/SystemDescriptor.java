@@ -217,11 +217,13 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
      */
     @Override
     public int setRanking(int ranking) {
+        int retVal = baseDescriptor.setRanking(ranking);
+        
         for (IndexedListData myList : myLists) {
             myList.unSort();
         }
         
-        return baseDescriptor.setRanking(ranking);
+        return retVal;
     }
     
     /* package */ void addList(IndexedListData indexedList) {
