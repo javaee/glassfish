@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
@@ -52,37 +54,19 @@ import java.util.TreeSet;
  *
  */
 public class IndexedListData {
-    private final LinkedList<SystemDescriptor<?>> currentList = new LinkedList<SystemDescriptor<?>>();
-    private boolean currentlySorted = true;
+    private TreeSet<SystemDescriptor<?>> currentList = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
     
-    public LinkedList<SystemDescriptor<?>> getSortedList() {
-        if (!currentlySorted) {
-            TreeSet<SystemDescriptor<?>> sorter = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
-            for (SystemDescriptor<?> descriptor : currentList) {
-                sorter.add(descriptor);
-            }
-            
-            currentList.clear();
-            
-            for (SystemDescriptor<?> descriptor : sorter) {
-                currentList.add(descriptor);
-            }
-            
-            currentlySorted = true;
-        }
-        
+    public Collection<SystemDescriptor<?>> getSortedList() {
         return currentList;
     }
     
     public void addDescriptor(SystemDescriptor<?> descriptor) {
         currentList.add(descriptor);
-        if (currentList.size() > 1) currentlySorted = false;
         descriptor.addList(this);
     }
     
     public void removeDescriptor(SystemDescriptor<?> descriptor) {
         currentList.remove(descriptor);
-        if (currentList.size() > 1) currentlySorted = false;
         descriptor.removeList(this);
     }
     
@@ -94,7 +78,11 @@ public class IndexedListData {
      * Called by a SystemDescriptor when its ranking has changed
      */
     public void unSort() {
-        if (currentList.size() > 1) currentlySorted = false;
+        TreeSet<SystemDescriptor<?>> oldList = currentList;
+        currentList = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
+        currentList.addAll(oldList);
+        
+        oldList.clear();
     }
     
     public void clear() {
@@ -103,7 +91,5 @@ public class IndexedListData {
         }
         
         currentList.clear();
-        currentlySorted = true;
     }
-
 }

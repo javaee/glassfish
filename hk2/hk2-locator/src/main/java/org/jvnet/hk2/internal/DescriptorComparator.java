@@ -54,14 +54,23 @@ public class DescriptorComparator implements Comparator<Descriptor> {
      */
     @Override
     public int compare(Descriptor o1, Descriptor o2) {
-        if (o1.getRanking() < o2.getRanking()) return 1;
-        if (o1.getRanking() > o2.getRanking()) return -1;
+        int o1Ranking = o1.getRanking();
+        int o2Ranking = o2.getRanking();
         
-        if (o1.getLocatorId().longValue() < o2.getLocatorId().longValue()) return 1;
-        if (o1.getLocatorId().longValue() > o2.getLocatorId().longValue()) return -1;
+        if (o1Ranking < o2Ranking) return 1;
+        if (o1Ranking > o2Ranking) return -1;
         
-        if (o1.getServiceId().longValue() > o2.getServiceId().longValue()) return 1;
-        if (o1.getServiceId().longValue() < o2.getServiceId().longValue()) return -1;
+        long o1LocatorId = o1.getLocatorId().longValue();
+        long o2LocatorId = o2.getLocatorId().longValue();
+        
+        if (o1LocatorId < o2LocatorId) return 1;
+        if (o1LocatorId > o2LocatorId) return -1;
+        
+        long o1ServiceId = o1.getServiceId().longValue();
+        long o2ServiceId = o2.getServiceId().longValue();
+        
+        if (o1ServiceId > o2ServiceId) return 1;
+        if (o1ServiceId < o2ServiceId) return -1;
         
         return 0;
     }

@@ -44,6 +44,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -160,12 +161,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
-            List<SystemDescriptor<?>> sortMeOut;
+            Collection<SystemDescriptor<?>> sortMeOut;
             if (filter instanceof IndexedFilter) {
                 IndexedFilter df = (IndexedFilter) filter;
                 
                 if (df.getName() != null) {
-                    List<SystemDescriptor<?>> scopedByName;
+                    Collection<SystemDescriptor<?>> scopedByName;
                     
                     String name = df.getName();
                     
@@ -1089,7 +1090,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         errorHandlers.addAll(allErrorServices);
     }
     
-    private void reupInstanceListenersHandlers(List<SystemDescriptor<?>> checkList) {
+    private void reupInstanceListenersHandlers(Collection<SystemDescriptor<?>> checkList) {
         List<InstanceLifecycleListener> allLifecycleListeners = protectedGetAllServices(InstanceLifecycleListener.class);
         
         for (SystemDescriptor<?> descriptor : checkList) {
