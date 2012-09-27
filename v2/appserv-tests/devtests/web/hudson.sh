@@ -168,6 +168,9 @@ pushd $APS_HOME/devtests/web
 
 ant all
 
+#check out fresh build.xml 
+rm $APS_HOME/devtests/web/build.xml
+
 kill_processes
 (cat web.output | grep FAIL | grep -v "Total FAIL") || true
 #popd
