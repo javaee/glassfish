@@ -54,6 +54,7 @@ import java.util.logging.Level;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.net.URL;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 
 /**
@@ -85,10 +86,10 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
         return m;
     }
 
-    protected void parseInhabitants(
+    protected List<ActiveDescriptor> parseInhabitants(
             Module module, String name, ServiceLocator serviceLocator)
             throws IOException {
-        ((ModuleImpl)module).parseInhabitants(name);
+        return ((ModuleImpl)module).parseInhabitants(name);
     }
 
     /**

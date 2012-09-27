@@ -76,6 +76,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
@@ -289,8 +290,10 @@ public final class ModuleImpl implements Module {
 
     /**
      * Parses all the inhabitants descriptors of the given name in this module.
+     * @return 
      */
-    void parseInhabitants(String name) throws IOException {
+    List<ActiveDescriptor> parseInhabitants(String name) throws IOException {
+		return null;
     }
 
     /**

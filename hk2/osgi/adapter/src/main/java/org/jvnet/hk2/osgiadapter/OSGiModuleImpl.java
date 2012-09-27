@@ -377,9 +377,10 @@ public class OSGiModuleImpl implements Module {
 
     /**
      * Parses all the inhabitants descriptors of the given name in this module.
+     * @return 
      */
-    /* package */ void parseInhabitants(String name, ServiceLocator serviceLocator) throws IOException, BootException {
-
+    List<ActiveDescriptor> parseInhabitants(String name, ServiceLocator serviceLocator) throws IOException, BootException {
+ 
 		// This needs to be fixed to bring in the cache
 
         final String path = "META-INF/hk2-locator/" + name;
@@ -398,6 +399,8 @@ public class OSGiModuleImpl implements Module {
         	this.serviceLocator = serviceLocator;
     	    this.descriptors = HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), postProcessorBinder);
         }
+        
+        return this.descriptors;
     }
 
     /**
@@ -554,16 +557,5 @@ public class OSGiModuleImpl implements Module {
         }
     }
     
-    public void dispose() {
-        DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-    	
-    	for (final Descriptor descriptor : descriptors) {
-            ServiceLocatorUtilities.removeOneDescriptor(serviceLocator, descriptor);
-    	}
-    	
-        config.commit();
-
-    }
 }
 

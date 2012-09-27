@@ -45,6 +45,8 @@ import com.sun.enterprise.module.*;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
@@ -96,10 +98,10 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
         // something like Eclipse.
     }
 
-    public void parseInhabitants(
+    public List<ActiveDescriptor> parseInhabitants(
             Module module, String name, ServiceLocator serviceLocator)
             throws IOException, BootException {
-        ((OSGiModuleImpl)module).parseInhabitants(name, serviceLocator);
+        return ((OSGiModuleImpl)module).parseInhabitants(name, serviceLocator);
     }
 
     public ModulesRegistry createChild() {
