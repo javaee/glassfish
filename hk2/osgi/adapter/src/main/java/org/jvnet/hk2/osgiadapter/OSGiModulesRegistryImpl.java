@@ -278,8 +278,6 @@ public class OSGiModulesRegistryImpl
     @Override
     public synchronized void remove(Module module) {
     	
-    	((OSGiModuleImpl)module).dispose();
-    	
         // It is overridden to make it synchronized as it is called from
         // BundleListener.
         super.remove(module);

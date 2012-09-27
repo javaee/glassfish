@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.HK2Populator;
@@ -120,7 +121,7 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
     }
 
     @Override
-    protected void parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
+    protected List<ActiveDescriptor> parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
             throws IOException {
 
         Binder postProcessorBinder = new Binder() {
@@ -129,7 +130,7 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
 				config.bind(BuilderHelper.createConstantDescriptor(new Hk2LoaderPopulatorPostProcessor(singleClassLoader)));
 			}};
     
-    	HK2Populator.populate(serviceLocator,
+    	return HK2Populator.populate(serviceLocator,
                 new ClasspathDescriptorFileFinder(singleClassLoader, name),
                 postProcessorBinder);
     }

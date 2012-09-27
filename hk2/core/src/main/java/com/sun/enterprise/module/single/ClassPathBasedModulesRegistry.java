@@ -53,6 +53,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 
 /**
@@ -128,28 +129,9 @@ public class ClassPathBasedModulesRegistry extends ModulesRegistryImpl {
     }
 
     @Override
-    protected void parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
+    protected List<ActiveDescriptor> parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
             throws IOException {
-
-//        HK2Loader loader = new HK2Loader() {
-//
-//			@Override
-//			public Class<?> loadClass(String className) throws MultiException {
-//				try {
-//				  return cLoader.loadClass(className);
-//				} catch (ClassNotFoundException cnfe) {
-//					throw new MultiException(cnfe);
-//				}
-//			}
-//        	
-//        };
-        
-//        for (Module m : modules) {
-//            // each module can have a different way of representing the inhabitant meta-data
-//            // some may use the inhabitant file, others may rely on introspection 
-//            for (InhabitantsDescriptor d :m.getMetadata().getHabitats(name))
-//                inhabitantsParser.parse(d.createScanner(), loader);
-//        }
+        return null;
     }
 
 }

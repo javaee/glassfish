@@ -50,6 +50,9 @@ import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.ContextDuplicatePostProcessor;
 
 import com.sun.enterprise.module.bootstrap.DefaultErrorService;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -58,6 +61,7 @@ import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.glassfish.hk2.inhabitants.InhabitantsParserFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 
@@ -69,6 +73,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -113,6 +118,8 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
 
     private Map<ServiceLocator, String> habitats = new Hashtable<ServiceLocator, String>();
 
+    Map<Module, Map<ServiceLocator, List<ActiveDescriptor>>> moduleDescriptors = new ConcurrentHashMap<Module, Map<ServiceLocator, List<ActiveDescriptor>>>();
+    
     protected AbstractModulesRegistryImpl(ModulesRegistry parent) {
         this.parent = parent;
     }
@@ -173,8 +180,16 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      */
      public void populateServiceLocator(String name, ServiceLocator serviceLocator) throws ComponentException {
          try {
-             for (final Module module : getModules()) {
-                 parseInhabitants(module, name, serviceLocator);
+             for (final Module module : getModules()) { 
+            	   // TODO: should get the inhabitantsParser out of Main instead since
+                 // this could have been overridden
+             	List<ActiveDescriptor> allDescriptors = parseInhabitants(module, name, serviceLocator);
+             	
+             	Map<ServiceLocator, List<ActiveDescriptor>> descriptorByServiceLocator = new HashMap<ServiceLocator, List<ActiveDescriptor>>();
+          
+             	descriptorByServiceLocator.put(serviceLocator, allDescriptors);
+             	
+             	moduleDescriptors.put(module,descriptorByServiceLocator);
              }
          } catch (Exception e) {
              throw new ComponentException("Failed to create a habitat",e);
@@ -206,7 +221,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
     	return createServiceLocator("default");
     }
 
-    protected abstract void parseInhabitants(Module module,
+    protected abstract List<ActiveDescriptor> parseInhabitants(Module module,
                                              String name, ServiceLocator serviceLocator)
             throws IOException, BootException;
 
@@ -394,7 +409,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             for( String name : spi.providerNames )
                 providers.put(name,newModule);
         }
-        
+            
         for (Map.Entry<ServiceLocator, String> entry : habitats.entrySet()) {
             String name = entry.getValue();
             ServiceLocator serviceLocator = entry.getKey();
@@ -408,6 +423,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             {
                 throw new RuntimeException("Not able to parse inhabitants information");
             }
+          
         }
     }
     
@@ -420,16 +436,40 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
      * Removes a module from the registry. The module will not be accessible 
      * from this registry after this method returns.
      */
-    public void remove(Module module) {
-        //if (Utils.isLoggable(Level.INFO)) {
-        //    Utils.getDefaultLogger().info("Removed module " + module);
-        //}
-        assert module.getRegistry()==this;
-        modules.remove(AbstractFactory.getInstance().createModuleId(module.getModuleDefinition()));
+	public void remove(Module module) {
+		// if (Utils.isLoggable(Level.INFO)) {
+		// Utils.getDefaultLogger().info("Removed module " + module);
+		// }
+		assert module.getRegistry() == this;
+		modules.remove(AbstractFactory.getInstance().createModuleId(
+				module.getModuleDefinition()));
 
-        // TODO: modules comes right back when getModules() is called.
-        // the modeling is incorrect
-    }
+		// TODO: modules comes right back when getModules() is called.
+		// the modeling is incorrect
+
+		Map<ServiceLocator, List<ActiveDescriptor>> descriptorsByServiceLocator = moduleDescriptors
+				.get(module);
+
+		System.out.println("descriptorsByServiceLocator: " + descriptorsByServiceLocator);
+		
+		for (Entry<ServiceLocator, List<ActiveDescriptor>> e : descriptorsByServiceLocator
+				.entrySet()) {
+			ServiceLocator sl = e.getKey();
+			List<ActiveDescriptor> descriptors = e.getValue();
+
+			DynamicConfigurationService dcs = sl
+					.getService(DynamicConfigurationService.class);
+			DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+			for (Descriptor descriptor : descriptors) {
+				System.out.println(descriptor);
+				ServiceLocatorUtilities.removeOneDescriptor(sl, descriptor);
+			}
+
+			config.commit();
+		}
+		moduleDescriptors.remove(module);
+	}
     
     /** 
      * Returns the list of shared Modules registered in this instance.
