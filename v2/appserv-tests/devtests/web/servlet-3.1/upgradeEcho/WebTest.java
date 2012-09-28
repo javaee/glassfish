@@ -52,6 +52,7 @@ public class WebTest {
 
     private static String TEST_NAME = "upgrade-echo";
     private static String EXPECTED_RESPONSE = "HelloWorld";
+    private static final String CRLF = "\r\n";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -72,15 +73,15 @@ public class WebTest {
                 s = new Socket(host, port);
                 output = s.getOutputStream();
                 try {
-                    String reqStr = "POST " + contextRoot + "/test HTTP/1.1\r\n";
-                    reqStr += "User-Agent: Java/1.6.0_33\r\n";
-                    reqStr += "Host: " + host + ":" + port + "\r\n";
-                    reqStr += "Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2\r\n";
-                    reqStr += "Upgrade: echo\r\n";
-                    reqStr += "Connection: keep-alive\r\n";
-                    reqStr += "Content-type: application/x-www-form-urlencoded\r\n";
-                    reqStr += "Transfer-Encoding: chunked\r\n";
-                    reqStr += "\r\n";
+                    String reqStr = "POST " + contextRoot + "/test HTTP/1.1" + CRLF;
+                    reqStr += "User-Agent: Java/1.6.0_33" + CRLF;
+                    reqStr += "Host: " + host + ":" + port + CRLF;
+                    reqStr += "Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2" + CRLF;
+                    reqStr += "Upgrade: echo" + CRLF;
+                    reqStr += "Connection: keep-alive" + CRLF;
+                    reqStr += "Content-type: application/x-www-form-urlencoded" + CRLF;
+                    reqStr += "Transfer-Encoding: chunked" + CRLF;
+                    reqStr += CRLF;
                     output.write(reqStr.getBytes());
 
                     writeChunk(output, "Hello");
@@ -146,11 +147,11 @@ public class WebTest {
 
     private static void writeChunk(OutputStream out, String data) throws IOException {
         int len = ((data != null) ? data.length() : 0);
-        out.write((len + "\r\n").getBytes());
+        out.write((len + CRLF).getBytes());
         if (data != null) {
             out.write(data.getBytes());
         }
-        out.write("\r\n".getBytes());
+        out.write(CRLF.getBytes());
         out.flush();
     }
 }
