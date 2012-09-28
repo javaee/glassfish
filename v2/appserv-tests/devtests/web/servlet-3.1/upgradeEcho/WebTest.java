@@ -42,6 +42,7 @@ import java.io.*;
 import java.net.*;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import com.sun.ejte.ccl.reporter.*;
 
 /*
@@ -64,12 +65,12 @@ public class WebTest {
         try {
             Socket s = null;
 
-            BufferedReader input = null;
-            BufferedWriter output = null;
+            InputStream input = null;
+            OutputStream output = null;
             boolean expected = false;
             try {
                 s = new Socket(host, port);
-                output = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+                output = s.getOutputStream();
                 try {
                     String reqStr = "POST " + contextRoot + "/test HTTP/1.1\r\n";
                     reqStr += "User-Agent: Java/1.6.0_33\r\n";
@@ -80,10 +81,9 @@ public class WebTest {
                     reqStr += "Content-type: application/x-www-form-urlencoded\r\n";
                     reqStr += "Transfer-Encoding: chunked\r\n";
                     reqStr += "\r\n";
-                    output.write(reqStr);
+                    output.write(reqStr.getBytes());
 
                     writeChunk(output, "Hello");
-                    //writeChunk(output, "\r");
                     int sleepInSeconds = 3;
                     System.out.format("Sleeping %d sec\n", sleepInSeconds);
                     Thread.sleep(sleepInSeconds * 1000);
@@ -93,17 +93,26 @@ public class WebTest {
                     writeChunk(output, null);
                 } catch(Exception ex) {
                 }
-                input = new BufferedReader(new InputStreamReader(s.getInputStream()));
-                String line = null;
-                while ((line = input.readLine()) != null) {
+                input = s.getInputStream();
+                // read data without using readLine
+                int len = -1;
+                byte b[] = new byte[1024];
+                StringBuilder sb = new StringBuilder();
+                while ((len = input.read(b)) != -1) {
+                    String line = new String(b, 0, len);
+                    sb.append(line);
                     System.out.println(line);
-                    expected = line.contains("/")
+                }
+
+                StringTokenizer tokens = new StringTokenizer(sb.toString(), "\r\n");
+                String line = null;
+                while (tokens.hasMoreTokens()) {
+                    line = tokens.nextToken();
+                }
+
+                expected = line.contains("/")
                         && (line.indexOf("/") < line.indexOf("d"))
                         && line.replace("/", "").equals(EXPECTED_RESPONSE);
-                    if (expected) {
-                        break;
-                    }
-                }
             } finally {
                 try {
                     if (input != null) {
@@ -135,13 +144,13 @@ public class WebTest {
         stat.printSummary();
     }
 
-    private static void writeChunk(BufferedWriter writer, String data) throws IOException {
+    private static void writeChunk(OutputStream out, String data) throws IOException {
         int len = ((data != null) ? data.length() : 0);
-        writer.write(len + "\r\n");
+        out.write((len + "\r\n").getBytes());
         if (data != null) {
-            writer.write(data);
+            out.write(data.getBytes());
         }
-        writer.write("\r\n");
-        writer.flush();
+        out.write("\r\n".getBytes());
+        out.flush();
     }
 }
