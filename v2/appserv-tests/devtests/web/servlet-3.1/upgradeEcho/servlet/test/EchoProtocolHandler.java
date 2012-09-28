@@ -94,7 +94,7 @@ public class EchoProtocolHandler implements ProtocolHandler {
                     System.out.println("--> " + data);
                     sb.append(data);
                 }
-                output.print(sb.toString());
+                output.print("/" + sb.toString());
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
             }

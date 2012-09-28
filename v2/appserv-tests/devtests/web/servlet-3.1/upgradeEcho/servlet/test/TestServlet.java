@@ -41,6 +41,7 @@
 package test;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -56,7 +57,24 @@ public class TestServlet extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        req.upgrade(new EchoProtocolHandler(req));
-        System.out.println("XXX upgraded to use EchoProtocolHandler");
+        //XXX
+        Enumeration<String> headerNames = req.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String name = headerNames.nextElement();
+            Enumeration<String> values = req.getHeaders(name);
+            while (values.hasMoreElements()) {
+                String value = values.nextElement();
+                System.out.println("XXX name = " + name + ", value = " + value);
+            }
+        }
+        //if ("echo".equals(req.getHeader("upgrade"))) {
+        if (true) {
+            res.setStatus(101);
+            res.setHeader("Upgrade", "echo");
+            System.out.println("upgraded to use EchoProtocolHandler");
+            req.upgrade(new EchoProtocolHandler(req));
+        } else {
+            res.getWriter().println("No upgrade: " + req.getHeader("Upgrade"));
+        }
     }
 }

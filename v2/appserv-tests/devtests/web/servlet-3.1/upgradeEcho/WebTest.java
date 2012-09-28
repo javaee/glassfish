@@ -62,44 +62,44 @@ public class WebTest {
         stat.addDescription("Unit test for non blocking read");
 
         try {
-            URL url = new URL("http://" + host + ":" + port + "/" + contextRoot + "/test");
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-            conn.setChunkedStreamingMode(5);
-            conn.setDoOutput(true);
-            conn.connect();
+            Socket s = null;
 
             BufferedReader input = null;
             BufferedWriter output = null;
             boolean expected = false;
             try {
-                output = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
+                s = new Socket(host, port);
+                output = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
                 try {
-                    String data = "Hello";
-                    output.write(data);
-                    output.flush();
-                    output.write("\r");
-                    output.flush();
+                    String reqStr = "POST " + contextRoot + "/test HTTP/1.1\r\n";
+                    reqStr += "User-Agent: Java/1.6.0_33\r\n";
+                    reqStr += "Host: " + host + ":" + port + "\r\n";
+                    reqStr += "Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2\r\n";
+                    reqStr += "Upgrade: echo\r\n";
+                    reqStr += "Connection: keep-alive\r\n";
+                    reqStr += "Content-type: application/x-www-form-urlencoded\r\n";
+                    reqStr += "Transfer-Encoding: chunked\r\n";
+                    reqStr += "\r\n";
+                    output.write(reqStr);
+
+                    writeChunk(output, "Hello");
+                    //writeChunk(output, "\r");
                     int sleepInSeconds = 3;
                     System.out.format("Sleeping %d sec\n", sleepInSeconds);
                     Thread.sleep(sleepInSeconds * 1000);
-                    data = "World";
-                    output.write(data);
-                    output.flush();
-                    output.write("\r");
-                    output.flush();
-                    output.close();
+                    writeChunk(output, "World");
+                    //XXX we need this \r ?
+                    writeChunk(output, "\r");
+                    writeChunk(output, null);
                 } catch(Exception ex) {
                 }
-                input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                input = new BufferedReader(new InputStreamReader(s.getInputStream()));
                 String line = null;
-                StringBuffer sb = new StringBuffer("");
                 while ((line = input.readLine()) != null) {
                     System.out.println(line);
-                    sb.append(line);
                     expected = line.contains("/")
                         && (line.indexOf("/") < line.indexOf("d"))
                         && line.replace("/", "").equals(EXPECTED_RESPONSE);
-                    expected = sb.toString().equals(EXPECTED_RESPONSE);
                     if (expected) {
                         break;
                     }
@@ -118,6 +118,12 @@ public class WebTest {
                     }
                 } catch(Exception ex) {
                 }
+                try {
+                    if (s != null) {
+                        s.close();
+                    }
+                } catch(Exception ex) {
+                }
             }
             
             stat.addStatus(TEST_NAME, ((expected) ? stat.PASS : stat.FAIL));
@@ -127,5 +133,15 @@ public class WebTest {
         }
 
         stat.printSummary();
+    }
+
+    private static void writeChunk(BufferedWriter writer, String data) throws IOException {
+        int len = ((data != null) ? data.length() : 0);
+        writer.write(len + "\r\n");
+        if (data != null) {
+            writer.write(data);
+        }
+        writer.write("\r\n");
+        writer.flush();
     }
 }
