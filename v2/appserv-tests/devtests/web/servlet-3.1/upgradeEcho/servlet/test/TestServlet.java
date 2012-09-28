@@ -60,6 +60,7 @@ public class TestServlet extends HttpServlet {
         if ("echo".equals(req.getHeader("upgrade"))) {
             res.setStatus(101);
             res.setHeader("Upgrade", "echo");
+            res.setHeader("Connection", "Upgrade");
             System.out.println("upgraded to use EchoProtocolHandler");
             req.upgrade(new EchoProtocolHandler(req));
         } else {

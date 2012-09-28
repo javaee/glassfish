@@ -51,7 +51,7 @@ import com.sun.ejte.ccl.reporter.*;
 public class WebTest {
 
     private static String TEST_NAME = "upgrade-echo";
-    private static String EXPECTED_RESPONSE = "HelloWorld";
+    private static String EXPECTED_RESPONSE = "HelloWorld-onAllDataRead";
     private static final String CRLF = "\r\n";
 
     private static SimpleReporterAdapter stat
@@ -78,7 +78,7 @@ public class WebTest {
                     reqStr += "Host: " + host + ":" + port + CRLF;
                     reqStr += "Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2" + CRLF;
                     reqStr += "Upgrade: echo" + CRLF;
-                    reqStr += "Connection: keep-alive" + CRLF;
+                    reqStr += "Connection: Upgrade\r\n";
                     reqStr += "Content-type: application/x-www-form-urlencoded" + CRLF;
                     reqStr += "Transfer-Encoding: chunked" + CRLF;
                     reqStr += CRLF;
@@ -89,8 +89,6 @@ public class WebTest {
                     System.out.format("Sleeping %d sec\n", sleepInSeconds);
                     Thread.sleep(sleepInSeconds * 1000);
                     writeChunk(output, "World");
-                    //XXX we need this \r ?
-                    writeChunk(output, "\r");
                     writeChunk(output, null);
                 } catch(Exception ex) {
                 }
