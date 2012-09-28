@@ -57,18 +57,7 @@ public class TestServlet extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        //XXX
-        Enumeration<String> headerNames = req.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String name = headerNames.nextElement();
-            Enumeration<String> values = req.getHeaders(name);
-            while (values.hasMoreElements()) {
-                String value = values.nextElement();
-                System.out.println("XXX name = " + name + ", value = " + value);
-            }
-        }
-        //if ("echo".equals(req.getHeader("upgrade"))) {
-        if (true) {
+        if ("echo".equals(req.getHeader("upgrade"))) {
             res.setStatus(101);
             res.setHeader("Upgrade", "echo");
             System.out.println("upgraded to use EchoProtocolHandler");
