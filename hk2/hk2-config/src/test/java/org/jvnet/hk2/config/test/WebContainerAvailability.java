@@ -45,9 +45,6 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.Injectable;
-
 
 import java.beans.PropertyVetoException;
 
@@ -60,7 +57,7 @@ import java.beans.PropertyVetoException;
 }) */
 
 @Configured
-public interface WebContainerAvailability extends ConfigBeanProxy, Injectable {
+public interface WebContainerAvailability extends ConfigBeanProxy {
 
     /**
      * Gets the value of the availabilityEnabled property.
