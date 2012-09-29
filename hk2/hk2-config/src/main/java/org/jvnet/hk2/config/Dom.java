@@ -1086,10 +1086,7 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
                 throw e.getTargetException();
             }
         }
-        if (clazz==Injectable.class) {
-            injectInto(this, args[0]);
-            return null;
-        }
+        
         if(method.getAnnotation(DuckTyped.class)!=null) {
             return invokeDuckMethod(method,proxy,args);
         }
@@ -1331,16 +1328,6 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
             c.writeTo(w);
 
         w.writeEndElement();
-    }
-
-    protected void injectInto(Dom injectable, Object target) {
-        for (Class intf : target.getClass().getInterfaces()) {
-            if (ConfigListener.class.isAssignableFrom(intf)) {
-                ConfigListener listener = (ConfigListener) target;
-                addListener(listener);
-                return;
-            }
-        }
     }
 
     @Override

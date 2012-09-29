@@ -51,8 +51,6 @@ import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.MultiException;
 
-import org.jvnet.hk2.component.Injectable;
-
 /**
  * InjectionManager is responsible for injecting resources into a component.
  * Injection targets are identified by the injection resolver type attribute.
@@ -171,7 +169,6 @@ public class InjectionManager {
                             if (value != null) {
                                 field.setAccessible(true);
                                 field.set(component, value);
-                                handleInjectable(component, value);
                                 injected = true;
                                 break;
                             } else {
@@ -222,7 +219,6 @@ public class InjectionManager {
                                   if (value != null) {
                                       setter.setAccessible(true);
                                       setter.invoke(component, value);
-                                      handleInjectable(component, value);
                                   } else {
                                       if (!target.isOptional(method, inject)) {
                                           throw new UnsatisfiedDependencyException(method, inject);
@@ -247,9 +243,6 @@ public class InjectionManager {
                                 }
                                   
                                 setter.invoke(component, params);
-                                for (Object value : params) {
-                                  handleInjectable(component, value);
-                                }
                               }
                             } catch (MultiException e) {
                                 error_injectionException(target, inject, setter, e);
@@ -424,7 +417,6 @@ public class InjectionManager {
           if (value != null) {
             field.setAccessible(true);
             field.set(ic.component, value);
-            handleInjectable(ic.component, value);
           } else {
             if (!target.isOptional(field, inject)) {
               throw new UnsatisfiedDependencyException(field, inject);
@@ -473,7 +465,6 @@ public class InjectionManager {
               if (value != null) {
                 setter.setAccessible(true);
                 setter.invoke(ic.component, value);
-                handleInjectable(ic.component, value);
               } else {
                 if (!target.isOptional(method, inject)) {
                   throw new UnsatisfiedDependencyException(method, inject);
@@ -498,9 +489,6 @@ public class InjectionManager {
               }
 
               setter.invoke(ic.component, params);
-              for (Object value : params) {
-                handleInjectable(ic.component, value);
-              }
             }
           } catch (MultiException e) {
             error_injectionException(target, inject, setter, e);
@@ -514,16 +502,6 @@ public class InjectionManager {
         }
       }
     }
-
-    
-    protected void handleInjectable(final Object component, final Object value) {
-        if (value == null) return;
-        if (value instanceof Injectable) {
-            Injectable injectable = (Injectable) value;
-            injectable.injectedInto(component);
-        }
-    }
-    
     
     protected void error_injectionException(InjectionResolver target, Annotation inject, AnnotatedElement injectionPoint, Throwable e) {
       Logger.getAnonymousLogger().log(Level.FINE, "** Injection failure **", e);

@@ -42,7 +42,6 @@ package org.jvnet.hk2.config.types;
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.Injectable;
 
 import java.beans.PropertyVetoException;
 
@@ -53,7 +52,7 @@ import java.beans.PropertyVetoException;
  * @author Jerome Dochez
  */
 @Configured
-public interface Property extends ConfigBeanProxy, Injectable  {
+public interface Property extends ConfigBeanProxy  {
 
     /**
      * Gets the value of the name property.
