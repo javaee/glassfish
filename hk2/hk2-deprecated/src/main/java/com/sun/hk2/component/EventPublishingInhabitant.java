@@ -144,9 +144,19 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
       return this == o;
   }
   
-  @Override
-  public String toString() {
-      return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
-          "(" + getImplementation() + ", active: " + real + ")";
-  }
+    @Override
+    public Class<?> getImplementationClass() {
+        return type();
+    }
+
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return get(null);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "-" + System.identityHashCode(this) + 
+            "(" + getImplementation() + ", active: " + real + ")";
+    }
 }

@@ -142,5 +142,15 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
         
     }
 
+    @Override
+    public Class<?> getImplementationClass() {
+        return type();
+    }
+
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return get(null);
+    }
+
     
 }

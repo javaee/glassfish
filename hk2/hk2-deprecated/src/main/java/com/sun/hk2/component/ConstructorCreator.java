@@ -39,6 +39,7 @@
  */
 package com.sun.hk2.component;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
@@ -122,6 +123,16 @@ public class ConstructorCreator<T> extends AbstractCreatorImpl<T> {
           }
           
         }
+    }
+
+    @Override
+    public Class<?> getImplementationClass() {
+        return type();
+    }
+
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return create((Inhabitant) null);
     }
 
 }

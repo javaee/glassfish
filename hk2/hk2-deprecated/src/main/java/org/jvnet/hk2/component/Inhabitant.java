@@ -39,12 +39,8 @@
  */
 package org.jvnet.hk2.component;
 
-import java.util.List;
-import java.util.Map;
-
 import org.glassfish.hk2.Provider;
-import org.glassfish.hk2.api.Descriptor;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.ActiveDescriptor;
 
 /**
  * Represents a component in the world of {@link ServiceLocator}.
@@ -69,7 +65,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 // TODO: Eventually get rid of auto-depend's Holder
 @Deprecated
-public interface Inhabitant<T> extends Provider<T>, Descriptor {
+public interface Inhabitant<T> extends Provider<T>, ActiveDescriptor<T> {
 
     /**
      * Returns the instance of this inhabitant.

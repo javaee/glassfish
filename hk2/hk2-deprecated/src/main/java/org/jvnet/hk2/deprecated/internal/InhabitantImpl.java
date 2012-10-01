@@ -100,4 +100,14 @@ public class InhabitantImpl<T> extends AbstractInhabitantImpl<T> {
         return handle.isActive();
     }
 
+    @Override
+    public Class<?> getImplementationClass() {
+        return type();
+    }
+
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return get(null);
+    }
+
 }

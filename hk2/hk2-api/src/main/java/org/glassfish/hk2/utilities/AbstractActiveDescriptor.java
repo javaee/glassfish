@@ -51,6 +51,7 @@ import java.util.Set;
 import javax.inject.Named;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -85,6 +86,17 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      */
     public AbstractActiveDescriptor() {
         super();
+    }
+    
+    /**
+     * Creates a NON reified ActiveDescriptor based on a copy of the given
+     * baseDescriptor.  The values from the baseDescriptor will be copied deeply
+     * 
+     * @param baseDescriptor The non-null base descriptor to copy values from
+     */
+    protected AbstractActiveDescriptor(Descriptor baseDescriptor) {
+        super(baseDescriptor);
+        isReified = false;
     }
     
     /**
