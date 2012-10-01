@@ -197,7 +197,7 @@ public class DomDocument<T extends Dom> {
             buildModel(i);
         }
         for (ConfigModel cm : models.values()) {
-            Class targetType = cm.classLoaderHolder.get().loadClass(cm.targetTypeName);
+            Class targetType = cm.classLoaderHolder.loadClass(cm.targetTypeName);
             do {
                 Class[] intfs = targetType.getInterfaces();
                 for (Class intf : intfs) {

@@ -39,12 +39,13 @@
  */
 package org.jvnet.hk2.config;
 
-import com.sun.hk2.component.Holder;
 import com.sun.hk2.component.InhabitantsFile;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.HK2LoaderImpl;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
@@ -115,57 +116,7 @@ public final class ConfigModel {
      * Deferred reference to the class loader that loaded the injector.
      * This classloader can also load the configurable object.
      */
-    public final Holder<ClassLoader> classLoaderHolder = new Holder<ClassLoader>() {
-        public ClassLoader get() {
-            
-            if (System.getSecurityManager()!=null) {
-                return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                    @Override
-                    public ClassLoader run() {
-                        ActiveDescriptor<?> reified;
-                        try {
-                            reified = locator.reifyDescriptor(injector);
-                        }
-                        catch (MultiException me) {
-                            return null;
-                        }
-                        
-                        return reified.getImplementationClass().getClassLoader();
-                    }
-                });
-            } else {
-                ActiveDescriptor<?> reified;
-                try {
-                    reified = locator.reifyDescriptor(injector);
-                }
-                catch (MultiException me) {
-                    return null;
-                }
-                
-                return reified.getImplementationClass().getClassLoader();
-            }
-        }
-    };
-
-    /**
-     * Deferred reference to the class object that can load the configurable type
-     */
-
-    public final Holder<Class> classHolder = new Holder<Class>() {
-        Class type = null;
-
-        @Override
-        public synchronized Class get() {
-            if (type==null) {
-                try {
-                    type =  classLoaderHolder.get().loadClass(targetTypeName);
-                } catch (ClassNotFoundException e) {
-                    // ignore, we just return null;
-                }
-            }
-            return type;
-        }
-    };
+    public final HK2Loader classLoaderHolder;
 
     /**
      * Fully-qualified name of the target type that this injector works on.
@@ -205,7 +156,8 @@ public final class ConfigModel {
      * @return the class object for this proxy type
      */
     public <T extends ConfigBeanProxy> Class<T> getProxyType() {
-        return (Class<T>) classHolder.get();
+        Class<T> retVal = (Class<T>) classLoaderHolder.loadClass(targetTypeName);
+        return retVal;
     }
 
     /**
@@ -857,6 +809,9 @@ public final class ConfigModel {
 
         document.models.put(injector,this); // register now so that cyclic references are handled correctly.
         this.injector = injector;
+        this.classLoaderHolder = (injector.getLoader() == null) ?
+                new HK2LoaderImpl() : injector.getLoader() ;
+        
         this.locator = locator;
         String targetTypeName=null,indexTypeName=null;
         String key = null;

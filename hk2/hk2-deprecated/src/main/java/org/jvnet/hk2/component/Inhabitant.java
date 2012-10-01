@@ -46,8 +46,6 @@ import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.annotations.Service;
 
-import com.sun.hk2.component.Holder;
-
 /**
  * Represents a component in the world of {@link ServiceLocator}.
  *
@@ -71,7 +69,7 @@ import com.sun.hk2.component.Holder;
  */
 // TODO: Eventually get rid of auto-depend's Holder
 @Deprecated
-public interface Inhabitant<T> extends Provider<T>, Holder<T>, Descriptor {
+public interface Inhabitant<T> extends Provider<T>, Descriptor {
 
     /**
      * Returns the instance of this inhabitant.

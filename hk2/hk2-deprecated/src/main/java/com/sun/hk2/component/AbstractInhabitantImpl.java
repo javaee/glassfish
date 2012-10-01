@@ -88,7 +88,7 @@ public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implement
     @Override
     public final T get() {
         try {
-            return get(this);
+            return (T) get(this);
         } catch (Exception e) {
             // we are a holder, so we need to allow for {@link RunLevelService} constraints
             // not properly being met --- in such cases return null

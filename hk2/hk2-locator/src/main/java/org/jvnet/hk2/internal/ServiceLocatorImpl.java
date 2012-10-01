@@ -666,11 +666,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         // Must do validation here in order to allow for caching
-        List<ActiveDescriptor<?>> postValidateResults = new LinkedList<ActiveDescriptor<?>>();
+        ActiveDescriptor<T> postValidateResult = null;
         for (ActiveDescriptor<?> validateMe : results.getResults()) {
             if (!validate((SystemDescriptor<?>) validateMe, onBehalfOf, filter)) continue;
             
-            postValidateResults.add(validateMe);
+            postValidateResult = (ActiveDescriptor<T>) validateMe;
+            break;
         }
         
         if (currentErrorHandlers != null) {
@@ -678,10 +679,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Utilities.handleErrors(results, currentErrorHandlers);
         }
         
-        ActiveDescriptor<?> topDog = Utilities.getFirstThingInList(postValidateResults);
-        if (topDog == null) return null;
+        if (postValidateResult == null) return null;
         
-        return getServiceHandle((ActiveDescriptor<T>) topDog);
+        return getServiceHandle(postValidateResult);
     }
     
     /* (non-Javadoc)

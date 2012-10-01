@@ -37,51 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.deprecated.internal;
-
-import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.MultiException;
-
-import com.sun.hk2.component.Holder;
+package org.glassfish.hk2.tests.utilities.hk2loader;
 
 /**
  * @author jwells
  *
  */
-@Deprecated
-public class HolderHK2LoaderImpl implements HK2Loader {
-    private final Holder<ClassLoader> clHolder;
-    
-    public HolderHK2LoaderImpl(Holder<ClassLoader> clHolder) {
-        this.clHolder = clHolder;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.HK2Loader#loadClass(java.lang.String)
-     */
-    @Override
-    public Class<?> loadClass(String className) throws MultiException {
-        ClassLoader cl;
-        if (clHolder == null) {
-            cl = this.getClass().getClassLoader();
-        }
-        else {
-            cl = clHolder.get();
-            if (cl == null) {
-                cl = this.getClass().getClassLoader();
-            }
-        }
-        
-        try {
-            return cl.loadClass(className);
-        }
-        catch (ClassNotFoundException e) {
-            throw new MultiException(e);
-        }
-    }
-    
-    public ClassLoader getClassLoader() {
-        return clHolder.get();
-    }
+public class SimpleService {
 
 }

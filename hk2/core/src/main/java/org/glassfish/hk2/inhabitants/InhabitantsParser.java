@@ -52,8 +52,6 @@ import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 
-import com.sun.hk2.component.Holder;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;

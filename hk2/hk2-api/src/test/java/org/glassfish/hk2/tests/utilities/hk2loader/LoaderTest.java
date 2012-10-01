@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,21 +37,61 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.hk2.component;
+package org.glassfish.hk2.tests.utilities.hk2loader;
 
-import org.glassfish.hk2.Factory;
+import java.util.List;
+
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.utilities.HK2LoaderImpl;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- * Indirection to a value. That is, instead of referring to the value itself,
- * this class allows you to obtain the value when you need it.
+ * @author jwells
  *
- * <p>
- * This is the basis for all the lazy computation.
- *
- *
- *
- * @author Kohsuke Kawaguchi
  */
-@Deprecated
-public interface Holder<T> extends Factory<T> {
+public class LoaderTest {
+    /**
+     * Tests loading a class
+     */
+    @Test
+    public void testLoadAClass() {
+        HK2Loader loader = new HK2LoaderImpl();
+        
+        Class<?> loaded = loader.loadClass("org.glassfish.hk2.tests.utilities.hk2loader.SimpleService");
+        Assert.assertNotNull(loaded);
+    }
+    
+    /**
+     * Tests loading a class
+     */
+    @Test
+    public void testDoNotLoadAClass() {
+        HK2Loader loader = new HK2LoaderImpl();
+        
+        try {
+            loader.loadClass("org.glassfish.hk2.tests.utilities.hk2loader.NoSimpleService");
+            Assert.fail("Should have not been able to load class that does not exist");
+        }
+        catch (MultiException me) {
+            List<Throwable> errors = me.getErrors();
+            Assert.assertEquals(1, errors.size());
+            
+            for (Throwable th : errors) {
+                Assert.assertTrue(th instanceof ClassNotFoundException);
+            }
+        }
+        
+        Assert.assertNotNull(loader.toString());
+    }
+    
+    /**
+     * Tests loading a class
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testNullInput() {
+        new HK2LoaderImpl(null);
+    }
+
 }

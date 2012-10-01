@@ -38,10 +38,11 @@
  * holder.
  */
 package org.jvnet.hk2.config;
-import com.sun.hk2.component.Holder;
+
 import com.sun.hk2.component.IntrospectionScanner;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -49,11 +50,11 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
 
 import java.util.*;
 
@@ -72,7 +73,7 @@ public class ConfiguredScanner implements IntrospectionScanner {
 
 
     @Override
-    public void parse(ParsingContext context, Holder<ClassLoader> loader) {
+    public void parse(ParsingContext context, HK2Loader loader) {
 
         this.context = context;
         AnnotationType configured = (AnnotationType) context.getTypes().getBy(Configured.class.getName());
@@ -96,7 +97,7 @@ public class ConfiguredScanner implements IntrospectionScanner {
             // register the injector.
             DescriptorImpl di = BuilderHelper.link(NoopConfigInjector.class).
                     in(Singleton.class.getName()).
-                    andLoadWith(new HolderHK2LoaderImpl(loader)).build();
+                    andLoadWith(loader).build();
             di.setMetadata(metadata);
             
             ActiveDescriptor<NoopConfigInjector> added = ServiceLocatorUtilities.addOneDescriptor(habitat, di);

@@ -53,7 +53,6 @@ import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.common_impl.LogHelper;
-import com.sun.hk2.component.Holder;
 
 import java.io.File;
 import java.io.IOException;

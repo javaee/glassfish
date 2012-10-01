@@ -46,7 +46,6 @@ import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.*;
-import org.jvnet.hk2.deprecated.internal.HolderHK2LoaderImpl;
 
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
@@ -202,7 +201,7 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
 
         //        habitat.add(this);
-        HK2Loader loader = new HolderHK2LoaderImpl(this.model.classLoaderHolder);
+        HK2Loader loader = this.model.classLoaderHolder;
         
         Set<Type> ctrs = new HashSet<Type>();
         ctrs.add(myselfReified.getImplementationClass());
