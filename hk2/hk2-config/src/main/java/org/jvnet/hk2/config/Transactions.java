@@ -47,12 +47,11 @@ import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.*;
 
-import com.sun.hk2.component.Holder;
-
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
@@ -68,8 +67,8 @@ import org.glassfish.hk2.api.PreDestroy;
 public final class Transactions implements PostConstruct, PreDestroy {
 
     // each transaction listener has a notification pump.
-    private final List<Holder<ListenerNotifier<TransactionListener, ?, Void>>> listeners =
-            new ArrayList<Holder<ListenerNotifier<TransactionListener, ?, Void>>>();
+    private final List<Provider<ListenerNotifier<TransactionListener, ?, Void>>> listeners =
+            new ArrayList<Provider<ListenerNotifier<TransactionListener, ?, Void>>>();
 
     private final Map<Class, Set<ConfigListener>> typeListeners = new HashMap<Class, Set<ConfigListener>>();
 
@@ -77,7 +76,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
     private ExecutorService executor;
 
     // all configuration listeners are notified though one notifier.
-    private final Holder<ConfigListenerNotifier> configListenerNotifier = new Holder<ConfigListenerNotifier>() {
+    private final Provider<ConfigListenerNotifier> configListenerNotifier = new Provider<ConfigListenerNotifier>() {
 
             private final ConfigListenerNotifier configListenerNotifier = new ConfigListenerNotifier();
             private final CountDownLatch initialized = new CountDownLatch(1);
@@ -101,7 +100,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
     }
 
     public void preDestroy() {
-       for (Holder<ListenerNotifier<TransactionListener,  ?, Void>> listener : listeners) {
+       for (Provider<ListenerNotifier<TransactionListener,  ?, Void>> listener : listeners) {
            listener.get().stop();
        }
        configListenerNotifier.get().stop();
@@ -308,7 +307,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
                     // note these events are always synchronous so far.
                     if (!unprocessed.isEmpty()) {
                         Job unprocessedJob = new UnprocessedEventsJob(unprocessed, null);
-                        for (Holder<ListenerNotifier<TransactionListener, ?, Void>> listener : Transactions.this.listeners) {
+                        for (Provider<ListenerNotifier<TransactionListener, ?, Void>> listener : Transactions.this.listeners) {
                             listener.get().add(unprocessedJob);
                         }
                     }
@@ -439,7 +438,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
      */
     public void addTransactionsListener(final TransactionListener listener) {
         synchronized(listeners) {
-            listeners.add(new Holder<ListenerNotifier<TransactionListener, ?, Void>>() {
+            listeners.add(new Provider<ListenerNotifier<TransactionListener, ?, Void>>() {
 
                 final ListenerNotifier<TransactionListener, PropertyChangeEvent, Void> tsListener = new ListenerNotifier<TransactionListener, PropertyChangeEvent, Void>(listener);
                 final CountDownLatch initialized = new CountDownLatch(1);
@@ -464,7 +463,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
      */
     public boolean removeTransactionsListener(TransactionListener listener) {
         synchronized(listeners) {
-            for (Holder<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
+            for (Provider<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
                 ListenerNotifier info = holder.get();
                 if (info.listener==listener) {
                     info.stop();
@@ -478,7 +477,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
     public List<TransactionListener> currentListeners() {
         synchronized(listeners) {            
             List<TransactionListener> l = new ArrayList<TransactionListener>();
-            for (Holder<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
+            for (Provider<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
                 ListenerNotifier<TransactionListener, ?, Void> info = holder.get();
                 l.add(info.listener);
             }
@@ -508,7 +507,7 @@ public final class Transactions implements PostConstruct, PreDestroy {
         final boolean waitTillCleared ) {
         
         final List<ListenerNotifier<TransactionListener, ?, Void>> listInfos = new ArrayList<ListenerNotifier<TransactionListener, ?, Void>>();
-        for (Holder<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
+        for (Provider<ListenerNotifier<TransactionListener, ?, Void>> holder : listeners) {
             ListenerNotifier<TransactionListener, ?, Void> info = holder.get();
             listInfos.add(info);
         }

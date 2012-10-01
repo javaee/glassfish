@@ -414,7 +414,7 @@ public class ConfigSupport {
         for (ConfigModel.Property element : bean.model.elements.values()) {
             if (!element.isLeaf()) {
                 ConfigModel elementModel =  ((ConfigModel.Node) element).model;
-                Class<?> subType = elementModel.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
+                Class<?> subType = elementModel.classLoaderHolder.loadClass(elementModel.targetTypeName);
                 subTypes.add(subType);
             } else {
                 if (element.isCollection()) {
@@ -570,7 +570,7 @@ public class ConfigSupport {
                     }
                     else if ( e.isCollection() ) {
                         try {
-                            final Class<?> tempClass = elementModel.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
+                            final Class<?> tempClass = elementModel.classLoaderHolder.loadClass(elementModel.targetTypeName);
                             if ( tempClass.isAssignableFrom( childType ) ) {
                                 element = e;
                                 targetClass = tempClass;
@@ -769,7 +769,7 @@ public class ConfigSupport {
 
                     ConfigModel elementModel = ((ConfigModel.Node) e).model;
                     try {
-                        final Class<?> targetClass = parent.model.classLoaderHolder.get().loadClass(elementModel.targetTypeName);
+                        final Class<?> targetClass = parent.model.classLoaderHolder.loadClass(elementModel.targetTypeName);
                         if (targetClass.isAssignableFrom(childType)) {
                             element = e;
                             break;
@@ -882,13 +882,13 @@ public class ConfigSupport {
                 return null;
             } else {
                 ConfigModel childModel = ((ConfigModel.Node) a).model;
-                return (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.get().loadClass(childModel.targetTypeName);
+                return (Class<? extends ConfigBeanProxy>) childModel.classLoaderHolder.loadClass(childModel.targetTypeName);
             }
         }
         // global lookup
         ConfigModel model = document.getModelByElementName(elementName);
         if (model!=null) {
-            return (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.get().loadClass(model.targetTypeName);
+            return (Class<? extends ConfigBeanProxy>) model.classLoaderHolder.loadClass(model.targetTypeName);
         }
 
         return null;

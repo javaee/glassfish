@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.hk2.component;
+package org.glassfish.hk2.utilities;
 
 import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.classmodel.reflect.ParsingContext;
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.MultiException;
 
 /**
- * Plugability API for allowing sub parsers to be looked up during
- * introspection. These sub parsers will have the right to peek at
- * the introspected.
- *
- * @author Jerome Dochez
+ * This is an implementation of an {@link HK2Loader} that uses
+ * a given classloader
+ * 
+ * @author jwells
  */
-@Contract
-@Deprecated
-public interface IntrospectionScanner {
-
+public class HK2LoaderImpl implements HK2Loader {
+    private final ClassLoader loader;
+    
     /**
-     * Called by the introspection framework with the class model
-     * context.
-     *
-     * @param context the reflection interfaces accesses
-     * @param loader class loader that call load introspected classes
+     * Initializes this HK2Loader with the system classloader
      */
-    void parse(ParsingContext context, HK2Loader loader);
+    public HK2LoaderImpl() {
+        this(ClassLoader.getSystemClassLoader());
+    }
+    
+    /**
+     * Initializes this HK2Loader with the given ClassLoader
+     * 
+     * @param loader The non-null classloader to use with this
+     * HK2Loader
+     */
+    public HK2LoaderImpl(ClassLoader loader) {
+        if (loader == null) throw new IllegalArgumentException();
+        
+        this.loader = loader;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.HK2Loader#loadClass(java.lang.String)
+     */
+    @Override
+    public Class<?> loadClass(String className) throws MultiException {
+        try {
+            return loader.loadClass(className);
+        }
+        catch (Exception e) {
+            throw new MultiException(e);
+        }
+    }
+    
+    public String toString() {
+        return "HK2LoaderImpl(" + loader + ")";
+    }
+
 }
