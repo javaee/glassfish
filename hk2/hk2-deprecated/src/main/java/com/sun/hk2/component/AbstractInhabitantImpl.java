@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.PreDestroy;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.deprecated.internal.Utilities;
@@ -57,7 +58,7 @@ import org.jvnet.hk2.deprecated.internal.Utilities;
  * @author Kohsuke Kawaguchi
  */
 @Deprecated
-public abstract class AbstractInhabitantImpl<T> extends DescriptorImpl implements Inhabitant<T> {
+public abstract class AbstractInhabitantImpl<T> extends AbstractActiveDescriptor<T> implements Inhabitant<T> {
     protected static final Logger logger = Logger.getLogger(AbstractInhabitantImpl.class.getName());
     
     public AbstractInhabitantImpl(Descriptor descriptorOfSelf) {

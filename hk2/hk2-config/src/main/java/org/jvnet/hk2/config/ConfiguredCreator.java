@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.config;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.MultiMap;
@@ -102,5 +103,15 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
 
     public void release() {
         core.release();
+    }
+
+    @Override
+    public Class<?> getImplementationClass() {
+        return type();
+    }
+
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return get(null);
     }
 }

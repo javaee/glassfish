@@ -40,6 +40,7 @@
 package com.sun.hk2.component;
 
 import org.glassfish.hk2.Scope;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Inhabitant;
@@ -104,5 +105,15 @@ public class ScopedInhabitant<T> extends AbstractCreatorInhabitantImpl<T> {
     @Override
     public void release() {
         // noop
+    }
+
+    @Override
+    public Class<?> getImplementationClass() {
+        return type();
+    }
+
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return get(null);
     }
 }

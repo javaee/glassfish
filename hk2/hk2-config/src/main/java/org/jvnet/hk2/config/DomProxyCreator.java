@@ -40,6 +40,8 @@
 package org.jvnet.hk2.config;
 
 import com.sun.hk2.component.AbstractCreatorImpl;
+
+import org.glassfish.hk2.api.ServiceHandle;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Inhabitant;
 
@@ -72,6 +74,16 @@ final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractCreatorIm
         }
 
         return proxyInstance;
+    }
+
+    @Override
+    public Class<?> getImplementationClass() {
+        return type();
+    }
+
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return create((Inhabitant) null);
     }
 }
 
