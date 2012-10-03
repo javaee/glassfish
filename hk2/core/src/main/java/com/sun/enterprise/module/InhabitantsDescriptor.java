@@ -39,8 +39,6 @@
  */
 package com.sun.enterprise.module;
 
-import com.sun.hk2.component.KeyValuePairParser;
-
 import java.io.IOException;
 
 import org.glassfish.hk2.inhabitants.InhabitantParser;
