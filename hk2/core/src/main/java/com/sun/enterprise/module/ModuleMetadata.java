@@ -39,7 +39,6 @@
  */
 package com.sun.enterprise.module;
 
-import com.sun.hk2.component.InhabitantsScanner;
 import org.jvnet.hk2.component.MultiMap;
 
 import java.io.ByteArrayInputStream;
