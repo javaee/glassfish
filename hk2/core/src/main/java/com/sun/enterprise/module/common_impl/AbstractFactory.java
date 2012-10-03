@@ -43,7 +43,6 @@ package com.sun.enterprise.module.common_impl;
 import com.sun.enterprise.module.Module;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.hk2.component.InhabitantsParser;
 import org.jvnet.hk2.component.Habitat;
 
 /**
