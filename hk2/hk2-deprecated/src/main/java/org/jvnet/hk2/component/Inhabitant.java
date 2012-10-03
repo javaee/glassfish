@@ -109,8 +109,6 @@ public interface Inhabitant<T> extends Provider<T>, ActiveDescriptor<T> {
      * callback invoked, and its reference released. For singleton
      * objects, this method is expected to dispose that object.
      * <p>
-     * For scoped objects, those are released when {@link org.glassfish.hk2.ScopeInstance#release()}
-     * is invoked.
      */
     void release();
 }
