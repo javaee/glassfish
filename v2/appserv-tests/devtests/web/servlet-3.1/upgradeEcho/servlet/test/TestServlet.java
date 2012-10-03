@@ -57,7 +57,7 @@ public class TestServlet extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        if ("echo".equals(req.getHeader("upgrade"))) {
+        if ("echo".equals(req.getHeader("Upgrade"))) {
             res.setStatus(101);
             res.setHeader("Upgrade", "echo");
             res.setHeader("Connection", "Upgrade");
