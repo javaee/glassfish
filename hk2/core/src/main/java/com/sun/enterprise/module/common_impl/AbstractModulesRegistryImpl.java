@@ -450,25 +450,25 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
 		Map<ServiceLocator, List<ActiveDescriptor>> descriptorsByServiceLocator = moduleDescriptors
 				.get(module);
 
-		System.out.println("descriptorsByServiceLocator: " + descriptorsByServiceLocator);
-		
-		for (Entry<ServiceLocator, List<ActiveDescriptor>> e : descriptorsByServiceLocator
-				.entrySet()) {
-			ServiceLocator sl = e.getKey();
-			List<ActiveDescriptor> descriptors = e.getValue();
+		if (descriptorsByServiceLocator != null) {
+			for (Entry<ServiceLocator, List<ActiveDescriptor>> e : descriptorsByServiceLocator
+					.entrySet()) {
+				ServiceLocator sl = e.getKey();
+				List<ActiveDescriptor> descriptors = e.getValue();
 
-			DynamicConfigurationService dcs = sl
-					.getService(DynamicConfigurationService.class);
-			DynamicConfiguration config = dcs.createDynamicConfiguration();
+				DynamicConfigurationService dcs = sl
+						.getService(DynamicConfigurationService.class);
+				DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-			for (Descriptor descriptor : descriptors) {
-				System.out.println(descriptor);
-				ServiceLocatorUtilities.removeOneDescriptor(sl, descriptor);
+				for (Descriptor descriptor : descriptors) {
+					System.out.println(descriptor);
+					ServiceLocatorUtilities.removeOneDescriptor(sl, descriptor);
+				}
+
+				config.commit();
 			}
-
-			config.commit();
+			moduleDescriptors.remove(module);
 		}
-		moduleDescriptors.remove(module);
 	}
     
     /** 
