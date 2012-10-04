@@ -73,10 +73,6 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
         return core.getImplementation();
     }
 
-    public Class<? extends T> type() {
-        return core.type();
-    }
-
     @SuppressWarnings("unchecked")
     public T get(Inhabitant onBehalfOf) {
         T t = create(onBehalfOf);
@@ -107,7 +103,7 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
 
     @Override
     public Class<?> getImplementationClass() {
-        return type();
+        return core.getImplementationClass();
     }
 
     @Override

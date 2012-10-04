@@ -895,7 +895,7 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
                 NodeChild nc = (NodeChild) child;
                 if(model.elements.containsKey(nc.name))
                     continue;   // match with named
-                if(baseType.isAssignableFrom(nc.dom.type()))
+                if(baseType.isAssignableFrom(nc.dom.getImplementationClass()))
                     r.add(nc.dom);
             }
         }
@@ -922,7 +922,7 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
                 NodeChild nc = (NodeChild) child;
                 if(model.elements.containsKey(nc.name))
                     continue;   // match with named
-                if(baseType.isAssignableFrom(nc.dom.type()))
+                if(baseType.isAssignableFrom(nc.dom.getImplementationClass()))
                     return baseType.cast(nc.dom.get());
             }
         }

@@ -96,13 +96,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   @SuppressWarnings("unchecked")
   @Override
-  public Class<? extends T> type() {
-      ActiveDescriptor<?> ad = serviceLocator.reifyDescriptor(this);
-      return (Class<? extends T>) ad.getImplementationClass();
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
   public T get(Inhabitant onBehalfOf) {
     if (null == real) {
       fetch();
@@ -146,7 +139,8 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
   
     @Override
     public Class<?> getImplementationClass() {
-        return type();
+        ActiveDescriptor<?> ad = serviceLocator.reifyDescriptor(this);
+        return (Class<? extends T>) ad.getImplementationClass();
     }
 
     @Override

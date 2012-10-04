@@ -66,13 +66,6 @@ public class InhabitantImpl<T> extends AbstractInhabitantImpl<T> {
         this.locator = locator;
     }
 
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Inhabitant#type()
-     */
-    @Override
-    public Class<? extends T> type() {
-        return (Class<? extends T>) desc.getImplementationClass();
-    }
 
     /* (non-Javadoc)
      * @see org.jvnet.hk2.component.Inhabitant#get(org.jvnet.hk2.component.Inhabitant)
@@ -102,7 +95,7 @@ public class InhabitantImpl<T> extends AbstractInhabitantImpl<T> {
 
     @Override
     public Class<?> getImplementationClass() {
-        return type();
+        return (Class<? extends T>) desc.getImplementationClass();
     }
 
     @Override

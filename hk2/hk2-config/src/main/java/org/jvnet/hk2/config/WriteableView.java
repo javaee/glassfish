@@ -595,7 +595,8 @@ private class ProtectedList extends AbstractList {
                     }
                 }
             }
-            param = ((WriteableView) handler).getMasterView().createProxy(master.type());
+            param = ((WriteableView) handler).getMasterView().createProxy(
+                    (Class<ConfigBeanProxy>) master.getImplementationClass());
 
         }
         changeEvents.add(new PropertyChangeEvent(defaultView, id, null, param));
