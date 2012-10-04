@@ -42,7 +42,6 @@ package org.jvnet.hk2.deprecated.internal;
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.hk2.MultiMap;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
 

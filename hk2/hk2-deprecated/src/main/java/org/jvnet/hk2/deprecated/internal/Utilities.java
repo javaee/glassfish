@@ -44,8 +44,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.glassfish.hk2.MultiMap;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.jvnet.hk2.component.MultiMap;
 
 /**
  * @author jwells

@@ -54,17 +54,6 @@ package org.jvnet.hk2.component;
 public interface Creator<T> extends Inhabitant<T> {
 
     /**
-     * Short cut for
-     *
-     * <pre>
-     * T o = create();
-     * initialize(o);
-     * return o;
-     * </pre>
-     */
-    T get() throws ComponentException;
-
-    /**
      * Creates a new instance.
      *
      * The caller is supposed to call the {@link Creator#initialize(Object, Inhabitant)}

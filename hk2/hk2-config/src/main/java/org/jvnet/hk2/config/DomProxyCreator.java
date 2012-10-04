@@ -39,14 +39,18 @@
  */
 package org.jvnet.hk2.config;
 
-import com.sun.hk2.component.AbstractCreatorImpl;
+import com.sun.hk2.component.AbstractInhabitantImpl;
 
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.ComponentException;
+import org.jvnet.hk2.component.Creator;
 import org.jvnet.hk2.component.Inhabitant;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * {@link org.jvnet.hk2.component.Creator} that returns a typed proxy to {@link Dom}.
@@ -54,13 +58,31 @@ import java.util.Map;
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings("unchecked")
-final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractCreatorImpl<T> {
+final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractInhabitantImpl<T> implements Creator<T> {
+    private final static Logger logger = Logger.getLogger(DomProxyCreator.class.getName());
+
+    protected final Class<? extends T> type;
+    
     private final Dom dom;
 
     private volatile T proxyInstance;
 
     public DomProxyCreator(Class<T> type, Map<String, List<String>> metadata, Dom dom) {
-        super(type, null, metadata);
+        super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(type.getName(), null, metadata));
+        
+        this.type = type;
+        
+        clearMetadata();
+        
+        if (metadata != null) {
+            for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
+                String key = entry.getKey();
+                for (String value : entry.getValue()) {
+                    addMetadata(key, value);
+                }
+            }
+        }
+        
         this.dom = dom;
     }
 
@@ -84,6 +106,60 @@ final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractCreatorIm
     @Override
     public T create(ServiceHandle<?> root) {
         return create((Inhabitant) null);
+    }
+
+    public String typeName() {
+        return type.getName();
+    }
+
+    public final Class<? extends T> type() {
+        return type;
+    }
+
+    public final T get(Inhabitant onBehalfOf) throws ComponentException {
+        T o = create(onBehalfOf);
+        logger.log(Level.FINER, "created object {0}", o);
+        initialize(o, onBehalfOf);
+        return o;
+    }
+
+    public boolean isActive() {
+        return true;
+    }
+
+    @Override
+    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
+        // JRW JRW 
+        // serviceLocator.inject(t);
+      // I could rely on injection, but the algorithm is slow enough for now that I
+      // need a faster scheme.
+        /**
+         * TODO:  JRW I don't know what this is
+      if (t instanceof InhabitantRequested) {
+          ((InhabitantRequested) t).setInhabitant(onBehalfOf);
+      }
+      */
+    }
+
+    public void release() {
+        // Creator creates a new instance every time,
+        // so there's nothing to release here.
+    }
+
+    /**
+     * Performs resource injection on the given instance from the given habitat.
+     *
+     * <p>
+     * This method is an utility method for subclasses for performing injection.
+     */
+    protected void inject(ServiceLocator habitat, T t, Inhabitant<?> onBehalfOf) {
+        logger.log(Level.FINER, "injection starting on {0}", t);
+        
+        habitat.inject(t);
+        
+        habitat.postConstruct(t);
+
+        logger.log(Level.FINER, "injection finished on {0}", t);
     }
 }
 

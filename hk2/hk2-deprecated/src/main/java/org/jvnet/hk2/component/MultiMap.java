@@ -52,7 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Jerome Dochez
  */
 @Deprecated
-public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Serializable, Cloneable {
+public class MultiMap<K, V> implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
 
     private final Map<K, List<V>> store;
@@ -107,7 +107,7 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      *
      * @param base map to copy
      */
-    public MultiMap(org.glassfish.hk2.MultiMap<K, V> base) {
+    public MultiMap(MultiMap<K, V> base) {
         this();
         for (Entry<K, List<V>> e : base.entrySet()) {
             store.put(e.getKey(), newList(e.getValue()));
@@ -142,7 +142,7 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
         return true;
     }
     
-    boolean matches(org.glassfish.hk2.MultiMap<K, V> other) {
+    boolean matches(MultiMap<K, V> other) {
         if (size() > other.size()) {
             return false;
         }
@@ -192,8 +192,7 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
             }
         }
     }
-
-    @Override
+    
     public Set<K> keySet() {
         return store.keySet();
     }
@@ -249,7 +248,6 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      * @param k key for the values
      * @return Can be empty but never null. Read-only.
      */
-    @Override
     public final List<V> get(K k) {
         List<V> l = store.get(k);
         if (l == null) {
@@ -337,7 +335,7 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
         return Collections.unmodifiableList(new ArrayList<V>(set));
     }
     
-    public void mergeAll(org.glassfish.hk2.MultiMap<K, V> another) {
+    public void mergeAll(MultiMap<K, V> another) {
         if (null != another) {
             for (Entry<K, List<V>> entry : another.entrySet()) {
                 List<V> ourList = store.get(entry.getKey());
@@ -375,7 +373,6 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      * @param k key to test
      * @return true if the map contains at least one element for this key
      */
-    @Override
     public boolean containsKey(K k) {
         return !get(k).isEmpty();
     }
@@ -388,7 +385,6 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      * @param k2 key (value) from inner collection
      * @return true if the map contains at least one element for these keys
      */
-    @Override
     public boolean contains(K k1, V k2) {
         List<V> list = _get(k1);
         return list.contains(k2);
@@ -429,7 +425,6 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
         return getFirst(k);
     }
 
-    @Override
     public V getFirst(K k) {
         List<V> lst = store.get(k);
         if (null == lst) {
@@ -448,7 +443,6 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      *
      * @return a {@link java.util.Set} of {@link java.util.Map.Entry} of entries
      */
-    @Override
     public Set<Entry<K, List<V>>> entrySet() {
         return store.entrySet();
     }
@@ -483,7 +477,6 @@ public class MultiMap<K, V> implements org.glassfish.hk2.MultiMap<K, V>, Seriali
      *
      * @return integer or 0 if the map is empty
      */
-    @Override
     public int size() {
         return store.size();
     }
