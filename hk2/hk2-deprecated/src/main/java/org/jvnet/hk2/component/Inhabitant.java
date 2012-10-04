@@ -97,7 +97,7 @@ public interface Inhabitant<T> extends ActiveDescriptor<T> {
      *
      * <p>
      * {@link Inhabitant}s are often used with the decorator pattern
-     * (see {@link com.sun.hk2.component.AbstractCreatorInhabitantImpl} for example), yet during
+     * yet during
      * the object initializtion inside the {@link #get()} method, we often
      * need the reference to the outer-most {@link Inhabitant} registered to
      * the {@link ServiceLocator} (for example so that we can request the injection
