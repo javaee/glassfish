@@ -39,7 +39,6 @@
  */
 package org.jvnet.hk2.component;
 
-import org.glassfish.hk2.Provider;
 import org.glassfish.hk2.api.ActiveDescriptor;
 
 /**
@@ -65,19 +64,30 @@ import org.glassfish.hk2.api.ActiveDescriptor;
  */
 // TODO: Eventually get rid of auto-depend's Holder
 @Deprecated
-public interface Inhabitant<T> extends Provider<T>, ActiveDescriptor<T> {
+public interface Inhabitant<T> extends ActiveDescriptor<T> {
+    /**
+     * The system calls this method to obtain a reference
+     * to the component/service.
+     * 
+     * @return
+     *      null is a valid return value. This is useful
+     *      when a factory primarily does a look-up and it fails
+     *      to find the specified component, yet you don't want that
+     *      by itself to be an error. If the injection wants
+     *      a non-null value (i.e., <tt>@Inject(optional=false)</tt>).
+     *      
+     * @throws ComponentException
+     *      If the factory failed to get/create an instance
+     *      and would like to propagate the error to the caller.
+     */
+    T get() throws ComponentException;
 
     /**
-     * Returns the instance of this inhabitant.
+     * Returns true if the component has been instantiated.
      *
-     * <p>
-     * Some {@link Inhabitant}s return the same instance for multiple
-     * invocations (AKA singleton), but
-     * the method may return different instances to invocations from different
-     * context (AKA scope.) The extreme case is where the each invocation
-     * returns a different object.
+     * @return true if the component is active.
      */
-    T get();
+    boolean isActive();
 
     /**
      * Returns the instance of this inhabitant.

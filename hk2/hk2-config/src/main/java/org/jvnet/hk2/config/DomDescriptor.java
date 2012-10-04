@@ -100,7 +100,7 @@ public class DomDescriptor<T>
 
     private void initTheOne() {
         if (theOne == null) {
-            Class c = theDom.type();
+            Class c = theDom.getImplementationClass();
             creator = (ConfigBeanProxy.class.isAssignableFrom(c)
                     ? new DomProxyCreator(c, theDom.getMetadata(), theDom)
                     : new ConfiguredCreator(theDom.createCreator(c), theDom));

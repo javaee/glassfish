@@ -73,10 +73,6 @@ public abstract class AbstractCreatorInhabitantImpl<T> extends AbstractInhabitan
     public final String typeName() {
         return creator.getImplementation();
     }
-
-    public final Class<? extends T> type() {
-        return creator.type();
-    }
     
     public Creator<T> getCreator() {
         return creator;

@@ -805,7 +805,7 @@ public final class ConfigModel {
             Map<String, List<String>> description,
             ServiceLocator locator) {
         if(description==null)
-            throw new ComponentException("%s doesn't have any metadata",injector.type());
+            throw new ComponentException("%s doesn't have any metadata",injector.getImplementationClass());
 
         document.models.put(injector,this); // register now so that cyclic references are handled correctly.
         this.injector = injector;
@@ -850,7 +850,7 @@ public final class ConfigModel {
                 key = value;
         }
         if(targetTypeName==null)
-            throw new ComponentException("%s doesn't have the mandatory '%s' metadata", injector.type(), ConfigMetadata.TARGET);
+            throw new ComponentException("%s doesn't have the mandatory '%s' metadata", injector.getImplementationClass(), ConfigMetadata.TARGET);
         if(key==null ^ indexTypeName==null)
             throw new ComponentException("%s has inconsistent '%s=%s' and '%s=%s' metadata",
                 ConfigMetadata.KEY, key, ConfigMetadata.TARGET, indexTypeName);

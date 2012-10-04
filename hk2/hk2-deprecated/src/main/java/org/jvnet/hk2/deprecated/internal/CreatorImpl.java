@@ -86,14 +86,6 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
     }
 
     /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Inhabitant#type()
-     */
-    @Override
-    public Class<? extends T> type() {
-        return (Class<? extends T>) c;
-    }
-
-    /* (non-Javadoc)
      * @see org.jvnet.hk2.component.Inhabitant#get(org.jvnet.hk2.component.Inhabitant)
      */
     @SuppressWarnings("unchecked")
@@ -144,7 +136,7 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
 
     @Override
     public Class<?> getImplementationClass() {
-        return type();
+        return c;
     }
 
     @Override

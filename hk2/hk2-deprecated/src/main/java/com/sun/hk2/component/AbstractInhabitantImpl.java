@@ -75,16 +75,7 @@ public abstract class AbstractInhabitantImpl<T> extends AbstractActiveDescriptor
         return Utilities.safeEquals(getImplementation(), matchTo.getImplementation());
     }
 
-    @Override
-    public String toString() {
-        StringBuffer sb = new StringBuffer(getClass().getSimpleName() + "-" + System.identityHashCode(this) + "(");
-        
-        DescriptorImpl.pretty(sb, this);
-        
-        sb.append(")\n");
-        
-        return sb.toString();
-    }
+    
     
     @Override
     public final T get() {
@@ -98,11 +89,6 @@ public abstract class AbstractInhabitantImpl<T> extends AbstractActiveDescriptor
         }
     }
 
-    @Override
-    public <U> U getByType(Class<U> type) {
-        return (U) get();
-    }
-
     public void dispose(T object) {
       if (object instanceof PreDestroy) {
           logger.log(Level.FINER, "calling PreDestroy on {0}", object);
@@ -111,7 +97,7 @@ public abstract class AbstractInhabitantImpl<T> extends AbstractActiveDescriptor
     }
     
     public <V extends Annotation> V getAnnotation(Class<V> annotation) {
-        return getAnnotation(type(), annotation, false);
+        return getAnnotation(getImplementationClass(), annotation, false);
     }
     
     /**
@@ -141,11 +127,15 @@ public abstract class AbstractInhabitantImpl<T> extends AbstractActiveDescriptor
       
       return null;
     }
-
+    
     @Override
-    public Collection<Annotation> getAnnotations() {
-        // TODO:
-        throw new UnsupportedOperationException();
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName() + "-" + System.identityHashCode(this) + "(");
+        
+        DescriptorImpl.pretty(sb, this);
+        
+        sb.append(")\n");
+        
+        return sb.toString();
     }
-
 }
