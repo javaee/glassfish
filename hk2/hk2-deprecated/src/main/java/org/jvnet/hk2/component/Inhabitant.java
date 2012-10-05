@@ -90,29 +90,6 @@ public interface Inhabitant<T> extends ActiveDescriptor<T> {
     boolean isActive();
 
     /**
-     * Returns the instance of this inhabitant.
-     *
-     * <p>
-     * <b>THIS METHOD SHOULD BE ONLY USED BY HK2 IMPLEMENTATION</b>.
-     *
-     * <p>
-     * {@link Inhabitant}s are often used with the decorator pattern
-     * yet during
-     * the object initializtion inside the {@link #get()} method, we often
-     * need the reference to the outer-most {@link Inhabitant} registered to
-     * the {@link ServiceLocator} (for example so that we can request the injection
-     * of {link Inhabita} that represents itself, or to inject companions.)
-     *
-     * <p>
-     * So this overloaded version of the get method takes the outer-most
-     * {@link Inhabitant}. This method is only invoked from within HK2
-     * where the decorator pattern is used.
-     */
-    // TODO: this and the lead/companions method make you wonder whether we should
-    // define Inhabitant as an abstract class.
-    T get(Inhabitant onBehalfOf);
-
-    /**
      * Called to orderly shutdown {@link ServiceLocator}.
      * <p>
      * The expected behavior is for objects to get its {@link org.glassfish.hk2.api.PreDestroy}

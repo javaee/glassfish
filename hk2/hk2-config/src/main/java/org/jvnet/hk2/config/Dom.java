@@ -1403,7 +1403,7 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
     }
     
     @Override
-    public Object get(Inhabitant onBehalfOf) {
+    public Object get() {
         if (serviceHandle == null) {
             return null;
         }

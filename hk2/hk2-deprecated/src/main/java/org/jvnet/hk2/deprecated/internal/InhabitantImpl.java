@@ -71,7 +71,7 @@ public class InhabitantImpl<T> extends AbstractInhabitantImpl<T> {
      * @see org.jvnet.hk2.component.Inhabitant#get(org.jvnet.hk2.component.Inhabitant)
      */
     @Override
-    public T get(Inhabitant onBehalfOf) {
+    public T get() {
         ServiceHandle<T> handle = locator.getServiceHandle(desc);
         return handle.getService();
     }
@@ -100,7 +100,7 @@ public class InhabitantImpl<T> extends AbstractInhabitantImpl<T> {
 
     @Override
     public T create(ServiceHandle<?> root) {
-        return get(null);
+        return get();
     }
 
 }

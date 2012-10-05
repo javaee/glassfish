@@ -75,20 +75,6 @@ public abstract class AbstractInhabitantImpl<T> extends AbstractActiveDescriptor
         return Utilities.safeEquals(getImplementation(), matchTo.getImplementation());
     }
 
-    
-    
-    @Override
-    public final T get() {
-        try {
-            return (T) get(this);
-        } catch (Exception e) {
-            // we are a holder, so we need to allow for {@link RunLevelService} constraints
-            // not properly being met --- in such cases return null
-            logger.log(Level.FINER, "swallowing error", e);
-            return null;
-        }
-    }
-
     public void dispose(T object) {
       if (object instanceof PreDestroy) {
           logger.log(Level.FINER, "calling PreDestroy on {0}", object);
