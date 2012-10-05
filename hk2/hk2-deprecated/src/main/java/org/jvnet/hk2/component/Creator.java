@@ -49,9 +49,8 @@ package org.jvnet.hk2.component;
  * @author Kohsuke Kawaguchi
  * @see Creators
  */
-@SuppressWarnings("unchecked")
 @Deprecated
-public interface Creator<T> extends Inhabitant<T> {
+public interface Creator<T> {
 
     /**
      * Creates a new instance.
@@ -61,5 +60,5 @@ public interface Creator<T> extends Inhabitant<T> {
      * cycle references correctly.
      * @param onBehalfOf
      */
-    T create(Inhabitant onBehalfOf) throws ComponentException;
+    T create() throws ComponentException;
 }

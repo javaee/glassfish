@@ -55,58 +55,28 @@ import java.util.Map;
  *
  * @author Kohsuke Kawaguchi
  */
-class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
+class ConfiguredCreator<T> implements Creator<T> {
     private final Creator<T> core;
     private final Dom dom;
 
     public ConfiguredCreator(Creator<T> core, Dom dom) {
-        super(core);
         this.core = core;
         this.dom = dom;
     }
 
-    public boolean isActive() {
-        return true;
-    }
-
-    public String typeName() {
-        return core.getImplementation();
-    }
-
     @SuppressWarnings("unchecked")
-    public T get(Inhabitant onBehalfOf) {
-        T t = create(onBehalfOf);
-        initialize(t,onBehalfOf);
-        return t;
-    }
-
-    @SuppressWarnings("unchecked")
-    public T create(Inhabitant onBehalfOf) throws ComponentException {
-        T retVal = core.create(onBehalfOf);
-        initialize(retVal, onBehalfOf);
+    public T create() throws ComponentException {
+        T retVal = core.create();
+        initialize(retVal);
         return retVal;
     }
 
     @SuppressWarnings("unchecked")
-    private void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
+    private void initialize(T t) throws ComponentException {
         injectConfig(t);
     }
 
     private void injectConfig(T t) {
         dom.inject(t);
-    }
-
-    public void release() {
-        core.release();
-    }
-
-    @Override
-    public Class<?> getImplementationClass() {
-        return core.getImplementationClass();
-    }
-
-    @Override
-    public T create(ServiceHandle<?> root) {
-        return get(null);
     }
 }

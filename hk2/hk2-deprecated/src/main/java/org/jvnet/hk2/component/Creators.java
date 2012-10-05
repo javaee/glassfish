@@ -87,6 +87,6 @@ public class Creators {
             foundDescriptor = descriptors.get(0);
         }
         
-        return new CreatorImpl(c, habitat, metadata, foundDescriptor);
+        return new CreatorImpl(c, habitat);
     }
 }

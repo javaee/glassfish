@@ -106,7 +106,7 @@ public class DomDescriptor<T>
                     : new ConfiguredCreator(theDom.createCreator(c), theDom));
         }
 
-        theOne = creator.create(theDom);
+        theOne = creator.create();
     }
 
     /*

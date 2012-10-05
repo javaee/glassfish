@@ -58,7 +58,7 @@ import java.util.logging.Logger;
  * @author Kohsuke Kawaguchi
  */
 @SuppressWarnings("unchecked")
-final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractInhabitantImpl<T> implements Creator<T> {
+final class DomProxyCreator<T extends ConfigBeanProxy> implements Creator<T> {
     private final static Logger logger = Logger.getLogger(DomProxyCreator.class.getName());
 
     protected final Class<? extends T> type;
@@ -68,10 +68,11 @@ final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractInhabitan
     private volatile T proxyInstance;
 
     public DomProxyCreator(Class<T> type, Map<String, List<String>> metadata, Dom dom) {
-        super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(type.getName(), null, metadata));
+        // super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(type.getName(), null, metadata));
         
         this.type = type;
         
+        /*
         clearMetadata();
         
         if (metadata != null) {
@@ -82,65 +83,21 @@ final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractInhabitan
                 }
             }
         }
+        */
         
         this.dom = dom;
     }
 
-    public T create(Inhabitant onBehalfOf) throws ComponentException {
+    public T create() throws ComponentException {
         if (proxyInstance == null) {
             synchronized (this) {
                 if (proxyInstance == null) {
-                    proxyInstance = (T) dom.createProxy((Class<ConfigBeanProxy>) getImplementationClass());
+                    proxyInstance = (T) dom.createProxy((Class<ConfigBeanProxy>) type);
                 }
             }
         }
 
         return proxyInstance;
-    }
-
-    @Override
-    public Class<?> getImplementationClass() {
-        return type;
-    }
-
-    @Override
-    public T create(ServiceHandle<?> root) {
-        return create((Inhabitant) null);
-    }
-
-    public String typeName() {
-        return type.getName();
-    }
-
-    public final T get(Inhabitant onBehalfOf) throws ComponentException {
-        T o = create(onBehalfOf);
-        logger.log(Level.FINER, "created object {0}", o);
-        return o;
-    }
-
-    public boolean isActive() {
-        return true;
-    }
-
-    public void release() {
-        // Creator creates a new instance every time,
-        // so there's nothing to release here.
-    }
-
-    /**
-     * Performs resource injection on the given instance from the given habitat.
-     *
-     * <p>
-     * This method is an utility method for subclasses for performing injection.
-     */
-    protected void inject(ServiceLocator habitat, T t, Inhabitant<?> onBehalfOf) {
-        logger.log(Level.FINER, "injection starting on {0}", t);
-        
-        habitat.inject(t);
-        
-        habitat.postConstruct(t);
-
-        logger.log(Level.FINER, "injection finished on {0}", t);
     }
 }
 
