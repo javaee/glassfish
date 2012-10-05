@@ -90,7 +90,7 @@ final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractInhabitan
         if (proxyInstance == null) {
             synchronized (this) {
                 if (proxyInstance == null) {
-                    proxyInstance = dom.createProxy(type());
+                    proxyInstance = (T) dom.createProxy((Class<ConfigBeanProxy>) getImplementationClass());
                 }
             }
         }
@@ -100,7 +100,7 @@ final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractInhabitan
 
     @Override
     public Class<?> getImplementationClass() {
-        return type();
+        return type;
     }
 
     @Override
@@ -112,33 +112,14 @@ final class DomProxyCreator<T extends ConfigBeanProxy> extends AbstractInhabitan
         return type.getName();
     }
 
-    public final Class<? extends T> type() {
-        return type;
-    }
-
     public final T get(Inhabitant onBehalfOf) throws ComponentException {
         T o = create(onBehalfOf);
         logger.log(Level.FINER, "created object {0}", o);
-        initialize(o, onBehalfOf);
         return o;
     }
 
     public boolean isActive() {
         return true;
-    }
-
-    @Override
-    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
-        // JRW JRW 
-        // serviceLocator.inject(t);
-      // I could rely on injection, but the algorithm is slow enough for now that I
-      // need a faster scheme.
-        /**
-         * TODO:  JRW I don't know what this is
-      if (t instanceof InhabitantRequested) {
-          ((InhabitantRequested) t).setInhabitant(onBehalfOf);
-      }
-      */
     }
 
     public void release() {

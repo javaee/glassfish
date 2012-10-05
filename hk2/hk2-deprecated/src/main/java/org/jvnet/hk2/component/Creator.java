@@ -62,9 +62,4 @@ public interface Creator<T> extends Inhabitant<T> {
      * @param onBehalfOf
      */
     T create(Inhabitant onBehalfOf) throws ComponentException;
-
-    /**
-     * Performs initialization of object, such as dependency injection.
-     */
-    void initialize(T t, Inhabitant onBehalfOf) throws ComponentException;
 }

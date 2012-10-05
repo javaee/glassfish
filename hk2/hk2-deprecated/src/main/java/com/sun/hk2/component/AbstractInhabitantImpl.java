@@ -96,38 +96,6 @@ public abstract class AbstractInhabitantImpl<T> extends AbstractActiveDescriptor
       }
     }
     
-    public <V extends Annotation> V getAnnotation(Class<V> annotation) {
-        return getAnnotation(getImplementationClass(), annotation, false);
-    }
-    
-    /**
-     * FOR INTERNAL USE TO HK2
-     */
-    public static <V extends Annotation> V getAnnotation(Class<?> annotated,
-        Class<V> annotation,
-        boolean walkParentChain) {
-      V v = annotated.getAnnotation(annotation);
-      if (null != v) {
-          return v;
-      }
-      
-      for (Annotation a : annotated.getAnnotations()) {
-          v = a.annotationType().getAnnotation(annotation);
-          if (null != v) {
-              return v;
-          }
-      }
-      
-      if (walkParentChain) {
-        annotated = annotated.getSuperclass();
-        if (null != annotated) {
-          return getAnnotation(annotated, annotation, true);
-        }
-      }
-      
-      return null;
-    }
-    
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(getClass().getSimpleName() + "-" + System.identityHashCode(this) + "(");

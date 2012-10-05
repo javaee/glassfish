@@ -88,9 +88,8 @@ class ConfiguredCreator<T> extends AbstractInhabitantImpl<T> implements Creator<
     }
 
     @SuppressWarnings("unchecked")
-    public void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
+    private void initialize(T t, Inhabitant onBehalfOf) throws ComponentException {
         injectConfig(t);
-        core.initialize(t,onBehalfOf);
     }
 
     private void injectConfig(T t) {
