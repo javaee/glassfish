@@ -116,28 +116,6 @@ public class Habitat implements ServiceLocator {
         return ServiceLocatorFactory.getInstance().create(name, null, GENERATOR);
     }
 
-    /*
-     * Why initialize/processInhabitantDecorations didn't work:
-     * 
-     * when a new CageBuilder comes into the habitat, it needs to build cages
-     * for all existing components. when a caged component comes into the
-     * habitat, it checks existing cage builders in the habitat.
-     * 
-     * Now, when a cage builder and a component are both initialized first and
-     * then processInhabitantDecorations runs for both of them later, then you
-     * end up creating a cage twice, because the builder think it got into
-     * habitat after than the component, and the component think it got into
-     * habitat after the builder.
-     */
-
-
-    protected static Long getServiceRanking(Inhabitant<?> i, boolean wantNonNull) {
-        int rank = i.getRanking();
-        Long retVal = new Long(rank);
-        
-        return retVal;
-    }
-
     /**
      * Gets a lazy reference to the component.
      * <p/>
@@ -154,51 +132,8 @@ public class Habitat implements ServiceLocator {
         return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
-
-    public <T> Inhabitant<T> getInhabitant(java.lang.reflect.Type type, String name) {
-        ServiceHandle<T> handle = delegate.getServiceHandle(type, name);
-        if (handle == null) return null;
-        
-        ActiveDescriptor<T> best = (ActiveDescriptor<T>) handle.getActiveDescriptor();
-        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
-    }
-
-    /**
-     * Gets a lazy reference to the component.
-     * <p/>
-     * <p/>
-     * This method defers the actual instantiation of the component until
-     * {@link Inhabitant#get()} is invoked.
-     *
-     * @return null if no such component is found.
-     */
-    public <T> Inhabitant<T> getInhabitantByType(Class<T> implType) {
-        return getInhabitant(implType, null);
-    }
-
-    public <T> Inhabitant<T> getInhabitantByType(java.lang.reflect.Type implType) {
-        return getInhabitant(implType, null);
-    }
-
     public Inhabitant<?> getInhabitantByType(String fullyQualifiedClassName) {
         ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createContractFilter(fullyQualifiedClassName));
-        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
-    }
-
-    /**
-     * Gets the inhabitant that has the given contract annotation and the given
-     * name.
-     * <p/>
-     * <p/>
-     * This method defers the actual instantiation of the component until
-     * {@link Inhabitant#get()} is invoked.
-     *
-     * @return null if no such component is found.
-     */
-    public Inhabitant<?> getInhabitantByAnnotation(
-            Class<? extends Annotation> contract, String name)
-            throws ComponentException {
-        ActiveDescriptor<?> best = delegate.getBestDescriptor(new QualifierFilter(contract.getName(), name));
         return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
@@ -226,49 +161,6 @@ public class Habitat implements ServiceLocator {
     }
 
     /**
-     * Gets all the inhabitants that has the given contract.
-     */
-    public <T> Collection<Inhabitant<T>> getInhabitantsByContract(
-            Type contract) throws ComponentException {
-        List<ServiceHandle<?>> all = delegate.getAllServiceHandles(contract);
-        
-        LinkedList<Inhabitant<T>> retVal = new LinkedList<Inhabitant<T>>();
-        
-        for (ServiceHandle<?> a : all) {
-            Inhabitant<T> addMe = Utilities.getInhabitantFromActiveDescriptor(
-                    (ActiveDescriptor<T>) a.getActiveDescriptor(), delegate);
-            
-            retVal.add(addMe);
-        }
-        
-        return retVal;
-    }
-
-    /**
-     * Instantiate the passed type and injects all the {@link org.jvnet.hk2.annotations.Inject}
-     * annotated fields and methods
-     *
-     * @param type class of the requested instance
-     * @param <T> type of the requested instance
-     * @return the instantiated and injected instance
-     */
-    public <T> T inject(Class<T> type) {
-        Object o = delegate.create(type);
-        delegate.inject(o);
-        delegate.postConstruct(o);
-        
-        return (T) o;
-    }
-
-    /**
-     * Gets all the inhabitants that has the given implementation type.
-     */
-    public <T> Collection<Inhabitant<T>> getInhabitantsByType(Class<T> implType)
-            throws ComponentException {
-        return getInhabitantsByContract(implType);
-    }
-
-    /**
      * Gets all the inhabitants that has the given implementation type name.
      */
     public Collection<Inhabitant<?>> getInhabitantsByType(
@@ -286,16 +178,6 @@ public class Habitat implements ServiceLocator {
         return retVal;
     }
 
-    /**
-     * Get the first inhabitant by contract
-     *
-     * @param typeName fullyQualifiedClassName
-     * @return
-     */
-    public Inhabitant<?> getInhabitantByContract(String typeName) {
-        return getInhabitantByType(typeName);
-    }
-
     public Collection<Inhabitant<?>> getInhabitantsByContract(
             String fullyQualifiedClassName) {
         return getInhabitantsByType(fullyQualifiedClassName);
@@ -304,61 +186,6 @@ public class Habitat implements ServiceLocator {
     public Inhabitant getInhabitantByContract(String fullyQualifiedName,
                                               String name) {
         ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(fullyQualifiedName, name));
-        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
-    }
-
-    /**
-     * Gets all the inhabitants that has the given contract and the given name
-     * <p/>
-     * <p/>
-     * This method defers the actual instantiation of the component until
-     * {@link Inhabitant#get()} is invoked.
-     *
-     * @return Can be empty but never null.
-     */
-    public <T> Iterable<Inhabitant<? extends T>> getInhabitants(
-            Class<T> contract, String name) throws ComponentException {
-        List<ActiveDescriptor<?>> all = delegate.getDescriptors(BuilderHelper.createNameAndContractFilter(contract.getName(), name));
-        
-        LinkedList<Inhabitant<? extends T>> retVal = new LinkedList<Inhabitant<? extends T>>();
-        for (ActiveDescriptor<?> a : all) {
-            Inhabitant<? extends T> addMe = Utilities.getInhabitantFromActiveDescriptor((ActiveDescriptor<? extends T>) a, delegate);
-            
-            retVal.add(addMe);
-        }
-        
-        return retVal;
-    }
-
-    /**
-     * Gets all the inhabitants that has the given contract annotation and the
-     * given name.
-     * <p/>
-     * <p/>
-     * This method defers the actual instantiation of the component until
-     * {@link Inhabitant#get()} is invoked.
-     *
-     * @return Can be empty but never null.
-     */
-    public Iterable<Inhabitant<?>> getInhabitantsByAnnotation(
-            Class<? extends Annotation> contract, String name)
-            throws ComponentException {
-        List<ActiveDescriptor<?>> all = delegate.getDescriptors(new QualifierFilter(contract.getName(), name));
-        
-        LinkedList<Inhabitant<?>> retVal = new LinkedList<Inhabitant<?>>();
-        for (ActiveDescriptor<?> a : all) {
-            Inhabitant<?> addMe = Utilities.getInhabitantFromActiveDescriptor(a, delegate);
-            
-            retVal.add(addMe);
-        }
-        
-        return retVal;
-    }
-
-    public <T> Inhabitant<T> getProvider(Type type, String name) {
-        ServiceHandle<T> handle = delegate.getServiceHandle(type, name);
-        
-        ActiveDescriptor<T> best = handle.getActiveDescriptor();
         return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
     }
 
