@@ -96,10 +96,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
   @SuppressWarnings("unchecked")
   @Override
-  public T get(Inhabitant onBehalfOf) {
-    if (null == real) {
-      fetch();
-    }
+  public T get() {
     ActiveDescriptor<T> activeDescriptor;
     if (real != null && (real instanceof ActiveDescriptor)) {
         activeDescriptor = (ActiveDescriptor<T>) real;
@@ -119,10 +116,6 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
     T result = handle.getService();
     
     return result;
-  }
-
-  protected void fetch() {
-    throw new IllegalStateException();  // responsibility on derived classes
   }
   
   public ServiceLocator getServiceLocator() {
@@ -145,7 +138,7 @@ public class EventPublishingInhabitant<T> extends AbstractInhabitantImpl<T> {
 
     @Override
     public T create(ServiceHandle<?> root) {
-        return get(null);
+        return get();
     }
 
     @Override
