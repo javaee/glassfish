@@ -46,6 +46,8 @@ import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.*;
+import org.jvnet.hk2.config.provider.internal.Creator;
+import org.jvnet.hk2.config.provider.internal.CreatorImpl;
 
 import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
@@ -1221,9 +1223,11 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
     @SuppressWarnings("unchecked")
     protected Creator createCreator(Class c) {
         Map<String, List<String>> metadata = getMetadata();
-        Creator creator = Creators.create(c, getServiceLocator(), metadata);
+        Creator creator = new CreatorImpl(c, getServiceLocator());
         
-        return (ConfigBeanProxy.class.isAssignableFrom(c)?new DomProxyCreator(c, getMetadata(), this):new ConfiguredCreator(creator,this));
+        return (ConfigBeanProxy.class.isAssignableFrom(c) ?
+                new DomProxyCreator(c, this) :
+                new ConfiguredCreator(creator,this));
     }
 
     public static <T extends Annotation> T digAnnotation(Class<?> target, Class<T> annotationType) {

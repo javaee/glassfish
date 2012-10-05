@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,28 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component;
+package org.jvnet.hk2.config.provider.internal;
+
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
- * Encapsulates how to create an object.
+ * @author jwells
  *
- * <p>
- * Signature-wise it's the same as {@link Inhabitant}
- * but it carries an additional meaning.
- *
- * @author Kohsuke Kawaguchi
- * @see Creators
  */
-@Deprecated
-public interface Creator<T> {
-
+public class CreatorImpl<T> implements Creator<T> {
+    private final Class<?> c;
+    private final ServiceLocator locator;
+    
     /**
-     * Creates a new instance.
-     *
-     * The caller is supposed to call the {@link Creator#initialize(Object, Inhabitant)}
-     * right away. This 2-phase initialization allows us to handle
-     * cycle references correctly.
-     * @param onBehalfOf
+     * 
+     * @param c
+     * @param locator
+     * @param metadata
+     * @param d
      */
-    T create() throws ComponentException;
+    public CreatorImpl(Class<?> c, ServiceLocator locator) {
+        this.c = c;
+        this.locator = locator;
+    }
+
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.component.Creator#create(org.jvnet.hk2.component.Inhabitant)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public T create() {
+        return (T) locator.createAndInitialize(c);
+    }    
 }
