@@ -74,11 +74,12 @@ public class WebTest {
         final WebTest webTest = new WebTest(args);
 
         try {
+            webTest.doTest("/resource.jsp", null, false, 403);
             webTest.doTest("/index.jsp", null, true, 200);
-            webTest.doTest("/index.jsp", webTest.csrfParam, false, 200);
-            webTest.doTest("/index.jsp", webTest.csrfParam + "__XXX", false, 403);
-            webTest.doTest("/index.jsp", null, false, 403);
-            webTest.doTest("/index.jsp", webTest.csrfParam + "__XXX", false, 403);
+            webTest.doTest("/resource.jsp", webTest.csrfParam, false, 200);
+            webTest.doTest("/resource.jsp", webTest.csrfParam + "__XXX", false, 403);
+            webTest.doTest("/resource.jsp", null, false, 403);
+            webTest.doTest("/resource.jsp", webTest.csrfParam + "__XXX", false, 403);
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch(Exception ex) {
             ex.printStackTrace();

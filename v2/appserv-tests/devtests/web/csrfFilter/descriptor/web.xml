@@ -50,6 +50,10 @@
     <filter>
         <filter-name>csrf</filter-name>
         <filter-class>org.apache.catalina.filters.CsrfPreventionFilter</filter-class>
+        <init-param>
+            <param-name>entryPoints</param-name>
+            <param-value>/index.jsp</param-value>
+        </init-param>
     </filter>
     <filter-mapping>
         <filter-name>csrf</filter-name>
