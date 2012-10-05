@@ -39,15 +39,7 @@
  */
 package org.jvnet.hk2.config;
 
-import org.glassfish.hk2.api.ServiceHandle;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.MultiMap;
-import org.jvnet.hk2.component.Inhabitant;
-import com.sun.hk2.component.AbstractInhabitantImpl;
-
-import java.util.List;
-import java.util.Map;
+import org.jvnet.hk2.config.provider.internal.Creator;
 
 /**
  * {@link Creator} decorator that uses {@link ConfigInjector} to set values to objects
@@ -64,15 +56,13 @@ class ConfiguredCreator<T> implements Creator<T> {
         this.dom = dom;
     }
 
-    @SuppressWarnings("unchecked")
-    public T create() throws ComponentException {
+    public T create() {
         T retVal = core.create();
         initialize(retVal);
         return retVal;
     }
 
-    @SuppressWarnings("unchecked")
-    private void initialize(T t) throws ComponentException {
+    private void initialize(T t) {
         injectConfig(t);
     }
 

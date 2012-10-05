@@ -4,7 +4,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.jvnet.hk2.component.Creator;
+import org.jvnet.hk2.config.provider.internal.Creator;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
@@ -102,7 +102,7 @@ public class DomDescriptor<T>
         if (theOne == null) {
             Class c = theDom.getImplementationClass();
             creator = (ConfigBeanProxy.class.isAssignableFrom(c)
-                    ? new DomProxyCreator(c, theDom.getMetadata(), theDom)
+                    ? new DomProxyCreator(c, theDom)
                     : new ConfiguredCreator(theDom.createCreator(c), theDom));
         }
 

@@ -39,17 +39,10 @@
  */
 package org.jvnet.hk2.config;
 
-import com.sun.hk2.component.AbstractInhabitantImpl;
-
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Creator;
-import org.jvnet.hk2.component.Inhabitant;
+import org.jvnet.hk2.config.provider.internal.Creator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -67,28 +60,12 @@ final class DomProxyCreator<T extends ConfigBeanProxy> implements Creator<T> {
 
     private volatile T proxyInstance;
 
-    public DomProxyCreator(Class<T> type, Map<String, List<String>> metadata, Dom dom) {
-        // super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(type.getName(), null, metadata));
-        
+    public DomProxyCreator(Class<T> type, Dom dom) {
         this.type = type;
-        
-        /*
-        clearMetadata();
-        
-        if (metadata != null) {
-            for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
-                String key = entry.getKey();
-                for (String value : entry.getValue()) {
-                    addMetadata(key, value);
-                }
-            }
-        }
-        */
-        
         this.dom = dom;
     }
 
-    public T create() throws ComponentException {
+    public T create() {
         if (proxyInstance == null) {
             synchronized (this) {
                 if (proxyInstance == null) {
