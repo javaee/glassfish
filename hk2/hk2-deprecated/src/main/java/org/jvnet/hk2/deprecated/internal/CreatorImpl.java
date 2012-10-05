@@ -56,7 +56,7 @@ import com.sun.hk2.component.AbstractInhabitantImpl;
  *
  */
 @Deprecated
-public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator<T> {
+public class CreatorImpl<T> implements Creator<T> {
     private final Class<?> c;
     private final ServiceLocator locator;
     
@@ -67,52 +67,9 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
      * @param metadata
      * @param d
      */
-    public CreatorImpl(Class<?> c, ServiceLocator locator, Map<String, List<String>> metadata, Descriptor d) {
-        super(d);
+    public CreatorImpl(Class<?> c, ServiceLocator locator) {
         this.c = c;
         this.locator = locator;
-        
-        clearMetadata();
-        
-        if (metadata != null) {
-            for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
-                String key = entry.getKey();
-                for (String value : entry.getValue()) {
-                    addMetadata(key, value);
-                }
-            }
-        }
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Inhabitant#get(org.jvnet.hk2.component.Inhabitant)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public T get(Inhabitant onBehalfOf) {
-        Object retVal = locator.getService(c);
-        return (T) retVal;
-    }
-
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Inhabitant#release()
-     */
-    @Override
-    public void release() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.Provider#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        ServiceHandle<?> handle = locator.getServiceHandle(c);
-        if (handle == null) return false;
-            
-        return handle.isActive();
     }
 
     /* (non-Javadoc)
@@ -120,19 +77,7 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
      */
     @SuppressWarnings("unchecked")
     @Override
-    public T create(Inhabitant onBehalfOf) throws ComponentException {
+    public T create() throws ComponentException {
         return (T) locator.createAndInitialize(c);
-    }
-
-    @Override
-    public Class<?> getImplementationClass() {
-        return c;
-    }
-
-    @Override
-    public T create(ServiceHandle<?> root) {
-        return get(null);
-    }
-
-    
+    }    
 }
