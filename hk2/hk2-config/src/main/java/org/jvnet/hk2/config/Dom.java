@@ -39,7 +39,7 @@
  */
 package org.jvnet.hk2.config;
 
-import com.sun.hk2.component.EventPublishingInhabitant;
+import com.sun.hk2.component.AbstractInhabitantImpl;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.utilities.AliasDescriptor;
@@ -77,7 +77,7 @@ import java.util.regex.Pattern;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, InvocationHandler, ObservableBean {
+public class Dom extends AbstractInhabitantImpl implements InvocationHandler, ObservableBean {
     /**
      * Model drives the interpretation of this DOM.
      */
@@ -252,35 +252,6 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
         serviceHandle = getHabitat().getServiceHandle(myDescriptor);
     }
 
-    /*
-    private class MyDescriptor<T>
-            extends ConstantActiveDescriptor<Creator<T>> {
-
-        Dom dom;
-
-        private MyDescriptor(ConfigBeanProxy theOne, String name, Set ctrs,
-                             Class<? extends Annotation> scope, Set ann, Dom dom) {
-            super(theOne, ctrs, scope, name, ann);
-            this.dom = dom;
-            super.setRanking(getRanking());
-            super.setImplementation(dom.getImplementation());
-        }
-
-        @Override
-        public Class<?> getImplementationClass() {
-            return type();
-        }
-        
-        public Creator<T> create(ServiceHandle<?> handle) {
-            Class c = type();
-            return ConfigBeanProxy.class.isAssignableFrom(c)
-                    ? new DomProxyCreator(c, dom.getMetadata(), dom)
-                    : new ConfiguredCreator(dom.createCreator(c), dom);
-        }
-
-    }
-     */
-
     /**
      * When a new Dom object is created, ensures that all @NotNull annotated
      * elements have a value.
@@ -345,6 +316,8 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
      * Owner of the DOM tree.
      */
     public final DomDocument document;
+    
+    private final Habitat habitat;
 
     /**
      * @param in
@@ -352,8 +325,10 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
      *      Otherwise this can be null.
      */
     public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
-        super(habitat, org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(
+        super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(
                 model.targetTypeName, model.injector.getLoader(), model.injector.getMetadata()));
+        
+        this.habitat = habitat;
         
         if (in!=null) {
             this.location =  new LocationImpl(in.getLocation());
@@ -371,7 +346,7 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
     }
 
     public Habitat getHabitat() {
-        return (Habitat) super.getServiceLocator();
+        return habitat;
     }
 
     /**
@@ -1336,7 +1311,6 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
     @Override
     public void release() {
         listeners.clear();
-        super.release();
     }
 
     Set<ConfigListener> listeners = new HashSet<ConfigListener>();
@@ -1408,9 +1382,26 @@ public class Dom extends EventPublishingInhabitant implements ActiveDescriptor, 
             return null;
         }
         
-        boolean wasActive = serviceHandle.isActive();
         Object result = serviceHandle.getService();
         
         return result;
+    }
+    
+    @Override
+    public boolean isActive() {
+        return true;
+      
+    }
+    
+    public ServiceLocator getServiceLocator() {
+        return habitat;
+    }
+    
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+    
+    public boolean equals(Object o) {
+        return this == o;
     }
 }
