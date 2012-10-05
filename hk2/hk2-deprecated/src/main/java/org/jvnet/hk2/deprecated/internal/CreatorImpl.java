@@ -124,16 +124,6 @@ public class CreatorImpl<T> extends AbstractInhabitantImpl<T> implements Creator
         return (T) locator.createAndInitialize(c);
     }
 
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.component.Creator#initialize(java.lang.Object, org.jvnet.hk2.component.Inhabitant)
-     */
-    @Override
-    public void initialize(T t, Inhabitant onBehalfOf)
-            throws ComponentException {
-        // Do nothing
-        
-    }
-
     @Override
     public Class<?> getImplementationClass() {
         return c;
