@@ -84,6 +84,7 @@ public class AllowEncodedSlash extends BaseDevTest {
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) new URL("http://localhost:" + adminPort + "/management/domain/resources/jdbc-resource/jdbc%2F__TimerPool.xml").openConnection();
+            connection.setRequestProperty("X-GlassFish-3", "true");
             System.out.println("Connection response code returned "+connection.getResponseCode()); 
             report("response-" + expectedCode + "-try-" + count, expectedCode == connection.getResponseCode());
         } finally {
