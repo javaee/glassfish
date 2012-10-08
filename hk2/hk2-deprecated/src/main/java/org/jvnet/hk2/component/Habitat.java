@@ -117,27 +117,6 @@ public class Habitat implements ServiceLocator {
     }
 
     /**
-     * Gets a lazy reference to the component.
-     * <p/>
-     * <p/>
-     * This method defers the actual instantiation of the component until
-     * {@link Inhabitant#get()} is invoked.
-     *
-     * @return null if no such component is found.
-     */
-    public <T> Inhabitant<T> getInhabitant(Class<T> contract, String name)
-            throws ComponentException {
-        ActiveDescriptor<T> best = (ActiveDescriptor<T>)
-                delegate.getBestDescriptor(BuilderHelper.createNameAndContractFilter(contract.getName(), name));
-        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
-    }
-
-    public Inhabitant<?> getInhabitantByType(String fullyQualifiedClassName) {
-        ActiveDescriptor<?> best = delegate.getBestDescriptor(BuilderHelper.createContractFilter(fullyQualifiedClassName));
-        return Utilities.getInhabitantFromActiveDescriptor(best, delegate);
-    }
-
-    /**
      * Gets all the inhabitants for a spcial contract.
      *
      * FOR COMPATIBILITY REASONS

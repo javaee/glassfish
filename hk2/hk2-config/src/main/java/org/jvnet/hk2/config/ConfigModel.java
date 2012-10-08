@@ -46,8 +46,8 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.HK2LoaderImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.tiger_types.Types;
 
@@ -70,7 +70,7 @@ public final class ConfigModel {
      * Reference to the {@link ConfigInjector} used to inject values to
      * objects of this model.
      */
-    public final Inhabitant<? extends ConfigInjector> injector;
+    public final ActiveDescriptor<? extends ConfigInjector> injector;
 
     /**
      * Legal attribute names.
@@ -208,7 +208,7 @@ public final class ConfigModel {
      */
     /*package*/ void inject(Dom dom, Object target) {
         try {
-            injector.get().inject(dom,target);
+            ServiceLocatorUtilities.<ConfigInjector>getService(locator, injector).inject(dom,target);
         } catch (ConfigurationException e) {
             e.setLocation(dom.getLocation());
             throw e;
@@ -801,7 +801,7 @@ public final class ConfigModel {
      *      The description of the model as written in {@link InhabitantsFile the inhabitants file}.
      */
     public ConfigModel(DomDocument document,
-            Inhabitant<? extends ConfigInjector> injector,
+            ActiveDescriptor<? extends ConfigInjector> injector,
             Map<String, List<String>> description,
             ServiceLocator locator) {
         if(description==null)

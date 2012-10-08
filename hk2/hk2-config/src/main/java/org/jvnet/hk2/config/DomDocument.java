@@ -42,10 +42,10 @@ package org.jvnet.hk2.config;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.classmodel.reflect.ClassModel;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.MultiMap;
 
@@ -69,7 +69,7 @@ public class DomDocument<T extends Dom> {
      */
     private volatile Translator translator = Translator.NOOP;
 
-    protected final Map<Inhabitant<? extends ConfigInjector>,ConfigModel> models = new HashMap<Inhabitant<? extends ConfigInjector>, ConfigModel>();
+    protected final Map<ActiveDescriptor<? extends ConfigInjector>,ConfigModel> models = new HashMap<ActiveDescriptor<? extends ConfigInjector>, ConfigModel>();
     private final MultiMap<Class, List<ConfigModel>> implementorsOf = new MultiMap<Class, List<ConfigModel>>();
 
     /*package*/ final Habitat habitat;
@@ -107,7 +107,7 @@ public class DomDocument<T extends Dom> {
     /**
      * Creates {@link ConfigModel} for the given {@link ConfigInjector} if we haven't done so.
      */
-    /*package*/ ConfigModel buildModel(Inhabitant<? extends ConfigInjector> i) {
+    /*package*/ ConfigModel buildModel(ActiveDescriptor<? extends ConfigInjector> i) {
         ConfigModel m = models.get(i);
         if(m==null)
             m = new ConfigModel(this, i, i.getMetadata(), habitat);
@@ -126,11 +126,12 @@ public class DomDocument<T extends Dom> {
      */
     public ConfigModel buildModel(String fullyQualifiedClassName) {
         //Inhabitant i = habitat.getInhabitantByAnnotation(InjectionTarget.class, fullyQualifiedClassName);
-        ActiveDescriptor desc = habitat.getBestDescriptor(new InjectionTargetFilter(fullyQualifiedClassName));
-        Inhabitant i = Utilities.getInhabitantFromActiveDescriptor(desc, habitat);
-        if(i==null)
+        ActiveDescriptor<? extends ConfigInjector> desc = (ActiveDescriptor<? extends ConfigInjector>)
+                habitat.getBestDescriptor(new InjectionTargetFilter(fullyQualifiedClassName));
+        
+        if (desc == null)
             throw new ComponentException("ConfigInjector for %s is not found, is it annotated with @Configured",fullyQualifiedClassName);
-        return buildModel(i);
+        return buildModel(desc);
     }
 
     /**
@@ -143,9 +144,9 @@ public class DomDocument<T extends Dom> {
      *      Null if no configurable component is registered under the given global element name.
      */
     public ConfigModel getModelByElementName(String elementName) {
-        Inhabitant<? extends ConfigInjector> i = habitat.getInhabitant(ConfigInjector.class, elementName);
+        ServiceHandle<? extends ConfigInjector> i = habitat.getServiceHandle(ConfigInjector.class, elementName);
         if(i==null) return null;
-        return buildModel(i);
+        return buildModel(i.getActiveDescriptor());
     }
 
     private static class InjectionTargetFilter
@@ -193,8 +194,8 @@ public class DomDocument<T extends Dom> {
     private void initXRef() throws ClassNotFoundException {
 
         // force initialization of all the config models.
-        for (Inhabitant<? extends ConfigInjector> i : habitat.getInhabitants(ConfigInjector.class)) {
-            buildModel(i);
+        for (ServiceHandle<?> i : habitat.getAllServiceHandles(ConfigInjector.class)) {
+            buildModel((ActiveDescriptor<? extends ConfigInjector>) i.getActiveDescriptor());
         }
         for (ConfigModel cm : models.values()) {
             Class targetType = cm.classLoaderHolder.loadClass(cm.targetTypeName);
