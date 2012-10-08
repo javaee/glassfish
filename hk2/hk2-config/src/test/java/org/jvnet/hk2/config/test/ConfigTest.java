@@ -47,7 +47,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.Inhabitant;
 import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyChangeEvent;
@@ -84,10 +83,10 @@ public class ConfigTest {
         };
         List<String> expectedInjectors = Arrays.asList(expected);
 
-        Collection<Inhabitant<? extends ConfigInjector>> inhabitants = habitat.getInhabitants(ConfigInjector.class);
+        List<ServiceHandle<?>> inhabitants = habitat.getAllServiceHandles(ConfigInjector.class);
         Set<String> inhabitantNames = new HashSet<String>();
-        for (Inhabitant inh : inhabitants) {
-            inhabitantNames.add(inh.getImplementation());
+        for (ServiceHandle<?> inh : inhabitants) {
+            inhabitantNames.add(inh.getActiveDescriptor().getImplementation());
         }
 
         assert(inhabitants.size() == 3 && inhabitantNames.containsAll(expectedInjectors));
@@ -95,18 +94,18 @@ public class ConfigTest {
 
     @Test
     public void lookupInjectorByName() {
-        Inhabitant inhabitant1 = habitat.getInhabitant(ConfigInjector.class, "simple-connector");
-        Inhabitant inhabitant2 = habitat.getInhabitant(ConfigInjector.class, "ejb-container-availability");
+        ServiceHandle inhabitant1 = habitat.getServiceHandle(ConfigInjector.class, "simple-connector");
+        ServiceHandle inhabitant2 = habitat.getServiceHandle(ConfigInjector.class, "ejb-container-availability");
         
         assert(inhabitant1 != null && inhabitant2 != null
-                && inhabitant1.getImplementation().equals(SimpleConnectorInjector.class.getName())
-                && inhabitant2.getImplementation().equals(EjbContainerAvailabilityInjector.class.getName()));
+                && inhabitant1.getActiveDescriptor().getImplementation().equals(SimpleConnectorInjector.class.getName())
+                && inhabitant2.getActiveDescriptor().getImplementation().equals(EjbContainerAvailabilityInjector.class.getName()));
     }
 
     @Test
     public void testLookupOfInjectorAndCheckIfActive() {
-        Inhabitant inhabitant1 = habitat.getInhabitant(ConfigInjector.class, "simple-connector");
-        Inhabitant inhabitant2 = habitat.getInhabitant(ConfigInjector.class, "ejb-container-availability");
+        ServiceHandle inhabitant1 = habitat.getServiceHandle(ConfigInjector.class, "simple-connector");
+        ServiceHandle inhabitant2 = habitat.getServiceHandle(ConfigInjector.class, "ejb-container-availability");
         assert(inhabitant1 != null && inhabitant2 != null
                 && inhabitant1.isActive() == false
                 && inhabitant2.isActive() == false);
@@ -148,7 +147,7 @@ public class ConfigTest {
     public void lookupConnectorServiceAndEnsureNotActive() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         System.out.println("[lookupConnectorService] Got sc : " + sc.getClass().getName());
-        Inhabitant inhabitant1 = habitat.getInhabitant(ConfigInjector.class, "simple-connector");
+        ServiceHandle inhabitant1 = habitat.getServiceHandle(ConfigInjector.class, "simple-connector");
         assert(sc != null && !inhabitant1.isActive());
     }
 
@@ -157,7 +156,7 @@ public class ConfigTest {
     public void getConnectorServiceAndCheckIfActive() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         String port = sc.getPort();
-        Inhabitant inhabitant1 = habitat.getInhabitant(ConfigInjector.class, "simple-connector");
+        ServiceHandle inhabitant1 = habitat.getServiceHandle(ConfigInjector.class, "simple-connector");
         assert(port.equals("8080")); // && inhabitant1.isActive());
     }
 

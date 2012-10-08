@@ -37,46 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
-
-import org.jvnet.hk2.annotations.Contract;
+package org.glassfish.hk2.tests.locator.servicelocatorutilities;
 
 /**
- * This service can be used to add validation points to Descriptors.
- * <p>
- * An implementation of ValidationService must be in the Singleton scope
- *
  * @author jwells
  *
  */
-@Contract
-public interface ValidationService {
-    /**
-     * This filter will be run at least once per descriptor at the point that the descriptor
-     * is being looked up, either with the {@link ServiceLocator} API or due to
-     * an &#64;Inject resolution.  The decision made by this filter will be cached and
-     * used every time that Descriptor is subsequently looked up.  No validation checks
-     * should be done in the returned filter, it is purely meant to limit the
-     * {@link Descriptor}s that are passed into the validator.
-     * <p>
-     * Descriptors passed to this filter may or may not be reified.  The filter should try as
-     * much as possible to do its work without reifying the descriptor.  
-     * <p>
-     * The filter may be run more than once on a descriptor if some condition caused
-     * the cache of results per descriptor to become invalidated.
-     * 
-     * @return The filter to be used to determine if the validators associated with this
-     * service should be called when the passed in {@link Descriptor} is looked up
-     */
-    public Filter getLookupFilter();
-    
-    /**
-     * Returns the {@link Validator} that will be run whenever
-     * a {@link Descriptor} that passed the filter is to be looked up with the API
-     * or injected into an injection point, or on any bind or unbind operation.
-     * If this method returns false then the operation will not proceed.
-     * 
-     * @return A non-null validator
-     */
-    public Validator getValidator();
+public class SimpleService6 {
+
 }

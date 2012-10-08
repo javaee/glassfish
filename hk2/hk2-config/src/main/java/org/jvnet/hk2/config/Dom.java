@@ -918,7 +918,7 @@ public class Dom extends AbstractInhabitantImpl implements InvocationHandler, Ob
      * this DOM to a bean.
      */
     public ConfigInjector getInjector() {
-        return model.injector.get();
+        return ServiceLocatorUtilities.getService(habitat, model.injector);
     }
 
     /**

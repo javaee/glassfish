@@ -354,4 +354,30 @@ public abstract class ServiceLocatorUtilities {
         
         return locator.getServiceHandle(ad).getService();
     }
+    
+    /**
+     * Returns the service in this service locator given the current descriptor.
+     * 
+     * @param locator The non-null locator in which to get the service associated with
+     * this descriptor
+     * @param descriptor The non-null descriptor to find the corresponding service for
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getService(ServiceLocator locator, Descriptor descriptor) {
+        if (locator == null || descriptor == null) throw new IllegalArgumentException();
+        
+        Long locatorId = descriptor.getLocatorId();
+        if (locatorId != null &&
+                (locatorId.longValue() == locator.getLocatorId()) &&
+                (descriptor instanceof ActiveDescriptor)) {
+            return locator.getServiceHandle((ActiveDescriptor<T>) descriptor).getService();
+            
+        }
+        
+        ActiveDescriptor<T> found = findOneDescriptor(locator, descriptor);
+        if (found == null) return null;
+        
+        return locator.getServiceHandle(found).getService();
+    }
 }

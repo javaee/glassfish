@@ -264,6 +264,32 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNull(ServiceLocatorUtilities.getService(locator, "not.really.There"));
     }
     
+    @Test
+    public void testGetServiceWithDescriptor() {
+        Descriptor desc5 = BuilderHelper.link(SimpleService5.class.getName()).build();
+        Descriptor desc6 = BuilderHelper.link(SimpleService6.class.getName()).build();
+        
+        ActiveDescriptor<SimpleService5> activeDesc = ServiceLocatorUtilities.addOneDescriptor(locator, desc5);
+        
+        {
+            // This way of getting it does NOT have the locator fields filled in, but should still work
+            SimpleService5 s5 = ServiceLocatorUtilities.getService(locator, desc5);
+            Assert.assertNotNull(s5);
+        }
+        
+        {
+            // This way of getting it DOES have the locator fields filled in
+            SimpleService5 s5 = ServiceLocatorUtilities.getService(locator, activeDesc);
+            Assert.assertNotNull(s5);
+        }
+        
+        {
+            // This service is NOT there
+            SimpleService6 s6 = ServiceLocatorUtilities.getService(locator, desc6);
+            Assert.assertNull(s6);
+        }
+    }
+    
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
         /**
          * 
