@@ -123,7 +123,7 @@ public class MultiException extends RuntimeException {
         
         int lcv = 1;
         for (Throwable th : listCopy) {
-            sb.append(lcv++ + ". " + th.getMessage() + "\n");
+            sb.append(lcv++ + ". " + th.getClass().getName() + ((th.getMessage() != null) ? ": " + th.getMessage() : "" ) + "\n");
         }
         
         return sb.toString();

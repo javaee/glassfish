@@ -43,9 +43,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.classmodel.reflect.ClassModel;
-import org.glassfish.hk2.deprecated.utilities.Utilities;
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.MultiMap;
 
@@ -72,7 +70,7 @@ public class DomDocument<T extends Dom> {
     protected final Map<ActiveDescriptor<? extends ConfigInjector>,ConfigModel> models = new HashMap<ActiveDescriptor<? extends ConfigInjector>, ConfigModel>();
     private final MultiMap<Class, List<ConfigModel>> implementorsOf = new MultiMap<Class, List<ConfigModel>>();
 
-    /*package*/ final Habitat habitat;
+    /*package*/ final ServiceLocator habitat;
 
     /*package*/ T root;
 
@@ -83,7 +81,7 @@ public class DomDocument<T extends Dom> {
     /*package*/ static final List<String> PRIMS = Collections.unmodifiableList(Arrays.asList(
     "boolean", "char", "int", "java.lang.Boolean", "java.lang.Character", "java.lang.Integer"));
     
-    public DomDocument(Habitat habitat) {
+    public DomDocument(ServiceLocator habitat) {
         this.habitat = habitat;
         for (String prim : PRIMS) {
             validators.put(prim, new PrimitiveDataType(prim) );
@@ -227,7 +225,7 @@ public class DomDocument<T extends Dom> {
         return buildModel(c);
     }
 
-    public Dom make(Habitat habitat, XMLStreamReader in, T parent, ConfigModel model) {
+    public Dom make(ServiceLocator habitat, XMLStreamReader in, T parent, ConfigModel model) {
         return decorator != null
             ? decorator.decorate(habitat, this, parent, model, in)
             : new Dom(habitat,this,parent,model,in);

@@ -40,7 +40,7 @@
 
 package org.jvnet.hk2.config.test;
 
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.config.ConfigView;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
@@ -60,7 +60,6 @@ public class SimpleConfigViewWrapper implements ConfigView {
     final static Pattern p = Pattern.compile("([^\\$]*)\\$\\{([^\\}]*)\\}([^\\$]*)");
 
     private static final String ALIAS_TOKEN = "ALIAS";
-    private static int MAX_SUBSTITUTION_DEPTH = 100;
     
     public static Object getTranslatedValue(Object value) {
         return value;
@@ -101,9 +100,9 @@ public class SimpleConfigViewWrapper implements ConfigView {
                  this));
     }
 
-    static Habitat habitat;
+    static ServiceLocator habitat;
 
-    public static void setHabitat(Habitat h) {
+    public static void setHabitat(ServiceLocator h) {
          habitat = h;
     }
 

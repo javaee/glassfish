@@ -71,7 +71,7 @@ import java.util.regex.Pattern;
  * so that the loading of the actual classes can be deferred as much as possible.
  *
  * <p>
- * This is the {@link Inhabitant} that gets registered into {@link Habitat},
+ * This is the {@link ActiveDescriptor} that gets registered into {@link ServiceLocator},
  * so one can access this object by {@link ServiceLocator#getServiceHandle(Class, String)} family
  * of methods.
  *
@@ -317,14 +317,14 @@ public class Dom extends AbstractInhabitantImpl implements InvocationHandler, Ob
      */
     public final DomDocument document;
     
-    private final Habitat habitat;
+    private final ServiceLocator habitat;
 
     /**
      * @param in
      *      If provided, this is used to record the source location where this DOM object is loaded from.
      *      Otherwise this can be null.
      */
-    public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
+    public Dom(ServiceLocator habitat, DomDocument document, Dom parent, ConfigModel model, XMLStreamReader in) {
         super(org.glassfish.hk2.deprecated.utilities.Utilities.createDescriptor(
                 model.targetTypeName, model.injector.getLoader(), model.injector.getMetadata()));
         
@@ -341,11 +341,11 @@ public class Dom extends AbstractInhabitantImpl implements InvocationHandler, Ob
         assert parent==null || parent.document==document; // all the nodes in the tree must belong to the same document
     }
 
-    public Dom(Habitat habitat, DomDocument document, Dom parent, ConfigModel model) {
+    public Dom(ServiceLocator habitat, DomDocument document, Dom parent, ConfigModel model) {
         this(habitat, document, parent, model, null);
     }
 
-    public Habitat getHabitat() {
+    public ServiceLocator getHabitat() {
         return habitat;
     }
 
