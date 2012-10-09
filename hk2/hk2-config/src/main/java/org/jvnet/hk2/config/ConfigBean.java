@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.config;
 
-import org.jvnet.hk2.component.Habitat;
-
 import javax.xml.stream.XMLStreamReader;
 import java.beans.*;
 import java.lang.reflect.Type;
@@ -54,6 +52,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
 import javax.management.ObjectName;
+
+import org.glassfish.hk2.api.ServiceLocator;
 
 
 /**
@@ -82,7 +82,7 @@ public class ConfigBean extends Dom implements ConfigView {
         objectName = objectNameIn;
     }
 
-    public ConfigBean(Habitat habitat, DomDocument document, ConfigBean parent, ConfigModel model, XMLStreamReader in) {
+    public ConfigBean(ServiceLocator habitat, DomDocument document, ConfigBean parent, ConfigModel model, XMLStreamReader in) {
 
         super(habitat, document, parent, model, in);
         // by default all ConfigBean support the ConstrainedBeanListener interface

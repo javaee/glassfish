@@ -43,6 +43,7 @@ package org.jvnet.hk2.config.test;
 import java.lang.reflect.Proxy;
 import javax.xml.stream.XMLStreamReader;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
 
@@ -75,7 +76,7 @@ public final class SimpleConfigBeanWrapper extends ConfigBean {
         return rawTransformer.transform(s);
     }
 
-    public SimpleConfigBeanWrapper(Habitat habitat, DomDocument document, SimpleConfigBeanWrapper parent, ConfigModel model, XMLStreamReader in) {
+    public SimpleConfigBeanWrapper(ServiceLocator habitat, DomDocument document, SimpleConfigBeanWrapper parent, ConfigModel model, XMLStreamReader in) {
         super((Habitat)habitat, document, parent, model, in);                
     }
 

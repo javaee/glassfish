@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.config;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Dom.Child;
@@ -77,10 +78,10 @@ public class ConfigParser {
     /**
      * This is where we put parsed inhabitants into.
      */
-    protected final Habitat habitat;
+    protected final ServiceLocator habitat;
 
 
-    public ConfigParser(Habitat habitat) {
+    public ConfigParser(ServiceLocator habitat) {
         this.habitat = habitat;
     }
 

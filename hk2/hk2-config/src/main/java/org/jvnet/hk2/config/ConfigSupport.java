@@ -41,9 +41,9 @@ package org.jvnet.hk2.config;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ProxyCtl;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
 import javax.inject.Inject;
-import org.jvnet.hk2.component.Habitat;
 
 import java.beans.PropertyVetoException;
 import java.beans.PropertyChangeEvent;
@@ -92,11 +92,10 @@ import org.jvnet.tiger_types.Types;
   * @author Jerome Dochez
   */
 @Service
-//@Scoped(Singleton.class)
 public class ConfigSupport {
 
     @Inject
-    Habitat habitat;
+    ServiceLocator habitat;
 
     public static int lockTimeOutInSeconds=Integer.getInteger("org.glassfish.hk2.config.locktimeout", 3);
  
