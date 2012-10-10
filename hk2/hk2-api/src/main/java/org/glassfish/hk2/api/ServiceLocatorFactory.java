@@ -64,7 +64,7 @@ public abstract class ServiceLocatorFactory {
    * Creates (or finds) a ServiceLocator.
    * <p>
    * If there is already a ServiceLocator with the given
-   * name then this method will return null.
+   * name then this method will return that locator.
    * 
    * @param name The name of this service locator.  May not be null
    * @return The created or found named ServiceLocator
@@ -75,7 +75,7 @@ public abstract class ServiceLocatorFactory {
    * Creates or finds a ServiceLocator.
    * <p>
    * If there is already a ServiceLocator with the given
-   * name then this method will that ServiceLocator.  The
+   * name then this method will return that ServiceLocator.  The
    * parent argument will be ignored in that case
    * 
    * @param name The name of this service locator.  May not be null

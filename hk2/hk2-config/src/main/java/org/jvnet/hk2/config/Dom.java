@@ -42,6 +42,7 @@ package org.jvnet.hk2.config;
 import com.sun.hk2.component.AbstractInhabitantImpl;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -77,7 +78,7 @@ import java.util.regex.Pattern;
  *
  * @author Kohsuke Kawaguchi
  */
-public class Dom extends AbstractInhabitantImpl implements InvocationHandler, ObservableBean {
+public class Dom extends AbstractActiveDescriptor implements InvocationHandler, ObservableBean {
     /**
      * Model drives the interpretation of this DOM.
      */
@@ -1308,8 +1309,7 @@ public class Dom extends AbstractInhabitantImpl implements InvocationHandler, Ob
         w.writeEndElement();
     }
 
-    @Override
-    public void release() {
+    private void release() {
         listeners.clear();
     }
 
@@ -1376,7 +1376,6 @@ public class Dom extends AbstractInhabitantImpl implements InvocationHandler, Ob
         return createProxy();
     }
     
-    @Override
     public Object get() {
         if (serviceHandle == null) {
             return null;
@@ -1385,12 +1384,6 @@ public class Dom extends AbstractInhabitantImpl implements InvocationHandler, Ob
         Object result = serviceHandle.getService();
         
         return result;
-    }
-    
-    @Override
-    public boolean isActive() {
-        return true;
-      
     }
     
     public ServiceLocator getServiceLocator() {
