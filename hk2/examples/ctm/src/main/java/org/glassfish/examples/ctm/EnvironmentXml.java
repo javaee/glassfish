@@ -45,7 +45,6 @@ import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.ConfigPopulatorException;
 import org.jvnet.hk2.config.DomDocument;
@@ -62,7 +61,7 @@ public class EnvironmentXml /*implements Populator*/ {
     TenantManager tenantManager;
 
     @Inject
-    protected Habitat habitat;
+    protected ServiceLocator habitat;
 
     // do not implement Populator to avoid execution in system service locator
     //@Override

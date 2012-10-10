@@ -40,10 +40,7 @@
 package org.jvnet.hk2.config;
 
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
-
-import javax.xml.stream.XMLStreamException;
 
 /**
  * Populates {@link Habitat}.

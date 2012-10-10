@@ -45,9 +45,7 @@ import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
-import org.jvnet.hk2.config.ConfigPopulatorException;
 import org.jvnet.hk2.config.DomDocument;
 
 import com.sun.enterprise.module.ModulesRegistry;
@@ -75,14 +73,6 @@ public class TenantLocatorGenerator {
         ServiceLocator serviceLocator =
             systemModulesRegistry.createServiceLocator(systemServiceLocator, "tenant-scoped");
 
-        /*
-        // FIXME: use serviceLocator or at least getService(Habitat.class)
-        Habitat h = new Habitat(serviceLocator);
-
-        EnvironmentXml populator = serviceLocator.getService(EnvironmentXml.class);
-
-        populator.run(new ConfigParser(h));
-        */
         populateWithConfig(serviceLocator, tenantName);
         
         return serviceLocator;
@@ -91,11 +81,9 @@ public class TenantLocatorGenerator {
     private void populateWithConfig(ServiceLocator serviceLocator, String tenantName) {
         System.out.println("Running populator for tenant " + tenantName);
         URL source = EnvironmentXml.class.getResource("/" + tenantName + ".xml");
-        // FIXME: use serviceLocator or at least getService(Habitat.class)
-        Habitat habitat = new Habitat(serviceLocator);
-        ConfigParser parser = new ConfigParser(habitat);
+        ConfigParser parser = new ConfigParser(serviceLocator);
         @SuppressWarnings({ "rawtypes", "unused" })
-        DomDocument doc = parser.parse(source, new DomDocument(habitat));
+        DomDocument doc = parser.parse(source, new DomDocument(serviceLocator));
     }
 
     @Inject
