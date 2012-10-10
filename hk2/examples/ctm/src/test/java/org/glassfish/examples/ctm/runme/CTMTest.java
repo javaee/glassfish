@@ -49,7 +49,6 @@ import org.glassfish.examples.ctm.TenantLocatorGenerator;
 import org.glassfish.examples.ctm.TenantManager;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.junit.Test;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.Transaction;

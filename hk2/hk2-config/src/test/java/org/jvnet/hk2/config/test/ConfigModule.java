@@ -47,7 +47,6 @@ import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
 
 import java.util.*;
@@ -62,9 +61,9 @@ import java.util.*;
  */
 public class ConfigModule {
 
-    Habitat serviceLocator;
+    ServiceLocator serviceLocator;
 
-    public ConfigModule(Habitat serviceLocator) {
+    public ConfigModule(ServiceLocator serviceLocator) {
         this.serviceLocator = serviceLocator;
     }
 

@@ -42,7 +42,6 @@ package org.jvnet.hk2.config;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.ConfigPopulator;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * Populates configuration entities
@@ -54,11 +53,9 @@ public class ConfigurationPopulator
     implements ConfigPopulator {
     
     public void populateConfig(ServiceLocator serviceLocator) {
-    	Habitat habitat = new Habitat(serviceLocator);
-    	
         for (Populator p : serviceLocator.<Populator>getAllServices(Populator.class)) {
             System.out.println("Found populator: " + p.getClass().getName());
-            p.run(new ConfigParser(habitat));
+            p.run(new ConfigParser(serviceLocator));
         }
     }
 
