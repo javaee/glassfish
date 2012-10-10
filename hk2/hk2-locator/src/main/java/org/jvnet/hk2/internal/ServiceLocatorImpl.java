@@ -53,6 +53,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import javax.inject.Provider;
@@ -82,6 +83,7 @@ import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.cache.CacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUCache;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -90,6 +92,23 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  *
  */
 public class ServiceLocatorImpl implements ServiceLocator {
+    private final static String BIND_TRACING_PATTERN_PROPERTY = "org.jvnet.hk2.properties.bind.tracing.pattern";
+    private final static String BIND_TRACING_PATTERN;
+    static {
+        BIND_TRACING_PATTERN = AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+            @Override
+            public String run() {
+                return System.getProperty(BIND_TRACING_PATTERN_PROPERTY);
+            }
+            
+        });
+        
+        if (BIND_TRACING_PATTERN != null) {
+            Logger.getLogger().debug("HK2 will trace binds and unbinds of " + BIND_TRACING_PATTERN);
+        }
+    }
+    
     private final static int CACHE_SIZE = 20000;
     private final static Object sLock = new Object();
     private static long currentLocatorId = 0L;
@@ -986,6 +1005,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @SuppressWarnings("unchecked")
     private void removeConfigurationInternal(SortedSet<SystemDescriptor<?>> unbinds) {
         for (SystemDescriptor<?> unbind : unbinds) {
+            if ((BIND_TRACING_PATTERN != null) && doTrace(unbind)) {
+                Logger.getLogger().debug("HK2 Bind Tracing: Removing Descriptor " + unbind);
+            }
+            
             allDescriptors.removeDescriptor(unbind);
             
             for (String advertisedContract : unbind.getAdvertisedContracts()) {
@@ -1015,11 +1038,37 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
+    private static boolean doTrace(ActiveDescriptor<?> desc) {
+        if (BIND_TRACING_PATTERN == null) return false;
+        if ("*".equals(BIND_TRACING_PATTERN)) return true;
+        
+        if (desc.getImplementation() == null) return true;  // Null here matches everything
+        
+        StringTokenizer st = new StringTokenizer(BIND_TRACING_PATTERN, "|");
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            
+            if (desc.getImplementation().contains(token)) {
+                return true;
+            }
+            
+            for (String contract : desc.getAdvertisedContracts()) {
+                if (contract.contains(token)) return true;
+            }
+        }
+        
+        return false;
+    }
+    
     @SuppressWarnings("unchecked")
     private List<SystemDescriptor<?>> addConfigurationInternal(DynamicConfigurationImpl dci) {
         List<SystemDescriptor<?>> thingsAdded = new LinkedList<SystemDescriptor<?>>();
         
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
+            if ((BIND_TRACING_PATTERN != null) && doTrace(sd)) {
+                Logger.getLogger().debug("HK2 Bind Tracing: Adding Descriptor " + sd);
+            }
+            
             thingsAdded.add(sd);
             allDescriptors.addDescriptor(sd);
             
