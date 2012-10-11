@@ -21,6 +21,13 @@
         <res-sharing-scope>Shareable</res-sharing-scope>
         <lookup-name>jdbc/__default</lookup-name>
       </resource-ref>
+      <resource-ref>
+        <res-ref-name>myDS5</res-ref-name>
+        <injection-target>
+        <injection-target-class>com.sun.s1asdev.deployment.ejb30.ear.xmloverride.SfulEJB</injection-target-class>
+        <injection-target-name>myDS6</injection-target-name>
+        </injection-target>
+      </resource-ref>
      <resource-ref>
         <res-ref-name>myDS4</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
