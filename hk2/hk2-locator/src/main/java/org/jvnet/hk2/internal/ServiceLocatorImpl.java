@@ -51,10 +51,12 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.WeakHashMap;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -120,7 +122,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private long nextServiceId = 0L;
     private final String locatorName;
     private final long id;
-    private final ServiceLocator parent;
+    private final ServiceLocatorImpl parent;
     
     private final IndexedListData allDescriptors = new IndexedListData();
     private final HashMap<String, IndexedListData> descriptorsByAdvertisedContract =
@@ -137,8 +139,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new LinkedList<ErrorService>();
     private final HashMap<Class<? extends Annotation>, Context<?>> contextCache =
             new HashMap<Class<? extends Annotation>, Context<?>>();
+    
+    // Fields needed for caching
     private final LRUCache<CacheKey, NarrowResults> cache = LRUCache.createCache(CACHE_SIZE);
     private final HashMap<String, List<CacheEntry>> cacheEntries = new HashMap<String, List<CacheEntry>>();
+    private final Map<ServiceLocatorImpl, ServiceLocatorImpl> children =
+            new WeakHashMap<ServiceLocatorImpl, ServiceLocatorImpl>(); // Must be Weak for throw away children
     
     private boolean shutdown = false;
     
@@ -148,9 +154,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @param name The name of this locator
      * @param parent The parent of this locator (may be null)
      */
-    public ServiceLocatorImpl(String name, ServiceLocator parent) {
+    public ServiceLocatorImpl(String name, ServiceLocatorImpl parent) {
         locatorName = name;
         this.parent = parent;
+        if (parent != null) {
+            parent.addChild(this);
+        }
+        
         synchronized (sLock) {
             id = currentLocatorId++;
         }
@@ -535,6 +545,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         synchronized (lock) {
             if (shutdown) return;
             
+            if (parent != null) {
+                parent.removeChild(this);
+            }
+            
             List<ServiceHandle<?>> handles = getAllServiceHandles(BuilderHelper.createContractFilter(Context.class.getName()));
 
             for (ServiceHandle<?> handle : handles){
@@ -556,6 +570,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             errorHandlers.clear();
             cache.releaseCache();
             cacheEntries.clear();
+            children.clear();
         }
 
     }
@@ -1147,6 +1162,24 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
+    private void reupCache(HashSet<String> affectedContracts) {
+        // This lock must be acquired in the child case
+        synchronized (lock) {
+            for (ServiceLocatorImpl child : children.keySet()) {
+                child.reupCache(affectedContracts);
+            }
+        
+            for (String affectedContract : affectedContracts) {
+                List<CacheEntry> entries = cacheEntries.remove(affectedContract);
+                if (entries == null) continue;
+            
+                for (CacheEntry entry : entries) {
+                    entry.removeFromCache();
+                }
+            }
+        }
+    }
+    
     private void reup(List<SystemDescriptor<?>> thingsAdded,
             boolean instanceListenersModified,
             boolean injectionResolversModified,
@@ -1155,14 +1188,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         // This MUST come before the other re-ups, in case the other re-ups look for
         // items that may have previously been cached
-        for (String affectedContract : affectedContracts) {
-            List<CacheEntry> entries = cacheEntries.remove(affectedContract);
-            if (entries == null) continue;
-            
-            for (CacheEntry entry : entries) {
-                entry.removeFromCache();
-            }
-        }
+        reupCache(affectedContracts);
         
         if (injectionResolversModified) {
             reupInjectionResolvers();
@@ -1362,6 +1388,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
     /* package */ long getNextServiceId() {
         synchronized (lock) {
             return nextServiceId++;
+        }
+    }
+    
+    private void addChild(ServiceLocatorImpl child) {
+        synchronized (lock) {
+            children.put(child, null);
+        }
+    }
+    
+    private void removeChild(ServiceLocatorImpl child) {
+        synchronized (lock) {
+            children.remove(child);
         }
     }
     
