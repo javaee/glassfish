@@ -51,7 +51,6 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -73,6 +72,10 @@ public class ParentedTest {
     
     private final static String PARENT3 = "Parent3";
     private final static String CHILD3 = "Child3";
+    
+    private final static String GRANDPARENT4 = "Grandparent4";
+    private final static String PARENT4 = "Parent4";
+    private final static String CHILD4 = "Child4";
     
     /**
      * Tests three generations of locators
@@ -163,7 +166,7 @@ public class ParentedTest {
      * Tests that if we dynamically add a descriptor to the parent AFTER
      * it has been looked up in the child that we can find it in the child
      */
-    @Test @Ignore
+    @Test
     public void testDynamicallyAddServiceToParentAfterALookup() {
         ServiceLocator parent3 = factory.create(PARENT3);
         ServiceLocator child3 = factory.create(CHILD3, parent3);
@@ -175,7 +178,26 @@ public class ParentedTest {
         
         ServiceLocatorUtilities.addOneDescriptor(parent3, d);
         
-        Assert.assertNotNull(parent3.getService(SimpleService.class));
         Assert.assertNotNull(child3.getService(SimpleService.class));
+    }
+    
+    /**
+     * Tests that if we dynamically add a descriptor to the GRAND-parent AFTER
+     * it has been looked up in the child that we can find it in the child
+     */
+    @Test
+    public void testDynamicallyAddServiceToGrandParentAfterALookup() {
+        ServiceLocator grandparent4 = factory.create(GRANDPARENT4);
+        ServiceLocator parent4 = factory.create(PARENT4, grandparent4);
+        ServiceLocator child4 = factory.create(CHILD4, parent4);
+        
+        Assert.assertNull(child4.getService(SimpleService.class));
+        
+        // Now add the service in the parent
+        Descriptor d = BuilderHelper.link(SimpleService.class).build();
+        
+        ServiceLocatorUtilities.addOneDescriptor(grandparent4, d);
+        
+        Assert.assertNotNull(child4.getService(SimpleService.class));
     }
 }

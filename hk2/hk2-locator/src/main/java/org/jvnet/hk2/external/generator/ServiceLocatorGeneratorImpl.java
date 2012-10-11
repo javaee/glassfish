@@ -56,7 +56,12 @@ import org.jvnet.hk2.internal.Utilities;
  */
 public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
     private ServiceLocatorImpl initialize(String name, ServiceLocator parent) {
-        ServiceLocatorImpl sli = new ServiceLocatorImpl(name, parent);
+        if (parent != null && !(parent instanceof ServiceLocatorImpl)) {
+            throw new AssertionError("parent must be a " + ServiceLocatorImpl.class.getName() +
+                    " instead it is a " + parent.getClass().getName());
+        }
+        
+        ServiceLocatorImpl sli = new ServiceLocatorImpl(name, (ServiceLocatorImpl) parent);
         
         DynamicConfigurationImpl dci = new DynamicConfigurationImpl(sli);
         
