@@ -28,6 +28,10 @@
         <injection-target-name>myDS6</injection-target-name>
         </injection-target>
       </resource-ref>
+      <resource-ref>
+        <res-ref-name>myDS7</res-ref-name>
+        <lookup-name>jdbc/__default</lookup-name>
+      </resource-ref>
      <resource-ref>
         <res-ref-name>myDS4</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
