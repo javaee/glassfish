@@ -37,6 +37,9 @@ public class SfulEJB implements Sful, SessionSynchronization
     @Resource(name="myDS7", lookup="jdbc/noexist")
     private DataSource myDS7;
 
+    @Resource(name="myDS8", mappedName="jdbc/noexist2")
+    private DataSource myDS8;
+
     public String hello() {
         System.out.println("In SfulEJB:hello()");
         return sless.hello();
@@ -76,6 +79,9 @@ public class SfulEJB implements Sful, SessionSynchronization
 
             int loginTimeout7 = myDS7.getLoginTimeout();
             System.out.println("myDS7 login timeout = " + loginTimeout7);
+
+            int loginTimeout8 = myDS8.getLoginTimeout();
+            System.out.println("myDS8 login timeout = " + loginTimeout8);
 
         } catch(Exception ex) {
             throw new IllegalStateException("Cannot get login timeout: " + ex);

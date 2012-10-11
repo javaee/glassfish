@@ -32,6 +32,10 @@
         <res-ref-name>myDS7</res-ref-name>
         <lookup-name>jdbc/__default</lookup-name>
       </resource-ref>
+      <resource-ref>
+        <res-ref-name>myDS8</res-ref-name>
+        <mapped-name>jdbc/__default</mapped-name>
+      </resource-ref>
      <resource-ref>
         <res-ref-name>myDS4</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
