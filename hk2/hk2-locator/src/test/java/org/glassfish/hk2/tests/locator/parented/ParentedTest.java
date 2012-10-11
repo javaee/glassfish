@@ -43,12 +43,15 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -67,6 +70,9 @@ public class ParentedTest {
     
     private final static String CHILD1 = "Child1";
     private final static String CHILD2 = "Child2";
+    
+    private final static String PARENT3 = "Parent3";
+    private final static String CHILD3 = "Child3";
     
     /**
      * Tests three generations of locators
@@ -151,5 +157,25 @@ public class ParentedTest {
         
         swpcip = locator.getService(ServiceWithParentContextInjectionPoint.class);
         Assert.assertNotNull(swpcip);
+    }
+    
+    /**
+     * Tests that if we dynamically add a descriptor to the parent AFTER
+     * it has been looked up in the child that we can find it in the child
+     */
+    @Test @Ignore
+    public void testDynamicallyAddServiceToParentAfterALookup() {
+        ServiceLocator parent3 = factory.create(PARENT3);
+        ServiceLocator child3 = factory.create(CHILD3, parent3);
+        
+        Assert.assertNull(child3.getService(SimpleService.class));
+        
+        // Now add the service in the parent
+        Descriptor d = BuilderHelper.link(SimpleService.class).build();
+        
+        ServiceLocatorUtilities.addOneDescriptor(parent3, d);
+        
+        Assert.assertNotNull(parent3.getService(SimpleService.class));
+        Assert.assertNotNull(child3.getService(SimpleService.class));
     }
 }
