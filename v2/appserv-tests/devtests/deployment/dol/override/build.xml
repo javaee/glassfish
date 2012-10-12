@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<project name="overrideTest" default="usage" basedir=".">
+
+    &commonBuild;
+
+    <property name="testName" value="overrideTest"/>
+
+    <target name="prepare" depends="init">
+        <property name="override.war" value="${build}/${testName}.war"/>
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="."
+               destdir="${build}"
+               debug="on"
+               failonerror="true">
+           <compilerarg line="-endorseddirs ${inst}/modules/endorsed"/>
+           <classpath>
+                <path refid="gfv3.classpath"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="assemble" depends="prepare">
+        <war destfile="${override.war}" webxml="web.xml">
+            <webinf dir="." includes="glassfish-web.xml"/>
+            <classes dir="${build}"/>
+        </war>
+    </target>
+
+    <target name="run.overridetest" depends="init">
+<echo>${inst}</echo>
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"
+            classname="override.OverrideTest"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+<!--
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=6666,server=y,suspend=y"/>
+-->
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+            <jvmarg value="-Dcom.sun.aas.installRoot=${inst}"/>
+            <jvmarg value="-Dwriteout.xml=true"/>
+            <jvmarg value="-Djavax.enterprise.system.tools.deployment.org.glassfish.deployment.common=FINE"/>
+
+            <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="${build}"/>
+            </classpath>
+
+            <arg line="${arg.list}"/>
+
+        </javaWithResult>
+
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+    </target>
+
+    <target name="private-all" depends="prepare">
+        <antcall target="compile"/>
+        <antcall target="assemble"/>
+        <antcall target="declare-test">
+            <param name="description" value="dol/override Test"/>
+        </antcall>
+        <antcall target="run.overridetest">
+            <param name="arg.list" value="${override.war}"/>
+            <param name="log.id" value="1"/>
+        </antcall>
+    </target>
+
+    <target name="clobber" depends="clean">
+        <delete dir="${build}"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="all"/>
+    </target>
+
+</project>
