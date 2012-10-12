@@ -9,10 +9,14 @@
     &commonBuild;
 
     <property name="testName" value="overrideTest"/>
+    <property name="web.build.dir"
+              value="${build}/${testName}.war"/>
+
 
     <target name="prepare" depends="init">
-        <property name="override.war" value="${build}/${testName}.war"/>
         <mkdir dir="${build}"/>
+        <mkdir dir="${web.build.dir}"/>
+        <mkdir dir="${web.build.dir}/WEB-INF/classes" />
     </target>
 
     <target name="compile" depends="prepare">
@@ -28,10 +32,11 @@
     </target>
 
     <target name="assemble" depends="prepare">
-        <war destfile="${override.war}" webxml="web.xml">
-            <webinf dir="." includes="glassfish-web.xml"/>
-            <classes dir="${build}"/>
-        </war>
+        <copy file="${build}/override/OverrideTestServlet.class" todir="${web.build.dir}/WEB-INF/classes"/>
+        <copy file="web.xml" todir="${web.build.dir}/WEB-INF"/>
+        <copy file="glassfish-web.xml"
+                  todir="${web.build.dir}/WEB-INF"
+                  failonerror="false"/>
     </target>
 
     <target name="run.overridetest" depends="init">
@@ -76,7 +81,7 @@
             <param name="description" value="dol/override Test"/>
         </antcall>
         <antcall target="run.overridetest">
-            <param name="arg.list" value="${override.war}"/>
+            <param name="arg.list" value="${web.build.dir}"/>
             <param name="log.id" value="1"/>
         </antcall>
     </target>

@@ -12,7 +12,7 @@ import java.io.IOException;
 public class OverrideTestServlet extends HttpServlet
 {
 
-    @Resource(name="myDS5", lookup="jdbc/__default")
+    @Resource(name="myDS5and6", mappedName="jdbc/__default")
     private DataSource myDS5;
 
     private DataSource myDS6;

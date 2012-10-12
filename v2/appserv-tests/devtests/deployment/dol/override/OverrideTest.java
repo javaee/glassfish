@@ -63,7 +63,9 @@ public class OverrideTest {
             File archiveFile = new File(fileName);
             archive = archiveFactory.openArchive(
                 archiveFile);
-            ClassLoader classloader = new URLClassLoader(new URL[]{ archiveFile.toURL()});
+            ClassLoader classloader = new URLClassLoader(
+                new URL[] { new File(archiveFile, "WEB-INF/classes").toURL() });
+
             archivist = archivistFactory.getArchivist(archiveType, classloader);
             archivist.setAnnotationProcessingRequested(true);
             JndiNameEnvironment nameEnv = (JndiNameEnvironment)archivist.open(archiveFile);
@@ -73,20 +75,28 @@ public class OverrideTest {
             for (ResourceReferenceDescriptor resRef : resRefDescs) {
                 String refName = resRef.getName();
                 String jndiName = resRef.getJndiName();
+                String mappedName = resRef.getMappedName();
+                String lookupName = resRef.getLookupName();
                 String description = resRef.getDescription();
                 String auth = resRef.getAuthorization();
                 String scope = resRef.getSharingScope();
-                log ("Resource ref [" + refName + "] with JNDI name: " + jndiName + ", description: " + description + ", authorization: " + auth + ", sharing scope: " + scope);
+                log ("Resource ref [" + refName + "] with JNDI name: " + jndiName + ", description: " + description + ", authorization: " + auth + ", sharing scope: " + scope + ", mappedName: " + mappedName + ", lookupName: " + lookupName);
                 if (refName.equals("myDS7") && 
                     !description.equals(EXPECTED_RESOURCE_DESCRIPTION)) {
                     log("Descriptor did not override the @Resource description attribute as expected");
                     fail();
-                } else if (refName.equals("myDS6") && 
-                    !jndiName.equals(EXPECTED_RESOURCE_JNDI_NAME)) {
-                    log("The additional injection target specified in the descriptor is not used as expected");
-                    fail();
+                } else if (refName.equals("myDS5and6")) { 
+                    Set<InjectionTarget> targets = resRef.getInjectionTargets();
+                    for (InjectionTarget target : targets) {
+                       log("Target class name: " + target.getClassName());
+                       log("Target name: " + target.getTargetName());
+                    }
+                    if (targets.size() != 2) {
+                        log("The additional injection target specified in the descriptor is not used as expected");
+                        fail();
+                    }
                 } else if (refName.equals("myDS8") && 
-                    !jndiName.equals(EXPECTED_RESOURCE_JNDI_NAME)) {
+                    !mappedName.equals(EXPECTED_RESOURCE_JNDI_NAME)) {
                     log("Descriptor did not override the @Resource mapped-name attribute as expected");
                     fail();
                 } else if (refName.equals("myDS7") && 
@@ -98,7 +108,7 @@ public class OverrideTest {
                     log("Descriptor did not override the @Resource authorization attribute as expected");
                     fail();
                 } else if (refName.equals("myDS7") && 
-                    !jndiName.equals(EXPECTED_RESOURCE_JNDI_NAME)) {
+                    !lookupName.equals(EXPECTED_RESOURCE_JNDI_NAME)) {
                     log("Descriptor did not override the @Resource lookup name attribute as expected");
                     fail();
                 }

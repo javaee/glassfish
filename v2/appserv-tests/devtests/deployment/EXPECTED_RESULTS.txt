@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 266 
+PASS: 267 
 FAIL: 0
 UNKNOWN: 0
 
@@ -147,6 +147,7 @@ UNKNOWN: 0
 [PASSED] validation : dol/validation Test WLS Ear
 [PASSED] validation : dol/validation Test WLS Ear2
 [PASSED] validation : dol/validation Test WLS Ear3
+[PASSED] override : dol/override Test
 [PASSED] session : ejb30/session Test asadmin deploy  
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
@@ -280,7 +281,7 @@ UNKNOWN: 0
 2. Running with EE installation on Remote Instance 
    (DEPL_TARGET=SERVER)
 
-PASS: 195
+PASS: 196
 FAIL: 0
 UNKNOWN: 0
 
@@ -381,6 +382,7 @@ UNKNOWN: 0
 [PASSED] validation : dol/validation Test WLS Ear
 [PASSED] validation : dol/validation Test WLS Ear2
 [PASSED] validation : dol/validation Test WLS Ear3
+[PASSED] override : dol/override Test
 [PASSED] session : ejb30/session Test asadmin deploy  
 [PASSED] session : ejb30/session Test asadmin redeploy  
 [PASSED] session2 : ejb30/session2 Test asadmin deploy  
@@ -485,7 +487,7 @@ UNKNOWN: 0
 3. Running with EE installation on Remote Instance and Cluster
    (DEPL_TARGET=CLUSTER)
 
-PASS: 353
+PASS: 354
 FAIL: 0
 UNKNOWN: 0
 
@@ -667,6 +669,7 @@ UNKNOWN: 0
 [PASSED] validation : dol/validation Test WLS Ear
 [PASSED] validation : dol/validation Test WLS Ear2
 [PASSED] validation : dol/validation Test WLS Ear3
+[PASSED] override : dol/override Test
 [PASSED] session : ejb30/session Test asadmin deploy
 [PASSED] session : ejb30/session Test asadmin redeploy
 [PASSED] session2 : ejb30/session2 Test asadmin deploy

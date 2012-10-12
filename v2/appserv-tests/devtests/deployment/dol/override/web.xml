@@ -25,7 +25,7 @@
         <lookup-name>jdbc/__default</lookup-name>
       </resource-ref>
       <resource-ref>
-        <res-ref-name>myDS5</res-ref-name>
+        <res-ref-name>myDS5and6</res-ref-name>
         <injection-target>
         <injection-target-class>override.OverrideTestServlet</injection-target-class>
         <injection-target-name>myDS6</injection-target-name>

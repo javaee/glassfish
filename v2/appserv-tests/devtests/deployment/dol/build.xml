@@ -12,6 +12,9 @@
         <ant dir="validation" target="private-all">
             <property name="build" value="${build}/validation"/>
         </ant>
+        <ant dir="override" target="private-all">
+            <property name="build" value="${build}/override"/>
+        </ant>
     </target>
 
 </project>
