@@ -164,6 +164,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         synchronized (sLock) {
             id = currentLocatorId++;
         }
+        
+        Logger.getLogger().debug("Created ServiceLocator " + this);
     }
     
     /**
@@ -571,6 +573,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             cache.releaseCache();
             cacheEntries.clear();
             children.clear();
+            
+            Logger.getLogger().debug("Shutdown ServiceLocator " + this);
         }
 
     }

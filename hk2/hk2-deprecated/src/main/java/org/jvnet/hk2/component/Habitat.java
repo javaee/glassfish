@@ -53,8 +53,6 @@ import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.deprecated.internal.QualifierFilter;
 import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
 
 import java.lang.annotation.Annotation;
