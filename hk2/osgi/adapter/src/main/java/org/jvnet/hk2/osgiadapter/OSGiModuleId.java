@@ -71,7 +71,9 @@ import org.osgi.framework.Constants;
         // please also change the code in OSGiModuleDefinition class which makes
         // similar assumption.
         if (name == null) name = b.getLocation();
-        String version = (String) b.getHeaders().get(Constants.BUNDLE_VERSION);
+                
+        String version = b.getVersion().toString(); // (String) b.getHeaders().get(Constants.BUNDLE_VERSION);
+        
         init(name, version);
     }
 
