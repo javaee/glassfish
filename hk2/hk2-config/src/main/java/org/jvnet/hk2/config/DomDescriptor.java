@@ -68,20 +68,6 @@ public class DomDescriptor<T>
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.SingleCache#getCache()
-     */
-    @Override
-    public T getCache() {
-        initTheOne();
-        return theOne;
-    }
-
-    @Override
-    public synchronized boolean isCacheSet() {
-        return isReified();
-    }
-
-    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
      */
     @Override
@@ -108,28 +94,4 @@ public class DomDescriptor<T>
 
         theOne = creator.create();
     }
-
-    /*
-    public DomDescriptor(Dom dom) {
-        super(EMPTY_CONTRACT_SET, null, dom.typeName(), EMPTY_ANNOTATION_SET, DescriptorType.FACTORY, 0);
-
-        super.addAdvertisedContract(ConfigBeanProxy.class.getName());
-        super.addAdvertisedContract(ConfigBean.class.getName());
-        super.addAdvertisedContract(Dom.class.getName());
-        super.setImplementation(dom.typeName());
-        Map<String, List<String>> metaData = dom.getMetadata();
-        for (String key : metaData.keySet()) {
-            List<String> values = metaData.get(key);
-            if (values != null) {
-                for (String value : values) {
-                    super.addMetadata(key, value);
-                }
-            }
-        }
-        this.dom = dom;
-        
-        super.setLoader(dom.getLoader());
-    }
-    */
-
 }

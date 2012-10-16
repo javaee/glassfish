@@ -155,26 +155,6 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
 
     // ----- AbstractActiveDescriptor overrides -----------------------------
 
-    @Override
-    public T getCache() {
-        return descriptor.getCache();
-    }
-
-    @Override
-    public boolean isCacheSet() {
-        return descriptor.isCacheSet();
-    }
-
-    @Override
-    public void setCache(T cacheMe) {
-        descriptor.setCache(cacheMe);
-    }
-
-    @Override
-    public void releaseCache() {
-        descriptor.releaseCache();
-    }
-
     /* (non-Javadoc)
     * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
     */
