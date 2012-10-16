@@ -44,6 +44,7 @@ import javax.inject.Singleton;
 //import com.sun.enterprise.module.bootstrap.Populator;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.deprecated.utilities.Utilities;
+import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.jvnet.hk2.annotations.Service;
@@ -132,8 +133,7 @@ public class ConfigModule {
             db.has(key, metaMap.get(key));
         }
         ActiveDescriptor desc = configurator.bind(db.build());
-        Utilities.addIndex(serviceLocator, desc, InjectionTarget.class.getName(), contract.getName());
-        //System.out.println("Bound descriptor : " + db.build());
+        configurator.bind(new AliasDescriptor(serviceLocator, desc, InjectionTarget.class.getName(), contract.getName()));
     }
     
     class MyHk2Loader
