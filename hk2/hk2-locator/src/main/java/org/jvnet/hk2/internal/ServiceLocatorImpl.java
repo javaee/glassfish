@@ -96,6 +96,8 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 public class ServiceLocatorImpl implements ServiceLocator {
     private final static String BIND_TRACING_PATTERN_PROPERTY = "org.jvnet.hk2.properties.bind.tracing.pattern";
     private final static String BIND_TRACING_PATTERN;
+    private final static String BIND_TRACING_STACKS_PROPERTY = "org.jvnet.hk2.properties.bind.tracing.stacks";
+    private final static boolean BIND_TRACING_STACKS;
     static {
         BIND_TRACING_PATTERN = AccessController.doPrivileged(new PrivilegedAction<String>() {
 
@@ -106,8 +108,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
         });
         
+        BIND_TRACING_STACKS = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+
+            @Override
+            public Boolean run() {
+                return Boolean.parseBoolean(System.getProperty(BIND_TRACING_STACKS_PROPERTY, "false"));
+            }
+            
+        });
+        
         if (BIND_TRACING_PATTERN != null) {
-            Logger.getLogger().debug("HK2 will trace binds and unbinds of " + BIND_TRACING_PATTERN);
+            Logger.getLogger().debug("HK2 will trace binds and unbinds of " + BIND_TRACING_PATTERN +
+                    " with stacks " + BIND_TRACING_STACKS);
         }
     }
     
@@ -1026,6 +1038,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
         for (SystemDescriptor<?> unbind : unbinds) {
             if ((BIND_TRACING_PATTERN != null) && doTrace(unbind)) {
                 Logger.getLogger().debug("HK2 Bind Tracing: Removing Descriptor " + unbind);
+                if (BIND_TRACING_STACKS) {
+                    Logger.getLogger().debug("ServiceLocatorImpl", "removeConfigurationInternal", new Throwable());
+                }
             }
             
             allDescriptors.removeDescriptor(unbind);
@@ -1086,6 +1101,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
             if ((BIND_TRACING_PATTERN != null) && doTrace(sd)) {
                 Logger.getLogger().debug("HK2 Bind Tracing: Adding Descriptor " + sd);
+                if (BIND_TRACING_STACKS) {
+                    Logger.getLogger().debug("ServiceLocatorImpl", "addConfigurationInternal", new Throwable());
+                }
             }
             
             thingsAdded.add(sd);
