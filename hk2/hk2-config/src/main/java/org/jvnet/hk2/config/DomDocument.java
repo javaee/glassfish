@@ -41,7 +41,7 @@ package org.jvnet.hk2.config;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.ComponentException;
@@ -80,6 +80,8 @@ public class DomDocument<T extends Dom> {
     
     /*package*/ static final List<String> PRIMS = Collections.unmodifiableList(Arrays.asList(
     "boolean", "char", "int", "java.lang.Boolean", "java.lang.Character", "java.lang.Integer"));
+    
+    private final Map<String, ActiveDescriptor<? extends ConfigInjector<?>>> cache = new HashMap<String, ActiveDescriptor<? extends ConfigInjector<?>>>();
     
     public DomDocument(ServiceLocator habitat) {
         this.habitat = habitat;
@@ -123,12 +125,22 @@ public class DomDocument<T extends Dom> {
      * Obtains a {@link ConfigModel} for the given class (Which should have {@link Configured} annotation on it.)
      */
     public ConfigModel buildModel(String fullyQualifiedClassName) {
-        //Inhabitant i = habitat.getInhabitantByAnnotation(InjectionTarget.class, fullyQualifiedClassName);
-        ActiveDescriptor<? extends ConfigInjector> desc = (ActiveDescriptor<? extends ConfigInjector>)
-                habitat.getBestDescriptor(new InjectionTargetFilter(fullyQualifiedClassName));
         
-        if (desc == null)
-            throw new ComponentException("ConfigInjector for %s is not found, is it annotated with @Configured",fullyQualifiedClassName);
+        ActiveDescriptor<? extends ConfigInjector<?>> desc;
+        synchronized (cache) {
+            desc = cache.get(fullyQualifiedClassName);
+            if (desc == null) {
+                desc = (ActiveDescriptor<? extends ConfigInjector<?>>)
+                    habitat.getBestDescriptor(new InjectionTargetFilter(fullyQualifiedClassName));
+                
+                if (desc == null) {
+                    throw new ComponentException("ConfigInjector for %s is not found, is it annotated with @Configured",fullyQualifiedClassName);
+                }
+            
+                cache.put(fullyQualifiedClassName, desc);
+            }
+        }
+        
         return buildModel(desc);
     }
 
@@ -147,25 +159,43 @@ public class DomDocument<T extends Dom> {
         return buildModel(i.getActiveDescriptor());
     }
 
-    private static class InjectionTargetFilter
-        implements Filter {
+    private class InjectionTargetFilter
+        implements IndexedFilter {
 
         String targetName;
 
-        InjectionTargetFilter(String targetName) {
+        private InjectionTargetFilter(String targetName) {
             this.targetName = targetName;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean matches(Descriptor d) {
             if (d.getQualifiers().contains(InjectionTarget.class.getName())) {
                 List<String> list = d.getMetadata().get("target");
-                if (list != null && list.get(0).equals(targetName)) {
+                if (list == null) return false;
+                
+                String value = list.get(0) ;
+                
+                // No need to synchronize on cache, it is already synchronized
+                cache.put(value, (ActiveDescriptor<? extends ConfigInjector<?>>) d);
+                
+                if (value.equals(targetName)) {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        @Override
+        public String getAdvertisedContract() {
+            return ConfigInjector.class.getName();
+        }
+
+        @Override
+        public String getName() {
+            return null;
         }
     }
 
