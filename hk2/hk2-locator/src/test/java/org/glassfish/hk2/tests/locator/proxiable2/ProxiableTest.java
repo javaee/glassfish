@@ -185,5 +185,30 @@ public class ProxiableTest {
             psHandle.destroy();
         }
     }
+    
+    /**
+     * Test that the singleton context works
+     */
+    @Test
+    public void testProxiedServiceFromFactory() {
+        ProxiableServiceFromFactory.resetConstructorCalled();
+        
+        ServiceHandle<ProxiableServiceFromFactory> psHandle = locator.getServiceHandle(ProxiableServiceFromFactory.class);
+        Assert.assertNotNull(psHandle);
+        
+        try {
+            ProxiableServiceFromFactory ps = psHandle.getService();
+        
+            Assert.assertEquals(0, ProxiableServiceFromFactory.getConstructorCalled());
+        
+            ps.doService();  // Forces true creation
+        
+            Assert.assertEquals(1, ProxiableServiceFromFactory.getConstructorCalled());
+        }
+        finally {
+            // Removes it from Singleton scope
+            psHandle.destroy();
+        }
+    }
 
 }

@@ -41,46 +41,36 @@ package org.glassfish.hk2.tests.locator.proxiable2;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.UseProxy;
 
 /**
  * @author jwells
  *
  */
-public class ProxiableModule implements TestModule {
+@Singleton
+public class ProxiableServiceFactory implements
+        Factory<ProxiableServiceFromFactory> {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+     * @see org.glassfish.hk2.api.Factory#provide()
      */
     @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(ProxiableService.class.getName()).
-                in(Singleton.class.getName()).
-                proxy().
-                build());
+    @Singleton
+    @UseProxy  // not really needed here, just here to make the point to the reader
+    public ProxiableServiceFromFactory provide() {
+        ProxiableServiceFromFactory retVal = new ProxiableServiceFromFactory();
+        retVal.postConstruct();
         
-        config.bind(BuilderHelper.link(ProxiableSingletonContext.class.getName()).
-                to(Context.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        
-        config.bind(BuilderHelper.link(ProxiableServiceInContext.class.getName()).
-                in(ProxiableSingleton.class.getName()).
-                build());
-        
-        config.bind(BuilderHelper.link(NotProxiableService.class.getName()).
-                in(ProxiableSingleton.class.getName()).
-                proxy(false).
-                build());
-        
-        config.bind(BuilderHelper.link(ProxiableServiceFactory.class.getName()).
-                to(ProxiableServiceFromFactory.class.getName()).
-                in(Singleton.class.getName()).
-                proxy(true).
-                buildFactory(Singleton.class.getName()));
+        return retVal;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
+     */
+    @Override
+    public void dispose(ProxiableServiceFromFactory instance) {
+        // TODO Auto-generated method stub
 
     }
 
