@@ -37,38 +37,62 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable2;
+package org.glassfish.hk2.tests.locator.negative.proxiable;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-@Service @Singleton
-public class ProxiableService {
-    private static int constructorCalled;
+public class NegativeProxyTest {
+    private final static String TEST_NAME = "NegativeProxyTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeProxyModule());
     
-    /* package */ static int getConstructorCalled() {
-        return constructorCalled;
+    /**
+     * Tests that a scope marked {@link Unproxiable} cannot have isProxiable set to true
+     */
+    @Test
+    public void testBadProxiable() {
+        DescriptorImpl di = BuilderHelper.link(SimpleService.class.getName()).
+            in(PerLookup.class.getName()).
+            proxy(true).
+            build();
+        
+        try {
+            locator.reifyDescriptor(di);
+            Assert.fail("A descriptor from an Unproxiable service must not have isProxiable return true");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains("The descriptor is in an Unproxiable scope but has " +
+                " isProxiable set to true"));
+            
+        }
+        
     }
     
-    /* package */ static void resetConstructorCalled() {
-        constructorCalled = 0;
+    @Test
+    public void testBadProxiableScope() {
+        DescriptorImpl di = BuilderHelper.link(ServiceInBadScope.class.getName()).
+            in(BadScope.class.getName()).
+            build();
+        
+        try {
+            locator.reifyDescriptor(di);
+            Assert.fail("BadScope is both proxiable and unproxiable, reify should fail");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(" is marked both @Proxiable and @Unproxiable"));
+        }
+        
     }
     
-    // Just a method to force service creation
-    public void doService() {
-    }
-    
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        constructorCalled++;
-    }
+
 }

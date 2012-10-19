@@ -37,38 +37,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable2;
+package org.glassfish.hk2.tests.locator.negative.proxiable;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Service;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Scope;
+
+import org.glassfish.hk2.api.Proxiable;
+import org.glassfish.hk2.api.Unproxiable;
 
 /**
+ * 
  * @author jwells
  *
  */
-@Service @Singleton
-public class ProxiableService {
-    private static int constructorCalled;
-    
-    /* package */ static int getConstructorCalled() {
-        return constructorCalled;
-    }
-    
-    /* package */ static void resetConstructorCalled() {
-        constructorCalled = 0;
-    }
-    
-    // Just a method to force service creation
-    public void doService() {
-    }
-    
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        constructorCalled++;
-    }
+@Scope
+@Proxiable
+@Unproxiable
+@Retention(RUNTIME)
+@Target( { TYPE })
+public @interface BadScope {
+
 }

@@ -40,18 +40,13 @@
 package org.glassfish.hk2.tests.locator.proxiable2;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Service @Singleton
-public class ProxiableService {
+@ProxiableSingleton
+public class ProxiableServiceInContext {
     private static int constructorCalled;
     
     /* package */ static int getConstructorCalled() {
@@ -71,4 +66,5 @@ public class ProxiableService {
     private void postConstruct() {
         constructorCalled++;
     }
+
 }
