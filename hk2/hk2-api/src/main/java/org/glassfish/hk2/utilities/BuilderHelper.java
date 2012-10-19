@@ -58,6 +58,7 @@ import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.UseProxy;
 import org.glassfish.hk2.internal.ActiveDescriptorBuilderImpl;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
@@ -305,12 +306,24 @@ public class BuilderHelper {
             contractsAsSet.add(cType);
         }
         
+        Boolean proxy = null;
+        UseProxy up = constant.getClass().getAnnotation(UseProxy.class);
+        if (up != null) {
+            if (up.value()) {
+                proxy = Boolean.TRUE;
+            }
+            else {
+                proxy = Boolean.FALSE;
+            }
+        }
+        
         return new ConstantActiveDescriptor<T>(
                 constant,
                 contractsAsSet,
                 scopeClass,
                 name,
                 qualifiers,
+                proxy,
                 metadata);
     }
     
@@ -345,6 +358,7 @@ public class BuilderHelper {
                 type,
                 null,
                 0,
+                null,
                 null,
                 null,
                 null);

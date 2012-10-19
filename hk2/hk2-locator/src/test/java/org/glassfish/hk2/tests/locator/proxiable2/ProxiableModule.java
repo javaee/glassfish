@@ -37,20 +37,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.api;
+package org.glassfish.hk2.tests.locator.proxiable2;
 
-import org.glassfish.hk2.api.UseProxy;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-@ScopeWithMetadata(BuilderHelperTest.SCOPE_DATA)
-@QualifierWithMetadata(value=BuilderHelperTest.QUALIFIER_VALUE,
-  anotherValue=BuilderHelperTest.QUALIFIER_ANOTHER_VALUE,
-  modeValue=QualifierWithMetadata.Mode.VALIDATING,
-  notInMetadata=15)
-@UseProxy
-public class ServiceWithAutoMetadata {
+public class ProxiableModule implements TestModule {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+     */
+    @Override
+    public void configure(DynamicConfiguration config) {
+        config.bind(BuilderHelper.link(ProxiableService.class.getName()).
+                in(Singleton.class.getName()).
+                proxy().
+                build());
+
+    }
 
 }

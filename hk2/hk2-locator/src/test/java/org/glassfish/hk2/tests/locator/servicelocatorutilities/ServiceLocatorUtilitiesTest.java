@@ -305,6 +305,7 @@ public class ServiceLocatorUtilitiesTest {
                     delegate.getQualifierAnnotations(),
                     delegate.getDescriptorType(),
                     delegate.getRanking(),
+                    delegate.isProxiable(),
                     delegate.getMetadata());
             
             this.delegate = delegate;

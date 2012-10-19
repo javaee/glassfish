@@ -87,6 +87,7 @@ import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.Unqualified;
+import org.glassfish.hk2.api.UseProxy;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.reflection.Logger;
@@ -469,6 +470,7 @@ public class Utilities {
         Set<Type> contracts;
         Class<? extends Annotation> scope;
         String name;
+        Boolean proxy = null;
 
         // Qualifiers naming dance
         qualifiers = ReflectionHelper.getQualifierAnnotations(clazz);
@@ -491,6 +493,16 @@ public class Utilities {
         for (Annotation qualifier : qualifiers) {
             BuilderHelper.getMetadataValues(qualifier, metadata);
         }
+        
+        UseProxy useProxy = clazz.getAnnotation(UseProxy.class);
+        if (useProxy != null) {
+            if (useProxy.value()) {
+                proxy = Boolean.TRUE;
+            }
+            else {
+                proxy = Boolean.FALSE;
+            }
+        }
 
         return new AutoActiveDescriptor<T>(
                 clazz,
@@ -500,6 +512,7 @@ public class Utilities {
                 name,
                 qualifiers,
                 0,
+                proxy,
                 metadata);
     }
 
@@ -756,6 +769,7 @@ public class Utilities {
                         null,
                         qualifiers,
                         0,
+                        null,
                         locator.getLocatorId(),
                         null);
 
@@ -790,6 +804,7 @@ public class Utilities {
                         InjectionResolver.SYSTEM_RESOLVER_NAME,
                         qualifiers,
                         0,
+                        null,
                         locator.getLocatorId(),
                         null);
 

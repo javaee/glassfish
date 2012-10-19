@@ -213,6 +213,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     }
     
     /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#isProxiable()
+     */
+    @Override
+    public Boolean isProxiable() {
+        return baseDescriptor.isProxiable();
+    }
+    
+    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#setRanking(int)
      */
     @Override

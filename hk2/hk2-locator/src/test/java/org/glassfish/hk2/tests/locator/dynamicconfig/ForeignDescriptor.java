@@ -169,4 +169,9 @@ public class ForeignDescriptor implements Descriptor {
     public Long getLocatorId() {
         return null;
     }
+
+    @Override
+    public Boolean isProxiable() {
+        return null;
+    }
 }

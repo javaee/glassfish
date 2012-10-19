@@ -386,6 +386,9 @@ public class BuilderHelperTest {
             
             lcv++;
         }
+        
+        Assert.assertNotNull(d.isProxiable());
+        Assert.assertEquals(false, d.isProxiable().booleanValue());
     }
     
     /**
@@ -420,6 +423,8 @@ public class BuilderHelperTest {
             Assert.assertTrue(metadata2Values.contains("-1"));
         }
         
+        Assert.assertNotNull(ad.isProxiable());
+        Assert.assertEquals(true, ad.isProxiable().booleanValue());
     }
     
     /**

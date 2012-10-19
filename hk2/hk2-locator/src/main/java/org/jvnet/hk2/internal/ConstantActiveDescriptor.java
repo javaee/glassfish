@@ -73,7 +73,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      */
     public ConstantActiveDescriptor(T theOne, long locatorId) {
         super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(),
-                DescriptorType.CLASS, 0, null);
+                DescriptorType.CLASS, 0, null, null);
         
         this.theOne = theOne;
         this.locatorId = new Long(locatorId);
@@ -96,10 +96,11 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             String name,
             Set<Annotation> qualifiers,
             int ranking,
+            Boolean proxy,
             long locatorId,
             Map<String, List<String>> metadata) {
         super(advertisedContracts, scope, name, qualifiers,
-                DescriptorType.CLASS, ranking, metadata);
+                DescriptorType.CLASS, ranking, proxy, metadata);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;

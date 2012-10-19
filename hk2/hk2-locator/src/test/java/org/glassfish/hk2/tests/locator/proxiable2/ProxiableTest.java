@@ -37,86 +37,76 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.locator;
+package org.glassfish.hk2.tests.locator.proxiable2;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Set;
+import junit.framework.Assert;
 
-import org.glassfish.hk2.api.DescriptorType;
-import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -6841153780662164886L;
+public class ProxiableTest {
+    private final static String TEST_NAME = "Proxiable2Test";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new ProxiableModule());
     
-    private final Class<?> implClass;
-
     /**
-     * @param advertisedContracts
-     * @param scope
-     * @param name
-     * @param qualifiers
-     * @param descriptorType
-     * @param ranking
+     * Tests that I can have something in the singleton
+     * scope that gets proxied
      */
-    protected ForeignActiveDescriptor(Set<Type> advertisedContracts,
-            Class<? extends Annotation> scope, String name,
-            Set<Annotation> qualifiers, DescriptorType descriptorType,
-            int ranking,
-            Class<?> implClass) {
-        super(advertisedContracts, scope, name, qualifiers, descriptorType, ranking, null, null);
+    @Test @Ignore
+    public void testProxiedSingleton() {
+        ProxiableService.resetConstructorCalled();
         
-        this.implClass = implClass;
+        ServiceHandle<ProxiableService> psHandle = locator.getServiceHandle(ProxiableService.class);
+        Assert.assertNotNull(psHandle);
+        
+        try {
+            ProxiableService ps = psHandle.getService();
+        
+            Assert.assertEquals(0, ProxiableService.getConstructorCalled());
+        
+            ps.doService();  // Forces true creation
+        
+            Assert.assertEquals(1, ProxiableService.getConstructorCalled());
+        }
+        finally {
+            // Removes it from Singleton scope
+            psHandle.destroy();
+        }
     }
     
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
+    /**
+     * Tests that the proxied singleton service implements ProxyCtl
      */
-    @Override
-    public boolean isReified() {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
-     */
-    @Override
-    public Class<?> getImplementationClass() {
-        return implClass;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public T create(ServiceHandle<?> root) {
+    @Test @Ignore
+    public void testProxiedSingletonUsingProxyCtl() {
+        ProxiableService.resetConstructorCalled();
+        
+        ServiceHandle<ProxiableService> psHandle = locator.getServiceHandle(ProxiableService.class);
+        Assert.assertNotNull(psHandle);
+        
         try {
-            return (T) implClass.newInstance();
+            ProxiableService ps = psHandle.getService();
+        
+            Assert.assertEquals(0, ProxiableService.getConstructorCalled());
+            
+            Assert.assertTrue(ps instanceof ProxyCtl);
+        
+            ((ProxyCtl) ps).__make();  // Forces true creation
+        
+            Assert.assertEquals(1, ProxiableService.getConstructorCalled());
         }
-        catch (InstantiationException e) {
-            throw new MultiException(e);
+        finally {
+            // Removes it from Singleton scope
+            psHandle.destroy();
         }
-        catch (IllegalAccessException e) {
-            throw new MultiException(e);
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Descriptor#getImplementation()
-     */
-    @Override
-    public String getImplementation() {
-        return implClass.getName();
     }
 
 }

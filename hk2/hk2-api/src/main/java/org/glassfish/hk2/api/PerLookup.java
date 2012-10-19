@@ -58,7 +58,7 @@ import javax.inject.Scope;
  */
 @Documented
 @Retention(RUNTIME)
-@Scope
+@Scope @Unproxiable
 @Target( { TYPE, METHOD })
 public @interface PerLookup {
 

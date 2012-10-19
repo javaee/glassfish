@@ -93,6 +93,8 @@ public class DescriptorImplTest {
         
         Assert.assertEquals(0, desc.getRanking());
         
+        Assert.assertNull(desc.isProxiable());
+        
         Assert.assertNull(desc.getBaseDescriptor());
         
         Assert.assertNull(desc.getServiceId());
@@ -143,6 +145,8 @@ public class DescriptorImplTest {
         Assert.assertNotNull(full.getLoader());
         
         Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_RANK, full.getRanking());
+        
+        Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_PROXIABLE, full.isProxiable());
         
         Assert.assertNotNull(full.getBaseDescriptor());
         
@@ -322,7 +326,7 @@ public class DescriptorImplTest {
     }
     
     /**
-     * Tests setting the loader
+     * Tests setting the ranking
      */
     @Test
     public void testSetRanking() {
@@ -331,6 +335,26 @@ public class DescriptorImplTest {
         Assert.assertEquals(0, desc.setRanking(1));
         Assert.assertEquals(1, desc.setRanking(-1));
         Assert.assertEquals(-1, desc.getRanking());
+    }
+    
+    /**
+     * Tests setting the ranking
+     */
+    @Test
+    public void testSetProxiable() {
+        DescriptorImpl desc = new DescriptorImpl();
+        
+        Assert.assertNull(desc.isProxiable());
+        
+        desc.setProxiable(Boolean.TRUE);
+        
+        Assert.assertTrue(desc.isProxiable());
+        
+        desc.setProxiable(Boolean.FALSE);
+        
+        Assert.assertFalse(desc.isProxiable());
+        
+        desc.setProxiable(null);
     }
     
     /**

@@ -37,20 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.api;
+package org.glassfish.hk2.tests.locator.proxiable2;
 
-import org.glassfish.hk2.api.UseProxy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@ScopeWithMetadata(BuilderHelperTest.SCOPE_DATA)
-@QualifierWithMetadata(value=BuilderHelperTest.QUALIFIER_VALUE,
-  anotherValue=BuilderHelperTest.QUALIFIER_ANOTHER_VALUE,
-  modeValue=QualifierWithMetadata.Mode.VALIDATING,
-  notInMetadata=15)
-@UseProxy
-public class ServiceWithAutoMetadata {
+@Service @Singleton
+public class ProxiableService {
+    private static int constructorCalled;
+    
+    /* package */ static int getConstructorCalled() {
+        return constructorCalled;
+    }
+    
+    /* package */ static void resetConstructorCalled() {
+        constructorCalled = 0;
+    }
 
+    @Inject
+    private ProxiableService() {
+        constructorCalled++;
+    }
+    
+    // Just a method to force service creation
+    public void doService() {
+    }
 }

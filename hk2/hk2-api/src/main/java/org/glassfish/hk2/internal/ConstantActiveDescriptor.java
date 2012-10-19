@@ -83,8 +83,9 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers,
+            Boolean proxy,
             Map<String, List<String>> metadata) {
-        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0, metadata);
+        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0, proxy, metadata);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;

@@ -76,6 +76,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
     private final static String TYPE_KEY = "type=";
     private final static String METADATA_KEY = "metadata=";
     private final static String RANKING_KEY = "rank=";
+    private final static String PROXIABLE_KEY = "proxiable=";
     private final static String FACTORY_DT = "FACTORY";
     private final static String START_START = "[";
     private final static String END_START = "]";
@@ -90,6 +91,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private DescriptorType descriptorType = DescriptorType.CLASS;
 	private HK2Loader loader;
 	private int rank;
+	private Boolean proxiable;
 	private Descriptor baseDescriptor;
 	private Long id;
 	private Long locatorId;
@@ -112,6 +114,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
         descriptorType = copyMe.getDescriptorType();
         loader = copyMe.getLoader();
         rank = copyMe.getRanking();
+        proxiable = copyMe.isProxiable();
         id = copyMe.getServiceId();
         locatorId = copyMe.getLocatorId();
         baseDescriptor = copyMe.getBaseDescriptor();
@@ -142,6 +145,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param descriptorType The type of this descriptor (should not be null)
 	 * @param loader The HK2Loader to associated with this descriptor (may be null)
 	 * @param rank The rank to initially associate with this descriptor
+	 * @param proxiable The proxiable value to associate with this descriptor (may be null)
 	 * @param baseDescriptor The base descriptor to associated with this descriptor
 	 * @param id The ID this descriptor should take (may be null)
 	 * @param locatorId The locator ID this descriptor should take (may be null)
@@ -156,6 +160,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			DescriptorType descriptorType,
 			HK2Loader loader,
 			int rank,
+			Boolean proxiable,
 			Descriptor baseDescriptor,
 			Long id,
 			Long locatorId) {
@@ -170,6 +175,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.descriptorType = descriptorType;
 		this.id = id;
 		this.rank = rank;
+		this.proxiable = proxiable;
 		this.locatorId = locatorId;
 		this.loader = loader;
 		this.baseDescriptor = baseDescriptor;
@@ -401,6 +407,15 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	}
 	
 	@Override
+	public Boolean isProxiable() {
+	    return proxiable;
+	}
+	
+	public void setProxiable(Boolean proxiable) {
+	    this.proxiable = proxiable;
+	}
+	
+	@Override
 	public synchronized Long getLocatorId() {
 	    return locatorId;
 	}
@@ -445,6 +460,14 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	            for (String value : entries.getValue()) {
 	                retVal ^= value.hashCode();
 	            }
+	        }
+	    }
+	    if (proxiable != null) {
+	        if (proxiable.booleanValue()) {
+	            retVal ^= 1;
+	        }
+	        else {
+	            retVal ^= -1;
 	        }
 	    }
 	    
@@ -507,6 +530,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    if (!equalOrderedCollection(qualifiers, d.getQualifiers())) return false;
 	    if (!safeEquals(descriptorType, d.getDescriptorType())) return false;
 	    if (!equalMetadata(metadatas, d.getMetadata())) return false;
+	    if (!safeEquals(proxiable, d.isProxiable())) return false;
 	    
 	    return true;
 	}
@@ -542,6 +566,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
         sb.append("\n\trank=" + d.getRanking());
         
         sb.append("\n\tloader=" + d.getLoader());
+        
+        sb.append("\n\tproxiable=" + d.isProxiable());
         
         sb.append("\n\tid=" + d.getServiceId());
         
@@ -602,6 +628,10 @@ public class DescriptorImpl implements Descriptor, Serializable {
         
         if (rank != 0) {
             out.println(RANKING_KEY + rank);
+        }
+        
+        if (proxiable != null) {
+            out.println(PROXIABLE_KEY + proxiable.booleanValue());
         }
         
         if (metadatas != null && !metadatas.isEmpty()) {
@@ -682,6 +712,9 @@ public class DescriptorImpl implements Descriptor, Serializable {
                     }
                     else if (leftHandSide.equals(RANKING_KEY)) {
                         rank = Integer.parseInt(rightHandSide);
+                    }
+                    else if (leftHandSide.equals(PROXIABLE_KEY)) {
+                        proxiable = Boolean.parseBoolean(rightHandSide);
                     }
                     
                     // Otherwise it is an unknown type, just forget it

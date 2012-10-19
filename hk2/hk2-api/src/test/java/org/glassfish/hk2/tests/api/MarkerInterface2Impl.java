@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import org.glassfish.hk2.api.UseProxy;
+
 /**
  * This class is NOT itself a Contract, but it implements
  * an interface that is a contract
@@ -46,6 +48,7 @@ package org.glassfish.hk2.tests.api;
  * @author jwells
  *
  */
+@UseProxy(false)
 public class MarkerInterface2Impl extends MarkerInterfaceImpl implements MarkerInterface2 {
 
 }

@@ -68,6 +68,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     private final Class<?> implementation;
     private HK2Loader loader = null;
     private int rank = 0;
+    private Boolean proxy = null;
     
     public ActiveDescriptorBuilderImpl(Class<?> implementation) {
         this.implementation = implementation;
@@ -147,6 +148,23 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         return this;
     }
     
+    @Override
+    public ActiveDescriptorBuilder proxy() {
+        return proxy(true);
+    }
+    
+    @Override
+    public ActiveDescriptorBuilder proxy(boolean forceProxy) {
+        if (forceProxy) {
+            proxy = Boolean.TRUE;
+        }
+        else {
+            proxy = Boolean.FALSE;
+        }
+        
+        return this;
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.ActiveDescriptorBuilder#andLoadWith(org.glassfish.hk2.api.HK2Loader)
      */
@@ -171,6 +189,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 qualifiers,
                 DescriptorType.CLASS,
                 rank,
+                proxy,
                 metadatas,
                 loader);
     }
@@ -188,6 +207,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 qualifiers,
                 DescriptorType.PROVIDE_METHOD,
                 rank,
+                proxy,
                 metadatas,
                 loader);
     }
@@ -207,6 +227,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 Set<Annotation> qualifiers,
                 DescriptorType descriptorType,
                 int ranking,
+                Boolean proxy,
                 Map<String, List<String>> metadata,
                 HK2Loader loader) {
             super(advertisedContracts,
@@ -215,6 +236,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                     qualifiers,
                     descriptorType,
                     ranking,
+                    proxy,
                     metadata);
             
             super.setReified(false);

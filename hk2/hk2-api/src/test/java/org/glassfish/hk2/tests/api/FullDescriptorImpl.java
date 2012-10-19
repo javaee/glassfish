@@ -75,6 +75,8 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
     private final static Set<String> FULL_ANNOTATIONS = new HashSet<String>();
     /** Given initial rank */
     public final static int FULL_INITIAL_RANK = -1;
+    /** Given initial proxiable */
+    public final static Boolean FULL_INITIAL_PROXIABLE = Boolean.FALSE;
     /** Given initial service id */
     public final static Long FULL_INITIAL_SID = new Long(-2);
     /** Given initial locator id */
@@ -116,6 +118,7 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
                 DescriptorType.PROVIDE_METHOD,
                 new HK2LoaderImpl(),
                 FULL_INITIAL_RANK,
+                FULL_INITIAL_PROXIABLE,
                 new DescriptorImpl(),
                 FULL_INITIAL_SID,
                 FULL_INITIAL_LID);

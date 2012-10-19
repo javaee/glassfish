@@ -50,6 +50,8 @@ import java.lang.annotation.Target;
  * annotation are proxiable.  All objects that are
  * produced by this scope must be able to be proxied,
  * and will be proxied by the system
+ * <p>
+ * A scope must not be marked with both {@link Proxiable} and {@link Unproxiable}
  * 
  * @author jwells
  *
