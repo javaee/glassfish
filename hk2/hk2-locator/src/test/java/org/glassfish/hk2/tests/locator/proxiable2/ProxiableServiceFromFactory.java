@@ -39,49 +39,27 @@
  */
 package org.glassfish.hk2.tests.locator.proxiable2;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-
 /**
  * @author jwells
  *
  */
-public class ProxiableModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(ProxiableService.class.getName()).
-                in(Singleton.class.getName()).
-                proxy().
-                build());
-        
-        config.bind(BuilderHelper.link(ProxiableSingletonContext.class.getName()).
-                to(Context.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        
-        config.bind(BuilderHelper.link(ProxiableServiceInContext.class.getName()).
-                in(ProxiableSingleton.class.getName()).
-                build());
-        
-        config.bind(BuilderHelper.link(NotProxiableService.class.getName()).
-                in(ProxiableSingleton.class.getName()).
-                proxy(false).
-                build());
-        
-        config.bind(BuilderHelper.link(ProxiableServiceFactory.class.getName()).
-                to(ProxiableServiceFromFactory.class.getName()).
-                in(Singleton.class.getName()).
-                proxy(true).
-                buildFactory(Singleton.class.getName()));
-
+public class ProxiableServiceFromFactory {
+    private static int constructorCalled;
+    
+    /* package */ static int getConstructorCalled() {
+        return constructorCalled;
+    }
+    
+    /* package */ static void resetConstructorCalled() {
+        constructorCalled = 0;
+    }
+    
+    // Just a method to force service creation
+    public void doService() {
+    }
+    
+    public void postConstruct() {
+        constructorCalled++;
     }
 
 }
