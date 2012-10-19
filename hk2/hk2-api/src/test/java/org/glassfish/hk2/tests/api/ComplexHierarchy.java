@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import org.glassfish.hk2.api.UseProxy;
+
 /**
  * This guy extends a class that is not a contract but implements
  * an interface which is a contract.  That subclass also extends
@@ -58,6 +60,7 @@ package org.glassfish.hk2.tests.api;
  * @author jwells
  *
  */
+@UseProxy(false)
 public class ComplexHierarchy extends MarkerInterface2Impl {
 
 }

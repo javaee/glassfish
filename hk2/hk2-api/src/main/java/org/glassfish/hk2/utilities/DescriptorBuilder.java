@@ -154,6 +154,26 @@ public interface DescriptorBuilder {
 	 * @return A DescriptorBuilder with the given rank
 	 */
 	public DescriptorBuilder ofRank(int rank);
+	
+	/**
+	 * This will cause the isProxiable field of the returned
+	 * descriptor to return true (it will force this
+	 * descriptor to use proxies).
+	 * 
+	 * @return A DescriptorBuilder with the proxiable field set to true
+	 */
+	public DescriptorBuilder proxy();
+	
+	/**
+     * This will cause the isProxiable field of the returned
+     * descriptor to return the given value.
+     * 
+     * @param forceProxy if true then this descriptor will be proxied,
+     * if false then this descriptor will NOT be proxied
+     * @return A DescriptorBuilder with the proxiable field set to
+     * the given value
+     */
+	public DescriptorBuilder proxy(boolean forceProxy);
     
     /**
      * Call this if this descriptor should be loaded with the given HK2Loader

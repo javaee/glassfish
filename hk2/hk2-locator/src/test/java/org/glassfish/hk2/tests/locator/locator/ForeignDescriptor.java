@@ -176,4 +176,9 @@ public class ForeignDescriptor implements Descriptor {
         return null;
     }
 
+    @Override
+    public Boolean isProxiable() {
+        return null;
+    }
+
 }

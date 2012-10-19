@@ -73,6 +73,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	private String implementation;
 	private HK2Loader loader = null;
 	private int rank = 0;
+	private Boolean proxy = null;
 	
 	/**
 	 * The basid constructor
@@ -220,6 +221,23 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         return this;
     }
     
+    @Override
+    public DescriptorBuilder proxy() {
+        return proxy(true);
+    }
+    
+    @Override
+    public DescriptorBuilder proxy(boolean forceProxy) {
+        if (forceProxy) {
+            proxy = Boolean.TRUE;
+        }
+        else {
+            proxy = Boolean.FALSE;
+        }
+        
+        return this;
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.DescriptorBuilder#andLoadWith(org.glassfish.hk2.api.HK2Loader)
      */
@@ -247,6 +265,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 				DescriptorType.CLASS,
 				loader,
 				rank,
+				proxy,
 				null,
 				null,
 				null);
@@ -275,6 +294,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 rank,
                 null,
                 null,
+                null,
                 null);
         
         // We want to remove the impl class from the contracts in this case
@@ -291,6 +311,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 DescriptorType.PROVIDE_METHOD,
                 loader,
                 rank,
+                proxy,
                 null,
                 null,
                 null);

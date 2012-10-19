@@ -37,20 +37,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.api;
+package org.glassfish.hk2.api;
 
-import org.glassfish.hk2.api.UseProxy;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
+ * This annotation must go on a scope annotation in order to indicate
+ * that no services from this scope may be proxied.
+ * <p>
+ * Any descriptor that returns true from {@link Descriptor#isProxiable()} but whose
+ * scope is Unproxiable will cause an exception when the {@link Descriptor} is
+ * reified.
+ * <p>
+ * A scope must not be marked with both {@link Proxiable} and {@link Unproxiable}
+ * <p>
+ * The {@link PerLookup} scope is Unproxiable because every method invocation on a
+ * {@link PerLookup} object would cause a new instance to be created
+ * 
  * @author jwells
  *
  */
-@ScopeWithMetadata(BuilderHelperTest.SCOPE_DATA)
-@QualifierWithMetadata(value=BuilderHelperTest.QUALIFIER_VALUE,
-  anotherValue=BuilderHelperTest.QUALIFIER_ANOTHER_VALUE,
-  modeValue=QualifierWithMetadata.Mode.VALIDATING,
-  notInMetadata=15)
-@UseProxy
-public class ServiceWithAutoMetadata {
+@Documented
+@Retention(RUNTIME)
+@Target( { ANNOTATION_TYPE })
+public @interface Unproxiable {
 
 }

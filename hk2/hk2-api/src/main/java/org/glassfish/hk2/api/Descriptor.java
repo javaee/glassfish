@@ -188,6 +188,22 @@ public interface Descriptor {
     public int setRanking(int ranking);
     
     /**
+     * If this returns true then the system will create a proxy for
+     * instances of this descriptor.  As with all proxies, the proxy
+     * created will also implement the {@link ProxyCtl} interface
+     * <p>
+     * It is an error for this method to return true if the scope that
+     * this descriptor is in is {@link Unproxiable} (such as PerLookup).
+     * 
+     * @return true if this descriptor must be proxied, false if this
+     * descriptor must NOT be proxied (even if it is in an Unproxiable scope)
+     * and null if this descriptor should take its proxiable status from
+     * the scope it is in (i.e., it will only be proxied if the scope is
+     * marked {@linke Proxiable})
+     */
+    public Boolean isProxiable();
+    
+    /**
      * If this descriptor is based on another descriptor (for example
      * via the {@link Configuration} bind call) then this method will
      * return the original basis for this descriptor.

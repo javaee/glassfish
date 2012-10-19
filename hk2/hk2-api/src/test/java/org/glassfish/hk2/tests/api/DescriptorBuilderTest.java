@@ -88,6 +88,7 @@ public class DescriptorBuilderTest {
             ofRank(MY_RANK).
             andLoadWith(loader).
             has(KEY, VALUE).
+            proxy(false).
             buildFactory();
         
         {
@@ -105,6 +106,7 @@ public class DescriptorBuilderTest {
             Assert.assertTrue(asService.getQualifiers().isEmpty());
             Assert.assertTrue(asService.getMetadata().isEmpty());
             Assert.assertEquals(loader, asService.getLoader());
+            Assert.assertNull(asService.isProxiable());
         
             Set<String> serviceContracts = asService.getAdvertisedContracts();
             Assert.assertEquals(2, serviceContracts.size());
@@ -125,6 +127,7 @@ public class DescriptorBuilderTest {
             Assert.assertEquals(MY_RANK, asFactory.getRanking());
             Assert.assertEquals(NAME, asFactory.getName());
             Assert.assertEquals(loader, asFactory.getLoader());
+            Assert.assertEquals(false, asFactory.isProxiable().booleanValue());
             
             Set<String> qualifiers = asFactory.getQualifiers();
             Assert.assertEquals(2, qualifiers.size());

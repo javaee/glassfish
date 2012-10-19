@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import org.glassfish.hk2.api.UseProxy;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -47,6 +48,7 @@ import org.jvnet.hk2.annotations.Contract;
  * 
  * @author jwells
  */
+@UseProxy(true)
 @Contract
 public class MarkerInterfaceImpl extends ParameterizedObject implements MarkerInterface {
 

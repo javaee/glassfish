@@ -52,7 +52,7 @@ public class DomDescriptor<T>
     public DomDescriptor(Dom theDom, Set<Type> advertisedContracts,
                         Class<? extends Annotation> scope, String name,
                         Set<Annotation> qualifiers) {
-        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0, null);
+        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0, null, null);
         super.addAdvertisedContract(ConfigBeanProxy.class.getName());
         if (theDom == null) throw new IllegalArgumentException();
 

@@ -121,6 +121,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
             Set<Annotation> qualifiers,
             DescriptorType descriptorType,
             int ranking,
+            Boolean proxy,
             Map<String, List<String>> metadata) {
         super();
         
@@ -131,6 +132,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         setRanking(ranking);
         setDescriptorType(descriptorType);
         setName(name);  // This MUST be called after the qualifiers have already been set
+        setProxiable(proxy);
         
         if (scope != null) {
             setScope(scope.getName());

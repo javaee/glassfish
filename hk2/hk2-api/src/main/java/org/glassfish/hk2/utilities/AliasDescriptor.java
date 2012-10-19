@@ -121,7 +121,9 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         // scope since we are not really reified and we don't want to reify
         // the given descriptor yet
         super(EMPTY_CONTRACT_SET, null, name, EMPTY_ANNOTATION_SET,
-                descriptor.getDescriptorType(), descriptor.getRanking(),
+                descriptor.getDescriptorType(),
+                descriptor.getRanking(),
+                descriptor.isProxiable(),
                 descriptor.getMetadata());
         this.locator    = locator;
         this.descriptor = descriptor;

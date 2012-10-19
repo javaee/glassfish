@@ -83,9 +83,11 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Creator<T> creator,
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope, String name,
-            Set<Annotation> qualifiers, int ranking,
+            Set<Annotation> qualifiers,
+            int ranking,
+            Boolean proxy,
             Map<String, List<String>> metadata) {
-        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, ranking, metadata);
+        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, ranking, proxy, metadata);
         
         implClass = clazz;
         this.creator = creator;
