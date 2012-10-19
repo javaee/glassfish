@@ -421,6 +421,39 @@ public class InhabitantsGeneratorTest {
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
+        
+        {
+            // From a service with @UseProxy explicitly set to true
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(ServiceWithTrueProxy.class.getName());
+            envItself.addAdvertisedContract(ServiceWithTrueProxy.class.getName());
+            envItself.setScope(Singleton.class.getName());
+            envItself.setProxiable(Boolean.TRUE);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a service with @UseProxy explicitly set to false
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(ServiceWithFalseProxy.class.getName());
+            envItself.addAdvertisedContract(ServiceWithFalseProxy.class.getName());
+            envItself.setScope(PerLookup.class.getName());
+            envItself.setProxiable(Boolean.FALSE);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a service with @UseProxy using default value (should be true)
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(ServiceWithDefaultProxy.class.getName());
+            envItself.addAdvertisedContract(ServiceWithDefaultProxy.class.getName());
+            envItself.setScope(Singleton.class.getName());
+            envItself.setProxiable(Boolean.TRUE);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
     }
     
     private File gendirDirectory;
