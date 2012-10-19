@@ -347,6 +347,12 @@ public class BuilderHelper {
             type = DescriptorType.PROVIDE_METHOD;
         }
         
+        Boolean proxy = null;
+        UseProxy up = clazz.getAnnotation(UseProxy.class);
+        if (up != null) {
+            proxy = new Boolean(up.value());
+        }
+        
         // TODO:  Can we get metadata from @Service?
         return new DescriptorImpl(
                 contracts,
@@ -358,7 +364,7 @@ public class BuilderHelper {
                 type,
                 null,
                 0,
-                null,
+                proxy,
                 null,
                 null,
                 null);

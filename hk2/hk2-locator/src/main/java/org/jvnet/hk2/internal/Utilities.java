@@ -497,12 +497,7 @@ public class Utilities {
         
         UseProxy useProxy = clazz.getAnnotation(UseProxy.class);
         if (useProxy != null) {
-            if (useProxy.value()) {
-                proxy = Boolean.TRUE;
-            }
-            else {
-                proxy = Boolean.FALSE;
-            }
+            proxy = new Boolean(useProxy.value());
         }
 
         return new AutoActiveDescriptor<T>(

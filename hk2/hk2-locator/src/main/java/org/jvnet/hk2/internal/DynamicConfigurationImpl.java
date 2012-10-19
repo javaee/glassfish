@@ -75,11 +75,11 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
      * @see org.glassfish.hk2.api.Configuration#bind(org.glassfish.hk2.api.Descriptor)
      */
     @Override
-    public ActiveDescriptor<?> bind(Descriptor key) {
+    public <T> ActiveDescriptor<T> bind(Descriptor key) {
         checkState();
         checkDescriptor(key);
 
-        SystemDescriptor<?> sd = new SystemDescriptor<Object>(key,
+        SystemDescriptor<T> sd = new SystemDescriptor<T>(key,
                 locator,
                 new Long(locator.getNextServiceId()));
 
@@ -163,6 +163,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
             throw new IllegalArgumentException();
         }
         
+        checkReifiedDescriptor(activeDescriptor);
+        
         SystemDescriptor<T> retVal = new SystemDescriptor<T>(activeDescriptor,
                 locator,
                 new Long(locator.getNextServiceId()));
@@ -179,6 +181,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
             throws IllegalArgumentException {
         ActiveDescriptor<T> ad = Utilities.createAutoDescriptor(rawClass, locator);
+        
+        checkReifiedDescriptor(ad);
         
         return addActiveDescriptor(ad);
     }
@@ -221,6 +225,14 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         if (d.getDescriptorType() == null) throw new IllegalArgumentException();
         if (d.getMetadata() == null) throw new IllegalArgumentException();
         if (d.getQualifiers() == null) throw new IllegalArgumentException();
+    }
+    
+    private static void checkReifiedDescriptor(ActiveDescriptor<?> d) {
+        if (d.isProxiable() == null) return;
+        if (!d.isProxiable()) return;
+        
+        // Now check to see if the scope is unproxiable
+        if (Utilities.isUnproxiableScope(d.getScopeAnnotation())) throw new IllegalArgumentException();
     }
 
     /**

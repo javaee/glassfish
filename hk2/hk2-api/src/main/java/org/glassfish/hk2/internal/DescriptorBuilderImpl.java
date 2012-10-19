@@ -282,7 +282,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         Set<String> factoryQualifiers = Collections.emptySet();
         Map<String, List<String>> factoryMetadata = Collections.emptyMap();
         
-        Descriptor asService = new DescriptorImpl(
+        DescriptorImpl asService = new DescriptorImpl(
                 factoryContracts,
                 null,
                 factoryScope,
@@ -301,7 +301,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         Set<String> serviceContracts = new HashSet<String>(contracts);
         if (implementation != null) serviceContracts.remove(implementation);
         
-        Descriptor asFactory = new DescriptorImpl(
+        DescriptorImpl asFactory = new DescriptorImpl(
                 serviceContracts,
                 name,
                 scope,

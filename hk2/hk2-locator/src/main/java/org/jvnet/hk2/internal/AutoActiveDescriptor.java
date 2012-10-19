@@ -64,11 +64,6 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     private final Creator<T> creator;
     private final String implClassString;
     
-    private final Object lock = new Object();
-    private boolean isCacheSet = false;
-    private T cachedValue;
-    
-
     /**
      * @param clazz 
      * @param creator 
@@ -134,45 +129,4 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     public List<Injectee> getInjectees() {
         return creator.getInjectees();
     }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.SingleCache#getCache()
-     */
-    @Override
-    public T getCache() {
-        return cachedValue;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.SingleCache#isCacheSet()
-     */
-    @Override
-    public boolean isCacheSet() {
-        return isCacheSet;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.SingleCache#setCache(java.lang.Object)
-     */
-    @Override
-    public void setCache(T cacheMe) {
-        synchronized (lock) {
-            cachedValue = cacheMe;
-            isCacheSet = true;
-        }
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.SingleCache#releaseCache()
-     */
-    @Override
-    public void releaseCache() {
-        synchronized (lock) {
-            isCacheSet = false;
-            cachedValue = null;
-        }
-        
-    }
-
 }
