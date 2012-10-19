@@ -17,7 +17,7 @@ public class SessionBeanDefault implements SessionBeanDefaultRemote {
     @Resource(name="myCF0", lookup="jms/__defaultConnectionFactory")
     private ConnectionFactory cf0;
     
-    @Resource(name="myCF1", lookup="java:comp/defaultJMSConnectionFactory")
+    @Resource(name="myCF1", lookup="java:comp/DefaultJMSConnectionFactory")
     private ConnectionFactory cf1;
     
     @Resource(name="myCF2")
@@ -28,7 +28,7 @@ public class SessionBeanDefault implements SessionBeanDefaultRemote {
         Connection conn = null;
         try {
             InitialContext ic = new InitialContext();
-            ConnectionFactory o = (ConnectionFactory) ic.lookup("java:comp/defaultJMSConnectionFactory");
+            ConnectionFactory o = (ConnectionFactory) ic.lookup("java:comp/DefaultJMSConnectionFactory");
             if (o == null || cf0 == null || cf1 == null || cf2 == null)
                 throw new RuntimeException("Failed to lookup up jms default connection factory.");
             conn = cf2.createConnection();
