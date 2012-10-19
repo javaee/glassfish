@@ -37,38 +37,80 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable2;
+package org.glassfish.hk2.tests.locator.negative.proxiable;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import java.lang.annotation.Annotation;
+
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-@Service @Singleton
-public class ProxiableService {
-    private static int constructorCalled;
-    
-    /* package */ static int getConstructorCalled() {
-        return constructorCalled;
+@Singleton
+public class BadScopeContext implements Context<BadScope> {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#getScope()
+     */
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return BadScope.class;
     }
-    
-    /* package */ static void resetConstructorCalled() {
-        constructorCalled = 0;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        throw new AssertionError("not called");
     }
-    
-    // Just a method to force service creation
-    public void doService() {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        throw new AssertionError("not called");
     }
-    
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        constructorCalled++;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        throw new AssertionError("not called");
+
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        throw new AssertionError("not called");
+
+    }
+
 }

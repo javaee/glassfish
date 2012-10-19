@@ -86,6 +86,7 @@ import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Unproxiable;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.UseProxy;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -696,6 +697,33 @@ public class Utilities {
     public static boolean isProxiableScope(Class<? extends Annotation> scope) {
         if (scope.isAnnotationPresent(Proxiable.class)) return true;
         return false;
+    }
+    
+    /**
+     * Returns true if this scope is unproxiable
+     *
+     * @param scope The scope annotation to test
+     * @return true if this must be proxied
+     */
+    public static boolean isUnproxiableScope(Class<? extends Annotation> scope) {
+        if (scope.isAnnotationPresent(Unproxiable.class)) return true;
+        return false;
+    }
+    
+    /**
+     * This method determines whether or not the descriptor should be proxied.
+     * The given descriptor must be reified and valid.
+     * 
+     * @param desc A non-null, reified ActiveDescriptor
+     * @return true if this descriptor must be proxied, false otherwise
+     */
+    public static boolean isProxiable(ActiveDescriptor<?> desc) {
+        Boolean directed = desc.isProxiable();
+        if (directed != null) {
+            return directed.booleanValue();
+        }
+        
+        return isProxiableScope(desc.getScopeAnnotation());
     }
 
     /**

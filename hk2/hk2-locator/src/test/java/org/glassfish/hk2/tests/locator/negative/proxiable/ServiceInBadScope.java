@@ -37,38 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable2;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Service;
+package org.glassfish.hk2.tests.locator.negative.proxiable;
 
 /**
  * @author jwells
  *
  */
-@Service @Singleton
-public class ProxiableService {
-    private static int constructorCalled;
-    
-    /* package */ static int getConstructorCalled() {
-        return constructorCalled;
-    }
-    
-    /* package */ static void resetConstructorCalled() {
-        constructorCalled = 0;
-    }
-    
-    // Just a method to force service creation
-    public void doService() {
-    }
-    
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        constructorCalled++;
-    }
+@BadScope
+public class ServiceInBadScope {
+
 }

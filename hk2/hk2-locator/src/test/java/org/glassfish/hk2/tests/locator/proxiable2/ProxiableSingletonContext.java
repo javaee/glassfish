@@ -39,36 +39,67 @@
  */
 package org.glassfish.hk2.tests.locator.proxiable2;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Service;
+import java.lang.annotation.Annotation;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-@Service @Singleton
-public class ProxiableService {
-    private static int constructorCalled;
-    
-    /* package */ static int getConstructorCalled() {
-        return constructorCalled;
+public class ProxiableSingletonContext implements Context<ProxiableSingleton> {
+
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return ProxiableSingleton.class;
     }
-    
-    /* package */ static void resetConstructorCalled() {
-        constructorCalled = 0;
+
+    @Override
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
+        
+        synchronized (activeDescriptor) {
+            if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
+            
+            U t = activeDescriptor.create(root);
+            activeDescriptor.setCache(t);
+            
+            return t;
+        }
     }
-    
-    // Just a method to force service creation
-    public void doService() {
+
+    @Override
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return descriptor.isCacheSet();
     }
-    
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        constructorCalled++;
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void destroyOne(ActiveDescriptor<?> one) {
+        if (!one.isCacheSet()) return;
+        
+        Object value = one.getCache();
+        one.releaseCache();
+        
+        ((ActiveDescriptor<Object>) one).dispose(value);
     }
+
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
+    }
+
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    @Override
+    public void shutdown() {
+    }
+
 }

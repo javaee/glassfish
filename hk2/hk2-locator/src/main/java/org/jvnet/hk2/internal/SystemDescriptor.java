@@ -637,6 +637,16 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             }
         }
         
+        if (Utilities.isProxiableScope(scope) && Utilities.isUnproxiableScope(scope)) {
+            collector.addThrowable(new IllegalArgumentException("The scope " + scope.getName() +
+                    " is marked both @Proxiable and @Unproxiable"));
+        }
+        
+        if ((isProxiable() != null) && isProxiable().booleanValue() && Utilities.isUnproxiableScope(scope)) {
+            collector.addThrowable(new IllegalArgumentException("The descriptor is in an Unproxiable scope but has " +
+                " isProxiable set to true"));
+        }
+        
         if (!collector.hasErrors()) {
             reified = true;
         }

@@ -56,6 +56,7 @@ import org.glassfish.hk2.utilities.reflection.Logger;
  * @author jwells
  *
  */
+@Singleton
 public class SingletonContext implements Context<Singleton> {
     private int generationNumber = Integer.MIN_VALUE;
     private final ServiceLocatorImpl locator;

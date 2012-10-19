@@ -37,38 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiable2;
+package org.glassfish.hk2.tests.locator.negative.proxiable;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
  * @author jwells
  *
  */
-@Service @Singleton
-public class ProxiableService {
-    private static int constructorCalled;
-    
-    /* package */ static int getConstructorCalled() {
-        return constructorCalled;
+public class NegativeProxyModule implements TestModule {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+     */
+    @Override
+    public void configure(DynamicConfiguration config) {
+        config.bind(BuilderHelper.link(BadScopeContext.class.getName()).
+            to(Context.class.getName()).
+            in(Singleton.class.getName()).
+            build());
+
     }
-    
-    /* package */ static void resetConstructorCalled() {
-        constructorCalled = 0;
-    }
-    
-    // Just a method to force service creation
-    public void doService() {
-    }
-    
-    @SuppressWarnings("unused")
-    @PostConstruct
-    private void postConstruct() {
-        constructorCalled++;
-    }
+
 }

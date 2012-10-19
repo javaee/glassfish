@@ -39,18 +39,10 @@
  */
 package org.jvnet.hk2.internal;
 
-import java.io.IOException;
-import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.inject.Singleton;
 
 import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
@@ -143,7 +135,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
                 root = (ActiveDescriptor<T>) locator.reifyDescriptor(root, injectee);
             }
         
-            if (Utilities.isProxiableScope(root.getScopeAnnotation())) {
+            if (Utilities.isProxiable(root)) {
                 final Class<?> proxyClass = Utilities.getFactoryAwareImplementationClass(root);
               
                 T proxy;

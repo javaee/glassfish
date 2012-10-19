@@ -60,7 +60,7 @@ public class ProxiableTest {
      * Tests that I can have something in the singleton
      * scope that gets proxied
      */
-    @Test @Ignore
+    @Test
     public void testProxiedSingleton() {
         ProxiableService.resetConstructorCalled();
         
@@ -85,7 +85,7 @@ public class ProxiableTest {
     /**
      * Tests that the proxied singleton service implements ProxyCtl
      */
-    @Test @Ignore
+    @Test
     public void testProxiedSingletonUsingProxyCtl() {
         ProxiableService.resetConstructorCalled();
         
@@ -102,6 +102,83 @@ public class ProxiableTest {
             ((ProxyCtl) ps).__make();  // Forces true creation
         
             Assert.assertEquals(1, ProxiableService.getConstructorCalled());
+        }
+        finally {
+            // Removes it from Singleton scope
+            psHandle.destroy();
+        }
+    }
+    
+    /**
+     * Test that the singleton context works
+     */
+    @Test
+    public void testProxiedSingletonFromContext() {
+        ProxiableServiceInContext.resetConstructorCalled();
+        
+        ServiceHandle<ProxiableServiceInContext> psHandle = locator.getServiceHandle(ProxiableServiceInContext.class);
+        Assert.assertNotNull(psHandle);
+        
+        try {
+            ProxiableServiceInContext ps = psHandle.getService();
+        
+            Assert.assertEquals(0, ProxiableServiceInContext.getConstructorCalled());
+        
+            ps.doService();  // Forces true creation
+        
+            Assert.assertEquals(1, ProxiableServiceInContext.getConstructorCalled());
+        }
+        finally {
+            // Removes it from Singleton scope
+            psHandle.destroy();
+        }
+    }
+    
+    /**
+     * Tests that the ProxiableSingleton works, using ProxyCtl
+     */
+    @Test
+    public void testProxiedSingletonInContextUsingProxyCtl() {
+        ProxiableServiceInContext.resetConstructorCalled();
+        
+        ServiceHandle<ProxiableServiceInContext> psHandle = locator.getServiceHandle(ProxiableServiceInContext.class);
+        Assert.assertNotNull(psHandle);
+        
+        try {
+            ProxiableServiceInContext ps = psHandle.getService();
+        
+            Assert.assertEquals(0, ProxiableServiceInContext.getConstructorCalled());
+            
+            Assert.assertTrue(ps instanceof ProxyCtl);
+        
+            ((ProxyCtl) ps).__make();  // Forces true creation
+        
+            Assert.assertEquals(1, ProxiableServiceInContext.getConstructorCalled());
+        }
+        finally {
+            // Removes it from Singleton scope
+            psHandle.destroy();
+        }
+    }
+    
+    /**
+     * Test that you can explicitly NOT be proxied from a proxiable context
+     */
+    @Test
+    public void testNotProxiedSingletonFromContext() {
+        NotProxiableService.resetConstructorCalled();
+        
+        ServiceHandle<NotProxiableService> psHandle = locator.getServiceHandle(NotProxiableService.class);
+        Assert.assertNotNull(psHandle);
+        
+        Assert.assertEquals(0, NotProxiableService.getConstructorCalled());
+        
+        try {
+            NotProxiableService ps = psHandle.getService();
+        
+            Assert.assertEquals(1, NotProxiableService.getConstructorCalled());
+        
+            Assert.assertFalse(ps instanceof ProxyCtl);
         }
         finally {
             // Removes it from Singleton scope
