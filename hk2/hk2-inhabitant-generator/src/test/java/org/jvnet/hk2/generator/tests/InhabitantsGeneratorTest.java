@@ -454,6 +454,52 @@ public class InhabitantsGeneratorTest {
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
+        
+        {
+            // From a factory with default @UseProxy on the provide method.  Service descriptor
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(FactoryWithDefaultProxy.class.getName());
+            envItself.addAdvertisedContract(FactoryWithDefaultProxy.class.getName());
+            envItself.addAdvertisedContract(Factory.class.getName());
+            envItself.setScope(Singleton.class.getName());
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a factory with default @UseProxy on the provide method.  Method descriptor
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(FactoryWithDefaultProxy.class.getName());
+            envItself.addAdvertisedContract(Object.class.getName());
+            envItself.setScope(Singleton.class.getName());
+            envItself.setProxiable(Boolean.TRUE);
+            envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a factory with false @UseProxy on the provide method.  Service descriptor
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(FactoryWithFalseProxy.class.getName());
+            envItself.addAdvertisedContract(FactoryWithFalseProxy.class.getName());
+            envItself.addAdvertisedContract(Factory.class.getName());
+            envItself.setScope(Singleton.class.getName());
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a factory with false @UseProxy on the provide method.  Method descriptor
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(FactoryWithFalseProxy.class.getName());
+            envItself.addAdvertisedContract(Object.class.getName());
+            envItself.setScope(Singleton.class.getName());
+            envItself.setProxiable(Boolean.FALSE);
+            envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
     }
     
     private File gendirDirectory;

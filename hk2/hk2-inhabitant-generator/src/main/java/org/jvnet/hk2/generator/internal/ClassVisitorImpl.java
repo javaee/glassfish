@@ -491,6 +491,9 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             else if (desc.equals(RANK_CLASS_FORM)) {
                 return new MethodRankAnnotationVisitor(asAFactoryDI);
             }
+            else if (desc.equals(USE_PROXY_CLASS_FORM)) {
+                return new MethodUseProxyAnnotationVisitor(asAFactoryDI);
+            }
             
             return null;
         }
@@ -747,6 +750,25 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         @Override
         public void visitEnd() {
             if (useProxy == null) useProxy = Boolean.TRUE;
+        }
+        
+    }
+    
+    private class MethodUseProxyAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        private final DescriptorImpl desc;
+        
+        private MethodUseProxyAnnotationVisitor(DescriptorImpl desc) {
+            this.desc = desc;
+        }
+        
+        @Override
+        public void visit(String name, Object value) {
+            desc.setProxiable((Boolean) value);
+        }
+        
+        @Override
+        public void visitEnd() {
+            if (desc.isProxiable() == null) desc.setProxiable(Boolean.TRUE);
         }
         
     }
