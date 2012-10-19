@@ -37,44 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.internal;
+package org.glassfish.hk2.tests.api;
 
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.FactoryDescriptors;
-import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.api.UseProxy;
 
 /**
  * @author jwells
  *
  */
-public class FactoryDescriptorsImpl implements FactoryDescriptors {
-    private final DescriptorImpl asService;
-    private final DescriptorImpl asFactory;
-    
-    /* package */ FactoryDescriptorsImpl(DescriptorImpl asService, DescriptorImpl asFactory) {
-        this.asService = asService;
-        this.asFactory = asFactory;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.FactoryDescriptors#getFactoryAsService()
-     */
-    @Override
-    public Descriptor getFactoryAsAService() {
-        return asService;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.FactoryDescriptors#getFactoryAsAFactory()
-     */
-    @Override
-    public Descriptor getFactoryAsAFactory() {
-        return asFactory;
-    }
-    
-    public String toString() {
-        return "FactoryDescriptorsImpl(\n" +
-          asService + ",\n" + asFactory + ",\n\t" + System.identityHashCode(this) + ")";
-    }
+@UseProxy(false)
+public class ServiceWithUseProxy {
 
 }

@@ -39,10 +39,14 @@
  */
 package org.glassfish.hk2.tests.locator.negative.proxiable;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.ActiveDescriptorBuilder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Assert;
@@ -94,5 +98,24 @@ public class NegativeProxyTest {
         
     }
     
-
+    @Test(expected=IllegalArgumentException.class)
+    public void testInvalidAutomaticActiveDescriptor() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        dc.addActiveDescriptor(InvalidlyAnnotatedServices.class);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testInvalidActiveDescriptor() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        AbstractActiveDescriptor<?> ad = BuilderHelper.activeLink(InvalidlyAnnotatedServices.class).
+                in(PerLookup.class).
+                proxy().
+                build();
+               
+        dc.addActiveDescriptor(ad);
+    }
 }

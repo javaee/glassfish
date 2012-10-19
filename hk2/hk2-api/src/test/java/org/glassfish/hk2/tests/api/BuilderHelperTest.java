@@ -54,6 +54,8 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
@@ -456,5 +458,40 @@ public class BuilderHelperTest {
         Assert.assertFalse(specificFilter.matches(aad2));
         Assert.assertFalse(specificFilter.matches(aad3));
         
+    }
+    
+    /**
+     * Tests I can create a factory that uses {@link UseProxy}
+     */
+    @Test
+    public void testUseProxyOnMethod() {
+        FactoryDescriptors dis = BuilderHelper.link(FactoryWithUseProxy.class.getName()).
+                to(Boolean.class).
+                proxy().
+                buildFactory();
+        
+        Descriptor serviceDI = dis.getFactoryAsAService();
+        
+        Assert.assertEquals(FactoryWithUseProxy.class.getName(), serviceDI.getImplementation());
+        Assert.assertTrue(serviceDI.getAdvertisedContracts().contains(Factory.class.getName()));
+        Assert.assertNull(serviceDI.isProxiable());
+        
+        Descriptor providerMethodDI = dis.getFactoryAsAFactory();
+        
+        Assert.assertEquals(FactoryWithUseProxy.class.getName(), providerMethodDI.getImplementation());
+        Assert.assertTrue(providerMethodDI.getAdvertisedContracts().contains(Boolean.class.getName()));
+        Assert.assertEquals(Boolean.TRUE, providerMethodDI.isProxiable());
+    }
+    
+    /**
+     * Tests createDescriptorFromClass honors {@link UseProxy}
+     */
+    @Test
+    public void testUseProxyOnClass() {
+        Descriptor di = BuilderHelper.createDescriptorFromClass(ServiceWithUseProxy.class);
+        
+        Assert.assertEquals(ServiceWithUseProxy.class.getName(), di.getImplementation());
+        Assert.assertTrue(di.getAdvertisedContracts().contains(ServiceWithUseProxy.class.getName()));
+        Assert.assertEquals(Boolean.FALSE, di.isProxiable());
     }
 }
