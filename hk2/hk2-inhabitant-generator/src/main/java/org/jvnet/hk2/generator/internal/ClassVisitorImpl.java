@@ -70,6 +70,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String RANK_CLASS_FORM = "Lorg/glassfish/hk2/api/Rank;";
     private final static String CONFIGURED_CLASS_FORM = "Lorg/jvnet/hk2/config/Configured;";
     private final static String DECORATE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Decorate;";
+    private final static String USE_PROXY_CLASS_FORM = "Lorg/glassfish/hk2/api/UseProxy;";
     private final static String NAME = "name";
     private final static String METADATA = "metadata";
     private final static String VALUE = "value";
@@ -104,6 +105,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private NamedAnnotationVisitor baseName;
     private String metadataString = null;
     private Integer rank = null;
+    private Boolean useProxy = null;
     private final Map<String, List<String>> metadata = new HashMap<String, List<String>>();
     
     private final LinkedList<DescriptorImpl> generatedDescriptors = new LinkedList<DescriptorImpl>();
@@ -174,6 +176,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
         if (DECORATE_CLASS_FORM.equals(desc)) {
             return new DecorateAnnotationVisitor();
+        }
+        
+        if (USE_PROXY_CLASS_FORM.equals(desc)) {
+            return new UseProxyAnnotationVisitor();
         }
         
         if (!desc.startsWith("L")) return null;
@@ -313,6 +319,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
         if (rank != null) {
             generatedDescriptor.setRanking(rank.intValue());
+        }
+        
+        if (useProxy != null) {
+            generatedDescriptor.setProxiable(useProxy);
         }
         
         if (!metadata.isEmpty()) {
@@ -724,6 +734,19 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         @Override
         public void visitEnd() {
             decorateData = new DecorateData(targetType, methodName, with);
+        }
+        
+    }
+    
+    private class UseProxyAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        @Override
+        public void visit(String name, Object value) {
+            useProxy = (Boolean) value;
+        }
+        
+        @Override
+        public void visitEnd() {
+            if (useProxy == null) useProxy = Boolean.TRUE;
         }
         
     }
