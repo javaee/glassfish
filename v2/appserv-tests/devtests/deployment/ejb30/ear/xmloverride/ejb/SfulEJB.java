@@ -40,6 +40,12 @@ public class SfulEJB implements Sful, SessionSynchronization
     @Resource(name="myDS8", mappedName="jdbc/noexist2")
     private DataSource myDS8;
 
+    @Resource(name="envEntry1", lookup="java:app/env/value1")
+    private Integer envEntry1;
+
+    @Resource(name="envEntry2", lookup="nonexist")
+    private Integer envEntry2;
+
     public String hello() {
         System.out.println("In SfulEJB:hello()");
         return sless.hello();
@@ -83,8 +89,19 @@ public class SfulEJB implements Sful, SessionSynchronization
             int loginTimeout8 = myDS8.getLoginTimeout();
             System.out.println("myDS8 login timeout = " + loginTimeout8);
 
+            System.out.println("enEntry1 = " + envEntry1);
+            System.out.println("envEntry2 = " + envEntry2);
+
+            if( (envEntry1 == null) || envEntry1.intValue() != 8 ) {
+                throw new RuntimeException("invalid enventry1 value");
+            }
+
+            if( (envEntry2 == null) || envEntry2.intValue() != 88 ) {
+                throw new RuntimeException("invalid enventry2 value");
+            }
+
         } catch(Exception ex) {
-            throw new IllegalStateException("Cannot get login timeout: " + ex);
+            throw new IllegalStateException("Cannot get expected value: " + ex);
         } 
         return "goodNight";
     }

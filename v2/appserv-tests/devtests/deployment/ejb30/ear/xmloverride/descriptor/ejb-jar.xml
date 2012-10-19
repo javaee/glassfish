@@ -8,6 +8,16 @@
       <ejb-class>com.sun.s1asdev.deployment.ejb30.ear.xmloverride.SfulEJB</ejb-class>
       <session-type>Stateful</session-type>
       <transaction-type>Container</transaction-type>
+      <env-entry>
+         <env-entry-name>envEntry1</env-entry-name>
+         <env-entry-type>java.lang.Integer</env-entry-type>
+         <env-entry-value>8</env-entry-value>
+       </env-entry>
+      <env-entry>
+         <env-entry-name>envEntry2</env-entry-name>
+         <env-entry-type>java.lang.Integer</env-entry-type>
+         <lookup-name>java:app/env/value1</lookup-name>
+       </env-entry>
       <resource-ref>
         <res-ref-name>jdbc/__default</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
