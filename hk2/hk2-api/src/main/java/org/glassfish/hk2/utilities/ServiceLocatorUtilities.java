@@ -380,4 +380,24 @@ public abstract class ServiceLocatorUtilities {
         
         return locator.getServiceHandle(found).getService();
     }
+    
+    /**
+     * This method returns a {@link DynamicConfiguration} for use with adding
+     * and removing services to the given {@link ServiceLocator}.
+     * 
+     * @param locator A non-null locator to get a DynamicConfiguration for
+     * @return A non-null DynamicConfiguration object that can be used to add
+     * or remove services to the passed in locator
+     * @throws IllegalStateException If there was an error retrieving the
+     * {@link DynamicConfigurationService} for this locator
+     */
+    public static DynamicConfiguration createDynamicConfiguration(ServiceLocator locator)
+        throws IllegalStateException {
+        if (locator == null) throw new IllegalArgumentException();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        if (dcs == null) throw new IllegalStateException();
+        
+        return dcs.createDynamicConfiguration();
+    }
 }

@@ -43,6 +43,8 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
@@ -288,6 +290,47 @@ public class ServiceLocatorUtilitiesTest {
             SimpleService6 s6 = ServiceLocatorUtilities.getService(locator, desc6);
             Assert.assertNull(s6);
         }
+    }
+    
+    /**
+     * Tests that a DynamicConfiguration is properly created (and useable)
+     */
+    @Test
+    public void testCreateDynamicConfiguration() {
+        DynamicConfiguration dc = ServiceLocatorUtilities.createDynamicConfiguration(locator);
+        Assert.assertNotNull(dc);
+        
+        Assert.assertNull(locator.getService(SimpleService7.class));
+        
+        ActiveDescriptor<?> added = dc.addActiveDescriptor(SimpleService7.class);
+        Assert.assertNotNull(added);
+        
+        dc.commit();
+        
+        Assert.assertNotNull(locator.getService(SimpleService7.class));
+    }
+    
+    /**
+     * Tests that a DynamicConfiguration will throw IllegalArgumentException for null locator
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testCreateDynamicConfigurationWithNullLocator() {
+        ServiceLocatorUtilities.createDynamicConfiguration(null);
+    }
+    
+    /**
+     * Tests that a locator without a DynamicConfigurationService will throw
+     * IllegalStateException from createDynamicConfiguration
+     */
+    @Test(expected=IllegalStateException.class)
+    public void testCreateDynamicConfigurationOnUnwriteableLocator() {
+        ServiceLocator unwriteableLocator = LocatorHelper.create(TEST_NAME + "_unwriteable", null);
+        
+        // This MAKES this locator unwriteable
+        ServiceLocatorUtilities.removeFilter(unwriteableLocator,
+                BuilderHelper.createContractFilter(DynamicConfigurationService.class.getName()));
+        
+        ServiceLocatorUtilities.createDynamicConfiguration(unwriteableLocator);
     }
     
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
