@@ -23,7 +23,7 @@
 <property name="customtasks.jar" value="${customtasks.dest}/customAntTasks.jar"/>
 <property name="junit.jar" value="${env.APS_HOME}/devtests/deployment/extlib/junit-4.3.1.jar" />
 <property name="annotation.report.dir" value="${testsRoot}/annotation/report"/> 
-<property name="testDomain" value="domain1"/>
+<property name="testDomain" value="depltest-domain"/>
 <property name="testServer" value="depltest-server"/>
 <property name="testCluster" value="depltest-cluster"/>
 <property name="testClusterServer1" value="depltest-cluster-server1"/>
@@ -1002,10 +1002,10 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <target name="restart.server">
     <echo message="Restarting server..."/>
     <exec executable="${ASADMIN}" failonerror="true">
-        <arg line="stop-domain ${testDomain}"/>
+        <arg line="stop-domain"/>
     </exec>
     <antcall target="start-process">
-      <param name="line" value="start-domain --user ${admin.user} --passwordfile ${passwordFile} ${testDomain}"/>
+      <param name="line" value="start-domain --user ${admin.user} --passwordfile ${passwordFile}"/>
     </antcall>
 </target>
 

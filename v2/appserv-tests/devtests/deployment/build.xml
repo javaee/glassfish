@@ -10,9 +10,6 @@
 
 
     <target name="private-all">
-        <ant target="unsetupDomain"/>
-        <ant target="setupDomain"/>
-
         <ant dir="war" target="private-all">
             <property name="build" value="${build}/war"/>
         </ant>
@@ -59,7 +56,6 @@
             <property name="build" value="${build}/webservices"/>
         </ant>
          -->
-        <antcall target="stop"/>
     </target>
 
     <target name="clobber" depends="clean">
