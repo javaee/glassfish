@@ -333,6 +333,57 @@ public class ServiceLocatorUtilitiesTest {
         ServiceLocatorUtilities.createDynamicConfiguration(unwriteableLocator);
     }
     
+    /**
+     * Since SimpleService8 is in Singleton context, we can tell if it is coming from
+     * the context if it is the same on two lookups
+     */
+    @Test
+    public void testFindOrCreateWithServiceInLocator() {
+        ServiceLocatorUtilities.addOneDescriptor(locator, BuilderHelper.link(SimpleService8.class).
+                in(Singleton.class.getName()).
+                build());
+        
+        SimpleService8 one = ServiceLocatorUtilities.findOrCreateService(locator, SimpleService8.class);
+        Assert.assertNotNull(one);
+        
+        SimpleService8 two = ServiceLocatorUtilities.findOrCreateService(locator, SimpleService8.class);
+        Assert.assertNotNull(two);
+        
+        Assert.assertEquals(one, two);
+                
+    }
+    
+    /**
+     * Even though SimpleService9 is marked with Singleton, it is NOT in the
+     * locator, and hence it will be recreated every time in the "create" phase
+     */
+    @Test
+    public void testFindOrCreateWithServiceNotInLocator() {
+        SimpleService9 one = ServiceLocatorUtilities.findOrCreateService(locator, SimpleService9.class);
+        Assert.assertNotNull(one);
+        
+        SimpleService9 two = ServiceLocatorUtilities.findOrCreateService(locator, SimpleService9.class);
+        Assert.assertNotNull(two);
+        
+        Assert.assertNotSame(one, two);           
+    }
+    
+    /**
+     * Bad locator test
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadLocatorToFindOrCreate() {
+        ServiceLocatorUtilities.findOrCreateService(null, SimpleService9.class);      
+    }
+    
+    /**
+     * Bad service test
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadServiceToFindOrCreate() {
+        ServiceLocatorUtilities.findOrCreateService(locator, null);      
+    }
+    
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
         /**
          * 

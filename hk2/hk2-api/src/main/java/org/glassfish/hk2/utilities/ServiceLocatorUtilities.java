@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.utilities;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import javax.inject.Singleton;
@@ -52,6 +53,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerThread;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
@@ -399,5 +401,31 @@ public abstract class ServiceLocatorUtilities {
         if (dcs == null) throw new IllegalStateException();
         
         return dcs.createDynamicConfiguration();
+    }
+    
+    /**
+     * This method will first attempt to find a service corresponding to the type and qualifiers
+     * passed in to the method, and if one is found simply returns it.  If no service is found
+     * in the locator this method will call {@link ServiceLocator#createAndInitialize(Class)} on
+     * the class (ignoring the qualifiers) in order to create an instance of the service.
+     * 
+     * @param locator The service locator to search for the service with
+     * @param type The non-null type of object to either find or create
+     * @param qualifiers The set of qualifiers that should be associated with the service
+     * @return An instance of type as either found in the locator or automatically created,
+     * injected and post-constructed.  Note that the return value CAN be null IF the service
+     * was found in the service locator and the context in which the service is in allows for
+     * null services.
+     * @throws MultiException On a failure from any of the underlying operations
+     */
+    public static <T> T findOrCreateService(ServiceLocator locator, Class<T> type, Annotation... qualifiers) throws MultiException {
+        if (locator == null || type == null) throw new IllegalArgumentException();
+        
+        ServiceHandle<T> retVal = locator.getServiceHandle(type, qualifiers);
+        if (retVal == null) {
+            return locator.createAndInitialize(type);
+        }
+        
+        return retVal.getService();
     }
 }
