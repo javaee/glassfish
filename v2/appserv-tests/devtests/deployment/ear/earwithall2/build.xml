@@ -20,6 +20,10 @@
         <property name="all.jar" value="${build}/${testName}.jar"/>
         <property name="all.ear" value="${build}/${testName}.ear"/>
         <property name="deployplan.jar" value="${build}/${testName}-deployplan.jar"/>
+        <property name="warName" value="${testName}_war"/>
+        <property name="ejbName" value="${testName}_ejb"/>
+        <property name="testWar" value="${build}/${warName}.war"/>
+        <property name="testEjb" value="${build}/${ejbName}.jar"/>
     </target>
 
     <target name="compile" depends="prepare">
@@ -36,20 +40,20 @@
         <!-- didn't deal with appclient yet -->
 
         <war destfile="${portable.war}" webxml="web.xml">
-            <classes dir="${build}" excludes="justclient/**,justbean/JustSessionBean.class"/>
+            <classes dir="${build}" excludes="justclient/**,justbean/JustSessionBean.class,**/*.*ar"/>
         </war>
         <war destfile="${all.war}" webxml="web.xml">
             <webinf file="glassfish-web.xml"/>
-            <classes dir="${build}" excludes="justclient/**,justbean/JustSessionBean.class,**.war"/>
+            <classes dir="${build}" excludes="justclient/**,justbean/JustSessionBean.class,**.*ar"/>
         </war>
 
         <jar destfile="${portable.jar}">
             <metainf file="ejb-jar.xml"/>
-            <fileset dir="${build}" excludes="justclient/**,justweb/**,**.war"/>
+            <fileset dir="${build}" excludes="justclient/**,justweb/**,**.*ar"/>
         </jar>
         <jar destfile="${all.jar}">
             <metainf dir="${basedir}" includes="ejb-jar.xml,glassfish-ejb-jar.xml"/>
-            <fileset dir="${build}" excludes="justclient/**,justweb/**,**.war,**.jar"/>
+            <fileset dir="${build}" excludes="justclient/**,justweb/**,**.*ar"/>
         </jar>
 
         <ear destfile="${portable.ear}" appxml="portable.application.xml">
@@ -59,6 +63,9 @@
             <metainf file="glassfish-application.xml"/>
             <fileset dir="${build}" includes="${testName}.jar,${testName}.war"/>
         </ear>
+
+        <copy file="${all.war}" tofile="${testWar}"/>
+        <copy file="${all.jar}" tofile="${testEjb}"/>
 
         <copy file="glassfish-web.xml" tofile="${portable.war}.glassfish-web.xml"/>
         <copy file="glassfish-ejb-jar.xml" tofile="${portable.jar}.glassfish-ejb-jar.xml"/>
@@ -88,6 +95,34 @@
         </antcall>
     </target>
     
+    <target name="deploy.asadmin.war" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--deploymentorder 102 ${testWar}"/>
+            <param name="testName" value="${warName}"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.asadmin.ejb" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--deploymentorder 101 ${testEjb}"/>
+            <param name="testName" value="${ejbName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin.war" depends="prepare">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${warName}"/>
+            <param name="testName" value="${warName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin.ejb" depends="prepare">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${ejbName}"/>
+            <param name="testName" value="${ejbName}"/>
+        </antcall>
+    </target>
+
     <target name="enable.asadmin"> 
         <antcall target="common.enable.asadmin">
             <param name="arg.list" 
@@ -381,6 +416,8 @@
         <delete file="${all.war}"/>
         <delete file="${all.jar}"/>
         <delete file="${all.ear}"/>
+        <delete file="${testWar}"/>
+        <delete file="${testEjb}"/>
         <delete file="${deployplan.war}"/>
         <delete dir="${build}"/>
     </target>
@@ -389,4 +426,34 @@
         <antcall target="all"/>
     </target>
 
+    <target name="depl-order" depends="assemble">
+        <echo message="depl-order"/>
+        <antcall target="deploy.asadmin.war"/>
+        <antcall target="deploy.asadmin.ejb"/>
+        <antcall target="restart.server"/>
+    <antcall target="declare-test">
+        <param name="description" value="test deployment order"/>
+    </antcall>
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"
+            classname="ear.earwithall2.TestDeplOrder"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+
+            <classpath>
+                <path location="${inst}/lib/j2ee.jar"/>
+                <path location="${build}"/>
+            </classpath>
+
+            <arg line="${env.S1AS_HOME}/domains/domain1/logs/server.log"/>
+
+        </javaWithResult>
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+        </antcall>
+        <antcall target="undeploy.asadmin.war"/>
+        <antcall target="undeploy.asadmin.ejb"/>
+    </target>
 </project>

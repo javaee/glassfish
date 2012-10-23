@@ -822,9 +822,16 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <touch file="client.log"/>
     <record name="client.log" action="start"/>
     <antcall target="preTestsRun"/>
+    <antcall target="restart.server"/>
     <antcall target="private-all">
         <param name="build" value="${testsRoot}/build"/>
     </antcall>
+    <ant dir="${testsRoot}/ear/earwithall2" target="depl-order">
+        <property name="build" value="${build}/ear/earwithall2"/>
+    </ant>
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="stop-domain"/>
+    </exec>
     <antcall target="postTestsRun"/>
     <record name="client.log" action="stop"/>
     <echo message="Grep the file client.log for exception/Exception and ensure that none is present"/>
