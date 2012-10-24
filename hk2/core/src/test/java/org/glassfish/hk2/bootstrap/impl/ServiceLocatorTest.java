@@ -29,8 +29,6 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
-import org.glassfish.hk2.inhabitants.InhabitantsScanner;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -67,64 +65,6 @@ public class ServiceLocatorTest {
 	@AfterClass
 	public static void deleteTestInhabitantsFile() throws Exception {
 		testFile.delete();
-	}
-
-	@Test
-	public void testInhabitantsScanner() throws Exception {
-
-		HK2Loader loader = new HK2Loader() {
-
-			@Override
-			public Class<?> loadClass(String className) throws MultiException {
-				try {
-					return getClass().getClassLoader().loadClass(className);
-				} catch (ClassNotFoundException cnfe) {
-					throw new MultiException(cnfe);
-				}
-			}
-
-		};
-
-		final URL resource = testFile.toURL();
-
-		assertNotNull(resource);
-
-		final String SERVICE_LOCATOR_NAME = getClass().getCanonicalName()
-				+ "_SERVICELOCATOR";
-		ServiceLocator sl = ServiceLocatorFactory.getInstance().create(
-				SERVICE_LOCATOR_NAME);
-
-		final InhabitantsScanner scanner;
-
-		scanner = new InhabitantsScanner(resource.openConnection()
-				.getInputStream(), SERVICE_LOCATOR_NAME);
-
-		final InhabitantsParser inhabitantsParser = new InhabitantsParser(sl);
-
-		inhabitantsParser.parse(scanner, loader);
-
-		List<ActiveDescriptor<?>> ds = sl.getDescriptors(BuilderHelper
-				.createNameAndContractFilter(
-						"com.sun.enterprise.admin.cli.CLICommand",
-						"restore-domain"));
-
-		assertNotNull(ds);
-		assertEquals("Expecting one restore-domain descriptor", 1, ds.size());
-		for (ActiveDescriptor<?> d : ds) {
-
-			assertEquals(
-					"com.sun.enterprise.admin.cli.optional.RestoreDomainCommand",
-					d.getImplementation());
-			assertEquals("restore-domain", d.getName());
-
-			Set<String> contracts = d.getAdvertisedContracts();
-			assertEquals(2, contracts.size());
-
-			assertTrue(contracts
-					.contains("com.sun.enterprise.admin.cli.CLICommand"));
-
-		}
-
 	}
 
 	@Test

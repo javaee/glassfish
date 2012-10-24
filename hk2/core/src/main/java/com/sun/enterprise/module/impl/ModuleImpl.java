@@ -78,7 +78,6 @@ import java.util.logging.Logger;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
 
 /**
  * A module represents a set of resources accessible to third party modules. 

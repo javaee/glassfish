@@ -45,9 +45,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 
-import org.glassfish.hk2.inhabitants.InhabitantParser;
-import org.glassfish.hk2.inhabitants.InhabitantsScanner;
-
 import com.sun.enterprise.module.InhabitantsDescriptor;
 
 /**
@@ -72,10 +69,6 @@ public class ByteArrayInhabitantsDescriptor implements InhabitantsDescriptor, Se
 
     public String getSystemId() {
         return systemId;
-    }
-
-    public Iterable<InhabitantParser> createScanner() throws IOException {
-        return new InhabitantsScanner(new ByteArrayInputStream(data), systemId);
     }
 
     public InputStream getInputStream() {

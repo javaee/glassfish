@@ -58,12 +58,4 @@ public interface InhabitantsDescriptor {
      */
     String getSystemId();
 
-    /**
-     * Creates an {@see InhabitantsScanner} instance capable of returning the
-     * metadata for all inhabitant.
-     *
-     * @return the scanner for inhabitant metadata
-     * @throws IOException if the scanner create fails initialization
-     */
-    Iterable<InhabitantParser> createScanner() throws IOException;
 }
