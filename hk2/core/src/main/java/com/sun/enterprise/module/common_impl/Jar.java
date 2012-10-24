@@ -39,23 +39,24 @@
  */
 package com.sun.enterprise.module.common_impl;
 
-import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.InhabitantsDescriptor;
-import com.sun.hk2.component.InhabitantsFile;
-
-import org.glassfish.hk2.classmodel.reflect.Parser;
-import org.glassfish.hk2.classmodel.reflect.ParsingContext;
-import org.glassfish.hk2.inhabitants.InhabitantIntrospectionScanner;
-import org.glassfish.hk2.inhabitants.InhabitantParser;
-
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.zip.ZipException;
-import java.net.URL;
+
+import org.glassfish.hk2.classmodel.reflect.Parser;
+import org.glassfish.hk2.classmodel.reflect.ParsingContext;
+
+import com.sun.enterprise.module.InhabitantsDescriptor;
+import com.sun.enterprise.module.ModuleMetadata;
+import com.sun.hk2.component.InhabitantsFile;
 
 /**
  * Abstraction of {@link JarFile} so that we can handle
@@ -127,19 +128,19 @@ public abstract class Jar {
                     }
 
 
-
-                    public Iterable<InhabitantParser> createScanner() throws IOException {
-                        ParsingContext context = (new ParsingContext.Builder()).build();
-                        Parser parser = new Parser(context);
-                        parser.parse(dir, null);
-                        try {
-                            parser.awaitTermination();
-                        } catch (InterruptedException e) {
-                            throw new IOException(e);
-                        }
-
-                        return new InhabitantIntrospectionScanner(context);
-                    }                    
+//
+//                    public Iterable<InhabitantParser> createScanner() throws IOException {
+//                        ParsingContext context = (new ParsingContext.Builder()).build();
+//                        Parser parser = new Parser(context);
+//                        parser.parse(dir, null);
+//                        try {
+//                            parser.awaitTermination();
+//                        } catch (InterruptedException e) {
+//                            throw new IOException(e);
+//                        }
+//
+//                        return new InhabitantIntrospectionScanner(context);
+//                    }                    
                 });
             }
             for( File svc : fixNull(new File(dir, InhabitantsFile.PATH).listFiles())) {

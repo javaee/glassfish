@@ -39,9 +39,6 @@
  */
 package com.sun.enterprise.module;
 
-import java.io.IOException;
-
-import org.glassfish.hk2.inhabitants.InhabitantParser;
 
 /**
  * Inhabitants Descriptor is an abstraction on how the inhabitants are
