@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.component.ComponentException;
 

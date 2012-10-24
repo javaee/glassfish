@@ -58,8 +58,6 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
-import org.glassfish.hk2.inhabitants.InhabitantsParser;
-import org.glassfish.hk2.inhabitants.InhabitantsParserFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.ComponentException;
@@ -91,7 +89,7 @@ import java.util.logging.*;
  * @author Jerome Dochez
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, InhabitantsParserFactory {
+public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
     /**
      * {@link ModulesRegistry} can form a tree structure by using this pointer.
      * It works in a way similar to the classloader tree. Modules defined in the parent
@@ -420,11 +418,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
             }
           
         }
-    }
-    
-    @Override
-    public InhabitantsParser createInhabitantsParser(ServiceLocator h) {
-      return new InhabitantsParser(h);
     }
     
     /**
