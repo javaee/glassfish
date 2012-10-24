@@ -46,7 +46,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyChangeEvent;
@@ -64,7 +63,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ConfigTest {
     private final static String TEST_NAME = "";
-    private final static Habitat habitat = new Habitat(); //ServiceLocatorFactory.getInstance().create("");
+    private final static ServiceLocator habitat = ServiceLocatorFactory.getInstance().create(TEST_NAME);
 
     @BeforeClass
     public static void before() {

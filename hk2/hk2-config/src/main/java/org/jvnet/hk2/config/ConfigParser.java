@@ -41,7 +41,6 @@ package org.jvnet.hk2.config;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.Dom.Child;
 
 import javax.validation.constraints.NotNull;

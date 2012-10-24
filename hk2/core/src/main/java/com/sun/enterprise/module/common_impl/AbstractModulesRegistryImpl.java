@@ -63,7 +63,6 @@ import org.glassfish.hk2.inhabitants.InhabitantsParserFactory;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.component.ComponentException;
-import org.jvnet.hk2.component.Habitat;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -166,10 +165,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry, In
 		}
 
         config.commit();
-
-        // Creating a new Habitat automatically registers itself with supplied ServiceLocator
-        // This is needed for compatibility reasons.
-        new Habitat(serviceLocator);
     }
 
     /**
