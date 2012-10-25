@@ -72,21 +72,8 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      * There are currently no concurrency controls around the Map portion of the data
      * structure.
      */
-    MultiMap(Map<K, List<V>> store) {
+    private MultiMap(Map<K, List<V>> store) {
         this(store, false);
-    }
-
-    /**
-     * Creates an empty multi-map with option to use concurrency controls
-     */
-    MultiMap(boolean concurrencyControls) {
-        this(new LinkedHashMap<K, List<V>>(), concurrencyControls);
-    }
-
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    MultiMap<K, V> readOnly() {
-        return new MultiMap(Collections.unmodifiableMap(store));
     }
     
     /**
@@ -94,7 +81,7 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      *
      * @param store map to copy
      */
-    protected MultiMap(Map<K, List<V>> store, boolean concurrencyControls) {
+    private MultiMap(Map<K, List<V>> store, boolean concurrencyControls) {
         this.store = store;
         this.concurrencyControls = concurrencyControls;
         
@@ -142,21 +129,6 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
         return true;
     }
     
-    boolean matches(MultiMap<K, V> other) {
-        if (size() > other.size()) {
-            return false;
-        }
-        
-        for (Entry<K, List<V>> entry : store.entrySet()) {
-            List<V> vColl = other.get(entry.getKey());
-            if (!entry.getValue().equals(vColl)) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-    
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
@@ -177,7 +149,7 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      * @param initialVal
      * @return
      */
-    protected List<V> newList(Collection<? extends V> initialVals) {
+    private List<V> newList(Collection<? extends V> initialVals) {
         if (concurrencyControls) {
             if (null == initialVals) {
                 return new CopyOnWriteArrayList<V>();
@@ -255,85 +227,6 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
         }
         return l;
     }
-
-    /**
-     * Returns the union of all elements indexed by the provided keys.
-     * This is a disjunctive operation.
-     *  
-     * @param keys the collection of keys
-     * @return the union collection of values
-     */
-    public List<V> getUnionOfAll(Collection<K> keys) {
-        LinkedHashSet<V> set = new LinkedHashSet<V>();
-        for (K k : keys) {
-            set.addAll(get(k));
-        }
-        return Collections.unmodifiableList(new ArrayList<V>(set));
-    }
-
-    /**
-     * Returns the intersection of all elements indexed by the provided keys.
-     * That means that all values must appear for each and every key specified.
-     * This is a conjunctive operation.
-     *  
-     * @param keys the collection of keys
-     * @return the intersecting collection of values
-     */
-    public List<V> getIntersectionOfAll(Collection<K> keys) {
-        if (1 == keys.size()) {
-            return get(keys.iterator().next());
-        }
-        
-        LinkedHashSet<V> set = new LinkedHashSet<V>();
-        for (K k : keys) {
-            List<V> vals = get(k);
-            
-            if (vals.isEmpty()) {
-                return Collections.emptyList();
-            }
-            
-            if (set.isEmpty()) {
-                // 1st iteration
-                set.addAll(vals);
-            } else {
-                // >1st iteration
-                if (1 == set.size()) {
-                  V item = set.iterator().next();
-                  if (vals.contains(item)) {
-                      set.clear();
-                      set.add(item);
-                  } else {
-                      return Collections.emptyList();
-                  }
-                } else if (1 == vals.size()) {
-                    V item = vals.iterator().next();
-                    if (set.contains(item)) {
-                        set.clear();
-                        set.add(item);
-                    } else {
-                        return Collections.emptyList();
-                    }
-                } else {
-                    Iterator<V> iter = set.iterator();
-                    while (iter.hasNext()) {
-                        V item = iter.next();
-                        if (!vals.contains(item)) {
-                            iter.remove();
-                        }
-                        if (set.isEmpty()) {
-                            return Collections.emptyList();
-                        }
-                    }
-                }
-            }
-        }
-
-        if (set.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return Collections.unmodifiableList(new ArrayList<V>(set));
-    }
     
     public void mergeAll(MultiMap<K, V> another) {
         if (null != another) {
@@ -359,7 +252,7 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      * @param k the key
      * @return
      */
-    final List<V> _get(K k) {
+    private final List<V> _get(K k) {
         List<V> l = store.get(k);
         if (l == null) {
             return Collections.emptyList();
@@ -425,7 +318,7 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
         return getFirst(k);
     }
 
-    public V getFirst(K k) {
+    private V getFirst(K k) {
         List<V> lst = store.get(k);
         if (null == lst) {
             return null;
