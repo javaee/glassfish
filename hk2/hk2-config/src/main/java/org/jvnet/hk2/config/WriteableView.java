@@ -59,6 +59,7 @@ import javax.validation.ValidatorFactory;
 import javax.validation.Validator;
 import javax.validation.ValidatorContext;
 import javax.validation.metadata.ConstraintDescriptor;
+import javax.validation.metadata.ElementDescriptor;
 
 /**
  * A WriteableView is a view of a ConfigBean object that allow access to the
@@ -771,6 +772,42 @@ private class ProtectedList extends AbstractList {
                         public Object getKey() {
                             return null;
                         }
+
+						@Override
+						public ElementDescriptor getElementDescriptor() {
+							return new ElementDescriptor(){
+
+								@Override
+								public boolean hasConstraints() {
+									return false;
+								}
+
+								@Override
+								public Class<?> getElementClass() {
+									return null;
+								}
+
+								@Override
+								public Set<ConstraintDescriptor<?>> getConstraintDescriptors() {
+									return null;
+								}
+
+								@Override
+								public ConstraintFinder findConstraints() {
+									return null;
+								}
+
+								@Override
+								public Kind getKind() {
+									return null;
+								}
+
+								@Override
+								public <T extends ElementDescriptor> T as(
+										Class<T> descriptorType) {
+									return null;
+								}};
+						}
                     });
                     return new javax.validation.Path() {
                         @Override
