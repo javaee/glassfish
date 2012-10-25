@@ -40,7 +40,6 @@
 package org.jvnet.hk2.config;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.config.Dom.Child;
 
 import javax.validation.constraints.NotNull;
@@ -124,14 +123,14 @@ public class ConfigParser {
             inputStream = source.openStream();
         }
         catch (IOException e) {
-            throw new ComponentException("Failed to open "+source,e);
+            throw new ConfigurationException("Failed to open "+source,e);
         }
         
         try {
             parse(xif.createXMLStreamReader(new StreamSource(inputStream)), document, parent);
             return document;
         } catch (XMLStreamException e) {
-            throw new ComponentException("Failed to parse "+source,e);
+            throw new ConfigurationException("Failed to parse "+source,e);
         }
         finally {
             try {

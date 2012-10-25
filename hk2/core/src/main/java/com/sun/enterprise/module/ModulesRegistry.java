@@ -46,9 +46,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.component.ComponentException;
 
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
@@ -64,7 +64,7 @@ public interface ModulesRegistry extends ModuleChangeListener {
      * Creates an uninitialized {@link ServiceLocator}
      *
      */
-    ServiceLocator newServiceLocator() throws ComponentException;
+    ServiceLocator newServiceLocator() throws MultiException;
 
     /**
      * Creates the default {@link ServiceLocator} from all the modules in this registry
@@ -75,7 +75,7 @@ public interface ModulesRegistry extends ModuleChangeListener {
      *      (so that different parallel habitats can be
      *      created over the same modules registry.)
      */
-    ServiceLocator createServiceLocator() throws ComponentException;
+    ServiceLocator createServiceLocator() throws MultiException;
 
     /**
      * Creates a {@link ServiceLocator} from all the modules in this registry
@@ -87,7 +87,7 @@ public interface ModulesRegistry extends ModuleChangeListener {
      *      (so that different parallel habitats can be
      *      created over the same modules registry.)
      */
-    ServiceLocator createServiceLocator(String name) throws ComponentException;
+    ServiceLocator createServiceLocator(String name) throws MultiException;
 
 
     /**
@@ -115,7 +115,7 @@ public interface ModulesRegistry extends ModuleChangeListener {
      *
      * @return initialized Habitat
      */
-    void populateServiceLocator(String name, ServiceLocator h) throws ComponentException;
+    void populateServiceLocator(String name, ServiceLocator h) throws MultiException;
 
     /**
      * Add a new <code>Repository</code> to this registry. From now on
@@ -346,8 +346,8 @@ public interface ModulesRegistry extends ModuleChangeListener {
     Module getProvidingModule(String providerClassName);
 
 	public ServiceLocator newServiceLocator(ServiceLocator parent)
-			throws ComponentException;
+			throws MultiException;
 
 	public void populateConfig(ServiceLocator serviceLocator)
-			throws ComponentException;
+			throws MultiException;
 }

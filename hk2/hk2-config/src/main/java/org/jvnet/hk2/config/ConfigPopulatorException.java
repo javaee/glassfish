@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.config;
 
-import org.jvnet.hk2.component.ComponentException;
-
 import javax.xml.stream.Location;
 
 /**
@@ -48,7 +46,7 @@ import javax.xml.stream.Location;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ConfigPopulatorException extends ComponentException {
+public class ConfigPopulatorException extends RuntimeException {
     private Location location;
 
     public ConfigPopulatorException(String message) {

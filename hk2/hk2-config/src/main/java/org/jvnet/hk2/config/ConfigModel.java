@@ -47,7 +47,6 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.HK2LoaderImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.tiger_types.Types;
 
@@ -805,7 +804,7 @@ public final class ConfigModel {
             Map<String, List<String>> description,
             ServiceLocator locator) {
         if(description==null)
-            throw new ComponentException("%s doesn't have any metadata",injector.getImplementationClass());
+            throw new ConfigurationException("%s doesn't have any metadata",injector.getImplementationClass());
 
         document.models.put(injector,this); // register now so that cyclic references are handled correctly.
         this.injector = injector;
@@ -850,9 +849,9 @@ public final class ConfigModel {
                 key = value;
         }
         if(targetTypeName==null)
-            throw new ComponentException("%s doesn't have the mandatory '%s' metadata", injector.getImplementationClass(), ConfigMetadata.TARGET);
+            throw new ConfigurationException("%s doesn't have the mandatory '%s' metadata", injector.getImplementationClass(), ConfigMetadata.TARGET);
         if(key==null ^ indexTypeName==null)
-            throw new ComponentException("%s has inconsistent '%s=%s' and '%s=%s' metadata",
+            throw new ConfigurationException("%s has inconsistent '%s=%s' and '%s=%s' metadata",
                 ConfigMetadata.KEY, key, ConfigMetadata.TARGET, indexTypeName);
         this.targetTypeName = targetTypeName;
         this.keyedAs = indexTypeName;

@@ -48,8 +48,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jvnet.hk2.component.ComponentException;
-
 import com.sun.hk2.component.Hk2ThreadContext;
 
 /**
@@ -126,8 +124,8 @@ public class WorkManager implements Executor {
     if (null != errors && !errors.isEmpty()) {
       ArrayList<Exception> errors = new ArrayList<Exception>(this.errors);
       this.errors.clear();
-      throw (1 == errors.size() && ComponentException.class.isInstance(errors.get(0)))
-          ? (ComponentException)errors.get(0) : new ExecutionException(errors);
+      throw (1 == errors.size() && ConfigurationException.class.isInstance(errors.get(0)))
+          ? (ConfigurationException)errors.get(0) : new ExecutionException(errors);
     }
   }
   
@@ -256,7 +254,7 @@ public class WorkManager implements Executor {
 
   
   @SuppressWarnings("serial")
-  public static final class ExecutionException extends ComponentException {
+  public static final class ExecutionException extends ConfigurationException {
     protected List<? extends Throwable> cause;
     
     public ExecutionException(Throwable t) {
