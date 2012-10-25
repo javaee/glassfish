@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,23 +37,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.component;
+package org.jvnet.hk2.config.provider.internal;
+
+import java.security.AccessControlContext;
+import java.security.AccessController;
 
 /**
+ * @author jwells
  *
- * A resource that can be injected into a component might optionally want to be notified of such
- * injection. This can be useful to track usage or to set up a notification mechanism
- * for change happening in the injected resource.
- *
- * @author Jerome Dochez
  */
-@Deprecated
-public interface Injectable {
+public class ConfigThreadContext {
+    private static final ThreadLocal<ConfigThreadContext> tlc = new ThreadLocal<ConfigThreadContext>();
 
+    private AccessControlContext acc;
+    
     /**
-     * notification of injection into a component
-     * @param target the component in which we are injected.
+     * Performs a runnable action while managing the callers AccessControlContext in thread local storage
      */
-    public void injectedInto(Object target);
-
+    public static void captureACCandRun(Runnable runnable) {
+      ConfigThreadContext ts = tlc.get();
+      if (null != ts && null != ts.acc) {
+        // caller's original context already set
+        runnable.run();
+        return;
+      }
+      
+      boolean created = (null == ts);
+      if (created) {
+        ts = new ConfigThreadContext();
+        tlc.set(ts);
+      }
+      
+      ts.acc = AccessController.getContext();
+      
+      try {
+        runnable.run();
+      } finally {
+        ts.acc = null;
+        if (created) {
+          tlc.set(null);
+        }
+      }
+    }
 }

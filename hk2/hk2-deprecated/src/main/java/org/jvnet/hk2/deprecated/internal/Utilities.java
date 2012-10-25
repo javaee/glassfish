@@ -60,43 +60,4 @@ public class Utilities {
         
         return a.equals(b);
     }
-    
-    public static void printThrowable(Throwable th) {
-        int lcv = 0;
-        while (th != null) {
-            System.err.println("[" + lcv++ + "]=" + th.getMessage());
-            th.printStackTrace();
-            
-            th = th.getCause();
-        }
-    }
-
-    public static void fillInMetadata(MultiMap<String, String> multi, DescriptorImpl d) {
-        if (multi == null) return;
-
-        for (String key : multi.keySet()) {
-            List<String> values = multi.get(key);
-
-            if (values == null) continue;
-
-            for (String value : values) {
-                d.addMetadata(key, value);
-            }
-        }
-    }
-
-    public static void fillInMetadata(Map<String, List<String>> multi, DescriptorImpl d) {
-        if (multi == null) return;
-
-        for (String key : multi.keySet()) {
-            List<String> values = multi.get(key);
-
-            if (values == null) continue;
-
-            for (String value : values) {
-                d.addMetadata(key, value);
-            }
-        }
-    }
-
 }

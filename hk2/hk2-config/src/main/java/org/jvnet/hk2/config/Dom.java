@@ -40,7 +40,6 @@
 package org.jvnet.hk2.config;
 
 import org.glassfish.hk2.api.*;
-import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
