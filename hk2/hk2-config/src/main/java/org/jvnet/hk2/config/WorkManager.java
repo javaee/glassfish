@@ -48,7 +48,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sun.hk2.component.Hk2ThreadContext;
+import org.jvnet.hk2.config.provider.internal.ConfigThreadContext;
 
 /**
  * Simple helper for managing work sent to a foreign executor service.
@@ -238,7 +238,7 @@ public class WorkManager implements Executor {
           runNow();
         }
       };
-      Hk2ThreadContext.captureACCandRun(runnable);
+      ConfigThreadContext.captureACCandRun(runnable);
     }
     
     private void runNow() {

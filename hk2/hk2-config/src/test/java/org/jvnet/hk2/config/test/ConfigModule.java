@@ -43,7 +43,6 @@ import javax.inject.Singleton;
 
 //import com.sun.enterprise.module.bootstrap.Populator;
 import org.glassfish.hk2.api.*;
-import org.glassfish.hk2.deprecated.utilities.Utilities;
 import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
