@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.config;
 
-import com.sun.hk2.component.InhabitantsFile;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
@@ -794,6 +792,8 @@ public final class ConfigModel {
             }
         }
     }
+    
+    private final static String INDEX_KEY = "index";
 
     /**
      * @param description
@@ -860,7 +860,7 @@ public final class ConfigModel {
         this.symbolSpaces = new HashSet<String>(getMetadataFromDescription(description, "symbolSpaces"));
 
         String tagName = null;
-        for (String v : getMetadataFromDescription(description, InhabitantsFile.INDEX_KEY)) {
+        for (String v : getMetadataFromDescription(description, INDEX_KEY)) {
             if(v.startsWith(ELEMENT_NAME_PREFIX))
                 tagName = v.substring(ELEMENT_NAME_PREFIX.length());
         }
