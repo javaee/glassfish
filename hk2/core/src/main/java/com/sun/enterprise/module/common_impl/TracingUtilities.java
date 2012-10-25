@@ -39,21 +39,13 @@
  */
 package com.sun.enterprise.module.common_impl;
 
-import com.sun.enterprise.module.Module;
-import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.hk2.component.AbstractInhabitantImpl;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.jvnet.hk2.tracing.InhabitantTracing;
-import org.jvnet.hk2.tracing.TracingThreadLocal;
-import org.jvnet.hk2.component.Inhabitant;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Iterator;
+
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.hk2.component.AbstractInhabitantImpl;
 
 /**
  * hk2 and modules usage tracing utilities.
@@ -62,12 +54,15 @@ import java.util.Iterator;
  */
 public class TracingUtilities {
 
+    private final static boolean enabled = Boolean.getBoolean("hk2.module.tracestate");
+    
+    
     public interface Loader {
         Class loadClass(String type) throws ClassNotFoundException;
     }
 
     public static boolean isEnabled() {
-        return org.jvnet.hk2.tracing.TracingUtilities.isEnabled();
+        return enabled;
     }
     
     public static File getLocation() {
@@ -100,8 +95,6 @@ public class TracingUtilities {
             w.append("Module ["+ bundleId + "] " + state + " " + bundleName+"\n");
             String prefix="-";
             StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-            InhabitantTracing tracing = TracingThreadLocal.get();
-            Iterator<ActiveDescriptor<?>> itr = tracing.inOrder();
 
             w.append("\n");
             w.append("-----------------------------------\n");
@@ -122,47 +115,11 @@ public class TracingUtilities {
                             break;
                         }
                     }
-                    if (itr.hasNext()) {
-                        ActiveDescriptor<?> reason = itr.next();
-                        StackTraceElement caller = stack[j];
-                        Module m = null;
-                        try {
-                            if (reason.isReified()) {
-                                m = registry.find(loader.loadClass(reason.getImplementation()));
-                            }
-                        } catch (ClassNotFoundException e) {
-                            m = null;
-                        }
-                        if (m!=null && !m.getModuleDefinition().getName().equals(currentBundleName)) {
-                            w.append("Looks like module " + currentBundleName + " was " + state + " because "+
-                                    m.getName() + " was " + state + "\nSince " + m.getName() + " contains ");
-                        } else {
-                            w.append("Requested by ");
-                        }
-                        if (m!=null)
-                            currentBundleName = m.getName();
 
-                        w.append(reason + " called from " + caller.getClassName()
-                                + "." + caller.getMethodName() + ":" + caller.getLineNumber()+" metadata \n" + reason.getMetadata()+"\n");
-                        w.append("\n");
-
-                    }
 
                 }
 
             }
-            w.append("\n");
-
-            w.append("-----------------------------------\n");
-            w.append("Inhabitants initialization stack\n");
-            w.append("-----------------------------------\n");
-            itr = tracing.inOrder();
-            while (itr.hasNext()) {
-                Descriptor i = itr.next();
-                w.append(prefix +"> requested from "+ i+"\n");
-                prefix=prefix+"-";
-            }
-
             w.append("\n");
 
             w.append("---------------------------\n");
