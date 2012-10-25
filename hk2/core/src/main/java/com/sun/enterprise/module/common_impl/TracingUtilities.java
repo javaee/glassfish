@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.sun.enterprise.module.ModulesRegistry;
-import com.sun.hk2.component.AbstractInhabitantImpl;
 
 /**
  * hk2 and modules usage tracing utilities.
@@ -104,9 +103,7 @@ public class TracingUtilities {
             String currentBundleName = bundleName;
             
             for (int i=0;i<stack.length;i++) {
-                StackTraceElement element = stack[i];
-                if (element.getClassName().equals(AbstractInhabitantImpl.class.getName()) &&
-                        element.getMethodName().equals("get"))  {
+                 {
                     // now let's find out the first non hk2 class asking for this...
                     int j=i+1;
                     for (;j<stack.length;j++) {
