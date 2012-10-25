@@ -39,8 +39,6 @@
  */
 package org.jvnet.hk2.config;
 
-import org.jvnet.hk2.component.ComponentException;
-
 import javax.xml.stream.Location;
 
 /**
@@ -48,7 +46,7 @@ import javax.xml.stream.Location;
  *
  * @author Kohsuke Kawaguchi
  */
-public class ConfigurationException extends ComponentException {
+public class ConfigurationException extends RuntimeException {
     private Location location;
 
     public ConfigurationException(String message) {
@@ -57,6 +55,10 @@ public class ConfigurationException extends ComponentException {
 
     public ConfigurationException(String message, Throwable origin) {
         super(message, origin);
+    }
+    
+    public ConfigurationException(String format, Object... args) {
+        super(String.format(format,args));
     }
 
     /**

@@ -35,8 +35,6 @@
  */
 package org.jvnet.hk2.config.provider;
 
-import org.jvnet.hk2.component.ComponentException;
-
 /**
  * A generic Transaction failure.
  *
@@ -45,7 +43,7 @@ import org.jvnet.hk2.component.ComponentException;
  * @author Jeff Trent
  */
 @SuppressWarnings("serial")
-public class ConfigTransactionException extends ComponentException {
+public class ConfigTransactionException extends RuntimeException {
 
   public ConfigTransactionException(String message) {
     super(message);

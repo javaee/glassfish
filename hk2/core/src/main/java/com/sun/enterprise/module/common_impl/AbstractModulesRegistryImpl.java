@@ -55,12 +55,12 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.component.ComponentException;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -126,7 +126,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      *
      */
     @Override
-    public ServiceLocator newServiceLocator() throws ComponentException {
+    public ServiceLocator newServiceLocator() throws MultiException {
     	return newServiceLocator(null);
     }
     
@@ -134,7 +134,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * Create a new ServiceLocator optionally providing a parent Services 
      */
     @Override
-	public ServiceLocator newServiceLocator(ServiceLocator parent) throws ComponentException {
+	public ServiceLocator newServiceLocator(ServiceLocator parent) throws MultiException {
         // We intentionally create an unnamed service locator, because the caller is going to
         // manage its lifecycle.
     	ServiceLocator serviceLocator =  ServiceLocatorFactory.getInstance().create(null, parent);
@@ -143,7 +143,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         return serviceLocator;
     }
 
-    protected void initializeServiceLocator(ServiceLocator serviceLocator) throws ComponentException {
+    protected void initializeServiceLocator(ServiceLocator serviceLocator) throws MultiException {
         DynamicConfigurationService dcs = serviceLocator
                 .getService(DynamicConfigurationService.class);
 
@@ -171,7 +171,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      * @param name
      *      Determines which descriptors are loaded.
      */
-     public void populateServiceLocator(String name, ServiceLocator serviceLocator) throws ComponentException {
+     public void populateServiceLocator(String name, ServiceLocator serviceLocator) throws MultiException {
          try {
              for (final Module module : getModules()) { 
             	   // TODO: should get the inhabitantsParser out of Main instead since
@@ -185,7 +185,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
              	moduleDescriptors.put(module,descriptorByServiceLocator);
              }
          } catch (Exception e) {
-             throw new ComponentException("Failed to create a habitat",e);
+             throw new MultiException(e);
          }
          // From now on, we will keep this service registry up-to-date with module system state
          habitats.put(serviceLocator, name);
@@ -196,21 +196,21 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
     	try {
         HK2Populator.populateConfig(serviceLocator);
     	} catch (BootException be) {
-    		throw new ComponentException(be);
+    		throw new MultiException(be);
     	}
     }
 
-    public ServiceLocator createServiceLocator(ServiceLocator parent, String name) throws ComponentException {
+    public ServiceLocator createServiceLocator(ServiceLocator parent, String name) throws MultiException {
         ServiceLocator serviceLocator = newServiceLocator(parent);
         populateServiceLocator(name, serviceLocator);
         return serviceLocator;
     }
 
-	public ServiceLocator createServiceLocator(String name) throws ComponentException {
+	public ServiceLocator createServiceLocator(String name) throws MultiException {
     	return createServiceLocator(null, name);
     }
 
-	public ServiceLocator createServiceLocator() throws ComponentException {
+	public ServiceLocator createServiceLocator() throws MultiException {
     	return createServiceLocator("default");
     }
 

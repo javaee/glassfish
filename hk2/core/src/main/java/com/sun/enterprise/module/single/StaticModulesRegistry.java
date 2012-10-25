@@ -48,11 +48,11 @@ import java.util.Properties;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.jvnet.hk2.component.ComponentException;
 
 /**
  * Implementation of the modules registry that use a single class loader to load
@@ -82,12 +82,12 @@ public class StaticModulesRegistry extends SingleModulesRegistry {
     }
 
     @Override
-    public void populateConfig(ServiceLocator serviceLocator) throws ComponentException {
+    public void populateConfig(ServiceLocator serviceLocator) {
         // do nothing...
     }
 
     @Override
-    public ServiceLocator createServiceLocator(String name) throws ComponentException {
+    public ServiceLocator createServiceLocator(String name) throws MultiException {
         ServiceLocator serviceLocator = super.createServiceLocator(name);
 
         StartupContext sc = startupContext;

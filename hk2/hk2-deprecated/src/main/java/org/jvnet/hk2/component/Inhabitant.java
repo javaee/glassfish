@@ -40,6 +40,7 @@
 package org.jvnet.hk2.component;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.MultiException;
 
 /**
  * Represents a component in the world of {@link ServiceLocator}.
@@ -80,7 +81,7 @@ public interface Inhabitant<T> extends ActiveDescriptor<T> {
      *      If the factory failed to get/create an instance
      *      and would like to propagate the error to the caller.
      */
-    T get() throws ComponentException;
+    T get() throws MultiException;
 
     /**
      * Returns true if the component has been instantiated.

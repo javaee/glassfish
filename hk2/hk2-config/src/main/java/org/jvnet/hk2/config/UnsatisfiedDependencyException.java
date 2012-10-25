@@ -46,8 +46,6 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.lang.annotation.Annotation;
 
-import org.jvnet.hk2.component.ComponentException;
-
 /**
  * Exception thrown by the injection manager when a dependency is not satisfied when
  * performing injection.
@@ -55,7 +53,7 @@ import org.jvnet.hk2.component.ComponentException;
  * @author Jerome Dochez
  */
 @SuppressWarnings("serial")
-public class UnsatisfiedDependencyException extends ComponentException {
+public class UnsatisfiedDependencyException extends ConfigurationException {
 
     final AnnotatedElement member;
 

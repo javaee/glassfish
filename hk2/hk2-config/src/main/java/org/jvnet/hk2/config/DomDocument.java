@@ -44,7 +44,6 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.component.ComponentException;
 import org.jvnet.hk2.component.MultiMap;
 
 import javax.xml.stream.XMLStreamReader;
@@ -134,7 +133,7 @@ public class DomDocument<T extends Dom> {
                     habitat.getBestDescriptor(new InjectionTargetFilter(fullyQualifiedClassName));
                 
                 if (desc == null) {
-                    throw new ComponentException("ConfigInjector for %s is not found, is it annotated with @Configured",fullyQualifiedClassName);
+                    throw new ConfigurationException("ConfigInjector for %s is not found, is it annotated with @Configured",fullyQualifiedClassName);
                 }
             
                 cache.put(fullyQualifiedClassName, desc);
