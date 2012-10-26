@@ -45,7 +45,6 @@ import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.config.DomDocument;
 
@@ -68,10 +67,9 @@ public class Utils {
     final static String habitatName = "default";
     final static String inhabitantPath = "META-INF/inhabitants";
 
-    Map<String, Habitat> habitats = new HashMap<String, Habitat>();
     public static final Utils instance = new Utils();
 
-    public static Habitat getNewHabitat() {
+    public static ServiceLocator getServiceLocator() {
 
         Properties p = new Properties();
         p.put(com.sun.enterprise.glassfish.bootstrap.Constants.INSTALL_ROOT_PROP_NAME, System.getProperty("java.io.tmpdir"));
@@ -79,7 +77,7 @@ public class Utils {
         ModulesRegistry registry = new StaticModulesRegistry(Utils.class.getClassLoader(), new StartupContext(p));
         ServiceLocator serviceLocator = registry.createServiceLocator("default");
 
-        return serviceLocator.getService(Habitat.class);
+        return serviceLocator;
     }
 }
 

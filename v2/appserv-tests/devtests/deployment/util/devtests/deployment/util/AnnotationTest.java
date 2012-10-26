@@ -20,6 +20,7 @@ import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
 import org.glassfish.web.deployment.descriptor.WebBundleDescriptorImpl;
 import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
 import org.glassfish.webservices.io.WebServicesDeploymentDescriptorFile;
+import org.glassfish.hk2.api.ServiceLocator;
 
 import junit.extensions.TestSetup;
 import junit.framework.Assert;
@@ -29,7 +30,6 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.tests.utils.Utils;
-import org.jvnet.hk2.component.Habitat;
 
 /**
  * This is a annotation testing code using JUnit.
@@ -55,8 +55,8 @@ public class AnnotationTest extends TestCase {
     protected Set<String> componentClassNames = new HashSet<String>();
 
     static {
-        final Habitat habitat = Utils.getNewHabitat();
-        Globals.setDefaultHabitat(habitat);
+        final ServiceLocator serviceLocator = Utils.getServiceLocator();
+        Globals.setDefaultHabitat(serviceLocator);
     }
     
     public AnnotationTest(String name) {

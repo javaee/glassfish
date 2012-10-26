@@ -62,7 +62,6 @@ import org.glassfish.web.deployment.util.WebBundleValidator;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
-import org.jvnet.hk2.component.Habitat;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
@@ -80,7 +79,7 @@ public class StandaloneProcessor {
     private AnnotatedElementHandler aeHandler = null;
     private ModuleType type = null;
     private Set<String> compClassNames = null;
-    private static Habitat habitat;
+    private static ServiceLocator serviceLocator = null;
     
     /** Creates a new instance of StandaloneProcessor */
     public StandaloneProcessor() {
@@ -130,8 +129,8 @@ public class StandaloneProcessor {
             File f = new File(arg);
             if (f.exists()) {
                 try {
-                    prepareHabitat();
-                    ArchiveFactory archiveFactory = habitat.getService(ArchiveFactory.class);
+                    prepareServiceLocator();
+                    ArchiveFactory archiveFactory = serviceLocator.getService(ArchiveFactory.class);
                     ReadableArchive archive = archiveFactory.openArchive(f);
                     ClassLoader classLoader = null;
                     if (ModuleType.WAR.equals(type)) {
@@ -145,7 +144,7 @@ public class StandaloneProcessor {
                     if (ModuleType.EJB.equals(type)) {
                         EjbBundleDescriptorImpl ejbBundleDesc =
                                 (EjbBundleDescriptorImpl)bundleDescriptor;
-                        scanner = habitat.getService(EjbJarScanner.class);
+                        scanner = serviceLocator.getService(EjbJarScanner.class);
                         scanner.process(archive, ejbBundleDesc, classLoader, null);
                         
                     } else if (ModuleType.WAR.equals(type)) {
@@ -158,7 +157,7 @@ public class StandaloneProcessor {
                             webCompDesc.setWebComponentImplementation(cname);
                             webBundleDesc.addWebComponentDescriptor(webCompDesc);
                         }
-                        scanner = habitat.getService(WarScanner.class);
+                        scanner = serviceLocator.getService(WarScanner.class);
                         scanner.process(archive, webBundleDesc, classLoader, null);
                         
                     } else if (ModuleType.CAR.equals(type)) {
@@ -166,12 +165,12 @@ public class StandaloneProcessor {
                         ApplicationClientDescriptor appClientDesc = 
                                 (ApplicationClientDescriptor)bundleDescriptor;
                         appClientDesc.setMainClassName(mainClassName);
-                        scanner = habitat.getService(AppClientScanner.class);
+                        scanner = serviceLocator.getService(AppClientScanner.class);
                         scanner.process(archive, appClientDesc, classLoader, null);
                         
                     }
 
-                    AnnotationProcessor ap = habitat.<SJSASFactory>getService(SJSASFactory.class).getAnnotationProcessor();
+                    AnnotationProcessor ap = serviceLocator.<SJSASFactory>getService(SJSASFactory.class).getAnnotationProcessor();
                     
                     
                     // if the user indicated a directory for handlers, time to add the                    
@@ -267,18 +266,16 @@ public class StandaloneProcessor {
             }       
     }
 
-    private void prepareHabitat() {
-        if ( (habitat == null) ) {
+    private void prepareServiceLocator() {
+        if ( (serviceLocator == null) ) {
             // Bootstrap a hk2 environment.
             ModulesRegistry registry = new StaticModulesRegistry(getClass().getClassLoader());
-            ServiceLocator serviceLocator = registry.createServiceLocator("default");
+            serviceLocator = registry.createServiceLocator("default");
             
-            habitat = serviceLocator.getService(Habitat.class);
-
             StartupContext startupContext = new StartupContext();
 
-            ServiceLocatorUtilities.addOneConstant(habitat, startupContext);
-            ServiceLocatorUtilities.addOneConstant(habitat,
+            ServiceLocatorUtilities.addOneConstant(serviceLocator, startupContext);
+            ServiceLocatorUtilities.addOneConstant(serviceLocator,
                 new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
         }
     }

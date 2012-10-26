@@ -7,7 +7,6 @@ import org.glassfish.deployment.common.Descriptor;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import com.sun.enterprise.deploy.shared.ArchiveFactory;
 import com.sun.enterprise.module.ModulesRegistry;
-import org.jvnet.hk2.component.Habitat;
 import com.sun.enterprise.module.single.StaticModulesRegistry;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 import org.glassfish.api.admin.ProcessEnvironment;
@@ -18,7 +17,7 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 public class Validator {
 
-    private static Habitat habitat;
+    private static ServiceLocator serviceLocator = null;
 
     public static void main(String args[]) {
 
@@ -43,10 +42,10 @@ public class Validator {
         String outputFileName = fileName + "1" + ext;
         String outputFileName2 = fileName + "2" + ext;
 
-        prepareHabitat();
+        prepareServiceLocator();
 
-        ArchivistFactory archivistFactory = habitat.getService(ArchivistFactory.class);
-        ArchiveFactory archiveFactory = habitat.getService(ArchiveFactory.class);
+        ArchivistFactory archivistFactory = serviceLocator.getService(ArchivistFactory.class);
+        ArchiveFactory archiveFactory = serviceLocator.getService(ArchiveFactory.class);
         Archivist archivist = null;
 
         ReadableArchive archive = null;
@@ -182,20 +181,18 @@ public class Validator {
         return ext;
     }
 
-    private static void prepareHabitat() {
-        if ( (habitat == null) ) {
+    private static void prepareServiceLocator() {
+        if ( (serviceLocator == null) ) {
             // Bootstrap a hk2 environment.
             ModulesRegistry registry = new StaticModulesRegistry(Thread.currentThread().getContextClassLoader());
-            ServiceLocator serviceLocator = registry.createServiceLocator("default");
-            habitat = serviceLocator.getService(Habitat.class);
-
+            serviceLocator = registry.createServiceLocator("default");
             StartupContext startupContext = new StartupContext();
 
-            ServiceLocatorUtilities.addOneConstant(habitat, startupContext);
-            ServiceLocatorUtilities.addOneConstant(habitat, 
+            ServiceLocatorUtilities.addOneConstant(serviceLocator, startupContext);
+            ServiceLocatorUtilities.addOneConstant(serviceLocator, 
                 new ProcessEnvironment(ProcessEnvironment.ProcessType.Other));
 
-            Globals.setDefaultHabitat(habitat);
+            Globals.setDefaultHabitat(serviceLocator);
         }
     }
 
