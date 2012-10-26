@@ -43,7 +43,7 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleMetadata;
 import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
-import com.sun.hk2.component.InhabitantsFile;
+import com.sun.enterprise.module.common_impl.InhabitantsFile;
 
 import java.net.*;
 import java.util.*;
