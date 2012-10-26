@@ -115,53 +115,6 @@ public abstract class Jar {
         }
 
         public void loadMetadata(ModuleMetadata result) {
-            File inhabitantFileLocation = new File(dir, InhabitantsFile.PATH);
-            if (!inhabitantFileLocation.exists()) {
-                // rely on introspection...
-                result.addHabitat("default", new InhabitantsDescriptor() {
-                    public String getSystemId() {
-                        return null;  //To change body of implemented methods use File | Settings | File Templates.
-                    }
-
-
-//
-//                    public Iterable<InhabitantParser> createScanner() throws IOException {
-//                        ParsingContext context = (new ParsingContext.Builder()).build();
-//                        Parser parser = new Parser(context);
-//                        parser.parse(dir, null);
-//                        try {
-//                            parser.awaitTermination();
-//                        } catch (InterruptedException e) {
-//                            throw new IOException(e);
-//                        }
-//
-//                        return new InhabitantIntrospectionScanner(context);
-//                    }                    
-                });
-            }
-            for( File svc : fixNull(new File(dir, InhabitantsFile.PATH).listFiles())) {
-                if(svc.isDirectory())
-                    continue;
-
-                try {
-                    result.addHabitat(svc.getName(),
-                        new ByteArrayInhabitantsDescriptor(svc.getPath(), readFully(svc))
-                    );
-                } catch(IOException e) {
-                    LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading habitats file from " + svc, e);
-                }
-            }
-
-            for( File svc : fixNull(new File(dir, SERVICE_LOCATION).listFiles()) ) {
-                if(svc.isDirectory())
-                    continue;
-
-                try {
-                    result.load( svc.toURL(), svc.getName() );
-                } catch(IOException e) {
-                    LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading service provider from " + svc, e);
-                }
-            }
         }
 
         public String getBaseName() {
@@ -201,37 +154,6 @@ public abstract class Jar {
         }
 
         public void loadMetadata(ModuleMetadata result) {
-
-            if (jar.getJarEntry(InhabitantsFile.PATH)==null
-                    && jar.getJarEntry(SERVICE_LOCATION)==null) {
-                return;
-            }
-            Enumeration<JarEntry> entries = jar.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
-                if (!entry.isDirectory() && entry.getName().startsWith(InhabitantsFile.PATH)) {
-                    String habitatName = entry.getName().substring(InhabitantsFile.PATH.length()+1);
-
-                    try {
-                        result.addHabitat(habitatName,new ByteArrayInhabitantsDescriptor(
-                            "jar:"+file.toURL()+"!/"+entry.getName(),
-                            loadFully(entry)
-                        ));
-                    } catch(IOException e) {
-                        LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading inhabitants list in " + jar.getName(), e);
-                    }
-                } else {
-                    if (!entry.isDirectory() && entry.getName().startsWith(SERVICE_LOCATION)) {
-                        String serviceName = entry.getName().substring(SERVICE_LOCATION.length()+1);
-
-                        try {
-                            result.load( new URL("jar:"+file.toURL()+"!/"+entry.getName()), serviceName, jar.getInputStream(entry));
-                        } catch(IOException e) {
-                            LogHelper.getDefaultLogger().log(Level.SEVERE, "Error reading service provider in " + jar.getName(), e);
-                        }
-                    }
-                }
-            }
         }
 
         public String getBaseName() {
@@ -241,17 +163,5 @@ public abstract class Jar {
                 name = name.substring(0,idx);
             return name;
         }
-
-        private byte[] loadFully(JarEntry e) throws IOException {
-            byte[] buf = new byte[(int)e.getSize()];
-            DataInputStream in = new DataInputStream(jar.getInputStream(e));
-            try {
-                in.readFully(buf);
-                return buf;
-            } finally {
-                in.close();
-            }
-        }
     }
-    final static private String SERVICE_LOCATION = "META-INF/services";
 }

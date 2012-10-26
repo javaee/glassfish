@@ -240,37 +240,19 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         }
 
         private void parseInhabitantsDescriptors(ModuleMetadata result) {
-            /**if (b.getEntry(InhabitantsFile.PATH) == null) return;
-            Enumeration<String> entries = b.getEntryPaths(InhabitantsFile.PATH);
-            if (entries != null) {
-                while (entries.hasMoreElements()) {
-                    String entry = entries.nextElement();
-                    String habitatName = entry.substring(InhabitantsFile.PATH.length() + 1);
-                    final URL url = b.getEntry(entry);
-                    try {
-                        result.addHabitat(habitatName,
-                                new ModuleMetadata.InhabitantsDescriptor(
-                                        url, loadFully(url)
-                                ));
-                    } catch (IOException e) {
-                        LogHelper.getDefaultLogger().log(Level.SEVERE,
-                                "Error reading inhabitants list in " + b.getLocation(), e);
-                    }
-                }
-            }
-            */
+
             final URL url = b.getEntry("META-INF/hk2-locator/default");
             
             if (url==null) return;
-            try {
-                result.addHabitat("default",
-                        new ByteArrayInhabitantsDescriptor(
-                                url, loadFully(url)
-                        ));
-            } catch (IOException e) {
-                LogHelper.getDefaultLogger().log(Level.SEVERE,
-                        "Error reading inhabitants list in " + b.getLocation(), e);
-            }
+//            try {
+//                result.addHabitat("default",
+//                        new ByteArrayInhabitantsDescriptor(
+//                                url, loadFully(url)
+//                        ));
+//            } catch (IOException e) {
+//                LogHelper.getDefaultLogger().log(Level.SEVERE,
+//                        "Error reading inhabitants list in " + b.getLocation(), e);
+//            }
             
         }
 
