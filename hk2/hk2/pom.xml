@@ -146,6 +146,11 @@
             <artifactId>hk2-runlevel</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>class-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>        
     </dependencies>
 
 </project>
