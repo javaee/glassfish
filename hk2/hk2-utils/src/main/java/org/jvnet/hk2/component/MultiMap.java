@@ -40,9 +40,13 @@
 package org.jvnet.hk2.component;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Map from a key to multiple values.
@@ -51,42 +55,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
  */
-@Deprecated
 public class MultiMap<K, V> implements Serializable, Cloneable {
-    private static final long serialVersionUID = 1L;
-
-    private final Map<K, List<V>> store;
-    private final boolean concurrencyControls;
-    private final boolean modifiable;
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = 893592003056170756L;
+    
+    private final Map<K, List<V>> store = new LinkedHashMap<K, List<V>>();
 
     /**
      * Creates an empty multi-map with default concurrency controls
      */
     public MultiMap() {
-        this(new LinkedHashMap<K, List<V>>(), false);
-    }
-
-    /**
-     * Creates an empty multi-map with option to use concurrency controls.
-     * Concurrency controls applies to the inner List collection held per each key.
-     * There are currently no concurrency controls around the Map portion of the data
-     * structure.
-     */
-    private MultiMap(Map<K, List<V>> store) {
-        this(store, false);
-    }
-    
-    /**
-     * Creates a multi-map backed by the given store.
-     *
-     * @param store map to copy
-     */
-    private MultiMap(Map<K, List<V>> store, boolean concurrencyControls) {
-        this.store = store;
-        this.concurrencyControls = concurrencyControls;
-        
-        // ugly, but no other way unfortunately
-        this.modifiable = !store.getClass().getName().contains("Collections$UnmodifiableMap");
     }
 
     /**
@@ -96,51 +76,12 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      */
     public MultiMap(MultiMap<K, V> base) {
         this();
-        for (Entry<K, List<V>> e : base.entrySet()) {
-            store.put(e.getKey(), newList(e.getValue()));
-        }
-    }
-    
-    @Override
-    public int hashCode() {
-        return store.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object another) {
-        if (!MultiMap.class.isInstance(another)) {
-            return false;
-        }
-        
-        @SuppressWarnings("rawtypes")
-        MultiMap other = MultiMap.class.cast(another);
-        if (size() != other.size()) {
-            return false;
-        }
-        
-        for (Entry<K, List<V>> entry : store.entrySet()) {
-            @SuppressWarnings("unchecked")
-            List<V> vColl = other.get(entry.getKey());
-            if (!entry.getValue().equals(vColl)) {
-                return false;
+        for (Map.Entry<K, List<V>> e : base.entrySet()) {
+            List<V> value = newList(e.getValue());
+            if (!value.isEmpty()) {
+                store.put(e.getKey(), newList(e.getValue()));
             }
         }
-        
-        return true;
-    }
-    
-    @Override
-    public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        final String newline = System.getProperty("line.separator");
-        builder.append("{");
-        for (final K key : store.keySet()) {
-            builder.append(key).append(": ");
-            builder.append(store.get(key));
-            builder.append(newline);
-        }
-        builder.append("}");
-        return builder.toString();
     }
 
     /**
@@ -150,21 +91,19 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      * @return
      */
     private List<V> newList(Collection<? extends V> initialVals) {
-        if (concurrencyControls) {
-            if (null == initialVals) {
-                return new CopyOnWriteArrayList<V>();
-            } else {
-                return new CopyOnWriteArrayList<V>(initialVals);
-            }
-        } else {
-            if (null == initialVals) {
-                return new ArrayList<V>(1);
-            } else {
-                return new ArrayList<V>(initialVals);
-            }
-        }
+        if (null == initialVals) {
+            return new LinkedList<V>();
+         }
+        
+         return new LinkedList<V>(initialVals);
     }
     
+    /**
+     * Returns the set of keys associated with this MultiMap
+     * 
+     * @return The set of keys currently available in this MultiMap.  Will not return null,
+     * but may return a Set of lenght zero
+     */
     public Set<K> keySet() {
         return store.keySet();
     }
@@ -176,10 +115,6 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      * @param v value to store in the k's values.
      */
     public final void add(K k, V v) {
-        if (!modifiable) {
-            throw new UnsupportedOperationException("unmodifiable collection");
-        }
-        
         List<V> l = store.get(k);
         if (l == null) {
             l = newList(null);
@@ -190,13 +125,20 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
 
     /**
      * Replaces all the existing values associated with the key
-     * by the given value.
+     * by the given value.  If v is empty the key k will
+     * be removed from the MultiMap.
      *
      * @param k key for the values
      * @param v Can be null or empty.
      */
     public void set(K k, Collection<? extends V> v) {
-        store.put(k, newList(v));
+        List<V> addMe = newList(v);
+        if (addMe.isEmpty()) {
+            store.remove(k);
+        }
+        else {
+            store.put(k, newList(v));
+        }
     }
 
     /**
@@ -225,21 +167,33 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
         if (l == null) {
             return Collections.emptyList();
         }
-        return l;
+        return Collections.unmodifiableList(l);
     }
     
+    /**
+     * This method merges all of the keys and values from another
+     * MultiMap into this MultiMap.  If a key/value pair is
+     * found in both MultiMaps it is not re-added to this
+     * MultiMap, but is instead discarded
+     * 
+     * @param another The MultiMap from which to add values
+     * to this MultiMap.  If null this method does nothing
+     */
     public void mergeAll(MultiMap<K, V> another) {
-        if (null != another) {
-            for (Entry<K, List<V>> entry : another.entrySet()) {
-                List<V> ourList = store.get(entry.getKey());
-                if (null == ourList) {
-                    ourList = newList(entry.getValue());
+        if (another == null) return;
+        
+        for (Map.Entry<K, List<V>> entry : another.entrySet()) {
+            List<V> ourList = store.get(entry.getKey());
+            if (null == ourList) {
+                ourList = newList(entry.getValue());
+                if (!ourList.isEmpty()) {
                     store.put(entry.getKey(), ourList);
-                } else {
-                    for (V v : entry.getValue()) {
-                        if (!ourList.contains(v)) {
-                            ourList.add(v);
-                        }
+                }
+            }
+            else {
+                for (V v : entry.getValue()) {
+                    if (!ourList.contains(v)) {
+                        ourList.add(v);
                     }
                 }
             }
@@ -294,7 +248,9 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
     }
 
     /**
-     * Removes an key value pair from the map
+     * Removes an key value pair from the map.  If the list of
+     * entries for that key is empty after the remove
+     * it will be removed from the set of keys
      *
      * @param key   key to be removed
      * @param entry the entry to be removed from the key'ed list
@@ -302,7 +258,15 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      */
     public boolean remove(K key, V entry) {
         List<V> list = store.get(key);
-        return (null == list) ? false : list.remove(entry);
+        if (list == null) return false;
+    
+        boolean retVal = list.remove(entry);
+        
+        if (list.isEmpty()) {
+            store.remove(key);
+        }
+        
+        return retVal;
     }
 
     /**
@@ -336,7 +300,7 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      *
      * @return a {@link java.util.Set} of {@link java.util.Map.Entry} of entries
      */
-    public Set<Entry<K, List<V>>> entrySet() {
+    public Set<Map.Entry<K, List<V>>> entrySet() {
         return store.entrySet();
     }
 
@@ -345,7 +309,7 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      */
     public String toCommaSeparatedString() {
         StringBuilder buf = new StringBuilder();
-        for (Entry<K, List<V>> e : entrySet()) {
+        for (Map.Entry<K, List<V>> e : entrySet()) {
             for (V v : e.getValue()) {
                 if (buf.length() > 0) {
                     buf.append(',');
@@ -366,26 +330,42 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
     }
 
     /**
-     * Returns the size of the map
+     * Returns the size of the map.  This returns the numbers
+     * of keys in the map, not the number of values
      *
      * @return integer or 0 if the map is empty
      */
     public int size() {
         return store.size();
     }
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private static final MultiMap EMPTY = new MultiMap(Collections.emptyMap());
-
-    /**
-     * Gets the singleton read-only empty multi-map.
-     *
-     * @return an empty map
-     * @see Collections#emptyMap()
-     */
-    @SuppressWarnings("unchecked")
-    public static <K, V> MultiMap<K, V> emptyMap() {
-        return EMPTY;
+    
+    @Override
+    public int hashCode() {
+        return store.hashCode();
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean equals(Object another) {
+        if (another == null ||
+                !(another instanceof MultiMap)) return false;
+        
+        MultiMap<K,V> other = (MultiMap<K,V>) another;
+        
+        return store.equals(other.store);
+    }
+    
+    @Override
+    public String toString() {
+        final StringBuilder builder = new StringBuilder();
+        final String newline = System.getProperty("line.separator");
+        builder.append("{");
+        for (final K key : store.keySet()) {
+            builder.append(key).append(": ");
+            builder.append(store.get(key));
+            builder.append(newline);
+        }
+        builder.append("}");
+        return builder.toString();
+    }
 }
