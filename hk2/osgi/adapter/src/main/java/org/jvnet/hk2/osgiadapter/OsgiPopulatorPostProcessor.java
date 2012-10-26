@@ -47,7 +47,6 @@ import java.util.logging.Level;
 
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
@@ -60,6 +59,8 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 public class OsgiPopulatorPostProcessor implements
 		PopulatorPostProcessor {
 	
+	private static final String BUNDLE_VERSION = "Bundle-Version";
+	public static final String BUNDLE_SYMBOLIC_NAME = "Bundle-SymbolicName";
 	private final OSGiModuleImpl osgiModule;
 
 	OsgiPopulatorPostProcessor(OSGiModuleImpl osgiModule) {
@@ -93,6 +94,9 @@ public class OsgiPopulatorPostProcessor implements
         	
         };
 		descriptorImpl.setLoader(hk2Loader);
+		
+		descriptorImpl.addMetadata(BUNDLE_SYMBOLIC_NAME,osgiModule.getBundle().getSymbolicName());
+		descriptorImpl.addMetadata(BUNDLE_VERSION, osgiModule.getBundle().getVersion().toString());
 		return descriptorImpl;
 	}	
 }

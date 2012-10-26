@@ -39,21 +39,24 @@
  */
 package com.sun.enterprise.module.single;
 
-import com.sun.enterprise.module.ModuleDefinition;
-import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.ModuleDependency;
-import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
-import com.sun.enterprise.module.common_impl.InhabitantsFile;
-
-import java.net.*;
-import java.util.*;
-import java.util.jar.Manifest;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModuleDependency;
+import com.sun.enterprise.module.ModuleMetadata;
 
 /**
  * Creates a ModuleDefinition backed up by a a single classloader.
@@ -66,28 +69,6 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 public class ProxyModuleDefinition implements ModuleDefinition {
-
-  // consider using SoftCache before bringing these back as members!
-//
-//  private static final List<URI> uris = new ArrayList<URI>();
-//
-//  static {
-//    // It is impossible to change java.class.path after the JVM starts --
-//    // so cache away a copy...
-//
-//    String cp = System.getProperty("java.class.path");
-//    if (ok(cp)) {
-//      String[] paths = cp.split(System.getProperty("path.separator"));
-//      if (ok(paths)) {
-//        for (int i = 0; i < paths.length; i++) {
-//          uris.add(new File(paths[i]).toURI());
-//        }
-//      }
-//    }
-//  }
-//
-// private final ModuleMetadata metadata = new ModuleMetadata();
-// private final Manifest manifest;
   
   private final ClassLoader classLoader;
   private final List<ManifestProxy.SeparatorMappings> mappings;
@@ -186,34 +167,7 @@ public class ProxyModuleDefinition implements ModuleDefinition {
   protected Manifest generate(ModuleMetadata metadata) {
     try {
       Manifest manifest = new ManifestProxy(classLoader, mappings);
-      
-      Collection<String> habitatNames = Collections.singleton("default");
-      for (String habitatName : habitatNames) {
-        Enumeration<URL> inhabitants = classLoader
-            .getResources(InhabitantsFile.PATH + '/' + habitatName);
-        Set<File> processedFiles = new HashSet<File>();
-        while (inhabitants.hasMoreElements()) {
-          URL url = inhabitants.nextElement();
-          if (url.getProtocol().equals("jar")) {
-            int index = url.getPath().indexOf("!");
-            if (index > 0 && url.getPath().length() > 5) {
-              String path = url.getPath()
-                  .substring(5, url.getPath().indexOf("!"));
-              File f = new File(URLDecoder.decode(path));
-              if (f.exists()) {
-                f = f.getCanonicalFile();
-                if (processedFiles.contains(f)) {
-                  continue;
-                }
-                processedFiles.add(f);
-              }
-            }
-          }
-          metadata.addHabitat(habitatName, new ByteArrayInhabitantsDescriptor(
-              url, readFully(url)));
-        }
-      }
-      
+            
       return manifest;
     } catch (IOException e) {
       throw new RuntimeException(e);
