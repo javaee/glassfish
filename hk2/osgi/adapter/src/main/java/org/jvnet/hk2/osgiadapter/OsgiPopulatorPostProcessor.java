@@ -59,7 +59,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 public class OsgiPopulatorPostProcessor implements
 		PopulatorPostProcessor {
 	
-	private static final String BUNDLE_VERSION = "Bundle-Version";
+	public static final String BUNDLE_VERSION = "Bundle-Version";
 	public static final String BUNDLE_SYMBOLIC_NAME = "Bundle-SymbolicName";
 	private final OSGiModuleImpl osgiModule;
 
