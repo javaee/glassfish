@@ -37,16 +37,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package com.sun.enterprise.module.common_impl;
 
-
-package org.glassfish.hk2.deprecated.utilities;
-
+import org.jvnet.hk2.annotations.InhabitantAnnotation;
 
 /**
-* Test interface.
-*
-* @author tbeerbower
-*/
-public interface MyInterface3 {
-    public void doSomethingCompletelyDifferent();
+ * @author jwells
+ *
+ */
+@Deprecated
+public class InhabitantsFile {
+    public static final String PATH = "META-INF/inhabitants";
+
+    public static final String CLASS_KEY = "class";
+    public static final String INDEX_KEY = "index";
+
+    public static final String QUALIFIER_KEY = "qualifier";
+
+    public static final String PARAMETERIZED_TYPE = "paramType";
+
+
+    /**
+     * Used as metadata for indentifying the type on which a {@link InhabitantAnnotation}
+     * was annotated.
+     */
+    public static final String TARGET_TYPE = "targetType";
+
+    public static final String METHOD_NAME = "method-name";
+
+    public static final String DECORATED_TYPE = "decorated";
+
 }

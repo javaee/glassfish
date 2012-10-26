@@ -51,12 +51,8 @@ import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.zip.ZipException;
 
-import org.glassfish.hk2.classmodel.reflect.Parser;
-import org.glassfish.hk2.classmodel.reflect.ParsingContext;
-
 import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.hk2.component.InhabitantsFile;
 
 /**
  * Abstraction of {@link JarFile} so that we can handle

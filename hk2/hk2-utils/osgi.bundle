@@ -41,4 +41,6 @@
 -exportcontents: \
                org.glassfish.hk2.utilities.reflection; \
                org.glassfish.hk2.utilities.cache; \
+               org.jvnet.hk2.component; \
+               org.jvnet.tiger_types; \
                version=${project.osgi.version}
