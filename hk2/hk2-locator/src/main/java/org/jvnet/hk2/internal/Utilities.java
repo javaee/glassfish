@@ -71,7 +71,11 @@ import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.inject.Singleton;
 
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.Enhancer;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.ErrorService;
@@ -85,6 +89,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.Self;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.Unproxiable;
 import org.glassfish.hk2.api.Unqualified;
@@ -1795,6 +1800,105 @@ public class Utilities {
     @SuppressWarnings("unchecked")
     public static <T> T cast(Object o) {
         return (T) o;
+    }
+    
+    private static <T> T secureCreate(final Class<?> superclass,
+            final Class<?>[] interfaces,
+            final Callback callback) {
+        
+        /* construct the classloader where the generated proxy will be created --
+         * this classloader must have visibility into the cglib classloader as well as
+         * the superclass' classloader
+         */
+        final ClassLoader delegatingLoader = (ClassLoader) AccessController
+                .doPrivileged(new PrivilegedAction<Object>() {
+
+                    @Override
+                    public Object run() {
+                        // create a delegating classloader that attempts to
+                        // load from the superclass' classloader first,
+                        // then hk2-locator's classloader second.
+                        return new DelegatingClassLoader<T>(
+                                Enhancer.class.getClassLoader(), superclass.getClassLoader());
+                    }
+                });
+
+        return AccessController.doPrivileged(new PrivilegedAction<T>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public T run() {
+                EnhancerWithClassLoader<T> e = new EnhancerWithClassLoader<T>(delegatingLoader);
+                
+                e.setSuperclass(superclass);
+                e.setInterfaces(interfaces);
+                e.setCallback(callback);
+                
+                return (T) e.create();
+            }
+            
+        });
+        
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T createService(ActiveDescriptor<T> root,
+            Injectee injectee,
+            ServiceLocatorImpl locator,
+            ServiceHandle<T> handle) {
+        if (root == null) throw new IllegalArgumentException();
+        
+        T service = null;
+        
+        if (!root.isReified()) {
+            root = (ActiveDescriptor<T>) locator.reifyDescriptor(root, injectee);
+        }
+    
+        if (Utilities.isProxiable(root)) {
+            final Class<?> proxyClass = Utilities.getFactoryAwareImplementationClass(root);
+          
+            T proxy;
+            try {
+                proxy = (T) secureCreate(proxyClass,
+                    Utilities.getInterfacesForProxy(root.getContractTypes()),
+                    new MethodInterceptorImpl(locator, root, handle));
+            }
+            catch (Throwable th) {
+                Exception addMe = new IllegalArgumentException("While attempting to create a Proxy for " + proxyClass.getName() +
+                        " in proxiable scope " + root.getScope() + " an error occured while creating the proxy");
+                
+                if (th instanceof MultiException) {
+                    MultiException me = (MultiException) th;
+                    
+                    me.addError(addMe);
+                    
+                    throw me;
+                }
+                
+                MultiException me = new MultiException(th);
+                me.addError(addMe);
+                throw me;
+            }
+            
+            return proxy;
+        }
+    
+        Context<?> context;
+        try {
+            context = locator.resolveContext(root.getScopeAnnotation());
+        }
+        catch (Throwable th) {
+            throw new MultiException(th);
+        }
+        
+        service = context.findOrCreate(root, handle);
+        if (service == null && !context.supportsNullCreation()) {
+            throw new MultiException(new IllegalStateException("Context " +
+                context + " findOrCreate returned a null for descriptor " + root +
+                " and handle " + handle));
+        }
+    
+        return service;
     }
 
     private static class MemberKey {

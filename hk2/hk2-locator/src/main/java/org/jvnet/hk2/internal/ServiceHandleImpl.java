@@ -39,18 +39,13 @@
  */
 package org.jvnet.hk2.internal;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.sf.cglib.proxy.Callback;
-import net.sf.cglib.proxy.Enhancer;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 
@@ -81,49 +76,10 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         this.locator = locator;
         this.injectee = injectee;
     }
-    
-    private Object secureCreate(final Class<?> superclass,
-            final Class<?>[] interfaces,
-            final Callback callback) {
-    	
-    	/* construct the classloader where the generated proxy will be created --
-    	 * this classloader must have visibility into the cglib classloader as well as
-    	 * the superclass' classloader
-    	 */
-		final ClassLoader delegatingLoader = (ClassLoader) AccessController
-				.doPrivileged(new PrivilegedAction<Object>() {
-
-					@Override
-					public Object run() {
-						// create a delegating classloader that attempts to
-						// load from the superclass' classloader first,
-						// then hk2-locator's classloader second.
-						return new DelegatingClassLoader<T>(
-								Enhancer.class.getClassLoader(), superclass.getClassLoader());
-					}
-				});
-
-        return AccessController.doPrivileged(new PrivilegedAction<Object>() {
-
-            @Override
-            public Object run() {
-            	EnhancerWithClassLoader<T> e = new EnhancerWithClassLoader<T>(delegatingLoader);
-            	
-                e.setSuperclass(superclass);
-                e.setInterfaces(interfaces);
-                e.setCallback(callback);
-                
-                return e.create();
-            }
-            
-        });
-        
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceHandle#getService()
      */
-    @SuppressWarnings("unchecked")
     @Override
     public T getService() {
         synchronized (lock) {
@@ -131,57 +87,8 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             
             if (serviceSet) return service;
             
-            if (!root.isReified()) {
-                root = (ActiveDescriptor<T>) locator.reifyDescriptor(root, injectee);
-            }
-        
-            if (Utilities.isProxiable(root)) {
-                final Class<?> proxyClass = Utilities.getFactoryAwareImplementationClass(root);
-              
-                T proxy;
-                try {
-                    proxy = (T) secureCreate(proxyClass,
-                        Utilities.getInterfacesForProxy(root.getContractTypes()),
-                        new MethodInterceptorImpl(locator, root, this));
-                }
-                catch (Throwable th) {
-                    Exception addMe = new IllegalArgumentException("While attempting to create a Proxy for " + proxyClass.getName() +
-                            " in proxiable scope " + root.getScope() + " an error occured while creating the proxy");
-                    
-                    if (th instanceof MultiException) {
-                        MultiException me = (MultiException) th;
-                        
-                        me.addError(addMe);
-                        
-                        throw me;
-                    }
-                    
-                    MultiException me = new MultiException(th);
-                    me.addError(addMe);
-                    throw me;
-                }
+            service = Utilities.createService(root, injectee, locator, this);
             
-                serviceSet = true;
-                service = proxy;
-                
-                return proxy;
-            }
-        
-            Context<?> context;
-            try {
-                context = locator.resolveContext(root.getScopeAnnotation());
-            }
-            catch (Throwable th) {
-                throw new MultiException(th);
-            }
-            
-            service = context.findOrCreate(root, this);
-            if (service == null && !context.supportsNullCreation()) {
-                throw new MultiException(new IllegalStateException("Context " +
-                    context + " findOrCreate returned a null for descriptor " + root +
-                    " and handle " + this));
-            }
-        
             serviceSet = true;
         
             return service;
@@ -217,7 +124,6 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceHandle#destroy()
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void destroy() {
         boolean localServiceSet;

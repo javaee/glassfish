@@ -394,10 +394,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
         
-        ServiceHandle<?> handle = internalGetServiceHandle(injectee, requiredType, name, injectee.getUnqualified(), qualifiers);
-        if (handle == null) return null;
-        
-        return handle.getActiveDescriptor();
+        ActiveDescriptor<?> retVal = internalGetDescriptor(injectee, requiredType, name, injectee.getUnqualified(), qualifiers);
+        return retVal;
     }
     
     /* (non-Javadoc)
@@ -431,10 +429,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> T getService(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) throws MultiException {
-        ServiceHandle<T> subHandle = getServiceHandle(activeDescriptor);
         checkState();
         
-        if (root != null && PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
+        if (root == null) {
+            return Utilities.createService(activeDescriptor, null, this, null);
+        }
+        
+        ServiceHandle<T> subHandle = getServiceHandle(activeDescriptor);
+        
+        if (PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
             ((ServiceHandleImpl<?>) root).addSubHandle((ServiceHandleImpl<T>) subHandle);
         }
         
@@ -448,19 +451,39 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public <T> T getService(Type contractOrImpl, Annotation... qualifiers) throws MultiException {
         checkState();
         
-        ServiceHandle<T> serviceHandle = getServiceHandle(contractOrImpl, qualifiers);
-        if (serviceHandle == null) return null;
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, null, qualifiers);
+        if (ad == null) return null;
         
-        return serviceHandle.getService();
+        T retVal = Utilities.createService(ad, null, this, null);
+        
+        return retVal;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String)
+     */
+    @Override
+    public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers)
+            throws MultiException {
+        checkState();
+        
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, qualifiers);
+        if (ad == null) return null;
+        
+        T retVal = Utilities.createService(ad, null, this, null);
+        
+        return retVal;
     }
     
     /* package */ <T> T getUnqualifiedService(Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers) throws MultiException {
         checkState();
         
-        ServiceHandle<T> serviceHandle = getUnqualifiedServiceHandle(contractOrImpl, unqualified, qualifiers);
-        if (serviceHandle == null) return null;
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, unqualified, qualifiers);
+        if (ad == null) return null;
         
-        return serviceHandle.getService();
+        T retVal = Utilities.createService(ad, null, this, null);
+        
+        return retVal;
     }
     
     private <T> List<T> protectedGetAllServices(final Type contractOrImpl,
@@ -483,12 +506,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
             throws MultiException {
         checkState();
         
-        List<ServiceHandle<?>> services = getAllServiceHandles(contractOrImpl, qualifiers);
-        
-        List<T> retVal = new LinkedList<T>();
-        for (ServiceHandle<?> service : services) {
-            retVal.add((T) service.getService());
-        }
+        List<T> retVal = (List<T>) internalGetAllServiceHandles(
+                contractOrImpl,
+                null,
+                false,
+                qualifiers
+                );
         
         return retVal;
     }
@@ -510,19 +533,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         return retVal;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String)
-     */
-    @Override
-    public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers)
-            throws MultiException {
-        checkState();
-        
-        ServiceHandle<T> handle = getServiceHandle(contractOrImpl, name, qualifiers);
-        if (handle == null) return null;
-        return handle.getService();
     }
 
     /* (non-Javadoc)
@@ -661,7 +671,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> ServiceHandle<T> internalGetServiceHandle(Injectee onBehalfOf, Type contractOrImpl,
+    private <T> ActiveDescriptor<T> internalGetDescriptor(Injectee onBehalfOf, Type contractOrImpl,
             String name,
             Unqualified unqualified,
             Annotation... qualifiers) throws MultiException {
@@ -729,9 +739,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Utilities.handleErrors(results, currentErrorHandlers);
         }
         
-        if (postValidateResult == null) return null;
-        
-        return getServiceHandle(postValidateResult, onBehalfOf);
+        return postValidateResult;
     }
     
     /* (non-Javadoc)
@@ -742,13 +750,19 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Annotation... qualifiers) throws MultiException {
         checkState();
         
-        return internalGetServiceHandle(null, contractOrImpl, null, null, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, null, qualifiers);
+        if (ad == null) return null;
+        
+        return getServiceHandle(ad, null);
     }
     
     /* package */ <T> ServiceHandle<T> getUnqualifiedServiceHandle(Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers) throws MultiException {
         checkState();
         
-        return internalGetServiceHandle(null, contractOrImpl, null, unqualified, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, unqualified, qualifiers);
+        if (ad == null) return null;
+        
+        return getServiceHandle(ad, null);
     }
     
     private List<ServiceHandle<?>> protectedGetAllServiceHandles(
@@ -766,21 +780,28 @@ public class ServiceLocatorImpl implements ServiceLocator {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getAllServiceHandles(java.lang.reflect.Type, java.lang.annotation.Annotation[])
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<ServiceHandle<?>> getAllServiceHandles(
             Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
-        return internalGetAllServiceHandles(contractOrImpl, null, qualifiers);
+        return (List<ServiceHandle<?>>)
+                internalGetAllServiceHandles(contractOrImpl, null, true, qualifiers);
     }
     
-    /* package */ List<ServiceHandle<?>> getAllUnqualifiedServiceHandles(
+    /* package */ @SuppressWarnings("unchecked")
+    List<ServiceHandle<?>> getAllUnqualifiedServiceHandles(
             Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers)
             throws MultiException {
-        return internalGetAllServiceHandles(contractOrImpl, unqualified, qualifiers);
+        return (List<ServiceHandle<?>>)
+                internalGetAllServiceHandles(contractOrImpl, unqualified, true, qualifiers);
     }
     
-    private List<ServiceHandle<?>> internalGetAllServiceHandles(
-            Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers)
+    private List<?> internalGetAllServiceHandles(
+            Type contractOrImpl,
+            Unqualified unqualified,
+            boolean getHandles,
+            Annotation... qualifiers)
             throws MultiException {
         if (contractOrImpl == null) throw new IllegalArgumentException();
         checkState();
@@ -838,11 +859,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Utilities.handleErrors(results, currentErrorHandlers);
         }
         
-        LinkedList<ServiceHandle<?>> retVal = new LinkedList<ServiceHandle<?>>();
+        LinkedList<Object> retVal = new LinkedList<Object>();
         for (ActiveDescriptor<?> candidate : results.getResults()) {
             if (!validate((SystemDescriptor<?>) candidate, null, filter)) continue;
             
-            retVal.add(getServiceHandle(candidate));
+            if (getHandles) {
+                retVal.add(getServiceHandle(candidate));
+            }
+            else {
+                Object service = Utilities.createService(candidate, null, this, null);
+                
+                retVal.add(service);
+            }
         }
         
         return retVal;
@@ -856,7 +884,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             String name, Annotation... qualifiers) throws MultiException {
         checkState();
         
-        return internalGetServiceHandle(null, contractOrImpl, name, null, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, qualifiers);
+        if (ad == null) return null;
+        
+        return getServiceHandle(ad, null);
     }
 
     /* (non-Javadoc)
