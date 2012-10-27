@@ -731,7 +731,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         if (postValidateResult == null) return null;
         
-        return getServiceHandle(postValidateResult);
+        return getServiceHandle(postValidateResult, onBehalfOf);
     }
     
     /* (non-Javadoc)
