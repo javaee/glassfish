@@ -126,8 +126,8 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets the all the services from this locator that implements
-     * this contract or has this implementation
+     * Gets the all the services from this locator that matches the
+     * {@link Filter}
      * <p>
      * Use this method only if destroying the service is not important
      * <p>
@@ -144,14 +144,8 @@ public interface ServiceLocator {
     public List<?> getAllServices(Filter searchCriteria) throws MultiException;
     
     /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * Gets a {@link ServiceHandle} that can be used to get and destroy the
+     * service that best matches the given criteria
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -163,8 +157,8 @@ public interface ServiceLocator {
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service
+     * Gets a {@link ServiceHandle} that can be used to get and destroy the
+     * service that best matches the given criteria
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -181,9 +175,8 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets service handles that can be used to get and destroy the returned
-     * services
-     * <p>
+     * Gets a list of {@link ServiceHandle} that can be used to get and destroy services
+     * associated with descriptors that match the provided criteria
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -198,9 +191,8 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets service handles that can be used to get and destroy the returned
-     * services
-     * <p>
+     * Gets a list of {@link ServiceHandle} that can be used to get and destroy services
+     * associated with descriptors that match the provided criteria
      * 
      * @param qualifier May not be null, and is a qualifier that must
      * match the service definition
@@ -215,18 +207,13 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * Gets a list of {@link ServiceHandle} whose {@link ActiveDescriptor}s match
+     * the supplied filter.  The returned {@link ServiceHandle}s may be used to
+     * get or destroy the services associated with the matching descriptors
      * 
-     * @param searchCriteria A filter to use when determining which services should apply 
-     * @return A list of handles in ranked order that match the given filter
-     * @throws MultiException if there was an error during service creation
+     * @param searchCriteria A filter to use when determining which descriptors should apply 
+     * @return A list of service handles in ranked order that match the given filter
+     * @throws MultiException if there was an error during service handle creation
      */
     public List<ServiceHandle<?>> getAllServiceHandles(Filter searchCriteria) throws MultiException;
     
@@ -250,7 +237,8 @@ public interface ServiceLocator {
     
     /**
      * Converts a descriptor to an ActiveDescriptor.  Will use the registered
-     * HK2Loaders to perform this action
+     * HK2Loaders to perform this action.  If no HK2Loader is available for
+     * the descriptor, will use the injectee to discover a classloader
      * 
      * @param descriptor The descriptor to convert, may not be null
      * @param injectee The injectee on behalf of whom this descriptor is being injected.  May
@@ -283,45 +271,36 @@ public interface ServiceLocator {
     public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee) throws MultiException;
     
     /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * Gets a {@link ServiceHandle} that can be used to get and destroy the service
+     * described by the {@link ActiveDescriptor}.  The injectee may be used to discover
+     * the proper classloader to use when attempting to reify the {@link ActiveDescriptor}
      * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service
-     * @param injectee The injectee on behalf of whom this descriptor is being injected.  May
+     * @param activeDescriptor The descriptor for which to create a {@link ServiceHandle}.
+     * May not be null
+     * @param injectee The injectee on behalf of whom this service is being injected.  May
      * be null if the injectee is unknown
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
+     * @return A {@link ServiceHandle} that may be used to create or destroy the service
+     * associated with this {@link ActiveDescriptor}
+     * @throws MultiException if there was an error during service handle creation
      */
     public <T> ServiceHandle<T> getServiceHandle(ActiveDescriptor<T> activeDescriptor, Injectee injectee) throws MultiException;
     
     /**
-     * Gets a service handle that can be used to get and destroy the returned
-     * service.  If a service, and all per lookup services must be destroyed then
-     * this method should be used to destroy the object
-     * <p>
-     * It is assumed that this method is called by the top level code.  All injection
-     * points created because of this invocation must use the
-     * getServiceHandle(ActiveDescriptor<T>, ServiceHandle<T>)
-     * method to retrieve objects, so that they can be destroyed in the proper sequence
+     * Gets a {@link ServiceHandle} that can be used to get and destroy the service
+     * described by the {@link ActiveDescriptor}.
      * 
-     * @param activeDescriptor The service handle that can be used to get and destroy
-     * this service
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
+     * @param activeDescriptor The descriptor for which to create a {@link ServiceHandle}.
+     * May not be null
+     * @return A {@link ServiceHandle} that may be used to create or destroy the service
+     * associated with this {@link ActiveDescriptor}
+     * @throws MultiException if there was an error during service handle creation
      */
     public <T> ServiceHandle<T> getServiceHandle(ActiveDescriptor<T> activeDescriptor) throws MultiException;
     
     /**
-     * This method should be called by code getting injectee's on behalf of some
-     * root object.  In this way the objects associated with the root object can
-     * be destroyed in the proper sequence
+     * This method should be called by code resolving injectee's on behalf of some
+     * root service, usually by an implementation of {@link InjectionResolver#resolve(Injectee, ServiceHandle)}.  In
+     * this way the objects associated with the root object can be destroyed in the proper sequence
      * 
      * @param activeDescriptor The descriptor whose service to create
      * @param root The ultimate parent of this service creation.  May be null
