@@ -39,44 +39,24 @@
  */
 package org.glassfish.hk2.tests.locator.destroy;
 
-import javax.inject.Singleton;
+import javax.annotation.PreDestroy;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class DestroyModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.Module#configure(org.glassfish.hk2.BinderFactory)
-     */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.bind(BuilderHelper.link(Foo.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Bar.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Baz.class).in(PerLookup.class.getName()).build());
-        configurator.bind(BuilderHelper.link(Qux.class).in(PerLookup.class.getName()).build());
-        
-        configurator.bind(BuilderHelper.link(Registrar.class).in(Singleton.class.getName()).build());
-        
-        // This is for the factory destruction test
-        configurator.bind(BuilderHelper.link(SprocketFactory.class, true).
-                to(Sprocket.class).
-                in(PerLookup.class.getName()).buildFactory(Singleton.class.getName()));
-        configurator.addActiveDescriptor(Widget.class);
-        
-        // This is for the multiple service handle destroy test
-        configurator.bind(BuilderHelper.link(SingletonWithPerLookupInjection.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        configurator.bind(BuilderHelper.link(PerLookupWithDestroy.class.getName()).
-                in(PerLookup.class.getName()).
-                build());
+@PerLookup
+public class PerLookupWithDestroy {
+    private boolean destroyed = false;
+    
+    @SuppressWarnings("unused")
+    @PreDestroy
+    private void preDestroy() {
+        destroyed = true;
     }
+    
+    public boolean isDestroyed() { return destroyed; }
 
 }

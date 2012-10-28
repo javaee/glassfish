@@ -46,6 +46,7 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
@@ -148,6 +149,25 @@ public class DestroyTest {
         Assert.assertNotNull(widget2);
         
         Assert.assertNotSame(sprocketFactory1, widget2.getSprocketFactory());
+    }
+    
+    @Test @Ignore
+    public void testNotOriginalServiceHandleDestruction() {
+        SingletonWithPerLookupInjection swpli = locator.getService(SingletonWithPerLookupInjection.class);
+        Assert.assertFalse(swpli.isDestroyed());
+        
+        PerLookupWithDestroy plwd = swpli.getPerLookup();
+        Assert.assertFalse(plwd.isDestroyed());
+        
+        ServiceHandle<SingletonWithPerLookupInjection> handle =
+                locator.getServiceHandle(SingletonWithPerLookupInjection.class);
+        
+        handle.destroy();
+        
+        Assert.assertTrue(swpli.isDestroyed());
+        Assert.assertFalse(swpli.wasPerLookupDestroyed());
+        
+        Assert.assertTrue(plwd.isDestroyed());
     }
 
 }
