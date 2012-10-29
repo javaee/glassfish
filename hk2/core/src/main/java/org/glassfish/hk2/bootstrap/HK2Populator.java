@@ -80,14 +80,10 @@ public class HK2Populator {
      */
 	public static List<ActiveDescriptor> populate(final ServiceLocator serviceLocator,
 			DescriptorFileFinder fileFinder,
-			final Binder postProcessorBinder) throws IOException {
+			List <? extends PopulatorPostProcessor> postProcessors) throws IOException {
 
 		List<ActiveDescriptor> descriptors = new ArrayList<ActiveDescriptor> ();
-		
-		if (postProcessorBinder != null) {
-			ServiceLocatorUtilities.bind(serviceLocator, postProcessorBinder);
-		}
-		
+
 		if (fileFinder == null) {
 			fileFinder = serviceLocator.getService(DescriptorFileFinder.class);
 		}
@@ -99,8 +95,7 @@ public class HK2Populator {
 
 		DynamicConfiguration config = dcs.createDynamicConfiguration();
 
-		List<PopulatorPostProcessor> postProcessors = serviceLocator.getAllServices(PopulatorPostProcessor.class);
-		
+
 		for (InputStream is : descriptorFileInputStreams) {
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -127,7 +122,9 @@ public class HK2Populator {
 							if (descriptorImpl != null) {
 								descriptors.add(config.bind(descriptorImpl));
 							}
-						}
+						}  else {
+                            descriptors.add(config.bind(descriptorImpl));  // if postProcessors was null, take the descriptor as-is
+                        }
 
 					}
 				} while (readOne);
@@ -137,8 +134,6 @@ public class HK2Populator {
 			}
 		}
 
-		config.addUnbindFilter(BuilderHelper.createContractFilter(PopulatorPostProcessor.class.getName()));
-				
 		config.commit();
 
 		return descriptors;
