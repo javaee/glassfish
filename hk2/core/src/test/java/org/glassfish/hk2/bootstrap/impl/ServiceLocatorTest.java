@@ -11,10 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.common_impl.AbstractFactory;
@@ -179,13 +176,7 @@ public class ServiceLocatorTest {
 				return returnList;
 			}
 
-		}, new Binder() {
-
-			@Override
-			public void bind(DynamicConfiguration config) {
-				config.bind(BuilderHelper.createConstantDescriptor(pp));
-			}
-		});
+		}, Arrays.asList(pp));
 
 		List<ActiveDescriptor<?>> descriptors = serviceLocator
 				.getDescriptors(BuilderHelper
@@ -231,13 +222,7 @@ public class ServiceLocatorTest {
 				return returnList;
 			}
 
-		}, new Binder() {
-
-			@Override
-			public void bind(DynamicConfiguration config) {
-				config.bind(BuilderHelper.createConstantDescriptor(pp));
-			}
-		});
+		}, Arrays.asList(pp));
 
 		List<ActiveDescriptor<?>> descriptors = serviceLocator
 				.getDescriptors(BuilderHelper

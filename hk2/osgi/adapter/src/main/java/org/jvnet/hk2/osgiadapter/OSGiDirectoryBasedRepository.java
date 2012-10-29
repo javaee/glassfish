@@ -78,15 +78,16 @@ public class OSGiDirectoryBasedRepository extends DirectoryBasedRepository {
 
     @Override
     public void initialize() throws IOException {
-        try {
-            loadCachedData();
-        } catch (Exception e) {
-            logger.logp(Level.WARNING, "OSGiDirectoryBasedRepository", "initialize", "Cache disabled because of exception: ", e);
-        }
+        //TODO: caching to be revisited
+//        try {
+//            loadCachedData();
+//        } catch (Exception e) {
+//            logger.logp(Level.WARNING, "OSGiDirectoryBasedRepository", "initialize", "Cache disabled because of exception: ", e);
+//        }
         super.initialize();
-        if (cacheInvalidated) {
-            saveCache();
-        }
+//        if (cacheInvalidated) {
+//            saveCache();
+//        }
     }
 
     /**

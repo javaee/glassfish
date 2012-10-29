@@ -55,11 +55,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.logging.Level;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -389,15 +385,9 @@ public class OSGiModuleImpl implements Module {
         if (entry != null) {
 
         	final OSGiModuleImpl module = this;
-        	
-        	Binder postProcessorBinder = new Binder () {
 
-				@Override
-				public void bind(DynamicConfiguration config) {
-					config.bind(BuilderHelper.createConstantDescriptor(new OsgiPopulatorPostProcessor(module)));
-				}};
         	this.serviceLocator = serviceLocator;
-    	    this.descriptors = HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), postProcessorBinder);
+    	    this.descriptors = HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), Arrays.asList(new OsgiPopulatorPostProcessor(module)));
         }
         
         return this.descriptors;
