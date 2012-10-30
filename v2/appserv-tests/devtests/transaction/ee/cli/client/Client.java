@@ -137,7 +137,12 @@ public class Client extends AdminBaseDevTest {
                     System.out.println("CLI FAILED: " + result.err);
                 }
             } else {
-                System.out.println("Transaction Id not found");
+                if (!result.returnValue) {
+                    System.out.println("CLI FAILED: " + result.err);
+                    System.out.println("Cannot rollback transaction");
+                } else {
+                    System.out.println("Transaction Id not found");
+                }
             }
             asadmin("unfreeze-transaction-service", "--target", INSTANCE1_NAME);
         } catch (Exception e) {
