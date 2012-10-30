@@ -2,7 +2,7 @@
  * ForwardedServlet.java
  *
  * =================================================================================================
- * Copyright © 2002 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2002 Sun Microsystems, Inc. All rights reserved.
  * =================================================================================================
  *
  */
