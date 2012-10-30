@@ -3,7 +3,7 @@ Results of deployment dev tests with v3
 
 1. Running with PE installation and EE installation on DAS
 
-PASS: 267 
+PASS: 268 
 FAIL: 0
 UNKNOWN: 0
 
@@ -271,6 +271,7 @@ UNKNOWN: 0
 [PASSED] simple : osgi/simple Test asadmin redeploy (server)
 [PASSED] simple : osgi/simple Test asadmin disable (server)
 [PASSED] simple : osgi/simple Test asadmin enable (server)
+[PASSED] earwithall2 : test deployment order
 [PASSED] AppClientAnnotationTest : testDescriptors,
 [PASSED] EjbAnnotationTest : testDescriptors,
 [PASSED] InheritanceAnnotationTest : testDescriptors,
