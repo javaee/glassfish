@@ -2,7 +2,7 @@
  * SimpleI18nServlet.java
  *
  * =================================================================================================
- * Copyright © 2003 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2003 Sun Microsystems, Inc. All rights reserved.
  * =================================================================================================
  *
  */
