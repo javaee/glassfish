@@ -41,13 +41,20 @@
 
 package org.glassfish.hk2.runlevel;
 
+import org.glassfish.hk2.api.HK2RuntimeException;
+
 
 /**
  * Exception related to the operations of the {@link RunLevelController}.
  *
  * @author jtrent, tbeerbower
  */
-public class RunLevelException extends RuntimeException {
+public class RunLevelException extends HK2RuntimeException {
+
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = 1514027985824049713L;
 
     public RunLevelException(String message) {
         super(message);

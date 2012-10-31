@@ -46,7 +46,7 @@ package org.glassfish.hk2.api;
  * @author jwells
  *
  */
-public class UnsatisfiedDependencyException extends RuntimeException {
+public class UnsatisfiedDependencyException extends HK2RuntimeException {
     /**
      * For serialization
      */

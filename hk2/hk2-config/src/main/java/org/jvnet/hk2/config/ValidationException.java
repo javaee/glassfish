@@ -39,13 +39,20 @@
  */
 package org.jvnet.hk2.config;
 
+import org.glassfish.hk2.api.HK2Exception;
+
 /**
  *
  * @author &#2325;&#2375;&#2342;&#2366;&#2352 (km@dev.java.net)
  * @since hk2 0.3.10
  */
-public class ValidationException extends Exception {
+public class ValidationException extends HK2Exception {
 
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = -5128377821321122996L;
+    
     public ValidationException() {
         super();
     }

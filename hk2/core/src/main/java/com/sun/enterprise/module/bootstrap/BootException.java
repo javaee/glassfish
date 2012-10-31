@@ -39,12 +39,19 @@
  */
 package com.sun.enterprise.module.bootstrap;
 
+import org.glassfish.hk2.api.HK2Exception;
+
 /**
  * Signals a fatal error in the module system launch.
  *
  * @author Kohsuke Kawaguchi
  */
-public class BootException extends Exception {
+public class BootException extends HK2Exception {
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = -4386799538037643906L;
+
     public BootException(String message) {
         super(message);
     }

@@ -35,6 +35,8 @@
  */
 package org.jvnet.hk2.config.provider;
 
+import org.glassfish.hk2.api.HK2RuntimeException;
+
 /**
  * A generic Transaction failure.
  *
@@ -42,8 +44,12 @@ package org.jvnet.hk2.config.provider;
  * 
  * @author Jeff Trent
  */
-@SuppressWarnings("serial")
-public class ConfigTransactionException extends RuntimeException {
+public class ConfigTransactionException extends HK2RuntimeException {
+
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = -5359924169380254813L;
 
   public ConfigTransactionException(String message) {
     super(message);

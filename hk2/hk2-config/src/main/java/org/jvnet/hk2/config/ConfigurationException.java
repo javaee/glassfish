@@ -41,12 +41,19 @@ package org.jvnet.hk2.config;
 
 import javax.xml.stream.Location;
 
+import org.glassfish.hk2.api.HK2RuntimeException;
+
 /**
  * Indicates a problem in the configuration value.
  *
  * @author Kohsuke Kawaguchi
  */
-public class ConfigurationException extends RuntimeException {
+public class ConfigurationException extends HK2RuntimeException {
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = -5739251253923553480L;
+    
     private Location location;
 
     public ConfigurationException(String message) {
