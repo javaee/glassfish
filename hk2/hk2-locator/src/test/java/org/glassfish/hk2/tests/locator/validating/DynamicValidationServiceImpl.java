@@ -39,60 +39,40 @@
  */
 package org.glassfish.hk2.tests.locator.validating;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class ValidatingModule implements TestModule {
+@Singleton
+public class DynamicValidationServiceImpl implements ValidationService {
+    @Inject
+    private DynamicValidator dynamicValidator;
+    
+    private final Filter lookupFilter = BuilderHelper.createContractFilter(
+            DynamicService.class.getName());
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
      */
     @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.bind(BuilderHelper.link(SuperSecretService.class).qualifiedBy(Secret.class.getName()).build());
-        configurator.bind(BuilderHelper.link(SystemService.class).build());
-        configurator.bind(BuilderHelper.link(UserService.class).build());
-        configurator.bind(BuilderHelper.link(NeverUnbindMeService.class).build());
-        
-        // Add validation services
-        configurator.addActiveDescriptor(ValidationServiceImpl.class);
-        configurator.bind(BuilderHelper.link(BindValidatorService.class.getName()).
-                to(ValidationService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        configurator.bind(BuilderHelper.link(UnbindValidatorService.class.getName()).
-                to(ValidationService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        
-        // This is to test validation in the parent locator
-        configurator.bind(BuilderHelper.link(DynamicValidator.class.getName()).
-                to(Validator.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        configurator.bind(BuilderHelper.link(DynamicServiceImpl1.class.getName()).
-                to(DynamicService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        configurator.bind(BuilderHelper.link(DynamicServiceImpl2.class.getName()).
-                to(DynamicService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        configurator.bind(BuilderHelper.link(DynamicValidationServiceImpl.class.getName()).
-                to(ValidationService.class.getName()).
-                in(Singleton.class.getName()).
-                build());
-        
-        
+    public Filter getLookupFilter() {
+        return lookupFilter;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getValidator()
+     */
+    @Override
+    public Validator getValidator() {
+        return dynamicValidator;
     }
 
 }

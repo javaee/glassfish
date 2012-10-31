@@ -49,6 +49,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -141,5 +142,40 @@ public class ValidatingTest {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(
                     " did not pass the UNBIND validation"));
         }
+    }
+    
+    /**
+     * This test ensures that validation changes in the parent properly affects children
+     */
+    @Test @Ignore
+    public void testValidationChangeInParent() {
+        ServiceLocator childLocator = LocatorHelper.create("child", locator, null);
+        
+        DynamicValidator dv = childLocator.getService(DynamicValidator.class);
+        
+        dv.addBadGuy(DynamicServiceImpl1.class.getName());
+        
+        List<DynamicService> services = childLocator.getAllServices(DynamicService.class);
+        
+        // Only one, because the other is not valid in the parent
+        Assert.assertEquals(1, services.size());
+        
+        DynamicService ds2 = services.get(0);
+        
+        Assert.assertEquals(2, ds2.getImplNumber());
+        
+        // Now dynamically change the validation, so that 1 is ok again
+        dv.removeBadGuy(DynamicServiceImpl1.class.getName());
+        
+        services = childLocator.getAllServices(DynamicService.class);
+        
+        // Should now have both services
+        Assert.assertEquals(2, services.size());
+        
+        DynamicService ds1 = services.get(0);
+        ds2 = services.get(1);
+        
+        Assert.assertEquals(1, ds1.getImplNumber());
+        Assert.assertEquals(2, ds2.getImplNumber());
     }
 }
