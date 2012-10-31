@@ -55,6 +55,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
@@ -73,6 +74,8 @@ public class LocatorTest {
     
     /* package */ final static String COBOL_ID = "COBOL is fun!";
     /* package */ final static int FORTRAN = 77;  // There really was a Fortran-77!
+    /* package */ final static Float JAVA = new Float(0.0);
+    /* package */ final static String JAVA_NAME = "CafeBabe";
     
     /**
      * Gets all the services in the registry
@@ -225,16 +228,81 @@ public class LocatorTest {
      */
     @Test
     public void testLookupWithTypeLiteral() {
-        ComputerLanguage<String> cobol = locator.getService((new TypeLiteral<ComputerLanguage<String>>() {}).getType());
-        Assert.assertNotNull(cobol);
+        {
+            ComputerLanguage<String> cobol = locator.getService((new TypeLiteral<ComputerLanguage<String>>() {}).getType());
+            Assert.assertNotNull(cobol);
         
-        Assert.assertSame(COBOL_ID, cobol.getItem());
+            Assert.assertSame(COBOL_ID, cobol.getItem());
+        }
         
-        ComputerLanguage<Integer> fortran = locator.getService((new TypeLiteral<ComputerLanguage<Integer>>() {}).getType());
-        Assert.assertNotNull(fortran);
+        {
+            ComputerLanguage<Integer> fortran = locator.getService((new TypeLiteral<ComputerLanguage<Integer>>() {}).getType());
+            Assert.assertNotNull(fortran);
         
-        Integer i = fortran.getItem();
-        Assert.assertSame("fortran.getItem() is " + fortran.getItem(), FORTRAN, i.intValue());
+            Integer i = fortran.getItem();
+            Assert.assertSame("fortran.getItem() is " + fortran.getItem(), FORTRAN, i.intValue());
+        }
+        
+        {
+            // this method uses the "name" version for code coverage
+            ComputerLanguage<Float> java = locator.getService((new TypeLiteral<ComputerLanguage<Float>>() {}).getType(), JAVA_NAME);
+            Assert.assertNotNull(java);
+            
+            Float f = java.getItem();
+            Assert.assertSame("java.getItem() is " + java.getItem(), JAVA, f);
+        }
+        
+        {
+            // This one just uses the class and the name
+            ComputerLanguage<?> java = locator.getService(ComputerLanguage.class, JAVA_NAME);
+            Assert.assertNotNull(java);
+            
+            Object o = java.getItem();
+            Assert.assertTrue(o instanceof Float);
+            
+            Assert.assertSame("java.getItem() is " + java.getItem(), JAVA, (Float) java.getItem());
+        }
+        
+    }
+    
+    /**
+     * Tests that we can look up (with handles) using TypeLiterals
+     */
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void testLookupHandleWithTypeLiteral() {
+        {
+            ServiceHandle<ComputerLanguage<String>> cobolHandle = locator.getServiceHandle((new TypeLiteral<ComputerLanguage<String>>() {}).getType());
+            Assert.assertNotNull(cobolHandle);
+        
+            Assert.assertSame(COBOL_ID, cobolHandle.getService().getItem());   
+        }
+        
+        {
+            ServiceHandle<ComputerLanguage<Integer>> fortranHandle = locator.getServiceHandle((new TypeLiteral<ComputerLanguage<Integer>>() {}).getType());
+            Assert.assertNotNull(fortranHandle);
+        
+            Integer i = fortranHandle.getService().getItem();
+            Assert.assertSame("fortran.getItem() is " + fortranHandle.getService().getItem(), FORTRAN, i.intValue());
+        }
+        
+        {
+            // this method uses the "name" version for code coverage
+            ServiceHandle<ComputerLanguage<Float>> javaHandle = locator.getServiceHandle((new TypeLiteral<ComputerLanguage<Float>>() {}).getType(), JAVA_NAME);
+            Assert.assertNotNull(javaHandle);
+        
+            Float f = javaHandle.getService().getItem();
+            Assert.assertSame("java.getItem() is " + javaHandle.getService().getItem(), JAVA, f);
+        }
+        
+        {
+            // This one just uses the class and the name
+            ServiceHandle<ComputerLanguage> javaHandle = locator.getServiceHandle(ComputerLanguage.class, JAVA_NAME);
+            Assert.assertNotNull(javaHandle);
+            
+            Float f = (Float) javaHandle.getService().getItem();
+            Assert.assertSame("java.getItem() is " + javaHandle.getService().getItem(), JAVA, f);
+        }
     }
     
     /**
@@ -329,5 +397,4 @@ public class LocatorTest {
                 " savings of: " + (filterElapsedTime - cacheElapsedTime));
         
     }
-
 }

@@ -41,6 +41,7 @@ package org.glassfish.hk2.tests.locator.unqualified;
 
 import java.util.List;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Assert;
@@ -122,6 +123,32 @@ public class UnqualifiedTest {
         Assert.assertSame(SHOE_TOY, ts.getShoeToy().getName());
         Assert.assertSame(UNKNOWN_TOY, ts.getUnknownToy().getName());
         
+    }
+    
+    /**
+     * Tests the get of the unqualified iterable provider
+     */
+    @Test
+    public void testGetOfUnqualifiedIterableProvider() {
+        ListCommandCommand lcc = locator.getService(ListCommandCommand.class);
+        Assert.assertNotNull(lcc);
+        
+        Command viaGet = lcc.getWithGetLocalCommand();
+        
+        Assert.assertSame(CLIENT_DATA_COMMAND, viaGet.getName());
+    }
+    
+    /**
+     * Tests the getHandle of the unqualified iterable provider
+     */
+    @Test
+    public void testGetHandleOfUnqualifiedIterableProvider() {
+        ListCommandCommand lcc = locator.getService(ListCommandCommand.class);
+        Assert.assertNotNull(lcc);
+        
+        ServiceHandle<Command> viaGetHandle = lcc.getWithGetHandleLocalCommand();
+        
+        Assert.assertSame(CLIENT_DATA_COMMAND, viaGetHandle.getService().getName());
     }
 
 }

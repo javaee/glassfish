@@ -46,6 +46,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.Unqualified;
 
 /**
@@ -131,6 +132,14 @@ public class ListCommandCommand implements Command {
     
     public Command getFirstUnqualifiedCommand() {
         return firstUnqualifiedCommand;
+    }
+    
+    public Command getWithGetLocalCommand() {
+        return localCommands.get();
+    }
+    
+    public ServiceHandle<Command> getWithGetHandleLocalCommand() {
+        return localCommands.getHandle();
     }
 
 }
