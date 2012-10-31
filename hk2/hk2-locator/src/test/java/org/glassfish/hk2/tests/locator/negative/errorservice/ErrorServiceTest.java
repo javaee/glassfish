@@ -150,7 +150,7 @@ public class ErrorServiceTest {
     private void testLookupHandlesWithContractPriorToFixing(ErrorServiceImpl esi) {
         esi.clear();
         
-        List<ServiceHandle<?>> handles = locator.getAllServiceHandles(FaultyClass.class);
+        List<ServiceHandle<FaultyClass>> handles = locator.getAllServiceHandles(FaultyClass.class);
         Assert.assertTrue("handles.size=" + handles.size(), handles.isEmpty());
         
         Descriptor faultyDesc = locator.getBestDescriptor(BuilderHelper.createContractFilter(FaultyClass.class.getName()));

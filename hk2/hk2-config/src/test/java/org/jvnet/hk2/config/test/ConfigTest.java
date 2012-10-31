@@ -82,7 +82,7 @@ public class ConfigTest {
         };
         List<String> expectedInjectors = Arrays.asList(expected);
 
-        List<ServiceHandle<?>> inhabitants = habitat.getAllServiceHandles(ConfigInjector.class);
+        List<ServiceHandle<ConfigInjector>> inhabitants = habitat.getAllServiceHandles(ConfigInjector.class);
         Set<String> inhabitantNames = new HashSet<String>();
         for (ServiceHandle<?> inh : inhabitants) {
             inhabitantNames.add(inh.getActiveDescriptor().getImplementation());
@@ -330,7 +330,7 @@ public class ConfigTest {
     
     @Test
     public void testConfigurationPopulator() {
-        DummyPopulator pop = habitat.getService(Populator.class);
+        DummyPopulator pop = (DummyPopulator) habitat.getService(Populator.class);
 
         ConfigurationPopulator confPopulator = habitat.getService(ConfigurationPopulator.class);
         confPopulator.populateConfig((ServiceLocator) habitat);
