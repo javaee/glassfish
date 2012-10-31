@@ -188,7 +188,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @return true if every validator returned true
      */
     private boolean validate(SystemDescriptor<?> descriptor, Injectee onBehalfOf, Filter filter) {
-        for (ValidationService vs : allValidators) {
+        for (ValidationService vs : getAllValidators()) {
             if (!descriptor.isValidating(vs)) continue;
             
             if (!vs.getValidator().validate(new ValidationInformationImpl(
@@ -264,7 +264,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
                 
                 sorter.addAll(retVal);
-                sorter.addAll(parent.getDescriptors(filter));
+                sorter.addAll(parent.getDescriptors(filter, onBehalfOf, getParents, doValidation));
                 
                 retVal.clear();
                 
@@ -1021,7 +1021,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 
                 if (retVal.contains(candidate)) continue;
                 
-                for (ValidationService vs : allValidators) {
+                for (ValidationService vs : getAllValidators()) {
                     if (!vs.getValidator().validate(new ValidationInformationImpl(
                             Operation.UNBIND, candidate))) {
                         throw new MultiException(new IllegalArgumentException("Descriptor " +
@@ -1091,7 +1091,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
             }
             
-            for (ValidationService vs : allValidators) {
+            for (ValidationService vs : getAllValidators()) {
                 Validator validator = vs.getValidator();
                 if (validator == null) {
                     throw new MultiException(new IllegalArgumentException("Validator was null from validation service" + vs));
@@ -1505,6 +1505,19 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     private void checkState() {
         if (shutdown) throw new IllegalStateException(this + " has been shut down");
+    }
+    
+    private LinkedHashSet<ValidationService> getAllValidators() {
+        if (parent == null) {
+            return allValidators;
+        }
+        
+        LinkedHashSet<ValidationService> retVal = new LinkedHashSet<ValidationService>();
+        
+        retVal.addAll(parent.getAllValidators());
+        retVal.addAll(allValidators);
+        
+        return retVal;
     }
     
     private static class CheckConfigurationData {
