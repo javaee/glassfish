@@ -110,6 +110,12 @@ public class LocatorModule implements TestModule {
                 in(Singleton.class.getName()).
                 build());
         
+        configurator.bind(BuilderHelper.link(Java.class).
+                to(ComputerLanguage.class).
+                named(LocatorTest.JAVA_NAME).
+                in(Singleton.class.getName()).
+                build());
+        
         // These are for a class with no scope annotation, and hence
         // should be allowed to take on any scope
         configurator.bind(BuilderHelper.link(NoScopeService.class.getName()).
