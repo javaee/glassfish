@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,27 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config;
+package org.glassfish.hk2.api;
 
 /**
- * Indicates a failure in {@link Translator#translate(String)}.
+ * Base class for HK2 defined runtime exceptions
+ * 
+ * @author jwells
  *
- * <p>
- * This is an user error, so must be reported nicely.
- *  
- * @author Kohsuke Kawaguchi
  */
-public class TranslationException extends ConfigurationException {
+public class HK2RuntimeException extends RuntimeException {
+
     /**
      * For serialization
      */
-    private static final long serialVersionUID = 6741868870550095623L;
+    private static final long serialVersionUID = 4421677624470704792L;
 
-    public TranslationException(String message) {
+    /**
+     * 
+     */
+    public HK2RuntimeException() {
+    }
+
+    /**
+     * @param message
+     */
+    public HK2RuntimeException(String message) {
         super(message);
     }
 
-    public TranslationException(String message, Throwable cause) {
+    /**
+     * @param cause
+     */
+    public HK2RuntimeException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    public HK2RuntimeException(String message, Throwable cause) {
         super(message, cause);
     }
+
 }

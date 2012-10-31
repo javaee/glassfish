@@ -53,7 +53,7 @@ import java.util.List;
  * @author jwells
  *
  */
-public class MultiException extends RuntimeException {
+public class MultiException extends HK2RuntimeException {
     /**
      * For serialization
      */

@@ -41,12 +41,14 @@ package org.jvnet.hk2.config;
 
 import javax.xml.stream.Location;
 
+import org.glassfish.hk2.api.HK2RuntimeException;
+
 /**
  * Indicates a problem during population on config beans.
  *
  * @author Kohsuke Kawaguchi
  */
-public class ConfigPopulatorException extends RuntimeException {
+public class ConfigPopulatorException extends HK2RuntimeException {
     private Location location;
 
     public ConfigPopulatorException(String message) {
