@@ -314,4 +314,47 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public <T> T createAndInitialize(Class<T> createMe) {
         return null;
     }
+
+    @Override
+    public <T> T getService(Class<T> contractOrImpl, Annotation... qualifiers)
+            throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T> T getService(Class<T> contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T> List<T> getAllServices(Class<T> contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Class<T> contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Class<T> contractOrImpl,
+            String name, Annotation... qualifiers) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public <T> List<ServiceHandle<T>> getAllServiceHandles(
+            Class<T> contractOrImpl, Annotation... qualifiers)
+            throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

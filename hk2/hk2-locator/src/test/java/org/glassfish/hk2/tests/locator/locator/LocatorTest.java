@@ -185,7 +185,7 @@ public class LocatorTest {
      */
     @Test
     public void testLookupViaQualifier() {
-        List<Object> deadLanguages = locator.getAllServices(Dead.class);
+        List<Dead> deadLanguages = locator.getAllServices(Dead.class);
         Assert.assertNotNull(deadLanguages);
         
         Assert.assertTrue("Expected at least two dead languages, but got " + deadLanguages.size(),
@@ -201,7 +201,7 @@ public class LocatorTest {
      */
     @Test
     public void testLookupViaPerLookup() {
-        List<Object> perLookup = locator.getAllServices(PerLookup.class);
+        List<PerLookup> perLookup = locator.getAllServices(PerLookup.class);
         Assert.assertNotNull(perLookup);
         
         Assert.assertTrue("Expected at least five perLookup services, but got " + perLookup.size(),
@@ -213,7 +213,7 @@ public class LocatorTest {
      */
     @Test
     public void testLookupViaPerSingleton() {
-        List<Object> singleton = locator.getAllServices(Singleton.class);
+        List<Singleton> singleton = locator.getAllServices(Singleton.class);
         Assert.assertNotNull(singleton);
         
         Assert.assertTrue("Expected at least one singleton services, but got " + singleton.size(),

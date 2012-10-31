@@ -131,12 +131,12 @@ public class RunLevelServiceTest {
                 RunLevelControllerNegOne.class,
                 RunLevelControllerOne.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         ServiceHandle<RunLevelControllerNegOne> serviceHandleNegOne = locator.getServiceHandle(RunLevelControllerNegOne.class);
         assertNotNull(serviceHandleNegOne);
 
-        ServiceHandle<RunLevelControllerNegOne> serviceHandleOne = locator.getServiceHandle(RunLevelControllerOne.class);
+        ServiceHandle<RunLevelControllerOne> serviceHandleOne = locator.getServiceHandle(RunLevelControllerOne.class);
         assertNotNull(serviceHandleOne);
 
         proceedToAndWait(rlc, locator, RunLevel.RUNLEVEL_VAL_IMMEDIATE);
@@ -154,7 +154,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerNegOne.class,
                 RunLevelControllerOne.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
 
         final Filter filter = new Filter() {
@@ -186,7 +186,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerNegOne.class,
                 RunLevelControllerOne.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         try {
             proceedToAndWait(rlc, locator, -2);
@@ -203,7 +203,7 @@ public class RunLevelServiceTest {
         configureLocator(locator, new Class[]{
                 RunLevelControllerOne.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 0);
 
@@ -221,7 +221,7 @@ public class RunLevelServiceTest {
         configureLocator(locator, new Class[]{
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 5);
         assertEquals(5, rlc.getCurrentRunLevel());
@@ -244,7 +244,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerTen.class,
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 10);
         assertEquals(10, rlc.getCurrentRunLevel());
@@ -269,7 +269,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerTen.class,
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 20);
         assertEquals(5, rlc.getCurrentRunLevel());
@@ -295,7 +295,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerTwentyFive.class,
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 20);
         assertEquals(25, rlc.getCurrentRunLevel());
@@ -326,7 +326,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerTwenty.class,
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 49);
         assertEquals(49, rlc.getCurrentRunLevel());
@@ -354,7 +354,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerTwenty.class,
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 49);
         assertEquals(49, rlc.getCurrentRunLevel());
@@ -383,7 +383,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerTwenty.class,
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 49);
         proceedToAndWait(rlc, locator, 11);
@@ -406,7 +406,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerB.class,
                 RunLevelControllerC.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 10);
 
@@ -463,7 +463,7 @@ public class RunLevelServiceTest {
 
         RunLevelDepService service = serviceHandle.getService();
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 10);
 
@@ -492,7 +492,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerFive.class,
                 FooRunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class, "foo");
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class, "foo");
 
         proceedToAndWait(rlc, locator, 5);
         assertEquals(5, rlc.getCurrentRunLevel());
@@ -513,7 +513,7 @@ public class RunLevelServiceTest {
                 Listener.class,
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         Listener listener = locator.getService(Listener.class);
 
@@ -539,7 +539,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerFive.class,
                 FooRunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class, "foo");
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class, "foo");
 
         Listener listener = locator.getService(Listener.class);
         Listener fooListener = locator.getService(FooListener.class);
@@ -566,7 +566,7 @@ public class RunLevelServiceTest {
                 Activator.class,
                 RunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         Activator activator = locator.getService(Activator.class);
 
@@ -594,7 +594,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerFive.class,
                 FooRunLevelControllerFive.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class, "foo");
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class, "foo");
 
         BaseActivator activator = locator.getService(Activator.class);
         BaseActivator fooActivator = locator.getService(FooActivator.class);
@@ -632,7 +632,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerMedPriority.class,
                 RunLevelControllerTen.class});
 
-        RunLevelControllerImpl rlc = locator.getService(RunLevelController.class);
+        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
 
         proceedToAndWait(rlc, locator, 10);
 

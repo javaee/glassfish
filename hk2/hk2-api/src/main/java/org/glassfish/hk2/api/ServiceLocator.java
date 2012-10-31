@@ -67,6 +67,23 @@ public interface ServiceLocator {
      * implementation or contract
      * @throws MultiException if there was an error during service creation
      */
+    public <T> T getService(Class<T> contractOrImpl, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets the best service from this locator that implements
+     * this contract or has this implementation
+     * <p>
+     * Use this method only if destroying the service is not important
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return An instance of the contract or impl.  May return
+     * null if there is no provider that provides the given
+     * implementation or contract
+     * @throws MultiException if there was an error during service creation
+     */
     public <T> T getService(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
     
     /**
@@ -87,7 +104,45 @@ public interface ServiceLocator {
      * implementation or contract
      * @throws MultiException if there was an error during service creation
      */
+    public <T> T getService(Class<T> contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets the best service from this locator that implements
+     * this contract or has this implementation and has the given
+     * name
+     * <p>
+     * Use this method only if destroying the service is not important
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param name May be null (to indicate any name is ok), and is the name of the
+     * implementation to be returned
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return An instance of the contract or impl.  May return
+     * null if there is no provider that provides the given
+     * implementation or contract
+     * @throws MultiException if there was an error during service creation
+     */
     public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets the all the services from this locator that implements
+     * this contract or has this implementation
+     * <p>
+     * Use this method only if destroying the service is not important
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return A list of services implementing this contract
+     * or concrete implementation.  May not return null, but
+     * may return an empty list
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> List<T> getAllServices(Class<T> contractOrImpl,
+            Annotation... qualifiers) throws MultiException;
     
     /**
      * Gets the all the services from this locator that implements
@@ -154,6 +209,19 @@ public interface ServiceLocator {
      * @return Will return root as a convenience
      * @throws MultiException if there was an error during service creation
      */
+    public <T> ServiceHandle<T> getServiceHandle(Class<T> contractOrImpl, Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a {@link ServiceHandle} that can be used to get and destroy the
+     * service that best matches the given criteria
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return Will return root as a convenience
+     * @throws MultiException if there was an error during service creation
+     */
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
     
     /**
@@ -171,7 +239,41 @@ public interface ServiceLocator {
      * @throws MultiException if there was an error during service creation
      * @throws IllegalArgumentException if contractOrImpl is null
      */
+    public <T> ServiceHandle<T> getServiceHandle(Class<T> contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a {@link ServiceHandle} that can be used to get and destroy the
+     * service that best matches the given criteria
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param name The name to use to further qualify the search (may be null,
+     * indicating that any name will match)
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return Will the service handle for the best service matching the
+     * given criteria, or null if no matching service could be found
+     * @throws MultiException if there was an error during service creation
+     * @throws IllegalArgumentException if contractOrImpl is null
+     */
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, String name,
+            Annotation... qualifiers) throws MultiException;
+    
+    /**
+     * Gets a list of {@link ServiceHandle} that can be used to get and destroy services
+     * associated with descriptors that match the provided criteria
+     * 
+     * @param contractOrImpl May not be null, and is the contract
+     * or concrete implementation to get the best instance of
+     * @param qualifiers The set of qualifiers that must match this service
+     * definition
+     * @return A non-null but possibly empty list of service handles matching
+     * the given criteria
+     * @throws MultiException if there was an error during service creation
+     * @throws IllegalArgumentException if contractOrImpl is null
+     */
+    public <T> List<ServiceHandle<T>> getAllServiceHandles(Class<T> contractOrImpl,
             Annotation... qualifiers) throws MultiException;
     
     /**

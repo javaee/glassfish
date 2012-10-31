@@ -443,6 +443,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         return subHandle.getService();
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type)
+     */
+    @Override
+    public <T> T getService(Class<T> contractOrImpl, Annotation... qualifiers) throws MultiException {
+        return getService((Type) contractOrImpl, qualifiers);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type)
@@ -463,8 +471,21 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String)
      */
     @Override
+    public <T> T getService(Class<T> contractOrImpl, String name, Annotation... qualifiers)
+            throws MultiException {
+        return internalGetService(contractOrImpl, name, qualifiers);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getService(java.lang.reflect.Type, java.lang.String)
+     */
+    @Override
     public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers)
             throws MultiException {
+        return internalGetService(contractOrImpl, name, qualifiers);
+    }
+    
+    private <T> T internalGetService(Type contractOrImpl, String name, Annotation... qualifiers) {
         checkState();
         
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, qualifiers);
@@ -473,6 +494,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         T retVal = Utilities.createService(ad, null, this, null);
         
         return retVal;
+        
     }
     
     /* package */ <T> T getUnqualifiedService(Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers) throws MultiException {
@@ -495,6 +517,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 return getAllServices(contractOrImpl, qualifiers);
             }
         });
+    }
+    
+    @Override
+    public <T> List<T> getAllServices(Class<T> contractOrImpl, Annotation... qualifiers)
+            throws MultiException {
+        return getAllServices((Type) contractOrImpl, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -742,6 +770,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return postValidateResult;
     }
     
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Class<T> contractOrImpl,
+            Annotation... qualifiers) throws MultiException {
+        return getServiceHandle((Type) contractOrImpl, qualifiers);
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getServiceHandle(java.lang.reflect.Type, java.lang.annotation.Annotation[])
      */
@@ -775,6 +809,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
             
         });
+    }
+    
+    @Override
+    public <T> List<ServiceHandle<T>> getAllServiceHandles(
+            Class<T> contractOrImpl, Annotation... qualifiers)
+            throws MultiException {
+        return Utilities.cast(getAllServiceHandles((Type) contractOrImpl, qualifiers));
     }
 
     /* (non-Javadoc)
@@ -874,6 +915,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         return retVal;
+    }
+    
+    @Override
+    public <T> ServiceHandle<T> getServiceHandle(Class<T> contractOrImpl,
+            String name, Annotation... qualifiers) throws MultiException {
+        return getServiceHandle((Type) contractOrImpl, name, qualifiers); 
     }
 
     /* (non-Javadoc)
