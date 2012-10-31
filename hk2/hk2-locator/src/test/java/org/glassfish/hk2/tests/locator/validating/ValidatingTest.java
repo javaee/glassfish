@@ -49,7 +49,6 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -147,7 +146,7 @@ public class ValidatingTest {
     /**
      * This test ensures that validation changes in the parent properly affects children
      */
-    @Test @Ignore
+    @Test
     public void testValidationChangeInParent() {
         ServiceLocator childLocator = LocatorHelper.create("child", locator, null);
         
