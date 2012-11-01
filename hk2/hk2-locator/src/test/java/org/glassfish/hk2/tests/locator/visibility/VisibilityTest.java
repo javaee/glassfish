@@ -37,22 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.dynamicconfig;
+package org.glassfish.hk2.tests.locator.visibility;
 
-import org.glassfish.hk2.api.DescriptorVisibility;
-import org.glassfish.hk2.api.UseProxy;
-import org.glassfish.hk2.api.Visibility;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
- * This service should have metadata automatically added
- * 
  * @author jwells
- *
  */
-@ScopeWithMetadata(DynamicConfigTest.class)
-@QualifierWithMetadata
-@UseProxy
-@Visibility(DescriptorVisibility.LOCAL)
-public class ServiceWithMetadata {
+public class VisibilityTest {
+    private final static String TEST_NAME = "VisibilityTest";
+    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new VisibilityModule());
+    
+    @Test @Ignore
+    public void testLocalVisibility() {
+        ServiceLocator child = LocatorHelper.create("child", locator, null);
+        
+        // First make sure both services are available in the parent
+        Assert.assertNotNull(locator.getService(LocalService.class));
+        Assert.assertNotNull(locator.getService(NormalService.class));
+        
+        // But only one should be in the child
+        Assert.assertNull(child.getService(LocalService.class));
+        Assert.assertNotNull(child.getService(NormalService.class));
+    }
 
 }

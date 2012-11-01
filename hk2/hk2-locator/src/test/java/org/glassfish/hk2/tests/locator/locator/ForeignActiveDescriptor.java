@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -71,9 +72,10 @@ public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     protected ForeignActiveDescriptor(Set<Type> advertisedContracts,
             Class<? extends Annotation> scope, String name,
             Set<Annotation> qualifiers, DescriptorType descriptorType,
+            DescriptorVisibility descriptorVisibility,
             int ranking,
             Class<?> implClass) {
-        super(advertisedContracts, scope, name, qualifiers, descriptorType, ranking, null, null);
+        super(advertisedContracts, scope, name, qualifiers, descriptorType, descriptorVisibility, ranking, null, null);
         
         this.implClass = implClass;
     }

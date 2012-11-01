@@ -122,6 +122,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         // the given descriptor yet
         super(EMPTY_CONTRACT_SET, null, name, EMPTY_ANNOTATION_SET,
                 descriptor.getDescriptorType(),
+                descriptor.getDescriptorVisibility(),
                 descriptor.getRanking(),
                 descriptor.isProxiable(),
                 descriptor.getMetadata());

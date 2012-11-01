@@ -431,6 +431,8 @@ public class BuilderHelperTest {
         
         Assert.assertNotNull(ad.isProxiable());
         Assert.assertEquals(true, ad.isProxiable().booleanValue());
+        
+        Assert.assertEquals(DescriptorVisibility.LOCAL, ad.getDescriptorVisibility());
     }
     
     /**
@@ -531,5 +533,19 @@ public class BuilderHelperTest {
             // Success
         }
         
+    }
+    
+    /**
+     * Tests createDescriptorFromClass honors {@link Visibility}
+     */
+    @Test
+    public void testVisibilityOnClass() {
+        Descriptor di = BuilderHelper.createDescriptorFromClass(ServiceWithLocalVisibility.class);
+        
+        Assert.assertEquals(DescriptorVisibility.LOCAL, di.getDescriptorVisibility());
+        
+        di = BuilderHelper.createDescriptorFromClass(ServiceWithNormalVisibility.class);
+        
+        Assert.assertEquals(DescriptorVisibility.NORMAL, di.getDescriptorVisibility());
     }
 }

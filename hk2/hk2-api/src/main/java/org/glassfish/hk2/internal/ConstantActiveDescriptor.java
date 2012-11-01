@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
@@ -83,9 +84,18 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers,
+            DescriptorVisibility descriptorVisibility,
             Boolean proxy,
             Map<String, List<String>> metadata) {
-        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, 0, proxy, metadata);
+        super(advertisedContracts,
+                scope,
+                name,
+                qualifiers,
+                DescriptorType.CLASS,
+                descriptorVisibility,
+                0,
+                proxy,
+                metadata);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;

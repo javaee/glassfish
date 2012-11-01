@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.UseProxy;
+import org.glassfish.hk2.api.Visibility;
 
 /**
  * @author jwells
@@ -51,6 +53,7 @@ import org.glassfish.hk2.api.UseProxy;
   modeValue=QualifierWithMetadata.Mode.VALIDATING,
   notInMetadata=15)
 @UseProxy
+@Visibility(DescriptorVisibility.LOCAL)
 public class ServiceWithAutoMetadata {
 
 }

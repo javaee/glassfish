@@ -37,22 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.dynamicconfig;
+package org.glassfish.hk2.tests.locator.visibility;
+
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
-import org.glassfish.hk2.api.UseProxy;
-import org.glassfish.hk2.api.Visibility;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
- * This service should have metadata automatically added
- * 
  * @author jwells
  *
  */
-@ScopeWithMetadata(DynamicConfigTest.class)
-@QualifierWithMetadata
-@UseProxy
-@Visibility(DescriptorVisibility.LOCAL)
-public class ServiceWithMetadata {
+public class VisibilityModule implements TestModule {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+     */
+    @Override
+    public void configure(DynamicConfiguration config) {
+        config.bind(BuilderHelper.link(LocalService.class).
+                in(Singleton.class.getName()).
+                localOnly().
+                build());
+        
+        config.bind(BuilderHelper.link(NormalService.class).
+                in(Singleton.class.getName()).
+                visibility(DescriptorVisibility.NORMAL).
+                build());
+
+    }
 
 }

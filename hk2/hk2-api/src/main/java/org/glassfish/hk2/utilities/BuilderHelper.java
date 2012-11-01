@@ -60,6 +60,7 @@ import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.UseProxy;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.internal.ActiveDescriptorBuilderImpl;
 import org.glassfish.hk2.internal.ConstantActiveDescriptor;
 import org.glassfish.hk2.internal.DescriptorBuilderImpl;
@@ -318,12 +319,19 @@ public class BuilderHelper {
             }
         }
         
+        DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
+        Visibility vi = constant.getClass().getAnnotation(Visibility.class);
+        if (vi != null) {
+            visibility = vi.value();
+        }
+        
         return new ConstantActiveDescriptor<T>(
                 constant,
                 contractsAsSet,
                 scopeClass,
                 name,
                 qualifiers,
+                visibility,
                 proxy,
                 metadata);
     }
@@ -354,6 +362,12 @@ public class BuilderHelper {
             proxy = new Boolean(up.value());
         }
         
+        DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
+        Visibility vi = clazz.getAnnotation(Visibility.class);
+        if (vi != null) {
+            visibility = vi.value();
+        }
+        
         // TODO:  Can we get metadata from @Service?
         return new DescriptorImpl(
                 contracts,
@@ -363,7 +377,7 @@ public class BuilderHelper {
                 new HashMap<String, List<String>>(),
                 qualifiers,
                 type,
-                DescriptorVisibility.NORMAL,
+                visibility,
                 null,
                 0,
                 proxy,

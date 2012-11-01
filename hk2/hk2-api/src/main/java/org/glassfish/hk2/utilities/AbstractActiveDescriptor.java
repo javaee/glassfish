@@ -53,6 +53,7 @@ import javax.inject.Named;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -120,6 +121,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
             String name,
             Set<Annotation> qualifiers,
             DescriptorType descriptorType,
+            DescriptorVisibility descriptorVisibility,
             int ranking,
             Boolean proxy,
             Map<String, List<String>> metadata) {
@@ -131,6 +133,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         
         setRanking(ranking);
         setDescriptorType(descriptorType);
+        setDescriptorVisibility(descriptorVisibility);
         setName(name);  // This MUST be called after the qualifiers have already been set
         setProxiable(proxy);
         

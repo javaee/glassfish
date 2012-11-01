@@ -51,6 +51,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.FactoryDescriptors;
@@ -420,6 +421,11 @@ public class DynamicConfigTest {
             
             Assert.assertTrue(values2.contains(""));
         }
+        
+        Assert.assertNotNull(ad.isProxiable());
+        Assert.assertEquals(true, ad.isProxiable().booleanValue());
+        
+        Assert.assertEquals(DescriptorVisibility.LOCAL, ad.getDescriptorVisibility());
         
     }
 }

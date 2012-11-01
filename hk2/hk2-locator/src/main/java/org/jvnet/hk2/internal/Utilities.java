@@ -78,6 +78,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Factory;
@@ -94,6 +95,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.Unproxiable;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.UseProxy;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.reflection.Logger;
@@ -504,6 +506,12 @@ public class Utilities {
         if (useProxy != null) {
             proxy = new Boolean(useProxy.value());
         }
+        
+        DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
+        Visibility vi = clazz.getAnnotation(Visibility.class);
+        if (vi != null) {
+            visibility = vi.value();
+        }
 
         return new AutoActiveDescriptor<T>(
                 clazz,
@@ -512,6 +520,7 @@ public class Utilities {
                 scope,
                 name,
                 qualifiers,
+                visibility,
                 0,
                 proxy,
                 metadata);
@@ -796,6 +805,7 @@ public class Utilities {
                         PerLookup.class,
                         null,
                         qualifiers,
+                        DescriptorVisibility.NORMAL,
                         0,
                         null,
                         locator.getLocatorId(),
@@ -831,6 +841,7 @@ public class Utilities {
                         Singleton.class,
                         InjectionResolver.SYSTEM_RESOLVER_NAME,
                         qualifiers,
+                        DescriptorVisibility.NORMAL,
                         0,
                         null,
                         locator.getLocatorId(),

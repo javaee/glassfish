@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -72,8 +73,15 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      * @param locatorId The id of the locator this is being created for
      */
     public ConstantActiveDescriptor(T theOne, long locatorId) {
-        super(new HashSet<Type>(), PerLookup.class, null, new HashSet<Annotation>(),
-                DescriptorType.CLASS, 0, null, null);
+        super(new HashSet<Type>(),
+                PerLookup.class,
+                null,
+                new HashSet<Annotation>(),
+                DescriptorType.CLASS,
+                DescriptorVisibility.NORMAL,
+                0,
+                null,
+                null);
         
         this.theOne = theOne;
         this.locatorId = new Long(locatorId);
@@ -95,12 +103,20 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Class<? extends Annotation> scope,
             String name,
             Set<Annotation> qualifiers,
+            DescriptorVisibility visibility,
             int ranking,
             Boolean proxy,
             long locatorId,
             Map<String, List<String>> metadata) {
-        super(advertisedContracts, scope, name, qualifiers,
-                DescriptorType.CLASS, ranking, proxy, metadata);
+        super(advertisedContracts,
+                scope,
+                name,
+                qualifiers,
+                DescriptorType.CLASS,
+                visibility,
+                ranking,
+                proxy,
+                metadata);
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;
