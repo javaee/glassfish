@@ -53,6 +53,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -71,10 +72,12 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String CONFIGURED_CLASS_FORM = "Lorg/jvnet/hk2/config/Configured;";
     private final static String DECORATE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Decorate;";
     private final static String USE_PROXY_CLASS_FORM = "Lorg/glassfish/hk2/api/UseProxy;";
+    private final static String VISIBILITY_CLASS_FORM = "Lorg/glassfish/hk2/api/Visibility;";
     private final static String NAME = "name";
     private final static String METADATA = "metadata";
     private final static String VALUE = "value";
     private final static String PROVIDE = "provide";
+    private final static String LOCAL = "LOCAL";
     
     /**
      * Must be the same value as from the GenerateServiceFromMethod value
@@ -106,6 +109,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private String metadataString = null;
     private Integer rank = null;
     private Boolean useProxy = null;
+    private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
     private final Map<String, List<String>> metadata = new HashMap<String, List<String>>();
     
     private final LinkedList<DescriptorImpl> generatedDescriptors = new LinkedList<DescriptorImpl>();
@@ -180,6 +184,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
         if (USE_PROXY_CLASS_FORM.equals(desc)) {
             return new UseProxyAnnotationVisitor();
+        }
+        
+        if (VISIBILITY_CLASS_FORM.equals(desc)) {
+            return new VisibilityAnnotationVisitor();
         }
         
         if (!desc.startsWith("L")) return null;
@@ -324,6 +332,8 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         if (useProxy != null) {
             generatedDescriptor.setProxiable(useProxy);
         }
+        
+        generatedDescriptor.setDescriptorVisibility(visibility);
         
         if (!metadata.isEmpty()) {
             for (Map.Entry<String, List<String>> entry : metadata.entrySet()) {
@@ -750,6 +760,16 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         @Override
         public void visitEnd() {
             if (useProxy == null) useProxy = Boolean.TRUE;
+        }
+        
+    }
+    
+    private class VisibilityAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        @Override
+        public void visitEnum(String name, String v0, String v1) {
+            if (v1 != null && LOCAL.equals(v1)) {
+                visibility = DescriptorVisibility.LOCAL;
+            }
         }
         
     }
