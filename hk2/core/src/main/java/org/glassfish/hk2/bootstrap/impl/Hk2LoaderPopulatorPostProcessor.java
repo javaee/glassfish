@@ -77,7 +77,7 @@ public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 	 * Uses the given classloader to load the class from the descriptor
 	 */
 	@Override
-	public DescriptorImpl process(DescriptorImpl descriptorImpl) {
+	public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
 		descriptorImpl.setLoader(new HK2Loader() {
 			
 			@Override

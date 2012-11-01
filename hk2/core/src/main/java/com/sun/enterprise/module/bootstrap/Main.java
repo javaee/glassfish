@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.List;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -52,6 +53,7 @@ import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -230,7 +232,7 @@ public class Main {
 
 	public ServiceLocator createServiceLocator(ModulesRegistry mr,
                                                StartupContext context,
-                                               Binder postProcessorBinder,
+                                               List<PopulatorPostProcessor> postProcessors,
                                                DescriptorFileFinder descriptorFileFinder)
 			throws BootException {
         // Why is this method not just delagting to ModulesRegistry.createServiceLocator(...)?
@@ -241,11 +243,6 @@ public class Main {
 		defineParentClassLoader();
 
         ServiceLocator serviceLocator = mr.newServiceLocator();
-		
-		// add all the PopulatorPostProcessors to the new ServiceLocator
-		if (postProcessorBinder != null) {
-				ServiceLocatorUtilities.bind(serviceLocator, postProcessorBinder);
-		}
 		
 		addDescriptorFileFinder(serviceLocator, descriptorFileFinder);
 		
@@ -272,7 +269,7 @@ public class Main {
 				});
 
 		try {
-            mr.populateServiceLocator(DEFAULT_NAME, serviceLocator);
+            mr.populateServiceLocator(DEFAULT_NAME, serviceLocator, postProcessors);
             mr.populateConfig(serviceLocator);
 		} finally {
 			AccessController.doPrivileged(new PrivilegedAction<Object>() {

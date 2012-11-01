@@ -113,7 +113,7 @@ public class HK2Populator {
 						if (postProcessors != null) {
 							
 							for (PopulatorPostProcessor pp : postProcessors) {
-								descriptorImpl = pp.process(descriptorImpl);
+								descriptorImpl = pp.process(serviceLocator, descriptorImpl);
 
 								if (descriptorImpl == null) {
 									break;

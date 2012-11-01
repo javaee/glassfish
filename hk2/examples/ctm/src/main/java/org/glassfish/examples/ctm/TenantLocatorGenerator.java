@@ -71,7 +71,7 @@ public class TenantLocatorGenerator {
         if (tenantName == null) throw new IllegalArgumentException();
         
         ServiceLocator serviceLocator =
-            systemModulesRegistry.createServiceLocator(systemServiceLocator, "tenant-scoped");
+            systemModulesRegistry.createServiceLocator(systemServiceLocator, "tenant-scoped", null);
 
         populateWithConfig(serviceLocator, tenantName);
         

@@ -47,14 +47,11 @@ import java.io.IOException;
 import java.util.*;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
-import org.glassfish.hk2.utilities.Binder;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * Normal modules registry with configuration handling backed up
@@ -118,12 +115,19 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
     }
 
     @Override
-    protected List<ActiveDescriptor> parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
+    protected List<ActiveDescriptor> parseInhabitants(Module module, String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> postProcessors)
             throws IOException {
-    
+
+        ArrayList<PopulatorPostProcessor> allPostProcessors = new ArrayList<PopulatorPostProcessor>();
+
+        allPostProcessors.add(new Hk2LoaderPopulatorPostProcessor(singleClassLoader));
+        if (postProcessors != null) {
+          allPostProcessors.addAll(postProcessors);
+        }
+
     	return HK2Populator.populate(serviceLocator,
                 new ClasspathDescriptorFileFinder(singleClassLoader, name),
-                Arrays.asList(new Hk2LoaderPopulatorPostProcessor(singleClassLoader)));
+                allPostProcessors);
     }
 
 }

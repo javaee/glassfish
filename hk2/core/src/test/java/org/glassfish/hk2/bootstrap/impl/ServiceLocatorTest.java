@@ -145,7 +145,7 @@ public class ServiceLocatorTest {
 		final PopulatorPostProcessor pp = new PopulatorPostProcessor() {
 
 			@Override
-			public DescriptorImpl process(DescriptorImpl d) {
+			public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl d) {
 				postProcessorWasCalled = true;
 
 				assertEquals(
@@ -200,7 +200,7 @@ public class ServiceLocatorTest {
 		final PopulatorPostProcessor pp = new PopulatorPostProcessor() {
 
 			@Override
-			public DescriptorImpl process(DescriptorImpl d) {
+			public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl d) {
 				postProcessorWasCalled = true;
 
 				d.setImplementation("OVERRIDDEN");

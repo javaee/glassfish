@@ -48,6 +48,7 @@ import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 
@@ -99,9 +100,9 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
     }
 
     public List<ActiveDescriptor> parseInhabitants(
-            Module module, String name, ServiceLocator serviceLocator)
+            Module module, String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> postProcessors)
             throws IOException, BootException {
-        return ((OSGiModuleImpl)module).parseInhabitants(name, serviceLocator);
+        return ((OSGiModuleImpl)module).parseInhabitants(name, serviceLocator, postProcessors);
     }
 
     public ModulesRegistry createChild() {

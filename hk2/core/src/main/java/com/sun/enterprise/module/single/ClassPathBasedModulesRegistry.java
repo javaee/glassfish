@@ -55,6 +55,7 @@ import java.util.StringTokenizer;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 
 /**
  * Implements a modules registry based on a class-path style of module
@@ -129,7 +130,7 @@ public class ClassPathBasedModulesRegistry extends ModulesRegistryImpl {
     }
 
     @Override
-    protected List<ActiveDescriptor> parseInhabitants(Module module, String name, ServiceLocator serviceLocator)
+    protected List<ActiveDescriptor> parseInhabitants(Module module, String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> postProcessors)
             throws IOException {
         return null;
     }

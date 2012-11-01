@@ -59,6 +59,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
@@ -122,7 +123,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
     }
 
     /**
-     * Creates an uninitialized {@link Habitat}
+     * Creates an uninitialized {@link ServiceLocator}
      *
      */
     @Override
@@ -170,13 +171,14 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
      *
      * @param name
      *      Determines which descriptors are loaded.
+     * @param postProcessors
      */
-     public void populateServiceLocator(String name, ServiceLocator serviceLocator) throws MultiException {
+     public void populateServiceLocator(String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> postProcessors) throws MultiException {
          try {
              for (final Module module : getModules()) { 
             	   // TODO: should get the inhabitantsParser out of Main instead since
                  // this could have been overridden
-             	List<ActiveDescriptor> allDescriptors = parseInhabitants(module, name, serviceLocator);
+             	List<ActiveDescriptor> allDescriptors = parseInhabitants(module, name, serviceLocator, postProcessors);
              	
              	Map<ServiceLocator, List<ActiveDescriptor>> descriptorByServiceLocator = new HashMap<ServiceLocator, List<ActiveDescriptor>>();
           
@@ -200,14 +202,14 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
     	}
     }
 
-    public ServiceLocator createServiceLocator(ServiceLocator parent, String name) throws MultiException {
+    public ServiceLocator createServiceLocator(ServiceLocator parent, String name, List<PopulatorPostProcessor> postProcessors) throws MultiException {
         ServiceLocator serviceLocator = newServiceLocator(parent);
-        populateServiceLocator(name, serviceLocator);
+        populateServiceLocator(name, serviceLocator, postProcessors);
         return serviceLocator;
     }
 
 	public ServiceLocator createServiceLocator(String name) throws MultiException {
-    	return createServiceLocator(null, name);
+    	return createServiceLocator(null, name, null);
     }
 
 	public ServiceLocator createServiceLocator() throws MultiException {
@@ -215,7 +217,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
     }
 
     protected abstract List<ActiveDescriptor> parseInhabitants(Module module,
-                                             String name, ServiceLocator serviceLocator)
+                                                               String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> postProcessors)
             throws IOException, BootException;
 
     /**
@@ -408,9 +410,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
             ServiceLocator serviceLocator = entry.getKey();
             try
             {
-                // TODO: should get the inhabitantsParser out of Main instead since
-                // this could have been overridden
-                parseInhabitants(newModule, name, serviceLocator);
+                parseInhabitants(newModule, name, serviceLocator, new ArrayList<PopulatorPostProcessor>());
             }
             catch (Exception e)
             {
