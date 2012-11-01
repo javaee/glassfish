@@ -53,6 +53,7 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -174,6 +175,7 @@ public class LocatorTest {
                 null,
                 qualifiers,
                 DescriptorType.CLASS,
+                DescriptorVisibility.NORMAL,
                 0,
                 GermanService.class);
         
@@ -327,6 +329,7 @@ public class LocatorTest {
                 null,
                 qualifiers,
                 DescriptorType.CLASS,
+                DescriptorVisibility.NORMAL,
                 0,
                 ChineseService.class);
         

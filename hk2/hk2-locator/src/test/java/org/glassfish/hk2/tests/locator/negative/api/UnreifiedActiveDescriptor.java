@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.util.HashSet;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -63,6 +64,7 @@ public class UnreifiedActiveDescriptor extends AbstractActiveDescriptor<Object> 
                 null,
                 new HashSet<Annotation>(),
                 DescriptorType.CLASS,
+                DescriptorVisibility.NORMAL,
                 0,
                 null,
                 null);

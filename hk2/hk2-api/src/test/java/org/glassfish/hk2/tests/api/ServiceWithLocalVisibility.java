@@ -37,22 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.dynamicconfig;
+package org.glassfish.hk2.tests.api;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
-import org.glassfish.hk2.api.UseProxy;
 import org.glassfish.hk2.api.Visibility;
 
 /**
- * This service should have metadata automatically added
- * 
  * @author jwells
  *
  */
-@ScopeWithMetadata(DynamicConfigTest.class)
-@QualifierWithMetadata
-@UseProxy
 @Visibility(DescriptorVisibility.LOCAL)
-public class ServiceWithMetadata {
+public class ServiceWithLocalVisibility {
 
 }

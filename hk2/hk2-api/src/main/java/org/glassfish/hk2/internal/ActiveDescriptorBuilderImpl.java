@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -188,6 +189,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 name,
                 qualifiers,
                 DescriptorType.CLASS,
+                DescriptorVisibility.NORMAL,
                 rank,
                 proxy,
                 metadatas,
@@ -206,6 +208,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 name,
                 qualifiers,
                 DescriptorType.PROVIDE_METHOD,
+                DescriptorVisibility.NORMAL,
                 rank,
                 proxy,
                 metadatas,
@@ -226,6 +229,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 String name,
                 Set<Annotation> qualifiers,
                 DescriptorType descriptorType,
+                DescriptorVisibility descriptorVisibility,
                 int ranking,
                 Boolean proxy,
                 Map<String, List<String>> metadata,
@@ -235,6 +239,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                     name,
                     qualifiers,
                     descriptorType,
+                    descriptorVisibility,
                     ranking,
                     proxy,
                     metadata);

@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -79,10 +80,19 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Set<Type> advertisedContracts,
             Class<? extends Annotation> scope, String name,
             Set<Annotation> qualifiers,
+            DescriptorVisibility descriptorVisibility,
             int ranking,
             Boolean proxy,
             Map<String, List<String>> metadata) {
-        super(advertisedContracts, scope, name, qualifiers, DescriptorType.CLASS, ranking, proxy, metadata);
+        super(advertisedContracts,
+                scope,
+                name,
+                qualifiers,
+                DescriptorType.CLASS,
+                descriptorVisibility,
+                ranking,
+                proxy,
+                metadata);
         
         implClass = clazz;
         this.creator = creator;
