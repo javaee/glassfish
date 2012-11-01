@@ -56,6 +56,7 @@ import java.net.URL;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 
 /**
  * @author Jerome Dochez
@@ -87,9 +88,9 @@ public class ModulesRegistryImpl extends AbstractModulesRegistryImpl {
     }
 
     protected List<ActiveDescriptor> parseInhabitants(
-            Module module, String name, ServiceLocator serviceLocator)
+            Module module, String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> postProcessors)
             throws IOException {
-        return ((ModuleImpl)module).parseInhabitants(name);
+        return ((ModuleImpl)module).parseInhabitants(name, postProcessors);
     }
 
     /**

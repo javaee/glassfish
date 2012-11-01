@@ -48,6 +48,7 @@ import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -80,7 +81,7 @@ public interface ModulesRegistry extends ModuleChangeListener {
     /**
      * Creates a {@link ServiceLocator} from all the modules in this registry
      * Cal;ling this method has the same effect of calling {@link #newServiceLocator()} followed by
-     * {@link #populateServiceLocator(String, ServiceLocator)}.
+     * {@link #populateServiceLocator(String, org.glassfish.hk2.api.ServiceLocator, java.util.List}.
      *
      * @param name
      *      Determines which inhabitants descriptors are loaded.
@@ -93,18 +94,21 @@ public interface ModulesRegistry extends ModuleChangeListener {
     /**
      * Creates a {@link ServiceLocator} with the provided parent.
      *  
+     *
      * @param serviceLocator
      * @param name
+     * @param postProcessors
      * @return
      */
 	ServiceLocator createServiceLocator(ServiceLocator serviceLocator,
-			String name);
+                                        String name, List<PopulatorPostProcessor> postProcessors);
 	
     /**
      * Populates a {@link ServiceLocator} from all the modules in this registry.
      *
      * <p>
      * Default {@link InhabitantsParser} is used.
+     *
      *
      * @param name
      *      Determines which inhabitants descriptors are loaded.
@@ -113,9 +117,10 @@ public interface ModulesRegistry extends ModuleChangeListener {
      * @param h
      *      Habitat to initialize, null if it should be created
      *
+     * @param postProcessors
      * @return initialized Habitat
      */
-    void populateServiceLocator(String name, ServiceLocator h) throws MultiException;
+    void populateServiceLocator(String name, ServiceLocator h, List<PopulatorPostProcessor> postProcessors) throws MultiException;
 
     /**
      * Add a new <code>Repository</code> to this registry. From now on

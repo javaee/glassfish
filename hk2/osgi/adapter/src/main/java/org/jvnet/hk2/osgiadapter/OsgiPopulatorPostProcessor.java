@@ -47,6 +47,7 @@ import java.util.logging.Level;
 
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
@@ -68,7 +69,7 @@ public class OsgiPopulatorPostProcessor implements
 	}
 
 	@Override
-	public DescriptorImpl process(DescriptorImpl descriptorImpl) {
+	public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
         HK2Loader hk2Loader = new HK2Loader() {
 
 			@SuppressWarnings({ "unchecked", "rawtypes" })

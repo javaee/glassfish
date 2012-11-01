@@ -66,15 +66,12 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 @PerLookup
 public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
     private final HashSet<DescriptorImpl> dupSet = new HashSet<DescriptorImpl>();
-    
-    @Inject
-    private ServiceLocator locator;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.bootstrap.PopulatorPostProcessor#process(org.glassfish.hk2.utilities.DescriptorImpl)
      */
     @Override
-    public DescriptorImpl process(DescriptorImpl descriptorImpl) {
+    public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
         if (dupSet.contains(descriptorImpl)) {
             return null;
         }
@@ -96,7 +93,7 @@ public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
         final String fName = descriptorImpl.getName();
         final DescriptorImpl fDescriptorImpl = descriptorImpl;
         
-        if (locator.getBestDescriptor(new IndexedFilter() {
+        if (serviceLocator.getBestDescriptor(new IndexedFilter() {
 
             @Override
             public boolean matches(Descriptor d) {

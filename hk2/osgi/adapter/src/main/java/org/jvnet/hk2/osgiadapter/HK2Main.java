@@ -111,13 +111,13 @@ public class HK2Main extends Main implements
     @Override
     public ServiceLocator createServiceLocator(ModulesRegistry mr,
                                                StartupContext context,
-                                               Binder postProcessorBinder,
+                                               List<PopulatorPostProcessor> postProcessors,
                                                DescriptorFileFinder descriptorFileFinder)
             throws BootException {
 
         HabitatInfo habitatInfo = new HabitatInfo();
         
-        habitatInfo.serviceLocator = super.createServiceLocator(mr, context, postProcessorBinder, descriptorFileFinder);
+        habitatInfo.serviceLocator = super.createServiceLocator(mr, context, postProcessors, descriptorFileFinder);
         createHK2ServiceTracker(habitatInfo);
         // register ServiceLocator as an OSGi service
         habitatInfo.habitatRegistration = ctx.registerService(ServiceLocator.class.getName(), habitatInfo.serviceLocator, context.getArguments());

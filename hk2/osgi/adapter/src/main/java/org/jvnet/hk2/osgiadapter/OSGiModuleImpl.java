@@ -375,7 +375,7 @@ public class OSGiModuleImpl implements Module {
      * Parses all the inhabitants descriptors of the given name in this module.
      * @return 
      */
-    List<ActiveDescriptor> parseInhabitants(String name, ServiceLocator serviceLocator) throws IOException, BootException {
+    List<ActiveDescriptor> parseInhabitants(String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> populatorPostProcessors) throws IOException, BootException {
  
 		// This needs to be fixed to bring in the cache
 
@@ -387,7 +387,13 @@ public class OSGiModuleImpl implements Module {
         	final OSGiModuleImpl module = this;
 
         	this.serviceLocator = serviceLocator;
-    	    this.descriptors = HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), Arrays.asList(new OsgiPopulatorPostProcessor(module)));
+
+            ArrayList<PopulatorPostProcessor> allPostProcessors = new ArrayList<PopulatorPostProcessor>();
+            allPostProcessors.add(new OsgiPopulatorPostProcessor(module));
+            if (populatorPostProcessors != null) {
+              allPostProcessors.addAll(populatorPostProcessors);
+            }
+    	    this.descriptors = HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), allPostProcessors);
         }
         
         return this.descriptors;

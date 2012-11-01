@@ -49,6 +49,7 @@ import com.sun.enterprise.module.bootstrap.BootException;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.osgi.framework.Bundle;
 
 import java.io.File;
@@ -169,9 +170,9 @@ public class OSGiObrModuleImpl extends OSGiModuleImpl {
     }
 
     @Override
-    List<ActiveDescriptor> parseInhabitants(String name, ServiceLocator serviceLocator) throws IOException, BootException {
+    List<ActiveDescriptor> parseInhabitants(String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> populatorPostProcessors) throws IOException, BootException {
         init();
-        return super.parseInhabitants(name, serviceLocator);
+        return super.parseInhabitants(name, serviceLocator, populatorPostProcessors);
     }
 
     @Override

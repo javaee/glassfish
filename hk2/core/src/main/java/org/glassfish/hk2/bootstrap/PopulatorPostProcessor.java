@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.bootstrap;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -57,7 +58,9 @@ public interface PopulatorPostProcessor {
      * If this method returns a list the descriptors from the list will be added
      * to the service locator, and not the incoming descriptorImpl.  However, the
      * incoming descriptorImpl may be a member of the list.
-     * 
+     *
+     * @param serviceLocator the ServiceLocator being populated
+     *
      * @param descriptorImpl The descriptorImpl read from some external source.  This
      * processor can modify this descriptor fully.
      * 
@@ -65,5 +68,5 @@ public interface PopulatorPostProcessor {
      * the descriptor will be added to the system 
      * If this returns null then no descriptor will be added to the system.
      */
-     DescriptorImpl process(DescriptorImpl descriptorImpl);
+     DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl);
 }

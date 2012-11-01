@@ -78,6 +78,7 @@ import java.util.logging.Logger;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 
 /**
  * A module represents a set of resources accessible to third party modules. 
@@ -290,7 +291,7 @@ public final class ModuleImpl implements Module {
      * Parses all the inhabitants descriptors of the given name in this module.
      * @return 
      */
-    List<ActiveDescriptor> parseInhabitants(String name) throws IOException {
+    List<ActiveDescriptor> parseInhabitants(String name, List<PopulatorPostProcessor> postProcessors) throws IOException {
 		return null;
     }
 
