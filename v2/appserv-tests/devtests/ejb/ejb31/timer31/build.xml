@@ -20,6 +20,7 @@
         <antcall target="aroundtimeout"/>
         <antcall target="mdb"/>
         <antcall target="keepstate"/>
+        <antcall target="methodintf"/>
 
     </target>
 
@@ -63,6 +64,12 @@
         <record name="keepstate.output" action="start" />
             <ant dir="keepstate" target="all"/>
         <record name="keepstate.output" action="stop" />
+    </target>
+
+    <target name="methodintf">
+        <record name="methodintf.output" action="start" />
+            <ant dir="methodintf" target="all"/>
+        <record name="methodintf.output" action="stop" />
     </target>
 
     <target name="usage">
