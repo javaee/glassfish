@@ -62,6 +62,13 @@ public class TestServlet extends HttpServlet {
                 new TimerTask() {
                     @Override
                     public void run() {
+                        // Need to getResponse before calling dispatch
+                        PrintWriter writer = null;
+                        try {
+                            writer = ac.getResponse().getWriter();
+                        } catch(IOException ioe) {
+                            throw new RuntimeException(ioe);
+                        }
                         ac.dispatch();
                         // Make sure IllegalStateException is thrown, since
                         // ServletRequest#startAsync is called outside the
@@ -69,12 +76,7 @@ public class TestServlet extends HttpServlet {
                         try {
                             ac.getRequest().startAsync();
                         } catch (IllegalStateException e) {
-                            try {
-                                ac.getResponse().getWriter().println(
-                                    "Hello world");
-                            } catch (IOException ioe) {
-                                throw new RuntimeException(ioe);
-                            }
+                            writer.println("Hello world");
                         }
                     }
                 },
