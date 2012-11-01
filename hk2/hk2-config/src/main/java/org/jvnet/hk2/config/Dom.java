@@ -45,7 +45,6 @@ import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.component.*;
 import org.jvnet.hk2.config.provider.internal.Creator;
 import org.jvnet.hk2.config.provider.internal.CreatorImpl;
 
@@ -1393,26 +1392,18 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         return habitat;
     }
     
-    private static final HashSet<String> EMPTY_QUALIFIERS = new HashSet<String>();
-    
     private static DescriptorImpl createDescriptor(
             String typeName,
             HK2Loader cl,
             Map<String, List<String>> metadata) {
-        return new DescriptorImpl(
-                Collections.singleton(typeName),
-                null,
-                null,
-                typeName,
-                metadata,
-                EMPTY_QUALIFIERS,
-                DescriptorType.CLASS,
-                cl,
-                0,
-                null,
-                null,
-                null,
-                null);
+        DescriptorImpl retVal = new DescriptorImpl();
+        
+        retVal.setImplementation(typeName);
+        retVal.addAdvertisedContract(typeName);
+        retVal.setLoader(cl);
+        retVal.setMetadata(metadata);
+        
+        return retVal;
     }
     
     public int hashCode() {

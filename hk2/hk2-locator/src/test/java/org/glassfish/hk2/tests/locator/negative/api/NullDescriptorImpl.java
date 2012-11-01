@@ -47,6 +47,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.HK2Loader;
 
 /**
@@ -132,6 +133,14 @@ public class NullDescriptorImpl implements Descriptor {
     @Override
     public DescriptorType getDescriptorType() {
         return type;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getDescriptorVisibility()
+     */
+    @Override
+    public DescriptorVisibility getDescriptorVisibility() {
+        return DescriptorVisibility.NORMAL;
     }
     
     public void unNullMetadata() {

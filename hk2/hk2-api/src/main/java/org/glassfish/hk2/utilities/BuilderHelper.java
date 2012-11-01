@@ -52,6 +52,7 @@ import java.util.Set;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
@@ -362,6 +363,7 @@ public class BuilderHelper {
                 new HashMap<String, List<String>>(),
                 qualifiers,
                 type,
+                DescriptorVisibility.NORMAL,
                 null,
                 0,
                 proxy,

@@ -42,6 +42,7 @@ package org.glassfish.hk2.utilities;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.HK2Loader;
 
@@ -174,6 +175,25 @@ public interface DescriptorBuilder {
      * the given value
      */
 	public DescriptorBuilder proxy(boolean forceProxy);
+	
+	/**
+     * This will cause the descriptorVisibility field of the returned
+     * descriptor to return LOCAL
+     * 
+     * @return A DescriptorBuilder with the descriptorVisibility
+     * field to be set to LOCAL
+     */
+    public DescriptorBuilder localOnly();
+    
+    /**
+     * This will set the descriptorVisibility field of the returned
+     * descriptor
+     * 
+     * @param visibility The non-null visibility that this descriptor should take
+     * @return A DescriptorBuilder with the descriptorVisibility field
+     * set to the input value
+     */
+    public DescriptorBuilder visibility(DescriptorVisibility visibility);
     
     /**
      * Call this if this descriptor should be loaded with the given HK2Loader
