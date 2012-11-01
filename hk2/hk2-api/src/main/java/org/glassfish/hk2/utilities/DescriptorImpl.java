@@ -53,6 +53,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -74,10 +75,12 @@ public class DescriptorImpl implements Descriptor, Serializable {
     private final static String SCOPE_KEY = "scope=";
     private final static String QUALIFIER_KEY = "qualifier=";
     private final static String TYPE_KEY = "type=";
+    private final static String VISIBILITY_KEY = "visibility=";
     private final static String METADATA_KEY = "metadata=";
     private final static String RANKING_KEY = "rank=";
     private final static String PROXIABLE_KEY = "proxiable=";
     private final static String FACTORY_DT = "FACTORY";
+    private final static String LOCAL_DT = "LOCAL";
     private final static String START_START = "[";
     private final static String END_START = "]";
     private final static char END_START_CHAR = ']';
@@ -89,6 +92,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private final Map<String, List<String>> metadatas = new LinkedHashMap<String, List<String>>();
 	private Set<String> qualifiers = new LinkedHashSet<String>();
 	private DescriptorType descriptorType = DescriptorType.CLASS;
+	private DescriptorVisibility descriptorVisibility = DescriptorVisibility.NORMAL;
 	private HK2Loader loader;
 	private int rank;
 	private Boolean proxiable;
@@ -112,6 +116,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
         scope = copyMe.getScope();
         implementation = copyMe.getImplementation();
         descriptorType = copyMe.getDescriptorType();
+        descriptorVisibility = copyMe.getDescriptorVisibility();
         loader = copyMe.getLoader();
         rank = copyMe.getRanking();
         proxiable = copyMe.isProxiable();
@@ -158,6 +163,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			Map<String, List<String>> metadatas,
 			Set<String> qualifiers,
 			DescriptorType descriptorType,
+			DescriptorVisibility descriptorVisibility,
 			HK2Loader loader,
 			int rank,
 			Boolean proxiable,
@@ -173,6 +179,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.metadatas.putAll(ReflectionHelper.deepCopyMetadata(metadatas));
 		this.qualifiers.addAll(qualifiers);
 		this.descriptorType = descriptorType;
+		this.descriptorVisibility = descriptorVisibility;
 		this.id = id;
 		this.rank = rank;
 		this.proxiable = proxiable;
@@ -282,6 +289,20 @@ public class DescriptorImpl implements Descriptor, Serializable {
     public synchronized void setDescriptorType(DescriptorType descriptorType) {
         if (descriptorType == null) throw new IllegalArgumentException();
         this.descriptorType = descriptorType;
+    }
+    
+    @Override
+    public synchronized DescriptorVisibility getDescriptorVisibility() {
+        return descriptorVisibility;
+    }
+    
+    /**
+     * Sets the descriptor visilibity
+     * @param descriptorType The descriptor type.  May not be null
+     */
+    public synchronized void setDescriptorVisibility(DescriptorVisibility descriptorVisibility) {
+        if (descriptorVisibility == null) throw new IllegalArgumentException();
+        this.descriptorVisibility = descriptorVisibility;
     }
 
 	@Override
@@ -453,6 +474,9 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    if (descriptorType != null) {
 	        retVal ^= descriptorType.hashCode();
 	    }
+	    if (descriptorVisibility != null) {
+            retVal ^= descriptorVisibility.hashCode();
+        }
 	    if (metadatas != null) {
 	        for (Map.Entry<String, List<String>> entries : metadatas.entrySet()) {
 	            retVal ^= entries.getKey().hashCode();
@@ -529,6 +553,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    if (!safeEquals(scope, d.getScope())) return false;
 	    if (!equalOrderedCollection(qualifiers, d.getQualifiers())) return false;
 	    if (!safeEquals(descriptorType, d.getDescriptorType())) return false;
+	    if (!safeEquals(descriptorVisibility, d.getDescriptorVisibility())) return false;
 	    if (!equalMetadata(metadatas, d.getMetadata())) return false;
 	    if (!safeEquals(proxiable, d.isProxiable())) return false;
 	    
@@ -559,6 +584,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
         sb.append(ReflectionHelper.writeSet(d.getQualifiers()));
         
         sb.append("\n\tdescriptorType=" + d.getDescriptorType());
+        
+        sb.append("\n\tdescriptorVisibility=" + d.getDescriptorVisibility());
         
         sb.append("\n\tmetadata=");
         sb.append(ReflectionHelper.writeMetadata(d.getMetadata()));
@@ -624,6 +651,10 @@ public class DescriptorImpl implements Descriptor, Serializable {
         
         if (descriptorType != null && descriptorType.equals(DescriptorType.PROVIDE_METHOD)) {
             out.println(TYPE_KEY + FACTORY_DT);
+        }
+        
+        if (descriptorVisibility != null && descriptorVisibility.equals(DescriptorVisibility.LOCAL)) {
+            out.println(VISIBILITY_KEY + LOCAL_DT);
         }
         
         if (rank != 0) {
@@ -703,6 +734,11 @@ public class DescriptorImpl implements Descriptor, Serializable {
                     else if (leftHandSide.equals(TYPE_KEY)) {
                         if (rightHandSide.equals(FACTORY_DT)) {
                             descriptorType = DescriptorType.PROVIDE_METHOD;
+                        }
+                    }
+                    else if (leftHandSide.equals(VISIBILITY_KEY)) {
+                        if (rightHandSide.equals(LOCAL_DT)) {
+                            descriptorVisibility = DescriptorVisibility.LOCAL;
                         }
                     }
                     else if (leftHandSide.equals(METADATA_KEY)) {

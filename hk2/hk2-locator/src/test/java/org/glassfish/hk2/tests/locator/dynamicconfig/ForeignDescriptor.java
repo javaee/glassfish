@@ -47,6 +47,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
 
@@ -108,6 +109,14 @@ public class ForeignDescriptor implements Descriptor {
     @Override
     public DescriptorType getDescriptorType() {
         return DescriptorType.CLASS;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getDescriptorVisibility()
+     */
+    @Override
+    public DescriptorVisibility getDescriptorVisibility() {
+        return DescriptorVisibility.NORMAL;
     }
 
     /* (non-Javadoc)

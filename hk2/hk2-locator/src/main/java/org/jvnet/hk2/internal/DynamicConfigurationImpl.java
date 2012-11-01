@@ -223,6 +223,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         if (d.getImplementation() == null) throw new IllegalArgumentException();
         if (d.getAdvertisedContracts() == null) throw new IllegalArgumentException();
         if (d.getDescriptorType() == null) throw new IllegalArgumentException();
+        if (d.getDescriptorVisibility() == null) throw new IllegalArgumentException();
         if (d.getMetadata() == null) throw new IllegalArgumentException();
         if (d.getQualifiers() == null) throw new IllegalArgumentException();
     }

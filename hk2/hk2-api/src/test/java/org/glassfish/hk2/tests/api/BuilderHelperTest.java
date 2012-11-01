@@ -54,6 +54,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
@@ -133,6 +134,7 @@ public class BuilderHelperTest {
 				has(KEY_A, VALUE_A).
 				has(KEY_B, multiValue).
 				qualifiedBy(Red.class.getName()).
+				localOnly().
 				build();
 		
 		Assert.assertNotNull(predicate);
@@ -158,6 +160,8 @@ public class BuilderHelperTest {
 		Assert.assertTrue(correctSet.containsAll(predicate.getQualifiers()));
 		
 		Assert.assertEquals(NAME, predicate.getName());
+		
+		Assert.assertEquals(DescriptorVisibility.LOCAL, predicate.getDescriptorVisibility());
 		
 		Assert.assertNotNull(predicate.getScope());
 		Assert.assertEquals(Singleton.class.getName(), predicate.getScope());
@@ -493,5 +497,39 @@ public class BuilderHelperTest {
         Assert.assertEquals(ServiceWithUseProxy.class.getName(), di.getImplementation());
         Assert.assertTrue(di.getAdvertisedContracts().contains(ServiceWithUseProxy.class.getName()));
         Assert.assertEquals(Boolean.FALSE, di.isProxiable());
+    }
+    
+    /**
+     * This predicate will have two of those things which allow multiples and
+     * one thing of all other things
+     */
+    @Test
+    public void testSetVisibility() {
+        
+        Descriptor predicate1 = BuilderHelper.link(AnotherService.class.getName()).
+                visibility(DescriptorVisibility.LOCAL).
+                build();
+        
+        Assert.assertNotNull(predicate1);
+        Assert.assertEquals(DescriptorVisibility.LOCAL, predicate1.getDescriptorVisibility());
+        
+        Descriptor predicate2 = BuilderHelper.link(AnotherService.class.getName()).
+                visibility(DescriptorVisibility.NORMAL).
+                build();
+        
+        Assert.assertNotNull(predicate2);
+        Assert.assertEquals(DescriptorVisibility.NORMAL, predicate2.getDescriptorVisibility());
+        
+        Assert.assertFalse(predicate1.equals(predicate2));
+        
+        try {
+            BuilderHelper.link(AnotherService.class.getName()).
+                visibility(null);
+            Assert.fail("Should have thrown IllegalArgumentException");
+        }
+        catch (IllegalArgumentException iae) {
+            // Success
+        }
+        
     }
 }

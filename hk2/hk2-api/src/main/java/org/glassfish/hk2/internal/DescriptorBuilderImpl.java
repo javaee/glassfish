@@ -52,6 +52,7 @@ import javax.inject.Named;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.HK2Loader;
@@ -74,6 +75,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	private HK2Loader loader = null;
 	private int rank = 0;
 	private Boolean proxy = null;
+	private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
 	
 	/**
 	 * The basid constructor
@@ -238,6 +240,22 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         return this;
     }
     
+    @Override
+    public DescriptorBuilder localOnly() {
+        visibility = DescriptorVisibility.LOCAL;
+        
+        return this;
+    }
+
+    @Override
+    public DescriptorBuilder visibility(DescriptorVisibility visibility) {
+        if (visibility == null) throw new IllegalArgumentException();
+        
+        this.visibility = visibility;
+        
+        return this;
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.DescriptorBuilder#andLoadWith(org.glassfish.hk2.api.HK2Loader)
      */
@@ -263,6 +281,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 				metadatas,
 				qualifiers,
 				DescriptorType.CLASS,
+				visibility,
 				loader,
 				rank,
 				proxy,
@@ -290,6 +309,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 factoryMetadata,
                 factoryQualifiers,
                 DescriptorType.CLASS,
+                visibility,
                 loader,
                 rank,
                 null,
@@ -309,6 +329,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 metadatas,
                 qualifiers,
                 DescriptorType.PROVIDE_METHOD,
+                visibility,
                 loader,
                 rank,
                 proxy,
@@ -338,4 +359,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         
         return buildFactory(factoryScope.getName());
     }
+
+    
 }

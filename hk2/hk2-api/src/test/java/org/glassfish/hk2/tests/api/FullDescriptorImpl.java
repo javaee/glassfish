@@ -49,6 +49,7 @@ import java.util.Set;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
@@ -116,6 +117,7 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
                 FULL_METADATA,
                 FULL_ANNOTATIONS,
                 DescriptorType.PROVIDE_METHOD,
+                DescriptorVisibility.LOCAL,
                 new HK2LoaderImpl(),
                 FULL_INITIAL_RANK,
                 FULL_INITIAL_PROXIABLE,

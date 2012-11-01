@@ -55,6 +55,7 @@ import java.util.Set;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
@@ -186,6 +187,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     @Override
     public DescriptorType getDescriptorType() {
         return baseDescriptor.getDescriptorType();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#getDescriptorType()
+     */
+    @Override
+    public DescriptorVisibility getDescriptorVisibility() {
+        return baseDescriptor.getDescriptorVisibility();
     }
     
     /* (non-Javadoc)

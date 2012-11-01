@@ -131,6 +131,22 @@ public interface Descriptor {
      * @return Either CLASS or FACTORY
      */
     public DescriptorType getDescriptorType();
+    
+    /**
+     * Returns the visibility of this descriptor.
+     * <p>
+     * If the visibility is NORMAL then this descriptor
+     * may be seen by all children locators of the
+     * locator in which this descriptor is bound
+     * <p>
+     * If the visibility is LOCAL then this descriptor
+     * may only be seen by the servcie locator in which
+     * it is bound, and in none of the children
+     * of that locator
+     * 
+     * @return Either NORMAL or LOCAL
+     */
+    public DescriptorVisibility getDescriptorVisibility();
 	
 	/**
 	 * Returns all of the metadata associated

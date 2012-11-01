@@ -55,6 +55,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -85,6 +86,8 @@ public class DescriptorImplTest {
         Assert.assertTrue(desc.getQualifiers().isEmpty());
         
         Assert.assertEquals(DescriptorType.CLASS, desc.getDescriptorType());
+        
+        Assert.assertEquals(DescriptorVisibility.NORMAL, desc.getDescriptorVisibility());
         
         Assert.assertNotNull(desc.getMetadata());
         Assert.assertTrue(desc.getMetadata().isEmpty());
@@ -125,6 +128,8 @@ public class DescriptorImplTest {
         Assert.assertTrue(full.getQualifiers().contains(Blue.class.getName()));
         
         Assert.assertEquals(DescriptorType.PROVIDE_METHOD, full.getDescriptorType());
+        
+        Assert.assertEquals(DescriptorVisibility.LOCAL, full.getDescriptorVisibility());
         
         Assert.assertNotNull(full.getMetadata());
         Map<String, List<String>> metadata = full.getMetadata();
@@ -308,6 +313,27 @@ public class DescriptorImplTest {
         
         desc.setDescriptorType(DescriptorType.CLASS);
         Assert.assertEquals(DescriptorType.CLASS, desc.getDescriptorType());
+    }
+    
+    /**
+     * Tests setting the descriptor type
+     */
+    @Test
+    public void testSetVisibility() {
+        DescriptorImpl desc = new DescriptorImpl();
+        
+        try {
+            desc.setDescriptorVisibility(null);
+            Assert.fail("Should not be able to set the descriptor visibility to null");
+        }
+        catch (IllegalArgumentException iae) {
+        }
+        
+        desc.setDescriptorVisibility(DescriptorVisibility.LOCAL);
+        Assert.assertEquals(DescriptorVisibility.LOCAL, desc.getDescriptorVisibility());
+        
+        desc.setDescriptorVisibility(DescriptorVisibility.NORMAL);
+        Assert.assertEquals(DescriptorVisibility.NORMAL, desc.getDescriptorVisibility());
     }
     
     /**
