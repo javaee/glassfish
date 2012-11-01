@@ -64,6 +64,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
@@ -200,7 +201,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return true;
     }
     
-    private List<ActiveDescriptor<?>> getDescriptors(Filter filter, Injectee onBehalfOf, boolean getParents, boolean doValidation) {
+    private List<ActiveDescriptor<?>> getDescriptors(Filter filter,
+            Injectee onBehalfOf,
+            boolean getParents,
+            boolean doValidation,
+            boolean getLocals) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
         synchronized (lock) {
@@ -253,6 +258,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
             
             for (SystemDescriptor<?> candidate : sortMeOut) {
+                if (!getLocals && DescriptorVisibility.LOCAL.equals(candidate.getDescriptorVisibility())) {
+                    continue;
+                }
+                
                 if (doValidation && !validate(candidate, onBehalfOf, filter)) continue;
                 
                 if (filter.matches(candidate)) {
@@ -264,7 +273,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
                 
                 sorter.addAll(retVal);
-                sorter.addAll(parent.getDescriptors(filter, onBehalfOf, getParents, doValidation));
+                sorter.addAll(parent.getDescriptors(filter, onBehalfOf, getParents, doValidation, false));
                 
                 retVal.clear();
                 
@@ -295,7 +304,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public List<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         checkState();
         
-        return getDescriptors(filter, null, true, true);
+        return getDescriptors(filter, null, true, true, true);
     }
     
     public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
@@ -733,7 +742,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
           }
           
           if (results == null) {
-            List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false);
+            List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false, true);
             results = narrow(this, candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
             if (!results.getErrors().isEmpty()) {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
@@ -874,7 +883,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
           }
           
           if (results == null) {
-              List<ActiveDescriptor<?>> candidates = getDescriptors(filter, null, true, false);
+              List<ActiveDescriptor<?>> candidates = getDescriptors(filter, null, true, false, true);
               results = narrow(this, candidates, contractOrImpl, null, true, null, qualifiers);
               if (!results.getErrors().isEmpty()) {
                   currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
@@ -1012,7 +1021,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         HashSet<String> affectedContracts = new HashSet<String>();
         
         for (Filter unbindFilter : dci.getUnbindFilters()) {
-            List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false, false);
+            List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false, false, true);
             
             for (ActiveDescriptor<?> result : results) {
                 affectedContracts.addAll(result.getAdvertisedContracts());

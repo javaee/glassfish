@@ -52,9 +52,12 @@ public class VisibilityTest {
     private final static String TEST_NAME = "VisibilityTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new VisibilityModule());
     
-    @Test @Ignore
+    /**
+     * Tests basic visibility
+     */
+    @Test
     public void testLocalVisibility() {
-        ServiceLocator child = LocatorHelper.create("child", locator, null);
+        ServiceLocator child = LocatorHelper.create(TEST_NAME + "child", locator, null);
         
         // First make sure both services are available in the parent
         Assert.assertNotNull(locator.getService(LocalService.class));
