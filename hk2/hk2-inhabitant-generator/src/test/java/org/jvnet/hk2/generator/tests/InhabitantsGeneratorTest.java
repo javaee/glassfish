@@ -59,6 +59,7 @@ import javax.inject.Singleton;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -497,6 +498,27 @@ public class InhabitantsGeneratorTest {
             envItself.setScope(Singleton.class.getName());
             envItself.setProxiable(Boolean.FALSE);
             envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a factory with false @UseProxy on the provide method.  Service descriptor
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(LocalService.class.getName());
+            envItself.addAdvertisedContract(LocalService.class.getName());
+            envItself.setScope(Singleton.class.getName());
+            envItself.setDescriptorVisibility(DescriptorVisibility.LOCAL);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a factory with false @UseProxy on the provide method.  Service descriptor
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(NormalService.class.getName());
+            envItself.addAdvertisedContract(NormalService.class.getName());
+            envItself.setScope(Singleton.class.getName());
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
