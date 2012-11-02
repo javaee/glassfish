@@ -66,7 +66,7 @@ public class StlesEJB implements Stles {
     }
 
     public boolean verifyTimers() {
-        return t1 && t2 && t3;
+        return ct && t1 && t2 && t3;
     }
 
 }
