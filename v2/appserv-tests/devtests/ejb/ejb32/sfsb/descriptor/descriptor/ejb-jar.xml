@@ -43,17 +43,8 @@
       <description>RequiresNew</description>
       <method>
         <ejb-name>SFSB</ejb-name>
-        <method-name>init</method-name>
-        <method-params/>
-      </method>
-      <trans-attribute>RequiresNew</trans-attribute>
-    </container-transaction>
-    <container-transaction>
-      <description>RequiresNew</description>
-      <method>
-        <ejb-name>SFSB</ejb-name>
-        <method-name>destroy</method-name>
-        <method-params/>
+        <method-intf>LifecycleCallback</method-intf>
+        <method-name>*</method-name>
       </method>
       <trans-attribute>RequiresNew</trans-attribute>
     </container-transaction>
