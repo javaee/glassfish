@@ -1024,7 +1024,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false, false, true);
             
             for (ActiveDescriptor<?> result : results) {
-                affectedContracts.addAll(result.getAdvertisedContracts());
+                affectedContracts.addAll(getAllContracts(result));
                 
                 SystemDescriptor<?> candidate = (SystemDescriptor<?>) result;
                 
@@ -1053,7 +1053,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
-            affectedContracts.addAll(sd.getAdvertisedContracts());
+            affectedContracts.addAll(getAllContracts(sd));
             
             boolean checkScope = false;
             if (sd.getAdvertisedContracts().contains(ValidationService.class.getName()) ||
@@ -1094,6 +1094,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
             if (checkScope) {
                 String scope = (sd.getScope() == null) ? PerLookup.class.getName() : sd.getScope() ;
+                
                 if (!scope.equals(Singleton.class.getName())) {
                     throw new MultiException(new IllegalArgumentException(
                             "The implementation class " +  sd.getImplementation() + " must be in the Singleton scope"));
@@ -1120,6 +1121,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 affectedContracts);
     }
     
+    private static List<String> getAllContracts(ActiveDescriptor<?> desc) {
+        LinkedList<String> allContracts = new LinkedList<String>(desc.getAdvertisedContracts());
+        allContracts.addAll(desc.getQualifiers());
+        String scope = (desc.getScope() == null) ? PerLookup.class.getName() : desc.getScope() ;
+        allContracts.add(scope);
+        
+        return allContracts;
+    }
+    
     @SuppressWarnings("unchecked")
     private void removeConfigurationInternal(SortedSet<SystemDescriptor<?>> unbinds) {
         for (SystemDescriptor<?> unbind : unbinds) {
@@ -1132,7 +1142,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
             allDescriptors.removeDescriptor(unbind);
             
-            for (String advertisedContract : unbind.getAdvertisedContracts()) {
+            for (String advertisedContract : getAllContracts(unbind)) {
                 IndexedListData ild = descriptorsByAdvertisedContract.get(advertisedContract);
                 if (ild == null) continue;
                 
@@ -1196,10 +1206,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             thingsAdded.add(sd);
             allDescriptors.addDescriptor(sd);
             
-            LinkedList<String> allContracts = new LinkedList<String>(sd.getAdvertisedContracts());
-            allContracts.addAll(sd.getQualifiers());
-            String scope = (sd.getScope() == null) ? PerLookup.class.getName() : sd.getScope() ;
-            allContracts.add(scope);
+            List<String> allContracts = getAllContracts(sd);
             
             for (String advertisedContract : allContracts) {
                 IndexedListData ild = descriptorsByAdvertisedContract.get(advertisedContract);
