@@ -70,6 +70,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     private HK2Loader loader = null;
     private int rank = 0;
     private Boolean proxy = null;
+    private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
     
     public ActiveDescriptorBuilderImpl(Class<?> implementation) {
         this.implementation = implementation;
@@ -177,19 +178,35 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         return this;
     }
     
+    @Override
+    public ActiveDescriptorBuilder localOnly() {
+        visibility = DescriptorVisibility.LOCAL;
+        
+        return this;
+    }
+
+    @Override
+    public ActiveDescriptorBuilder visibility(DescriptorVisibility visibility) {
+        if (visibility == null) throw new IllegalArgumentException();
+        
+        this.visibility = visibility;
+        
+        return this;
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.ActiveDescriptorBuilder#build()
      */
     @Override
-    public AbstractActiveDescriptor<?> build() throws IllegalArgumentException {
-        return new BuiltActiveDescriptor<Object>(
+    public <T> AbstractActiveDescriptor<T> build() throws IllegalArgumentException {
+        return new BuiltActiveDescriptor<T>(
                 implementation,
                 contracts,
                 scope,
                 name,
                 qualifiers,
                 DescriptorType.CLASS,
-                DescriptorVisibility.NORMAL,
+                visibility,
                 rank,
                 proxy,
                 metadatas,
@@ -197,18 +214,27 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     }
     
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.utilities.ActiveDescriptorBuilder#buildFactory()
+     * @see org.glassfish.hk2.utilities.ActiveDescriptorBuilder#buildProvideMethod()
      */
     @Override
-    public AbstractActiveDescriptor<?> buildFactory() throws IllegalArgumentException {
-        return new BuiltActiveDescriptor<Object>(
+    @Deprecated
+    public <T> AbstractActiveDescriptor<T> buildFactory() throws IllegalArgumentException {
+        return buildProvideMethod();
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.ActiveDescriptorBuilder#buildProvideMethod()
+     */
+    @Override
+    public <T> AbstractActiveDescriptor<T> buildProvideMethod() throws IllegalArgumentException {
+        return new BuiltActiveDescriptor<T>(
                 implementation,
                 contracts,
                 scope,
                 name,
                 qualifiers,
                 DescriptorType.PROVIDE_METHOD,
-                DescriptorVisibility.NORMAL,
+                visibility,
                 rank,
                 proxy,
                 metadatas,
@@ -268,6 +294,8 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         }
         
     }
+
+    
     
 
 }
