@@ -75,6 +75,7 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
         dci.bind(BuilderHelper.link(DynamicConfigurationServiceImpl.class, false).
                 to(DynamicConfigurationService.class).
                 in(Singleton.class.getName()).
+                localOnly().
                 build());
         
         dci.commit();
