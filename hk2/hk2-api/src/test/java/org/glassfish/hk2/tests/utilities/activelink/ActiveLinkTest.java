@@ -48,6 +48,7 @@ import javax.inject.Singleton;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
@@ -102,6 +103,8 @@ public class ActiveLinkTest {
                 named(NAME).
                 has(NAME, NAME).
                 ofRank(1).
+                proxy().
+                localOnly().
                 andLoadWith(new HK2Loader() {
 
                     @Override
@@ -121,6 +124,9 @@ public class ActiveLinkTest {
         
         Assert.assertEquals(Singleton.class, desc.getScopeAnnotation());
         Assert.assertEquals(Singleton.class.getName(), desc.getScope());
+        
+        Assert.assertEquals(Boolean.TRUE, desc.isProxiable());
+        Assert.assertEquals(DescriptorVisibility.LOCAL, desc.getDescriptorVisibility());
         
         testSetOfOne(desc.getAdvertisedContracts(), SimpleInterface1.class.getName());
         testSetOfOne(desc.getContractTypes(), SimpleInterface1.class);
@@ -162,6 +168,87 @@ public class ActiveLinkTest {
         Assert.assertNull(desc.getBaseDescriptor());
         Assert.assertNotNull(desc.getLoader());
         Assert.assertSame(DescriptorType.CLASS, desc.getDescriptorType());
+        Assert.assertTrue(desc.getInjectees().isEmpty());
+        
+        Assert.assertFalse(desc.isReified());
+    }
+    
+    @Test
+    public void testFactoryDescWithFields() {
+        SimpleQualifier1 sq1 = new SimpleQualifier1Impl();
+        
+        AbstractActiveDescriptor<?> desc = BuilderHelper.activeLink(ServiceA.class).
+                to(SimpleInterface1.class).
+                in(Singleton.class).
+                qualifiedBy(sq1).
+                named(NAME).
+                has(NAME, NAME).
+                ofRank(1).
+                proxy(false).
+                visibility(DescriptorVisibility.LOCAL).
+                andLoadWith(new HK2Loader() {
+
+                    @Override
+                    public Class<?> loadClass(String className)
+                            throws MultiException {
+                        throw new AssertionError("not called");
+                    }
+                    
+                }).
+                buildFactory();
+                
+        
+        Assert.assertSame(ServiceA.class, desc.getImplementationClass());
+        Assert.assertSame(ServiceA.class.getName(), desc.getImplementation());
+        
+        Assert.assertSame(NAME, desc.getName());
+        
+        Assert.assertEquals(Singleton.class, desc.getScopeAnnotation());
+        Assert.assertEquals(Singleton.class.getName(), desc.getScope());
+        
+        Assert.assertEquals(Boolean.FALSE, desc.isProxiable());
+        Assert.assertEquals(DescriptorVisibility.LOCAL, desc.getDescriptorVisibility());
+        
+        testSetOfOne(desc.getAdvertisedContracts(), SimpleInterface1.class.getName());
+        testSetOfOne(desc.getContractTypes(), SimpleInterface1.class);
+        
+        boolean foundSQ1 = false;
+        boolean foundName = false;
+        for (Annotation anno : desc.getQualifierAnnotations()) {
+            if (anno.annotationType().equals(SimpleQualifier1.class)) {
+                foundSQ1 = true;
+            }
+            else if (anno.annotationType().equals(Named.class)) {
+                String annoName = ((Named) anno).value();
+                Assert.assertSame(annoName, NAME);
+                foundName = true;
+            }
+            else {
+                Assert.fail("Unknown annotation found " + anno);
+            }
+        }
+        Assert.assertTrue(foundName);
+        Assert.assertTrue(foundSQ1);
+        
+        foundSQ1 = false;
+        foundName = false;
+        for (String anno : desc.getQualifiers()) {
+            if (anno.equals(SimpleQualifier1.class.getName())) {
+                foundSQ1 = true;
+            }
+            else if (anno.equals(Named.class.getName())) {
+                foundName = true;
+            }
+            else {
+                Assert.fail("Unknown annotation found " + anno);
+            }
+        }
+        Assert.assertTrue(foundName);
+        Assert.assertTrue(foundSQ1);
+        
+        Assert.assertNull(desc.getBaseDescriptor());
+        Assert.assertNotNull(desc.getLoader());
+        Assert.assertSame(DescriptorType.PROVIDE_METHOD, desc.getDescriptorType());
         Assert.assertTrue(desc.getInjectees().isEmpty());
         
         Assert.assertFalse(desc.isReified());

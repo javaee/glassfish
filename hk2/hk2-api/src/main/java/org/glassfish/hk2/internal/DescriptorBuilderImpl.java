@@ -309,7 +309,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 factoryMetadata,
                 factoryQualifiers,
                 DescriptorType.CLASS,
-                visibility,
+                DescriptorVisibility.NORMAL,
                 loader,
                 rank,
                 null,

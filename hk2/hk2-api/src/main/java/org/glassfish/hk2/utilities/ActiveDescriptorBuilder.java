@@ -43,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.HK2Loader;
 
 /**
@@ -132,6 +133,25 @@ public interface ActiveDescriptorBuilder {
     public ActiveDescriptorBuilder ofRank(int rank);
     
     /**
+     * This will cause the descriptorVisibility field of the returned
+     * descriptor to return LOCAL
+     * 
+     * @return A DescriptorBuilder with the descriptorVisibility
+     * field to be set to LOCAL
+     */
+    public ActiveDescriptorBuilder localOnly();
+    
+    /**
+     * This will set the descriptorVisibility field of the returned
+     * descriptor
+     * 
+     * @param visibility The non-null visibility that this descriptor should take
+     * @return A DescriptorBuilder with the descriptorVisibility field
+     * set to the input value
+     */
+    public ActiveDescriptorBuilder visibility(DescriptorVisibility visibility);
+    
+    /**
      * This will cause the isProxiable field of the returned
      * descriptor to return true (it will force this
      * descriptor to use proxies).
@@ -166,14 +186,25 @@ public interface ActiveDescriptorBuilder {
      * @return The descriptor that has been built up
      * @throws IllegalArgumentException if the built descriptor is invalid
      */
-    public AbstractActiveDescriptor<?> build() throws IllegalArgumentException;
+    public <T> AbstractActiveDescriptor<T> build() throws IllegalArgumentException;
     
     /**
      * Generates a descriptor that can be used in binding operations that
-     * describes a factory
+     * describes a factorys provide method
      * 
-     * @return The descriptor that has been built up, of type FACTORY 
+     * @return The descriptor that has been built up, of type PROVIDE_METHOD 
+     * @throws IllegalArgumentException if the built descriptor is invalid
+     * @deprecated Use buildProvideMethod instead
+     */
+    @Deprecated
+    public <T> AbstractActiveDescriptor<T> buildFactory() throws IllegalArgumentException;
+    
+    /**
+     * Generates a descriptor that can be used in binding operations that
+     * describes a factorys provide method
+     * 
+     * @return The descriptor that has been built up, of type PROVIDE_METHOD 
      * @throws IllegalArgumentException if the built descriptor is invalid
      */
-    public AbstractActiveDescriptor<?> buildFactory() throws IllegalArgumentException;
+    public <T> AbstractActiveDescriptor<T> buildProvideMethod() throws IllegalArgumentException;
 }

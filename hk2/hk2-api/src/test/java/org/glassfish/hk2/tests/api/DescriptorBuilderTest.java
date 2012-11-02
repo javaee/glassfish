@@ -52,6 +52,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.HK2Loader;
@@ -89,6 +90,7 @@ public class DescriptorBuilderTest {
             andLoadWith(loader).
             has(KEY, VALUE).
             proxy(false).
+            localOnly().
             buildFactory();
         
         {
@@ -99,6 +101,7 @@ public class DescriptorBuilderTest {
             Assert.assertTrue(asService instanceof DescriptorImpl);
         
             Assert.assertEquals(DescriptorType.CLASS, asService.getDescriptorType());
+            Assert.assertEquals(DescriptorVisibility.NORMAL, asService.getDescriptorVisibility());
             Assert.assertEquals(FACTORY_CLASS_NAME, asService.getImplementation());
             Assert.assertEquals(PerLookup.class.getName(), asService.getScope());
             Assert.assertEquals(MY_RANK, asService.getRanking());
@@ -122,6 +125,7 @@ public class DescriptorBuilderTest {
             Assert.assertTrue(asFactory instanceof DescriptorImpl);
         
             Assert.assertEquals(DescriptorType.PROVIDE_METHOD, asFactory.getDescriptorType());
+            Assert.assertEquals(DescriptorVisibility.LOCAL, asFactory.getDescriptorVisibility());
             Assert.assertEquals(FACTORY_CLASS_NAME, asFactory.getImplementation());
             Assert.assertEquals(Singleton.class.getName(), asFactory.getScope());
             Assert.assertEquals(MY_RANK, asFactory.getRanking());
