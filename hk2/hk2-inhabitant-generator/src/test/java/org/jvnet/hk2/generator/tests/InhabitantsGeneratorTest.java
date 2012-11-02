@@ -503,7 +503,7 @@ public class InhabitantsGeneratorTest {
         }
         
         {
-            // From a factory with false @UseProxy on the provide method.  Service descriptor
+            // From a service with LOCAL visibility
             DescriptorImpl envItself = new DescriptorImpl();
             envItself.setImplementation(LocalService.class.getName());
             envItself.addAdvertisedContract(LocalService.class.getName());
@@ -514,11 +514,33 @@ public class InhabitantsGeneratorTest {
         }
         
         {
-            // From a factory with false @UseProxy on the provide method.  Service descriptor
+            // From a service with NORMAL visiblity
             DescriptorImpl envItself = new DescriptorImpl();
             envItself.setImplementation(NormalService.class.getName());
             envItself.addAdvertisedContract(NormalService.class.getName());
             envItself.setScope(Singleton.class.getName());
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a factory with LOCAL visiblity (service descriptor)
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(FactoryWithVisibility.class.getName());
+            envItself.addAdvertisedContract(FactoryWithVisibility.class.getName());
+            envItself.addAdvertisedContract(Factory.class.getName());
+            envItself.setDescriptorVisibility(DescriptorVisibility.LOCAL);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a factory with LOCAL visibility (method descriptor)
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(FactoryWithVisibility.class.getName());
+            envItself.addAdvertisedContract(String.class.getName());
+            envItself.setDescriptorVisibility(DescriptorVisibility.LOCAL);
+            envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
