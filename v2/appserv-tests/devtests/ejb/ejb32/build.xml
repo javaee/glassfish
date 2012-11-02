@@ -13,6 +13,7 @@
 
     <target name="all">
         <antcall target="sfsb"/>
+        <antcall target="methodintf"/>
     </target>
 
     <target name="lite">
@@ -23,6 +24,12 @@
         <record name="sfsb.output" action="start" />
             <ant dir="sfsb" target="all"/>
         <record name="sfsb.output" action="stop" />
+    </target>
+
+    <target name="methodintf">
+        <record name="methodintf.output" action="start" />
+            <ant dir="methodintf" target="all"/>
+        <record name="methodintf.output" action="stop" />
     </target>
 
     <target name="ejblite">
