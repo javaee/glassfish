@@ -504,6 +504,9 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             else if (desc.equals(USE_PROXY_CLASS_FORM)) {
                 return new MethodUseProxyAnnotationVisitor(asAFactoryDI);
             }
+            else if (desc.equals(VISIBILITY_CLASS_FORM)) {
+                return new MethodVisibilityAnnotationVisitor(asAFactoryDI);
+            }
             
             return null;
         }
@@ -791,6 +794,21 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             if (desc.isProxiable() == null) desc.setProxiable(Boolean.TRUE);
         }
         
+    }
+    
+    private class MethodVisibilityAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+        private final DescriptorImpl desc;
+        
+        private MethodVisibilityAnnotationVisitor(DescriptorImpl desc) {
+            this.desc = desc;
+        }
+        
+        @Override
+        public void visitEnum(String name, String v0, String v1) {
+            if (v1 != null && LOCAL.equals(v1)) {
+                desc.setDescriptorVisibility(DescriptorVisibility.LOCAL);
+            }
+        }
     }
     
     private static class DecorateData {
