@@ -45,6 +45,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
@@ -77,6 +78,12 @@ public class ParentedTest {
     private final static String PARENT4 = "Parent4";
     private final static String CHILD4 = "Child4";
     
+    private final static String PARENT5 = "Parent5";
+    private final static String CHILD5 = "Child5";
+    
+    private final static String PARENT6 = "Parent6";
+    private final static String CHILD6 = "Child6";
+    
     /**
      * Tests three generations of locators
      */
@@ -86,27 +93,35 @@ public class ParentedTest {
         ServiceLocator dad = factory.create(DAD, grandpa);
         ServiceLocator me = factory.create(ME, dad);
         
-        List<ServiceLocator> grandpaLocators = grandpa.getAllServices(ServiceLocator.class);
-        List<ServiceLocator> dadLocators = dad.getAllServices(ServiceLocator.class);
-        List<ServiceLocator> meLocators = me.getAllServices(ServiceLocator.class);
+        SimpleService grandPaSimpleService = new SimpleService();
+        SimpleService dadSimpleService = new SimpleService();
+        SimpleService meSimpleService = new SimpleService();
+        
+        ServiceLocatorUtilities.addOneConstant(grandpa, grandPaSimpleService);
+        ServiceLocatorUtilities.addOneConstant(dad, dadSimpleService);
+        ServiceLocatorUtilities.addOneConstant(me, meSimpleService);
+        
+        List<SimpleService> grandpaLocators = grandpa.getAllServices(SimpleService.class);
+        List<SimpleService> dadLocators = dad.getAllServices(SimpleService.class);
+        List<SimpleService> meLocators = me.getAllServices(SimpleService.class);
         
         Assert.assertNotNull(grandpaLocators);
         Assert.assertEquals(1, grandpaLocators.size());
-        Assert.assertEquals(grandpa, grandpaLocators.get(0));
+        Assert.assertEquals(grandPaSimpleService, grandpaLocators.get(0));
         
         Assert.assertNotNull(dadLocators);
         Assert.assertEquals(2, dadLocators.size());
-        Assert.assertEquals(dad, dadLocators.get(0));
-        Assert.assertEquals(grandpa, dadLocators.get(1));
+        Assert.assertEquals(dadSimpleService, dadLocators.get(0));
+        Assert.assertEquals(grandPaSimpleService, dadLocators.get(1));
         
         Assert.assertNotNull(meLocators);
         Assert.assertEquals(3, meLocators.size());
-        Assert.assertEquals(me, meLocators.get(0));
-        Assert.assertEquals(dad, meLocators.get(1));
-        Assert.assertEquals(grandpa, meLocators.get(2));
+        Assert.assertEquals(meSimpleService, meLocators.get(0));
+        Assert.assertEquals(dadSimpleService, meLocators.get(1));
+        Assert.assertEquals(grandPaSimpleService, meLocators.get(2));
         
         // Make sure the most normal case returns the right guy
-        Assert.assertEquals(me, me.getService(ServiceLocator.class));
+        Assert.assertEquals(meSimpleService, me.getService(SimpleService.class));
     }
     
     /**
@@ -199,5 +214,45 @@ public class ParentedTest {
         ServiceLocatorUtilities.addOneDescriptor(grandparent4, d);
         
         Assert.assertNotNull(child4.getService(SimpleService.class));
+    }
+    
+    /**
+     * Tests that ServiceLocator is a LOCAL service
+     */
+    @Test
+    public void testServiceLocatorIsLocal() {
+        ServiceLocator parent5 = factory.create(PARENT5);
+        ServiceLocator child5 = factory.create(CHILD5, parent5);
+        
+        List<ServiceLocator> parentLocators = parent5.getAllServices(ServiceLocator.class);
+        List<ServiceLocator> childLocators = child5.getAllServices(ServiceLocator.class);
+        
+        Assert.assertEquals(1, parentLocators.size());
+        Assert.assertEquals(1, childLocators.size());
+        
+        Assert.assertEquals(parent5, parentLocators.get(0));
+        Assert.assertEquals(child5, childLocators.get(0));
+        
+        Assert.assertEquals(parent5, parent5.getService(ServiceLocator.class));
+        Assert.assertEquals(child5, child5.getService(ServiceLocator.class));
+        
+    }
+    
+    /**
+     * Tests that DynamicConfigurationService is a LOCAL service
+     */
+    @Test
+    public void testDynamicConfigurationIsLocal() {
+        ServiceLocator parent6 = factory.create(PARENT6);
+        ServiceLocator child6 = factory.create(CHILD6, parent6);
+        
+        List<DynamicConfigurationService> parentLocators = parent6.getAllServices(DynamicConfigurationService.class);
+        List<DynamicConfigurationService> childLocators = child6.getAllServices(DynamicConfigurationService.class);
+        
+        Assert.assertEquals(1, parentLocators.size());
+        Assert.assertEquals(1, childLocators.size());
+        
+        Assert.assertEquals(parent6.getService(DynamicConfigurationService.class), parentLocators.get(0));
+        Assert.assertEquals(child6.getService(DynamicConfigurationService.class), childLocators.get(0));
     }
 }

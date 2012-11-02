@@ -407,14 +407,6 @@ public class Utilities {
 
             Type firstType = getFirstTypeArgument(type);
 
-// TODO : remove this block after review...
-// This is required for Jersey and should work now with changes to ReflectionHelper.getTypeClosure()
-//
-//            if (firstType instanceof TypeVariable) {
-//                collector.addThrowable(new IllegalArgumentException("The class " +
-//                    Pretty.clazz(factoryClass) + " has a TypeVariable as its type"));
-//            }
-
             if (firstType instanceof WildcardType) {
                 // This should not be possible
                 collector.addThrowable(new IllegalArgumentException("The class " +
@@ -805,7 +797,7 @@ public class Utilities {
                         PerLookup.class,
                         null,
                         qualifiers,
-                        DescriptorVisibility.NORMAL,
+                        DescriptorVisibility.LOCAL,
                         0,
                         null,
                         locator.getLocatorId(),
