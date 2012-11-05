@@ -8,7 +8,7 @@ import java.sql.*;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.api.ServiceLocator;
 
 
 public class SimpleBMPBean implements EntityBean {
@@ -122,7 +122,7 @@ public class SimpleBMPBean implements EntityBean {
     }
 
     private static ActionReport runCommand(String commandName, ParameterMap parameters) {
-        Habitat habitat = Globals.getDefaultHabitat();
+        ServiceLocator habitat = Globals.getDefaultHabitat();
         CommandRunner cr = habitat.getService(CommandRunner.class);
         ActionReport ar = habitat.getService(ActionReport.class);
         cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
