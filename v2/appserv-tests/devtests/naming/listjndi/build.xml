@@ -63,7 +63,7 @@
     <pathconvert refid="class.path" property="classpath"/>
 
     <target name="listjndi">
-         <java classname="listjndi.ListJndiEntriesTest"  fork="true" classpath="${classpath}">
+         <java classname="listjndi.ListJndiEntriesTest" classpath="${classpath}">
             <jvmarg line="${javaprops}"/>
             <classpath id="classpath" />
         </java>
@@ -73,11 +73,12 @@
 
     <target name="build">
         <mkdir dir="build"/>
-        <javac fork="true" includeAntRuntime="false" destdir="build" debug="true" 
+        <javac  includeAntRuntime="false" destdir="build" debug="true" 
                srcdir="${env.APS_HOME}/devtests/admin/cli/src" includes="**/AdminBaseDevTest.java">
+
             <classpath path="${classpath}"/>
         </javac>
-        <javac fork="true" includeAntRuntime="false" 
+        <javac  includeAntRuntime="false" 
                destdir="build" debug="true" srcdir="." includes="**/*.java">
             <classpath path="${classpath}"/>
         </javac>
