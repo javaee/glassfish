@@ -10,8 +10,8 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import org.glassfish.embeddable.*;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.component.Habitat;
 
 public class SimpleBMPBean implements EntityBean {
 
@@ -106,7 +106,7 @@ public class SimpleBMPBean implements EntityBean {
     }
 
     private boolean flushConnectionPool() throws Exception {
-        Habitat habitat = Globals.getDefaultHabitat();
+        ServiceLocator habitat = Globals.getDefaultHabitat();
 	GlassFish gf = habitat.getService(GlassFish.class);
 	CommandRunner runner = gf.getCommandRunner();
 	CommandResult res = runner.run("flush-connection-pool", poolName);
