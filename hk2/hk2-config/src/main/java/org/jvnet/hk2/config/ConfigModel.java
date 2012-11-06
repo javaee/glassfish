@@ -534,6 +534,9 @@ public final class ConfigModel {
             if(returnType==String.class) {
                 return v;
             }
+            if(returnType==Long.class || returnType==long.class) {
+                return Long.valueOf(v);
+            }
             if(returnType==Integer.class || returnType==int.class) {
                 return Integer.valueOf(v);
             }

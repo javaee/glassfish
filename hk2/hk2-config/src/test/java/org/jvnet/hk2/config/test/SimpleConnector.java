@@ -109,6 +109,11 @@ public interface SimpleConnector extends ConfigBeanProxy {
 
     void setWebContainerAvailability(WebContainerAvailability v);
 
+    @Element
+    public GenericContainer getGenericContainer();
+
+    void setGenericContainer(GenericContainer v);
+
 }
 
 

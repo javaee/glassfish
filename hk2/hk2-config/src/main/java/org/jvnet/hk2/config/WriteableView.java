@@ -716,12 +716,15 @@ private class ProtectedList extends AbstractList {
         if ("int".equals(al.dataType) ||
             "java.lang.Integer".equals(al.dataType))
             isValid = representsInteger(value);
+        else if ("long".equals(al.dataType) ||
+                "java.lang.Long".equals(al.dataType))
+            isValid = representsLong(value);
         else if ("boolean".equals(al.dataType) ||
                  "java.lang.Boolean".endsWith(al.dataType))
             isValid = representsBoolean(value);
         else if ("char".equals(al.dataType) ||
                  "java.lang.Character".equals(al.dataType))
-            isValid = representsChar(value);        
+            isValid = representsChar(value);
         if (!isValid) {            
             return new ConstraintViolation() {
                 @Override
@@ -846,6 +849,16 @@ private class ProtectedList extends AbstractList {
     private boolean representsInteger(String value) {
         try {
             Integer.parseInt(value);
+            return true;
+        } catch(NumberFormatException ne) {
+            return false;
+        }
+    }
+
+
+    private boolean representsLong(String value) {
+        try {
+            Long.parseLong(value);
             return true;
         } catch(NumberFormatException ne) {
             return false;

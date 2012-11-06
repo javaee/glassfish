@@ -78,7 +78,7 @@ public class DomDocument<T extends Dom> {
     private final Map<String, DataType> validators = new HashMap<String, DataType>();
     
     /*package*/ static final List<String> PRIMS = Collections.unmodifiableList(Arrays.asList(
-    "boolean", "char", "int", "java.lang.Boolean", "java.lang.Character", "java.lang.Integer"));
+    "boolean", "char", "long", "int", "java.lang.Boolean", "java.lang.Character", "java.lang.Long", "java.lang.Integer"));
     
     private final Map<String, ActiveDescriptor<? extends ConfigInjector<?>>> cache = new HashMap<String, ActiveDescriptor<? extends ConfigInjector<?>>>();
     
