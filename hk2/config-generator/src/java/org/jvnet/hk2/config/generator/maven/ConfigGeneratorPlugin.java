@@ -103,7 +103,17 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
     /**
      * @parameter expression="${supportedProjectTypes}" default-value="jar"
      */
-    private String supportedProjectTypes;    
+    private String supportedProjectTypes;
+    
+    /**
+     * @parameter expression="${includes}" default-value="**\/*.java"
+     */
+    private String includes;
+    
+    /**
+     * @parameter expression="${excludes}" default-value=""
+     */
+    private String excludes;
     
     /* (non-Javadoc)
      * @see org.apache.maven.plugin.Mojo#execute()
@@ -130,7 +140,7 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
         args.add(javaGeneratedFile.getAbsolutePath());
         args.add("-cp");
         args.add(getBuildClasspath());
-        args.addAll(FileUtils.getFileNames(srcDir, "**/*.java", "",true));
+        args.addAll(FileUtils.getFileNames(srcDir, includes, excludes,true));
         
         String[] cmdLine = args.toArray(new String[args.size()]);
         if(verbose){
