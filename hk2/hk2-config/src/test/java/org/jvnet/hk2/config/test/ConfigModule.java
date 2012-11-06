@@ -49,6 +49,7 @@ import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.*;
 
+
 import java.util.*;
 
 /**
@@ -99,6 +100,7 @@ public class ConfigModule {
         bindInjector(configurator, "simple-connector", SimpleConnector.class, SimpleConnectorInjector.class);
         bindInjector(configurator, "ejb-container-availability", EjbContainerAvailability.class, EjbContainerAvailabilityInjector.class);
         bindInjector(configurator, "web-container-availability", WebContainerAvailability.class, WebContainerAvailabilityInjector.class);
+        bindInjector(configurator, "generic-container",          GenericContainer.class,         GenericContainerInjector.class);
 
     }
     
@@ -133,6 +135,7 @@ public class ConfigModule {
         }
         ActiveDescriptor desc = configurator.bind(db.build());
         configurator.bind(new AliasDescriptor(serviceLocator, desc, InjectionTarget.class.getName(), contract.getName()));
+        System.out.println("**Successfully bound an alias descriptor for: " + elementName);
     }
     
     class MyHk2Loader

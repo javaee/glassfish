@@ -78,7 +78,7 @@ public class ConfigTest {
     public void lookupAllInjectors() {
         String[] expected = {
                 SimpleConnectorInjector.class.getName(), EjbContainerAvailabilityInjector.class.getName(),
-                WebContainerAvailabilityInjector.class.getName()
+                WebContainerAvailabilityInjector.class.getName(), GenericContainerInjector.class.getName()
         };
         List<String> expectedInjectors = Arrays.asList(expected);
 
@@ -88,7 +88,7 @@ public class ConfigTest {
             inhabitantNames.add(inh.getActiveDescriptor().getImplementation());
         }
 
-        assert(inhabitants.size() == 3 && inhabitantNames.containsAll(expectedInjectors));
+        assert(inhabitants.size() == expected.length && inhabitantNames.containsAll(expectedInjectors));
     }
 
     @Test
@@ -326,6 +326,30 @@ public class ConfigTest {
         ConfigBean ejbConfigBean = (ConfigBean) ConfigBean.unwrap(ejb);
 
         assert(ejbConfigBean != null);
+    }
+
+    @Test
+    public void testGenericContainerInjector() {
+        ServiceHandle sh = habitat.getServiceHandle(ConfigInjector.class, "generic-container");
+
+        assert(sh != null);
+
+    }
+
+    @Test
+    public void testLongDataType() {
+        GenericContainer gc = habitat.getService(GenericContainer.class);
+        Object obj = gc.getStartupTime();
+        assert(obj.getClass() == Long.class);
+
+    }
+
+    @Test
+    public void testIntDataType() {
+        GenericContainer gc = habitat.getService(GenericContainer.class);
+        Object obj = gc.getIntValue();
+        assert(obj.getClass() == Integer.class);
+
     }
     
     @Test
