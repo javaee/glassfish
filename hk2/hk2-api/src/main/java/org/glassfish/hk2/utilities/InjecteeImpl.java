@@ -83,6 +83,15 @@ public class InjecteeImpl implements Injectee, Serializable {
     }
     
     /**
+     * Only the requiredType field will be set
+     * 
+     * @param requiredType The possibly null required type
+     */
+    public InjecteeImpl(Type requiredType) {
+        this.requiredType = requiredType;
+    }
+    
+    /**
      * This is the copy constructor, which will copy all the values from the incoming Injectee
      * @param copyMe The non-null Injectee to copy the values from
      */

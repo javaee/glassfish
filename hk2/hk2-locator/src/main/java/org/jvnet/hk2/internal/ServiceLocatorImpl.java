@@ -86,6 +86,7 @@ import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.cache.CacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUCache;
+import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -426,25 +427,45 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor) throws MultiException {
+        return internalGetServiceHandle(activeDescriptor, null);
+    }
+    
+    private <T> ServiceHandle<T> internalGetServiceHandle(
+            ActiveDescriptor<T> activeDescriptor,
+            Type requestedType) {
         if (activeDescriptor == null) throw new IllegalArgumentException();
         checkState();
         
-        return getServiceHandle(activeDescriptor, null);
+        if (requestedType == null) {
+            return getServiceHandle(activeDescriptor, null);
+        }
+        
+        return getServiceHandle(activeDescriptor, new InjecteeImpl(requestedType));
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#getService(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
-    @Override
+    @Override @Deprecated
     public <T> T getService(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) throws MultiException {
+        return getService(activeDescriptor, root, null);
+    }
+    
+    @Override
+    public <T> T getService(ActiveDescriptor<T> activeDescriptor,
+            ServiceHandle<?> root,
+            Injectee originalRequest) throws MultiException {
         checkState();
         
+        Type contractOrImpl = (originalRequest == null) ? null : originalRequest.getRequiredType();
+        Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
+        
         if (root == null) {
-            return Utilities.createService(activeDescriptor, null, this, null);
+            return Utilities.createService(activeDescriptor, null, this, null, rawClass);
         }
         
-        ServiceHandle<T> subHandle = getServiceHandle(activeDescriptor);
+        ServiceHandle<T> subHandle = internalGetServiceHandle(activeDescriptor, contractOrImpl);
         
         if (PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
             ((ServiceHandleImpl<?>) root).addSubHandle((ServiceHandleImpl<T>) subHandle);
@@ -471,7 +492,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, null, qualifiers);
         if (ad == null) return null;
         
-        T retVal = Utilities.createService(ad, null, this, null);
+        T retVal = Utilities.createService(ad, null, this, null, ReflectionHelper.getRawClass(contractOrImpl));
         
         return retVal;
     }
@@ -500,7 +521,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, qualifiers);
         if (ad == null) return null;
         
-        T retVal = Utilities.createService(ad, null, this, null);
+        T retVal = Utilities.createService(ad, null, this, null, ReflectionHelper.getRawClass(contractOrImpl));
         
         return retVal;
         
@@ -512,7 +533,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, unqualified, qualifiers);
         if (ad == null) return null;
         
-        T retVal = Utilities.createService(ad, null, this, null);
+        T retVal = Utilities.createService(ad, null, this, null, ReflectionHelper.getRawClass(contractOrImpl));
         
         return retVal;
     }
@@ -796,7 +817,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, null, qualifiers);
         if (ad == null) return null;
         
-        return getServiceHandle(ad, null);
+        return getServiceHandle(ad, new InjecteeImpl(contractOrImpl));
     }
     
     /* package */ <T> ServiceHandle<T> getUnqualifiedServiceHandle(Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers) throws MultiException {
@@ -805,7 +826,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, unqualified, qualifiers);
         if (ad == null) return null;
         
-        return getServiceHandle(ad, null);
+        return getServiceHandle(ad, new InjecteeImpl(contractOrImpl));
     }
     
     private List<ServiceHandle<?>> protectedGetAllServiceHandles(
@@ -914,10 +935,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             if (!validate((SystemDescriptor<?>) candidate, null, filter)) continue;
             
             if (getHandles) {
-                retVal.add(getServiceHandle(candidate));
+                retVal.add(internalGetServiceHandle(candidate, contractOrImpl));
             }
             else {
-                Object service = Utilities.createService(candidate, null, this, null);
+                Object service = Utilities.createService(candidate, null, this, null, rawClass);
                 
                 retVal.add(service);
             }
@@ -943,7 +964,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, qualifiers);
         if (ad == null) return null;
         
-        return getServiceHandle(ad, null);
+        return internalGetServiceHandle(ad, contractOrImpl);
     }
 
     /* (non-Javadoc)

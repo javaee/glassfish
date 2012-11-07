@@ -357,4 +357,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public <T> T getService(ActiveDescriptor<T> activeDescriptor,
+            ServiceHandle<?> root, Injectee injectee) throws MultiException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

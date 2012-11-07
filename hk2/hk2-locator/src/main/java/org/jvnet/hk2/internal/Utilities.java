@@ -45,11 +45,13 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.security.AccessController;
@@ -71,8 +73,8 @@ import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.inject.Singleton;
 
-import net.sf.cglib.proxy.Callback;
 import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
@@ -1807,7 +1809,8 @@ public class Utilities {
     
     private static <T> T secureCreate(final Class<?> superclass,
             final Class<?>[] interfaces,
-            final Callback callback) {
+            final MethodInterceptor callback,
+            boolean useJDKProxy) {
         
         /* construct the classloader where the generated proxy will be created --
          * this classloader must have visibility into the cglib classloader as well as
@@ -1826,6 +1829,21 @@ public class Utilities {
                     }
                 });
 
+        if (useJDKProxy) {
+            return AccessController.doPrivileged(new PrivilegedAction<T>() {
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public T run() {
+                    return (T) Proxy.newProxyInstance(delegatingLoader, interfaces,
+                            new MethodInterceptorInvocationHandler(callback));
+                }
+                
+            });
+            
+        }
+        
+        
         return AccessController.doPrivileged(new PrivilegedAction<T>() {
 
             @SuppressWarnings("unchecked")
@@ -1848,7 +1866,8 @@ public class Utilities {
     public static <T> T createService(ActiveDescriptor<T> root,
             Injectee injectee,
             ServiceLocatorImpl locator,
-            ServiceHandle<T> handle) {
+            ServiceHandle<T> handle,
+            Class<?> requestedClass) {
         if (root == null) throw new IllegalArgumentException();
         
         T service = null;
@@ -1858,13 +1877,28 @@ public class Utilities {
         }
     
         if (Utilities.isProxiable(root)) {
-            final Class<?> proxyClass = Utilities.getFactoryAwareImplementationClass(root);
+            boolean isInterface = (requestedClass == null) ? false : requestedClass.isInterface() ;
+            
+            final Class<?> proxyClass;
+            Class<?> iFaces[];
+            if (isInterface) {
+                proxyClass = requestedClass;
+                iFaces = new Class<?>[2];
+                iFaces[0] = proxyClass;
+                iFaces[1] = ProxyCtl.class;
+            }
+            else {
+                proxyClass = Utilities.getFactoryAwareImplementationClass(root);
+                
+                iFaces = Utilities.getInterfacesForProxy(root.getContractTypes());
+            }
           
             T proxy;
             try {
                 proxy = (T) secureCreate(proxyClass,
-                    Utilities.getInterfacesForProxy(root.getContractTypes()),
-                    new MethodInterceptorImpl(locator, root, handle));
+                    iFaces,
+                    new MethodInterceptorImpl(locator, root, handle),
+                    isInterface);
             }
             catch (Throwable th) {
                 Exception addMe = new IllegalArgumentException("While attempting to create a Proxy for " + proxyClass.getName() +
@@ -2013,5 +2047,20 @@ public class Utilities {
         private Class<? extends Annotation> getAnnoType() {
             return annoType;
         }
+    }
+    
+    private static class MethodInterceptorInvocationHandler implements InvocationHandler {
+        private final MethodInterceptor interceptor;
+        
+        private MethodInterceptorInvocationHandler(MethodInterceptor interceptor) {
+            this.interceptor = interceptor;
+        }
+
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args)
+                throws Throwable {
+            return interceptor.intercept(proxy, method, args, null);
+        }
+        
     }
 }

@@ -43,7 +43,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
@@ -127,7 +126,7 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
                 collector.throwIfErrors();
             }
             
-            return locator.getService(ad, root);  
+            return locator.getService(ad, root, injectee);  
         }
         finally {
             for (ServiceHandle<JustInTimeInjectionResolver> jitResolver : jitResolvers) {
@@ -151,7 +150,7 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
             return secondChanceResolve(injectee, root);
         }
         
-        return locator.getService(ad, root);
+        return locator.getService(ad, root, injectee);
     }
 
     /* (non-Javadoc)

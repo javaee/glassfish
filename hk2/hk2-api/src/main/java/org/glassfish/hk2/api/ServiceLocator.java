@@ -408,8 +408,24 @@ public interface ServiceLocator {
      * @param root The ultimate parent of this service creation.  May be null
      * @return The service matching this descriptor
      * @throws MultiException if there was an error during service creation
+     * @deprecated use {@link ServiceLocator#getService(ActiveDescriptor, ServiceHandle, Injectee)}
      */
+    @Deprecated
     public <T> T getService(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root) throws MultiException;
+    
+    /**
+     * This method should be called by code resolving injectee's on behalf of some
+     * root service, usually by an implementation of {@link InjectionResolver#resolve(Injectee, ServiceHandle)}.  In
+     * this way the objects associated with the root object can be destroyed in the proper sequence
+     * 
+     * @param activeDescriptor The descriptor whose service to create
+     * @param root The ultimate parent of this service creation.  May be null
+     * @param injectee The injectee passed into the {@link InjectionResolver#resolve(Injectee, ServiceHandle)} if known,
+     * null otherwise
+     * @return The service matching this descriptor
+     * @throws MultiException if there was an error during service creation
+     */
+    public <T> T getService(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root, Injectee injectee) throws MultiException;
   
     /**
      * Returns the name of this ServiceLocator

@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * This handle does the underlying work of getting the service.  Only
@@ -87,7 +88,9 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             
             if (serviceSet) return service;
             
-            service = Utilities.createService(root, injectee, locator, this);
+            Class<?> requiredClass = (injectee == null) ? null : ReflectionHelper.getRawClass(injectee.getRequiredType());
+            
+            service = Utilities.createService(root, injectee, locator, this, requiredClass);
             
             serviceSet = true;
         
