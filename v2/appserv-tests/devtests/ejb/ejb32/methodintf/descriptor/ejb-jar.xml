@@ -24,7 +24,9 @@
     <container-transaction>
       <method>
         <ejb-name>StlesEJB</ejb-name>
+<!-- TEST GLASSFISH-19270
         <method-intf>Remote</method-intf>
+TEST GLASSFISH-19270 -->
         <method-name>*</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
