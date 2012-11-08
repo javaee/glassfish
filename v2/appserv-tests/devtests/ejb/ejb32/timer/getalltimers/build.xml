@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-timer-getalltimers-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="clean,build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+      <mkdir dir="${assemble.dir}"/>
+      <antcall target="package-ejbjar-common">
+        <param name="ejbjar.files" value="${build.classes.dir}"/>
+        <param name="ejb.jar" value="${assemble.dir}/${appname}-ejb1.jar"/>
+        <param name="ejbjar.classes" value="**/*Timeout*.class" />
+      </antcall>
+      <antcall target="package-ejbjar-common">
+        <param name="ejbjar.files" value="${build.classes.dir}"/>
+        <param name="ejb.jar" value="${assemble.dir}/${appname}-ejb2.jar"/>
+        <param name="ejbjar.classes" value="**/*Timeout*.class" />
+      </antcall>
+      <antcall target="appclient-jar-common">
+        <param name="appclientjar.classes" value="**/Client.class,**/*Timeout.class" />
+      </antcall>
+      <antcall target="ear-common"/>
+    </target> 
+    
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runclient-common"/>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>
