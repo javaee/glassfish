@@ -6,7 +6,7 @@
 <target name="autodeploy.scenario" if="PE">
     <!-- deploys by using the autodeploy mechanism -->
     <antcall target="autodeploy.version">
-        <param name="versionExpression" value="${identifier.2}"/>
+        <param name="versionExpression" value=""/>
         <param name="xmlVersionIdentifier" value="${identifier.2}"/>
     </antcall>
 
