@@ -7,12 +7,7 @@
     Description:
         descriptor for <library-directory> element test
 -->
-
-<application version='5.0'
-  xmlns='http://java.sun.com/xml/ns/javaee'
-  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-  xsi:schemaLocation='http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application_5_0.xsd'>
-
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd">
   <module>
       <ejb>libdirtest-EJBModule.jar</ejb>
   </module>
