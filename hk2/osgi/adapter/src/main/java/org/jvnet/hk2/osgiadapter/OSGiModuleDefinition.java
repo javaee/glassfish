@@ -62,6 +62,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
@@ -86,6 +87,9 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     private Manifest manifest;
     private String lifecyclePolicyClassName;
     private ModuleMetadata metadata = new ModuleMetadata();
+
+
+    List<ActiveDescriptor> descriptors;
 
     public OSGiModuleDefinition(File jar) throws IOException {
         this(Jar.create(jar), jar.toURI());
@@ -221,6 +225,8 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     }
 
     private static class BundleJar extends Jar {
+        private static final String HK2_DESCRIPTOR_LOCATION = "META-INF/hk2-locator";
+
         private static final String SERVICE_LOCATION = "META-INF/services";
         Bundle b;
         Manifest m;
@@ -235,25 +241,35 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         }
 
         public void loadMetadata(ModuleMetadata result) {
-            parseInhabitantsDescriptors(result);
+            parseDescriptorFiles(result);
             parseServiceDescriptors(result);
         }
 
-        private void parseInhabitantsDescriptors(ModuleMetadata result) {
+        private void parseDescriptorFiles(ModuleMetadata result) {
 
-            final URL url = b.getEntry("META-INF/hk2-locator/default");
-            
-            if (url==null) return;
-//            try {
-//                result.addHabitat("default",
-//                        new ByteArrayInhabitantsDescriptor(
-//                                url, loadFully(url)
-//                        ));
-//            } catch (IOException e) {
-//                LogHelper.getDefaultLogger().log(Level.SEVERE,
-//                        "Error reading inhabitants list in " + b.getLocation(), e);
-//            }
-            
+            Enumeration<String> entries;
+            entries = b.getEntryPaths(HK2_DESCRIPTOR_LOCATION);
+            if (entries != null) {
+                while (entries.hasMoreElements()) {
+                    String entry = entries.nextElement();
+                    String serviceName = entry.substring(HK2_DESCRIPTOR_LOCATION.length()+1);
+                    InputStream is = null;
+                    final URL url = b.getEntry(entry);
+                    try {
+                        is = url.openStream();
+                        result.loadHk2Descriptor(url, serviceName, is);
+                    } catch (IOException e) {
+                        LogHelper.getDefaultLogger().log(Level.SEVERE,
+                                "Error reading service provider in " + b.getLocation(), e);
+                    } finally {
+                        if (is != null) {
+                            try {
+                                is.close();
+                            } catch (IOException e) {}
+                        }
+                    }
+                }
+            }
         }
 
         private void parseServiceDescriptors(ModuleMetadata result) {
