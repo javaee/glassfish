@@ -88,13 +88,12 @@ public class OSGiModulesRegistryImpl
         // This must happen before we start iterating the existing bundles.
         bctx.addBundleListener(this);
 
-        // TODO: we need to revisit the caching scheme
-//        try {
-//            loadCachedData();
-//        } catch (Exception e) {
-//            Logger.logger.log(Level.WARNING, "Cannot load cached metadata, will recreate the cache", e);
-//            cachedData.clear();
-//        }
+        try {
+            loadCachedData();
+        } catch (Exception e) {
+            Logger.logger.log(Level.WARNING, "Cannot load cached metadata, will recreate the cache", e);
+            cachedData.clear();
+        }
 
         // Populate registry with pre-installed bundles
         for (final Bundle b : bctx.getBundles()) {
@@ -323,13 +322,13 @@ public class OSGiModulesRegistryImpl
 
         // TODO: we need to revisit the caching scheme
         // Save the cache before clearing modules
-//        try {
-//            if (cacheInvalidated) {
-//                saveCache();
-//            }
-//        } catch (IOException e) {
-//            Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
-//        }
+        try {
+            if (cacheInvalidated) {
+                saveCache();
+            }
+        } catch (IOException e) {
+            Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
+        }
         super.shutdown();
     }
 

@@ -43,12 +43,7 @@ package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.security.AccessController;
@@ -65,6 +60,7 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.bootstrap.impl.URLDescriptorFileFinder;
@@ -376,13 +372,34 @@ public class OSGiModuleImpl implements Module {
      * @return 
      */
     List<ActiveDescriptor> parseInhabitants(String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> populatorPostProcessors) throws IOException, BootException {
- 
+
 		// This needs to be fixed to bring in the cache
 
-        final String path = "META-INF/hk2-locator/" + name;
-        URL entry = bundle.getEntry(path);
+        // final byte[] cachedDescriptorBytes = getModuleDefinition().getMetadata().getDescriptorFile(name);
+
+        DescriptorFileFinder dff = null;
+        /*
+        if (cachedDescriptorBytes != null) {
+            dff = new DescriptorFileFinder() {
+                @Override
+                public List<InputStream> findDescriptorFiles() throws IOException {
+                    return Arrays.asList((InputStream)new ByteArrayInputStream(cachedDescriptorBytes));
+                }
+            };
+        } */
+
+        if (dff == null) {
+
+            final String path = "META-INF/hk2-locator/" + name;
+            URL entry = bundle.getEntry(path);
+
+            if (entry != null) {
+               dff = new URLDescriptorFileFinder(entry);
+            }
+        }
+
         
-        if (entry != null) {
+        if (dff != null) {
 
         	final OSGiModuleImpl module = this;
 
@@ -393,7 +410,7 @@ public class OSGiModuleImpl implements Module {
             if (populatorPostProcessors != null) {
               allPostProcessors.addAll(populatorPostProcessors);
             }
-    	    this.descriptors = HK2Populator.populate(serviceLocator, new URLDescriptorFileFinder(entry), allPostProcessors);
+    	    this.descriptors = HK2Populator.populate(serviceLocator, dff, allPostProcessors);
         }
         
         return this.descriptors;
