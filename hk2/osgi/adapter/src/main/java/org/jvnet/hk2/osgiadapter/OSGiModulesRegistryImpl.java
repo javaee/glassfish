@@ -311,6 +311,7 @@ public class OSGiModulesRegistryImpl
     }
 
     public synchronized void shutdown() {
+
         for (Module m : modules.values()) {
             // Only stop modules that were started after ModulesRegistry
             // came into existence.
@@ -319,8 +320,6 @@ public class OSGiModulesRegistryImpl
             }
         }
         
-
-        // TODO: we need to revisit the caching scheme
         // Save the cache before clearing modules
         try {
             if (cacheInvalidated) {
@@ -329,6 +328,9 @@ public class OSGiModulesRegistryImpl
         } catch (IOException e) {
             Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
         }
+
+        bctx.removeBundleListener(this);
+
         super.shutdown();
     }
 
