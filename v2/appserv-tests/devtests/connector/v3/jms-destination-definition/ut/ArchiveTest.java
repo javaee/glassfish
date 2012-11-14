@@ -12,6 +12,14 @@ import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.loader.ASURLClassLoader;
+import junit.framework.TestCase;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.JavaEEResourceType;
+import org.glassfish.ejb.deployment.archivist.EjbArchivist;
+import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
+import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
+import org.glassfish.web.deployment.archivist.WebArchivist;
+import org.xml.sax.SAXParseException;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,14 +27,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import junit.framework.TestCase;
-
-import org.glassfish.ejb.deployment.archivist.EjbArchivist;
-import org.glassfish.web.deployment.archivist.WebArchivist;
-import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
-import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
-import org.xml.sax.SAXParseException;
 
 public class ArchiveTest extends TestCase {
 
@@ -87,7 +87,7 @@ public class ArchiveTest extends TestCase {
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
-        TestUtil.compareJMSDDD(expectedJMSDDDs, applicationDesc.getJMSDestinationDefinitionDescriptors());
+        TestUtil.compareJMSDDD(expectedJMSDDDs, applicationDesc.getResourceDescriptors(JavaEEResourceType.JMSDD));
     }
 
     public void testApplicationClientArchive() throws Exception {
@@ -193,7 +193,7 @@ public class ArchiveTest extends TestCase {
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
-        TestUtil.compareJMSDDD(expectedJMSDDDs, appclientDesc.getJMSDestinationDefinitionDescriptors());
+        TestUtil.compareJMSDDD(expectedJMSDDDs, appclientDesc.getResourceDescriptors(JavaEEResourceType.JMSDD));
     }
 
     public void testWebArchive() throws Exception {
@@ -299,7 +299,7 @@ public class ArchiveTest extends TestCase {
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
-        TestUtil.compareJMSDDD(expectedJMSDDDs, webDesc.getJMSDestinationDefinitionDescriptors());
+        TestUtil.compareJMSDDD(expectedJMSDDDs, webDesc.getResourceDescriptors(JavaEEResourceType.JMSDD));
     }
 
     public void testEJBArchive() throws Exception {
@@ -328,9 +328,9 @@ public class ArchiveTest extends TestCase {
         assertTrue("Archivist should handle annotations.", reader.isAnnotationProcessingRequested());
 
         EjbBundleDescriptorImpl ejbBundleDesc = reader.open(archive);
-        Set<JMSDestinationDefinitionDescriptor> acturalCRDDs = new HashSet<JMSDestinationDefinitionDescriptor>();
+        Set<Descriptor> acturalCRDDs = new HashSet<Descriptor>();
         for (EjbDescriptor ejbDesc : ejbBundleDesc.getEjbs()) {
-            acturalCRDDs.addAll(ejbDesc.getJMSDestinationDefinitionDescriptors());
+            acturalCRDDs.addAll(ejbDesc.getResourceDescriptors(JavaEEResourceType.JMSDD));
         }
 
         Map<String, JMSDestinationDefinitionDescriptor> expectedJMSDDDs =

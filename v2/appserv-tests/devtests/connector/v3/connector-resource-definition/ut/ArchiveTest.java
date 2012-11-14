@@ -4,26 +4,25 @@
  */
 package com.sun.s1asdev.crd;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.glassfish.ejb.deployment.archivist.EjbArchivist;
-import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
-import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
-import org.glassfish.web.deployment.archivist.WebArchivist;
-
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ConnectorResourceDefinitionDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
-import com.sun.enterprise.deployment.xml.TagNames;
 import com.sun.enterprise.loader.ASURLClassLoader;
-
 import junit.framework.TestCase;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.JavaEEResourceType;
+import org.glassfish.ejb.deployment.archivist.EjbArchivist;
+import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
+import org.glassfish.ejb.deployment.descriptor.EjbDescriptor;
+import org.glassfish.web.deployment.archivist.WebArchivist;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 public class ArchiveTest extends TestCase {
     String archiveDir = null;
     private static SimpleReporterAdapter stat =  new SimpleReporterAdapter("appserv-tests");
@@ -91,7 +90,7 @@ public class ArchiveTest extends TestCase {
         desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
 
-        TestUtil.compareCRDD(expectedCRDDs, applicationDesc.getConnectorResourceDefinitionDescriptors());
+        TestUtil.compareCRDD(expectedCRDDs, applicationDesc.getResourceDescriptors(JavaEEResourceType.CRD));
 
     }
 
@@ -190,7 +189,7 @@ public class ArchiveTest extends TestCase {
         desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "crd-ra");
         expectedCRDDs.put(desc.getName(), desc);
 
-        TestUtil.compareCRDD(expectedCRDDs, webDesc.getConnectorResourceDefinitionDescriptors());
+        TestUtil.compareCRDD(expectedCRDDs, webDesc.getResourceDescriptors(JavaEEResourceType.CRD));
     }
 
     public void testEJBArchive() throws Exception{
@@ -218,9 +217,9 @@ public class ArchiveTest extends TestCase {
         assertTrue("Archivist should handle annotations.", reader.isAnnotationProcessingRequested());
 
         EjbBundleDescriptorImpl ejbBundleDesc = reader.open(archive);
-        Set<ConnectorResourceDefinitionDescriptor> acturalCRDDs = new HashSet<ConnectorResourceDefinitionDescriptor>(); 
+        Set<Descriptor> acturalCRDDs = new HashSet<Descriptor>();
         for( EjbDescriptor ejbDesc: ejbBundleDesc.getEjbs()){
-            acturalCRDDs.addAll(ejbDesc.getConnectorResourceDefinitionDescriptors());
+            acturalCRDDs.addAll(ejbDesc.getResourceDescriptors(JavaEEResourceType.CRD));
         }
         
         Map<String,ConnectorResourceDefinitionDescriptor> expectedCRDDs = 

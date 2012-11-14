@@ -4,27 +4,22 @@
  */
 package com.sun.s1asdev.aod;
 
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.JavaEEResourceType;
+import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
+import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
-import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
-
-import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.AdministeredObjectDefinitionDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
-
-import junit.framework.TestCase;
-import junit.framework.Assert;
 public class DDTest extends TestCase {
 
     private static SimpleReporterAdapter stat =  new SimpleReporterAdapter("appserv-tests");
@@ -54,7 +49,7 @@ public class DDTest extends TestCase {
             ApplicationDeploymentDescriptorFile ddReader = new ApplicationDeploymentDescriptorFile();
             Application application = (Application) ddReader.read( ddIS);
             
-            Set<AdministeredObjectDefinitionDescriptor> actualAODDs = application.getAdministeredObjectDefinitionDescriptors();
+            Set<Descriptor> actualAODDs = application.getResourceDescriptors(JavaEEResourceType.AODD);
 
             Map<String,AdministeredObjectDefinitionDescriptor> expectedAODDs = 
                     new HashMap<String,AdministeredObjectDefinitionDescriptor>();
@@ -105,7 +100,7 @@ public class DDTest extends TestCase {
             EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) ddReader.read( ddIS);
             
             for(EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()){
-                ejbDescriptor.getAdministeredObjectDefinitionDescriptors();
+                ejbDescriptor.getResourceDescriptors(JavaEEResourceType.AODD);
                 if(ejbDescriptor.getName().equals("HelloStatefulEJB")){
                     testStatefulSessionEJBDD(ejbDescriptor);
                 }else if(ejbDescriptor.getName().equals("HelloEJB")){
@@ -157,7 +152,7 @@ public class DDTest extends TestCase {
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
 
-        TestUtil.compareAODD(expectedAODDs, ejb.getAdministeredObjectDefinitionDescriptors());
+        TestUtil.compareAODD(expectedAODDs, ejb.getResourceDescriptors(JavaEEResourceType.AODD));
         
     }
     
@@ -189,7 +184,7 @@ public class DDTest extends TestCase {
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
 
-        TestUtil.compareAODD(expectedAODDs, ejb.getAdministeredObjectDefinitionDescriptors());
+        TestUtil.compareAODD(expectedAODDs, ejb.getResourceDescriptors(JavaEEResourceType.AODD));
         
     }
     
@@ -234,7 +229,7 @@ public class DDTest extends TestCase {
                 desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
                 expectedAODDs.put(desc.getName(), desc);
 
-                TestUtil.compareAODD(expectedAODDs, ejbDescriptor.getAdministeredObjectDefinitionDescriptors());
+                TestUtil.compareAODD(expectedAODDs, ejbDescriptor.getResourceDescriptors(JavaEEResourceType.AODD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -292,7 +287,7 @@ public class DDTest extends TestCase {
                 desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
                 expectedAODDs.put(desc.getName(), desc);
 
-                TestUtil.compareAODD(expectedAODDs, ejbDescriptor.getAdministeredObjectDefinitionDescriptors());
+                TestUtil.compareAODD(expectedAODDs, ejbDescriptor.getResourceDescriptors(JavaEEResourceType.AODD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -350,7 +345,7 @@ public class DDTest extends TestCase {
                 desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
                 expectedAODDs.put(desc.getName(), desc);
 
-                TestUtil.compareAODD(expectedAODDs, interceptor.getAdministeredObjectDefinitionDescriptors());
+                TestUtil.compareAODD(expectedAODDs, interceptor.getResourceDescriptors(JavaEEResourceType.AODD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -407,7 +402,7 @@ public class DDTest extends TestCase {
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
-            TestUtil.compareAODD(expectedAODDs, webBundle.getAdministeredObjectDefinitionDescriptors());
+            TestUtil.compareAODD(expectedAODDs, webBundle.getResourceDescriptors(JavaEEResourceType.AODD));
 
             stat.addStatus(tcName, stat.PASS);
             

@@ -4,24 +4,23 @@
  */
 package com.sun.s1asdev.aod;
 
+import com.sun.enterprise.deployment.AdministeredObjectDefinitionDescriptor;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.internal.api.Globals;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.glassfish.internal.api.Globals;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
-
-import com.sun.enterprise.deployment.AdministeredObjectDefinitionDescriptor;
+import static junit.framework.Assert.*;
 
 public class TestUtil {
 
     public static void compareAODD(Map<String,AdministeredObjectDefinitionDescriptor> expectedAODDs, 
-            Set<AdministeredObjectDefinitionDescriptor> actualAODDs) throws Exception{
+            Set<Descriptor> actualAODDs) throws Exception{
         
-        for(AdministeredObjectDefinitionDescriptor actualDesc : actualAODDs){
+        for(Descriptor descriptor : actualAODDs){
+            AdministeredObjectDefinitionDescriptor actualDesc = (AdministeredObjectDefinitionDescriptor)descriptor;
             assertNotNull("the name of administered object cannot be null.", actualDesc.getName());
             
             AdministeredObjectDefinitionDescriptor expectedDesc = expectedAODDs.get(actualDesc.getName());

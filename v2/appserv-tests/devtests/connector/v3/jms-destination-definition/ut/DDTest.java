@@ -5,15 +5,15 @@
 package com.sun.s1asdev.jmsdd;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.JMSDestinationDefinitionDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.JavaEEResourceType;
+import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
+import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,12 +21,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import junit.framework.TestCase;
-import junit.framework.Assert;
-
-import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
-import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
 
 public class DDTest extends TestCase {
 
@@ -56,7 +50,7 @@ public class DDTest extends TestCase {
             ApplicationDeploymentDescriptorFile ddReader = new ApplicationDeploymentDescriptorFile();
             Application application = (Application)ddReader.read(ddIS);
 
-            Set<JMSDestinationDefinitionDescriptor> actualJMSDDDs = application.getJMSDestinationDefinitionDescriptors();
+            Set<Descriptor> actualJMSDDDs = application.getResourceDescriptors(JavaEEResourceType.JMSDD);
 
             Map<String, JMSDestinationDefinitionDescriptor> expectedJMSDDDs =
                     new HashMap<String, JMSDestinationDefinitionDescriptor>();
@@ -139,7 +133,7 @@ public class DDTest extends TestCase {
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
-            TestUtil.compareJMSDDD(expectedJMSDDDs, appclientDesc.getJMSDestinationDefinitionDescriptors());
+            TestUtil.compareJMSDDD(expectedJMSDDDs, appclientDesc.getResourceDescriptors(JavaEEResourceType.JMSDD));
 
             stat.addStatus(tcName, stat.PASS);
 
@@ -167,7 +161,7 @@ public class DDTest extends TestCase {
             EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor)ddReader.read(ddIS);
 
             for (EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()) {
-                ejbDescriptor.getJMSDestinationDefinitionDescriptors();
+                ejbDescriptor.getResourceDescriptors(JavaEEResourceType.JMSDD);
                 if (ejbDescriptor.getName().equals("HelloStatefulEJB")) {
                     testStatefulSessionEJBDD(ejbDescriptor);
                 } else if (ejbDescriptor.getName().equals("HelloEJB")) {
@@ -225,7 +219,7 @@ public class DDTest extends TestCase {
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
-        TestUtil.compareJMSDDD(expectedJMSDDDs, ejb.getJMSDestinationDefinitionDescriptors());
+        TestUtil.compareJMSDDD(expectedJMSDDDs, ejb.getResourceDescriptors(JavaEEResourceType.JMSDD));
     }
 
     private void testStatelessSessionEJBDD(EjbDescriptor ejb) {
@@ -264,7 +258,7 @@ public class DDTest extends TestCase {
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
-        TestUtil.compareJMSDDD(expectedJMSDDDs, ejb.getJMSDestinationDefinitionDescriptors());
+        TestUtil.compareJMSDDD(expectedJMSDDDs, ejb.getResourceDescriptors(JavaEEResourceType.JMSDD));
     }
 
     public void testEntityEJBDD() throws Exception {
@@ -316,7 +310,7 @@ public class DDTest extends TestCase {
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
-                TestUtil.compareJMSDDD(expectedJMSDDDs, ejbDescriptor.getJMSDestinationDefinitionDescriptors());
+                TestUtil.compareJMSDDD(expectedJMSDDDs, ejbDescriptor.getResourceDescriptors(JavaEEResourceType.JMSDD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -380,7 +374,7 @@ public class DDTest extends TestCase {
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
-                TestUtil.compareJMSDDD(expectedJMSDDDs, ejbDescriptor.getJMSDestinationDefinitionDescriptors());
+                TestUtil.compareJMSDDD(expectedJMSDDDs, ejbDescriptor.getResourceDescriptors(JavaEEResourceType.JMSDD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -444,7 +438,7 @@ public class DDTest extends TestCase {
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
-                TestUtil.compareJMSDDD(expectedJMSDDDs, interceptor.getJMSDestinationDefinitionDescriptors());
+                TestUtil.compareJMSDDD(expectedJMSDDDs, interceptor.getResourceDescriptors(JavaEEResourceType.JMSDD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -507,7 +501,7 @@ public class DDTest extends TestCase {
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
-            TestUtil.compareJMSDDD(expectedJMSDDDs, webBundle.getJMSDestinationDefinitionDescriptors());
+            TestUtil.compareJMSDDD(expectedJMSDDDs, webBundle.getResourceDescriptors(JavaEEResourceType.JMSDD));
 
             stat.addStatus(tcName, stat.PASS);
 

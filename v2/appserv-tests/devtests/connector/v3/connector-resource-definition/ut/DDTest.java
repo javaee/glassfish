@@ -4,28 +4,22 @@
  */
 package com.sun.s1asdev.crd;
 
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+import com.sun.enterprise.deployment.*;
+import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.deployment.common.JavaEEResourceType;
+import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
+import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
-import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
-
-import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.ConnectorResourceDefinitionDescriptor;
-import com.sun.enterprise.deployment.EjbBundleDescriptor;
-import com.sun.enterprise.deployment.EjbDescriptor;
-import com.sun.enterprise.deployment.EjbInterceptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
-import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
-import com.sun.enterprise.deployment.xml.TagNames;
-
-import junit.framework.TestCase;
-import junit.framework.Assert;
 public class DDTest extends TestCase {
 
     private static SimpleReporterAdapter stat =  new SimpleReporterAdapter("appserv-tests");
@@ -55,7 +49,7 @@ public class DDTest extends TestCase {
             ApplicationDeploymentDescriptorFile ddReader = new ApplicationDeploymentDescriptorFile();
             Application application = (Application) ddReader.read( ddIS);
             
-            Set<ConnectorResourceDefinitionDescriptor> actualCRDDs = application.getConnectorResourceDefinitionDescriptors();
+            Set<Descriptor> actualCRDDs = application.getResourceDescriptors(JavaEEResourceType.CRD);
 
             Map<String,ConnectorResourceDefinitionDescriptor> expectedCRDDs = 
                     new HashMap<String,ConnectorResourceDefinitionDescriptor>();
@@ -106,7 +100,7 @@ public class DDTest extends TestCase {
             EjbBundleDescriptor ejbBundle = (EjbBundleDescriptor) ddReader.read( ddIS);
             
             for(EjbDescriptor ejbDescriptor : ejbBundle.getEjbs()){
-                ejbDescriptor.getConnectorResourceDefinitionDescriptors();
+                ejbDescriptor.getResourceDescriptors(JavaEEResourceType.CRD);
                 if(ejbDescriptor.getName().equals("HelloStatefulEJB")){
                     testStatefulSessionEJBDD(ejbDescriptor);
                 }else if(ejbDescriptor.getName().equals("HelloEJB")){
@@ -158,7 +152,7 @@ public class DDTest extends TestCase {
         desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
 
-        TestUtil.compareCRDD(expectedCRDDs, ejb.getConnectorResourceDefinitionDescriptors());
+        TestUtil.compareCRDD(expectedCRDDs, ejb.getResourceDescriptors(JavaEEResourceType.CRD));
         
     }
     
@@ -190,7 +184,7 @@ public class DDTest extends TestCase {
         desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
         expectedCRDDs.put(desc.getName(), desc);
 
-        TestUtil.compareCRDD(expectedCRDDs, ejb.getConnectorResourceDefinitionDescriptors());
+        TestUtil.compareCRDD(expectedCRDDs, ejb.getResourceDescriptors(JavaEEResourceType.CRD));
         
     }
     
@@ -235,7 +229,7 @@ public class DDTest extends TestCase {
                 desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
-                TestUtil.compareCRDD(expectedCRDDs, ejbDescriptor.getConnectorResourceDefinitionDescriptors());
+                TestUtil.compareCRDD(expectedCRDDs, ejbDescriptor.getResourceDescriptors(JavaEEResourceType.CRD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -293,7 +287,7 @@ public class DDTest extends TestCase {
                 desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
-                TestUtil.compareCRDD(expectedCRDDs, ejbDescriptor.getConnectorResourceDefinitionDescriptors());
+                TestUtil.compareCRDD(expectedCRDDs, ejbDescriptor.getResourceDescriptors(JavaEEResourceType.CRD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -351,7 +345,7 @@ public class DDTest extends TestCase {
                 desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
                 expectedCRDDs.put(desc.getName(), desc);
 
-                TestUtil.compareCRDD(expectedCRDDs, interceptor.getConnectorResourceDefinitionDescriptors());
+                TestUtil.compareCRDD(expectedCRDDs, interceptor.getResourceDescriptors(JavaEEResourceType.CRD));
             }
 
             stat.addStatus(tcName, stat.PASS);
@@ -408,7 +402,7 @@ public class DDTest extends TestCase {
             desc.addProperty("org.glassfish.connector-connection-pool.resource-adapter-name", "RaApplicationName");
             expectedCRDDs.put(desc.getName(), desc);
 
-            TestUtil.compareCRDD(expectedCRDDs, webBundle.getConnectorResourceDefinitionDescriptors());
+            TestUtil.compareCRDD(expectedCRDDs, webBundle.getResourceDescriptors(JavaEEResourceType.CRD));
 
             stat.addStatus(tcName, stat.PASS);
             

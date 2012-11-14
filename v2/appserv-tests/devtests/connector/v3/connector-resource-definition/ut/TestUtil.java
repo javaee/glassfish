@@ -4,24 +4,23 @@
  */
 package com.sun.s1asdev.crd;
 
+import com.sun.enterprise.deployment.ConnectorResourceDefinitionDescriptor;
+import org.glassfish.deployment.common.Descriptor;
+import org.glassfish.internal.api.Globals;
+
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.glassfish.internal.api.Globals;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
-
-import com.sun.enterprise.deployment.ConnectorResourceDefinitionDescriptor;
+import static junit.framework.Assert.*;
 
 public class TestUtil {
 
     public static void compareCRDD(Map<String,ConnectorResourceDefinitionDescriptor> expectedCRDDs, 
-            Set<ConnectorResourceDefinitionDescriptor> actualCRDDs) throws Exception{
+            Set<Descriptor> actualCRDDs) throws Exception{
         
-        for(ConnectorResourceDefinitionDescriptor actualDesc : actualCRDDs){
+        for(Descriptor descriptor : actualCRDDs){
+            ConnectorResourceDefinitionDescriptor actualDesc = (ConnectorResourceDefinitionDescriptor)descriptor;
             assertNotNull("the name of connector resource cannot be null.", actualDesc.getName());
             
             ConnectorResourceDefinitionDescriptor expectedDesc = expectedCRDDs.get(actualDesc.getName());
