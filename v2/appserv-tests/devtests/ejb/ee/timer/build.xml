@@ -57,7 +57,7 @@
         <ant dir="cli" target="test"/>
         <ant dir="domaindeployment" target="test"/>
         <ant dir="failover" target="test"/>
-
+        <ant dir="getalltimers" target="test"/>
         <record name="ejb.ee.timer.output" action="stop" />
         <antcall target="dev-report"/>
 
