@@ -754,12 +754,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
         NarrowResults results = null;
         LinkedList<ErrorService> currentErrorHandlers = null;
         
-        synchronized (lock) {
-          CacheKey ck = null;
-          if (useCache) {
+        CacheKey ck = null;
+        if (useCache) {
+            // Create the CacheKey outside of the lock
             ck = new CacheKey(contractOrImpl, name, qualifiers);
-              
-            results = cache.get(ck);
+        }
+        
+        synchronized (lock) {
+          if (useCache) {
+              results = cache.get(ck);
           }
           
           if (results == null) {
@@ -895,11 +898,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
         NarrowResults results = null;
         LinkedList<ErrorService> currentErrorHandlers = null;
         
+        CacheKey ck = null;
+        if (useCache) {
+            // Create the CacheKey outside of the lock
+            ck = new CacheKey(contractOrImpl, null, qualifiers);
+        }
+        
         synchronized (lock) {
-          CacheKey ck = null;
-          if (useCache) {
-              ck = new CacheKey(contractOrImpl, null, qualifiers);
-                
+          if (useCache) {  
               results = cache.get(ck);
           }
           
