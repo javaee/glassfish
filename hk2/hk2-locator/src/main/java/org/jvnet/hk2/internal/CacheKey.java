@@ -59,6 +59,9 @@ public class CacheKey {
     private final String name;
     private final Annotation qualifiers[];
     
+    /** Pre-calculated in order to improve hashMap lookups */
+    private final int hashCode;
+    
     public CacheKey(Type lookupType, String name, Annotation... qualifiers) {
         this.lookupType = lookupType;
         this.name = name;
@@ -68,15 +71,7 @@ public class CacheKey {
         else {
             this.qualifiers = null;
         }
-    }
-    
-    public static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null || b == null) return false;
-        return a.equals(b);
-    }
-    
-    public int hashCode() {
+        
         int retVal = 0;
         
         if (lookupType != null) {
@@ -93,7 +88,17 @@ public class CacheKey {
             }
         }
         
-        return retVal;
+        hashCode = retVal;
+    }
+    
+    public static boolean safeEquals(Object a, Object b) {
+        if (a == b) return true;
+        if (a == null || b == null) return false;
+        return a.equals(b);
+    }
+    
+    public int hashCode() {
+        return hashCode;
     }
     
     public boolean equals(Object o) {
