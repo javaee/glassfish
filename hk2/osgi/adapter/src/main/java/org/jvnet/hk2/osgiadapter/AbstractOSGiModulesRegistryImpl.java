@@ -47,12 +47,8 @@ import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.osgi.framework.*;
 import org.osgi.service.packageadmin.PackageAdmin;
 
@@ -64,7 +60,6 @@ import java.net.URLClassLoader;
 import java.util.*;
 import java.util.logging.Level;
 
-import static org.glassfish.hk2.utilities.ServiceLocatorUtilities.*;
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
 /**
@@ -107,45 +102,7 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
     public List<ActiveDescriptor> parseInhabitants(
             Module module, String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> postProcessors)
             throws IOException, BootException {
-
-        OSGiModuleImpl osgiModuleImpl = (OSGiModuleImpl) module;
-
-        List<ActiveDescriptor> activeDescriptors;
-
-        List<Descriptor> descriptors = module.getModuleDefinition().getMetadata().getDescriptors();
-
-        if (descriptors == null) {
-            activeDescriptors = osgiModuleImpl.parseInhabitants(name, serviceLocator, postProcessors);
-
-            if (activeDescriptors != null) {
-
-                // use the copy constructor to create (nonactive) descriptor for serialization into the cache
-                descriptors = new ArrayList<Descriptor>();
-                for (Descriptor d : activeDescriptors) {
-                    descriptors.add(new DescriptorImpl(d));
-                }
-
-                module.getModuleDefinition().getMetadata().setDescriptors(descriptors);
-            }
-        } else {
-               activeDescriptors = new ArrayList<ActiveDescriptor>();
-
-            DynamicConfiguration dcs = createDynamicConfiguration(serviceLocator);
-            for (Descriptor descriptor : descriptors) {
-
-                // set the hk2loader
-                DescriptorImpl descriptorImpl = new OsgiPopulatorPostProcessor(osgiModuleImpl).process(serviceLocator, new DescriptorImpl(descriptor));
-
-                if (descriptorImpl != null) {
-                    activeDescriptors.add(dcs.bind(descriptorImpl));
-                }
-            }
-
-            dcs.commit();
-        }
-
-        return activeDescriptors;
-
+        return ((OSGiModuleImpl)module).parseInhabitants(name, serviceLocator, postProcessors);
     }
 
     public ModulesRegistry createChild() {
