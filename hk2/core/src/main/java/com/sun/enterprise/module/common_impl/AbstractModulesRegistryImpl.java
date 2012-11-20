@@ -69,6 +69,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -178,13 +179,26 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
              for (final Module module : getModules()) { 
             	   // TODO: should get the inhabitantsParser out of Main instead since
                  // this could have been overridden
-             	List<ActiveDescriptor> allDescriptors = parseInhabitants(module, name, serviceLocator, postProcessors);
+             	List<ActiveDescriptor> allDescriptors =
+             	        parseInhabitants(module, name, serviceLocator, postProcessors);
+             	if (allDescriptors == null) continue;
+             	if (allDescriptors.isEmpty()) continue;
              	
-             	Map<ServiceLocator, List<ActiveDescriptor>> descriptorByServiceLocator = new HashMap<ServiceLocator, List<ActiveDescriptor>>();
-          
-             	descriptorByServiceLocator.put(serviceLocator, allDescriptors);
+             	Map<ServiceLocator, List<ActiveDescriptor>> descriptorByServiceLocator = moduleDescriptors.get(module);
+             	if (descriptorByServiceLocator == null) {
+             	    descriptorByServiceLocator = new HashMap<ServiceLocator, List<ActiveDescriptor>>();
+             	    
+             	   moduleDescriptors.put(module, descriptorByServiceLocator);
+             	}
              	
-             	moduleDescriptors.put(module,descriptorByServiceLocator);
+             	List<ActiveDescriptor> foundDs = descriptorByServiceLocator.get(serviceLocator);
+             	if (foundDs == null) {
+             	    foundDs = new LinkedList<ActiveDescriptor>();
+             	    
+             	    descriptorByServiceLocator.put(serviceLocator, foundDs);
+             	}
+             	
+             	foundDs.addAll(allDescriptors);
              }
          } catch (Exception e) {
              throw new MultiException(e);
