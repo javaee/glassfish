@@ -39,11 +39,12 @@
  */
 package com.sun.enterprise.module;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.component.MultiMap;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,55 +71,9 @@ import java.util.StringTokenizer;
 public final class ModuleMetadata implements Serializable {
 
     /**
-     * META-INF/hk2-locator/* cache
-     */
-    private final Map<String, byte[]> descriptorText = new HashMap<String, byte[]>();
-    private List<Descriptor> descriptors;
-
-    /**
-     * Retrieve descriptor file for named servicelocator
-     * @param name
-     * @return
-     */
-    public byte[] getDescriptorFile(String name) {
-        return descriptorText.get(name);
-    }
-
-    /**
      * META-INF/inhabitants/* files.
      */
     private final MultiMap<String, InhabitantsDescriptor> inhabitants = new MultiMap<String, InhabitantsDescriptor>();
-
-    public void loadHk2Descriptor(URL url, String locatorName, InputStream is) throws IOException {
-
-        ByteArrayOutputStream bais = new ByteArrayOutputStream();
-
-        try {
-            is = url.openStream ();
-            byte[] byteChunk = new byte[4096];
-            int n;
-
-            while ( (n = is.read(byteChunk)) > 0 ) {
-                bais.write(byteChunk, 0, n);
-            }
-        }
-        finally {
-            if (is != null) {
-                    is.close();
-            }
-        }
-
-        descriptorText.put(locatorName, bais.toByteArray());
-
-    }
-
-    public List<Descriptor> getDescriptors() {
-        return descriptors;
-    }
-
-    public void setDescriptors(List<Descriptor> descriptors) {
-        this.descriptors = descriptors;
-    }
 
     public static final class Entry implements Serializable {
         public final List<String> providerNames = new ArrayList<String>();
