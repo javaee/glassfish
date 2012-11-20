@@ -37,74 +37,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.validating;
+package org.glassfish.hk2.tests.locator.locator;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.ValidationInformation;
-import org.glassfish.hk2.api.ValidationService;
-import org.glassfish.hk2.api.Validator;
+import org.glassfish.hk2.api.PerLookup;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This service bases its decision on the current state of the system
- * 
  * @author jwells
  *
  */
-@Singleton
-public class StateBasedValidationService implements ValidationService {
-    private int currentState = 0;
-    
-    public void setCurrentState(int state) {
-        currentState = state;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
-     */
-    @Override
-    public Filter getLookupFilter() {
-        return new Filter() {
-
-            @Override
-            public boolean matches(Descriptor d) {
-                return (d.getAdvertisedContracts().contains(DynamicService.class.getName()));
-            }
-            
-        };
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getValidator()
-     */
-    @Override
-    public Validator getValidator() {
-        return new Validator() {
-
-            @Override
-            public boolean validate(ValidationInformation info) {
-                ActiveDescriptor<?> candidate = info.getCandidate();
-                String impl = candidate.getImplementation();
-                
-                
-                boolean retVal;
-                switch (currentState) {
-                case 1:
-                    retVal = impl.contains("DynamicServiceImpl1");
-                    break;
-                case 2:
-                    retVal = impl.contains("DynamicServiceImpl2");
-                    break;
-                default:
-                    retVal = false;
-                }
-                
-                return retVal;
-            }
-        };
-    }
+@Service
+@PerLookup
+public class MultiContractImpl1 implements MultiContract {
 
 }

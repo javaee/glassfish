@@ -400,4 +400,23 @@ public class LocatorTest {
                 " savings of: " + (filterElapsedTime - cacheElapsedTime));
         
     }
+    
+    /**
+     * Does a legal ordering of lookups that could cause caching to fail
+     */
+    @Test
+    public void testGetServiceFollowedByGetAllServices() {
+        MultiContract mc1 = locator.getService(MultiContract.class);
+        Assert.assertNotNull(mc1);
+        
+        Assert.assertTrue(mc1 instanceof MultiContractImpl1);
+        
+        List<MultiContract> allMCs = locator.getAllServices(MultiContract.class);
+        Assert.assertNotNull(allMCs);
+        
+        Assert.assertEquals(2, allMCs.size());
+        
+        Assert.assertTrue(allMCs.get(0) instanceof MultiContractImpl1);
+        Assert.assertTrue(allMCs.get(1) instanceof MultiContractImpl2);
+    }
 }
