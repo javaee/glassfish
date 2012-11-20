@@ -41,14 +41,21 @@ package org.glassfish.hk2.tests.locator.validating;
 
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -176,5 +183,50 @@ public class ValidatingTest {
         
         Assert.assertEquals(1, ds1.getImplNumber());
         Assert.assertEquals(2, ds2.getImplNumber());
+    }
+    
+    @Test @Ignore
+    public void testStateBasedValidation() {
+        // Overrides global one
+        ServiceLocator locator = LocatorHelper.create("ValidationTest_2", null);
+        
+        ServiceLocatorUtilities.bind(locator, new Binder() {
+
+            @Override
+            public void bind(DynamicConfiguration config) {
+                config.bind(BuilderHelper.link(DynamicServiceImpl1.class.getName()).
+                        to(DynamicService.class.getName()).
+                        in(Singleton.class.getName()).
+                        build());
+                config.bind(BuilderHelper.link(DynamicServiceImpl2.class.getName()).
+                        to(DynamicService.class.getName()).
+                        in(Singleton.class.getName()).
+                        build());
+                config.bind(BuilderHelper.link(StateBasedValidationService.class.getName()).
+                        to(ValidationService.class.getName()).
+                        in(Singleton.class.getName()).
+                        build());
+                
+            }
+            
+        });
+        
+        // First get one
+        StateBasedValidationService sbvs = (StateBasedValidationService)
+                locator.getService(ValidationService.class);
+        Assert.assertNotNull(sbvs);
+        
+        sbvs.setCurrentState(1);
+        
+        DynamicService d1 = locator.getService(DynamicService.class);
+        Assert.assertNotNull(d1);
+        Assert.assertEquals(1, d1.getImplNumber());
+        
+        // Now switch the state to state 2
+        sbvs.setCurrentState(2);
+        
+        DynamicService d2 = locator.getService(DynamicService.class);
+        Assert.assertNotNull(d2);
+        Assert.assertEquals(2, d2.getImplNumber());
     }
 }
