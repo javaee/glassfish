@@ -52,6 +52,7 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -64,14 +65,25 @@ import org.junit.Test;
 public class ServiceLocatorUtilitiesTest {
     private final static String TEST_NAME = "ServiceLocatorUtilitiesTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, null);
+    
+    private SimpleService addSimpleService() {
+        SimpleService ss1 = locator.getService(SimpleService.class);
+        if (ss1 == null) {
+            SimpleService ss = new SimpleService();
+            
+            ActiveDescriptor<SimpleService> active = BuilderHelper.createConstantDescriptor(ss);
+            
+            ServiceLocatorUtilities.addOneDescriptor(locator, active);
+            
+            ss1 = locator.getService(SimpleService.class);
+        }
+        
+        return ss1;
+    }
 
     @Test
     public void testAddActiveDescriptor() {
-        SimpleService ss = new SimpleService();
-        
-        ActiveDescriptor<SimpleService> active = BuilderHelper.createConstantDescriptor(ss);
-        
-        ServiceLocatorUtilities.addOneDescriptor(locator, active);
+        SimpleService ss = addSimpleService();
         
         SimpleService ss1 = locator.getService(SimpleService.class);
         Assert.assertNotNull(ss1);
@@ -113,6 +125,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testCreateAndInitialize() {
+        addSimpleService();
+        
         ServiceWithPostConstruct swpc = locator.createAndInitialize(
                 ServiceWithPostConstruct.class);
         Assert.assertNotNull(swpc);

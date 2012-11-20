@@ -767,7 +767,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
           
           if (results == null) {
             List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false, true);
-            results = narrow(this, candidates, contractOrImpl, name, false, onBehalfOf, qualifiers);
+            results = narrow(this, candidates, contractOrImpl, name, onBehalfOf, qualifiers);
             if (!results.getErrors().isEmpty()) {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
             }
@@ -911,7 +911,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
           
           if (results == null) {
               List<ActiveDescriptor<?>> candidates = getDescriptors(filter, null, true, false, true);
-              results = narrow(this, candidates, contractOrImpl, null, true, null, qualifiers);
+              results = narrow(this, candidates, contractOrImpl, null, null, qualifiers);
               if (!results.getErrors().isEmpty()) {
                   currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
               }
@@ -984,7 +984,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
         List<ActiveDescriptor<?>> candidates = getDescriptors(searchCriteria);
-        results = narrow(this, candidates, null, null, true, null);
+        results = narrow(this, candidates, null, null, null);
         if (!results.getErrors().isEmpty()) {
             currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
         }
@@ -1460,7 +1460,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
 
     private static NarrowResults narrow(ServiceLocator locator, List<ActiveDescriptor<?>> candidates,
-            Type requiredType, String name, boolean getAll, Injectee injectee, Annotation... qualifiers) {
+            Type requiredType, String name, Injectee injectee, Annotation... qualifiers) {
         NarrowResults retVal = new NarrowResults();
         
         Set<Annotation> requiredAnnotations = Utilities.fixAndCheckQualifiers(qualifiers, name);
@@ -1510,11 +1510,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
             // If we are here, then this one matches
             retVal.addGoodResult(candidate);
-            
-            if (!getAll) {
-                // We found one, we don't want to reify any more than we have to
-                break;
-            }
         }
         
         return retVal;
