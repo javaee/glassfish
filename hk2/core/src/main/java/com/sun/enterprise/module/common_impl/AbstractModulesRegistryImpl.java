@@ -475,6 +475,8 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
 			for (Entry<ServiceLocator, List<ActiveDescriptor>> e : descriptorsByServiceLocator
 					.entrySet()) {
 				ServiceLocator sl = e.getKey();
+				if (!sl.getState().equals(ServiceLocatorState.RUNNING)) continue;
+				
 				List<ActiveDescriptor> descriptors = e.getValue();
 
 				DynamicConfigurationService dcs = sl
