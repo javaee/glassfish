@@ -25,7 +25,7 @@ public class Client {
             Context ctx = new InitialContext();
             SessionBeanInjectionRemote beanRemote = (SessionBeanInjectionRemote) ctx.lookup(SessionBeanInjectionRemote.RemoteJNDIName);
             beanRemote.sendMessage(text);
-            STAT.addStatus("jms-injection-ejb " + ejbName, STAT.PASS);
+
             boolean received = beanRemote.checkMessage(text);
             if (received)
                 STAT.addStatus("jms-injection-ejb " + ejbName, STAT.PASS);
