@@ -448,6 +448,14 @@ public interface ServiceLocator {
     public void shutdown();
     
     /**
+     * Returns the current state of this service locator.  This method will work
+     * in all service locator states
+     * 
+     * @return The current state of the service locator
+     */
+    public ServiceLocatorState getState();
+    
+    /**
      * This method will analyze the given class, and create it if can.  The object
      * created in this way will not be managed by HK2.  It is the responsibility of
      * the caller to ensure that any lifecycle this object has is honored

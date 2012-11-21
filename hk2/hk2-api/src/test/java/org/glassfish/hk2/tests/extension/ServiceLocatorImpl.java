@@ -50,6 +50,7 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorState;
 
 /**
  * @author jwells
@@ -363,5 +364,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ServiceHandle<?> root, Injectee injectee) throws MultiException {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public ServiceLocatorState getState() {
+        return ServiceLocatorState.RUNNING;
     }
 }
