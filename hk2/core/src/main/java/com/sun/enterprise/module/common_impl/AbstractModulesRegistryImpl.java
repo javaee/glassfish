@@ -58,6 +58,7 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.api.ServiceLocatorState;
 import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -68,6 +69,7 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -434,6 +436,20 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
         }
     }
     
+    private void removeShutdownLocators() {
+        for (Map<ServiceLocator, List<ActiveDescriptor>> descriptorsByServiceLocator : moduleDescriptors.values()) {
+            Set<ServiceLocator> keys = new HashSet<ServiceLocator>(descriptorsByServiceLocator.keySet());
+            
+            for (ServiceLocator key : keys) {
+                if (!ServiceLocatorState.SHUTDOWN.equals(key.getState())) continue;
+                
+                descriptorsByServiceLocator.remove(key);
+            }
+        }
+   
+        
+    }
+    
     /**
      * Removes a module from the registry. The module will not be accessible 
      * from this registry after this method returns.
@@ -445,6 +461,9 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
 		assert module.getRegistry() == this;
 		modules.remove(AbstractFactory.getInstance().createModuleId(
 				module.getModuleDefinition()));
+		
+		// Removes any shutdown locators before we operate on them
+		removeShutdownLocators();
 
 		// TODO: modules comes right back when getModules() is called.
 		// the modeling is incorrect

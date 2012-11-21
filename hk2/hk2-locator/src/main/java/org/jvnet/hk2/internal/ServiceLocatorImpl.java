@@ -80,6 +80,7 @@ import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorState;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
@@ -160,7 +161,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final Map<ServiceLocatorImpl, ServiceLocatorImpl> children =
             new WeakHashMap<ServiceLocatorImpl, ServiceLocatorImpl>(); // Must be Weak for throw away children
     
-    private boolean shutdown = false;
+    private ServiceLocatorState state = ServiceLocatorState.RUNNING;
     
     /**
      * Called by the Generator, and hence must be a public method
@@ -618,6 +619,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public String getName() {
         return locatorName;
     }
+    
+    @Override
+    public ServiceLocatorState getState() {
+        synchronized(lock) {
+            return state;
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocator#shutdown()
@@ -625,7 +633,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public void shutdown() {
         synchronized (lock) {
-            if (shutdown) return;
+            if (state.equals(ServiceLocatorState.SHUTDOWN)) return;
             
             if (parent != null) {
                 parent.removeChild(this);
@@ -642,7 +650,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
             singletonContext.shutdown();
 
-            shutdown = true;
+            state = ServiceLocatorState.SHUTDOWN;
 
             allDescriptors.clear();
             descriptorsByAdvertisedContract.clear();
@@ -1542,7 +1550,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     private void checkState() {
-        if (shutdown) throw new IllegalStateException(this + " has been shut down");
+        if (ServiceLocatorState.SHUTDOWN.equals(state)) throw new IllegalStateException(this + " has been shut down");
     }
     
     private LinkedHashSet<ValidationService> getAllValidators() {
