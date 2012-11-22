@@ -45,6 +45,7 @@ import javax.resource.spi.IllegalStateException;
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * @author Tony Ng
@@ -351,6 +352,27 @@ public class JdbcConnection implements Connection {
     }
 
     /////////////  END  JDK 1.4  //////////////
+    
+    public int getNetworkTimeout() throws SQLException {
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
+    public void abort(Executor executor)  throws SQLException{
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
+    public String getSchema() throws SQLException{
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
+    public void setSchema(String schema) throws SQLException{
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
 
     void associateConnection(JdbcManagedConnection newMc)
             throws ResourceException {

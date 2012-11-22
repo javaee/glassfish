@@ -7,6 +7,7 @@ import javax.resource.ConnectorResourceDefinitions;
 import javax.resource.ConnectorResourceDefinition;
 import javax.resource.cci.Connection;
 import javax.resource.cci.ConnectionFactory;
+import javax.annotation.Resource;
 
 @ConnectorResourceDefinitions(
      value = {
@@ -54,7 +55,16 @@ import javax.resource.cci.ConnectionFactory;
 @Stateless
 public class HelloEJB implements Hello {
 
+    @javax.annotation.Resource(name="java:comp/env/HelloEJB_Annotation_ConnectorResource")
+    ConnectionFactory cf;
+    
     public void hello() {
+        try {
+            Connection c = cf.getConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Fail to access connector resource through injection", e);
+        }
 
         // Connector-Resource-Definition through Annotation
         lookupConnectorResource("java:global/env/Servlet_ConnectorResource", true);

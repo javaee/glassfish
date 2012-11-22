@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * Holds the java.sql.Connection object, which is to be 
@@ -613,6 +614,27 @@ public class ConnectionHolder implements Connection{
 	checkValidity();
     	con.setTypeMap(map);
     }
+
+    public int getNetworkTimeout() throws SQLException {
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
+    public void abort(Executor executor)  throws SQLException{
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
+    public String getSchema() throws SQLException{
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
+    public void setSchema(String schema) throws SQLException{
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 new feature.");
+    }
+    
     
     /**
      * Checks the validity of this object

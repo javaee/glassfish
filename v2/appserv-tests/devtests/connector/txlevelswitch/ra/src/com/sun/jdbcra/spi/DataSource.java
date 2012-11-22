@@ -8,6 +8,7 @@ package com.sun.jdbcra.spi;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import javax.resource.spi.ManagedConnectionFactory;
 import javax.resource.spi.ConnectionManager;
 import javax.resource.ResourceException;
@@ -150,6 +151,9 @@ public class DataSource implements javax.sql.DataSource, java.io.Serializable,
     	this.logWriter = logWriter;
     }        
         
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException{
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 feature.");
+    }
     /**
      * Retrieves the description.
      *

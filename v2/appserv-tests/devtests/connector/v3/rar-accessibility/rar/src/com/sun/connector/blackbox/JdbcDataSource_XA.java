@@ -50,6 +50,8 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 /**
  * @author Tony Ng
@@ -105,6 +107,10 @@ public class JdbcDataSource_XA implements
 
     public void setLogWriter(PrintWriter out) throws SQLException {
         DriverManager.setLogWriter(out);
+    }
+
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException{
+      throw new SQLFeatureNotSupportedException("Do not support Java 7 feature.");
     }
 
     public String getDescription() {
