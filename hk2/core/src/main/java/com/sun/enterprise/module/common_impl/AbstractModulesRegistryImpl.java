@@ -444,6 +444,8 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
                 if (!ServiceLocatorState.SHUTDOWN.equals(key.getState())) continue;
                 
                 descriptorsByServiceLocator.remove(key);
+                
+                habitats.remove(key);
             }
         }
    
