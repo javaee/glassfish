@@ -5,5 +5,4 @@ public interface StlesTimeout {
 
     public void createProgrammaticTimers();
     public void verify();
-    public void verifyCancel();
 }
