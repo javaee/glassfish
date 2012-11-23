@@ -53,6 +53,41 @@ public class StlesTimeoutEJB implements StlesTimeout {
         verifyAllTimers();
     }
 
+    public void verifyCancel() {
+        Collection<Timer> ts = timerSvc.getAllTimers();
+        Set<String> cancelerrors = new HashSet<String>();
+        for (Timer t : ts) {
+            String info = "" + t.getInfo();
+            if (info.contains("Sglt")) {
+                try {
+                    t.cancel();
+                    cancelerrors.add(info + " should not be cancelled");
+                } catch (IllegalStateException e) {
+                    String msg = e.getMessage();
+                    if (msg.contains("owner")) {
+                        System.out.println("expected exception " + msg);
+                    } else {
+                        cancelerrors.add("unexpected exception " + msg + " when cancelling " + info);
+                    }
+                }
+            } else if (info.contains("Stles")) {
+                try {
+                    t.cancel();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    cancelerrors.add(info + " should be cancelled");
+                }
+            }
+        }
+        if (!cancelerrors.isEmpty()) {
+            StringBuffer sb = new StringBuffer();
+            for (String e : cancelerrors) {
+                sb.append("" + e).append(", ");
+            }
+            throw new EJBException("Errors when cancelling timers: " + sb.toString());
+        }
+    }
+
     private void verifyAllTimers() {
 
         Collection<Timer> ts = timerSvc.getAllTimers();

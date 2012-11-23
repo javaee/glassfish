@@ -32,6 +32,11 @@ public class Client {
             stlesTimeout.createProgrammaticTimers();
             stlesTimeout.verify();
             stat.addStatus("getalltimers timeout: ", stat.PASS );
+
+            System.out.println("Verifying cancelling from other bean");
+            stlesTimeout.createProgrammaticTimers();
+            stlesTimeout.verifyCancel();
+            stat.addStatus("getalltimers cancel: ", stat.PASS );
         } catch(Exception e) {
             stat.addStatus("getalltimers: ", stat.FAIL);
             e.printStackTrace();
