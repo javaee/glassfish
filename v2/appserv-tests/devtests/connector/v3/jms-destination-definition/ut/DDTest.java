@@ -10,7 +10,6 @@ import com.sun.enterprise.deployment.io.AppClientDeploymentDescriptorFile;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.glassfish.deployment.common.Descriptor;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
 import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
@@ -50,7 +49,7 @@ public class DDTest extends TestCase {
             ApplicationDeploymentDescriptorFile ddReader = new ApplicationDeploymentDescriptorFile();
             Application application = (Application)ddReader.read(ddIS);
 
-            Set<Descriptor> actualJMSDDDs = application.getResourceDescriptors(JavaEEResourceType.JMSDD);
+            Set<ResourceDescriptor> actualJMSDDDs = application.getResourceDescriptors(JavaEEResourceType.JMSDD);
 
             Map<String, JMSDestinationDefinitionDescriptor> expectedJMSDDDs =
                     new HashMap<String, JMSDestinationDefinitionDescriptor>();

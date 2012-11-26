@@ -5,7 +5,7 @@
 package com.sun.s1asdev.jmsdd;
 
 import com.sun.enterprise.deployment.JMSDestinationDefinitionDescriptor;
-import org.glassfish.deployment.common.Descriptor;
+import com.sun.enterprise.deployment.ResourceDescriptor;
 import org.glassfish.internal.api.Globals;
 
 import java.util.Map;
@@ -17,9 +17,9 @@ import static junit.framework.Assert.*;
 public class TestUtil {
 
     public static void compareJMSDDD(Map<String, JMSDestinationDefinitionDescriptor> expectedJMSDDDs,
-            Set<Descriptor> actualJMSDDDs) {
+            Set<ResourceDescriptor> actualJMSDDDs) {
 
-        for (Descriptor descriptor : actualJMSDDDs) {
+        for (ResourceDescriptor descriptor : actualJMSDDDs) {
             JMSDestinationDefinitionDescriptor actualDesc = (JMSDestinationDefinitionDescriptor)descriptor;
             assertNotNull("The JMSDestinationDefinitionDescriptor name cannot be null.", actualDesc.getName());
 

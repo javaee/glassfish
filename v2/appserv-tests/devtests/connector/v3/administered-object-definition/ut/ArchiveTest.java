@@ -7,11 +7,11 @@ package com.sun.s1asdev.aod;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 import com.sun.enterprise.deployment.AdministeredObjectDefinitionDescriptor;
 import com.sun.enterprise.deployment.Application;
+import com.sun.enterprise.deployment.ResourceDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.loader.ASURLClassLoader;
 import junit.framework.TestCase;
-import org.glassfish.deployment.common.Descriptor;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.ejb.deployment.archivist.EjbArchivist;
 import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
@@ -220,7 +220,7 @@ public class ArchiveTest extends TestCase {
         assertTrue("Archivist should handle annotations.", reader.isAnnotationProcessingRequested());
 
         EjbBundleDescriptorImpl ejbBundleDesc = reader.open(archive);
-        Set<Descriptor> acturalAODDs = new HashSet<Descriptor>();
+        Set<ResourceDescriptor> acturalAODDs = new HashSet<ResourceDescriptor>();
         for( EjbDescriptor ejbDesc: ejbBundleDesc.getEjbs()){
             acturalAODDs.addAll(ejbDesc.getResourceDescriptors(JavaEEResourceType.AODD));
 //            for( AdministeredObjectDefinitionDescriptor aodd: ejbDesc.getAdministeredObjectDefinitionDescriptors()){

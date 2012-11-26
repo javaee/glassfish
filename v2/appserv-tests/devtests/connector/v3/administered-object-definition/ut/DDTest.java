@@ -9,7 +9,6 @@ import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.io.ApplicationDeploymentDescriptorFile;
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.glassfish.deployment.common.Descriptor;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.ejb.deployment.io.EjbDeploymentDescriptorFile;
 import org.glassfish.web.deployment.io.WebDeploymentDescriptorFile;
@@ -49,7 +48,7 @@ public class DDTest extends TestCase {
             ApplicationDeploymentDescriptorFile ddReader = new ApplicationDeploymentDescriptorFile();
             Application application = (Application) ddReader.read( ddIS);
             
-            Set<Descriptor> actualAODDs = application.getResourceDescriptors(JavaEEResourceType.AODD);
+            Set<ResourceDescriptor> actualAODDs = application.getResourceDescriptors(JavaEEResourceType.AODD);
 
             Map<String,AdministeredObjectDefinitionDescriptor> expectedAODDs = 
                     new HashMap<String,AdministeredObjectDefinitionDescriptor>();

@@ -5,6 +5,7 @@
 package com.sun.s1asdev.crd;
 
 import com.sun.enterprise.deployment.ConnectorResourceDefinitionDescriptor;
+import com.sun.enterprise.deployment.ResourceDescriptor;
 import org.glassfish.deployment.common.Descriptor;
 import org.glassfish.internal.api.Globals;
 
@@ -17,7 +18,7 @@ import static junit.framework.Assert.*;
 public class TestUtil {
 
     public static void compareCRDD(Map<String,ConnectorResourceDefinitionDescriptor> expectedCRDDs, 
-            Set<Descriptor> actualCRDDs) throws Exception{
+            Set<ResourceDescriptor> actualCRDDs) throws Exception{
         
         for(Descriptor descriptor : actualCRDDs){
             ConnectorResourceDefinitionDescriptor actualDesc = (ConnectorResourceDefinitionDescriptor)descriptor;

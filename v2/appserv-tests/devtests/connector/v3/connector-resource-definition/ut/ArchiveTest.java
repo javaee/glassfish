@@ -7,6 +7,7 @@ package com.sun.s1asdev.crd;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 import com.sun.enterprise.deployment.Application;
 import com.sun.enterprise.deployment.ConnectorResourceDefinitionDescriptor;
+import com.sun.enterprise.deployment.ResourceDescriptor;
 import com.sun.enterprise.deployment.WebBundleDescriptor;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.loader.ASURLClassLoader;
@@ -217,7 +218,7 @@ public class ArchiveTest extends TestCase {
         assertTrue("Archivist should handle annotations.", reader.isAnnotationProcessingRequested());
 
         EjbBundleDescriptorImpl ejbBundleDesc = reader.open(archive);
-        Set<Descriptor> acturalCRDDs = new HashSet<Descriptor>();
+        Set<ResourceDescriptor> acturalCRDDs = new HashSet<ResourceDescriptor>();
         for( EjbDescriptor ejbDesc: ejbBundleDesc.getEjbs()){
             acturalCRDDs.addAll(ejbDesc.getResourceDescriptors(JavaEEResourceType.CRD));
         }

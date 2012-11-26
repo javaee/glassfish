@@ -5,15 +5,11 @@
 package com.sun.s1asdev.jmsdd;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
-import com.sun.enterprise.deployment.Application;
-import com.sun.enterprise.deployment.ApplicationClientDescriptor;
-import com.sun.enterprise.deployment.JMSDestinationDefinitionDescriptor;
-import com.sun.enterprise.deployment.WebBundleDescriptor;
+import com.sun.enterprise.deployment.*;
 import com.sun.enterprise.deployment.archivist.AppClientArchivist;
 import com.sun.enterprise.deployment.archivist.ApplicationArchivist;
 import com.sun.enterprise.loader.ASURLClassLoader;
 import junit.framework.TestCase;
-import org.glassfish.deployment.common.Descriptor;
 import org.glassfish.deployment.common.JavaEEResourceType;
 import org.glassfish.ejb.deployment.archivist.EjbArchivist;
 import org.glassfish.ejb.deployment.descriptor.EjbBundleDescriptorImpl;
@@ -328,7 +324,7 @@ public class ArchiveTest extends TestCase {
         assertTrue("Archivist should handle annotations.", reader.isAnnotationProcessingRequested());
 
         EjbBundleDescriptorImpl ejbBundleDesc = reader.open(archive);
-        Set<Descriptor> acturalCRDDs = new HashSet<Descriptor>();
+        Set<ResourceDescriptor> acturalCRDDs = new HashSet<ResourceDescriptor>();
         for (EjbDescriptor ejbDesc : ejbBundleDesc.getEjbs()) {
             acturalCRDDs.addAll(ejbDesc.getResourceDescriptors(JavaEEResourceType.JMSDD));
         }

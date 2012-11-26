@@ -49,7 +49,7 @@ public class DDTest extends TestCase {
             ApplicationDeploymentDescriptorFile ddReader = new ApplicationDeploymentDescriptorFile();
             Application application = (Application) ddReader.read( ddIS);
             
-            Set<Descriptor> actualCRDDs = application.getResourceDescriptors(JavaEEResourceType.CRD);
+            Set<ResourceDescriptor> actualCRDDs = application.getResourceDescriptors(JavaEEResourceType.CRD);
 
             Map<String,ConnectorResourceDefinitionDescriptor> expectedCRDDs = 
                     new HashMap<String,ConnectorResourceDefinitionDescriptor>();
