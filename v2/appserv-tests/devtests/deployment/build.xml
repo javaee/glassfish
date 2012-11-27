@@ -56,6 +56,9 @@
             <property name="build" value="${build}/webservices"/>
         </ant>
          -->
+        <ant dir="${testsRoot}/ear/earwithall2" target="depl-order">
+            <property name="build" value="${build}/ear/earwithall2"/>
+        </ant>
     </target>
 
     <target name="clobber" depends="clean">

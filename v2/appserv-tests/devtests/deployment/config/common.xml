@@ -826,9 +826,6 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <antcall target="private-all">
         <param name="build" value="${testsRoot}/build"/>
     </antcall>
-    <ant dir="${testsRoot}/ear/earwithall2" target="depl-order">
-        <property name="build" value="${build}/ear/earwithall2"/>
-    </ant>
     <exec executable="${ASADMIN}" failonerror="true">
         <arg line="stop-domain"/>
     </exec>
