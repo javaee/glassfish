@@ -17,6 +17,7 @@
         <antcall target="setup"/>
         <antcall target="DefaultConnectionFactory"/>
         <antcall target="Injection"/>
+        <antcall target="JMSXDeliveryCount"/>
         <antcall target="unsetup"/>
         <antcall target="report"/>
     </target>
@@ -55,6 +56,12 @@
         <record name="DefaultCF.output" action="start" />
             <ant dir="defaultCF" target="all"/>
         <record name="DefaultCF.output" action="stop" />
+    </target>
+
+    <target name="JMSXDeliveryCount">
+        <record name="JMSXDeliveryCount.output" action="start" />
+            <ant dir="JMSXDeliveryCount" target="all"/>
+        <record name="JMSXDeliveryCount.output" action="stop" />
     </target>
 
     <target name="usage">
