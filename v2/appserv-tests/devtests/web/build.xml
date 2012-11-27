@@ -221,6 +221,7 @@
         <ant dir="servlet-3.0/asyncContextHasOriginalRequestAndResponse" target="all"/>
         <ant dir="servlet-3.0/asyncContextMultipleDispatch" target="all"/>
         <ant dir="servlet-3.0/asyncContextSetTimeout" target="all"/>
+        <ant dir="servlet-3.0/asyncContextDispatchWithException" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnComplete" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnError" target="all"/>
         <ant dir="servlet-3.0/asyncListenerOnTimeout" target="all"/>
