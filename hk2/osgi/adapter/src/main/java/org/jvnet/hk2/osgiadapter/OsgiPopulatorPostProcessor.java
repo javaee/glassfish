@@ -92,6 +92,11 @@ public class OsgiPopulatorPostProcessor implements
 				});
 
 			}
+			
+			public String toString() {
+			    return "OsgiPopulatorPostProcessor.HK2Loader(" +
+			    		osgiModule + "," + System.identityHashCode(this) + ")";
+			}
         	
         };
 		descriptorImpl.setLoader(hk2Loader);
