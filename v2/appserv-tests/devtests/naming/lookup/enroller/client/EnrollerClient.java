@@ -15,9 +15,9 @@ import javax.jms.*;
 import java.util.*;
 import com.sun.s1peqe.ejb.bmp.enroller.ejb.*;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
-import com.sun.enterprise.naming.SerialContext;
-import com.sun.enterprise.util.ORBManager;
-
+import com.sun.enterprise.naming.impl.SerialContext;
+import org.glassfish.internal.api.Globals;
+import org.glassfish.internal.api.ORBLocator;
 
 public class EnrollerClient {
 
@@ -35,6 +35,7 @@ public class EnrollerClient {
         try{
             stat.addDescription("Testing loadbalancing app.");
             test01(args);
+            testInAppClientContainer();
             stat.printSummary("loadbalancingAppID");
         } catch (Exception ex) {
             System.out.println("Exception in runTestClient: " + ex.toString());
@@ -56,8 +57,9 @@ public class EnrollerClient {
 	    }
 	    Properties env = new Properties();
 	    env.put("java.naming.factory.initial", "com.sun.jndi.cosnaming.CNCtxFactory");
-	    org.omg.CORBA.ORB orb = ORBManager.getORB();
-	    env.put("java.naming.corba.orb", orb);
+	    ORBLocator orbLocator = Globals.getDefaultHabitat().getService(ORBLocator.class);
+	    
+	    env.put("java.naming.corba.orb", orbLocator.getORB());
 	    // Initialize the Context with JNDI specific properties
 	    InitialContext ctx = new InitialContext(env);
 	    System.out.println("looking up ejb/MyStudent using com.sun.jndi.cosnaming.CNCtxFactory...");
@@ -147,4 +149,27 @@ public class EnrollerClient {
             ex.printStackTrace();
         }
     } 
+
+	private void testInAppClientContainer() {
+		System.out.println("Creating new Context ...");
+		try {
+			InitialContext ctx = new InitialContext();
+			Object obj = ctx.lookup("java:comp/InAppClientContainer");
+			if (obj == null) {
+				stat.addStatus("testInAppClientContainer", stat.FAIL);
+				return;
+			}
+			Boolean result = (Boolean) obj;
+			if (!result) {
+				stat.addStatus("testInAppClientContainer", stat.FAIL);
+			}
+			System.out.println("Looked up java:comp/InAppClientContainer :"
+					+ result);
+			 stat.addStatus("testInAppClientContainer", stat.PASS);
+		} catch (Exception ex) {
+			 stat.addStatus("testInAppClientContainer", stat.FAIL);
+	         System.err.println("Caught an unexpected exception!");
+	         ex.printStackTrace();
+		}
+	}
 } 

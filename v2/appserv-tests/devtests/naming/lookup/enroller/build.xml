@@ -48,7 +48,7 @@
             <param name="jdbc.resource.name" value="jdbc/bmp-enrollerDB"/>
 	</antcall>
 	<antcall target="deploy-jms-common"/>	
-	<antcall target="reconfig-common"/>
+	<!--<antcall target="reconfig-common"/>-->
     </target>
 
     <target name="deploy" depends="init-common">
