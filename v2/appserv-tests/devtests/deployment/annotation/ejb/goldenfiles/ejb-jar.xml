@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="true" version="3.1" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="true" version="3.2" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_2.xsd">
 <enterprise-beans>
 <session>
 <display-name>StatefulTest2</display-name>
@@ -12,6 +12,7 @@
 <security-identity>
 <use-caller-identity/>
 </security-identity>
+<passivation-capable>true</passivation-capable> 
 </session>
 <session>
 <display-name>StatelessTest2</display-name>
@@ -55,6 +56,7 @@
 <security-identity>
 <use-caller-identity/>
 </security-identity>
+<passivation-capable>true</passivation-capable> 
 </session>
 <session>
 <display-name>myStatelessTest1</display-name>
