@@ -55,8 +55,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>osgi-adapter-test</module>
+        <module>faux-sdp-bundle</module>
+        <module>sdp-management-bundle</module>
         <module>test-module-startup</module>
+        <module>osgi-adapter-test</module>
     </modules>
 
 </project>
