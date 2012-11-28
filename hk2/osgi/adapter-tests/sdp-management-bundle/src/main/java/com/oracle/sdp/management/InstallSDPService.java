@@ -39,27 +39,45 @@
  */
 package com.oracle.sdp.management;
 
-import org.osgi.framework.BundleActivator;
+import java.io.IOException;
+import java.net.URL;
+
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 /**
- * Installs the services
+ * Installs the SDP
  * 
  * @author jwells
  *
  */
-public class Activator implements BundleActivator {
-
-    @Override
-    public void start(BundleContext context) throws Exception {
-        InstallSDPService iss = new InstallSDPService(context);
+public class InstallSDPService {
+    private final static String RESOURCE = "bundles/sdp.jar";
+    private final BundleContext context;
+    
+    private Bundle installedSDP;
+    
+    public InstallSDPService(BundleContext context) {
+        this.context = context;
+    }
+    
+    public void install() throws IOException, BundleException {
+        Bundle bundle = context.getBundle();
+        URL url = bundle.getResource(RESOURCE);
         
-        context.registerService(InstallSDPService.class.getName(),
-                iss, null);
+        installedSDP = context.installBundle("sdp", url.openStream());
+    }
+    
+    public boolean uninstall() throws BundleException {
+        if (installedSDP == null) return false;
+        Bundle localSDP = installedSDP;
+        installedSDP = null;
+        
+        localSDP.uninstall();
+        
+        return true;
+        
     }
 
-    @Override
-    public void stop(BundleContext arg0) throws Exception {
-        
-    }
 }

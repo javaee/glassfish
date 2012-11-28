@@ -14,9 +14,11 @@ import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
 import java.io.File;
 import java.util.List;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -28,6 +30,8 @@ import org.osgi.util.tracker.ServiceTracker;
 
 import test.TestModuleStartup;
 
+import com.oracle.sdp.management.InstallSDPService;
+import com.oracle.test.contracts.FooContract;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
@@ -78,6 +82,10 @@ public class ServiceLocatorHk2MainTest {
 						"osgi-adapter").version(projectVersion).startLevel(1)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
 						"test-module-startup").version(projectVersion).startLevel(4)),
+				provision(mavenBundle().groupId(GROUP_ID).artifactId(
+		                        "contract-bundle").version(projectVersion).startLevel(4)),
+		        provision(mavenBundle().groupId(GROUP_ID).artifactId(
+		                        "sdp-management-bundle").version(projectVersion).startLevel(4)),
 
 				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level")
 						.value("DEBUG"), logProfile(), cleanCaches()
@@ -152,25 +160,34 @@ public class ServiceLocatorHk2MainTest {
 		}
 	}
 	
+	private ServiceLocator getMainServiceLocator() throws Throwable {
+	    StartupContext startupContext = new StartupContext();
+        ServiceTracker hk2Tracker = new ServiceTracker(
+                this.bundleContext, Main.class.getName(), null);
+        hk2Tracker.open();
+        Main main = (Main) hk2Tracker.waitForService(0);
+        
+        hk2Tracker.close();
+        
+        ModulesRegistry mr = (ModulesRegistry) bundleContext
+                .getService(bundleContext
+                        .getServiceReference(ModulesRegistry.class
+                                .getName()));
+
+        ServiceLocator serviceLocator = main.createServiceLocator(
+                mr, startupContext,null,null);
+        
+        return serviceLocator;
+	    
+	}
+	
 	@Test
 	public <d> void testRemovalOfBundle() throws Throwable {
 
 		try {
 				
-			final StartupContext startupContext = new StartupContext();
-			final ServiceTracker hk2Tracker = new ServiceTracker(
-					this.bundleContext, Main.class.getName(), null);
-			hk2Tracker.open();
-			final Main main = (Main) hk2Tracker.waitForService(0);
-
-			hk2Tracker.close();
-			final ModulesRegistry mr = ModulesRegistry.class.cast(bundleContext
-					.getService(bundleContext
-							.getServiceReference(ModulesRegistry.class
-									.getName())));
-
-			final ServiceLocator serviceLocator = main.createServiceLocator(
-                    mr, startupContext,null,null);
+			
+			final ServiceLocator serviceLocator = getMainServiceLocator();
 
 			ModuleStartup m = serviceLocator.getService(ModuleStartup.class);
 			
@@ -187,7 +204,7 @@ public class ServiceLocatorHk2MainTest {
 				}
 			}
 			
-			Thread.currentThread().sleep(2000l);
+			Thread.sleep(2000l);
 			
 		    m = serviceLocator.getService(ModuleStartup.class);
 		    
@@ -201,6 +218,61 @@ public class ServiceLocatorHk2MainTest {
 		} finally {
 			TestModuleStartup.wasCalled=false;
 		}
+	}
+	
+	/**
+	 * Tests that late installation properly removes
+	 * services
+	 * 
+	 * @throws Throwable
+	 */
+	@Test @Ignore
+	public void testLateBundleInstallation() throws Throwable {
+	    ServiceLocator serviceLocator = getMainServiceLocator();
+	    
+        ServiceTracker hk2Tracker = new ServiceTracker(
+                this.bundleContext,
+                InstallSDPService.class.getName(),
+                null);
+        hk2Tracker.open();
+        InstallSDPService installationService = (InstallSDPService)
+                hk2Tracker.waitForService(0);
+        
+        hk2Tracker.close();
+        
+        FooContract fooC = serviceLocator.getService(FooContract.class);
+        Assert.assertNull(fooC);
+        
+        /**
+         * First install and uninstall
+         */
+        installationService.install();
+        
+        List<ActiveDescriptor<?>> descriptors =
+                serviceLocator.getDescriptors(
+                        BuilderHelper.createContractFilter(
+                                FooContract.class.getName()));
+        Assert.assertEquals(1, descriptors.size());
+        
+        Assert.assertTrue(installationService.uninstall());
+        
+        descriptors =
+                serviceLocator.getDescriptors(
+                        BuilderHelper.createContractFilter(
+                                FooContract.class.getName()));
+        
+        Assert.assertEquals(0, descriptors.size());
+        
+        fooC = serviceLocator.getService(FooContract.class);
+        Assert.assertNull(fooC);
+        
+        /**
+         * then install again
+         */
+        installationService.install();
+        
+        fooC = serviceLocator.getService(FooContract.class);
+        Assert.assertNotNull(fooC);
 	}
 
 

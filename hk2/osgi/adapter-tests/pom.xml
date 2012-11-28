@@ -55,6 +55,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>contract-bundle</module>
         <module>faux-sdp-bundle</module>
         <module>sdp-management-bundle</module>
         <module>test-module-startup</module>

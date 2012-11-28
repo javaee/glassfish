@@ -41,11 +41,13 @@ package com.oracle.faux.sdp;
 
 import org.jvnet.hk2.annotations.Service;
 
+import com.oracle.test.contracts.FooContract;
+
 /**
  * A service that will come and go as this bundle is installed and uninstalled
  * 
  * @author jwells
  */
 @Service
-public class Foo {
+public class Foo implements FooContract {
 }

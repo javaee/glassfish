@@ -37,29 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.oracle.sdp.management;
+package com.oracle.test.contracts;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Installs the services
+ * Empty contract
  * 
  * @author jwells
  *
  */
-public class Activator implements BundleActivator {
-
-    @Override
-    public void start(BundleContext context) throws Exception {
-        InstallSDPService iss = new InstallSDPService(context);
-        
-        context.registerService(InstallSDPService.class.getName(),
-                iss, null);
-    }
-
-    @Override
-    public void stop(BundleContext arg0) throws Exception {
-        
-    }
+@Contract
+public interface FooContract {
 }
