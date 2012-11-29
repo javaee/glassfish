@@ -67,6 +67,7 @@ public class InstallSDPService {
         URL url = bundle.getResource(RESOURCE);
         
         installedSDP = context.installBundle("sdp", url.openStream());
+        installedSDP.start();
     }
     
     public boolean uninstall() throws BundleException {
