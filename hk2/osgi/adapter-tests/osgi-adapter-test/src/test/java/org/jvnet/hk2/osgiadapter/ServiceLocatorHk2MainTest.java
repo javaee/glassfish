@@ -226,7 +226,7 @@ public class ServiceLocatorHk2MainTest {
 	 * 
 	 * @throws Throwable
 	 */
-	@Test @Ignore
+	@Test
 	public void testLateBundleInstallation() throws Throwable {
 	    ServiceLocator serviceLocator = getMainServiceLocator();
 	    
@@ -261,8 +261,7 @@ public class ServiceLocatorHk2MainTest {
                         BuilderHelper.createContractFilter(
                                 FooContract.class.getName()));
         
-        Assert.assertEquals("All descriptors from bundle should be removed but at least one remains: " + descriptors.get(0),
-                0, descriptors.size());
+        Assert.assertEquals(0, descriptors.size());
         
         fooC = serviceLocator.getService(FooContract.class);
         Assert.assertNull(fooC);

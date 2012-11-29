@@ -41,15 +41,29 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import com.sun.enterprise.module.*;
+import com.sun.enterprise.module.Module;
+import com.sun.enterprise.module.ModuleChangeListener;
+import com.sun.enterprise.module.ModuleDefinition;
+import com.sun.enterprise.module.ModuleLifecycleListener;
+import com.sun.enterprise.module.ModulesRegistry;
+import com.sun.enterprise.module.Repository;
+import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorState;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.osgi.framework.*;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.packageadmin.PackageAdmin;
 
 import java.io.IOException;
@@ -313,5 +327,60 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
 
     /*package*/ Module getModule(Bundle bundle) {
         return modules.get(new OSGiModuleId(bundle));
+    }
+    
+    public void remove(Module module) {
+        super.remove(module);
+        
+        if (!(module instanceof OSGiModuleImpl)) {
+            return;
+        }
+        
+        OSGiModuleImpl oModule = (OSGiModuleImpl) module;
+        Bundle bundle = oModule.getBundle();
+        
+        String bsn = bundle.getSymbolicName();
+        String version = bundle.getVersion().toString();
+        
+        Set<ServiceLocator> locators = getAllServiceLocators();
+        
+        for (ServiceLocator locator : locators) {
+            if (!ServiceLocatorState.RUNNING.equals(locator.getState())) continue;
+            
+            ServiceLocatorUtilities.removeFilter(locator, new RemoveFilter(bsn, version));
+        }
+    }
+    
+    private static class RemoveFilter implements Filter {
+        private final String bsn;
+        private final String version;
+        
+        private RemoveFilter(String bsn, String version) {
+            this.bsn = bsn;
+            this.version = version;
+        }
+        
+        private static String getMetadataValue(Descriptor d, String key) {
+            Map<String, List<String>> metadata = d.getMetadata();
+            
+            List<String> values = metadata.get(key);
+            if (values == null || values.size() <= 0) {
+                return null;
+            }
+            
+            return values.get(0);
+        }
+
+        @Override
+        public boolean matches(Descriptor d) {
+            String dBSN = getMetadataValue(d, OsgiPopulatorPostProcessor.BUNDLE_SYMBOLIC_NAME);
+            if (dBSN == null || !dBSN.equals(bsn)) return false;
+            
+            String dVersion = getMetadataValue(d, OsgiPopulatorPostProcessor.BUNDLE_VERSION);
+            if (dVersion == null) return false;
+            
+            return dVersion.equals(version);
+        }
+        
     }
 }

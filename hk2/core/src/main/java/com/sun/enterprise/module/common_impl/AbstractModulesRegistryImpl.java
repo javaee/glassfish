@@ -481,19 +481,18 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
 				
 				List<ActiveDescriptor> descriptors = e.getValue();
 
-				DynamicConfigurationService dcs = sl
-						.getService(DynamicConfigurationService.class);
-				DynamicConfiguration config = dcs.createDynamicConfiguration();
-
 				for (Descriptor descriptor : descriptors) {
-					System.out.println(descriptor);
 					ServiceLocatorUtilities.removeOneDescriptor(sl, descriptor);
 				}
-
-				config.commit();
 			}
 			moduleDescriptors.remove(module);
 		}
+	}
+	
+	protected Set<ServiceLocator> getAllServiceLocators() {
+	    removeShutdownLocators();
+	    
+	    return Collections.unmodifiableSet(habitats.keySet());
 	}
     
     /** 
