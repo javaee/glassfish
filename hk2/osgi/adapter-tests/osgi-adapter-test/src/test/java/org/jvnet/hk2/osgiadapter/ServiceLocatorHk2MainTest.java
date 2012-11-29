@@ -261,7 +261,8 @@ public class ServiceLocatorHk2MainTest {
                         BuilderHelper.createContractFilter(
                                 FooContract.class.getName()));
         
-        Assert.assertEquals(0, descriptors.size());
+        Assert.assertEquals("All descriptors from bundle should be removed but at least one remains: " + descriptors.get(0),
+                0, descriptors.size());
         
         fooC = serviceLocator.getService(FooContract.class);
         Assert.assertNull(fooC);
@@ -270,6 +271,13 @@ public class ServiceLocatorHk2MainTest {
          * then install again
          */
         installationService.install();
+        
+        descriptors =
+                serviceLocator.getDescriptors(
+                        BuilderHelper.createContractFilter(
+                                FooContract.class.getName()));
+        
+        Assert.assertEquals(1, descriptors.size());
         
         fooC = serviceLocator.getService(FooContract.class);
         Assert.assertNotNull(fooC);
