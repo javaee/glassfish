@@ -1475,7 +1475,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         for (ActiveDescriptor<?> candidate : candidates) {
             // We will not reify them all, we will only reify until we match
-            if (!candidate.isReified()) {
+            boolean doReify = false;
+            if ((requiredType != null || !requiredAnnotations.isEmpty()) &&
+                    !candidate.isReified()) {
+                doReify = true;
+            }
+            
+            if (doReify) {
                 try {
                     candidate = locator.reifyDescriptor(candidate, injectee);
                 }
@@ -1506,14 +1512,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
             
             // Now match the qualifiers
-            Set<Annotation> candidateAnnotations = candidate.getQualifierAnnotations();
             
             // Checking requiredAnnotations isEmpty is a performance optimization which avoids
             // a potentially expensive doPriv call in the second part of the AND statement
-            if (!requiredAnnotations.isEmpty() &&
-                    !Utilities.annotationContainsAll(candidateAnnotations, requiredAnnotations)) {
-                // The qualifiers do not match
-                continue;
+            if (!requiredAnnotations.isEmpty()) {
+                Set<Annotation> candidateAnnotations = candidate.getQualifierAnnotations();
+                
+                if (!Utilities.annotationContainsAll(candidateAnnotations, requiredAnnotations)) {
+                    // The qualifiers do not match
+                    continue;
+                }
             }
             
             // If we are here, then this one matches

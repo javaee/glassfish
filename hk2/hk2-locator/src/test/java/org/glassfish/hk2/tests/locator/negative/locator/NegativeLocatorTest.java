@@ -39,13 +39,9 @@
  */
 package org.glassfish.hk2.tests.locator.negative.locator;
 
-import java.util.List;
-
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -60,7 +56,7 @@ public class NegativeLocatorTest {
      * This method will throw if getAllServiceHandles attempts to reify the
      * BadService descriptor
      */
-    @Test @Ignore
+    @Test
     public void testGetAllServiceHandlesDoesNotReifyUnnecessarily() {
         locator.getAllServiceHandles(BuilderHelper.allFilter());
     }
