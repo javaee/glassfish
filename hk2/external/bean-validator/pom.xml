@@ -74,7 +74,9 @@
                             *; artifactId=hibernate-validator; inline=true
                         </Embed-Dependency>
                         <Export-Package>
-                            javax.validation.*; version=${javax.validation.version}
+                            javax.validation.*; version=${javax.validation.version},
+                            org.hibernate.validator.internal.cdi; version=${hibernate-validator.version},
+			    org.hibernate.validator.internal.cdi.interceptor; version=${hibernate-validator.version}
                         </Export-Package>
 
                         <Private-Package>
