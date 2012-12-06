@@ -12,11 +12,13 @@ import org.junit.rules.TestName;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.Binding;
 import javax.naming.Context;
+import javax.naming.InitialContext;
 import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 public class ContextTest {
@@ -127,6 +129,25 @@ public class ContextTest {
         testBean.closeNamingEnumerations();
     }
     
+	@Test
+	public void getIsInAppClientContainerFromEJB() throws NamingException {
+		Boolean isACC = testBean.getIsInAppClientContainer();
+		assertFalse(isACC);
+		System.out.println("get java:comp/InAppClientContainer from EJB:"
+				+ isACC);
+	}
+	
+	@Test
+	public void getIsInAppClientContainerFromSEClient() throws NamingException {
+		String jndiname = "java:comp/InAppClientContainer";
+		Context context = new InitialContext();
+		Boolean isACC = (Boolean) context.lookup(jndiname);
+		assertFalse(isACC);
+		System.out
+				.println("get "+jndiname+" from java SE client:"
+						+ isACC);
+	}
+	
     private String toString(NamingEnumeration<? extends NameClassPair> n) throws NamingException {
         StringBuilder sb = new StringBuilder();
         sb.append(n.toString()).append(NL);

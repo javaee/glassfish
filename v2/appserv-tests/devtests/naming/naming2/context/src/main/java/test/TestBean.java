@@ -1,5 +1,6 @@
 package test;
 
+import javax.annotation.Resource;
 import javax.ejb.*;
 import javax.naming.*;
 import java.util.Properties;
@@ -7,7 +8,8 @@ import java.util.Properties;
 @Singleton @Startup
 public class TestBean {
     @EJB private TestBean testBean;
-    
+    @Resource(lookup="java:comp/InAppClientContainer")
+    private Boolean isInAppClientContainer;
     public String hello() {
         return "Hello from " + this;
     }
@@ -83,4 +85,8 @@ public class TestBean {
         listJavaApp().close();
         listBindingsJavaApp().close();
     }
+    
+	public Boolean getIsInAppClientContainer() {
+		return isInAppClientContainer;
+	}
 }
