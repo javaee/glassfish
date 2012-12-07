@@ -86,6 +86,15 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         changedAttributes = new HashMap<String, PropertyChangeEvent>();
         changedCollections = new HashMap<String, ProtectedList>();
         if (beanValidator == null) {
+            ClassLoader cl = System.getSecurityManager()==null?Thread.currentThread().getContextClassLoader():
+                    AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                        @Override
+                        public ClassLoader run() {
+                            return Thread.currentThread().getContextClassLoader();
+                        }
+                    });
+            try {
+                Thread.currentThread().setContextClassLoader(null);
                 TraversableResolver traversableResolver =
                     new TraversableResolver() {
                         public boolean isReachable(Object traversableObject,
@@ -106,6 +115,9 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                 validatorContext.messageInterpolator(new MessageInterpolatorImpl());                
                     beanValidator = validatorContext.traversableResolver(
                             traversableResolver).getValidator();
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
+            }
         }
     }
 
