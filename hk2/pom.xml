@@ -140,7 +140,7 @@
 
     <scm>
       <connection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</connection>
-      <developerConnection>scm:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
+      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
       <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
     </scm>
 
