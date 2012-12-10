@@ -184,11 +184,21 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+                <version>2.3.2</version>
                 <configuration>
-                    <mavenExecutorId>forked-path</mavenExecutorId>
                     <useReleaseProfile>false</useReleaseProfile>
                     <arguments>${release.arguments}</arguments>
+                    <providerImplementations>
+                        <svn>javasvn</svn>
+                    </providerImplementations>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+                        <artifactId>maven-scm-provider-svnjava</artifactId>
+                        <version>2.0.5</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
