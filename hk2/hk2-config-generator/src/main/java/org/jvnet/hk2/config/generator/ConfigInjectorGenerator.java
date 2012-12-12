@@ -73,7 +73,9 @@ import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.*;
 import javax.lang.model.util.SimpleElementVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import java.io.IOException;
@@ -287,7 +289,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
             while(!q.isEmpty()) {
                 TypeElement t = q.pop();
-                if (!visited.add(t)) continue;   // been here already
+                if(!visited.add(t)) continue;   // been here already
 
                 for (FieldDeclaration f : t.getFields())
                     generate(new Property.Field(f));
@@ -310,22 +312,22 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
         private void generate(Property p) {
             Attribute a = p.getAnnotation(Attribute.class);
-            Element e = p.getAnnotation(Element.class);
+            org.jvnet.hk2.config.Element e = p.getAnnotation(org.jvnet.hk2.config.Element.class);
 
             if(a!=null) {
                 new AttributeMethodGenerator(p,a).generate();
                 if(e!=null)
-                    env.getMessager().printError(p.decl().getPosition(),"Cannot have both @Element and @Attribute at the same time");
+                    printError(p.decl(), "Cannot have both @Element and @Attribute at the same time");
             } else {
                 if(e!=null)
-                    new ElementMethodGenerator(p,e).generate();
+                    new ElementMethodGenerator(p, e).generate();
             }
 
             // Updates #key with error check.
             if(p.isKey()) {
                 if(key!=null) {
-                    env.getMessager().printError(p.decl().getPosition(),"Multiple key properties");
-                    env.getMessager().printError(key.decl().getPosition(),"Another one is at here");
+                    printError(p.decl(), "Multiple key properties");
+                    printError(key.decl(), "Another one is at here");
                 }
                 key = p;
             }
@@ -403,8 +405,8 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
                 conv = createConverter(itemType);
                 conv.addMetadata(xmlTokenName(),itemType);
 
-                if(!isVariableExpansion() && TO_JTYPE.apply(itemType,null)!=cm.ref(String.class))
-                    env.getMessager().printError(p.decl().getPosition(),"variableExpansion=false is only allowed on String");
+                if(!isVariableExpansion() && TO_JTYPE.visit(itemType, (Void) null)!=cm.ref(String.class))
+                    printError(p.decl(), "variableExpansion=false is only allowed on String");
 
                 if(!generateNoopConfigInjector) {
                     JVar value = var(
@@ -451,7 +453,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
             private void addKey() {
                 metadata.add(ConfigMetadata.KEY, xmlTokenName());
-                metadata.add(ConfigMetadata.KEYED_AS,p.decl().getDeclaringType().getQualifiedName());
+                metadata.add(ConfigMetadata.KEYED_AS, p.decl().asType().toString());
             }
 
             /**
@@ -506,11 +508,11 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
                     return new ListPacker(type,itemType);
                 }
 
-                TypeMirror mapType = TypeMath.baseClassFinder.apply(type, env.getTypeDeclaration(Map.class.getName()));
+                TypeMirror mapType = TypeMath.baseClassFinder.visit(type, env.getTypeDeclaration(Map.class.getName()));
                 if(mapType!=null) {
                     // T=Map<...>
                     DeclaredType d = (DeclaredType)mapType;
-                    Iterator<TypeMirror> itr = d.getActualTypeArguments().iterator();
+                    Iterator<? extends TypeMirror> itr = d.getTypeArguments().iterator();
                     itr.next();
                     return new MapPacker(itr.next());
                 }
@@ -543,7 +545,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
                 public ArrayPacker(ArrayType t) {
                     this.at = t;
-                    this.componentT = TO_JTYPE.apply(itemType(),null);
+                    this.componentT = TO_JTYPE.visit(itemType(),null);
                     this.arrayT = componentT.array();
                 }
 
@@ -575,8 +577,8 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
                 private final TypeMirror itemT;
 
                 public ListPacker(TypeMirror collectionType, TypeMirror itemType) {
-                    this.collectionType = TO_JTYPE.apply(collectionType,null).boxify();
-                    this.itemType       = TO_JTYPE.apply(itemType,null).boxify();
+                    this.collectionType = TO_JTYPE.visit(collectionType,null).boxify();
+                    this.itemType       = TO_JTYPE.visit(itemType,null).boxify();
                     this.itemT = itemType;
                 }
 
@@ -642,7 +644,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
             private Converter createConverter(TypeMirror itemType) {
                 try {
                     // is this a leaf value?
-                    math.SIMPLE_VALUE_CONVERTER.apply(itemType, JExpr._null());
+                    math.SIMPLE_VALUE_CONVERTER.visit(itemType, JExpr._null());
                     return new LeafConverter();
                 } catch (UnsupportedOperationException e) {
                     // nope
@@ -670,8 +672,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
                     return new NodeByTypeConverter(itemType);
                 }
 
-                env.getMessager().printError(p.decl().getPosition(),
-                    "I don't know how to inject "+itemType+" from configuration");
+                printError(p.decl(), "I don't know how to inject "+itemType+" from configuration");
                 return new NodeConverter(); // error recovery
             }
 
@@ -708,7 +709,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
             class LeafConverter extends Converter {
                 JExpression as(JExpression rhs, TypeMirror targetType) {
-                    return math.SIMPLE_VALUE_CONVERTER.apply(targetType, rhs);
+                    return math.SIMPLE_VALUE_CONVERTER.visit(targetType, rhs);
                 }
                 JClass sourceType() {
                     return cm.ref(String.class);
@@ -725,7 +726,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
             class NodeConverter extends Converter {
                 JExpression as(JExpression rhs, TypeMirror targetType) {
-                    return JExpr.cast(TO_JTYPE.apply(targetType,null),rhs.invoke("get"));
+                    return JExpr.cast(TO_JTYPE.visit(targetType,null),rhs.invoke("get"));
                 }
                 JClass sourceType() {
                     return cm.ref(Dom.class);
@@ -744,7 +745,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
                 final JClass sourceType;
 
                 NodeByTypeConverter(TypeMirror sourceType) {
-                    this.sourceType = TO_JTYPE.apply(sourceType,null).boxify();
+                    this.sourceType = TO_JTYPE.visit(sourceType,null).boxify();
                 }
 
                 JExpression as(JExpression rhs, TypeMirror targetType) {
@@ -763,7 +764,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
             class ReferenceConverter extends Converter {
                 JExpression as(JExpression rhs, TypeMirror targetType) {
-                    return JExpr.invoke("reference").arg($dom).arg(rhs).arg(TO_JTYPE.apply(targetType,null).boxify().dotclass());
+                    return JExpr.invoke("reference").arg($dom).arg(rhs).arg(TO_JTYPE.visit(targetType,null).boxify().dotclass());
                 }
                 JClass sourceType() {
                     return cm.ref(String.class);
@@ -845,16 +846,15 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
             protected JExpression getXmlValue() {
                 if(!isVariableExpansion() && packer!=null) {
-                    env.getMessager().printError(p.decl().getPosition(),
-                        "collection attribute property is inconsistent with variableExpansion=false");
+                    printError(p.decl(), "collection attribute property is inconsistent with variableExpansion=false");
                 }
                 return invokeDom(isVariableExpansion()?"attribute":"rawAttribute").arg(xmlName);
             }
         }
         
         private final class ElementMethodGenerator extends MethodGenerator {
-            private final Element e;
-            private ElementMethodGenerator(Property p, Element e) {
+            private final org.jvnet.hk2.config.Element e;
+            private ElementMethodGenerator(Property p, org.jvnet.hk2.config.Element e) {
                 super("element_", injectElementMethod, p, e.value());
                 this.e = e;
             }
@@ -873,7 +873,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
                 } else {
                     assert isVariableExpansion();   // this error is checked earlier.
                     if(xmlName.equals("*")) {
-                        return invokeDom("nodeByTypeElement").arg(TO_JTYPE.apply(itemType,null).boxify().dotclass());
+                        return invokeDom("nodeByTypeElement").arg(TO_JTYPE.visit(itemType, (Void) null).boxify().dotclass());
                     } else
                         name = "nodeElement";
                 }
@@ -914,20 +914,22 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
         TypeMirror tm = me.getTypeMirror();
         if (tm instanceof DeclaredType) {
             DeclaredType dec = (DeclaredType) tm;
-            String qn = dec.getDeclaration().getQualifiedName();
+            String qn = dec.toString(); //TODO: Was dec.getDeclaration().getQualifiedName()
             return ( qn );
         }
         return "";  //ok?
     }
     private TypeMirror erasure(TypeMirror type) {
-        return env.getTypeUtils().getErasure(type);
+        return env.getTypeUtils().erasure(type);
     }
 
     /**
      * Takes {@link TypeMirror} and returns the corresponding {@link JType}.
      */
-    final APTTypeVisitor<JType,Void> TO_JTYPE = new APTTypeVisitor<JType,Void>() {
-        protected JType onPrimitiveType(PrimitiveType type, Void param) {
+    final SimpleTypeVisitor6<JType,Void> TO_JTYPE = new SimpleTypeVisitor6<JType, Void>() {
+
+        @Override
+        public JType visitPrimitive(PrimitiveType type, Void param) {
             switch (type.getKind()) {
             case BOOLEAN:   return cm.BOOLEAN;
             case BYTE:      return cm.BYTE;
@@ -941,29 +943,23 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
             throw new AssertionError();
         }
 
-        protected JType onArrayType(ArrayType type, Void param) {
-            return apply(type.getComponentType(),null).array();
+        @Override
+        public JType visitArray(ArrayType type, Void param) {
+            return type.accept(this, null).array();
         }
 
-        protected JType onClassType(ClassType type, Void param) {
+        @Override
+        public JType visitDeclared(DeclaredType type, Void param) {
             // TODO: generics support
-            return cm.ref(type.getDeclaration().getQualifiedName());
+            return cm.ref(type.toString()); //TODO: Double Check. Was cm.ref(type.getDeclaration().getQualifiedName())
         }
 
-        protected JType onInterfaceType(InterfaceType type, Void param) {
-            // TODO: generics support
-            return cm.ref(type.getDeclaration().getQualifiedName());
-        }
-
-        protected JType onTypeVariable(TypeVariable type, Void param) {
-            throw new UnsupportedOperationException();
-        }
-
-        protected JType onVoidType(VoidType type, Void param) {
+        @Override
+        public JType visitNoType(NoType type, Void param) {
             return cm.VOID;
         }
 
-        protected JType onWildcard(WildcardType type, Void param) {
+        protected JType defaultAction(TypeMirror type, Void param) {
             throw new UnsupportedOperationException();
         }
     };
