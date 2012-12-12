@@ -42,18 +42,15 @@ package org.jvnet.hk2.config.generator;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JVar;
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.MemberDeclaration;
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.type.TypeMirror;
+
 import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Dom;
 
-import java.beans.Introspector;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents configurable property of the component.
@@ -65,15 +62,15 @@ abstract class Property {
      * Field/method declaration of this property.
      * Used to read annotations on this property.
      */
-    abstract MemberDeclaration decl();
+    abstract Element decl();
 
     /**
      * Name used as a seed for the XML name of this property.
      * This is the property name / field name.
      */
     String seedName() {
-        return decl().getSimpleName();
-    };
+        return decl().getSimpleName().toString();
+    }
 
     /**
      * The type of the property.
@@ -89,7 +86,7 @@ abstract class Property {
     private Boolean isKey=null;
     
     /**
-     * Does this property have {@link Attribute#key()} or {@link Element#key()}.
+     * Does this property have {@link Attribute#key()} or {@link org.jvnet.hk2.config.Element#key()}.
      */
     final boolean isKey() {
         if(isKey==null)
@@ -98,13 +95,12 @@ abstract class Property {
     }
 
     private boolean _isKey() {
-        Element e = getAnnotation(Element.class);
+        org.jvnet.hk2.config.Element e = getAnnotation(org.jvnet.hk2.config.Element.class);
         if(e!=null && e.key())  return true;
 
         Attribute a = getAnnotation(Attribute.class);
-        if(a!=null && a.key())  return true;
+        return a != null && a.key();
 
-        return false;
     }
 
     String inferName(String name) {
@@ -117,18 +113,18 @@ abstract class Property {
      * Property that consists of a set/add/get method.
      */
     static final class Method extends Property {
-        final MethodDeclaration decl;
+        final ExecutableElement decl;
         /**
          * True if this property is based on the getter method. False if the setter/adder.
          */
         final boolean getter;
 
-        public Method(MethodDeclaration decl) {
+        public Method(ExecutableElement decl) {
             this.decl = decl;
             getter = !decl.getReturnType().toString().equals("void");
         }
 
-        MemberDeclaration decl() {
+        Element decl() {
             return decl;
         }
 
@@ -136,11 +132,11 @@ abstract class Property {
             if(getter)
                 return decl.getReturnType();
             else
-                return decl.getParameters().iterator().next().getType();
+                return decl.getParameters().iterator().next().asType();
         }
 
         void assign(JVar $target, JBlock block, JExpression rhs) {
-            block.invoke($target,decl.getSimpleName()).arg(rhs);
+            block.invoke($target,decl.getSimpleName().toString()).arg(rhs);
         }
     }
 
@@ -148,22 +144,22 @@ abstract class Property {
      * Property that consists of a field.
      */
     static final class Field extends Property {
-        final FieldDeclaration decl;
+        final VariableElement decl;
 
-        public Field(FieldDeclaration decl) {
+        public Field(VariableElement decl) {
             this.decl = decl;
         }
 
-        MemberDeclaration decl() {
+        Element decl() {
             return decl;
         }
 
         TypeMirror type() {
-            return decl.getType();
+            return decl.asType();
         }
 
         void assign(JVar $target, JBlock block, JExpression rhs) {
-            block.assign($target.ref(decl.getSimpleName()),rhs);
+            block.assign($target.ref(decl.getSimpleName().toString()),rhs);
         }
     }
 }

@@ -59,14 +59,15 @@ public class ConfiguredAnnotationProcessor
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         boolean claimed = false;
-        for (TypeElement elem : annotations) {
-            System.out.println("** ConfiguredAnnotationProcessor asked to handle: " + elem.toString());
-            claimed = true;
-        }
 
+        for (Element elem : roundEnv.getRootElements()) {
+            System.out.println("\tRoot Element: " + elem.toString());
+        }
         for (Element elem : roundEnv.getElementsAnnotatedWith(Configured.class)) {
+            System.out.println("** ConfiguredAnnotationProcessor asked to process: " + elem.toString());
+            claimed = true;
             ConfigInjectorGenerator gen = new ConfigInjectorGenerator(super.processingEnv);
-            gen.process();
+            gen.process(elem);
         }
 
         return claimed;
