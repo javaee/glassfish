@@ -50,10 +50,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.WebConnection;
 
-public class EchoProtocolHandler implements HttpUpgradeHandler {
+public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
     private String delimiter = null;
 
-    public EchoProtocolHandler() {
+    public EchoHttpUpgradeHandler() {
     }
 
     public void init(WebConnection wc) {
