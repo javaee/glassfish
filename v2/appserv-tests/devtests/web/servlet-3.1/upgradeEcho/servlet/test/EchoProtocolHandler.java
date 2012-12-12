@@ -47,12 +47,13 @@ import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.ProtocolHandler;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.WebConnection;
 
-public class EchoProtocolHandler implements ProtocolHandler {
+public class EchoProtocolHandler implements HttpUpgradeHandler {
+    private String delimiter = null;
 
-    public EchoProtocolHandler(HttpServletRequest req) {
+    public EchoProtocolHandler() {
     }
 
     public void init(WebConnection wc) {
@@ -60,7 +61,7 @@ public class EchoProtocolHandler implements ProtocolHandler {
         try {
             ServletInputStream input = wc.getInputStream();
             ServletOutputStream output = wc.getOutputStream();
-            ReadListenerImpl readListener = new ReadListenerImpl(input, output);
+            ReadListenerImpl readListener = new ReadListenerImpl(delimiter, input, output);
             input.setReadListener(readListener);
 
             int b = -1;
@@ -73,11 +74,25 @@ public class EchoProtocolHandler implements ProtocolHandler {
         }
     }
 
+    public void destroy() {
+        System.out.println("--> destroy");
+    }
+
+    public void setDelimiter(String delimiter) {
+        this.delimiter = delimiter;
+    }
+
+    public String getDelimiter() {
+        return delimiter;
+    }
+
     static class ReadListenerImpl implements ReadListener {
         ServletInputStream input = null;
         ServletOutputStream output = null;
+        String delimiter = null;
 
-        ReadListenerImpl(ServletInputStream in, ServletOutputStream out) {
+        ReadListenerImpl(String d, ServletInputStream in, ServletOutputStream out) {
+            delimiter = d;
             input = in;
             output = out;
         }
@@ -94,7 +109,7 @@ public class EchoProtocolHandler implements ProtocolHandler {
                     System.out.println("--> " + data);
                     sb.append(data);
                 }
-                output.print("/" + sb.toString());
+                output.print(delimiter + sb.toString());
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
             }
