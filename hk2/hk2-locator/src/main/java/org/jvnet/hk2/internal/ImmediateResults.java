@@ -43,48 +43,36 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
 
 /**
+ * This contains the local portion of the narrowed result
+ * 
  * @author jwells
  *
  */
-public class NarrowResults {
-    private final List<ActiveDescriptor<?>> unnarrowedResults = new LinkedList<ActiveDescriptor<?>>();
-    private final List<ActiveDescriptor<?>> goodResults = new LinkedList<ActiveDescriptor<?>>();
-    private final List<ErrorResults> errors = new LinkedList<ErrorResults>();
+public class ImmediateResults {
+    private final NarrowResults timelessResults;
+    private final List<ActiveDescriptor<?>> validatedImmediateResults = new LinkedList<ActiveDescriptor<?>>();
     
-    /* package */ void addGoodResult(ActiveDescriptor<?> result) {
-        goodResults.add(result);
+    /* package */ ImmediateResults(NarrowResults cachedResults) {
+        if (cachedResults == null) {
+            timelessResults = new NarrowResults();
+        }
+        else {
+            timelessResults = cachedResults;
+        }
     }
     
-    /* package */ void addError(ActiveDescriptor<?> fail, Injectee injectee, MultiException me) {
-        errors.add(new ErrorResults(fail, injectee, me));
+    /* package */ NarrowResults getTimelessResults() {
+        return timelessResults;
     }
     
-    /* package */ List<ActiveDescriptor<?>> getResults() {
-        return goodResults;
+    /* package */ List<ActiveDescriptor<?>> getImmediateResults() {
+        return validatedImmediateResults;
     }
     
-    /* package */ List<ErrorResults> getErrors() {
-        return errors;
-    }
-    
-    /* package */ void setUnnarrowedResults(List<ActiveDescriptor<?>> unnarrowed) {
-        unnarrowedResults.clear();
-        unnarrowedResults.addAll(unnarrowed);
-    }
-    
-    /* package */ ActiveDescriptor<?> removeUnnarrowedResult() {
-        if (unnarrowedResults.isEmpty()) return null;
-        
-        return unnarrowedResults.remove(0);
-    }
-    
-    public String toString() {
-        return "NarrowResults(goodResultsSize=" + goodResults.size() + ",errorsSize=" + errors.size() +
-                "," + System.identityHashCode(this) + ")";
+    /* package */ void addValidatedResult(ActiveDescriptor<?> addMe) {
+        validatedImmediateResults.add(addMe);
     }
 
 }

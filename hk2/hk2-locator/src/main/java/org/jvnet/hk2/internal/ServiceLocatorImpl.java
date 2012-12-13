@@ -203,7 +203,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return true;
     }
     
-    private List<ActiveDescriptor<?>> getDescriptors(Filter filter,
+    private List<SystemDescriptor<?>> getDescriptors(Filter filter,
             Injectee onBehalfOf,
             boolean getParents,
             boolean doValidation,
@@ -257,7 +257,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 sortMeOut = allDescriptors.getSortedList();
             }
             
-            LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
+            LinkedList<SystemDescriptor<?>> retVal = new LinkedList<SystemDescriptor<?>>();
             
             for (SystemDescriptor<?> candidate : sortMeOut) {
                 if (!getLocals && DescriptorVisibility.LOCAL.equals(candidate.getDescriptorVisibility())) {
@@ -272,7 +272,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
             
             if (getParents && parent != null) {
-                TreeSet<ActiveDescriptor<?>> sorter = new TreeSet<ActiveDescriptor<?>>(DESCRIPTOR_COMPARATOR);
+                TreeSet<SystemDescriptor<?>> sorter = new TreeSet<SystemDescriptor<?>>(DESCRIPTOR_COMPARATOR);
                 
                 sorter.addAll(retVal);
                 sorter.addAll(parent.getDescriptors(filter, onBehalfOf, getParents, doValidation, false));
@@ -306,7 +306,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public List<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         checkState();
         
-        return getDescriptors(filter, null, true, true, true);
+        return Utilities.cast(getDescriptors(filter, null, true, true, true));
     }
     
     public ActiveDescriptor<?> getBestDescriptor(Filter filter) {
@@ -768,14 +768,25 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ck = new CacheKey(contractOrImpl, name, qualifiers);
         }
         
+        ImmediateResults immediate = null;
         synchronized (lock) {
           if (useCache) {
               results = cache.get(ck);
           }
           
           if (results == null) {
-            List<ActiveDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false, true);
-            results = narrow(this, candidates, contractOrImpl, name, onBehalfOf, qualifiers);
+            List<SystemDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false, true);
+            immediate = narrow(this,
+                    candidates,
+                    contractOrImpl,
+                    name,
+                    onBehalfOf,
+                    true,
+                    true,
+                    results,
+                    filter,
+                    qualifiers);
+            results = immediate.getTimelessResults();
             if (!results.getErrors().isEmpty()) {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
             }
@@ -792,15 +803,22 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 addToMe.add(entry);
             }
           }
-        }
-        
-        // Must do validation here in order to allow for caching
-        ActiveDescriptor<T> postValidateResult = null;
-        for (ActiveDescriptor<?> validateMe : results.getResults()) {
-            if (!validate((SystemDescriptor<?>) validateMe, onBehalfOf, filter)) continue;
-            
-            postValidateResult = (ActiveDescriptor<T>) validateMe;
-            break;
+          else {
+              immediate = narrow(this,
+                      null,
+                      contractOrImpl,
+                      name,
+                      onBehalfOf,
+                      true,
+                      true,
+                      results,
+                      filter,
+                      qualifiers);
+              results = immediate.getTimelessResults();
+              if (!results.getErrors().isEmpty()) {
+                  currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+              }
+          }
         }
         
         if (currentErrorHandlers != null) {
@@ -808,6 +826,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Utilities.handleErrors(results, currentErrorHandlers);
         }
         
+        // Must do validation here in order to allow for caching
+        ActiveDescriptor<T> postValidateResult = immediate.getImmediateResults().isEmpty() ? null :
+            (ActiveDescriptor<T>) immediate.getImmediateResults().get(0);
+          
         return postValidateResult;
     }
     
@@ -912,14 +934,25 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ck = new CacheKey(contractOrImpl, null, qualifiers);
         }
         
+        ImmediateResults immediate = null;
         synchronized (lock) {
           if (useCache) {  
               results = cache.get(ck);
           }
           
           if (results == null) {
-              List<ActiveDescriptor<?>> candidates = getDescriptors(filter, null, true, false, true);
-              results = narrow(this, candidates, contractOrImpl, null, null, qualifiers);
+              List<SystemDescriptor<?>> candidates = getDescriptors(filter, null, true, false, true);
+              immediate = narrow(this,
+                      candidates,
+                      contractOrImpl,
+                      null,
+                      null,
+                      false,
+                      true,
+                      results,
+                      filter,
+                      qualifiers);
+              results = immediate.getTimelessResults();
               if (!results.getErrors().isEmpty()) {
                   currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
               }
@@ -936,6 +969,22 @@ public class ServiceLocatorImpl implements ServiceLocator {
                   addToMe.add(entry);
               }
           }
+          else {
+              immediate = narrow(this,
+                      null,
+                      contractOrImpl,
+                      null,
+                      null,
+                      false,
+                      true,
+                      results,
+                      filter,
+                      qualifiers);
+              results = immediate.getTimelessResults();
+              if (!results.getErrors().isEmpty()) {
+                  currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+              }
+          }
           
         }
         
@@ -945,9 +994,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         LinkedList<Object> retVal = new LinkedList<Object>();
-        for (ActiveDescriptor<?> candidate : results.getResults()) {
-            if (!validate((SystemDescriptor<?>) candidate, null, filter)) continue;
-            
+        for (ActiveDescriptor<?> candidate : immediate.getImmediateResults()) {
             if (getHandles) {
                 retVal.add(internalGetServiceHandle(candidate, contractOrImpl));
             }
@@ -991,8 +1038,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
-        List<ActiveDescriptor<?>> candidates = getDescriptors(searchCriteria);
-        results = narrow(this, candidates, null, null, null);
+        List<SystemDescriptor<?>> candidates = Utilities.cast(getDescriptors(searchCriteria));
+        ImmediateResults immediate = narrow(this,
+                candidates,
+                null,
+                null,
+                null,
+                false,
+                false,
+                null,
+                searchCriteria);
+        results = immediate.getTimelessResults();
         if (!results.getErrors().isEmpty()) {
             currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
         }
@@ -1056,12 +1112,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         HashSet<String> affectedContracts = new HashSet<String>();
         
         for (Filter unbindFilter : dci.getUnbindFilters()) {
-            List<ActiveDescriptor<?>> results = getDescriptors(unbindFilter, null, false, false, true);
+            List<SystemDescriptor<?>> results = getDescriptors(unbindFilter, null, false, false, true);
             
-            for (ActiveDescriptor<?> result : results) {
-                affectedContracts.addAll(getAllContracts(result));
-                
-                SystemDescriptor<?> candidate = (SystemDescriptor<?>) result;
+            for (SystemDescriptor<?> candidate : results) {
+                affectedContracts.addAll(getAllContracts(candidate));
                 
                 if (retVal.contains(candidate)) continue;
                 
@@ -1467,14 +1521,36 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return retVal;
     }
 
-    private static NarrowResults narrow(ServiceLocator locator, List<ActiveDescriptor<?>> candidates,
-            Type requiredType, String name, Injectee injectee, Annotation... qualifiers) {
-        NarrowResults retVal = new NarrowResults();
+    private ImmediateResults narrow(ServiceLocator locator,
+            List<SystemDescriptor<?>> candidates,
+            Type requiredType,
+            String name,
+            Injectee injectee,
+            boolean onlyOne,
+            boolean doValidation,
+            NarrowResults cachedResults,
+            Filter filter,
+            Annotation... qualifiers) {
+        ImmediateResults retVal = new ImmediateResults(cachedResults);
+        cachedResults = retVal.getTimelessResults();
+        
+        if (candidates != null) {
+            List<ActiveDescriptor<?>> lCandidates = Utilities.cast(candidates);
+            cachedResults.setUnnarrowedResults(lCandidates);
+        }
         
         Set<Annotation> requiredAnnotations = Utilities.fixAndCheckQualifiers(qualifiers, name);
         
-        for (ActiveDescriptor<?> candidate : candidates) {
-            // We will not reify them all, we will only reify until we match
+        for (ActiveDescriptor<?> previousResult : cachedResults.getResults()) {
+            if (doValidation && !validate((SystemDescriptor<?>) previousResult, injectee, filter)) continue;
+            
+            retVal.addValidatedResult(previousResult);
+            
+            if (onlyOne) return retVal;
+        }
+        
+        ActiveDescriptor<?> candidate;
+        while ((candidate = cachedResults.removeUnnarrowedResult()) != null) {
             boolean doReify = false;
             if ((requiredType != null || !requiredAnnotations.isEmpty()) &&
                     !candidate.isReified()) {
@@ -1486,11 +1562,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     candidate = locator.reifyDescriptor(candidate, injectee);
                 }
                 catch (MultiException me) {
-                    retVal.addError(candidate, injectee, me);
+                    cachedResults.addError(candidate, injectee, me);
                     continue;
                 }
                 catch (Throwable th) {
-                    retVal.addError(candidate, injectee, new MultiException(th));
+                    cachedResults.addError(candidate, injectee, new MultiException(th));
                     continue;
                 }
             }
@@ -1525,7 +1601,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
             
             // If we are here, then this one matches
-            retVal.addGoodResult(candidate);
+            cachedResults.addGoodResult(candidate);
+            
+            if (doValidation && !validate((SystemDescriptor<?>) candidate, injectee, filter)) continue;
+            retVal.addValidatedResult(candidate);
+            
+            if (onlyOne) return retVal;
         }
         
         return retVal;

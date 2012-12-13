@@ -37,54 +37,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.locator;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
 
 /**
  * @author jwells
  *
  */
-public class NarrowResults {
-    private final List<ActiveDescriptor<?>> unnarrowedResults = new LinkedList<ActiveDescriptor<?>>();
-    private final List<ActiveDescriptor<?>> goodResults = new LinkedList<ActiveDescriptor<?>>();
-    private final List<ErrorResults> errors = new LinkedList<ErrorResults>();
+public class RecordingLoader implements HK2Loader {
+    private final static RecordingLoader INSTANCE = new RecordingLoader();
     
-    /* package */ void addGoodResult(ActiveDescriptor<?> result) {
-        goodResults.add(result);
+    private final HashSet<String> loadedClasses = new HashSet<String>();
+    
+    private RecordingLoader() {
     }
     
-    /* package */ void addError(ActiveDescriptor<?> fail, Injectee injectee, MultiException me) {
-        errors.add(new ErrorResults(fail, injectee, me));
-    }
-    
-    /* package */ List<ActiveDescriptor<?>> getResults() {
-        return goodResults;
-    }
-    
-    /* package */ List<ErrorResults> getErrors() {
-        return errors;
-    }
-    
-    /* package */ void setUnnarrowedResults(List<ActiveDescriptor<?>> unnarrowed) {
-        unnarrowedResults.clear();
-        unnarrowedResults.addAll(unnarrowed);
-    }
-    
-    /* package */ ActiveDescriptor<?> removeUnnarrowedResult() {
-        if (unnarrowedResults.isEmpty()) return null;
+    public static RecordingLoader getInstance() { return INSTANCE; }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.HK2Loader#loadClass(java.lang.String)
+     */
+    @Override
+    public Class<?> loadClass(String className) throws MultiException {
+        loadedClasses.add(className);
         
-        return unnarrowedResults.remove(0);
+        try {
+            return getClass().getClassLoader().loadClass(className);
+        }
+        catch (ClassNotFoundException e) {
+            throw new MultiException(e);
+        }
     }
     
-    public String toString() {
-        return "NarrowResults(goodResultsSize=" + goodResults.size() + ",errorsSize=" + errors.size() +
-                "," + System.identityHashCode(this) + ")";
+    public boolean wasClassLoaded(String className) {
+        return loadedClasses.contains(className);
+    }
+    
+    public void clear() {
+        loadedClasses.clear();
     }
 
 }
