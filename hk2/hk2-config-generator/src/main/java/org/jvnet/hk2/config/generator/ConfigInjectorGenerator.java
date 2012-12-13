@@ -69,11 +69,9 @@ import org.jvnet.hk2.config.InjectionTarget;
 import org.jvnet.hk2.config.NoopConfigInjector;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.*;
+import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.SimpleElementVisitor6;
 import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
@@ -291,19 +289,19 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
                 TypeElement t = q.pop();
                 if(!visited.add(t)) continue;   // been here already
 
-                for (FieldDeclaration f : t.getFields())
+                for (VariableElement f : ElementFilter.fieldsIn(t.getEnclosedElements()))
                     generate(new Property.Field(f));
 
-                for (MethodDeclaration m : t.getMethods())
+                for (ExecutableElement m : ElementFilter.methodsIn(t.getEnclosedElements()))
                     generate(new Property.Method(m));
 
-                for (InterfaceType it : clz.getSuperinterfaces())
-                    q.add(it.getDeclaration());
 
-                if (t instanceof ClassDeclaration) {
-                    ClassDeclaration cd = (ClassDeclaration) t;
-                    if(cd.getSuperclass()!=null)
-                        q.add(cd.getSuperclass().getDeclaration());
+                for (TypeMirror tm : clz.getInterfaces())
+                    q.add((TypeElement) env.getTypeUtils().asElement(tm));
+
+                if (t.getKind() == ElementKind.CLASS) {
+                    if(t.getSuperclass()!=null)
+                        q.add((TypeElement) env.getTypeUtils().asElement(t.getSuperclass()));
                 }
             }
 
@@ -508,7 +506,7 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
                     return new ListPacker(type,itemType);
                 }
 
-                TypeMirror mapType = TypeMath.baseClassFinder.visit(type, env.getTypeDeclaration(Map.class.getName()));
+                TypeMirror mapType = TypeMath.baseClassFinder.visit(type, env.getElementUtils().getTypeElement(Map.class.getName()));
                 if(mapType!=null) {
                     // T=Map<...>
                     DeclaredType d = (DeclaredType)mapType;
@@ -652,12 +650,12 @@ public class ConfigInjectorGenerator extends SimpleElementVisitor6<Object, Eleme
 
                 // try to handle it as a reference
                 if (itemType instanceof DeclaredType) {
-                    if (!(itemType instanceof ClassType || itemType instanceof InterfaceType)) {
-                        env.getMessager().printError(p.decl().getPosition(),
-                        "I only inject interfaces or classes,  "+itemType+" is not one of them");
+                    if (!(itemType.getKind() == TypeKind.DECLARED)) {
+                        printError(p.decl(), "I only inject interfaces or classes,  "+itemType+" is not one of them");
                         return new NodeConverter();
                     }
-                    TypeDeclaration decl = ((DeclaredType)itemType).getDeclaration();
+
+                    TypeElement decl = (TypeElement) itemType;
                     Configured cfg = decl.getAnnotation(Configured.class);
                     if(cfg!=null) {
                         // node value
