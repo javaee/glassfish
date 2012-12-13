@@ -1,1 +1,2 @@
 instanceHttpPortDynamicReconfig #investigate random failures
+servlet-3.1/upgradeEcho #uncomment after test update and grizzly integration
