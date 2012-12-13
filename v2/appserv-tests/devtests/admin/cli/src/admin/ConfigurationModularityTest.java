@@ -112,12 +112,12 @@ public class ConfigurationModularityTest extends AdminBaseDevTest {
 
     private void runTests() {
         startDomain();
-        cleanUpModuleConfigsIfExist();
+//        cleanUpModuleConfigsIfExist();
 //        checkCreateModuleConfigCommand();
 //        checkDeleteModuleConfigCommand();
 //        checkCreateModuleConfigDryRunCommand();
-        checkDryRunNotCausingMerger();
-        checkGetActiveConfigCommand();
+//        checkDryRunNotCausingMerger();
+//        checkGetActiveConfigCommand();
         stopDomain();
         stat.printSummary();
     }
@@ -182,14 +182,14 @@ public class ConfigurationModularityTest extends AdminBaseDevTest {
 //        AsadminReturn returnee = asadminWithOutput("get-active-config", "web-container");
 //        compareResponseReport("Case 1: getting active config for a default web-container not present in domain.xml ",
 //                returnee, DEFAULT_WEB_CONTAINER_COMMAND_OUT, DEFAULT_WEB_CONTAINER_COMMAND_OUT_ALTER_1);
-
-
+//
+//
 //        asadmin("delete-module-config", "jms-service");
 //        asadmin("create-module-config", "jms-service");
 //        AsadminReturn returnee2 = asadminWithOutput("get-active-config", "jms-service");
 //        compareResponseReport("Case 2: getting active config for jms-service present in domain.xml ",
 //                returnee2, DEFAULT_JMS_SERVICE);
-
+//
 //        asadmin("set", "server-config.jms-service.init-timeout-in-seconds=120");
 //        AsadminReturn returnee3 = asadminWithOutput("get-active-config", "jms-service");
 //        compareResponseReport("Case 3: getting a customized active configuration for jms-service",
