@@ -112,12 +112,12 @@ public class ConfigurationModularityTest extends AdminBaseDevTest {
 
     private void runTests() {
         startDomain();
-//        cleanUpModuleConfigsIfExist();
-//        checkCreateModuleConfigCommand();
-//        checkDeleteModuleConfigCommand();
+        cleanUpModuleConfigsIfExist();
+        checkCreateModuleConfigCommand();
+        checkDeleteModuleConfigCommand();
 //        checkCreateModuleConfigDryRunCommand();
 //        checkDryRunNotCausingMerger();
-//        checkGetActiveConfigCommand();
+        checkGetActiveConfigCommand();
         stopDomain();
         stat.printSummary();
     }
