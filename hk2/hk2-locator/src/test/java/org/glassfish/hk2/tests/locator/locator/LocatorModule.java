@@ -128,14 +128,7 @@ public class LocatorModule implements TestModule {
         configurator.bind(BuilderHelper.link(PerformanceService.class).
                 in(Singleton.class.getName()).build());
         
-        // This is for a test of getService followed by getAllServices
-        // where there are two implementations of a single contract
-        configurator.bind(BuilderHelper.link(MultiContractImpl1.class.getName()).
-                in(PerLookup.class.getName()).
-                to(MultiContract.class.getName()).build());
-        configurator.bind(BuilderHelper.link(MultiContractImpl2.class.getName()).
-                in(Singleton.class.getName()).
-                to(MultiContract.class.getName()).build());
+        
     }
 
 }

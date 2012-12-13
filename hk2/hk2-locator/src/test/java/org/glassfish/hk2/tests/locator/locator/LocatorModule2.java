@@ -37,54 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.locator;
 
-import java.util.LinkedList;
-import java.util.List;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class NarrowResults {
-    private final List<ActiveDescriptor<?>> unnarrowedResults = new LinkedList<ActiveDescriptor<?>>();
-    private final List<ActiveDescriptor<?>> goodResults = new LinkedList<ActiveDescriptor<?>>();
-    private final List<ErrorResults> errors = new LinkedList<ErrorResults>();
-    
-    /* package */ void addGoodResult(ActiveDescriptor<?> result) {
-        goodResults.add(result);
-    }
-    
-    /* package */ void addError(ActiveDescriptor<?> fail, Injectee injectee, MultiException me) {
-        errors.add(new ErrorResults(fail, injectee, me));
-    }
-    
-    /* package */ List<ActiveDescriptor<?>> getResults() {
-        return goodResults;
-    }
-    
-    /* package */ List<ErrorResults> getErrors() {
-        return errors;
-    }
-    
-    /* package */ void setUnnarrowedResults(List<ActiveDescriptor<?>> unnarrowed) {
-        unnarrowedResults.clear();
-        unnarrowedResults.addAll(unnarrowed);
-    }
-    
-    /* package */ ActiveDescriptor<?> removeUnnarrowedResult() {
-        if (unnarrowedResults.isEmpty()) return null;
-        
-        return unnarrowedResults.remove(0);
-    }
-    
-    public String toString() {
-        return "NarrowResults(goodResultsSize=" + goodResults.size() + ",errorsSize=" + errors.size() +
-                "," + System.identityHashCode(this) + ")";
+public class LocatorModule2 implements TestModule {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+     */
+    @Override
+    public void configure(DynamicConfiguration config) {
+        // This is for a test of getService followed by getAllServices
+        // where there are two implementations of a single contract
+        config.bind(BuilderHelper.link(MultiContractImpl1.class.getName()).
+                in(PerLookup.class.getName()).
+                andLoadWith(RecordingLoader.getInstance()).
+                to(MultiContract.class.getName()).build());
+        config.bind(BuilderHelper.link(MultiContractImpl2.class.getName()).
+                in(Singleton.class.getName()).
+                andLoadWith(RecordingLoader.getInstance()).
+                to(MultiContract.class.getName()).build());
+
     }
 
 }

@@ -72,6 +72,7 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
 public class LocatorTest {
     private final static String TEST_NAME = "LocatorTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new LocatorModule());
+    private final static ServiceLocator locator2 = LocatorHelper.create(TEST_NAME + "2", new LocatorModule2());
     
     /* package */ final static String COBOL_ID = "COBOL is fun!";
     /* package */ final static int FORTRAN = 77;  // There really was a Fortran-77!
@@ -406,17 +407,25 @@ public class LocatorTest {
      */
     @Test
     public void testGetServiceFollowedByGetAllServices() {
-        MultiContract mc1 = locator.getService(MultiContract.class);
+        RecordingLoader.getInstance().clear();
+        
+        MultiContract mc1 = locator2.getService(MultiContract.class);
         Assert.assertNotNull(mc1);
         
         Assert.assertTrue(mc1 instanceof MultiContractImpl1);
         
-        List<MultiContract> allMCs = locator.getAllServices(MultiContract.class);
+        Assert.assertTrue(RecordingLoader.getInstance().wasClassLoaded(MultiContractImpl1.class.getName()));
+        Assert.assertFalse(RecordingLoader.getInstance().wasClassLoaded(MultiContractImpl2.class.getName()));
+        
+        List<MultiContract> allMCs = locator2.getAllServices(MultiContract.class);
         Assert.assertNotNull(allMCs);
         
         Assert.assertEquals(2, allMCs.size());
         
         Assert.assertTrue(allMCs.get(0) instanceof MultiContractImpl1);
         Assert.assertTrue(allMCs.get(1) instanceof MultiContractImpl2);
+        
+        Assert.assertTrue(RecordingLoader.getInstance().wasClassLoaded(MultiContractImpl1.class.getName()));
+        Assert.assertTrue(RecordingLoader.getInstance().wasClassLoaded(MultiContractImpl2.class.getName()));
     }
 }
