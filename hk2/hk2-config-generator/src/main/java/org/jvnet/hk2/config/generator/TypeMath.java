@@ -112,7 +112,7 @@ class TypeMath {
             if (elem.asType().getKind() == TypeKind.DECLARED) {
                 TypeElement typeElement = (TypeElement) elem;
                 for(TypeMirror typeMirror : typeElement.getInterfaces()) {
-                    TypeMirror r = visitDeclared(i,sup);
+                    TypeMirror r = visitDeclared(typeMirror, sup);
                     if(r!=null)     return r;
                 }
             }
