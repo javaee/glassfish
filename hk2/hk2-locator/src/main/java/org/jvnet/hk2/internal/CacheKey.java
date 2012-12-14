@@ -107,6 +107,7 @@ public class CacheKey {
         
         final CacheKey other = (CacheKey) o;
         
+        if (hashCode != other.hashCode) return false;
         if (!safeEquals(lookupType, other.lookupType)) return false;
         if (!safeEquals(name, other.name)) return false;
         
