@@ -51,7 +51,7 @@ import org.glassfish.hk2.api.MultiException;
  *
  */
 public class NarrowResults {
-    private final List<ActiveDescriptor<?>> unnarrowedResults = new LinkedList<ActiveDescriptor<?>>();
+    private List<ActiveDescriptor<?>> unnarrowedResults;
     private final List<ActiveDescriptor<?>> goodResults = new LinkedList<ActiveDescriptor<?>>();
     private final List<ErrorResults> errors = new LinkedList<ErrorResults>();
     
@@ -72,12 +72,11 @@ public class NarrowResults {
     }
     
     /* package */ void setUnnarrowedResults(List<ActiveDescriptor<?>> unnarrowed) {
-        unnarrowedResults.clear();
-        unnarrowedResults.addAll(unnarrowed);
+        unnarrowedResults = unnarrowed;
     }
     
     /* package */ ActiveDescriptor<?> removeUnnarrowedResult() {
-        if (unnarrowedResults.isEmpty()) return null;
+        if (unnarrowedResults == null || unnarrowedResults.isEmpty()) return null;
         
         return unnarrowedResults.remove(0);
     }
