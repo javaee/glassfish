@@ -90,8 +90,10 @@ public class WebTest {
                 String line = null;
                 while ((line = input.readLine()) != null) {
                     System.out.println(line);
+                    int slashInd = line.indexOf("/", 1);
                     expected = line.contains("/")
-                        && (line.indexOf("/") < line.indexOf("d"))
+                        && (slashInd > line.indexOf("e"))
+                        && (slashInd < line.indexOf("d"))
                         && line.replace("/", "").equals(EXPECTED_RESPONSE);
                     if (expected) {
                         break;

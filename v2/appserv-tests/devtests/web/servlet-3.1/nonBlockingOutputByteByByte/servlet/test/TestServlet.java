@@ -66,27 +66,7 @@ public class TestServlet extends HttpServlet {
         WriteListenerImpl writeListener = new WriteListenerImpl(output, latch);
         output.setWriteListener(writeListener);
 
-        output.write("START\n".getBytes());    
-        output.flush();
-
-        long count = 0;
-        System.out.println("--> Begin for loop");
-        boolean prevCanWrite = true;
-        final long startTimeMillis = System.currentTimeMillis();
-
-        while ((prevCanWrite = output.canWrite())) {
-            writeData(output);
-            count++;
-
-            if (System.currentTimeMillis() - startTimeMillis > MAX_TIME_MILLIS) {
-                System.out.println("Error: can't overload output buffer");
-                return;
-            }
-        }
-        System.out.println("--> prevCanWriite = " + prevCanWrite + 
-                ", count = " + count);
-
-         try {
+        try {
             if (latch.await(10, TimeUnit.SECONDS)) {
                 System.out.println("COMPLETED");
             } else {

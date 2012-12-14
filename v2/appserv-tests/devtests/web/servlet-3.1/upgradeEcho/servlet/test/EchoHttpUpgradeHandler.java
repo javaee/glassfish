@@ -63,12 +63,6 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             ServletOutputStream output = wc.getOutputStream();
             ReadListenerImpl readListener = new ReadListenerImpl(delimiter, input, output);
             input.setReadListener(readListener);
-
-            int b = -1;
-            while (input.isReady() && ((b = input.read()) != -1)) {
-                System.out.print((char)b);
-                output.write(b);
-            }
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }

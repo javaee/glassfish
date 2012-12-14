@@ -66,12 +66,6 @@ public class TestServlet extends HttpServlet {
         ReadListenerImpl readListener = new ReadListenerImpl(input, output, ac);
         input.setReadListener(readListener);
 
-        int b = -1;
-        while (input.isReady() && ((b = input.read()) != -1)) {
-            System.out.print((char)b);
-            output.write(b);
-        }
-
         if (input.isFinished()) {
             ac.complete();
         }
