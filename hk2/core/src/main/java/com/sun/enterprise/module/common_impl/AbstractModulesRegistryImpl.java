@@ -49,8 +49,6 @@ import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.ContextDuplicatePostProcessor;
 
-import com.sun.enterprise.module.bootstrap.DefaultErrorService;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -157,8 +155,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
 
         // default modules registry is the one that created the habitat
         config.bind(BuilderHelper.createConstantDescriptor(this));
-
-        config.addActiveDescriptor(DefaultErrorService.class);
 
         ContextDuplicatePostProcessor processor = serviceLocator.getService(ContextDuplicatePostProcessor.class);
 
