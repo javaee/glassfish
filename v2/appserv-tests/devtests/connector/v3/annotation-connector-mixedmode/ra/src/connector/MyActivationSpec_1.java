@@ -19,7 +19,7 @@ import javax.resource.spi.ConfigProperty;
 @Activation(
         messageListeners = {connector.MyMessageListener_1.class, connector.MyMessageListener.class}
 )
-public class MyActivationSpec_1
+public class MyActivationSpec_1 implements javax.resource.spi.ActivationSpec
     {
 
     private String destinationName;
