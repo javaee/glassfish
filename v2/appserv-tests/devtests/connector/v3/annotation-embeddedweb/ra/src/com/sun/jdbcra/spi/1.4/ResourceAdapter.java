@@ -93,5 +93,30 @@ public class ResourceAdapter implements javax.resource.spi.ResourceAdapter {
     public String getRAProperty() {
         return raProp;
     }
-    
+
+    private void validateDealiasing(String propertyName, String propertyValue){
+        System.out.println("Validating property ["+propertyName+"] with value ["+propertyValue+"] in ResourceAdapter bean");
+        //check whether the value is dealiased or not and fail
+        //if it's not dealiased.
+        if(propertyValue != null && propertyValue.contains("${ALIAS")){
+            throw new IllegalArgumentException(propertyName + "'s value is not de-aliased : " + propertyValue);
+        }
+    }
+
+    private String aliasTest;
+
+    @ConfigProperty(
+            defaultValue = "${ALIAS=ALIAS_TEST_PROPERTY}",
+            type = java.lang.String.class,
+            confidential = true
+    )
+    public void setAliasTest (String value) {
+        validateDealiasing("AliasTest", value);
+        System.out.println("setAliasTest called : " + value);
+        aliasTest = value;
+    }
+
+    public String getAliasTest () {
+        return aliasTest;
+    }
 }

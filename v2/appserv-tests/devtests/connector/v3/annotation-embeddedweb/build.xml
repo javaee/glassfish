@@ -180,6 +180,10 @@
 
     
     <target name="deploy-ear" depends="init-common">
+        <antcall target="create-password-alias"> 
+         <param name="password.alias.name" value="ALIAS_TEST_PROPERTY"/>
+         <param name="password.alias.file" value="aliaspassword.txt"/>
+        </antcall>
         <antcall target="create-ra-config"/>
         <antcall target="deploy-common"/>
     </target>
@@ -203,6 +207,9 @@
     <target name="undeploy-ear" depends="init-common">
         <antcall target="delete-ra-config"/>
         <antcall target="undeploy-common"/>
+        <antcall target="delete-password-alias">
+          <param name="password.alias.name" value="ALIAS_TEST_PROPERTY"/>
+        </antcall>
     </target>  
 
     <target name="undeploy-war" depends="init-common">
