@@ -110,7 +110,7 @@ public class AnnotationLiteralTest {
     /**
      * Tests JDK version of equals works with an empty qualifier
      */
-    @Test @Ignore
+    @Test
     public void testEqualsOfEmptyAnnotation() {
         Q qJdk = ClassWithQ.class.getAnnotation(Q.class);
         Q qJdkField = getQField();
@@ -120,13 +120,21 @@ public class AnnotationLiteralTest {
         
         Assert.assertEquals(qJdk, qJdkField);
         
-        Assert.assertEquals((new AnnotationLiteral<Q>(){}).hashCode(), qJdk.hashCode());
+        Assert.assertEquals(new QImpl().hashCode(), qJdk.hashCode());
         Assert.assertEquals(qJdkField.hashCode(), qJdk.hashCode());
         
-        Assert.assertTrue((new AnnotationLiteral<Q>(){}).equals(qJdk));
+        Assert.assertTrue(new QImpl().equals(qJdk));
         
-        // Currently fails, looks like a bug in the JDK
-        Assert.assertTrue(qJdk.equals(new AnnotationLiteral<Q>(){}));
+        Assert.assertTrue(qJdk.equals(new QImpl()));
+    }
+    
+    public class QImpl extends AnnotationLiteral<Q> implements Q {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 4372411188097605709L;
+        
     }
 
 }

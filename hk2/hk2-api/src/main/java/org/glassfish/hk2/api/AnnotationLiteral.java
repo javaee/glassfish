@@ -62,6 +62,16 @@ import java.util.Arrays;
  *       implements PayBy {}
  * </pre>
  * 
+ * <p>
+ * An extension of AnnotationLiteral must do two things:<OL>
+ * <LI>Must have the target annotation as its generic type</LI>
+ * <LI>Must implement the target type</LI>
+ * </OL>
+ * </p>
+ * In particular, in-line anonymous extensions of AnnotationLiteral will not
+ * work because in-line anonymous extensions of AnnotationLiteral cannot implement
+ * the target annotation
+ * 
  * @author jwells
  * 
  * @param <T> the annotation type
