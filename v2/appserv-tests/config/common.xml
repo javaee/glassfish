@@ -1871,6 +1871,35 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     </exec>
 </target>
 
+
+<!-- ================================================================ -->
+<!-- Target to create password alias -->
+<!-- ================================================================ -->
+<target name="create-password-alias" depends="init-common">
+<echo message="Create Password Alias ${alias.name}" 
+    level="verbose"/>
+    <exec executable="${ASADMIN}" failonerror="false">
+        <arg line="create-password-alias"/>
+        <arg line="--passwordfile "/>
+        <arg line="${password.alias.file}"/>
+        <arg line="${password.alias.name}"/>
+    </exec>
+</target>
+
+
+<!-- ================================================================ -->
+<!-- Target to delete password alias -->
+<!-- ================================================================ -->
+<target name="delete-password-alias" depends="init-common">
+<echo message="delete Password Alias ${password.alias.name}" 
+    level="verbose"/>
+    <exec executable="${ASADMIN}" failonerror="false">
+        <arg line="delete-password-alias"/>
+        <arg line="${password.alias.name}"/>
+    </exec>
+</target>
+
+
 <!-- ================================================================ -->
 <!-- Target to generate a neat Html report -->
 <!-- ================================================================ -->
