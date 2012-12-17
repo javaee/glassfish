@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.literal;
 
+import java.lang.reflect.Field;
+
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.AnnotationLiteral;
@@ -91,19 +93,40 @@ public class AnnotationLiteralTest {
         Assert.assertFalse(awsJdk.equals(aws2));
     }
     
+    private Q getQField() {
+        Class<?> c = ClassWithQField.class;
+        
+        Field field;
+        try {
+            field = c.getField("qField");
+        }
+        catch (NoSuchFieldException nsfe) {
+            return null;
+        }
+        
+        return field.getAnnotation(Q.class);
+    }
+    
     /**
      * Tests JDK version of equals works with an empty qualifier
      */
     @Test @Ignore
     public void testEqualsOfEmptyAnnotation() {
         Q qJdk = ClassWithQ.class.getAnnotation(Q.class);
+        Q qJdkField = getQField();
+        
+        Assert.assertNotNull(qJdk);
+        Assert.assertNotNull(qJdkField);
+        
+        Assert.assertEquals(qJdk, qJdkField);
+        
+        Assert.assertEquals((new AnnotationLiteral<Q>(){}).hashCode(), qJdk.hashCode());
+        Assert.assertEquals(qJdkField.hashCode(), qJdk.hashCode());
         
         Assert.assertTrue((new AnnotationLiteral<Q>(){}).equals(qJdk));
         
-        boolean jrw = qJdk.equals(new AnnotationLiteral<Q>(){});
-        System.out.println("JRW(10) equals from jdk is? " + jrw);
+        // Currently fails, looks like a bug in the JDK
         Assert.assertTrue(qJdk.equals(new AnnotationLiteral<Q>(){}));
-        
     }
 
 }
