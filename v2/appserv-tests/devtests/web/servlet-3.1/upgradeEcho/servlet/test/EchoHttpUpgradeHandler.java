@@ -51,7 +51,7 @@ import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.WebConnection;
 
 public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
-    private String delimiter = null;
+    private String delimiter = "/";
 
     public EchoHttpUpgradeHandler() {
     }
@@ -63,6 +63,14 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             ServletOutputStream output = wc.getOutputStream();
             ReadListenerImpl readListener = new ReadListenerImpl(delimiter, input, output);
             input.setReadListener(readListener);
+
+            int b = -1;
+            while (input.isReady() && ((b = input.read()) != -1)) {
+                System.out.print((char)b);
+                output.write(b);
+            }
+            output.flush();
+
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -104,6 +112,7 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
                     sb.append(data);
                 }
                 output.print(delimiter + sb.toString());
+                output.flush();
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
             }
@@ -119,7 +128,8 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
         }
 
         public void onError(final Throwable t) {
-            t.printStackTrace();
+            System.out.println("--> onError");
+            //t.printStackTrace();
         }
     }
 }

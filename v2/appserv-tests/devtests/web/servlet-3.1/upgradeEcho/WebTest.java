@@ -51,7 +51,7 @@ import com.sun.ejte.ccl.reporter.*;
 public class WebTest {
 
     private static String TEST_NAME = "upgrade-echo";
-    private static String EXPECTED_RESPONSE = "HelloWorld-onAllDataRead";
+    private static String EXPECTED_RESPONSE = "HelloWorld";
     private static final String CRLF = "\r\n";
 
     private static SimpleReporterAdapter stat
@@ -61,7 +61,7 @@ public class WebTest {
         String host = args[0];
         int port = Integer.parseInt(args[1]);
         String contextRoot = args[2];
-        stat.addDescription("Unit test for non blocking read");
+        stat.addDescription("Unit test for upgrade");
 
         try {
             Socket s = null;
@@ -85,7 +85,7 @@ public class WebTest {
                     output.write(reqStr.getBytes());
 
                     writeChunk(output, "Hello");
-                    int sleepInSeconds = 3;
+                    int sleepInSeconds = 1;
                     System.out.format("Sleeping %d sec\n", sleepInSeconds);
                     Thread.sleep(sleepInSeconds * 1000);
                     writeChunk(output, "World");
@@ -96,14 +96,19 @@ public class WebTest {
                 // read data without using readLine
                 int len = -1;
                 byte b[] = new byte[1024];
+                int counter = 0;
                 StringBuilder sb = new StringBuilder();
                 while ((len = input.read(b)) != -1) {
                     String line = new String(b, 0, len);
                     sb.append(line);
                     System.out.println(line);
+                    counter++;
+                    if(counter >= 2) {
+                        break;
+                    }
                 }
 
-                StringTokenizer tokens = new StringTokenizer(sb.toString(), "\r\n");
+                StringTokenizer tokens = new StringTokenizer(sb.toString(), CRLF);
                 String line = null;
                 while (tokens.hasMoreTokens()) {
                     line = tokens.nextToken();
@@ -115,25 +120,38 @@ public class WebTest {
             } finally {
                 try {
                     if (input != null) {
+                        System.out.println("# Closing input...");
                         input.close();
+                        System.out.println("# Input closed.");
                     }
                 } catch(Exception ex) {
                 }
 
                 try {
                     if (output != null) {
+                        System.out.println("# Closing output...");
                         output.close();
+                        System.out.println("# Output closed .");
                     }
                 } catch(Exception ex) {
                 }
                 try {
                     if (s != null) {
+                        System.out.println("# Closing socket...");
                         s.close();
+                        System.out.println("# Socked closed.");
                     }
                 } catch(Exception ex) {
                 }
             }
-            
+
+            // server.log should contain "##### OnError" and
+            // stacktrace of produced exception (EOF).
+
+            // sleep is here only for versifying that onError was
+            // called before this process ended.
+            Thread.sleep(10000);
+
             stat.addStatus(TEST_NAME, ((expected) ? stat.PASS : stat.FAIL));
         } catch(Exception ex) {
             ex.printStackTrace();
@@ -144,12 +162,9 @@ public class WebTest {
     }
 
     private static void writeChunk(OutputStream out, String data) throws IOException {
-        int len = ((data != null) ? data.length() : 0);
-        out.write((len + CRLF).getBytes());
         if (data != null) {
             out.write(data.getBytes());
         }
-        out.write(CRLF.getBytes());
         out.flush();
     }
 }
