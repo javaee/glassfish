@@ -17,6 +17,28 @@ public class MyAdminObject implements java.io.Serializable, ResourceAdapterAssoc
         return resetControl;
     }
 
+
+    private void validateDealiasing(String propertyName, String propertyValue){
+        System.out.println("Validating property ["+propertyName+"] with value ["+propertyValue+"] in MyAdminObject");
+        //check whether the value is dealiased or not and fail
+        //if it's not dealiased.
+        if(propertyValue != null && propertyValue.contains("${ALIAS")){
+            throw new IllegalArgumentException(propertyName + "'s value is not de-aliased : " + propertyValue);
+        }
+    }
+
+    private String aliasTest;
+
+    public void setAliasTest (String value) {
+        validateDealiasing("AliasTest", value);
+        System.out.println("setAliasTest called : " + value);
+        aliasTest = value;
+    }
+
+    public String getAliasTest () {
+        return aliasTest;
+    }
+
     public ResourceAdapter getResourceAdapter(){
         return resourceAdapter;
     }

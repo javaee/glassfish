@@ -59,6 +59,12 @@
             <config-property-type>java.lang.Integer</config-property-type>
             <config-property-value>88</config-property-value>
           </config-property>
+          <config-property>
+            <config-property-name>AliasTest</config-property-name>
+            <config-property-type>java.lang.String</config-property-type>
+            <config-property-value>${ALIAS=ALIAS_TEST_PROPERTY}</config-property-value>
+            <config-property-confidential>true</config-property-confidential>
+          </config-property>
         </adminobject>
     </resourceadapter>
 </connector>

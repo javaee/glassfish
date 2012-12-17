@@ -29,6 +29,11 @@
 
     <target name="setup">
 
+        <antcall target="create-password-alias">
+            <param name="password.alias.name" value="ALIAS_TEST_PROPERTY"/>
+            <param name="password.alias.file" value="aliaspassword.txt"/>
+        </antcall>
+
         <antcall target="setup-security-permission"/>
 
         <ant dir="app" inheritAll="false" target="setupJdbc"/>
@@ -61,7 +66,6 @@
             <param name="password" value="guest"/>
             <param name="groups" value="employee"/>
         </antcall>
-
 
     </target>
 
@@ -117,6 +121,10 @@
         </antcall>
 
         <antcall target="restore-default-security-permission"/>
+ 
+        <antcall target="delete-password-alias">
+            <param name="password.alias.name" value="ALIAS_TEST_PROPERTY"/>
+        </antcall>
 
         <ant dir="." inheritAll="false" target="restart"/>
     </target>
