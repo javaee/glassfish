@@ -24,6 +24,7 @@
 <res-type>javax.sql.DataSource</res-type>
 <res-auth>Container</res-auth>
 <res-sharing-scope>Shareable</res-sharing-scope>
+<lookup-name>java:comp/DefaultDataSource</lookup-name>
 </resource-ref>
 <resource-env-ref>
 <resource-env-ref-name>test.ejb.StatefulTest/ejbContext3</resource-env-ref-name>
@@ -80,6 +81,7 @@
 <res-type>javax.sql.DataSource</res-type>
 <res-auth>Container</res-auth>
 <res-sharing-scope>Shareable</res-sharing-scope>
+<lookup-name>java:comp/DefaultDataSource</lookup-name>
 </resource-ref>
 <resource-env-ref>
 <resource-env-ref-name>test.ejb.StatefulTest/ejbContext3</resource-env-ref-name>
@@ -162,12 +164,14 @@
 <res-type>javax.sql.DataSource</res-type>
 <res-auth>Container</res-auth>
 <res-sharing-scope>Shareable</res-sharing-scope>
+<lookup-name>java:comp/DefaultDataSource</lookup-name>
 </resource-ref>
 <resource-ref>
 <res-ref-name>myDataSource</res-ref-name>
 <res-type>javax.sql.DataSource</res-type>
 <res-auth>Container</res-auth>
 <res-sharing-scope>Shareable</res-sharing-scope>
+<lookup-name>java:comp/DefaultDataSource</lookup-name>
 </resource-ref>
 <resource-env-ref>
 <resource-env-ref-name>sfEjbContext3</resource-env-ref-name>

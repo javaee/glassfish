@@ -80,6 +80,7 @@
 <res-type>javax.sql.DataSource</res-type>
 <res-auth>Container</res-auth>
 <res-sharing-scope>Shareable</res-sharing-scope>
+<lookup-name>java:comp/DefaultDataSource</lookup-name>
 </resource-ref>
 <resource-env-ref>
 <resource-env-ref-name>test.ejb.stateless.InterceptorB/sessionCtx</resource-env-ref-name>
