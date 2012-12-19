@@ -199,7 +199,6 @@
             <param name="arg.list" value="${validation.car}"/>
             <param name="log.id" value="4"/>
         </antcall>
-<!--
         <antcall target="declare-test">
             <param name="description" value="dol/validation Test ear"/>
         </antcall>
@@ -207,7 +206,6 @@
             <param name="arg.list" value="${validation.ear}"/>
             <param name="log.id" value="5"/>
         </antcall>
--->
         <antcall target="declare-test">
             <param name="description" value="dol/validation Test WLS Ear"/>
         </antcall>

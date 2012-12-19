@@ -69,20 +69,6 @@
          </authentication-mechanism>
          <reauthentication-support>false</reauthentication-support>
         </outbound-resourceadapter>
-        <inbound-resourceadapter>
-            <messageadapter>          
-                <messagelistener>
-                    <messagelistener-type>
-                        connector.MyMessageListener
-                    </messagelistener-type>
-                    <activationspec>
-                        <activationspec-class>
-                            connector.SimpleActivationSpec
-                        </activationspec-class>
-                    </activationspec>
-                </messagelistener>
-            </messageadapter>          
-        </inbound-resourceadapter>
         <adminobject>
           <adminobject-interface>connector.MyAdminObject</adminobject-interface>
           <adminobject-class>connector.MyAdminObject</adminobject-class>
