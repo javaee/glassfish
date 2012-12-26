@@ -42,9 +42,8 @@ package test;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ReadListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -54,38 +53,29 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/test")
+@WebServlet(urlPatterns="/test", asyncSupported=true)
 public class TestServlet extends HttpServlet {
 
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        CountDownLatch cdl = new CountDownLatch(1);
+        AsyncContext ac = req.startAsync();
         ServletOutputStream output = res.getOutputStream();
         ServletInputStream input = req.getInputStream();
-        ReadListenerImpl readListener = new ReadListenerImpl(input, output, cdl);
+        ReadListenerImpl readListener = new ReadListenerImpl(input, output, ac);
         input.setReadListener(readListener);
-
-        try {
-            if (cdl.await(8, TimeUnit.SECONDS)) {
-                System.out.println("COMPLETED");
-            } else {
-                System.out.println("TIMEOUT");
-            }
-        } catch(InterruptedException ie) {
-        }
     }
 
     static class ReadListenerImpl implements ReadListener {
         private ServletInputStream input = null;
         private ServletOutputStream output = null;
-        private CountDownLatch cdl = null;
+        private AsyncContext ac = null;
 
         ReadListenerImpl(ServletInputStream in, ServletOutputStream out,
-                CountDownLatch latch) {
+                AsyncContext c) {
             input = in;
             output = out;
-            cdl = latch;
+            ac = c;
         }
 
         public void onDataAvailable() {
@@ -114,11 +104,12 @@ public class TestServlet extends HttpServlet {
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
             } finally {
-                cdl.countDown();
+                ac.complete();
             }
         }
 
         public void onError(final Throwable t) {
+            ac.complete();
             t.printStackTrace();
         }
     }

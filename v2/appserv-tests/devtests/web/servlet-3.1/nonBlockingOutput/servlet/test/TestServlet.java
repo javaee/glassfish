@@ -42,9 +42,8 @@ package test;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
@@ -53,66 +52,65 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/test")
+@WebServlet(urlPatterns="/test", asyncSupported=true)
 public class TestServlet extends HttpServlet {
     private static final int MAX_TIME_MILLIS = 10 * 1000;
-    
     private static final int LENGTH = 587952;
 
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        CountDownLatch latch = new CountDownLatch(1);
-
+        AsyncContext ac = req.startAsync();
         ServletOutputStream output = res.getOutputStream();
-        WriteListenerImpl writeListener = new WriteListenerImpl(output, latch);
+        WriteListenerImpl writeListener = new WriteListenerImpl(output, ac);
         output.setWriteListener(writeListener);
-
-        try {
-            if (latch.await(10, TimeUnit.SECONDS)) {
-                System.out.println("COMPLETED");
-            } else {
-                System.out.println("TIMEOUT");
-            }
-        } catch (InterruptedException e) {
-        }
     }
 
     static class WriteListenerImpl implements WriteListener {
         private ServletOutputStream output = null;
-        private CountDownLatch latch = null;
+        private AsyncContext ac = null;
+        private int count = 0;
 
         WriteListenerImpl(ServletOutputStream sos,
-                CountDownLatch l) {
+                AsyncContext c) {
             output = sos;
-            latch = l;
+            ac = c;
         }
 
         public void onWritePossible() {
             try {
-                String message = "onWritePossible";
-                System.out.println("--> " + message);
-                output.write(message.getBytes());
+                if (count == 0) {
+                    long startTime = System.currentTimeMillis();
+                    while (output.isReady()) {
+                        writeData(output);
+                        count++;    
+                        if (System.currentTimeMillis() - startTime > MAX_TIME_MILLIS
+                                || count > 10) {
+                            throw new Exception("Cannot fill the write buffer");
+                        }
+                    }
+                } else if (count > 0) {
+                    String message = "onWritePossible";
+                    System.out.println("--> " + message);
+                    output.write(message.getBytes());
+                    ac.complete();
+                }
             } catch(Exception ex) {
+                ac.complete();
                 throw new IllegalStateException(ex);
-            } finally {
-                latch.countDown();
             }
         }
 
         public void onError(final Throwable t) {
+            ac.complete();
             t.printStackTrace();
         }
     }
 
-    void writeData(ServletOutputStream output, long count) throws IOException {
-        System.out.println("--> calling writeData " + count);
-        char[] cs = String.valueOf(count).toCharArray();
+    static void writeData(ServletOutputStream output) throws IOException {
+        System.out.println("--> calling writeData");
         byte[] b = new byte[LENGTH];
-        for (int i = 0; i < cs.length; i++) {
-            b[i] = (byte)cs[i];
-        }
-        Arrays.fill(b, cs.length, LENGTH, (byte)'a');
+        Arrays.fill(b, 0, LENGTH, (byte)'a');
         output.write(b);
     }
 }
