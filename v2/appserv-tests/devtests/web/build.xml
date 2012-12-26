@@ -330,7 +330,7 @@
         <ant dir="servlet-3.1/networkPathReference" target="all"/>
         <ant dir="servlet-3.1/nonBlockingOutput" target="all"/>
         <ant dir="servlet-3.1/nonBlockingInput" target="all"/>
-        <ant dir="servlet-3.1/nonBlockingInputWithAsync" target="all"/>
+        <ant dir="servlet-3.1/nonBlockingInputWithAsyncDispatch" target="all"/>
         <ant dir="servlet-3.1/upgradeEcho" target="all"/>
         <ant dir="servlet-3.1/changeSessionId" target="all"/>
         <ant dir="servlet-3.1/resetCharacterEncoding" target="all"/>
