@@ -49,7 +49,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static String TEST_NAME = "non-blocking-Input-with-async";
+    private static String TEST_NAME = "non-blocking-Input-with-async-dispatch";
     private static String EXPECTED_RESPONSE = "HelloWorld-onAllDataRead";
 
     private static SimpleReporterAdapter stat
@@ -62,7 +62,7 @@ public class WebTest {
         stat.addDescription("Unit test for non blocking read");
 
         try {
-            URL url = new URL("http://" + host + ":" + port + "/" + contextRoot + "/test");
+            URL url = new URL("http://" + host + ":" + port + contextRoot + "/test");
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setChunkedStreamingMode(5);
             conn.setDoOutput(true);

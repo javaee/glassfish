@@ -61,31 +61,23 @@ public class TestServlet extends HttpServlet {
 
         AsyncContext ac = req.startAsync();
         //ac.setTimeout(-1);
-        ServletOutputStream output = res.getOutputStream();
         ServletInputStream input = req.getInputStream();
-        ReadListenerImpl readListener = new ReadListenerImpl(input, output, ac);
+        ReadListenerImpl readListener = new ReadListenerImpl(input, ac);
         input.setReadListener(readListener);
-
-        if (input.isFinished()) {
-            ac.complete();
-        }
     }
 
     static class ReadListenerImpl implements ReadListener {
         private ServletInputStream input = null;
-        private ServletOutputStream output = null;
         private AsyncContext ac = null;
+        private StringBuilder sb = new StringBuilder();
 
-        ReadListenerImpl(ServletInputStream in, ServletOutputStream out,
-                AsyncContext c) {
+        ReadListenerImpl(ServletInputStream in, AsyncContext c) {
             input = in;
-            output = out;
             ac = c;
         }
 
         public void onDataAvailable() {
             try {
-                StringBuilder sb = new StringBuilder();
                 System.out.println("--> onDataAvailable");
                 int len = -1;
                 byte b[] = new byte[1024];
@@ -94,9 +86,7 @@ public class TestServlet extends HttpServlet {
                     String data = new String(b, 0, len);
                     System.out.println("--> " + data);
                     sb.append('/' + data);
-                    //output.print('/' + data);
                 }
-                output.print(sb.toString());
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
             }
@@ -105,11 +95,11 @@ public class TestServlet extends HttpServlet {
         public void onAllDataRead() {
             try {
                 System.out.println("--> onAllDataRead");
-                output.println("-onAllDataRead");
+                sb.append("-onAllDataRead");
+                ac.getRequest().setAttribute("mysb", sb.toString());
+                ac.dispatch("test2");
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
-            } finally {
-                ac.complete();
             }
         }
 
