@@ -53,8 +53,8 @@
          maven-bundle-plugin and hk2-maven-plugin together -->
     <packaging>jar</packaging>
     <properties>
-       <hibernate-validator.version>5.0.0.Alpha1</hibernate-validator.version>
-       <javax.validation.version>1.1.0.Alpha1</javax.validation.version>
+       <hibernate-validator.version>5.0.0.Alpha2</hibernate-validator.version>
+       <javax.validation.version>1.1.0.Beta2</javax.validation.version>
        <slf4j.version>1.6</slf4j.version>
        <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
       <jtype.version>0.1.0</jtype.version>
@@ -74,15 +74,11 @@
                             *; artifactId=hibernate-validator; inline=true
                         </Embed-Dependency>
                         <Export-Package>
-                            <!--
-                                Actually there is no need to any of the implementation stuff, but
-                                because of a bug in Hibernate Validator, where in it uses thread's context
-                                class loader to load implementation classes, we have to export implementation
-                                packages so that our special context class loader can find them.
-                                See http://opensource.atlassian.com/projects/hibernate/browse/HV-363
-                            -->
                             javax.validation.*; version=${javax.validation.version},
-                            org.hibernate.validator.*; version=${hibernate-validator.version}
+                            org.hibernate.validator.*; version=${hibernate-validator.version},
+                            org.hibernate.validator.internal.cdi; version=${hibernate-validator.version},
+			    org.hibernate.validator.internal.cdi.interceptor; version=${hibernate-validator.version},
+			    org.glassfish.validation; version=${hibernate-validator.version}
                         </Export-Package>
 
                         <Private-Package>
@@ -109,6 +105,12 @@
                             org.jsoup.*; resolution:=optional; version="[1.5.2,2.0.0)",
                             org.apache.log4j; resolution:=optional,
                             org.jboss.logmanager; resolution:=optional,
+                            javax.enterprise.context.*; resolution:=optional,
+                            javax.enterprise.event.*; resolution:=optional,
+                            javax.enterprise.inject.*; resolution:=optional,
+                            javax.enterprise.util.*; resolution:=optional,
+			    javax.interceptor.*; resolution:=optional,
+			    org.hibernate.validator.*; version=${hibernate-validator.version},
                             *
                         </Import-Package>
                         <!--
