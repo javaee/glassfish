@@ -41,7 +41,10 @@ package org.glassfish.hk2.utilities.reflection;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
@@ -924,6 +927,29 @@ public class ReflectionHelper {
     }
     
     /**
+     * Sets the given field to the given value
+     * 
+     * @param field The non-null field to set
+     * @param instance The non-null instance to set into
+     * @param value The value to which the field should be set
+     */
+    public static void setField(Field field, Object instance, Object value) throws Throwable {
+        setAccessible(field);
+        
+        try {
+            field.set(instance, value);
+        }
+        catch (IllegalArgumentException e) {
+            Logger.getLogger().debug(field.getDeclaringClass().getName(), field.getName(), e);
+            throw e;
+        }
+        catch (IllegalAccessException e) {
+            Logger.getLogger().debug(field.getDeclaringClass().getName(), field.getName(), e);
+            throw e;
+        }
+    }
+    
+    /**
      * This version of invoke is CCL neutral (it will return with the
      * same CCL as what it went in with)
      * 
@@ -939,6 +965,7 @@ public class ReflectionHelper {
             o = null;
         }
         
+        setAccessible(m);
         ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
         
         try {
@@ -986,6 +1013,54 @@ public class ReflectionHelper {
             
         });
         
+    }
+    
+    /**
+     * Sets this accessible object to be accessible using the permissions of
+     * the hk2-locator bundle (which will need the required grant)
+     *
+     * @param ao The object to change
+     */
+    private static void setAccessible(final AccessibleObject ao) {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+
+            @Override
+            public Object run() {
+                ao.setAccessible(true);
+                return null;
+            }
+
+        });
+
+    }
+    
+    /**
+     * This version of invoke is CCL neutral (it will return with the
+     * same CCL as what it went in with)
+     *
+     * @param c the constructor to call
+     * @param args The arguments to invoke (may not be null)
+     * @return The return from the invocation
+     * @throws Throwable The unwrapped throwable thrown by the method
+     */
+    public static Object makeMe(Constructor<?> c, Object args[])
+            throws Throwable {
+        setAccessible(c);
+        
+        ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
+
+        try {
+            return c.newInstance(args);
+        } catch (InvocationTargetException ite) {
+            Throwable targetException = ite.getTargetException();
+            Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), targetException);
+            throw targetException;
+        } catch (Throwable th) {
+            Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), th);
+            throw th;
+        } finally {
+            setContextClassLoader(Thread.currentThread(), currentCCL);
+        }
     }
 
 }

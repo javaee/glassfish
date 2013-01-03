@@ -86,8 +86,6 @@ public class MethodInterceptorImpl implements MethodInterceptor {
             return service;
         }
         
-        Utilities.setAccessible(method);
-        
         return ReflectionHelper.invoke(service, method, params);
     }
 

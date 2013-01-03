@@ -41,12 +41,10 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -100,7 +98,6 @@ import org.glassfish.hk2.api.UseProxy;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
-import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -194,26 +191,6 @@ public class Utilities {
             @Override
             public Method[] run() {
                 return clazz.getDeclaredMethods();
-            }
-
-        });
-
-    }
-
-    /**
-     * Sets this accessible object to be accessible using the permissions of
-     * the hk2-locator bundle (which will need the required grant)
-     *
-     * @param ao The object to change
-     */
-    /* package */
-    static void setAccessible(final AccessibleObject ao) {
-        AccessController.doPrivileged(new PrivilegedAction<Object>() {
-
-            @Override
-            public Object run() {
-                ao.setAccessible(true);
-                return null;
             }
 
         });
@@ -537,8 +514,6 @@ public class Utilities {
 
         if (preDestroy == null) return;
 
-        setAccessible(preDestroy);
-
         try {
             ReflectionHelper.invoke(preMe, preDestroy, new Object[0]);
         } catch (Throwable e) {
@@ -562,8 +537,6 @@ public class Utilities {
         collector.throwIfErrors();
 
         if (postConstruct == null) return;
-
-        setAccessible(postConstruct);
 
         try {
             ReflectionHelper.invoke(postMe, postConstruct, new Object[0]);
@@ -600,13 +573,12 @@ public class Utilities {
             Injectee injectee = injecteeFields.get(0);
 
             Object fieldValue = resolver.resolve(injectee, null);
-
-            setAccessible(field);
-
+            
             try {
-                field.set(injectMe, fieldValue);
-            } catch (IllegalAccessException e) {
-                throw new MultiException(e);
+                ReflectionHelper.setField(field, injectMe, fieldValue);
+            }
+            catch (Throwable th) {
+                throw new MultiException(th);
             }
         }
 
@@ -622,8 +594,6 @@ public class Utilities {
                 InjectionResolver<?> resolver = getInjectionResolver(locator, injectee);
                 args[injectee.getPosition()] = resolver.resolve(injectee, null);
             }
-
-            setAccessible(method);
 
             try {
                 ReflectionHelper.invoke(injectMe, method, args);
@@ -662,13 +632,11 @@ public class Utilities {
             args[injectee.getPosition()] = resolver.resolve(injectee, null);
         }
 
-        setAccessible(c);
         try {
-            return (T) makeMe(c, args);
+          return (T) ReflectionHelper.makeMe(c, args);
         } catch (Throwable th) {
             throw new MultiException(th);
         }
-
     }
 
     /**
@@ -1723,33 +1691,6 @@ public class Utilities {
         }
 
         return null;
-    }
-
-    /**
-     * This version of invoke is CCL neutral (it will return with the
-     * same CCL as what it went in with)
-     *
-     * @param c the constructor to call
-     * @param args The arguments to invoke (may not be null)
-     * @return The return from the invocation
-     * @throws Throwable The unwrapped throwable thrown by the method
-     */
-    public static Object makeMe(Constructor<?> c, Object args[])
-            throws Throwable {
-        ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
-
-        try {
-            return c.newInstance(args);
-        } catch (InvocationTargetException ite) {
-            Throwable targetException = ite.getTargetException();
-            Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), targetException);
-            throw targetException;
-        } catch (Throwable th) {
-            Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), th);
-            throw th;
-        } finally {
-            ReflectionHelper.setContextClassLoader(Thread.currentThread(), currentCCL);
-        }
     }
 
     /**

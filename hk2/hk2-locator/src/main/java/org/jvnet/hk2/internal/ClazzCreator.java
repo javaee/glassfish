@@ -203,9 +203,7 @@ public class ClazzCreator<T> implements Creator<T> {
             args[injectee.getPosition()] = resolved.get(injectee);
         }
 
-        Utilities.setAccessible(c);
-
-        return Utilities.makeMe(c, args);
+        return ReflectionHelper.makeMe(c, args);
     }
 
     private void fieldMe(Map<Injectee, Object> resolved, T t) throws Throwable {
@@ -220,9 +218,7 @@ public class ClazzCreator<T> implements Creator<T> {
 
             Object putMeIn = resolved.get(fieldInjectee);
 
-            Utilities.setAccessible(field);
-
-            field.set(t, putMeIn);
+            ReflectionHelper.setField(field, t, putMeIn);
         }
     }
 
@@ -235,8 +231,6 @@ public class ClazzCreator<T> implements Creator<T> {
             for (Injectee injectee : injectees) {
                 args[injectee.getPosition()] = resolved.get(injectee);
             }
-
-            Utilities.setAccessible(m);
 
             ReflectionHelper.invoke(t, m, args);
         }
@@ -252,7 +246,6 @@ public class ClazzCreator<T> implements Creator<T> {
 
         if (postConstructMethod == null) return;
 
-        Utilities.setAccessible(postConstructMethod);
         ReflectionHelper.invoke(t, postConstructMethod, new Object[0]);
     }
 
@@ -266,7 +259,6 @@ public class ClazzCreator<T> implements Creator<T> {
 
         if (preDestroyMethod == null) return;
 
-        Utilities.setAccessible(preDestroyMethod);
         ReflectionHelper.invoke(t, preDestroyMethod, new Object[0]);
     }
 
