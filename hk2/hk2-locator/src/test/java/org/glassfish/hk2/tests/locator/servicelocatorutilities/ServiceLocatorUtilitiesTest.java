@@ -50,9 +50,9 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -449,6 +449,48 @@ public class ServiceLocatorUtilitiesTest {
         public T create(ServiceHandle<?> root) {
             return delegate.create(root);
         }
+        
+    }
+    
+    private final static String FIELD1 = "Field1";
+    private final static String FIELD2 = "Field2";
+    private final static String VALUE1 = "Value1";
+    private final static String VALUE2 = "Value2";
+    private final static String FIELD3 = "Field3";
+    
+    /**
+     * Tests getting one metadata field from a service handle
+     */
+    @Test
+    public void testGetOneMetadataServiceHandle() {
+        Descriptor d = BuilderHelper.link(SimpleService10.class.getName()).
+            has(FIELD1, VALUE1).
+            has(FIELD2, VALUE2).
+            build();
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, d);
+        
+        ServiceHandle<SimpleService10> handle = locator.getServiceHandle(SimpleService10.class);
+        
+        Assert.assertEquals(VALUE1, ServiceLocatorUtilities.getOneMetadataField(handle, FIELD1));
+        Assert.assertEquals(VALUE2, ServiceLocatorUtilities.getOneMetadataField(handle, FIELD2));
+        Assert.assertNull(ServiceLocatorUtilities.getOneMetadataField(handle, FIELD3));
+    }
+    
+    /**
+     * Tests getting one metadata field from a descriptor
+     */
+    @Test
+    public void testGetOneMetadataDescriptor() {
+        DescriptorImpl d = new DescriptorImpl();
+        
+        d.addMetadata(FIELD1, VALUE1);
+        d.addMetadata(FIELD2, VALUE2);
+        d.addMetadata(FIELD2, VALUE1);
+        
+        Assert.assertEquals(VALUE1, ServiceLocatorUtilities.getOneMetadataField(d, FIELD1));
+        Assert.assertEquals(VALUE2, ServiceLocatorUtilities.getOneMetadataField(d, FIELD2));
+        Assert.assertNull(ServiceLocatorUtilities.getOneMetadataField(d, FIELD3));
         
     }
 }
