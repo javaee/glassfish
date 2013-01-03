@@ -41,6 +41,8 @@ package org.glassfish.hk2.utilities;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -427,5 +429,31 @@ public abstract class ServiceLocatorUtilities {
         }
         
         return retVal.getService();
+    }
+    
+    /**
+     * Gets one value from a metadata field from the given descriptor
+     * 
+     * @param d The non-null descriptor from which to get the first value in the given field
+     * @param field The non-null field to get the first value of
+     * @return The first value in the given field, or null if no such field exists in the descriptor
+     */
+    public static String getOneMetadataField(Descriptor d, String field) {
+        Map<String, List<String>> metadata = d.getMetadata();
+        List<String> values = metadata.get(field);
+        if (values == null || values.isEmpty()) return null;
+        
+        return values.get(0);
+    }
+    
+    /**
+     * Gets one value from a metadata field from the given service handle
+     * 
+     * @param h The non-null service handle from which to get the first value in the given field
+     * @param field The non-null field to get the first value of
+     * @return The first value in the given field, or null if no such field exists in the descriptor
+     */
+    public static String getOneMetadataField(ServiceHandle<?> h, String field) {
+        return getOneMetadataField(h.getActiveDescriptor(), field);
     }
 }
