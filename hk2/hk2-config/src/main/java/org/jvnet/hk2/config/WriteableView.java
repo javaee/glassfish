@@ -93,8 +93,8 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                             return Thread.currentThread().getContextClassLoader();
                         }
                     });
-            try {
-                Thread.currentThread().setContextClassLoader(null);
+            try {      
+                Thread.currentThread().setContextClassLoader(WriteableView.class.getClassLoader());
                 TraversableResolver traversableResolver =
                     new TraversableResolver() {
                         public boolean isReachable(Object traversableObject,
@@ -109,7 +109,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                                 return true;
                         }
                     };
-
+                
                 ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
                 ValidatorContext validatorContext = validatorFactory.usingContext();
                 validatorContext.messageInterpolator(new MessageInterpolatorImpl());                
