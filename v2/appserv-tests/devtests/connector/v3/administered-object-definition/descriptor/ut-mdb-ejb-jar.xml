@@ -15,6 +15,7 @@
       <administered-object>
         <description>global-scope resource defined in EJB DD</description>
         <name>java:global/env/MDB_AdminObject</name>
+        <interface-name>javax.jms.Destination</interface-name>
         <class-name>connector.MyAdminObject</class-name>
         <resource-adapter-name>aod-ra</resource-adapter-name>
         <property>
@@ -26,6 +27,7 @@
       <administered-object>
         <description>module-scope resource defined in EJB DD</description>
         <name>java:module/env/MDB_AdminObject</name>
+        <interface-name>javax.jms.Destination</interface-name>
         <class-name>connector.MyAdminObject</class-name>
         <resource-adapter-name>aod-ra</resource-adapter-name>
         <property>
@@ -37,6 +39,7 @@
       <administered-object>
         <description>component-scope resource defined in EJB DD</description>
         <name>java:comp/env/MDB_AdminObject</name>
+        <interface-name>javax.jms.Destination</interface-name>
         <class-name>connector.MyAdminObject</class-name>
         <resource-adapter-name>aod-ra</resource-adapter-name>
         <property>

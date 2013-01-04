@@ -18,6 +18,7 @@
     <administered-object>
        <description>global-scope resource defined in application DD</description>
        <name>java:global/env/EAR_AdminObject</name>
+       <interface-name>javax.jms.Destination</interface-name>
        <class-name>connector.MyAdminObject</class-name>
        <resource-adapter-name>aod-ra</resource-adapter-name>
        <property>
@@ -29,6 +30,7 @@
     <administered-object>
        <description>application-scope resource defined in application DD</description>
        <name>java:app/env/EAR_AdminObject</name>
+       <interface-name>javax.jms.Destination</interface-name>
        <class-name>connector.MyAdminObject</class-name>
        <resource-adapter-name>aod-ra</resource-adapter-name>
        <property>

@@ -26,6 +26,9 @@ public class TestUtil {
             AdministeredObjectDefinitionDescriptor expectedDesc = expectedAODDs.get(actualDesc.getName());
             assertNotNull("The AOD of the name ["+actualDesc.getName()+"] is not expected.", expectedDesc);
             
+            assertEquals("Fail to verify interface-type of the AODD:"+actualDesc.getName(),
+                    expectedDesc.getInterfaceName(), actualDesc.getInterfaceName());
+
             assertEquals("Fail to verify class-name of the AODD:"+actualDesc.getName(),
                     expectedDesc.getClassName(), actualDesc.getClassName());
             

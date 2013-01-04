@@ -40,7 +40,7 @@
 
   <target name="testAddAdmin" depends="init-common">
     <antcall target="asadmin-common">
-      <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype connector.MyAdminObject --raname aod-ra --property ResetControl=BEGINNING"/>
+      <param name="admin.command" value="create-admin-object --target ${appserver.instance.name} --restype javax.jms.Destination --raname aod-ra --property ResetControl=BEGINNING"/>
       <param name="operand.props" value="eis/testAdmin"/>
     </antcall>
     <!--<antcall target="reconfig-common"/>-->

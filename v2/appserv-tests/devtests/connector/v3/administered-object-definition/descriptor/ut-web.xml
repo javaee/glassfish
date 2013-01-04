@@ -21,7 +21,7 @@
        <description>global-scope resource defined in Web DD</description>
        <name>java:global/env/AdminObject</name>
        <class-name>connector.MyAdminObject</class-name>
-        <resource-adapter-name>aod-ra</resource-adapter-name>
+       <resource-adapter-name>aod-ra</resource-adapter-name>
        <property>
          <name>org.glassfish.admin-object.resType</name>
          <value>connector.MyAdminObject</value>
@@ -31,8 +31,9 @@
     <administered-object>
        <description>application-scope resource defined in Web DD</description>
        <name>java:app/env/AdminObject</name>
+       <interface-name>javax.jms.Destination</interface-name>
        <class-name>connector.MyAdminObject</class-name>
-        <resource-adapter-name>aod-ra</resource-adapter-name>
+       <resource-adapter-name>aod-ra</resource-adapter-name>
        <property>
          <name>org.glassfish.admin-object.resType</name>
          <value>connector.MyAdminObject</value>
@@ -42,8 +43,9 @@
      <administered-object>
        <description>module-scope resource defined in Web DD</description>
        <name>java:module/env/AdminObject</name>
+       <interface-name>javax.jms.Destination</interface-name>
        <class-name>connector.MyAdminObject</class-name>
-        <resource-adapter-name>aod-ra</resource-adapter-name>
+       <resource-adapter-name>aod-ra</resource-adapter-name>
        <property>
          <name>org.glassfish.admin-object.resType</name>
          <value>connector.MyAdminObject</value>

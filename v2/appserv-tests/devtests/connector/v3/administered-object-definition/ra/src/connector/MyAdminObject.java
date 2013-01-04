@@ -1,14 +1,16 @@
 
 package connector;
 
-import java.io.Serializable;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Queue;
 import javax.resource.spi.AdministeredObject;
 import javax.resource.spi.ConfigProperty;
 
 @AdministeredObject(
-        adminObjectInterfaces = {MyAdminObject.class}
+        adminObjectInterfaces = {Destination.class,Queue.class}
 )
-public class MyAdminObject extends AbstractAdminObject implements Serializable {
+public class MyAdminObject extends AbstractAdminObject implements Destination, Queue {
 
     private static final long serialVersionUID = 1169995481259581782L;
     private Integer expectedResults;
@@ -31,8 +33,8 @@ public class MyAdminObject extends AbstractAdminObject implements Serializable {
             synchronized (Controls.readyLock){
                 Controls.done=false;
             }
-	   System.out.println("[MyAdminObject] Initialized the Controls to false");
-	}
+            System.out.println("[MyAdminObject] Initialized the Controls to false");
+        }
     }
 
     public boolean done() {
@@ -50,6 +52,11 @@ public class MyAdminObject extends AbstractAdminObject implements Serializable {
 
     public Object getLockObject(){
         return Controls.readyLock;
+    }
+
+    @Override
+    public String getQueueName() throws JMSException {
+      return "testQueue";
     }
 
 }
