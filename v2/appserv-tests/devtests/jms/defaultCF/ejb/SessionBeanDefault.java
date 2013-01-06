@@ -26,21 +26,32 @@ public class SessionBeanDefault implements SessionBeanDefaultRemote {
     @Override
     public void sendMessage(String text) {
         Connection conn = null;
+        Session session = null;
         try {
             InitialContext ic = new InitialContext();
-            ConnectionFactory o = (ConnectionFactory) ic.lookup("java:comp/DefaultJMSConnectionFactory");
-            if (o == null || cf0 == null || cf1 == null || cf2 == null)
+            ConnectionFactory o1 = (ConnectionFactory) ic.lookup("java:comp/DefaultJMSConnectionFactory");
+            ConnectionFactory o2 = (ConnectionFactory) ic.lookup("java:comp/env/jms/systemDefaultCF");
+            if (o1 == null || o2 == null || cf0 == null || cf1 == null || cf2 == null)
                 throw new RuntimeException("Failed to lookup up jms default connection factory.");
             conn = cf2.createConnection();
-            Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            conn.start();
+            session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
             TextMessage msg = session.createTextMessage(text);
             MessageProducer p = session.createProducer(queue);
             p.send(msg);
         } catch (Exception e) {
             throw new EJBException(e);
         } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception e) {
+                    throw new EJBException(e);
+                }
+            }
             if (conn != null) {
                 try {
+                    
                     conn.close();
                 } catch (Exception e) {
                     throw new EJBException(e);
@@ -52,9 +63,11 @@ public class SessionBeanDefault implements SessionBeanDefaultRemote {
     @Override
     public boolean checkMessage(String text) {
         Connection conn = null;
+        Session session = null;
         try {
             conn = cf1.createConnection();
-            Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            conn.start();
+            session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
             MessageConsumer r = session.createConsumer(queue);
             Message msg = r.receive(30000L);
             if (msg instanceof TextMessage) {
@@ -66,6 +79,13 @@ public class SessionBeanDefault implements SessionBeanDefaultRemote {
         } catch (Exception e) {
             throw new EJBException(e);
         } finally {
+            if (session != null) {
+                try {
+                    session.close();
+                } catch (Exception e) {
+                    throw new EJBException(e);
+                }
+            }
             if (conn != null) {
                 try {
                     conn.close();

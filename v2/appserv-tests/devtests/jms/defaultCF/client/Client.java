@@ -25,7 +25,6 @@ public class Client {
             Context ctx = new InitialContext();
             SessionBeanDefaultRemote beanRemote = (SessionBeanDefaultRemote) ctx.lookup(SessionBeanDefaultRemote.RemoteJNDIName);
             beanRemote.sendMessage(text);
-            STAT.addStatus("jms-default-connection-factory-ejb " + ejbName, STAT.PASS);
             boolean received = beanRemote.checkMessage(text);
             if (received)
                 STAT.addStatus("jms-default-connection-factory-ejb " + ejbName, STAT.PASS);
