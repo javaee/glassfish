@@ -88,6 +88,30 @@ public interface RunLevelController {
      * is running on one or more managed threads.
      *
      * @param runLevel  the run level to move to
+     * @param activator The activator to use for this procession
+     */
+    void proceedTo(int runLevel, Activator activator);
+    
+    /**
+     * Causes this RunLevelController to move to the specified run level for
+     * all {@link RunLevel} instances (identified by
+     * {@link RunLevelControllerIndicator}), orchestrating the appropriate
+     * lifecycle events.
+     * <p>
+     * If the run level specified is the same as the current run level then
+     * the RunLevelController may return immediately.
+     * <p>
+     * Note that the underlying implementation may perform this operation
+     * asynchronously. Implementors who choose the asynchronous approach
+     * are expected to treat a subsequent proceedTo(newRunLevel) call as
+     * an implicit cancellation of any currently running proceedTo() that
+     * is running on one or more managed threads.
+     * <p>
+     * This method will use the default activator which either starts or
+     * stops the services depending on whether or not the runLevel is
+     * coming up or going down
+     *
+     * @param runLevel  the run level to move to
      */
     void proceedTo(int runLevel);
 

@@ -345,13 +345,18 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
     }
 
     @Override
+    public void proceedTo(int runLevel, Activator activators) {
+        proceedTo(runLevel, false, activators);
+    }
+    
+    @Override
     public void proceedTo(int runLevel) {
-        proceedTo(runLevel, false);
+        proceedTo(runLevel, false, this);
     }
 
     @Override
     public void interrupt() {
-        proceedTo(null, true);
+        proceedTo(null, true, this);
     }
 
 
@@ -540,7 +545,7 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
      * @param runLevel         the run level
      * @param isHardInterrupt  indicates a hard interrupt
      */
-    protected void proceedTo(Integer runLevel, boolean isHardInterrupt) {
+    protected void proceedTo(Integer runLevel, boolean isHardInterrupt, Activator activator) {
         if (null != runLevel && runLevel < RunLevel.RUNLEVEL_VAL_IMMEDIATE) {
             throw new IllegalArgumentException();
         }
@@ -558,33 +563,12 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
             // a new worker
             synchronized (lock) {
                 this.worker = worker = asyncMode ?
-                        new AsyncProceedToWorker(runLevel) :
-                        new SyncProceedToWorker(runLevel);
+                        new AsyncProceedToWorker(runLevel, activator) :
+                        new SyncProceedToWorker(runLevel, activator);
             }
 
             worker.proceedTo(runLevel);
         }
-    }
-
-    /**
-     * Get the best {@link Activator}.
-     *
-     * @return the best actvator; defaulting to this
-     */
-    protected synchronized Activator getActivator() {
-        Collection<Activator> activators = new ArrayList<Activator>();
-        List<ActiveDescriptor<?>> allActivators =
-                serviceLocator.getDescriptors(BuilderHelper.createContractFilter(Activator.class.getName()));
-
-        for (ActiveDescriptor<?> descriptor : allActivators) {
-            if (name.equals(Utilities.getRunLevelControllerName(descriptor))) {
-                final Activator activator = (Activator) serviceLocator.getServiceHandle(descriptor).getService();
-                if (activator != this) {
-                    activators.add(activator);
-                }
-            }
-        }
-        return (activators.isEmpty()) ? this : activators.iterator().next();
     }
 
     /**
@@ -646,12 +630,15 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
          * Records whether a cancel was actually an hard interrupt.
          */
         protected Boolean isHardInterrupt;
+        
+        private final Activator activator;
 
 
         // ----- Constructors -----------------------------------------------
 
-        protected Worker(int runLevel) {
+        protected Worker(int runLevel, Activator activator) {
             this.planned = runLevel;
+            this.activator = activator;
         }
 
 
@@ -806,8 +793,6 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
                         }
                     });
 
-            Activator ia = getActivator();
-
             if (!activations.isEmpty()) {
                 if (logger.isLoggable(LEVEL)) {
                     logger.log(LEVEL, "sorting {0}", activations);
@@ -825,7 +810,7 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
                     }
 
                     try {
-                        ia.activate(descriptor);
+                        activator.activate(descriptor);
                         // an escape hatch if we've been interrupted in some way
                         checkInterrupt(null, descriptor, null);
                     } catch (Exception e) {
@@ -834,7 +819,7 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
                 }
             }
             try {
-                ia.awaitCompletion(DEFAULT_ASYNC_WAIT, TimeUnit.MILLISECONDS);
+                activator.awaitCompletion(DEFAULT_ASYNC_WAIT, TimeUnit.MILLISECONDS);
             } catch (Exception e) {
                 checkInterrupt(e, null, null);
             }
@@ -850,8 +835,6 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
 
                 if (downRecorder != null) {
 
-                    Activator ia = getActivator();
-
                     ActiveDescriptor<?> descriptor;
                     while (!downRecorder.isEmpty()) {
                         descriptor = downRecorder.pop();
@@ -861,7 +844,7 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
                         }
 
                         try {
-                            ia.deactivate(descriptor);
+                            activator.deactivate(descriptor);
                             // asynchronously
                             checkInterrupt(null, descriptor, null);
                         } catch (Exception e) {
@@ -870,7 +853,7 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
                     }
 
                     try {
-                        ia.awaitCompletion();
+                        activator.awaitCompletion();
                     } catch (Exception e) {
                         checkInterrupt(e, null, null);
                     }
@@ -895,8 +878,8 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
         // records whether a cancel event was issued
         private boolean cancelIssued;
 
-        private SyncProceedToWorker(int runLevel) {
-            super(runLevel);
+        private SyncProceedToWorker(int runLevel, Activator activator) {
+            super(runLevel, activator);
         }
 
         /**
@@ -1032,8 +1015,8 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
         // record the future for the operation
         private Future<?> activeFuture;
 
-        private AsyncProceedToWorker(int runLevel) {
-            super(runLevel);
+        private AsyncProceedToWorker(int runLevel, Activator activator) {
+            super(runLevel, activator);
         }
 
         /**
