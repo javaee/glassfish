@@ -111,11 +111,12 @@ public class RunLevelServiceTest {
     }
 
     private void proceedToAndWait(RunLevelControllerImpl rlc, ServiceLocator locator, int runLevel) throws TimeoutException{
-//        TestListener listener = locator.getService(TestListener.class);
-//        synchronized (listener) {
             rlc.proceedTo(runLevel);
-//            listener.waitForRunLevel(runLevel, 10000);
-//        }
+    }
+    
+    private void proceedToAndWait(RunLevelControllerImpl rlc, ServiceLocator locator, int runLevel,
+            org.glassfish.hk2.runlevel.Activator activator) throws TimeoutException{
+        rlc.proceedTo(runLevel, activator);
     }
 
 
@@ -573,12 +574,12 @@ public class RunLevelServiceTest {
         assertNull(activator.getLastActivated());
         assertNull(activator.getLastDeactivated());
 
-        proceedToAndWait(rlc, locator, 5);
+        proceedToAndWait(rlc, locator, 5, activator);
 
         assertEquals(RunLevelControllerFive.class, activator.getLastActivated().getImplementationClass());
         assertNull(activator.getLastDeactivated());
 
-        proceedToAndWait(rlc, locator, 0);
+        proceedToAndWait(rlc, locator, 0, activator);
 
         assertEquals(RunLevelControllerFive.class, activator.getLastDeactivated().getImplementationClass());
     }
@@ -605,7 +606,7 @@ public class RunLevelServiceTest {
         assertNull(fooActivator.getLastActivated());
         assertNull(fooActivator.getLastDeactivated());
 
-        proceedToAndWait(rlc, locator, 5);
+        proceedToAndWait(rlc, locator, 5, fooActivator);
 
         assertNull(activator.getLastActivated());
         assertNull(activator.getLastDeactivated());
@@ -613,7 +614,7 @@ public class RunLevelServiceTest {
         assertEquals(FooRunLevelControllerFive.class, fooActivator.getLastActivated().getImplementationClass());
         assertNull(fooActivator.getLastDeactivated());
 
-        proceedToAndWait(rlc, locator, 0);
+        proceedToAndWait(rlc, locator, 0, fooActivator);
 
         assertNull(activator.getLastActivated());
         assertNull(activator.getLastDeactivated());
