@@ -215,7 +215,7 @@ import java.util.logging.Logger;
  * @author jtrent, tbeerbower
  */
 @Service
-public class RunLevelControllerImpl implements RunLevelController, Activator {
+public class RunLevelControllerImpl implements RunLevelController {
     /**
      * The default timeout in milliseconds (to wait for async service types).
      */
@@ -265,6 +265,8 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
 
     @Inject
     private Provider<RunLevelContext> contextProvider;
+    
+    private final Activator defaultActivator = new DefaultActivator();
 
     // used for eventing an {@link RunLevelListener}s
     private enum ListenerEvent {
@@ -345,45 +347,50 @@ public class RunLevelControllerImpl implements RunLevelController, Activator {
     }
 
     @Override
-    public void proceedTo(int runLevel, Activator activators) {
-        proceedTo(runLevel, false, activators);
+    public void proceedTo(int runLevel, Activator activator) {
+        proceedTo(runLevel, false, activator);
     }
     
     @Override
     public void proceedTo(int runLevel) {
-        proceedTo(runLevel, false, this);
+        proceedTo(runLevel, false, defaultActivator);
     }
 
     @Override
     public void interrupt() {
-        proceedTo(null, true, this);
+        proceedTo(null, true, defaultActivator);
+    }
+    
+    @Override
+    public Activator getDefaultActivator() {
+        return defaultActivator;
     }
 
+    private class DefaultActivator implements Activator {
 
-    // ----- Activator ------------------------------------------------------
-
-    @Override
-    public void activate(ActiveDescriptor<?> descriptor) {
-        ServiceHandle serviceHandle = serviceLocator.getServiceHandle(descriptor);
-        serviceLocator.reifyDescriptor( descriptor );
-        if ( ! serviceHandle.isActive() ) {
-          serviceHandle.getService();
+        @Override
+        public void activate(ActiveDescriptor<?> descriptor) {
+            ServiceHandle serviceHandle = serviceLocator.getServiceHandle(descriptor);
+            serviceLocator.reifyDescriptor( descriptor );
+            if ( ! serviceHandle.isActive() ) {
+                serviceHandle.getService();
+            }
         }
-    }
 
-    @Override
-    public void deactivate(ActiveDescriptor<?> descriptor) {
-        contextProvider.get().deactivate(descriptor);
-    }
+        @Override
+        public void deactivate(ActiveDescriptor<?> descriptor) {
+            contextProvider.get().deactivate(descriptor);
+        }
 
-    @Override
-    public void awaitCompletion()
+        @Override
+        public void awaitCompletion()
             throws InterruptedException, ExecutionException, TimeoutException {
-    }
+        }
 
-    @Override
-    public void awaitCompletion(long timeout, TimeUnit unit)
+        @Override
+        public void awaitCompletion(long timeout, TimeUnit unit)
             throws InterruptedException, TimeoutException, ExecutionException {
+        }
     }
 
 

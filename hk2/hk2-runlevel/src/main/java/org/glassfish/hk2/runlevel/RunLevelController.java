@@ -153,4 +153,14 @@ public interface RunLevelController {
      * @param descriptor  the descriptor
      */
     public void recordActivation(ActiveDescriptor<?> descriptor);
+    
+    /**
+     * Returns the default activator which can be used to properly activate
+     * and deactivate run-level services
+     * 
+     * @return The default activator for this run-level controller, which
+     * can be used by user activators to customize the behavior of activation
+     * or deactivation.  May not return null
+     */
+    public Activator getDefaultActivator();
 }

@@ -48,6 +48,7 @@ import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelControllerIndicator;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.Sorter;
+import org.glassfish.hk2.runlevel.utilities.RunLevelControllerImpl;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -55,13 +56,11 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.runlevel.utilities.RunLevelControllerImpl;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Contract;
-// import org.jvnet.hk2.annotations.Priority;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.annotation.PreDestroy;
@@ -74,7 +73,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
@@ -110,11 +108,11 @@ public class RunLevelServiceTest {
         config.commit();
     }
 
-    private void proceedToAndWait(RunLevelControllerImpl rlc, ServiceLocator locator, int runLevel) throws TimeoutException{
+    private void proceedToAndWait(RunLevelController rlc, ServiceLocator locator, int runLevel) throws TimeoutException{
             rlc.proceedTo(runLevel);
     }
     
-    private void proceedToAndWait(RunLevelControllerImpl rlc, ServiceLocator locator, int runLevel,
+    private void proceedToAndWait(RunLevelController rlc, ServiceLocator locator, int runLevel,
             org.glassfish.hk2.runlevel.Activator activator) throws TimeoutException{
         rlc.proceedTo(runLevel, activator);
     }
@@ -132,7 +130,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerNegOne.class,
                 RunLevelControllerOne.class});
 
-        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
+        RunLevelController rlc = locator.getService(RunLevelController.class);
 
         ServiceHandle<RunLevelControllerNegOne> serviceHandleNegOne = locator.getServiceHandle(RunLevelControllerNegOne.class);
         assertNotNull(serviceHandleNegOne);
@@ -155,8 +153,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerNegOne.class,
                 RunLevelControllerOne.class});
 
-        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
-
+        RunLevelController rlc = locator.getService(RunLevelController.class);
 
         final Filter filter = new Filter() {
             @Override
@@ -187,7 +184,7 @@ public class RunLevelServiceTest {
                 RunLevelControllerNegOne.class,
                 RunLevelControllerOne.class});
 
-        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
+        RunLevelController rlc = locator.getService(RunLevelController.class);
 
         try {
             proceedToAndWait(rlc, locator, -2);
@@ -968,7 +965,7 @@ public class RunLevelServiceTest {
         ActiveDescriptor lastActivated = null;
         ActiveDescriptor lastDeactivated = null;
 
-        protected abstract RunLevelControllerImpl getRunLevelController();
+        protected abstract RunLevelController getRunLevelController();
 
         public ActiveDescriptor getLastActivated() {
             return lastActivated;
@@ -980,24 +977,24 @@ public class RunLevelServiceTest {
 
         @Override
         public void activate(ActiveDescriptor<?> activeDescriptor) {
-            getRunLevelController().activate(activeDescriptor);
+            getRunLevelController().getDefaultActivator().activate(activeDescriptor);
             lastActivated = activeDescriptor;
         }
 
         @Override
         public void deactivate(ActiveDescriptor<?> activeDescriptor) {
-            getRunLevelController().deactivate(activeDescriptor);
+            getRunLevelController().getDefaultActivator().deactivate(activeDescriptor);
             lastDeactivated = activeDescriptor;
         }
 
         @Override
         public void awaitCompletion() throws ExecutionException, InterruptedException, TimeoutException {
-            getRunLevelController().awaitCompletion();
+            getRunLevelController().getDefaultActivator().awaitCompletion();
         }
 
         @Override
         public void awaitCompletion(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException {
-            getRunLevelController().awaitCompletion(timeout, unit);
+            getRunLevelController().getDefaultActivator().awaitCompletion(timeout, unit);
         }
     }
 
