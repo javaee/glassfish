@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -192,8 +192,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testDeleteResourceRefInCluster";
         AsadminReturn result = asadminWithOutput(DELETE_RESOURCE_REF,TARGET_OPTION, CLUSTER_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
+        reportExpectedResult(testName, result, "resource-ref resource-1 deleted successfully.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
@@ -201,8 +201,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testDeleteResourceRefInStandaloneInstance";
         AsadminReturn result = asadminWithOutput(DELETE_RESOURCE_REF,TARGET_OPTION, STANDALONE_INSTANCE_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
+        reportExpectedResult(testName, result, "resource-ref resource-1 deleted successfully.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
         reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
@@ -210,8 +210,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testDeleteResourceRefInServer";
         AsadminReturn result = asadminWithOutput(DELETE_RESOURCE_REF,TARGET_OPTION, SERVER, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, SERVER );
+        reportExpectedResult(testName, result, "resource-ref resource-1 deleted successfully.");
+        //reportExpectedResult(testName, result, SERVER );
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
@@ -219,8 +219,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testCreateResourceRefInCluster";
         AsadminReturn result = asadminWithOutput(CREATE_RESOURCE_REF,TARGET_OPTION, CLUSTER_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
+        reportExpectedResult(testName, result, "resource-ref resource-1 created successfully.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
@@ -228,8 +228,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testCreateResourceRefInStandaloneInstance";
         AsadminReturn result = asadminWithOutput(CREATE_RESOURCE_REF,TARGET_OPTION, STANDALONE_INSTANCE_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
+        reportExpectedResult(testName, result, "resource-ref resource-1 created successfully.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
         reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
@@ -237,8 +237,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testCreateResourceRefInServer";
         AsadminReturn result = asadminWithOutput(CREATE_RESOURCE_REF,TARGET_OPTION, SERVER, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, SERVER );
+        reportExpectedResult(testName, result, "resource-ref resource-1 created successfully.");
+        //reportExpectedResult(testName, result, SERVER );
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
@@ -246,8 +246,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testDeleteCustomResourceInDomain";
         AsadminReturn result = asadminWithOutput(DELETE_CUSTOM_RESOURCE,TARGET_OPTION, DOMAIN, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command delete-custom-resource executed successfully.");
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME, DOMAIN);
+        reportExpectedResult(testName, result, "Custom resource resource-1 deleted.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME, DOMAIN);
         //reportUnexpectedResult(testName, result, CLUSTER_NAME);
     }
 
@@ -256,8 +256,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         AsadminReturn result = asadminWithOutput(DELETE_CUSTOM_RESOURCE,TARGET_OPTION, STANDALONE_INSTANCE_NAME,
                 RESOURCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
-        //reportExpectedResult(testName, result, "Command delete-custom-resource executed successfully.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
+        reportExpectedResult(testName, result, "Custom resource resource-1 deleted.");
         reportUnexpectedResult(testName, result, SERVER, CLUSTER_NAME);
     }
 
@@ -265,8 +265,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
         String testName = "testDeleteCustomResourceInCluster";
         AsadminReturn result = asadminWithOutput(DELETE_CUSTOM_RESOURCE,TARGET_OPTION, CLUSTER_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME, STANDALONE_INSTANCE_NAME);
-        //reportExpectedResult(testName, result, "Command delete-custom-resource executed successfully.");
+        //reportExpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME, STANDALONE_INSTANCE_NAME);
+        reportExpectedResult(testName, result, "Custom resource resource-1 deleted.");
         reportUnexpectedResult(testName, result, SERVER);
     }
 
@@ -275,9 +275,9 @@ public class CustomResourceTest extends AdminBaseDevTest {
         AsadminReturn result = asadminWithOutput(DELETE_CUSTOM_RESOURCE,RESOURCE_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
-        //reportExpectedResult(testName, result, "Command delete-custom-resource executed successfully.");
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,
-                STANDALONE_INSTANCE_NAME);
+        reportExpectedResult(testName, result, "Custom resource resource-1 deleted.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,
+        //        STANDALONE_INSTANCE_NAME);
     }
 
     private void testCreateCustomResourceInDomain() {
@@ -289,9 +289,9 @@ public class CustomResourceTest extends AdminBaseDevTest {
                 TARGET_OPTION, DOMAIN,
                  RESOURCE_NAME);
         reportExpectedResult(testName, result);
-        //reportExpectedResult(testName, result, "Command create-custom-resource executed successfully.");
+        reportExpectedResult(testName, result, "Custom Resource resource-1 created.");
         //reportUnexpectedResult(testName, result, CLUSTER_NAME);
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME, DOMAIN);
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME, DOMAIN);
     }
 
 
@@ -304,8 +304,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
                 TARGET_OPTION, STANDALONE_INSTANCE_NAME,
                  RESOURCE_NAME);
         reportExpectedResult(testName, result);
-        //reportExpectedResult(testName, result, "Command create-custom-resource executed successfully.");
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
+        reportExpectedResult(testName, result, "Custom Resource resource-1 created.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
         reportUnexpectedResult(testName, result, CLUSTER_NAME);
 
     }
@@ -319,8 +319,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
                 TARGET_OPTION, CLUSTER_NAME,
                  RESOURCE_NAME);
         reportExpectedResult(testName, result);
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME);
-        //reportExpectedResult(testName, result, "Command create-custom-resource executed successfully.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME);
+        reportExpectedResult(testName, result, "Custom Resource resource-1 created.");
         //reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
@@ -333,8 +333,8 @@ public class CustomResourceTest extends AdminBaseDevTest {
                         TARGET_OPTION, SERVER,
                         RESOURCE_NAME);
         reportExpectedResult(testName, result);
-        //reportExpectedResult(testName, result, "Command create-custom-resource executed successfully.");
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
+        reportExpectedResult(testName, result, "Custom Resource resource-1 created.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
         reportUnexpectedResult(testName, result, CLUSTER_NAME);
     }
 

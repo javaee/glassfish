@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -255,8 +255,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testDeleteResourceRefInCluster";
         AsadminReturn result = asadminWithOutput(DELETE_RESOURCE_REF,TARGET_OPTION, CLUSTER_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
+        reportExpectedResult(testName, result, "resource-ref resource-1 deleted successfully.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
@@ -264,8 +264,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testDeleteResourceRefInStandaloneInstance";
         AsadminReturn result = asadminWithOutput(DELETE_RESOURCE_REF,TARGET_OPTION, STANDALONE_INSTANCE_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
+        reportExpectedResult(testName, result, "resource-ref resource-1 deleted successfully.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
         reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
@@ -273,8 +273,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testDeleteResourceRefInServer";
         AsadminReturn result = asadminWithOutput(DELETE_RESOURCE_REF,TARGET_OPTION, SERVER, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, SERVER );
+        reportExpectedResult(testName, result, "resource-ref resource-1 deleted successfully.");
+        //reportExpectedResult(testName, result, SERVER );
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
@@ -282,8 +282,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testCreateResourceRefInCluster";
         AsadminReturn result = asadminWithOutput(CREATE_RESOURCE_REF,TARGET_OPTION, CLUSTER_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
+        reportExpectedResult(testName, result, "resource-ref resource-1 created successfully.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
@@ -291,8 +291,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testCreateResourceRefInStandaloneInstance";
         AsadminReturn result = asadminWithOutput(CREATE_RESOURCE_REF,TARGET_OPTION, STANDALONE_INSTANCE_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
+        reportExpectedResult(testName, result, "resource-ref resource-1 created successfully.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME );
         reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
@@ -300,8 +300,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testCreateResourceRefInServer";
         AsadminReturn result = asadminWithOutput(CREATE_RESOURCE_REF,TARGET_OPTION, SERVER, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
-        reportExpectedResult(testName, result, SERVER );
+        reportExpectedResult(testName, result, "resource-ref resource-1 created successfully.");
+        //reportExpectedResult(testName, result, SERVER );
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
@@ -309,8 +309,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testDeleteAdminObjectInClusterConfig";
         AsadminReturn result = asadminWithOutput(DELETE_ADMIN_OBJECT,TARGET_OPTION, CLUSTER_CONFIG_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        //reportExpectedResult(testName, result, "Command delete-admin-object executed successfully.");
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME, CLUSTER_CONFIG_NAME);
+        reportExpectedResult(testName, result, "Administered object resource-1 deleted.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME, CLUSTER_CONFIG_NAME);
         //reportUnexpectedResult(testName, result, CLUSTER_NAME);
     }
 
@@ -319,8 +319,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         AsadminReturn result = asadminWithOutput(DELETE_ADMIN_OBJECT,TARGET_OPTION, STANDALONE_INSTANCE_NAME,
                 RESOURCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
-        //reportExpectedResult(testName, result, "Command delete-admin-object executed successfully.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
+        reportExpectedResult(testName, result, "Administered object resource-1 deleted.");
         reportUnexpectedResult(testName, result, SERVER, CLUSTER_NAME);
     }
 
@@ -328,8 +328,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
         String testName = "testDeleteAdminObjectInCluster";
         AsadminReturn result = asadminWithOutput(DELETE_ADMIN_OBJECT,TARGET_OPTION, CLUSTER_NAME, RESOURCE_NAME);
         reportResultStatus(testName, result);
-        reportExpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME, STANDALONE_INSTANCE_NAME);
-        //reportExpectedResult(testName, result, "Command delete-admin-object executed successfully.");
+        //reportExpectedResult(testName, result, INSTANCE1_NAME, INSTANCE2_NAME, STANDALONE_INSTANCE_NAME);
+        reportExpectedResult(testName, result, "Administered object resource-1 deleted.");
         reportUnexpectedResult(testName, result, SERVER);
     }
 
@@ -338,9 +338,9 @@ public class AdminObjectTest extends AdminBaseDevTest {
         AsadminReturn result = asadminWithOutput(DELETE_ADMIN_OBJECT,RESOURCE_NAME);
         reportResultStatus(testName, result);
         reportExpectedResult(testName, result);
-        //reportExpectedResult(testName, result, "Command delete-admin-object executed successfully.");
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,
-                STANDALONE_INSTANCE_NAME);
+        reportExpectedResult(testName, result, "Administered object resource-1 deleted.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,
+          //      STANDALONE_INSTANCE_NAME);
     }
 
     private void testCreateAdminObjectInDomain() {
@@ -351,9 +351,9 @@ public class AdminObjectTest extends AdminBaseDevTest {
                 TARGET_OPTION, CLUSTER_CONFIG_NAME,
                  RESOURCE_NAME);
         reportExpectedResult(testName, result);
-        //reportExpectedResult(testName, result, "Command create-admin-object executed successfully.");
+        reportExpectedResult(testName, result, "Administered object resource-1 created.");
         //reportUnexpectedResult(testName, result, CLUSTER_NAME);
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME, CLUSTER_CONFIG_NAME);
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME, CLUSTER_CONFIG_NAME);
     }
 
 
@@ -365,8 +365,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
                 TARGET_OPTION, STANDALONE_INSTANCE_NAME,
                  RESOURCE_NAME);
         reportExpectedResult(testName, result);
-        //reportExpectedResult(testName, result, "Command create-admin-object executed successfully.");
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
+        reportExpectedResult(testName, result, "Administered object resource-1 created.");
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME);
         reportUnexpectedResult(testName, result, CLUSTER_NAME);
 
     }
@@ -379,9 +379,9 @@ public class AdminObjectTest extends AdminBaseDevTest {
                 TARGET_OPTION, CLUSTER_NAME,
                  RESOURCE_NAME);
         reportExpectedResult(testName, result);
-        reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME);
-        //reportExpectedResult(testName, result, "Command create-admin-object executed successfully.");
-        //reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
+        //reportExpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME, STANDALONE_INSTANCE_NAME);
+        reportExpectedResult(testName, result, "Administered object resource-1 created.");
+        reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
     private void testCreateAdminObjectInServer() {
@@ -392,8 +392,8 @@ public class AdminObjectTest extends AdminBaseDevTest {
                 TARGET_OPTION, SERVER,
                  RESOURCE_NAME);
         reportExpectedResult(testName, result);
-        //reportExpectedResult(testName, result, "Command create-admin-object executed successfully.");
-        reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
+        reportExpectedResult(testName, result, "Administered object resource-1 created.");
+        //reportExpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE1_NAME, INSTANCE2_NAME);
         reportUnexpectedResult(testName, result, CLUSTER_NAME);
     }
 
