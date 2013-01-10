@@ -39,7 +39,7 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.internal.api.Globals;
-import org.jvnet.hk2.component.Habitat;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -162,51 +162,51 @@ public class ResourcesTestActivator implements BundleActivator {
     }
 
     private void setAttribute(String nameValue){
-        Habitat habitat = Globals.getDefaultHabitat();
+        ServiceLocator habitat = Globals.getDefaultHabitat();
         CommandRunner cr = habitat.getService(CommandRunner.class);
         ActionReport ar = habitat.getService(ActionReport.class);
         ParameterMap params = new ParameterMap();
         params.add("DEFAULT", nameValue);
-        cr.getCommandInvocation("set", ar).parameters(params).execute();
+        cr.getCommandInvocation("set", ar, null).parameters(params).execute();
     }
 
 
     private void deleteJmsResource(String resourceName) {
-        Habitat habitat = Globals.getDefaultHabitat();
+        ServiceLocator habitat = Globals.getDefaultHabitat();
         CommandRunner cr = habitat.getService(CommandRunner.class);
         ActionReport ar = habitat.getService(ActionReport.class);
         ParameterMap params = new ParameterMap();
         params.add("DEFAULT", resourceName);
-        cr.getCommandInvocation("delete-jms-resource", ar).parameters(params).execute();
+        cr.getCommandInvocation("delete-jms-resource", ar, null).parameters(params).execute();
     }
 
     private void createJmsResource(String resourceName, String resourceType) {
-        Habitat habitat = Globals.getDefaultHabitat();
+        ServiceLocator habitat = Globals.getDefaultHabitat();
         CommandRunner cr = habitat.getService(CommandRunner.class);
         ActionReport ar = habitat.getService(ActionReport.class);
         ParameterMap params = new ParameterMap();
         params.add("resType", resourceType);
         params.add("DEFAULT", resourceName);
-        cr.getCommandInvocation("create-jms-resource", ar).parameters(params).execute();
+        cr.getCommandInvocation("create-jms-resource", ar, null).parameters(params).execute();
     }
 
     private void deleteJdbcResource(String resourceName) {
-        Habitat habitat = Globals.getDefaultHabitat();
+        ServiceLocator habitat = Globals.getDefaultHabitat();
         CommandRunner cr = habitat.getService(CommandRunner.class);
         ActionReport ar = habitat.getService(ActionReport.class);
         ParameterMap params = new ParameterMap();
         params.add("DEFAULT", resourceName);
-        cr.getCommandInvocation("delete-jdbc-resource", ar).parameters(params).execute();
+        cr.getCommandInvocation("delete-jdbc-resource", ar, null).parameters(params).execute();
     }
 
     private void createJdbcResource(String resourceName) {
-        Habitat habitat = Globals.getDefaultHabitat();
+        ServiceLocator habitat = Globals.getDefaultHabitat();
         CommandRunner cr = habitat.getService(CommandRunner.class);
         ActionReport ar = habitat.getService(ActionReport.class);
         ParameterMap params = new ParameterMap();
         params.add("poolName", "DerbyPool");
         params.add("DEFAULT", resourceName);
-        cr.getCommandInvocation("create-jdbc-resource", ar).parameters(params).execute();
+        cr.getCommandInvocation("create-jdbc-resource", ar, null).parameters(params).execute();
     }
 
 
