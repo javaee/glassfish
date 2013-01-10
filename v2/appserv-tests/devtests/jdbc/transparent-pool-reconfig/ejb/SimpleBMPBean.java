@@ -122,10 +122,10 @@ public class SimpleBMPBean implements EntityBean {
     }
 
     private static ActionReport runCommand(String commandName, ParameterMap parameters) {
-        ServiceLocator habitat = Globals.getDefaultHabitat();
-        CommandRunner cr = habitat.getService(CommandRunner.class);
-        ActionReport ar = habitat.getService(ActionReport.class);
-        cr.getCommandInvocation(commandName, ar).parameters(parameters).execute();
+        ServiceLocator serviceLocator = Globals.getDefaultHabitat();
+        CommandRunner cr = serviceLocator.getService(CommandRunner.class);
+        ActionReport ar = serviceLocator.getService(ActionReport.class);
+        cr.getCommandInvocation(commandName, ar, null).parameters(parameters).execute();
         return ar;
     }
 }
