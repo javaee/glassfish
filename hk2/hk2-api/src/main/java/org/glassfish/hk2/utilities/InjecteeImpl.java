@@ -136,6 +136,7 @@ public class InjecteeImpl implements Injectee, Serializable {
      */
     @Override
     public Set<Annotation> getRequiredQualifiers() {
+        if (qualifiers == null) return Collections.emptySet();
         return qualifiers;
     }
     

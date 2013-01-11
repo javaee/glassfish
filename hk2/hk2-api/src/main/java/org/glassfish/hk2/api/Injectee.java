@@ -85,7 +85,9 @@ public interface Injectee {
     
     /**
      * Returns the parent class for this injectee.  This is the
-     * class of the object that will be injected into.
+     * class of the object that will be injected into.  This
+     * field may return null if this is from a lookup
+     * with {@link ServiceLocator#getInjecteeDescriptor(Injectee)}.
      * 
      * @return The class of the object that will be injected into
      */
@@ -96,9 +98,11 @@ public interface Injectee {
      * constructor being injected into.  If this Injectee is in a
      * method this will return the method being injected into.  If this
      * injectee represents a field, this will return the field being
-     * injected into
+     * injected into.  This injectee may be neither (it may be
+     * the result of a lookup with {@link ServiceLocator#getInjecteeDescriptor(Injectee)})
+     * in which case this will return null.
      * 
-     * @return The parent of the injectee
+     * @return The parent of the injectee, which may be null
      */
     public AnnotatedElement getParent();
     

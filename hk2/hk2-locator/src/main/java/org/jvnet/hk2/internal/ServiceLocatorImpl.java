@@ -71,6 +71,7 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
+import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.Operation;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.IterableProvider;
@@ -374,13 +375,71 @@ public class ServiceLocatorImpl implements ServiceLocator {
         checkState();
         return reifyDescriptor(descriptor, null);
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ServiceLocator#getInjecteeDescriptor(org.glassfish.hk2.api.Injectee)
-     */
-    @Override
-    public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee)
-            throws MultiException {
+    
+    private ActiveDescriptor<?> secondChanceResolve(Injectee injectee) {
+        // OK, lets do the second chance protocol
+        Collector collector = new Collector();
+        
+        List<ServiceHandle<JustInTimeInjectionResolver>> jitResolvers =
+                Utilities.<List<ServiceHandle<JustInTimeInjectionResolver>>>cast(
+                getAllServiceHandles(JustInTimeInjectionResolver.class));
+        
+        try {
+            boolean modified = false;
+            boolean aJITFailed = false;
+            for (ServiceHandle<JustInTimeInjectionResolver> handle : jitResolvers) {
+                if ((injectee.getInjecteeClass() != null) && (
+                        injectee.getInjecteeClass().getName().equals(
+                        handle.getActiveDescriptor().getImplementation()))) {
+                    // Do not self second-chance
+                    continue; 
+                }
+                
+                JustInTimeInjectionResolver jitResolver;
+                try {
+                    jitResolver = handle.getService();
+                }
+                catch (MultiException me) {
+                    // We just ignore this for now, it may be resolvable later
+                    Logger.getLogger().debug(handle.toString(), "secondChanceResolver", me);
+                    continue;
+                }
+                
+                boolean jitModified = false;
+                try {
+                    jitModified = jitResolver.justInTimeResolution(injectee);
+                }
+                catch (Throwable th) {
+                    collector.addThrowable(th);
+                    aJITFailed = true;
+                }
+                
+                modified = jitModified || modified;
+            }
+            
+            if (aJITFailed) {
+                collector.throwIfErrors();
+            }
+            
+            if (!modified) {
+                return null;
+            }
+            
+            // Try again
+            return internalGetInjecteeDescriptor(injectee, false);
+        }
+        finally {
+            for (ServiceHandle<JustInTimeInjectionResolver> jitResolver : jitResolvers) {
+                if (jitResolver.getActiveDescriptor().getScope() == null ||
+                        PerLookup.class.getName().equals(jitResolver.getActiveDescriptor().getScope())) {
+                    // Destroy any per-lookup JIT resolver
+                    jitResolver.destroy();
+                }
+            }
+        }
+    }
+    
+    private ActiveDescriptor<?> internalGetInjecteeDescriptor(Injectee injectee, boolean firstTime) {
         if (injectee == null) throw new IllegalArgumentException();
         checkState();
         
@@ -406,7 +465,20 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
         
         ActiveDescriptor<?> retVal = internalGetDescriptor(injectee, requiredType, name, injectee.getUnqualified(), qualifiers);
+        if (retVal == null && firstTime) {
+            return secondChanceResolve(injectee);
+        }
         return retVal;
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getInjecteeDescriptor(org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee)
+            throws MultiException {
+        return internalGetInjecteeDescriptor(injectee, true);
     }
     
     /* (non-Javadoc)

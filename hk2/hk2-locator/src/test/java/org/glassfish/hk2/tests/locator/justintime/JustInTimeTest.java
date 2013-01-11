@@ -41,10 +41,13 @@ package org.glassfish.hk2.tests.locator.justintime;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
@@ -92,6 +95,18 @@ public class JustInTimeTest {
         ServiceLocatorUtilities.addOneDescriptor(locator, BuilderHelper.link(SimpleService3.class).build());
         
         Assert.assertNotNull(locator.getService(DoubleTroubleService.class));
+    }
+    
+    /**
+     * This test ensures that a direct lookup (with {@link ServiceLocator#getInjecteeDescriptor(org.glassfish.hk2.api.Injectee)})
+     * works properly
+     */
+    @Test
+    public void testJITInLookup() {
+        InjecteeImpl injectee = new InjecteeImpl(SimpleService.class);
+        
+        ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
+        Assert.assertNotNull(ad);
     }
 
 }
