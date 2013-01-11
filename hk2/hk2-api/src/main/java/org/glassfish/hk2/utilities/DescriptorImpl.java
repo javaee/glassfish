@@ -79,7 +79,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
     private final static String METADATA_KEY = "metadata=";
     private final static String RANKING_KEY = "rank=";
     private final static String PROXIABLE_KEY = "proxiable=";
-    private final static String FACTORY_DT = "FACTORY";
+    private final static String PROVIDE_METHOD_DT = "PROVIDE";
     private final static String LOCAL_DT = "LOCAL";
     private final static String START_START = "[";
     private final static String END_START = "]";
@@ -650,7 +650,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
         }
         
         if (descriptorType != null && descriptorType.equals(DescriptorType.PROVIDE_METHOD)) {
-            out.println(TYPE_KEY + FACTORY_DT);
+            out.println(TYPE_KEY + PROVIDE_METHOD_DT);
         }
         
         if (descriptorVisibility != null && descriptorVisibility.equals(DescriptorVisibility.LOCAL)) {
@@ -732,7 +732,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
                         scope = rightHandSide;
                     }
                     else if (leftHandSide.equals(TYPE_KEY)) {
-                        if (rightHandSide.equals(FACTORY_DT)) {
+                        if (rightHandSide.equals(PROVIDE_METHOD_DT)) {
                             descriptorType = DescriptorType.PROVIDE_METHOD;
                         }
                     }

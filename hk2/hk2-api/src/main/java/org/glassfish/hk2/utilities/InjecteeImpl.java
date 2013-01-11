@@ -72,9 +72,9 @@ public class InjecteeImpl implements Injectee, Serializable {
     private int position;
     private Class<?> pClass;
     private AnnotatedElement parent;
-    private boolean isOptional;
-    private boolean isSelf;
-    private Unqualified unqualified;
+    private boolean isOptional = false;
+    private boolean isSelf = false;
+    private Unqualified unqualified = null;
     
     /**
      * None of the fields of the returned object will be set
@@ -234,7 +234,7 @@ public class InjecteeImpl implements Injectee, Serializable {
      * @param self true if this is a self-referencing Injectee, and false otherwise
      */
     public void setSelf(boolean self) {
-        
+        isSelf = self;
     }
 
     /* (non-Javadoc)
