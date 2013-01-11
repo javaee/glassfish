@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,45 +39,39 @@
  */
 package org.glassfish.hk2.tests.locator.justintime;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 /**
+ * This service is added during a lookup operation as opposed to being
+ * from an actual injection point
+ * 
  * @author jwells
  *
  */
-public class JustInTimeModule implements TestModule {
+@Singleton
+public class SimpleService4JITResolver implements JustInTimeInjectionResolver {
+    @Inject
+    private ServiceLocator locator;
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Injectee)
      */
     @Override
-    public void configure(DynamicConfiguration configurator) {
-        // Whoops, I forgot to add my service here
-        // Lucky for me, I can add it with my just
-        // in time resolver:
-        configurator.bind(BuilderHelper.link(
-                SimpleServiceJITResolver.class).to(JustInTimeInjectionResolver.class).in(Singleton.class.getName()).build());
+    public boolean justInTimeResolution(Injectee failedInjectionPoint) {
+        if (!SimpleService4.class.equals(failedInjectionPoint.getRequiredType()))
+                return false;
         
-        configurator.bind(BuilderHelper.link(
-                InjectedThriceService.class).in(Singleton.class.getName()).build());
-        
-        // This next set is for the DoubleTrouble resolver, which has its own resolution issues
-        configurator.bind(BuilderHelper.link(
-                DoubleTroubleJITResolver.class).to(JustInTimeInjectionResolver.class).in(Singleton.class.getName()).build());
-        
-        configurator.bind(BuilderHelper.link(
-                DoubleTroubleService.class).in(Singleton.class.getName()).build());
-        
-        // This JIT resolver is for the lookup case
-        configurator.bind(BuilderHelper.link(SimpleServiceJITResolver.class).
-                to(JustInTimeInjectionResolver.class).
-                in(Singleton.class.getName()).
-                build());
+        Descriptor d = BuilderHelper.link(SimpleService4.class).build();
+        ServiceLocatorUtilities.addOneDescriptor(locator, d);
+        return true;
     }
 
 }

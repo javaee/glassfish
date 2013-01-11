@@ -39,20 +39,15 @@
  */
 package org.jvnet.hk2.internal;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.UnsatisfiedDependencyException;
-import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
  * @author jwells
@@ -65,79 +60,6 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
     /* package */ ThreeThirtyResolver(ServiceLocatorImpl locator) {
         this.locator = locator;
     }
-    
-    private Object secondChanceResolve(Injectee injectee, ServiceHandle<?> root) {
-        // OK, lets do the second chance protocol
-        Collector collector = new Collector();
-        collector.addThrowable(new UnsatisfiedDependencyException(injectee));
-        
-        List<ServiceHandle<JustInTimeInjectionResolver>> jitResolvers =
-                Utilities.<List<ServiceHandle<JustInTimeInjectionResolver>>>cast(
-                locator.getAllServiceHandles(JustInTimeInjectionResolver.class));
-        
-        try {
-            boolean modified = false;
-            boolean aJITFailed = false;
-            for (ServiceHandle<JustInTimeInjectionResolver> handle : jitResolvers) {
-                if (injectee.getInjecteeClass().getName().equals(
-                        handle.getActiveDescriptor().getImplementation())) {
-                    // Do not self second-chance
-                    continue; 
-                }
-                
-                JustInTimeInjectionResolver jitResolver;
-                try {
-                    jitResolver = handle.getService();
-                }
-                catch (MultiException me) {
-                    // We just ignore this for now, it may be resolvable later
-                    Logger.getLogger().debug(handle.toString(), "secondChanceResolver", me);
-                    continue;
-                }
-                
-                boolean jitModified = false;
-                try {
-                    jitModified = jitResolver.justInTimeResolution(injectee);
-                }
-                catch (Throwable th) {
-                    collector.addThrowable(th);
-                    aJITFailed = true;
-                }
-                
-                modified = jitModified || modified;
-            }
-            
-            if (aJITFailed) {
-                collector.throwIfErrors();
-            }
-            
-            if (!modified) {
-                if (injectee.isOptional()) return null;
-                
-                collector.throwIfErrors();
-            }
-            
-            // Try again
-            ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
-            
-            if (ad == null) {
-                if (injectee.isOptional()) return null;
-                
-                collector.throwIfErrors();
-            }
-            
-            return locator.getService(ad, root, injectee);  
-        }
-        finally {
-            for (ServiceHandle<JustInTimeInjectionResolver> jitResolver : jitResolvers) {
-                if (jitResolver.getActiveDescriptor().getScope() == null ||
-                        PerLookup.class.getName().equals(jitResolver.getActiveDescriptor().getScope())) {
-                    // Destroy any per-lookup JIT resolver
-                    jitResolver.destroy();
-                }
-            }
-        }
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
@@ -147,7 +69,9 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
         ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
         
         if (ad == null) {
-            return secondChanceResolve(injectee, root);
+            if (injectee.isOptional()) return null;
+            
+            throw new MultiException(new UnsatisfiedDependencyException(injectee));
         }
         
         return locator.getService(ad, root, injectee);
