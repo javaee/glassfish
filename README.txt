@@ -58,6 +58,10 @@ Last updated: 8/14/2012 by romain.grecourt@oracle.com
 
 	Documentation resources (online help, etc.) for the GlassFish project.
 
+- main-docs-l10n
+
+	L10n documentation resources (online help, etc.) for the GlassFish project.
+
 
 - master-pom
 
