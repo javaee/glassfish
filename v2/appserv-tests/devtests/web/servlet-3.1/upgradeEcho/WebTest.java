@@ -80,7 +80,6 @@ public class WebTest {
                     reqStr += "Upgrade: echo" + CRLF;
                     reqStr += "Connection: Upgrade\r\n";
                     reqStr += "Content-type: application/x-www-form-urlencoded" + CRLF;
-                    reqStr += "Transfer-Encoding: chunked" + CRLF;
                     reqStr += CRLF;
                     output.write(reqStr.getBytes());
 
