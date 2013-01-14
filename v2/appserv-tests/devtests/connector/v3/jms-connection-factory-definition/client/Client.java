@@ -25,7 +25,6 @@ import javax.naming.InitialContext;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=NoTransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 ),
 
@@ -37,7 +36,6 @@ import javax.naming.InitialContext;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 ),
 
@@ -49,7 +47,6 @@ import javax.naming.InitialContext;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=NoTransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 ),
 
@@ -61,7 +58,6 @@ import javax.naming.InitialContext;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 ),
 
@@ -73,7 +69,6 @@ import javax.naming.InitialContext;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=LocalTransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 )
         }

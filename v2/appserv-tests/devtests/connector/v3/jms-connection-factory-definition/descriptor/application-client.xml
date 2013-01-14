@@ -15,7 +15,6 @@
             <name>org.glassfish.connector-connection-pool.transaction-support</name>
             <value>XATransaction</value>
         </property>
-        <initial-pool-size>0</initial-pool-size>
         <min-pool-size>0</min-pool-size>
     </jms-connection-factory>
 
@@ -30,7 +29,6 @@
             <name>org.glassfish.connector-connection-pool.transaction-support</name>
             <value>XATransaction</value>
         </property>
-        <initial-pool-size>0</initial-pool-size>
         <min-pool-size>0</min-pool-size>
     </jms-connection-factory>
 
@@ -45,7 +43,6 @@
             <name>org.glassfish.connector-connection-pool.transaction-support</name>
             <value>NoTransaction</value>
         </property>
-        <initial-pool-size>0</initial-pool-size>
         <min-pool-size>0</min-pool-size>
     </jms-connection-factory>
 
@@ -60,7 +57,6 @@
             <name>org.glassfish.connector-connection-pool.transaction-support</name>
             <value>LocalTransaction</value>
         </property>
-        <initial-pool-size>0</initial-pool-size>
         <min-pool-size>0</min-pool-size>
     </jms-connection-factory>
 
@@ -75,7 +71,6 @@
             <name>org.glassfish.connector-connection-pool.transaction-support</name>
             <value>LocalTransaction</value>
         </property>
-        <initial-pool-size>0</initial-pool-size>
         <min-pool-size>0</min-pool-size>
     </jms-connection-factory>
 

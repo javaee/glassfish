@@ -37,7 +37,6 @@ import javax.transaction.UserTransaction;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=NoTransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 ),
 
@@ -49,7 +48,6 @@ import javax.transaction.UserTransaction;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 ),
 
@@ -61,7 +59,6 @@ import javax.transaction.UserTransaction;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 ),
 
@@ -73,7 +70,6 @@ import javax.transaction.UserTransaction;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 ),
 
@@ -85,7 +81,6 @@ import javax.transaction.UserTransaction;
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},
-                        initialPoolSize = 0,
                         minPoolSize = 0
                 )
 
