@@ -85,6 +85,7 @@ public class WebTest {
                     output.flush();
                     output.close();
                 } catch(Exception ex) {
+                    ex.printStackTrace();
                 }
                 input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String line = null;
