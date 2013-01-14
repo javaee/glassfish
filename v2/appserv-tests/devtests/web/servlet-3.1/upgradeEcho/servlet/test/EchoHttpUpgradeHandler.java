@@ -103,6 +103,7 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             try {
                 StringBuilder sb = new StringBuilder();
                 System.out.println("--> onDataAvailable");
+                System.out.println("#### Thread.currentThread.getContextClassloader(): " + Thread.currentThread().getContextClassLoader());
                 int len = -1;
                 byte b[] = new byte[1024];
                 while (input.isReady()

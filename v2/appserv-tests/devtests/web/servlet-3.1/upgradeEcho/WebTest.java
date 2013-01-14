@@ -100,8 +100,8 @@ public class WebTest {
                 while ((len = input.read(b)) != -1) {
                     String line = new String(b, 0, len);
                     sb.append(line);
-                    System.out.println(line);
                     counter++;
+                    System.out.println(line+" counter="+counter);
                     if(counter >= 2) {
                         break;
                     }
