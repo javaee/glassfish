@@ -15,6 +15,7 @@
 
     <target name="all">
         <antcall target="setup"/>
+        <antcall target="Annotation"/>
         <antcall target="DefaultConnectionFactory"/>
         <antcall target="Injection"/>
         <antcall target="JMSXDeliveryCount"/>
@@ -44,6 +45,12 @@
         </delete>
         <record name="jms.output" action="start" />
 
+    </target>
+
+    <target name="Annotation">
+        <record name="Annotation.output" action="start" />
+            <ant dir="annotation" target="all"/>
+        <record name="Annotation.output" action="stop" />
     </target>
 
     <target name="Injection">
