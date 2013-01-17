@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -63,14 +63,6 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             ServletOutputStream output = wc.getOutputStream();
             ReadListenerImpl readListener = new ReadListenerImpl(delimiter, input, output);
             input.setReadListener(readListener);
-
-            int b = -1;
-            while (input.isReady() && ((b = input.read()) != -1)) {
-                System.out.print((char)b);
-                output.write(b);
-            }
-            output.flush();
-
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }

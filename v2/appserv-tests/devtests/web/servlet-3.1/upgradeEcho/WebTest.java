@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,25 +88,25 @@ public class WebTest {
                     System.out.format("Sleeping %d sec\n", sleepInSeconds);
                     Thread.sleep(sleepInSeconds * 1000);
                     writeChunk(output, "World");
-                    writeChunk(output, null);
                 } catch(Exception ex) {
+                    ex.printStackTrace();
                 }
                 input = s.getInputStream();
                 // read data without using readLine
                 int len = -1;
                 byte b[] = new byte[1024];
-                int counter = 0;
+                long startTime = System.currentTimeMillis();
                 StringBuilder sb = new StringBuilder();
                 while ((len = input.read(b)) != -1) {
                     String line = new String(b, 0, len);
                     sb.append(line);
-                    counter++;
-                    System.out.println(line+" counter="+counter);
-                    if(counter >= 2) {
+                    boolean hasInfo = sb.toString().replace("/", "").contains(EXPECTED_RESPONSE);
+                    if (hasInfo || System.currentTimeMillis() - startTime > 20 * 1000) {
                         break;
                     }
                 }
 
+                System.out.println(sb.toString());
                 StringTokenizer tokens = new StringTokenizer(sb.toString(), CRLF);
                 String line = null;
                 while (tokens.hasMoreTokens()) {
@@ -147,7 +147,7 @@ public class WebTest {
             // server.log should contain "##### OnError" and
             // stacktrace of produced exception (EOF).
 
-            // sleep is here only for versifying that onError was
+            // sleep is here only for verifying that onError was
             // called before this process ended.
             Thread.sleep(10000);
 
