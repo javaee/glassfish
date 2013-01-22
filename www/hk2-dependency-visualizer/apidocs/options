@@ -1,24 +1,24 @@
 -classpath
-'/Users/dochez/java/svn/full-hk2/hk2/dependency-visualizer/target/classes:/Users/dochez/.m2/repository/args4j/args4j/2.0.12/args4j-2.0.12.jar'
+'/scratch/jwells/bg/all/hk2/dependency-visualizer/target/classes:/scratch/jwells/maven/repository/args4j/args4j/2.0.12/args4j-2.0.12.jar'
 -encoding
-'MacRoman'
+'UTF-8'
 -protected
 -sourcepath
-'/Users/dochez/java/svn/full-hk2/hk2/dependency-visualizer/src/main/java'
+'/scratch/jwells/bg/all/hk2/dependency-visualizer/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2010 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
+'Copyright &#169; 2013 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
-'/Users/dochez/java/svn/full-hk2/hk2/dependency-visualizer/target/site/apidocs'
+'/scratch/jwells/bg/all/hk2/dependency-visualizer/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'hk2-dependency-visualizer 1.0.59-SNAPSHOT API'
--link
-'http://java.sun.com/javase/6/docs/api'
+'hk2-dependency-visualizer 2.1.53-SNAPSHOT API'
+-linkoffline
+'http://download.oracle.com/javase/6/docs/api' '/scratch/jwells/bg/all/hk2/dependency-visualizer/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'hk2-dependency-visualizer 1.0.59-SNAPSHOT API'
+'hk2-dependency-visualizer 2.1.53-SNAPSHOT API'
