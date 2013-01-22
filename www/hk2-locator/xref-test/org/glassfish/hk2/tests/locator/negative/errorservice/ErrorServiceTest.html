@@ -102,7 +102,7 @@
 <a class="jxr_linenumber" name="92" href="#92">92</a>          MultiException me = esi.getMe();
 <a class="jxr_linenumber" name="93" href="#93">93</a>          Assert.assertNotNull(me);
 <a class="jxr_linenumber" name="94" href="#94">94</a>          
-<a class="jxr_linenumber" name="95" href="#95">95</a>          Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+<a class="jxr_linenumber" name="95" href="#95">95</a>          Assert.assertTrue(<span class="jxr_string">"Expected "</span> + EXCEPTION_STRING + <span class="jxr_string">" but got "</span> + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING));
 <a class="jxr_linenumber" name="96" href="#96">96</a>      }
 <a class="jxr_linenumber" name="97" href="#97">97</a>      
 <a class="jxr_linenumber" name="98" href="#98">98</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupInjecteePriorToFixing(<a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi) {
@@ -131,15 +131,15 @@
 <a class="jxr_linenumber" name="121" href="#121">121</a>         MultiException me = esi.getMe();
 <a class="jxr_linenumber" name="122" href="#122">122</a>         Assert.assertNotNull(me);
 <a class="jxr_linenumber" name="123" href="#123">123</a>         
-<a class="jxr_linenumber" name="124" href="#124">124</a>         Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+<a class="jxr_linenumber" name="124" href="#124">124</a>         Assert.assertTrue(<span class="jxr_string">"Expected "</span> + EXCEPTION_STRING + <span class="jxr_string">" but got "</span> + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
 <a class="jxr_linenumber" name="125" href="#125">125</a>     }
 <a class="jxr_linenumber" name="126" href="#126">126</a>     
 <a class="jxr_linenumber" name="127" href="#127">127</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupHandlesPriorToFixing(<a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi) {
 <a class="jxr_linenumber" name="128" href="#128">128</a>         esi.clear();
 <a class="jxr_linenumber" name="129" href="#129">129</a>         
-<a class="jxr_linenumber" name="130" href="#130">130</a>         List&lt;ServiceHandle&lt;?&gt;&gt; handles = locator.getAllServiceHandles(
-<a class="jxr_linenumber" name="131" href="#131">131</a>                 BuilderHelper.createContractFilter(FaultyClass.<strong class="jxr_keyword">class</strong>.getName()));
-<a class="jxr_linenumber" name="132" href="#132">132</a>         Assert.assertTrue(<span class="jxr_string">"handles.size="</span> + handles.size(), handles.isEmpty());
+<a class="jxr_linenumber" name="130" href="#130">130</a>         List&lt;FaultyClass&gt; faulties = locator.getAllServices(
+<a class="jxr_linenumber" name="131" href="#131">131</a>                 FaultyClass.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="132" href="#132">132</a>         Assert.assertTrue(<span class="jxr_string">"faulties.size="</span> + faulties.size(), faulties.isEmpty());
 <a class="jxr_linenumber" name="133" href="#133">133</a>         
 <a class="jxr_linenumber" name="134" href="#134">134</a>         Descriptor faultyDesc = locator.getBestDescriptor(BuilderHelper.createContractFilter(FaultyClass.<strong class="jxr_keyword">class</strong>.getName()));
 <a class="jxr_linenumber" name="135" href="#135">135</a>         Assert.assertNotNull(faultyDesc);
@@ -154,13 +154,13 @@
 <a class="jxr_linenumber" name="144" href="#144">144</a>         MultiException me = esi.getMe();
 <a class="jxr_linenumber" name="145" href="#145">145</a>         Assert.assertNotNull(me);
 <a class="jxr_linenumber" name="146" href="#146">146</a>         
-<a class="jxr_linenumber" name="147" href="#147">147</a>         Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+<a class="jxr_linenumber" name="147" href="#147">147</a>         Assert.assertTrue(<span class="jxr_string">"Expected "</span> + EXCEPTION_STRING + <span class="jxr_string">" but got "</span> + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
 <a class="jxr_linenumber" name="148" href="#148">148</a>     }
 <a class="jxr_linenumber" name="149" href="#149">149</a>     
 <a class="jxr_linenumber" name="150" href="#150">150</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupHandlesWithContractPriorToFixing(<a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi) {
 <a class="jxr_linenumber" name="151" href="#151">151</a>         esi.clear();
 <a class="jxr_linenumber" name="152" href="#152">152</a>         
-<a class="jxr_linenumber" name="153" href="#153">153</a>         List&lt;ServiceHandle&lt;?&gt;&gt; handles = locator.getAllServiceHandles(FaultyClass.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="153" href="#153">153</a>         List&lt;ServiceHandle&lt;FaultyClass&gt;&gt; handles = locator.getAllServiceHandles(FaultyClass.<strong class="jxr_keyword">class</strong>);
 <a class="jxr_linenumber" name="154" href="#154">154</a>         Assert.assertTrue(<span class="jxr_string">"handles.size="</span> + handles.size(), handles.isEmpty());
 <a class="jxr_linenumber" name="155" href="#155">155</a>         
 <a class="jxr_linenumber" name="156" href="#156">156</a>         Descriptor faultyDesc = locator.getBestDescriptor(BuilderHelper.createContractFilter(FaultyClass.<strong class="jxr_keyword">class</strong>.getName()));
@@ -176,7 +176,7 @@
 <a class="jxr_linenumber" name="166" href="#166">166</a>         MultiException me = esi.getMe();
 <a class="jxr_linenumber" name="167" href="#167">167</a>         Assert.assertNotNull(me);
 <a class="jxr_linenumber" name="168" href="#168">168</a>         
-<a class="jxr_linenumber" name="169" href="#169">169</a>         Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
+<a class="jxr_linenumber" name="169" href="#169">169</a>         Assert.assertTrue(<span class="jxr_string">"Expected "</span> + EXCEPTION_STRING + <span class="jxr_string">" but got "</span> + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
 <a class="jxr_linenumber" name="170" href="#170">170</a>     }
 <a class="jxr_linenumber" name="171" href="#171">171</a>     
 <a class="jxr_linenumber" name="172" href="#172">172</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupPriorToFixingButThrowing(<a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi) {
@@ -188,75 +188,76 @@
 <a class="jxr_linenumber" name="178" href="#178">178</a>             Assert.fail(<span class="jxr_string">"The error service now throws an assertion error"</span>);
 <a class="jxr_linenumber" name="179" href="#179">179</a>         }
 <a class="jxr_linenumber" name="180" href="#180">180</a>         <strong class="jxr_keyword">catch</strong> (MultiException me) {
-<a class="jxr_linenumber" name="181" href="#181">181</a>             Assert.assertEquals(me.getMessage(), EXCEPTION_STRING_DUEX, me.getMessage());
-<a class="jxr_linenumber" name="182" href="#182">182</a>             
-<a class="jxr_linenumber" name="183" href="#183">183</a>         }
-<a class="jxr_linenumber" name="184" href="#184">184</a>         
-<a class="jxr_linenumber" name="185" href="#185">185</a>         ActiveDescriptor&lt;?&gt; fromError = esi.getDescriptor();
-<a class="jxr_linenumber" name="186" href="#186">186</a>         Assert.assertNotNull(fromError);
-<a class="jxr_linenumber" name="187" href="#187">187</a>         
-<a class="jxr_linenumber" name="188" href="#188">188</a>         Assert.assertNull(esi.getInjectee());
-<a class="jxr_linenumber" name="189" href="#189">189</a>         
-<a class="jxr_linenumber" name="190" href="#190">190</a>         MultiException me = esi.getMe();
-<a class="jxr_linenumber" name="191" href="#191">191</a>         Assert.assertNotNull(me);
-<a class="jxr_linenumber" name="192" href="#192">192</a>         
-<a class="jxr_linenumber" name="193" href="#193">193</a>         Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
-<a class="jxr_linenumber" name="194" href="#194">194</a>     }
-<a class="jxr_linenumber" name="195" href="#195">195</a>     
-<a class="jxr_linenumber" name="196" href="#196">196</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupPriorToFixingButReThrowing(<a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi) {
-<a class="jxr_linenumber" name="197" href="#197">197</a>         esi.reThrow();
-<a class="jxr_linenumber" name="198" href="#198">198</a>         esi.clear();
-<a class="jxr_linenumber" name="199" href="#199">199</a>         
-<a class="jxr_linenumber" name="200" href="#200">200</a>         <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="201" href="#201">201</a>             locator.getService(FaultyClass.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="202" href="#202">202</a>             Assert.fail(<span class="jxr_string">"The error service now rethrows the ME error"</span>);
-<a class="jxr_linenumber" name="203" href="#203">203</a>         }
-<a class="jxr_linenumber" name="204" href="#204">204</a>         <strong class="jxr_keyword">catch</strong> (MultiException me) {
-<a class="jxr_linenumber" name="205" href="#205">205</a>             Assert.assertEquals(me.getMessage(), EXCEPTION_STRING, me.getMessage());
-<a class="jxr_linenumber" name="206" href="#206">206</a>         }
-<a class="jxr_linenumber" name="207" href="#207">207</a>         
-<a class="jxr_linenumber" name="208" href="#208">208</a>         ActiveDescriptor&lt;?&gt; fromError = esi.getDescriptor();
-<a class="jxr_linenumber" name="209" href="#209">209</a>         Assert.assertNotNull(fromError);
-<a class="jxr_linenumber" name="210" href="#210">210</a>         
-<a class="jxr_linenumber" name="211" href="#211">211</a>         Assert.assertNull(esi.getInjectee());
-<a class="jxr_linenumber" name="212" href="#212">212</a>         
-<a class="jxr_linenumber" name="213" href="#213">213</a>         MultiException me = esi.getMe();
-<a class="jxr_linenumber" name="214" href="#214">214</a>         Assert.assertNotNull(me);
-<a class="jxr_linenumber" name="215" href="#215">215</a>         
-<a class="jxr_linenumber" name="216" href="#216">216</a>         Assert.assertEquals(EXCEPTION_STRING, me.getMessage()); 
-<a class="jxr_linenumber" name="217" href="#217">217</a>     }
-<a class="jxr_linenumber" name="218" href="#218">218</a>     
-<a class="jxr_linenumber" name="219" href="#219">219</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupAfterFixing() {
-<a class="jxr_linenumber" name="220" href="#220">220</a>         <a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/FaultyClass.html">FaultyClass</a> fc = locator.getService(FaultyClass.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="221" href="#221">221</a>         Assert.assertNotNull(fc);
-<a class="jxr_linenumber" name="222" href="#222">222</a>     }
-<a class="jxr_linenumber" name="223" href="#223">223</a>     
-<a class="jxr_linenumber" name="224" href="#224">224</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupInjecteeAfterFixing() {
-<a class="jxr_linenumber" name="225" href="#225">225</a>         <a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/InjectedWithFaultyClass.html">InjectedWithFaultyClass</a> iwfc = locator.getService(InjectedWithFaultyClass.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="226" href="#226">226</a>         Assert.assertNotNull(iwfc);
-<a class="jxr_linenumber" name="227" href="#227">227</a>     }
-<a class="jxr_linenumber" name="228" href="#228">228</a>     
-<a class="jxr_linenumber" name="229" href="#229">229</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="230" href="#230">230</a> <em class="jxr_javadoccomment">     * This test ensures that the other methods are called in the proper order</em>
-<a class="jxr_linenumber" name="231" href="#231">231</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="232" href="#232">232</a>     @Test
-<a class="jxr_linenumber" name="233" href="#233">233</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testOrdered() {
-<a class="jxr_linenumber" name="234" href="#234">234</a>         <a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi = locator.getService(ErrorServiceImpl.<strong class="jxr_keyword">class</strong>);
-<a class="jxr_linenumber" name="235" href="#235">235</a>         
-<a class="jxr_linenumber" name="236" href="#236">236</a>         testLookupPriorToFixing(esi);
-<a class="jxr_linenumber" name="237" href="#237">237</a>         testLookupInjecteePriorToFixing(esi);
-<a class="jxr_linenumber" name="238" href="#238">238</a>         testLookupHandlesPriorToFixing(esi);
-<a class="jxr_linenumber" name="239" href="#239">239</a>         testLookupHandlesWithContractPriorToFixing(esi);
-<a class="jxr_linenumber" name="240" href="#240">240</a>         testLookupPriorToFixingButThrowing(esi);
-<a class="jxr_linenumber" name="241" href="#241">241</a>         testLookupPriorToFixingButReThrowing(esi);
-<a class="jxr_linenumber" name="242" href="#242">242</a>         
-<a class="jxr_linenumber" name="243" href="#243">243</a>         TempermentalLoader.fixIt();
-<a class="jxr_linenumber" name="244" href="#244">244</a>         
-<a class="jxr_linenumber" name="245" href="#245">245</a>         testLookupAfterFixing();
-<a class="jxr_linenumber" name="246" href="#246">246</a>         testLookupInjecteeAfterFixing();
-<a class="jxr_linenumber" name="247" href="#247">247</a>     }
-<a class="jxr_linenumber" name="248" href="#248">248</a> 
-<a class="jxr_linenumber" name="249" href="#249">249</a> }
+<a class="jxr_linenumber" name="181" href="#181">181</a>             Assert.assertTrue(<span class="jxr_string">"Expected "</span> + EXCEPTION_STRING_DUEX + <span class="jxr_string">" but got "</span> + me.getMessage(),
+<a class="jxr_linenumber" name="182" href="#182">182</a>                     me.getMessage().contains(EXCEPTION_STRING_DUEX));
+<a class="jxr_linenumber" name="183" href="#183">183</a>             
+<a class="jxr_linenumber" name="184" href="#184">184</a>         }
+<a class="jxr_linenumber" name="185" href="#185">185</a>         
+<a class="jxr_linenumber" name="186" href="#186">186</a>         ActiveDescriptor&lt;?&gt; fromError = esi.getDescriptor();
+<a class="jxr_linenumber" name="187" href="#187">187</a>         Assert.assertNotNull(fromError);
+<a class="jxr_linenumber" name="188" href="#188">188</a>         
+<a class="jxr_linenumber" name="189" href="#189">189</a>         Assert.assertNull(esi.getInjectee());
+<a class="jxr_linenumber" name="190" href="#190">190</a>         
+<a class="jxr_linenumber" name="191" href="#191">191</a>         MultiException me = esi.getMe();
+<a class="jxr_linenumber" name="192" href="#192">192</a>         Assert.assertNotNull(me);
+<a class="jxr_linenumber" name="193" href="#193">193</a>         
+<a class="jxr_linenumber" name="194" href="#194">194</a>         Assert.assertTrue(<span class="jxr_string">"Expected "</span> + EXCEPTION_STRING + <span class="jxr_string">" but got "</span> + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
+<a class="jxr_linenumber" name="195" href="#195">195</a>     }
+<a class="jxr_linenumber" name="196" href="#196">196</a>     
+<a class="jxr_linenumber" name="197" href="#197">197</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupPriorToFixingButReThrowing(<a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi) {
+<a class="jxr_linenumber" name="198" href="#198">198</a>         esi.reThrow();
+<a class="jxr_linenumber" name="199" href="#199">199</a>         esi.clear();
+<a class="jxr_linenumber" name="200" href="#200">200</a>         
+<a class="jxr_linenumber" name="201" href="#201">201</a>         <strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="202" href="#202">202</a>             locator.getService(FaultyClass.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="203" href="#203">203</a>             Assert.fail(<span class="jxr_string">"The error service now rethrows the ME error"</span>);
+<a class="jxr_linenumber" name="204" href="#204">204</a>         }
+<a class="jxr_linenumber" name="205" href="#205">205</a>         <strong class="jxr_keyword">catch</strong> (MultiException me) {
+<a class="jxr_linenumber" name="206" href="#206">206</a>             Assert.assertTrue(<span class="jxr_string">"Expected "</span> + EXCEPTION_STRING + <span class="jxr_string">" but got "</span> + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING));
+<a class="jxr_linenumber" name="207" href="#207">207</a>         }
+<a class="jxr_linenumber" name="208" href="#208">208</a>         
+<a class="jxr_linenumber" name="209" href="#209">209</a>         ActiveDescriptor&lt;?&gt; fromError = esi.getDescriptor();
+<a class="jxr_linenumber" name="210" href="#210">210</a>         Assert.assertNotNull(fromError);
+<a class="jxr_linenumber" name="211" href="#211">211</a>         
+<a class="jxr_linenumber" name="212" href="#212">212</a>         Assert.assertNull(esi.getInjectee());
+<a class="jxr_linenumber" name="213" href="#213">213</a>         
+<a class="jxr_linenumber" name="214" href="#214">214</a>         MultiException me = esi.getMe();
+<a class="jxr_linenumber" name="215" href="#215">215</a>         Assert.assertNotNull(me);
+<a class="jxr_linenumber" name="216" href="#216">216</a>         
+<a class="jxr_linenumber" name="217" href="#217">217</a>         Assert.assertTrue(<span class="jxr_string">"Expected "</span> + EXCEPTION_STRING + <span class="jxr_string">" but got "</span> + me.getMessage(), me.getMessage().contains(EXCEPTION_STRING)); 
+<a class="jxr_linenumber" name="218" href="#218">218</a>     }
+<a class="jxr_linenumber" name="219" href="#219">219</a>     
+<a class="jxr_linenumber" name="220" href="#220">220</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupAfterFixing() {
+<a class="jxr_linenumber" name="221" href="#221">221</a>         <a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/FaultyClass.html">FaultyClass</a> fc = locator.getService(FaultyClass.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="222" href="#222">222</a>         Assert.assertNotNull(fc);
+<a class="jxr_linenumber" name="223" href="#223">223</a>     }
+<a class="jxr_linenumber" name="224" href="#224">224</a>     
+<a class="jxr_linenumber" name="225" href="#225">225</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> testLookupInjecteeAfterFixing() {
+<a class="jxr_linenumber" name="226" href="#226">226</a>         <a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/InjectedWithFaultyClass.html">InjectedWithFaultyClass</a> iwfc = locator.getService(InjectedWithFaultyClass.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="227" href="#227">227</a>         Assert.assertNotNull(iwfc);
+<a class="jxr_linenumber" name="228" href="#228">228</a>     }
+<a class="jxr_linenumber" name="229" href="#229">229</a>     
+<a class="jxr_linenumber" name="230" href="#230">230</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="231" href="#231">231</a> <em class="jxr_javadoccomment">     * This test ensures that the other methods are called in the proper order</em>
+<a class="jxr_linenumber" name="232" href="#232">232</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="233" href="#233">233</a>     @Test
+<a class="jxr_linenumber" name="234" href="#234">234</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testOrdered() {
+<a class="jxr_linenumber" name="235" href="#235">235</a>         <a href="../../../../../../../org/glassfish/hk2/tests/locator/negative/errorservice/ErrorServiceImpl.html">ErrorServiceImpl</a> esi = locator.getService(ErrorServiceImpl.<strong class="jxr_keyword">class</strong>);
+<a class="jxr_linenumber" name="236" href="#236">236</a>         
+<a class="jxr_linenumber" name="237" href="#237">237</a>         testLookupPriorToFixing(esi);
+<a class="jxr_linenumber" name="238" href="#238">238</a>         testLookupInjecteePriorToFixing(esi);
+<a class="jxr_linenumber" name="239" href="#239">239</a>         testLookupHandlesPriorToFixing(esi);
+<a class="jxr_linenumber" name="240" href="#240">240</a>         testLookupHandlesWithContractPriorToFixing(esi);
+<a class="jxr_linenumber" name="241" href="#241">241</a>         testLookupPriorToFixingButThrowing(esi);
+<a class="jxr_linenumber" name="242" href="#242">242</a>         testLookupPriorToFixingButReThrowing(esi);
+<a class="jxr_linenumber" name="243" href="#243">243</a>         
+<a class="jxr_linenumber" name="244" href="#244">244</a>         TempermentalLoader.fixIt();
+<a class="jxr_linenumber" name="245" href="#245">245</a>         
+<a class="jxr_linenumber" name="246" href="#246">246</a>         testLookupAfterFixing();
+<a class="jxr_linenumber" name="247" href="#247">247</a>         testLookupInjecteeAfterFixing();
+<a class="jxr_linenumber" name="248" href="#248">248</a>     }
+<a class="jxr_linenumber" name="249" href="#249">249</a> 
+<a class="jxr_linenumber" name="250" href="#250">250</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>

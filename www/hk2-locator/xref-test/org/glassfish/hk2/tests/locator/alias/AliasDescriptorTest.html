@@ -89,7 +89,7 @@
 <a class="jxr_linenumber" name="79" href="#79">79</a>          DynamicConfiguration config = dcs.createDynamicConfiguration();
 <a class="jxr_linenumber" name="80" href="#80">80</a>  
 <a class="jxr_linenumber" name="81" href="#81">81</a>          ActiveDescriptor&lt;MyService&gt; descriptor =
-<a class="jxr_linenumber" name="82" href="#82">82</a>                  (ActiveDescriptor&lt;MyService&gt;)config.bind(BuilderHelper.link(MyService.<strong class="jxr_keyword">class</strong>).
+<a class="jxr_linenumber" name="82" href="#82">82</a>                  (ActiveDescriptor&lt;MyService&gt;) config.&lt;MyService&gt;bind(BuilderHelper.link(MyService.<strong class="jxr_keyword">class</strong>).
 <a class="jxr_linenumber" name="83" href="#83">83</a>                          to(MyInterface1.<strong class="jxr_keyword">class</strong>).in(Singleton.<strong class="jxr_keyword">class</strong>.getName()).build());
 <a class="jxr_linenumber" name="84" href="#84">84</a>  
 <a class="jxr_linenumber" name="85" href="#85">85</a>          config.commit();
@@ -144,7 +144,7 @@
 <a class="jxr_linenumber" name="134" href="#134">134</a>         DynamicConfiguration config = dcs.createDynamicConfiguration();
 <a class="jxr_linenumber" name="135" href="#135">135</a> 
 <a class="jxr_linenumber" name="136" href="#136">136</a>         ActiveDescriptor&lt;MyService&gt; descriptor =
-<a class="jxr_linenumber" name="137" href="#137">137</a>                 (ActiveDescriptor&lt;MyService&gt;)config.bind(BuilderHelper.link(MyService.<strong class="jxr_keyword">class</strong>).
+<a class="jxr_linenumber" name="137" href="#137">137</a>                 (ActiveDescriptor&lt;MyService&gt;)config.&lt;MyService&gt;bind(BuilderHelper.link(MyService.<strong class="jxr_keyword">class</strong>).
 <a class="jxr_linenumber" name="138" href="#138">138</a>                         to(MyInterface1.<strong class="jxr_keyword">class</strong>).in(Singleton.<strong class="jxr_keyword">class</strong>.getName()).build());
 <a class="jxr_linenumber" name="139" href="#139">139</a> 
 <a class="jxr_linenumber" name="140" href="#140">140</a>         config.commit();
@@ -196,7 +196,7 @@
 <a class="jxr_linenumber" name="186" href="#186">186</a>         DynamicConfiguration config = dcs.createDynamicConfiguration();
 <a class="jxr_linenumber" name="187" href="#187">187</a> 
 <a class="jxr_linenumber" name="188" href="#188">188</a>         ActiveDescriptor&lt;MyService&gt; descriptor =
-<a class="jxr_linenumber" name="189" href="#189">189</a>                 (ActiveDescriptor&lt;MyService&gt;)config.bind(BuilderHelper.link(MyService.<strong class="jxr_keyword">class</strong>).
+<a class="jxr_linenumber" name="189" href="#189">189</a>                 (ActiveDescriptor&lt;MyService&gt;)config.&lt;MyService&gt;bind(BuilderHelper.link(MyService.<strong class="jxr_keyword">class</strong>).
 <a class="jxr_linenumber" name="190" href="#190">190</a>                         to(MyInterface1.<strong class="jxr_keyword">class</strong>).in(Singleton.<strong class="jxr_keyword">class</strong>.getName()).build());
 <a class="jxr_linenumber" name="191" href="#191">191</a> 
 <a class="jxr_linenumber" name="192" href="#192">192</a>         AliasDescriptor&lt;MyService&gt; aliasDescriptor =
@@ -220,7 +220,7 @@
 <a class="jxr_linenumber" name="210" href="#210">210</a>         DynamicConfiguration config = dcs.createDynamicConfiguration();
 <a class="jxr_linenumber" name="211" href="#211">211</a> 
 <a class="jxr_linenumber" name="212" href="#212">212</a>         ActiveDescriptor&lt;MyService&gt; descriptor =
-<a class="jxr_linenumber" name="213" href="#213">213</a>                 (ActiveDescriptor&lt;MyService&gt;)config.bind(BuilderHelper.link(MyService.<strong class="jxr_keyword">class</strong>).
+<a class="jxr_linenumber" name="213" href="#213">213</a>                 (ActiveDescriptor&lt;MyService&gt;)config.&lt;MyService&gt;bind(BuilderHelper.link(MyService.<strong class="jxr_keyword">class</strong>).
 <a class="jxr_linenumber" name="214" href="#214">214</a>                         to(MyInterface1.<strong class="jxr_keyword">class</strong>).in(Singleton.<strong class="jxr_keyword">class</strong>.getName()).build());
 <a class="jxr_linenumber" name="215" href="#215">215</a> 
 <a class="jxr_linenumber" name="216" href="#216">216</a>         config.commit();
