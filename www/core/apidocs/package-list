@@ -5,4 +5,3 @@ com.sun.enterprise.module.impl
 com.sun.enterprise.module.single
 org.glassfish.hk2.bootstrap
 org.glassfish.hk2.bootstrap.impl
-org.glassfish.hk2.inhabitants
