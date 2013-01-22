@@ -131,7 +131,7 @@
 <a class="jxr_linenumber" name="121" href="#121">121</a>         <em class="jxr_comment">// any ConfigBean in our transactor should result in sending transaction events, but only once.</em>
 <a class="jxr_linenumber" name="122" href="#122">122</a>         <strong class="jxr_keyword">for</strong> (Transactor t : participants) {
 <a class="jxr_linenumber" name="123" href="#123">123</a>             <strong class="jxr_keyword">if</strong> (t instanceof WriteableView) {
-<a class="jxr_linenumber" name="124" href="#124">124</a>                 ((<a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a>) t).getMasterView().getHabitat().getComponent(Transactions.<strong class="jxr_keyword">class</strong>).addTransaction(transactionChanges);
+<a class="jxr_linenumber" name="124" href="#124">124</a>                 ((<a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a>) t).getMasterView().getHabitat().&lt;Transactions&gt;getService(Transactions.<strong class="jxr_keyword">class</strong>).addTransaction(transactionChanges);
 <a class="jxr_linenumber" name="125" href="#125">125</a>                 <strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="126" href="#126">126</a>             }
 <a class="jxr_linenumber" name="127" href="#127">127</a>         }
@@ -161,9 +161,9 @@
 <a class="jxr_linenumber" name="151" href="#151">151</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="152" href="#152">152</a>     <strong class="jxr_keyword">public</strong> &lt;T <strong class="jxr_keyword">extends</strong> ConfigBeanProxy&gt; T enroll(<strong class="jxr_keyword">final</strong> T source)
 <a class="jxr_linenumber" name="153" href="#153">153</a>         <strong class="jxr_keyword">throws</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a> {
-<a class="jxr_linenumber" name="154" href="#154">154</a> 
-<a class="jxr_linenumber" name="155" href="#155">155</a>         <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> sourceBean = (ConfigView) Proxy.getInvocationHandler(source);
-<a class="jxr_linenumber" name="156" href="#156">156</a>         <a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a> writeableView = ConfigSupport.getWriteableView(source, (ConfigBean) sourceBean.getMasterView());
+<a class="jxr_linenumber" name="154" href="#154">154</a>         T configBeanProxy = ConfigSupport.revealProxy(source);
+<a class="jxr_linenumber" name="155" href="#155">155</a>         <a href="../../../../org/jvnet/hk2/config/ConfigView.html">ConfigView</a> sourceBean = (ConfigView) Proxy.getInvocationHandler(configBeanProxy);
+<a class="jxr_linenumber" name="156" href="#156">156</a>         <a href="../../../../org/jvnet/hk2/config/WriteableView.html">WriteableView</a> writeableView = ConfigSupport.getWriteableView(configBeanProxy, (ConfigBean) sourceBean.getMasterView());
 <a class="jxr_linenumber" name="157" href="#157">157</a>         <strong class="jxr_keyword">if</strong> (!writeableView.join(<strong class="jxr_keyword">this</strong>)) {
 <a class="jxr_linenumber" name="158" href="#158">158</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> <a href="../../../../org/jvnet/hk2/config/TransactionFailure.html">TransactionFailure</a>(<span class="jxr_string">"Cannot join transaction : "</span> + sourceBean.getProxyType());
 <a class="jxr_linenumber" name="159" href="#159">159</a>         }
