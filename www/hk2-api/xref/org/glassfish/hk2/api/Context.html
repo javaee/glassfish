@@ -98,24 +98,34 @@
 <a class="jxr_linenumber" name="88" href="#88">88</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> containsKey(ActiveDescriptor&lt;?&gt; descriptor);
 <a class="jxr_linenumber" name="89" href="#89">89</a>      
 <a class="jxr_linenumber" name="90" href="#90">90</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">     * Returns true if the findOrCreate method can return null</em>
-<a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">     * @return true if null is a legal value from the findOrCreate method</em>
-<a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="95" href="#95">95</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> supportsNullCreation();
-<a class="jxr_linenumber" name="96" href="#96">96</a>      
-<a class="jxr_linenumber" name="97" href="#97">97</a>      <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="98" href="#98">98</a>  <em class="jxr_javadoccomment">     * True if this context is active, false otherwise</em>
-<a class="jxr_linenumber" name="99" href="#99">99</a>  <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="100" href="#100">100</a> <em class="jxr_javadoccomment">     * @return true if this context is active, false otherwise</em>
-<a class="jxr_linenumber" name="101" href="#101">101</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="102" href="#102">102</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isActive();
-<a class="jxr_linenumber" name="103" href="#103">103</a> 
-<a class="jxr_linenumber" name="104" href="#104">104</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="105" href="#105">105</a> <em class="jxr_javadoccomment">     * Shut down this context.</em>
-<a class="jxr_linenumber" name="106" href="#106">106</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="107" href="#107">107</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> shutdown();
-<a class="jxr_linenumber" name="108" href="#108">108</a> }
+<a class="jxr_linenumber" name="91" href="#91">91</a>  <em class="jxr_javadoccomment">     * This method is called when {@link ServiceHandle#destroy()} method is called.</em>
+<a class="jxr_linenumber" name="92" href="#92">92</a>  <em class="jxr_javadoccomment">     * It is up to the context implementation whether or not to honor this destruction</em>
+<a class="jxr_linenumber" name="93" href="#93">93</a>  <em class="jxr_javadoccomment">     * request based on the lifecycle requirements of the context</em>
+<a class="jxr_linenumber" name="94" href="#94">94</a>  <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="95" href="#95">95</a>  <em class="jxr_javadoccomment">     * @param descriptor A non-null descriptor upon which {@link ServiceHandle#destroy()}</em>
+<a class="jxr_linenumber" name="96" href="#96">96</a>  <em class="jxr_javadoccomment">     * has been called</em>
+<a class="jxr_linenumber" name="97" href="#97">97</a>  <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="98" href="#98">98</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> destroyOne(ActiveDescriptor&lt;?&gt; descriptor);
+<a class="jxr_linenumber" name="99" href="#99">99</a>      
+<a class="jxr_linenumber" name="100" href="#100">100</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="101" href="#101">101</a> <em class="jxr_javadoccomment">     * Returns true if the findOrCreate method can return null</em>
+<a class="jxr_linenumber" name="102" href="#102">102</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="103" href="#103">103</a> <em class="jxr_javadoccomment">     * @return true if null is a legal value from the findOrCreate method</em>
+<a class="jxr_linenumber" name="104" href="#104">104</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="105" href="#105">105</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> supportsNullCreation();
+<a class="jxr_linenumber" name="106" href="#106">106</a>     
+<a class="jxr_linenumber" name="107" href="#107">107</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="108" href="#108">108</a> <em class="jxr_javadoccomment">     * True if this context is active, false otherwise</em>
+<a class="jxr_linenumber" name="109" href="#109">109</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="110" href="#110">110</a> <em class="jxr_javadoccomment">     * @return true if this context is active, false otherwise</em>
+<a class="jxr_linenumber" name="111" href="#111">111</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="112" href="#112">112</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isActive();
+<a class="jxr_linenumber" name="113" href="#113">113</a> 
+<a class="jxr_linenumber" name="114" href="#114">114</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="115" href="#115">115</a> <em class="jxr_javadoccomment">     * Shut down this context.</em>
+<a class="jxr_linenumber" name="116" href="#116">116</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="117" href="#117">117</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> shutdown();
+<a class="jxr_linenumber" name="118" href="#118">118</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
