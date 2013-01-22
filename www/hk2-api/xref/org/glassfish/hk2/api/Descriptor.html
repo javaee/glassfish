@@ -141,105 +141,137 @@
 <a class="jxr_linenumber" name="131" href="#131">131</a> <em class="jxr_javadoccomment">     * @return Either CLASS or FACTORY</em>
 <a class="jxr_linenumber" name="132" href="#132">132</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="133" href="#133">133</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/api/DescriptorType.html">DescriptorType</a> getDescriptorType();
-<a class="jxr_linenumber" name="134" href="#134">134</a> 	
-<a class="jxr_linenumber" name="135" href="#135">135</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="136" href="#136">136</a> <em class="jxr_javadoccomment">	 * Returns all of the metadata associated</em>
-<a class="jxr_linenumber" name="137" href="#137">137</a> <em class="jxr_javadoccomment">	 * that this object should be registered</em>
-<a class="jxr_linenumber" name="138" href="#138">138</a> <em class="jxr_javadoccomment">	 * with or looked up by</em>
-<a class="jxr_linenumber" name="139" href="#139">139</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="140" href="#140">140</a> <em class="jxr_javadoccomment">	 * @return Never returns null, but may return</em>
-<a class="jxr_linenumber" name="141" href="#141">141</a> <em class="jxr_javadoccomment">	 * an empty set.  The set of metadata</em>
-<a class="jxr_linenumber" name="142" href="#142">142</a> <em class="jxr_javadoccomment">	 * associated with the object.  The values</em>
-<a class="jxr_linenumber" name="143" href="#143">143</a> <em class="jxr_javadoccomment">	 * in the returned map will never be null, and</em>
-<a class="jxr_linenumber" name="144" href="#144">144</a> <em class="jxr_javadoccomment">	 * will always have at least one member</em>
-<a class="jxr_linenumber" name="145" href="#145">145</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="146" href="#146">146</a> 	<strong class="jxr_keyword">public</strong> Map&lt;String, List&lt;String&gt;&gt; getMetadata();
-<a class="jxr_linenumber" name="147" href="#147">147</a> 	
-<a class="jxr_linenumber" name="148" href="#148">148</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="149" href="#149">149</a> <em class="jxr_javadoccomment">	 * This returns the loader that should be used when</em>
-<a class="jxr_linenumber" name="150" href="#150">150</a> <em class="jxr_javadoccomment">	 * classloading this descriptor.  If this returns</em>
-<a class="jxr_linenumber" name="151" href="#151">151</a> <em class="jxr_javadoccomment">	 * null then class will either be loaded with the</em>
-<a class="jxr_linenumber" name="152" href="#152">152</a> <em class="jxr_javadoccomment">	 * classloader of the Injectee if there is one, or</em>
-<a class="jxr_linenumber" name="153" href="#153">153</a> <em class="jxr_javadoccomment">	 * with the classloader that loaded HK2 itself.</em>
-<a class="jxr_linenumber" name="154" href="#154">154</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="155" href="#155">155</a> <em class="jxr_javadoccomment">	 * @return An HK2Loader that can be used to load</em>
-<a class="jxr_linenumber" name="156" href="#156">156</a> <em class="jxr_javadoccomment">	 * this descriptor, or null if the default classloading</em>
-<a class="jxr_linenumber" name="157" href="#157">157</a> <em class="jxr_javadoccomment">	 * algorithm should be used</em>
-<a class="jxr_linenumber" name="158" href="#158">158</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="159" href="#159">159</a> 	<strong class="jxr_keyword">public</strong> HK2Loader getLoader();
-<a class="jxr_linenumber" name="160" href="#160">160</a> 	
-<a class="jxr_linenumber" name="161" href="#161">161</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="162" href="#162">162</a> <em class="jxr_javadoccomment">	 * Returns the ranking of this descriptor.  Rankings</em>
-<a class="jxr_linenumber" name="163" href="#163">163</a> <em class="jxr_javadoccomment">	 * with higher value will be considered "better" than</em>
-<a class="jxr_linenumber" name="164" href="#164">164</a> <em class="jxr_javadoccomment">	 * rankings of lower value.  Descriptors with the same</em>
-<a class="jxr_linenumber" name="165" href="#165">165</a> <em class="jxr_javadoccomment">	 * ranking will be returned in the reverse ServiceID order</em>
-<a class="jxr_linenumber" name="166" href="#166">166</a> <em class="jxr_javadoccomment">	 * (in other words, the least service ID is considered</em>
-<a class="jxr_linenumber" name="167" href="#167">167</a> <em class="jxr_javadoccomment">	 * "better" than any higher service ID).</em>
-<a class="jxr_linenumber" name="168" href="#168">168</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="169" href="#169">169</a> <em class="jxr_javadoccomment">	 * @return the ranking that should be associated with this</em>
-<a class="jxr_linenumber" name="170" href="#170">170</a> <em class="jxr_javadoccomment">	 * descriptor</em>
-<a class="jxr_linenumber" name="171" href="#171">171</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="172" href="#172">172</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getRanking();
-<a class="jxr_linenumber" name="173" href="#173">173</a> 	
-<a class="jxr_linenumber" name="174" href="#174">174</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="175" href="#175">175</a> <em class="jxr_javadoccomment">     * Returns the ranking of this descriptor.  Rankings</em>
-<a class="jxr_linenumber" name="176" href="#176">176</a> <em class="jxr_javadoccomment">     * with higher value will be considered "better" than</em>
-<a class="jxr_linenumber" name="177" href="#177">177</a> <em class="jxr_javadoccomment">     * rankings of lower value.  Descriptors with the same</em>
-<a class="jxr_linenumber" name="178" href="#178">178</a> <em class="jxr_javadoccomment">     * ranking will be returned in the reverse ServiceID order</em>
-<a class="jxr_linenumber" name="179" href="#179">179</a> <em class="jxr_javadoccomment">     * (in other words, the least service ID is considered</em>
-<a class="jxr_linenumber" name="180" href="#180">180</a> <em class="jxr_javadoccomment">     * "better" than any higher service ID).</em>
-<a class="jxr_linenumber" name="181" href="#181">181</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="182" href="#182">182</a> <em class="jxr_javadoccomment">     * The ranking of a service may change at any time during</em>
-<a class="jxr_linenumber" name="183" href="#183">183</a> <em class="jxr_javadoccomment">     * the life of the descriptor</em>
-<a class="jxr_linenumber" name="184" href="#184">184</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="185" href="#185">185</a> <em class="jxr_javadoccomment">     * @param ranking The new ranking this descriptor should have</em>
-<a class="jxr_linenumber" name="186" href="#186">186</a> <em class="jxr_javadoccomment">     * @return the previous ranking that this descriptor had</em>
-<a class="jxr_linenumber" name="187" href="#187">187</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="188" href="#188">188</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> setRanking(<strong class="jxr_keyword">int</strong> ranking);
-<a class="jxr_linenumber" name="189" href="#189">189</a>     
-<a class="jxr_linenumber" name="190" href="#190">190</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="191" href="#191">191</a> <em class="jxr_javadoccomment">     * If this descriptor is based on another descriptor (for example</em>
-<a class="jxr_linenumber" name="192" href="#192">192</a> <em class="jxr_javadoccomment">     * via the {@link Configuration} bind call) then this method will</em>
-<a class="jxr_linenumber" name="193" href="#193">193</a> <em class="jxr_javadoccomment">     * return the original basis for this descriptor.</em>
-<a class="jxr_linenumber" name="194" href="#194">194</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="195" href="#195">195</a> <em class="jxr_javadoccomment">     * On bind calls the value of this parameter will be ignored, and</em>
-<a class="jxr_linenumber" name="196" href="#196">196</a> <em class="jxr_javadoccomment">     * will be filled in by the system.</em>
+<a class="jxr_linenumber" name="134" href="#134">134</a>     
+<a class="jxr_linenumber" name="135" href="#135">135</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="136" href="#136">136</a> <em class="jxr_javadoccomment">     * Returns the visibility of this descriptor.</em>
+<a class="jxr_linenumber" name="137" href="#137">137</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="138" href="#138">138</a> <em class="jxr_javadoccomment">     * If the visibility is NORMAL then this descriptor</em>
+<a class="jxr_linenumber" name="139" href="#139">139</a> <em class="jxr_javadoccomment">     * may be seen by all children locators of the</em>
+<a class="jxr_linenumber" name="140" href="#140">140</a> <em class="jxr_javadoccomment">     * locator in which this descriptor is bound</em>
+<a class="jxr_linenumber" name="141" href="#141">141</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="142" href="#142">142</a> <em class="jxr_javadoccomment">     * If the visibility is LOCAL then this descriptor</em>
+<a class="jxr_linenumber" name="143" href="#143">143</a> <em class="jxr_javadoccomment">     * may only be seen by the servcie locator in which</em>
+<a class="jxr_linenumber" name="144" href="#144">144</a> <em class="jxr_javadoccomment">     * it is bound, and in none of the children</em>
+<a class="jxr_linenumber" name="145" href="#145">145</a> <em class="jxr_javadoccomment">     * of that locator</em>
+<a class="jxr_linenumber" name="146" href="#146">146</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="147" href="#147">147</a> <em class="jxr_javadoccomment">     * @return Either NORMAL or LOCAL</em>
+<a class="jxr_linenumber" name="148" href="#148">148</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="149" href="#149">149</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/api/DescriptorVisibility.html">DescriptorVisibility</a> getDescriptorVisibility();
+<a class="jxr_linenumber" name="150" href="#150">150</a> 	
+<a class="jxr_linenumber" name="151" href="#151">151</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="152" href="#152">152</a> <em class="jxr_javadoccomment">	 * Returns all of the metadata associated</em>
+<a class="jxr_linenumber" name="153" href="#153">153</a> <em class="jxr_javadoccomment">	 * that this object should be registered</em>
+<a class="jxr_linenumber" name="154" href="#154">154</a> <em class="jxr_javadoccomment">	 * with or looked up by</em>
+<a class="jxr_linenumber" name="155" href="#155">155</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="156" href="#156">156</a> <em class="jxr_javadoccomment">	 * @return Never returns null, but may return</em>
+<a class="jxr_linenumber" name="157" href="#157">157</a> <em class="jxr_javadoccomment">	 * an empty set.  The set of metadata</em>
+<a class="jxr_linenumber" name="158" href="#158">158</a> <em class="jxr_javadoccomment">	 * associated with the object.  The values</em>
+<a class="jxr_linenumber" name="159" href="#159">159</a> <em class="jxr_javadoccomment">	 * in the returned map will never be null, and</em>
+<a class="jxr_linenumber" name="160" href="#160">160</a> <em class="jxr_javadoccomment">	 * will always have at least one member</em>
+<a class="jxr_linenumber" name="161" href="#161">161</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="162" href="#162">162</a> 	<strong class="jxr_keyword">public</strong> Map&lt;String, List&lt;String&gt;&gt; getMetadata();
+<a class="jxr_linenumber" name="163" href="#163">163</a> 	
+<a class="jxr_linenumber" name="164" href="#164">164</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="165" href="#165">165</a> <em class="jxr_javadoccomment">	 * This returns the loader that should be used when</em>
+<a class="jxr_linenumber" name="166" href="#166">166</a> <em class="jxr_javadoccomment">	 * classloading this descriptor.  If this returns</em>
+<a class="jxr_linenumber" name="167" href="#167">167</a> <em class="jxr_javadoccomment">	 * null then class will either be loaded with the</em>
+<a class="jxr_linenumber" name="168" href="#168">168</a> <em class="jxr_javadoccomment">	 * classloader of the Injectee if there is one, or</em>
+<a class="jxr_linenumber" name="169" href="#169">169</a> <em class="jxr_javadoccomment">	 * with the classloader that loaded HK2 itself.</em>
+<a class="jxr_linenumber" name="170" href="#170">170</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="171" href="#171">171</a> <em class="jxr_javadoccomment">	 * @return An HK2Loader that can be used to load</em>
+<a class="jxr_linenumber" name="172" href="#172">172</a> <em class="jxr_javadoccomment">	 * this descriptor, or null if the default classloading</em>
+<a class="jxr_linenumber" name="173" href="#173">173</a> <em class="jxr_javadoccomment">	 * algorithm should be used</em>
+<a class="jxr_linenumber" name="174" href="#174">174</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="175" href="#175">175</a> 	<strong class="jxr_keyword">public</strong> HK2Loader getLoader();
+<a class="jxr_linenumber" name="176" href="#176">176</a> 	
+<a class="jxr_linenumber" name="177" href="#177">177</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="178" href="#178">178</a> <em class="jxr_javadoccomment">	 * Returns the ranking of this descriptor.  Rankings</em>
+<a class="jxr_linenumber" name="179" href="#179">179</a> <em class="jxr_javadoccomment">	 * with higher value will be considered "better" than</em>
+<a class="jxr_linenumber" name="180" href="#180">180</a> <em class="jxr_javadoccomment">	 * rankings of lower value.  Descriptors with the same</em>
+<a class="jxr_linenumber" name="181" href="#181">181</a> <em class="jxr_javadoccomment">	 * ranking will be returned in the reverse ServiceID order</em>
+<a class="jxr_linenumber" name="182" href="#182">182</a> <em class="jxr_javadoccomment">	 * (in other words, the least service ID is considered</em>
+<a class="jxr_linenumber" name="183" href="#183">183</a> <em class="jxr_javadoccomment">	 * "better" than any higher service ID).</em>
+<a class="jxr_linenumber" name="184" href="#184">184</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="185" href="#185">185</a> <em class="jxr_javadoccomment">	 * @return the ranking that should be associated with this</em>
+<a class="jxr_linenumber" name="186" href="#186">186</a> <em class="jxr_javadoccomment">	 * descriptor</em>
+<a class="jxr_linenumber" name="187" href="#187">187</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="188" href="#188">188</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> getRanking();
+<a class="jxr_linenumber" name="189" href="#189">189</a> 	
+<a class="jxr_linenumber" name="190" href="#190">190</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="191" href="#191">191</a> <em class="jxr_javadoccomment">     * Returns the ranking of this descriptor.  Rankings</em>
+<a class="jxr_linenumber" name="192" href="#192">192</a> <em class="jxr_javadoccomment">     * with higher value will be considered "better" than</em>
+<a class="jxr_linenumber" name="193" href="#193">193</a> <em class="jxr_javadoccomment">     * rankings of lower value.  Descriptors with the same</em>
+<a class="jxr_linenumber" name="194" href="#194">194</a> <em class="jxr_javadoccomment">     * ranking will be returned in the reverse ServiceID order</em>
+<a class="jxr_linenumber" name="195" href="#195">195</a> <em class="jxr_javadoccomment">     * (in other words, the least service ID is considered</em>
+<a class="jxr_linenumber" name="196" href="#196">196</a> <em class="jxr_javadoccomment">     * "better" than any higher service ID).</em>
 <a class="jxr_linenumber" name="197" href="#197">197</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
-<a class="jxr_linenumber" name="198" href="#198">198</a> <em class="jxr_javadoccomment">     * Note that even if the values in the returned descriptor are modified</em>
-<a class="jxr_linenumber" name="199" href="#199">199</a> <em class="jxr_javadoccomment">     * it will not affect the values in the parent descriptor (the fields</em>
-<a class="jxr_linenumber" name="200" href="#200">200</a> <em class="jxr_javadoccomment">     * must have been copied out of the base descriptor, not referenced)</em>
-<a class="jxr_linenumber" name="201" href="#201">201</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="202" href="#202">202</a> <em class="jxr_javadoccomment">     * @return The original descriptor upon which this descriptor is based, or</em>
-<a class="jxr_linenumber" name="203" href="#203">203</a> <em class="jxr_javadoccomment">     * null if there is no known base descriptor.  This field is filled in by</em>
-<a class="jxr_linenumber" name="204" href="#204">204</a> <em class="jxr_javadoccomment">     * the system at bind time</em>
-<a class="jxr_linenumber" name="205" href="#205">205</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="206" href="#206">206</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/api/Descriptor.html">Descriptor</a> getBaseDescriptor();
-<a class="jxr_linenumber" name="207" href="#207">207</a> 	
-<a class="jxr_linenumber" name="208" href="#208">208</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="209" href="#209">209</a> <em class="jxr_javadoccomment">	 * This returns the unique identifier for this descriptor.</em>
-<a class="jxr_linenumber" name="210" href="#210">210</a> <em class="jxr_javadoccomment">	 * This field will be ignored upon binding, and will then</em>
-<a class="jxr_linenumber" name="211" href="#211">211</a> <em class="jxr_javadoccomment">	 * be assigned by the system.  However, this field can be</em>
-<a class="jxr_linenumber" name="212" href="#212">212</a> <em class="jxr_javadoccomment">	 * set on search operations, in which case this search will</em>
-<a class="jxr_linenumber" name="213" href="#213">213</a> <em class="jxr_javadoccomment">	 * match exactly one Provider in the system.</em>
-<a class="jxr_linenumber" name="214" href="#214">214</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="215" href="#215">215</a> <em class="jxr_javadoccomment">	 * @return The service id for this object.  Note that this</em>
-<a class="jxr_linenumber" name="216" href="#216">216</a> <em class="jxr_javadoccomment">	 * field may return null if this is an initial bind, as it</em>
-<a class="jxr_linenumber" name="217" href="#217">217</a> <em class="jxr_javadoccomment">	 * is not the responsibility of the binder to set this</em>
-<a class="jxr_linenumber" name="218" href="#218">218</a> <em class="jxr_javadoccomment">	 * value.  If this returns non-null on a bind operation the</em>
-<a class="jxr_linenumber" name="219" href="#219">219</a> <em class="jxr_javadoccomment">	 * return value will be ignored</em>
-<a class="jxr_linenumber" name="220" href="#220">220</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="221" href="#221">221</a> 	<strong class="jxr_keyword">public</strong> Long getServiceId();
-<a class="jxr_linenumber" name="222" href="#222">222</a> 	
-<a class="jxr_linenumber" name="223" href="#223">223</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="224" href="#224">224</a> <em class="jxr_javadoccomment">     * This returns the id of the ServiceLocator which this descriptor</em>
-<a class="jxr_linenumber" name="225" href="#225">225</a> <em class="jxr_javadoccomment">     * is registered with.  Returns null if this descriptor</em>
-<a class="jxr_linenumber" name="226" href="#226">226</a> <em class="jxr_javadoccomment">     * is not yet registered with a ServiceLocator</em>
-<a class="jxr_linenumber" name="227" href="#227">227</a> <em class="jxr_javadoccomment">     * </em>
-<a class="jxr_linenumber" name="228" href="#228">228</a> <em class="jxr_javadoccomment">     * @return The id of the ServiceLocator this Descriptor is registered</em>
-<a class="jxr_linenumber" name="229" href="#229">229</a> <em class="jxr_javadoccomment">     * with, or null if this Descriptor is not registered with a ServiceLocator</em>
-<a class="jxr_linenumber" name="230" href="#230">230</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="231" href="#231">231</a>     <strong class="jxr_keyword">public</strong> Long getLocatorId();
-<a class="jxr_linenumber" name="232" href="#232">232</a> }
+<a class="jxr_linenumber" name="198" href="#198">198</a> <em class="jxr_javadoccomment">     * The ranking of a service may change at any time during</em>
+<a class="jxr_linenumber" name="199" href="#199">199</a> <em class="jxr_javadoccomment">     * the life of the descriptor</em>
+<a class="jxr_linenumber" name="200" href="#200">200</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="201" href="#201">201</a> <em class="jxr_javadoccomment">     * @param ranking The new ranking this descriptor should have</em>
+<a class="jxr_linenumber" name="202" href="#202">202</a> <em class="jxr_javadoccomment">     * @return the previous ranking that this descriptor had</em>
+<a class="jxr_linenumber" name="203" href="#203">203</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="204" href="#204">204</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">int</strong> setRanking(<strong class="jxr_keyword">int</strong> ranking);
+<a class="jxr_linenumber" name="205" href="#205">205</a>     
+<a class="jxr_linenumber" name="206" href="#206">206</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="207" href="#207">207</a> <em class="jxr_javadoccomment">     * If this returns true then the system will create a proxy for</em>
+<a class="jxr_linenumber" name="208" href="#208">208</a> <em class="jxr_javadoccomment">     * instances of this descriptor.  As with all proxies, the proxy</em>
+<a class="jxr_linenumber" name="209" href="#209">209</a> <em class="jxr_javadoccomment">     * created will also implement the {@link ProxyCtl} interface</em>
+<a class="jxr_linenumber" name="210" href="#210">210</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="211" href="#211">211</a> <em class="jxr_javadoccomment">     * It is an error for this method to return true if the scope that</em>
+<a class="jxr_linenumber" name="212" href="#212">212</a> <em class="jxr_javadoccomment">     * this descriptor is in is {@link Unproxiable} (such as PerLookup).</em>
+<a class="jxr_linenumber" name="213" href="#213">213</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="214" href="#214">214</a> <em class="jxr_javadoccomment">     * @return true if this descriptor must be proxied, false if this</em>
+<a class="jxr_linenumber" name="215" href="#215">215</a> <em class="jxr_javadoccomment">     * descriptor must NOT be proxied (even if it is in an Unproxiable scope)</em>
+<a class="jxr_linenumber" name="216" href="#216">216</a> <em class="jxr_javadoccomment">     * and null if this descriptor should take its proxiable status from</em>
+<a class="jxr_linenumber" name="217" href="#217">217</a> <em class="jxr_javadoccomment">     * the scope it is in (i.e., it will only be proxied if the scope is</em>
+<a class="jxr_linenumber" name="218" href="#218">218</a> <em class="jxr_javadoccomment">     * marked {@linke Proxiable})</em>
+<a class="jxr_linenumber" name="219" href="#219">219</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="220" href="#220">220</a>     <strong class="jxr_keyword">public</strong> Boolean isProxiable();
+<a class="jxr_linenumber" name="221" href="#221">221</a>     
+<a class="jxr_linenumber" name="222" href="#222">222</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="223" href="#223">223</a> <em class="jxr_javadoccomment">     * If this descriptor is based on another descriptor (for example</em>
+<a class="jxr_linenumber" name="224" href="#224">224</a> <em class="jxr_javadoccomment">     * via the {@link Configuration} bind call) then this method will</em>
+<a class="jxr_linenumber" name="225" href="#225">225</a> <em class="jxr_javadoccomment">     * return the original basis for this descriptor.</em>
+<a class="jxr_linenumber" name="226" href="#226">226</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="227" href="#227">227</a> <em class="jxr_javadoccomment">     * On bind calls the value of this parameter will be ignored, and</em>
+<a class="jxr_linenumber" name="228" href="#228">228</a> <em class="jxr_javadoccomment">     * will be filled in by the system.</em>
+<a class="jxr_linenumber" name="229" href="#229">229</a> <em class="jxr_javadoccomment">     * &lt;p&gt;</em>
+<a class="jxr_linenumber" name="230" href="#230">230</a> <em class="jxr_javadoccomment">     * Note that even if the values in the returned descriptor are modified</em>
+<a class="jxr_linenumber" name="231" href="#231">231</a> <em class="jxr_javadoccomment">     * it will not affect the values in the parent descriptor (the fields</em>
+<a class="jxr_linenumber" name="232" href="#232">232</a> <em class="jxr_javadoccomment">     * must have been copied out of the base descriptor, not referenced)</em>
+<a class="jxr_linenumber" name="233" href="#233">233</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="234" href="#234">234</a> <em class="jxr_javadoccomment">     * @return The original descriptor upon which this descriptor is based, or</em>
+<a class="jxr_linenumber" name="235" href="#235">235</a> <em class="jxr_javadoccomment">     * null if there is no known base descriptor.  This field is filled in by</em>
+<a class="jxr_linenumber" name="236" href="#236">236</a> <em class="jxr_javadoccomment">     * the system at bind time</em>
+<a class="jxr_linenumber" name="237" href="#237">237</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="238" href="#238">238</a>     <strong class="jxr_keyword">public</strong> <a href="../../../../org/glassfish/hk2/api/Descriptor.html">Descriptor</a> getBaseDescriptor();
+<a class="jxr_linenumber" name="239" href="#239">239</a> 	
+<a class="jxr_linenumber" name="240" href="#240">240</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="241" href="#241">241</a> <em class="jxr_javadoccomment">	 * This returns the unique identifier for this descriptor.</em>
+<a class="jxr_linenumber" name="242" href="#242">242</a> <em class="jxr_javadoccomment">	 * This field will be ignored upon binding, and will then</em>
+<a class="jxr_linenumber" name="243" href="#243">243</a> <em class="jxr_javadoccomment">	 * be assigned by the system.  However, this field can be</em>
+<a class="jxr_linenumber" name="244" href="#244">244</a> <em class="jxr_javadoccomment">	 * set on search operations, in which case this search will</em>
+<a class="jxr_linenumber" name="245" href="#245">245</a> <em class="jxr_javadoccomment">	 * match exactly one Provider in the system.</em>
+<a class="jxr_linenumber" name="246" href="#246">246</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="247" href="#247">247</a> <em class="jxr_javadoccomment">	 * @return The service id for this object.  Note that this</em>
+<a class="jxr_linenumber" name="248" href="#248">248</a> <em class="jxr_javadoccomment">	 * field may return null if this is an initial bind, as it</em>
+<a class="jxr_linenumber" name="249" href="#249">249</a> <em class="jxr_javadoccomment">	 * is not the responsibility of the binder to set this</em>
+<a class="jxr_linenumber" name="250" href="#250">250</a> <em class="jxr_javadoccomment">	 * value.  If this returns non-null on a bind operation the</em>
+<a class="jxr_linenumber" name="251" href="#251">251</a> <em class="jxr_javadoccomment">	 * return value will be ignored</em>
+<a class="jxr_linenumber" name="252" href="#252">252</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="253" href="#253">253</a> 	<strong class="jxr_keyword">public</strong> Long getServiceId();
+<a class="jxr_linenumber" name="254" href="#254">254</a> 	
+<a class="jxr_linenumber" name="255" href="#255">255</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="256" href="#256">256</a> <em class="jxr_javadoccomment">     * This returns the id of the ServiceLocator which this descriptor</em>
+<a class="jxr_linenumber" name="257" href="#257">257</a> <em class="jxr_javadoccomment">     * is registered with.  Returns null if this descriptor</em>
+<a class="jxr_linenumber" name="258" href="#258">258</a> <em class="jxr_javadoccomment">     * is not yet registered with a ServiceLocator</em>
+<a class="jxr_linenumber" name="259" href="#259">259</a> <em class="jxr_javadoccomment">     * </em>
+<a class="jxr_linenumber" name="260" href="#260">260</a> <em class="jxr_javadoccomment">     * @return The id of the ServiceLocator this Descriptor is registered</em>
+<a class="jxr_linenumber" name="261" href="#261">261</a> <em class="jxr_javadoccomment">     * with, or null if this Descriptor is not registered with a ServiceLocator</em>
+<a class="jxr_linenumber" name="262" href="#262">262</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="263" href="#263">263</a>     <strong class="jxr_keyword">public</strong> Long getLocatorId();
+<a class="jxr_linenumber" name="264" href="#264">264</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
