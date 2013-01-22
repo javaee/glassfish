@@ -15,7 +15,7 @@
 <a class="jxr_linenumber" name="5" href="#5">5</a>   <strong class="jxr_keyword">import</strong> org.jvnet.hk2.config.InjectionTarget;
 <a class="jxr_linenumber" name="6" href="#6">6</a>   <strong class="jxr_keyword">import</strong> org.jvnet.hk2.config.NoopConfigInjector;
 <a class="jxr_linenumber" name="7" href="#7">7</a>   
-<a class="jxr_linenumber" name="8" href="#8">8</a>   @Service(name = <span class="jxr_string">"environment"</span>, metadata = <span class="jxr_string">"target=org.glassfish.examples.ctm.Environment,@name=optional,@name=datatype:java.lang.String,@name=leaf,@min-size=optional,@min-size=datatype:java.lang.String,@min-size=leaf,@max-size=optional,@max-size=datatype:java.lang.String,@max-size=leaf"</span>)
+<a class="jxr_linenumber" name="8" href="#8">8</a>   @Service(name = <span class="jxr_string">"environment"</span>, metadata = <span class="jxr_string">"target=org.glassfish.examples.ctm.Environment,target-habitats=tenant-scoped;,@name=optional,@name=datatype:java.lang.String,@name=leaf,@min-size=optional,@min-size=datatype:java.lang.String,@min-size=leaf,@max-size=optional,@max-size=datatype:java.lang.String,@max-size=leaf"</span>)
 <a class="jxr_linenumber" name="9" href="#9">9</a>   @InjectionTarget(Environment.<strong class="jxr_keyword">class</strong>)
 <a class="jxr_linenumber" name="10" href="#10">10</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../org/glassfish/examples/ctm/EnvironmentInjector.html">EnvironmentInjector</a>
 <a class="jxr_linenumber" name="11" href="#11">11</a>      <strong class="jxr_keyword">extends</strong> NoopConfigInjector
