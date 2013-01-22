@@ -49,21 +49,21 @@
 <a class="jxr_linenumber" name="39" href="#39">39</a>  <em class="jxr_comment"> */</em>
 <a class="jxr_linenumber" name="40" href="#40">40</a>  <strong class="jxr_keyword">package</strong> org.jvnet.hk2.config;
 <a class="jxr_linenumber" name="41" href="#41">41</a>  
-<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Habitat;
-<a class="jxr_linenumber" name="43" href="#43">43</a>  
-<a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> javax.xml.stream.XMLStreamReader;
-<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> java.beans.*;
-<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> java.lang.reflect.Type;
-<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> java.lang.reflect.Proxy;
-<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> java.security.AccessController;
-<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> java.security.PrivilegedAction;
-<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> java.util.*;
-<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.locks.Lock;
-<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.locks.Condition;
-<a class="jxr_linenumber" name="53" href="#53">53</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.TimeUnit;
-<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.locks.LockSupport;
+<a class="jxr_linenumber" name="42" href="#42">42</a>  <strong class="jxr_keyword">import</strong> javax.xml.stream.XMLStreamReader;
+<a class="jxr_linenumber" name="43" href="#43">43</a>  <strong class="jxr_keyword">import</strong> java.beans.*;
+<a class="jxr_linenumber" name="44" href="#44">44</a>  <strong class="jxr_keyword">import</strong> java.lang.reflect.Type;
+<a class="jxr_linenumber" name="45" href="#45">45</a>  <strong class="jxr_keyword">import</strong> java.lang.reflect.Proxy;
+<a class="jxr_linenumber" name="46" href="#46">46</a>  <strong class="jxr_keyword">import</strong> java.security.AccessController;
+<a class="jxr_linenumber" name="47" href="#47">47</a>  <strong class="jxr_keyword">import</strong> java.security.PrivilegedAction;
+<a class="jxr_linenumber" name="48" href="#48">48</a>  <strong class="jxr_keyword">import</strong> java.util.*;
+<a class="jxr_linenumber" name="49" href="#49">49</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.locks.Lock;
+<a class="jxr_linenumber" name="50" href="#50">50</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.locks.Condition;
+<a class="jxr_linenumber" name="51" href="#51">51</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.TimeUnit;
+<a class="jxr_linenumber" name="52" href="#52">52</a>  <strong class="jxr_keyword">import</strong> java.util.concurrent.locks.LockSupport;
+<a class="jxr_linenumber" name="53" href="#53">53</a>  
+<a class="jxr_linenumber" name="54" href="#54">54</a>  <strong class="jxr_keyword">import</strong> javax.management.ObjectName;
 <a class="jxr_linenumber" name="55" href="#55">55</a>  
-<a class="jxr_linenumber" name="56" href="#56">56</a>  <strong class="jxr_keyword">import</strong> javax.management.ObjectName;
+<a class="jxr_linenumber" name="56" href="#56">56</a>  <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
 <a class="jxr_linenumber" name="57" href="#57">57</a>  
 <a class="jxr_linenumber" name="58" href="#58">58</a>  
 <a class="jxr_linenumber" name="59" href="#59">59</a>  <em class="jxr_javadoccomment">/**</em>
@@ -92,7 +92,7 @@
 <a class="jxr_linenumber" name="82" href="#82">82</a>          objectName = objectNameIn;
 <a class="jxr_linenumber" name="83" href="#83">83</a>      }
 <a class="jxr_linenumber" name="84" href="#84">84</a>  
-<a class="jxr_linenumber" name="85" href="#85">85</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a>(Habitat habitat, <a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> document, <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> parent, <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, XMLStreamReader in) {
+<a class="jxr_linenumber" name="85" href="#85">85</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a>(ServiceLocator habitat, <a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> document, <a href="../../../../org/jvnet/hk2/config/ConfigBean.html">ConfigBean</a> parent, <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, XMLStreamReader in) {
 <a class="jxr_linenumber" name="86" href="#86">86</a>  
 <a class="jxr_linenumber" name="87" href="#87">87</a>          <strong class="jxr_keyword">super</strong>(habitat, document, parent, model, in);
 <a class="jxr_linenumber" name="88" href="#88">88</a>          <em class="jxr_comment">// by default all ConfigBean support the ConstrainedBeanListener interface</em>
@@ -171,7 +171,7 @@
 <a class="jxr_linenumber" name="161" href="#161">161</a> 
 <a class="jxr_linenumber" name="162" href="#162">162</a>     <strong class="jxr_keyword">protected</strong> <strong class="jxr_keyword">void</strong> setter(ConfigModel.Property target, Object value) <strong class="jxr_keyword">throws</strong> Exception  {
 <a class="jxr_linenumber" name="163" href="#163">163</a>         <strong class="jxr_keyword">if</strong> (!writeLock) {
-<a class="jxr_linenumber" name="164" href="#164">164</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> PropertyVetoException(<span class="jxr_string">"Instance of "</span> + typeName() + <span class="jxr_string">" named '"</span> + getKey() +
+<a class="jxr_linenumber" name="164" href="#164">164</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> PropertyVetoException(<span class="jxr_string">"Instance of "</span> + getImplementation() + <span class="jxr_string">" named '"</span> + getKey() +
 <a class="jxr_linenumber" name="165" href="#165">165</a>                     <span class="jxr_string">"' is not locked for writing when changing attribute "</span> + target.xmlName()
 <a class="jxr_linenumber" name="166" href="#166">166</a>                     + <span class="jxr_string">", you must use transaction semantics to access it."</span>, <strong class="jxr_keyword">null</strong>);
 <a class="jxr_linenumber" name="167" href="#167">167</a>         }

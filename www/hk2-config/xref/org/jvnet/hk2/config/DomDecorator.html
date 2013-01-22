@@ -10,15 +10,15 @@
 
 <a class="jxr_linenumber" name="1" href="#1">1</a>   <strong class="jxr_keyword">package</strong> org.jvnet.hk2.config;
 <a class="jxr_linenumber" name="2" href="#2">2</a>   
-<a class="jxr_linenumber" name="3" href="#3">3</a>   <strong class="jxr_keyword">import</strong> org.jvnet.hk2.annotations.Contract;
-<a class="jxr_linenumber" name="4" href="#4">4</a>   <strong class="jxr_keyword">import</strong> org.jvnet.hk2.component.Habitat;
+<a class="jxr_linenumber" name="3" href="#3">3</a>   <strong class="jxr_keyword">import</strong> org.glassfish.hk2.api.ServiceLocator;
+<a class="jxr_linenumber" name="4" href="#4">4</a>   <strong class="jxr_keyword">import</strong> org.jvnet.hk2.annotations.Contract;
 <a class="jxr_linenumber" name="5" href="#5">5</a>   
 <a class="jxr_linenumber" name="6" href="#6">6</a>   <strong class="jxr_keyword">import</strong> javax.xml.stream.XMLStreamReader;
 <a class="jxr_linenumber" name="7" href="#7">7</a>   
 <a class="jxr_linenumber" name="8" href="#8">8</a>   @Contract
 <a class="jxr_linenumber" name="9" href="#9">9</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">interface</strong> DomDecorator&lt;T <strong class="jxr_keyword">extends</strong> Dom&gt; {
 <a class="jxr_linenumber" name="10" href="#10">10</a>      
-<a class="jxr_linenumber" name="11" href="#11">11</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> decorate(Habitat habitat, <a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> document, T parent, <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, XMLStreamReader in);
+<a class="jxr_linenumber" name="11" href="#11">11</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../org/jvnet/hk2/config/Dom.html">Dom</a> decorate(ServiceLocator habitat, <a href="../../../../org/jvnet/hk2/config/DomDocument.html">DomDocument</a> document, T parent, <a href="../../../../org/jvnet/hk2/config/ConfigModel.html">ConfigModel</a> model, XMLStreamReader in);
 <a class="jxr_linenumber" name="12" href="#12">12</a>  
 <a class="jxr_linenumber" name="13" href="#13">13</a>  }
 </pre>
