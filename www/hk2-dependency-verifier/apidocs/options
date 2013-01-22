@@ -1,24 +1,28 @@
 -classpath
-'/Users/dochez/java/svn/full-hk2/hk2/dependency-verifier/target/classes:/Users/dochez/.m2/repository/org/glassfish/hk2/external/asm-all-repackaged/1.0.59-SNAPSHOT/asm-all-repackaged-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/sun/enterprise/osgi-adapter/1.0.59-SNAPSHOT/osgi-adapter-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/apache/felix/org.osgi.core/1.2.0/org.osgi.core-1.2.0.jar:/Users/dochez/.m2/repository/org/glassfish/hk2/external/bean-validator/1.0.59-SNAPSHOT/bean-validator-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/glassfish/hk2/class-model/1.0.59-SNAPSHOT/class-model-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/sun/enterprise/hk2-core/1.0.59-SNAPSHOT/hk2-core-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/org/apache/bcel/bcel/5.2/bcel-5.2.jar:/Users/dochez/.m2/repository/jakarta-regexp/jakarta-regexp/1.4/jakarta-regexp-1.4.jar:/Users/dochez/.m2/repository/com/googlecode/jtype/jtype/0.1.0/jtype-0.1.0.jar:/Users/dochez/.m2/repository/org/jvnet/tiger-types/1.2/tiger-types-1.2.jar:/Users/dochez/.m2/repository/com/sun/enterprise/auto-depends/1.0.59-SNAPSHOT/auto-depends-1.0.59-SNAPSHOT.jar:/Users/dochez/.m2/repository/com/sun/enterprise/config/1.0.59-SNAPSHOT/config-1.0.59-SNAPSHOT.jar'
+'/scratch/jwells/bg/all/hk2/dependency-verifier/target/classes:/scratch/jwells/bg/all/hk2/hk2-api/target/classes:/scratch/jwells/bg/all/hk2/external/asm-all/target/classes:/scratch/jwells/maven/repository/org/osgi/org.osgi.core/4.1.0/org.osgi.core-4.1.0.jar:/scratch/jwells/bg/all/hk2/osgi/adapter/target/classes:/scratch/jwells/maven/repository/org/apache/felix/org.osgi.core/1.2.0/org.osgi.core-1.2.0.jar:/scratch/jwells/bg/all/hk2/hk2-utils/target/classes:/scratch/jwells/bg/all/hk2/core/target/classes:/scratch/jwells/bg/all/hk2/external/jsr330/target/classes:/scratch/jwells/maven/repository/org/apache/bcel/bcel/5.2/bcel-5.2.jar:/scratch/jwells/maven/repository/jakarta-regexp/jakarta-regexp/1.4/jakarta-regexp-1.4.jar:/scratch/jwells/maven/repository/org/apache/felix/org.apache.felix.bundlerepository/1.6.6/org.apache.felix.bundlerepository-1.6.6.jar:/scratch/jwells/maven/repository/javax/inject/javax.inject/1/javax.inject-1.jar:/scratch/jwells/bg/all/hk2/external/cglib/target/classes:/scratch/jwells/maven/repository/org/glassfish/hk2/osgi-resource-locator/1.0.1/osgi-resource-locator-1.0.1.jar:/scratch/jwells/bg/all/hk2/hk2-locator/target/classes'
 -encoding
-'MacRoman'
+'UTF-8'
 -protected
 -sourcepath
-'/Users/dochez/java/svn/full-hk2/hk2/dependency-verifier/src/main/java'
+'/scratch/jwells/bg/all/hk2/dependency-verifier/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2010 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
+'Copyright &#169; 2013 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
-'/Users/dochez/java/svn/full-hk2/hk2/dependency-verifier/target/site/apidocs'
+'/scratch/jwells/bg/all/hk2/dependency-verifier/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'Static Analyser for verifying module dependency 1.0.59-SNAPSHOT API'
--link
-'http://java.sun.com/javase/6/docs/api'
+'Static Analyser for verifying module dependency 2.1.53-SNAPSHOT API'
+-linkoffline
+'http://download.oracle.com/javase/6/docs/api' '/scratch/jwells/bg/all/hk2/dependency-verifier/target/javadoc-bundle-options'
+-linkoffline
+'http://java.net/hk2-parent/core/apidocs' '/scratch/jwells/bg/all/hk2/core/target/site/apidocs'
+-linkoffline
+'http://java.net/hk2-parent/osgi/osgi-adapter/apidocs' '/scratch/jwells/bg/all/hk2/osgi/adapter/target/site/apidocs'
 -use
 -version
 -windowtitle
-'Static Analyser for verifying module dependency 1.0.59-SNAPSHOT API'
+'Static Analyser for verifying module dependency 2.1.53-SNAPSHOT API'
