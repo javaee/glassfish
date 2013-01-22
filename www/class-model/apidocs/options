@@ -1,24 +1,24 @@
 -classpath
-'/Users/dochez/java/svn/full-hk2/hk2/class-model/target/classes:/Users/dochez/.m2/repository/asm/asm-commons/3.2/asm-commons-3.2.jar:/Users/dochez/.m2/repository/asm/asm/3.2/asm-3.2.jar:/Users/dochez/.m2/repository/asm/asm-tree/3.2/asm-tree-3.2.jar:/Users/dochez/.m2/repository/junit/junit/4.3.1/junit-4.3.1.jar'
+'/scratch/jwells/bg/all/hk2/class-model/target/classes:/scratch/jwells/maven/repository/asm/asm-commons/3.3/asm-commons-3.3.jar:/scratch/jwells/maven/repository/asm/asm/3.3/asm-3.3.jar:/scratch/jwells/maven/repository/asm/asm-tree/3.3/asm-tree-3.3.jar:/scratch/jwells/maven/repository/junit/junit/4.3.1/junit-4.3.1.jar'
 -encoding
-'MacRoman'
+'UTF-8'
 -protected
 -sourcepath
-'/Users/dochez/java/svn/full-hk2/hk2/class-model/src/main/java'
+'/scratch/jwells/bg/all/hk2/class-model/src/main/java'
 -author
 -bottom
-'Copyright &#169; 2010 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
+'Copyright &#169; 2013 <a href="http://www.oracle.com">Oracle Corporation</a>. All Rights Reserved.'
 -charset
 'UTF-8'
 -d
-'/Users/dochez/java/svn/full-hk2/hk2/class-model/target/site/apidocs'
+'/scratch/jwells/bg/all/hk2/class-model/target/site/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'Class Model for Hk2 1.0.59-SNAPSHOT API'
--link
-'http://java.sun.com/javase/6/docs/api'
+'Class Model for Hk2 2.1.53-SNAPSHOT API'
+-linkoffline
+'http://download.oracle.com/javase/6/docs/api' '/scratch/jwells/bg/all/hk2/class-model/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'Class Model for Hk2 1.0.59-SNAPSHOT API'
+'Class Model for Hk2 2.1.53-SNAPSHOT API'
