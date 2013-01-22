@@ -85,12 +85,12 @@
 <a class="jxr_linenumber" name="75" href="#75">75</a>  <em class="jxr_comment">     * @see org.glassfish.hk2.api.Configuration#bind(org.glassfish.hk2.api.Descriptor)</em>
 <a class="jxr_linenumber" name="76" href="#76">76</a>  <em class="jxr_comment">     */</em>
 <a class="jxr_linenumber" name="77" href="#77">77</a>      @Override
-<a class="jxr_linenumber" name="78" href="#78">78</a>      <strong class="jxr_keyword">public</strong> ActiveDescriptor&lt;?&gt; bind(Descriptor key) {
+<a class="jxr_linenumber" name="78" href="#78">78</a>      <strong class="jxr_keyword">public</strong> &lt;T&gt; ActiveDescriptor&lt;T&gt; bind(Descriptor key) {
 <a class="jxr_linenumber" name="79" href="#79">79</a>          checkState();
 <a class="jxr_linenumber" name="80" href="#80">80</a>          checkDescriptor(key);
 <a class="jxr_linenumber" name="81" href="#81">81</a>  
-<a class="jxr_linenumber" name="82" href="#82">82</a>          SystemDescriptor&lt;?&gt; sd = <strong class="jxr_keyword">new</strong> SystemDescriptor&lt;Object&gt;(key,
-<a class="jxr_linenumber" name="83" href="#83">83</a>                  <strong class="jxr_keyword">new</strong> Long(locator.getLocatorId()),
+<a class="jxr_linenumber" name="82" href="#82">82</a>          SystemDescriptor&lt;T&gt; sd = <strong class="jxr_keyword">new</strong> SystemDescriptor&lt;T&gt;(key,
+<a class="jxr_linenumber" name="83" href="#83">83</a>                  locator,
 <a class="jxr_linenumber" name="84" href="#84">84</a>                  <strong class="jxr_keyword">new</strong> Long(locator.getNextServiceId()));
 <a class="jxr_linenumber" name="85" href="#85">85</a>  
 <a class="jxr_linenumber" name="86" href="#86">86</a>          allDescriptors.add(sd);
@@ -128,12 +128,12 @@
 <a class="jxr_linenumber" name="118" href="#118">118</a>         }
 <a class="jxr_linenumber" name="119" href="#119">119</a>         
 <a class="jxr_linenumber" name="120" href="#120">120</a>         <strong class="jxr_keyword">final</strong> SystemDescriptor&lt;?&gt; boundAsService = <strong class="jxr_keyword">new</strong> SystemDescriptor&lt;Object&gt;(asService,
-<a class="jxr_linenumber" name="121" href="#121">121</a>                 <strong class="jxr_keyword">new</strong> Long(locator.getLocatorId()),
+<a class="jxr_linenumber" name="121" href="#121">121</a>                 locator,
 <a class="jxr_linenumber" name="122" href="#122">122</a>                 <strong class="jxr_keyword">new</strong> Long(locator.getNextServiceId()));
 <a class="jxr_linenumber" name="123" href="#123">123</a> 
 <a class="jxr_linenumber" name="124" href="#124">124</a>         <em class="jxr_comment">// Link the factory descriptor to the service descriptor for the factory</em>
 <a class="jxr_linenumber" name="125" href="#125">125</a>         <strong class="jxr_keyword">final</strong> SystemDescriptor&lt;?&gt; boundAsFactory = <strong class="jxr_keyword">new</strong> SystemDescriptor&lt;Object&gt;(asFactory,
-<a class="jxr_linenumber" name="126" href="#126">126</a>                 <strong class="jxr_keyword">new</strong> Long(locator.getLocatorId()),
+<a class="jxr_linenumber" name="126" href="#126">126</a>                 locator,
 <a class="jxr_linenumber" name="127" href="#127">127</a>                 <strong class="jxr_keyword">new</strong> Long(locator.getNextServiceId()));
 <a class="jxr_linenumber" name="128" href="#128">128</a>         
 <a class="jxr_linenumber" name="129" href="#129">129</a>         <strong class="jxr_keyword">if</strong> (asService instanceof ActiveDescriptor) {
@@ -173,84 +173,97 @@
 <a class="jxr_linenumber" name="163" href="#163">163</a>             <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
 <a class="jxr_linenumber" name="164" href="#164">164</a>         }
 <a class="jxr_linenumber" name="165" href="#165">165</a>         
-<a class="jxr_linenumber" name="166" href="#166">166</a>         SystemDescriptor&lt;T&gt; retVal = <strong class="jxr_keyword">new</strong> SystemDescriptor&lt;T&gt;(activeDescriptor,
-<a class="jxr_linenumber" name="167" href="#167">167</a>                 <strong class="jxr_keyword">new</strong> Long(locator.getLocatorId()),
-<a class="jxr_linenumber" name="168" href="#168">168</a>                 <strong class="jxr_keyword">new</strong> Long(locator.getNextServiceId()));
-<a class="jxr_linenumber" name="169" href="#169">169</a>         
-<a class="jxr_linenumber" name="170" href="#170">170</a>         allDescriptors.add(retVal);
+<a class="jxr_linenumber" name="166" href="#166">166</a>         checkReifiedDescriptor(activeDescriptor);
+<a class="jxr_linenumber" name="167" href="#167">167</a>         
+<a class="jxr_linenumber" name="168" href="#168">168</a>         SystemDescriptor&lt;T&gt; retVal = <strong class="jxr_keyword">new</strong> SystemDescriptor&lt;T&gt;(activeDescriptor,
+<a class="jxr_linenumber" name="169" href="#169">169</a>                 locator,
+<a class="jxr_linenumber" name="170" href="#170">170</a>                 <strong class="jxr_keyword">new</strong> Long(locator.getNextServiceId()));
 <a class="jxr_linenumber" name="171" href="#171">171</a>         
-<a class="jxr_linenumber" name="172" href="#172">172</a>         <strong class="jxr_keyword">return</strong> retVal;
-<a class="jxr_linenumber" name="173" href="#173">173</a>     }
-<a class="jxr_linenumber" name="174" href="#174">174</a>     
-<a class="jxr_linenumber" name="175" href="#175">175</a>     <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
-<a class="jxr_linenumber" name="176" href="#176">176</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.Configuration#addActiveDescriptor(java.lang.Class)</em>
-<a class="jxr_linenumber" name="177" href="#177">177</a> <em class="jxr_comment">     */</em>
-<a class="jxr_linenumber" name="178" href="#178">178</a>     @Override
-<a class="jxr_linenumber" name="179" href="#179">179</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; ActiveDescriptor&lt;T&gt; addActiveDescriptor(Class&lt;T&gt; rawClass)
-<a class="jxr_linenumber" name="180" href="#180">180</a>             <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
-<a class="jxr_linenumber" name="181" href="#181">181</a>         ActiveDescriptor&lt;T&gt; ad = Utilities.createAutoDescriptor(rawClass, locator);
-<a class="jxr_linenumber" name="182" href="#182">182</a>         
-<a class="jxr_linenumber" name="183" href="#183">183</a>         <strong class="jxr_keyword">return</strong> addActiveDescriptor(ad);
-<a class="jxr_linenumber" name="184" href="#184">184</a>     }
-<a class="jxr_linenumber" name="185" href="#185">185</a>     
-<a class="jxr_linenumber" name="186" href="#186">186</a>     <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
-<a class="jxr_linenumber" name="187" href="#187">187</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.Configuration#addUnbindFilter(org.glassfish.hk2.api.Filter)</em>
-<a class="jxr_linenumber" name="188" href="#188">188</a> <em class="jxr_comment">     */</em>
-<a class="jxr_linenumber" name="189" href="#189">189</a>     @Override
-<a class="jxr_linenumber" name="190" href="#190">190</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addUnbindFilter(Filter unbindFilter)
-<a class="jxr_linenumber" name="191" href="#191">191</a>             <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
-<a class="jxr_linenumber" name="192" href="#192">192</a>         <strong class="jxr_keyword">if</strong> (unbindFilter == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
-<a class="jxr_linenumber" name="193" href="#193">193</a>         
-<a class="jxr_linenumber" name="194" href="#194">194</a>         allUnbindFilters.add(unbindFilter);
-<a class="jxr_linenumber" name="195" href="#195">195</a>     }
-<a class="jxr_linenumber" name="196" href="#196">196</a> 
-<a class="jxr_linenumber" name="197" href="#197">197</a>     <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
-<a class="jxr_linenumber" name="198" href="#198">198</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.DynamicConfiguration#commit()</em>
-<a class="jxr_linenumber" name="199" href="#199">199</a> <em class="jxr_comment">     */</em>
-<a class="jxr_linenumber" name="200" href="#200">200</a>     @Override
-<a class="jxr_linenumber" name="201" href="#201">201</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> commit() <strong class="jxr_keyword">throws</strong> MultiException {
-<a class="jxr_linenumber" name="202" href="#202">202</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
-<a class="jxr_linenumber" name="203" href="#203">203</a>             checkState();
-<a class="jxr_linenumber" name="204" href="#204">204</a>             
-<a class="jxr_linenumber" name="205" href="#205">205</a>             committed = <strong class="jxr_keyword">true</strong>;
-<a class="jxr_linenumber" name="206" href="#206">206</a>         }
-<a class="jxr_linenumber" name="207" href="#207">207</a>         
-<a class="jxr_linenumber" name="208" href="#208">208</a>         locator.addConfiguration(<strong class="jxr_keyword">this</strong>);
-<a class="jxr_linenumber" name="209" href="#209">209</a>     }
-<a class="jxr_linenumber" name="210" href="#210">210</a>     
-<a class="jxr_linenumber" name="211" href="#211">211</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkState() {
-<a class="jxr_linenumber" name="212" href="#212">212</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
-<a class="jxr_linenumber" name="213" href="#213">213</a>             <strong class="jxr_keyword">if</strong> (committed) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException();
-<a class="jxr_linenumber" name="214" href="#214">214</a>         }
-<a class="jxr_linenumber" name="215" href="#215">215</a>     }
-<a class="jxr_linenumber" name="216" href="#216">216</a>     
-<a class="jxr_linenumber" name="217" href="#217">217</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> checkDescriptor(Descriptor d) {
-<a class="jxr_linenumber" name="218" href="#218">218</a>         <strong class="jxr_keyword">if</strong> (d == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
-<a class="jxr_linenumber" name="219" href="#219">219</a>         <strong class="jxr_keyword">if</strong> (d.getImplementation() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
-<a class="jxr_linenumber" name="220" href="#220">220</a>         <strong class="jxr_keyword">if</strong> (d.getAdvertisedContracts() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
-<a class="jxr_linenumber" name="221" href="#221">221</a>         <strong class="jxr_keyword">if</strong> (d.getDescriptorType() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
-<a class="jxr_linenumber" name="222" href="#222">222</a>         <strong class="jxr_keyword">if</strong> (d.getMetadata() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
-<a class="jxr_linenumber" name="223" href="#223">223</a>         <strong class="jxr_keyword">if</strong> (d.getQualifiers() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
-<a class="jxr_linenumber" name="224" href="#224">224</a>     }
-<a class="jxr_linenumber" name="225" href="#225">225</a> 
-<a class="jxr_linenumber" name="226" href="#226">226</a>     <em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="227" href="#227">227</a> <em class="jxr_javadoccomment">     * @return the allDescriptors</em>
-<a class="jxr_linenumber" name="228" href="#228">228</a> <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="229" href="#229">229</a>     <em class="jxr_comment">/*<em class="jxr_comment"> package */</em> LinkedList&lt;SystemDescriptor&lt;?&gt;&gt; getAllDescriptors() {</em>
-<a class="jxr_linenumber" name="230" href="#230">230</a>         <strong class="jxr_keyword">return</strong> allDescriptors;
-<a class="jxr_linenumber" name="231" href="#231">231</a>     }
-<a class="jxr_linenumber" name="232" href="#232">232</a>     
-<a class="jxr_linenumber" name="233" href="#233">233</a>     <em class="jxr_comment">/*<em class="jxr_comment"> package */</em> LinkedList&lt;Filter&gt; getUnbindFilters() {</em>
-<a class="jxr_linenumber" name="234" href="#234">234</a>         <strong class="jxr_keyword">return</strong> allUnbindFilters;
-<a class="jxr_linenumber" name="235" href="#235">235</a>     }
-<a class="jxr_linenumber" name="236" href="#236">236</a>     
-<a class="jxr_linenumber" name="237" href="#237">237</a>     <strong class="jxr_keyword">public</strong> String toString() {
-<a class="jxr_linenumber" name="238" href="#238">238</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"DynamicConfigurationImpl("</span> + locator + <span class="jxr_string">","</span> +
-<a class="jxr_linenumber" name="239" href="#239">239</a>             Pretty.collection(allDescriptors) + <span class="jxr_string">","</span> +
-<a class="jxr_linenumber" name="240" href="#240">240</a>             Pretty.collection(allUnbindFilters) + <span class="jxr_string">","</span> +
-<a class="jxr_linenumber" name="241" href="#241">241</a>             System.identityHashCode(<strong class="jxr_keyword">this</strong>) + <span class="jxr_string">")"</span>;
-<a class="jxr_linenumber" name="242" href="#242">242</a>     }
-<a class="jxr_linenumber" name="243" href="#243">243</a> }
+<a class="jxr_linenumber" name="172" href="#172">172</a>         allDescriptors.add(retVal);
+<a class="jxr_linenumber" name="173" href="#173">173</a>         
+<a class="jxr_linenumber" name="174" href="#174">174</a>         <strong class="jxr_keyword">return</strong> retVal;
+<a class="jxr_linenumber" name="175" href="#175">175</a>     }
+<a class="jxr_linenumber" name="176" href="#176">176</a>     
+<a class="jxr_linenumber" name="177" href="#177">177</a>     <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
+<a class="jxr_linenumber" name="178" href="#178">178</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.Configuration#addActiveDescriptor(java.lang.Class)</em>
+<a class="jxr_linenumber" name="179" href="#179">179</a> <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="180" href="#180">180</a>     @Override
+<a class="jxr_linenumber" name="181" href="#181">181</a>     <strong class="jxr_keyword">public</strong> &lt;T&gt; ActiveDescriptor&lt;T&gt; addActiveDescriptor(Class&lt;T&gt; rawClass)
+<a class="jxr_linenumber" name="182" href="#182">182</a>             <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
+<a class="jxr_linenumber" name="183" href="#183">183</a>         ActiveDescriptor&lt;T&gt; ad = Utilities.createAutoDescriptor(rawClass, locator);
+<a class="jxr_linenumber" name="184" href="#184">184</a>         
+<a class="jxr_linenumber" name="185" href="#185">185</a>         checkReifiedDescriptor(ad);
+<a class="jxr_linenumber" name="186" href="#186">186</a>         
+<a class="jxr_linenumber" name="187" href="#187">187</a>         <strong class="jxr_keyword">return</strong> addActiveDescriptor(ad);
+<a class="jxr_linenumber" name="188" href="#188">188</a>     }
+<a class="jxr_linenumber" name="189" href="#189">189</a>     
+<a class="jxr_linenumber" name="190" href="#190">190</a>     <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
+<a class="jxr_linenumber" name="191" href="#191">191</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.Configuration#addUnbindFilter(org.glassfish.hk2.api.Filter)</em>
+<a class="jxr_linenumber" name="192" href="#192">192</a> <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="193" href="#193">193</a>     @Override
+<a class="jxr_linenumber" name="194" href="#194">194</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> addUnbindFilter(Filter unbindFilter)
+<a class="jxr_linenumber" name="195" href="#195">195</a>             <strong class="jxr_keyword">throws</strong> IllegalArgumentException {
+<a class="jxr_linenumber" name="196" href="#196">196</a>         <strong class="jxr_keyword">if</strong> (unbindFilter == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="197" href="#197">197</a>         
+<a class="jxr_linenumber" name="198" href="#198">198</a>         allUnbindFilters.add(unbindFilter);
+<a class="jxr_linenumber" name="199" href="#199">199</a>     }
+<a class="jxr_linenumber" name="200" href="#200">200</a> 
+<a class="jxr_linenumber" name="201" href="#201">201</a>     <em class="jxr_comment">/*<em class="jxr_comment"> (non-Javadoc)</em></em>
+<a class="jxr_linenumber" name="202" href="#202">202</a> <em class="jxr_comment">     * @see org.glassfish.hk2.api.DynamicConfiguration#commit()</em>
+<a class="jxr_linenumber" name="203" href="#203">203</a> <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="204" href="#204">204</a>     @Override
+<a class="jxr_linenumber" name="205" href="#205">205</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> commit() <strong class="jxr_keyword">throws</strong> MultiException {
+<a class="jxr_linenumber" name="206" href="#206">206</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
+<a class="jxr_linenumber" name="207" href="#207">207</a>             checkState();
+<a class="jxr_linenumber" name="208" href="#208">208</a>             
+<a class="jxr_linenumber" name="209" href="#209">209</a>             committed = <strong class="jxr_keyword">true</strong>;
+<a class="jxr_linenumber" name="210" href="#210">210</a>         }
+<a class="jxr_linenumber" name="211" href="#211">211</a>         
+<a class="jxr_linenumber" name="212" href="#212">212</a>         locator.addConfiguration(<strong class="jxr_keyword">this</strong>);
+<a class="jxr_linenumber" name="213" href="#213">213</a>     }
+<a class="jxr_linenumber" name="214" href="#214">214</a>     
+<a class="jxr_linenumber" name="215" href="#215">215</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">void</strong> checkState() {
+<a class="jxr_linenumber" name="216" href="#216">216</a>         <strong class="jxr_keyword">synchronized</strong> (lock) {
+<a class="jxr_linenumber" name="217" href="#217">217</a>             <strong class="jxr_keyword">if</strong> (committed) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalStateException();
+<a class="jxr_linenumber" name="218" href="#218">218</a>         }
+<a class="jxr_linenumber" name="219" href="#219">219</a>     }
+<a class="jxr_linenumber" name="220" href="#220">220</a>     
+<a class="jxr_linenumber" name="221" href="#221">221</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> checkDescriptor(Descriptor d) {
+<a class="jxr_linenumber" name="222" href="#222">222</a>         <strong class="jxr_keyword">if</strong> (d == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="223" href="#223">223</a>         <strong class="jxr_keyword">if</strong> (d.getImplementation() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="224" href="#224">224</a>         <strong class="jxr_keyword">if</strong> (d.getAdvertisedContracts() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="225" href="#225">225</a>         <strong class="jxr_keyword">if</strong> (d.getDescriptorType() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="226" href="#226">226</a>         <strong class="jxr_keyword">if</strong> (d.getDescriptorVisibility() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="227" href="#227">227</a>         <strong class="jxr_keyword">if</strong> (d.getMetadata() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="228" href="#228">228</a>         <strong class="jxr_keyword">if</strong> (d.getQualifiers() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="229" href="#229">229</a>     }
+<a class="jxr_linenumber" name="230" href="#230">230</a>     
+<a class="jxr_linenumber" name="231" href="#231">231</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">void</strong> checkReifiedDescriptor(ActiveDescriptor&lt;?&gt; d) {
+<a class="jxr_linenumber" name="232" href="#232">232</a>         <strong class="jxr_keyword">if</strong> (d.isProxiable() == <strong class="jxr_keyword">null</strong>) <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="233" href="#233">233</a>         <strong class="jxr_keyword">if</strong> (!d.isProxiable()) <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="234" href="#234">234</a>         
+<a class="jxr_linenumber" name="235" href="#235">235</a>         <em class="jxr_comment">// Now check to see if the scope is unproxiable</em>
+<a class="jxr_linenumber" name="236" href="#236">236</a>         <strong class="jxr_keyword">if</strong> (Utilities.isUnproxiableScope(d.getScopeAnnotation())) <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException();
+<a class="jxr_linenumber" name="237" href="#237">237</a>     }
+<a class="jxr_linenumber" name="238" href="#238">238</a> 
+<a class="jxr_linenumber" name="239" href="#239">239</a>     <em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="240" href="#240">240</a> <em class="jxr_javadoccomment">     * @return the allDescriptors</em>
+<a class="jxr_linenumber" name="241" href="#241">241</a> <em class="jxr_javadoccomment">     */</em>
+<a class="jxr_linenumber" name="242" href="#242">242</a>     <em class="jxr_comment">/*<em class="jxr_comment"> package */</em> LinkedList&lt;SystemDescriptor&lt;?&gt;&gt; getAllDescriptors() {</em>
+<a class="jxr_linenumber" name="243" href="#243">243</a>         <strong class="jxr_keyword">return</strong> allDescriptors;
+<a class="jxr_linenumber" name="244" href="#244">244</a>     }
+<a class="jxr_linenumber" name="245" href="#245">245</a>     
+<a class="jxr_linenumber" name="246" href="#246">246</a>     <em class="jxr_comment">/*<em class="jxr_comment"> package */</em> LinkedList&lt;Filter&gt; getUnbindFilters() {</em>
+<a class="jxr_linenumber" name="247" href="#247">247</a>         <strong class="jxr_keyword">return</strong> allUnbindFilters;
+<a class="jxr_linenumber" name="248" href="#248">248</a>     }
+<a class="jxr_linenumber" name="249" href="#249">249</a>     
+<a class="jxr_linenumber" name="250" href="#250">250</a>     <strong class="jxr_keyword">public</strong> String toString() {
+<a class="jxr_linenumber" name="251" href="#251">251</a>         <strong class="jxr_keyword">return</strong> <span class="jxr_string">"DynamicConfigurationImpl("</span> + locator + <span class="jxr_string">","</span> +
+<a class="jxr_linenumber" name="252" href="#252">252</a>             Pretty.collection(allDescriptors) + <span class="jxr_string">","</span> +
+<a class="jxr_linenumber" name="253" href="#253">253</a>             Pretty.collection(allUnbindFilters) + <span class="jxr_string">","</span> +
+<a class="jxr_linenumber" name="254" href="#254">254</a>             System.identityHashCode(<strong class="jxr_keyword">this</strong>) + <span class="jxr_string">")"</span>;
+<a class="jxr_linenumber" name="255" href="#255">255</a>     }
+<a class="jxr_linenumber" name="256" href="#256">256</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
