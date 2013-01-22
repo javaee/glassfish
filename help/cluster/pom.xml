@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.docs.help</groupId>
         <artifactId>online</artifactId>
-        <version>4.0-SNAPSHOT</version>
+        <version>4.0-b12</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>console-cluster-plugin-help</artifactId>
