@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
@@ -44,14 +44,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.docs.help</groupId>
-	<artifactId>online</artifactId>
+        <artifactId>online</artifactId>
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
-    </parent>
+    </parent>    
     <artifactId>console-jdbc-plugin-help</artifactId>
-    <packaging>hk2-jar</packaging>
+    <packaging>pom</packaging>
     <name>Administration Console JDBC Help Content</name>
-    <description>Online help content for the console-jdbc-plugin bundle.</description>
 
     <developers>
         <developer>
@@ -63,29 +62,21 @@
                 <role>developer</role>
             </roles>
         </developer>
-        <developer>
-            <id>chaase3</id>
-            <name>Kim Haase</name>
-            <url>http://blogs.sun.com/appserverwriters</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
     </developers>
-
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Export-Package />
-                    </instructions>
-                </configuration>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-            <!-- create dummy sources and javadoc artifacts -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <dependencies>
@@ -103,19 +94,20 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <!-- This is where we use our shared assembly descriptor -->
                             <descriptorRefs>
-                                <descriptorRef>sources</descriptorRef>
-                                <descriptorRef>javadoc</descriptorRef>
+                                <descriptorRef>zip</descriptorRef>
                             </descriptorRefs>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
-        <resources>
+	<resources>
             <resource>
                 <directory>src/main/resources</directory>
             </resource>
-        </resources>
+          </resources>
     </build>
 </project>
