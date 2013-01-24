@@ -129,6 +129,10 @@ public class FactoryModule implements TestModule {
                 to(JeffersonVP.class).
                 in(ProxiableSingleton.class.getName()).
                 buildFactory(ProxiableSingleton.class.getName()));
+        configurator.bind(BuilderHelper.link(BurrVPFactory.class).
+                to(BurrVP.class).
+                in(ProxiableSingleton.class.getName()).
+                buildFactory(ProxiableSingleton.class.getName()));
     }
 
 }

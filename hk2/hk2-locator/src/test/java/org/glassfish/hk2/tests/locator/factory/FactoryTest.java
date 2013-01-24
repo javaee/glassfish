@@ -45,6 +45,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -69,6 +70,8 @@ public class FactoryTest {
     public final static int ADAMS_VP_NUMBER = 1;
     /** Second Vice President */
     public final static int JEFFERSON_VP_NUMBER = 2;
+    /** Third Vice President */
+    public final static int BURR_VP_NUMBER = 3;
     
     /**
      * A very simple factory test
@@ -170,5 +173,15 @@ public class FactoryTest {
         JeffersonVP jeffersonVP = locator.getService(JeffersonVP.class);
         Assert.assertNotNull(jeffersonVP);
         Assert.assertEquals(JEFFERSON_VP_NUMBER, jeffersonVP.getNumber());
+    }
+    
+    /**
+     * Tests a proxiable factory where the provide method has a wildcard
+     */
+    @Test @Ignore
+    public void testProxiableFactoryWithWildcardProvideMethod() {
+        BurrVP burrVP = locator.getService(BurrVP.class);
+        Assert.assertNotNull(burrVP);
+        Assert.assertEquals(BURR_VP_NUMBER, burrVP.getNumber());
     }
 }
