@@ -43,9 +43,11 @@ import java.util.Date;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Ignore;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
 
 /**
@@ -176,11 +178,19 @@ public class FactoryTest {
     }
     
     /**
-     * Tests a proxiable factory where the provide method has a wildcard
+     * Tests a proxiable factory where the provide method has a wildcard.
+     * 
+     * This uses a round-about way to get the burrVP service in order to ensure it works
      */
-    @Test @Ignore
+    @SuppressWarnings("unchecked")
+    @Test
     public void testProxiableFactoryWithWildcardProvideMethod() {
-        BurrVP burrVP = locator.getService(BurrVP.class);
+        ActiveDescriptor<?> burrVPDescriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(BurrVP.class.getName()));
+        Assert.assertNotNull(burrVPDescriptor);
+        
+        ServiceHandle<BurrVP> handle = (ServiceHandle<BurrVP>) locator.getServiceHandle(burrVPDescriptor);
+        
+        BurrVP burrVP = handle.getService();
         Assert.assertNotNull(burrVP);
         Assert.assertEquals(BURR_VP_NUMBER, burrVP.getNumber());
     }
