@@ -114,6 +114,7 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    private final static String PROVIDE_METHOD_NAME = "provide";
     /**
      * This utility will return the proper implementation class, taking into account that the
      * descriptor may be a factory
@@ -357,18 +358,15 @@ public class Utilities {
      * @return the CLASS version of what the factory produces
      */
     private static Class<?> getFactoryProductionClass(Class<?> factoryClass) {
-        for (Type type : factoryClass.getGenericInterfaces()) {
-            Class<?> rawClass = ReflectionHelper.getRawClass(type);
-            if (rawClass == null) continue;
-
-            if (!Factory.class.equals(rawClass)) continue;
-
-            Type firstType = getFirstTypeArgument(type);
-
-            return ReflectionHelper.getRawClass(firstType);
+        Method m;
+        try {
+            m = factoryClass.getMethod(PROVIDE_METHOD_NAME);
         }
-
-        throw new MultiException(new IllegalArgumentException(factoryClass.getName() + " is not a factory"));
+        catch (NoSuchMethodException e) {
+            throw new MultiException(new IllegalArgumentException(factoryClass.getName() + " is not a factory"));
+        }
+        
+        return m.getReturnType();
     }
 
     /**
@@ -472,12 +470,12 @@ public class Utilities {
         for (Annotation qualifier : qualifiers) {
             BuilderHelper.getMetadataValues(qualifier, metadata);
         }
-        
+
         UseProxy useProxy = clazz.getAnnotation(UseProxy.class);
         if (useProxy != null) {
             proxy = new Boolean(useProxy.value());
         }
-        
+
         DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
         Visibility vi = clazz.getAnnotation(Visibility.class);
         if (vi != null) {
@@ -669,7 +667,7 @@ public class Utilities {
         if (scope.isAnnotationPresent(Proxiable.class)) return true;
         return false;
     }
-    
+
     /**
      * Returns true if this scope is unproxiable
      *
@@ -680,11 +678,11 @@ public class Utilities {
         if (scope.isAnnotationPresent(Unproxiable.class)) return true;
         return false;
     }
-    
+
     /**
      * This method determines whether or not the descriptor should be proxied.
      * The given descriptor must be reified and valid.
-     * 
+     *
      * @param desc A non-null, reified ActiveDescriptor
      * @return true if this descriptor must be proxied, false otherwise
      */
@@ -693,7 +691,7 @@ public class Utilities {
         if (directed != null) {
             return directed.booleanValue();
         }
-        
+
         return isProxiableScope(desc.getScopeAnnotation());
     }
 
@@ -1747,12 +1745,12 @@ public class Utilities {
     public static <T> T cast(Object o) {
         return (T) o;
     }
-    
+
     private static <T> T secureCreate(final Class<?> superclass,
             final Class<?>[] interfaces,
             final MethodInterceptor callback,
             boolean useJDKProxy) {
-        
+
         /* construct the classloader where the generated proxy will be created --
          * this classloader must have visibility into the cglib classloader as well as
          * the superclass' classloader
@@ -1779,30 +1777,30 @@ public class Utilities {
                     return (T) Proxy.newProxyInstance(delegatingLoader, interfaces,
                             new MethodInterceptorInvocationHandler(callback));
                 }
-                
+
             });
-            
+
         }
-        
-        
+
+
         return AccessController.doPrivileged(new PrivilegedAction<T>() {
 
             @SuppressWarnings("unchecked")
             @Override
             public T run() {
                 EnhancerWithClassLoader<T> e = new EnhancerWithClassLoader<T>(delegatingLoader);
-                
+
                 e.setSuperclass(superclass);
                 e.setInterfaces(interfaces);
                 e.setCallback(callback);
-                
+
                 return (T) e.create();
             }
-            
+
         });
-        
+
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> T createService(ActiveDescriptor<T> root,
             Injectee injectee,
@@ -1810,16 +1808,16 @@ public class Utilities {
             ServiceHandle<T> handle,
             Class<?> requestedClass) {
         if (root == null) throw new IllegalArgumentException();
-        
+
         T service = null;
-        
+
         if (!root.isReified()) {
             root = (ActiveDescriptor<T>) locator.reifyDescriptor(root, injectee);
         }
-    
+
         if (Utilities.isProxiable(root)) {
             boolean isInterface = (requestedClass == null) ? false : requestedClass.isInterface() ;
-            
+
             final Class<?> proxyClass;
             Class<?> iFaces[];
             if (isInterface) {
@@ -1830,10 +1828,10 @@ public class Utilities {
             }
             else {
                 proxyClass = Utilities.getFactoryAwareImplementationClass(root);
-                
+
                 iFaces = Utilities.getInterfacesForProxy(root.getContractTypes());
             }
-          
+
             T proxy;
             try {
                 proxy = (T) secureCreate(proxyClass,
@@ -1844,23 +1842,23 @@ public class Utilities {
             catch (Throwable th) {
                 Exception addMe = new IllegalArgumentException("While attempting to create a Proxy for " + proxyClass.getName() +
                         " in proxiable scope " + root.getScope() + " an error occured while creating the proxy");
-                
+
                 if (th instanceof MultiException) {
                     MultiException me = (MultiException) th;
-                    
+
                     me.addError(addMe);
-                    
+
                     throw me;
                 }
-                
+
                 MultiException me = new MultiException(th);
                 me.addError(addMe);
                 throw me;
             }
-            
+
             return proxy;
         }
-    
+
         Context<?> context;
         try {
             context = locator.resolveContext(root.getScopeAnnotation());
@@ -1868,14 +1866,14 @@ public class Utilities {
         catch (Throwable th) {
             throw new MultiException(th);
         }
-        
+
         service = context.findOrCreate(root, handle);
         if (service == null && !context.supportsNullCreation()) {
             throw new MultiException(new IllegalStateException("Context " +
                 context + " findOrCreate returned a null for descriptor " + root +
                 " and handle " + handle));
         }
-    
+
         return service;
     }
 
@@ -1989,10 +1987,10 @@ public class Utilities {
             return annoType;
         }
     }
-    
+
     private static class MethodInterceptorInvocationHandler implements InvocationHandler {
         private final MethodInterceptor interceptor;
-        
+
         private MethodInterceptorInvocationHandler(MethodInterceptor interceptor) {
             this.interceptor = interceptor;
         }
@@ -2002,6 +2000,6 @@ public class Utilities {
                 throws Throwable {
             return interceptor.intercept(proxy, method, args, null);
         }
-        
+
     }
 }

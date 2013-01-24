@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,14 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.tests.locator.factory;
 
--exportcontents: \
-               com.sun.hk2.component; \
-               org.glassfish.hk2.api; \
-               org.glassfish.hk2.extension; \
-               org.glassfish.hk2.utilities; \
-               org.glassfish.hk2.utilities.binding; \
-               org.jvnet.hk2.annotations; \
-               version=${project.osgi.version}
-
-
+/**
+ * This is here to ensure that if the factory is specified in
+ * some superclass (and is proxiable) that we still get
+ * the proper type
+ * 
+ * @author jwells
+ *
+ */
+@ProxiableSingleton
+public class JeffersonVPFactory extends IntermediateVicePresidentFactory {
+}

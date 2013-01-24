@@ -116,4 +116,11 @@ public interface ScopedNamedBindingBuilder<T> extends BindingBuilder<T> {
      *             are bound to the same contract.
      */
     public void ranked(int rank);
+
+    /**
+     * Set proxy flag on the binding.
+     *
+     * @param proxiable flag to determine if the binding should be proxiable.
+     */
+    public ScopedNamedBindingBuilder<T> proxy(boolean proxiable);
 }

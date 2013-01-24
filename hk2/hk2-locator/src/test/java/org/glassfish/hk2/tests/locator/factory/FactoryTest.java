@@ -62,8 +62,13 @@ public class FactoryTest {
     
     /** Wrote many historic documents */
     public final static String JEFFERSON_NAME = "Jefferson";
-    /** Second president */
-    public final static int JEFFERSON_NUMBER = 2;
+    /** Third president */
+    public final static int JEFFERSON_NUMBER = 3;
+    
+    /** First Vice President */
+    public final static int ADAMS_VP_NUMBER = 1;
+    /** Second Vice President */
+    public final static int JEFFERSON_VP_NUMBER = 2;
     
     /**
      * A very simple factory test
@@ -144,5 +149,26 @@ public class FactoryTest {
     public void testFactoryCreatedWithBuild() {
         Widget widget = locator.getService(Widget.class);
         Assert.assertNotNull(widget);
+    }
+    
+    /**
+     * Tests a proxiable factory creating a proxiable service
+     */
+    @Test
+    public void testProxiableAbstractFactoryProducingProxiableServices() {
+        AdamsVP adamsVP = locator.getService(AdamsVP.class);
+        Assert.assertNotNull(adamsVP);
+        Assert.assertEquals(ADAMS_VP_NUMBER, adamsVP.getNumber());
+    }
+    
+    /**
+     * Tests a proxiable factory created a proxiable service using a
+     * superclass
+     */
+    @Test
+    public void testProxiableAbstractFactoryProducingProxiableServicesFromSuperclass() {
+        JeffersonVP jeffersonVP = locator.getService(JeffersonVP.class);
+        Assert.assertNotNull(jeffersonVP);
+        Assert.assertEquals(JEFFERSON_VP_NUMBER, jeffersonVP.getNumber());
     }
 }
