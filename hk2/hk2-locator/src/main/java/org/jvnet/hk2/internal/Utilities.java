@@ -51,6 +51,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -115,6 +116,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 public class Utilities {
     private final static String PROVIDE_METHOD_NAME = "provide";
+    
     /**
      * This utility will return the proper implementation class, taking into account that the
      * descriptor may be a factory
@@ -124,7 +126,7 @@ public class Utilities {
      *
      * @return The real implementation class
      */
-    public static Class<?> getFactoryAwareImplementationClass(ActiveDescriptor<?> descriptor) {
+    private static Class<?> getFactoryAwareImplementationClass(ActiveDescriptor<?> descriptor) {
         if (descriptor.getDescriptorType().equals(DescriptorType.CLASS)) {
             return descriptor.getImplementationClass();
         }
@@ -352,10 +354,22 @@ public class Utilities {
     }
 
     /**
-     * This method assumes that this class has already been checked...
+     * This method uses two strategies to try to find the class
+     * which the factory produces.  Firstly, it simply uses the
+     * provide method itself.  If the provide method has enough type
+     * information to reveal what the factory is producing, that
+     * value is used.
+     * <p>
+     * In the other case the provide method has some sort of type
+     * variable.  In that case we need to find the index of that
+     * type variable on the declaring class of the method, and
+     * then use that to discover what hard type the factory is
+     * producing.
      *
-     * @param factoryClass The non-null factory class
-     * @return the CLASS version of what the factory produces
+     * @param factoryClass The non-null factory class.  May not be null
+     * @return the CLASS version of what the factory produces.  Will
+     * not be null
+     * @throws MultiException if there was an error analyzing the class
      */
     private static Class<?> getFactoryProductionClass(Class<?> factoryClass) {
         Method m;
@@ -366,7 +380,55 @@ public class Utilities {
             throw new MultiException(new IllegalArgumentException(factoryClass.getName() + " is not a factory"));
         }
         
-        return m.getReturnType();
+        Type genericReturn = m.getGenericReturnType();
+        if ((genericReturn instanceof Class) || (genericReturn instanceof ParameterizedType)) {
+            return m.getReturnType();
+        }
+        
+        if (!(genericReturn instanceof TypeVariable)) {
+            throw new MultiException(new AssertionError("Factory class " + factoryClass.getName() + " has an invalid generic return type"));
+        }
+        
+        TypeVariable<?> tv = (TypeVariable<?>) genericReturn;
+        Class<?> declaringClass = m.getDeclaringClass();
+        
+        TypeVariable<Class<?>> genericTypes[] = cast(declaringClass.getTypeParameters());
+        
+        boolean found = false;
+        int typeIndex = 0;
+        for (TypeVariable<Class<?>> genericType : genericTypes) {
+            if (genericType.getName().equals(tv.getName())) {
+                found = true;
+                break;
+            }
+            
+            typeIndex++;
+        }
+        
+        if (!found) {
+            throw new MultiException(new AssertionError("Could not discover type variable index named " + tv.getName() + " on class " +
+                    declaringClass.getName()));
+        }
+        
+        // Now that we know the index, we need to find the fully specified reification
+        Type typeUnderInvestigation = factoryClass;
+        while (typeUnderInvestigation != null) {
+            Class<?> classUnderInvestigation = ReflectionHelper.getRawClass(typeUnderInvestigation);
+            if ((typeUnderInvestigation instanceof ParameterizedType) &&
+                    classUnderInvestigation.equals(declaringClass)) {
+                // This one might have the true type needed
+                ParameterizedType ptUnderInvestigation = (ParameterizedType) typeUnderInvestigation;
+                
+                Type possibleRealType = ptUnderInvestigation.getActualTypeArguments()[typeIndex];
+                
+                Class<?> retVal = ReflectionHelper.getRawClass(possibleRealType);
+                if (retVal != null) return retVal;
+            }
+            
+            typeUnderInvestigation = classUnderInvestigation.getGenericSuperclass();
+        }
+        
+        throw new MultiException(new AssertionError("Could not find true produced type of factory " + factoryClass.getName()));
     }
 
     /**
