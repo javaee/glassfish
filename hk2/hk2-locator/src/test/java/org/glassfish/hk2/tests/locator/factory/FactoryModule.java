@@ -114,6 +114,21 @@ public class FactoryModule implements TestModule {
                 to(Widget.class.getName()).build();
         di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
         configurator.bind(di);
+        
+        // For the test below we have an abstract factory that is in a proxiable scope
+        // and which is producing something from a proxiable scope
+        // First we add the context, then we add the factories
+        configurator.bind(BuilderHelper.link(ProxiableSingletonContext.class.getName()).
+                to(Context.class.getName()).
+                in(Singleton.class.getName()).build());
+        configurator.bind(BuilderHelper.link(AdamsFactory.class).
+                to(AdamsVP.class).
+                in(ProxiableSingleton.class.getName()).
+                buildFactory(ProxiableSingleton.class.getName()));
+        configurator.bind(BuilderHelper.link(JeffersonVPFactory.class).
+                to(JeffersonVP.class).
+                in(ProxiableSingleton.class.getName()).
+                buildFactory(ProxiableSingleton.class.getName()));
     }
 
 }

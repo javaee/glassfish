@@ -95,6 +95,16 @@ abstract class AbstractBindingBuilder<T> implements
      * Binding name (see @Named).
      */
     String name = null;
+    /**
+     * Injectee is proxiable.
+     */
+    boolean proxiable = false;
+
+    @Override
+    public AbstractBindingBuilder<T> proxy(boolean proxiable) {
+        this.proxiable = proxiable;
+        return this;
+    }
 
     @Override
     public AbstractBindingBuilder<T> to(Class<? super T> contract) {
@@ -203,6 +213,10 @@ abstract class AbstractBindingBuilder<T> implements
                 builder.to(contract);
             }
 
+            if (proxiable) {
+                builder.proxy();
+            }
+
             configuration.bind(builder.build());
         }
     }
@@ -245,6 +259,8 @@ abstract class AbstractBindingBuilder<T> implements
                 descriptor.addContractType(contract);
             }
 
+            descriptor.setProxiable(proxiable);
+
             configuration.bind(descriptor);
         }
     }
@@ -266,6 +282,7 @@ abstract class AbstractBindingBuilder<T> implements
             factoryContractDescriptor.addContractType(factory.getClass());
             factoryContractDescriptor.setName(name);
             factoryContractDescriptor.setLoader(this.loader);
+            factoryContractDescriptor.setProxiable(proxiable);
 
             ActiveDescriptorBuilder descriptorBuilder = BuilderHelper.activeLink(factory.getClass())
                     .named(name)
@@ -310,15 +327,17 @@ abstract class AbstractBindingBuilder<T> implements
             }
 
             ActiveDescriptorBuilder factoryDescriptorBuilder = BuilderHelper.activeLink(factoryClass)
-                    .named(name)
-                    .andLoadWith(this.loader);
+             .named(name)
+             .andLoadWith(this.loader);
             if (factoryScope != null) {
                 factoryDescriptorBuilder.in(factoryScope);
             }
 
             ActiveDescriptorBuilder descriptorBuilder = BuilderHelper.activeLink(factoryClass)
                     .named(name)
-                    .andLoadWith(this.loader);
+                    .andLoadWith(this.loader)
+                    .proxy(proxiable);
+
             if (scope != null) {
                 descriptorBuilder.in(scope);
             }
