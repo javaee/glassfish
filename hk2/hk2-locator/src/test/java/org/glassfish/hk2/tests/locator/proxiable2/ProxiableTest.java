@@ -138,25 +138,25 @@ public class ProxiableTest {
      */
     @Test
     public void testProxiedSingletonInContextUsingProxyCtl() {
-        ProxiableServiceInContext.resetConstructorCalled();
+        ProxiableServiceInContext2.resetConstructorCalled();
         
-        ServiceHandle<ProxiableServiceInContext> psHandle = locator.getServiceHandle(ProxiableServiceInContext.class);
-        Assert.assertNotNull(psHandle);
+        ServiceHandle<ProxiableServiceInContext2> ps2Handle = locator.getServiceHandle(ProxiableServiceInContext2.class);
+        Assert.assertNotNull(ps2Handle);
         
         try {
-            ProxiableServiceInContext ps = psHandle.getService();
+            ProxiableServiceInContext2 ps2 = ps2Handle.getService();
         
-            Assert.assertEquals(0, ProxiableServiceInContext.getConstructorCalled());
+            Assert.assertEquals(0, ProxiableServiceInContext2.getConstructorCalled());
             
-            Assert.assertTrue(ps instanceof ProxyCtl);
+            Assert.assertTrue(ps2 instanceof ProxyCtl);
+
+            ((ProxyCtl) ps2).__make();  // Forces true creation
         
-            ((ProxyCtl) ps).__make();  // Forces true creation
-        
-            Assert.assertEquals(1, ProxiableServiceInContext.getConstructorCalled());
+            Assert.assertEquals(1, ProxiableServiceInContext2.getConstructorCalled());
         }
         finally {
             // Removes it from Singleton scope
-            psHandle.destroy();
+            ps2Handle.destroy();
         }
     }
     
