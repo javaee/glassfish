@@ -94,7 +94,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                         }
                     });
             try {      
-                Thread.currentThread().setContextClassLoader(WriteableView.class.getClassLoader());
+                Thread.currentThread().setContextClassLoader(ValidatorFactory.class.getClassLoader());
                 TraversableResolver traversableResolver =
                     new TraversableResolver() {
                         public boolean isReachable(Object traversableObject,
