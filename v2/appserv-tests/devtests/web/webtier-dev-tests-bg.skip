@@ -1,7 +1,4 @@
 instanceHttpPortDynamicReconfig #investigate random failures
 elUninterpretedTag #regression from EL 3.0
 tagplugin #regression from EL 3.0
-weldJsfFormLoginHttpSessionListener #GLASSFISH-19556
-weldJsfLoginPage #GLASSFISH-19556                   
-weldJsfServerAuthModuleRedirect #GLASSFISH-19556
 
