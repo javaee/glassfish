@@ -66,7 +66,7 @@ public class WebTest {
     
     public static void main(String[] args) {
         stat.addDescription("Unit test for "
-                            + "HttpSessionListener.sessionDestroyed()");
+                            + "create session in HttpRequestListener.requestInitialized");
         WebTest webTest = new WebTest(args);
         webTest.doTest();
         stat.printSummary(TEST_NAME);
