@@ -63,6 +63,7 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             ServletOutputStream output = wc.getOutputStream();
             ReadListenerImpl readListener = new ReadListenerImpl(delimiter, input, output);
             input.setReadListener(readListener);
+            readListener.setWebConnection(wc);
         } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -84,6 +85,7 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
         ServletInputStream input = null;
         ServletOutputStream output = null;
         String delimiter = null;
+        WebConnection wc = null;
 
         ReadListenerImpl(String d, ServletInputStream in, ServletOutputStream out) {
             delimiter = d;
@@ -91,11 +93,16 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             output = out;
         }
 
+        public void setWebConnection(WebConnection wc) {
+            this.wc = wc;
+        }
+
         public void onDataAvailable() {
             try {
                 StringBuilder sb = new StringBuilder();
                 System.out.println("--> onDataAvailable");
                 System.out.println("#### Thread.currentThread.getContextClassloader(): " + Thread.currentThread().getContextClassLoader());
+
                 int len = -1;
                 byte b[] = new byte[1024];
                 while (input.isReady()
@@ -106,6 +113,10 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
                 }
                 output.print(delimiter + sb.toString());
                 output.flush();
+
+                // Server side connection close 
+                //wc.close();
+
             } catch(Exception ex) {
                 throw new IllegalStateException(ex);
             }
