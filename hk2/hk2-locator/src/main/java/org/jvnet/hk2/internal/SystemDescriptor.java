@@ -41,7 +41,6 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.Collections;
@@ -601,14 +600,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             
             Type factoryProvidedType = provideMethod.getGenericReturnType();
             if (factoryProvidedType instanceof TypeVariable) {
-                // the factory provided method return type should be the single argument type
-                // of the generic Factory<T> interface.
-                Set<Type> types = ReflectionHelper.getTypeClosure(implClass,
-                        Collections.singleton(Factory.class.getName()));
-
-                ParameterizedType parameterizedType = (ParameterizedType) types.iterator().next();
-
-                factoryProvidedType = parameterizedType.getActualTypeArguments()[0];
+                factoryProvidedType = Utilities.getFactoryProductionType(implClass);
             }
             
             ActiveDescriptor<?> factoryDescriptor = getFactoryDescriptor(provideMethod,

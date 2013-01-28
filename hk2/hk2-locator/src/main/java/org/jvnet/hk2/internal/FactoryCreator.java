@@ -43,10 +43,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstanceLifecycleEventType;
 import org.glassfish.hk2.api.MultiException;
@@ -113,42 +110,4 @@ public class FactoryCreator<T> implements Creator<T> {
             // ignore
         }
     }
-    
-    private static class FactoryFilter implements IndexedFilter {
-        private final String implClass;
-        
-        private FactoryFilter(String implClass) {
-            this.implClass = implClass;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
-         */
-        @Override
-        public boolean matches(Descriptor d) {
-            if (d.getDescriptorType().equals(DescriptorType.CLASS)) return true;
-            
-            return false;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
-         */
-        @Override
-        public String getAdvertisedContract() {
-            // We are interested in the impl class that is a factory
-            return implClass;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.IndexedFilter#getName()
-         */
-        @Override
-        public String getName() {
-            // Name is not our index
-            return null;
-        }
-        
-    }
-
 }
