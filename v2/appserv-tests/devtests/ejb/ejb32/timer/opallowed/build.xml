@@ -77,6 +77,7 @@
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${test.client}">
+					 <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
            <arg line="${client.type}"/>
         </java>
 	  </target>
