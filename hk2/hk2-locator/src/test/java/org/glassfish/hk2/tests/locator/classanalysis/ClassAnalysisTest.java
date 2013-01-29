@@ -67,5 +67,38 @@ public class ClassAnalysisTest {
         
         service.checkCalls();
     }
-
+    
+    @Test
+    public void testCustomCreateStrategy() {
+        ServiceWithManyDoubles service = locator.create(ServiceWithManyDoubles.class, DoubleClassAnalyzer.DOUBLE_ANALYZER);
+        Assert.assertNotNull(service);
+        
+        service.checkAfterConstructor();
+    }
+    
+    @Test
+    public void testCustomInitializationStrategy() {
+        ServiceWithManyDoubles service = new ServiceWithManyDoubles(DoubleFactory.DOUBLE);
+        
+        locator.inject(service, DoubleClassAnalyzer.DOUBLE_ANALYZER);
+        
+        service.checkAfterInitializeBeforePostConstruct();
+    }
+    
+    @Test
+    public void testCustomPostDestroyStrategy() {
+        ServiceWithManyDoubles service = new ServiceWithManyDoubles(DoubleFactory.DOUBLE);
+        
+        locator.postConstruct(service, DoubleClassAnalyzer.DOUBLE_ANALYZER);
+        
+        service.checkAfterPostConstructWithNoInitialization();
+    }
+    
+    @Test
+    public void testCustomFullCreateAPI() {
+        ServiceWithManyDoubles service = locator.createAndInitialize(ServiceWithManyDoubles.class,
+                DoubleClassAnalyzer.DOUBLE_ANALYZER);
+        
+        service.checkFullCreateWithoutDestroy();
+    }
 }

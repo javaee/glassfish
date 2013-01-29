@@ -802,7 +802,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ((PostConstruct) postConstructMe).postConstruct();
         }
         else {
-            Utilities.justPostConstruct(postConstructMe, strategy);
+            Utilities.justPostConstruct(postConstructMe, this, strategy);
         }
 
     }
