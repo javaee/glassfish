@@ -153,4 +153,88 @@ public class ServiceWithManyDoubles {
         Assert.assertNull(s1);
         Assert.assertNull(locator);
     }
+    
+    public void checkAfterConstructor() {
+        Assert.assertTrue(pickedCorrectConstructor);
+        
+        Assert.assertFalse(incorrectInitializerCalled);
+        Assert.assertFalse(incorrectPostConstructCalled);
+        Assert.assertFalse(incorrectPreDestroyCalled);
+ 
+        Assert.assertFalse(setD1Called);
+        Assert.assertFalse(setD2Called);
+        
+        Assert.assertFalse(correctPostConstructCalled);
+        Assert.assertFalse(correctPreDestroyCalled);
+        
+        Assert.assertNull(d1);
+        Assert.assertNull(d2);
+        
+        Assert.assertNull(f1);
+        Assert.assertNull(s1);
+        Assert.assertNull(locator);
+    }
+    
+    public void checkAfterInitializeBeforePostConstruct() {
+        Assert.assertTrue(pickedCorrectConstructor);
+        
+        Assert.assertFalse(incorrectInitializerCalled);
+        Assert.assertFalse(incorrectPostConstructCalled);
+        Assert.assertFalse(incorrectPreDestroyCalled);
+ 
+        Assert.assertTrue(setD1Called);
+        Assert.assertTrue(setD2Called);
+        
+        Assert.assertFalse(correctPostConstructCalled);
+        Assert.assertFalse(correctPreDestroyCalled);
+        
+        Assert.assertEquals(DoubleFactory.DOUBLE, d1);
+        Assert.assertEquals(DoubleFactory.DOUBLE, d2);
+        
+        Assert.assertNull(f1);
+        Assert.assertNull(s1);
+        Assert.assertNull(locator);
+    }
+    
+    public void checkAfterPostConstructWithNoInitialization() {
+        Assert.assertTrue(pickedCorrectConstructor);
+        
+        Assert.assertFalse(incorrectInitializerCalled);
+        Assert.assertFalse(incorrectPostConstructCalled);
+        Assert.assertFalse(incorrectPreDestroyCalled);
+ 
+        Assert.assertFalse(setD1Called);
+        Assert.assertFalse(setD2Called);
+        
+        Assert.assertTrue(correctPostConstructCalled);
+        Assert.assertFalse(correctPreDestroyCalled);
+        
+        Assert.assertNull(d1);
+        Assert.assertNull(d2);
+        
+        Assert.assertNull(f1);
+        Assert.assertNull(s1);
+        Assert.assertNull(locator);
+    }
+    
+    public void checkFullCreateWithoutDestroy() {
+        Assert.assertTrue(pickedCorrectConstructor);
+        
+        Assert.assertFalse(incorrectInitializerCalled);
+        Assert.assertFalse(incorrectPostConstructCalled);
+        Assert.assertFalse(incorrectPreDestroyCalled);
+ 
+        Assert.assertTrue(setD1Called);
+        Assert.assertTrue(setD2Called);
+        
+        Assert.assertTrue(correctPostConstructCalled);
+        Assert.assertFalse(correctPreDestroyCalled);
+        
+        Assert.assertEquals(DoubleFactory.DOUBLE, d1);
+        Assert.assertEquals(DoubleFactory.DOUBLE, d2);
+        
+        Assert.assertNull(f1);
+        Assert.assertNull(s1);
+        Assert.assertNull(locator);
+    }
 }

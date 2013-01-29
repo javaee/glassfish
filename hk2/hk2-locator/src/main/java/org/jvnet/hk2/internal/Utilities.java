@@ -116,6 +116,21 @@ import org.jvnet.hk2.annotations.Service;
  */
 public class Utilities {
     /**
+     * Returns the class analyzer with the given name
+     * 
+     * @param sli The ServiceLocator to search in.  May not be null
+     * @param analyzerName The name of the analyzer (may be null for the default analyzer)
+     * @return The ClassAnalyzer corresponding to the name, or null if none was found
+     */
+    public static ClassAnalyzer getClassAnalyzer(ServiceLocatorImpl sli, String analyzerName) {
+        if (analyzerName == null || analyzerName.equals(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)) {
+            return sli.getDefaultClassAnalyzer();
+        }
+        
+        return sli.getService(ClassAnalyzer.class, analyzerName);
+    }
+    
+    /**
      * Gets the constructor given the implClass and analyzer.  Checks service output
      * 
      * @param implClass The implementation class (not null)
@@ -680,13 +695,18 @@ public class Utilities {
      *
      * @param postMe post constructs the thing
      */
-    public static void justPostConstruct(Object postMe, String strategy) {
+    public static void justPostConstruct(Object postMe, ServiceLocatorImpl locator, String strategy) {
         if (postMe == null) throw new IllegalArgumentException();
+        
+        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy);
+        if (analyzer == null) {
+            throw new IllegalArgumentException("No class analyzer with name " + strategy);
+        }
 
         Class<?> baseClass = postMe.getClass();
 
         Collector collector = new Collector();
-        Method postConstruct = findPostConstruct(baseClass, collector);
+        Method postConstruct = getPostConstruct(baseClass, analyzer, collector);
 
         collector.throwIfErrors();
 
@@ -706,13 +726,18 @@ public class Utilities {
      */
     public static void justInject(Object injectMe, ServiceLocatorImpl locator, String strategy) {
         if (injectMe == null) throw new IllegalArgumentException();
+        
+        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy);
+        if (analyzer == null) {
+            throw new IllegalArgumentException("No class analyzer with name " + strategy);
+        }
 
         Class<?> baseClass = injectMe.getClass();
 
         Collector collector = new Collector();
 
-        Set<Field> fields = findInitializerFields(baseClass, locator, collector);
-        Set<Method> methods = findInitializerMethods(baseClass, locator, collector);
+        Set<Field> fields = Utilities.getInitFields(baseClass, analyzer, collector);
+        Set<Method> methods = Utilities.getInitMethods(baseClass, analyzer, collector);
 
         collector.throwIfErrors();
 
@@ -767,10 +792,15 @@ public class Utilities {
     @SuppressWarnings("unchecked")
     public static <T> T justCreate(Class<T> createMe, ServiceLocatorImpl locator, String strategy) {
         if (createMe == null) throw new IllegalArgumentException();
+        
+        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy);
+        if (analyzer == null) {
+            throw new IllegalArgumentException("No class analyzer with name " + strategy);
+        }
 
         Collector collector = new Collector();
 
-        Constructor<?> c = findProducerConstructor(createMe, locator, collector);
+        Constructor<?> c = getConstructor(createMe, analyzer, collector);
 
         collector.throwIfErrors();
 

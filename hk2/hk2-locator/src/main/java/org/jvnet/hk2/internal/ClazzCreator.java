@@ -92,11 +92,7 @@ public class ClazzCreator<T> implements Creator<T> {
         String analyzerName = (selfDescriptor == null) ? null : 
             selfDescriptor.getClassAnalysisName() ;
         
-        ClassAnalyzer analyzer = ((analyzerName == null) ||
-                analyzerName.equals(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)) ?
-                locator.getDefaultClassAnalyzer() :
-                locator.getService(ClassAnalyzer.class, analyzerName) ;
-                
+        ClassAnalyzer analyzer = Utilities.getClassAnalyzer(locator, analyzerName);     
         if (analyzer == null) {
             collector.addThrowable(new AssertionError("Could not find an implementation of ClassAnalyzer with name " + analyzerName));
             myConstructor = null;

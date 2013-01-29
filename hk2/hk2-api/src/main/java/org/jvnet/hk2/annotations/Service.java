@@ -45,6 +45,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 import java.lang.annotation.Documented;
 
+import org.glassfish.hk2.api.ClassAnalyzer;
+
 /**
  * Marker interface for service implementation. A service is defined by 
  * an interface marked with the {@link Contract} annotation. Each service
@@ -88,4 +90,13 @@ public @interface Service {
      * the config file can be read without actually loading the classes. 
      */
     String metadata() default "";
+    
+    /**
+     * The name of the {@link ClassAnalyzer} service that should be used
+     * to analyze this class
+     * 
+     * @return The name of the {@link ClassAnalyzer} service that should
+     * be used to analyze this class
+     */
+    String analyzer() default ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
 }
