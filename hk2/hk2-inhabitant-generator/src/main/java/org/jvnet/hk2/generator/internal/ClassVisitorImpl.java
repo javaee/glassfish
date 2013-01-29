@@ -52,6 +52,7 @@ import java.util.StringTokenizer;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
@@ -78,6 +79,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private final static String VALUE = "value";
     private final static String PROVIDE = "provide";
     private final static String LOCAL = "LOCAL";
+    private final static String ANALYZER = "analyzer";
     
     /**
      * Must be the same value as from the GenerateServiceFromMethod value
@@ -111,6 +113,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     private Boolean useProxy = null;
     private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
     private final Map<String, List<String>> metadata = new HashMap<String, List<String>>();
+    private String classAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
     
     private final LinkedList<DescriptorImpl> generatedDescriptors = new LinkedList<DescriptorImpl>();
     private boolean isFactory = false;
@@ -307,6 +310,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             generatedDescriptor.setName(baseName.getName());
         }
         
+        generatedDescriptor.setClassAnalysisName(classAnalyzer);
         if (metadataString != null) {
             StringTokenizer commaTokenizer = new StringTokenizer(metadataString, ",");
             
@@ -430,6 +434,9 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             }
             else if (annotationName.equals(METADATA)) {
                 metadataString = (String) value;
+            }
+            else if (annotationName.equals(ANALYZER)) {
+                classAnalyzer = (String) value;
             }
         }        
     }
