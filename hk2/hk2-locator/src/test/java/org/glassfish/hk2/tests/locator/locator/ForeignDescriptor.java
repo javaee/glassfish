@@ -190,4 +190,9 @@ public class ForeignDescriptor implements Descriptor {
         return null;
     }
 
+    @Override
+    public String getClassAnalysisName() {
+        return null;
+    }
+
 }

@@ -50,7 +50,6 @@ import java.util.Set;
 
 import javax.inject.Named;
 
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
@@ -76,6 +75,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 	private int rank = 0;
 	private Boolean proxy = null;
 	private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
+	private String analysisName = null;
 	
 	/**
 	 * The basid constructor
@@ -267,6 +267,13 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         this.loader = loader;
         return this;
     }
+    
+    @Override
+    public DescriptorBuilder analyzeWith(String serviceName) {
+        this.analysisName = serviceName;
+        
+        return this;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.glassfish.hk2.utilities.DescriptorBuilder#build()
@@ -285,6 +292,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 				loader,
 				rank,
 				proxy,
+				analysisName,
 				null,
 				null,
 				null);
@@ -313,6 +321,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 loader,
                 rank,
                 null,
+                analysisName,
                 null,
                 null,
                 null);
@@ -333,6 +342,7 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 loader,
                 rank,
                 proxy,
+                null,
                 null,
                 null,
                 null);
@@ -359,6 +369,4 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
         
         return buildFactory(factoryScope.getName());
     }
-
-    
 }

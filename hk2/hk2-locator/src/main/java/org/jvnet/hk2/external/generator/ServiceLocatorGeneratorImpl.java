@@ -41,10 +41,12 @@ package org.jvnet.hk2.external.generator;
 
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.jvnet.hk2.internal.DefaultClassAnalyzer;
 import org.jvnet.hk2.internal.DynamicConfigurationImpl;
 import org.jvnet.hk2.internal.DynamicConfigurationServiceImpl;
 import org.jvnet.hk2.internal.ServiceLocatorImpl;
@@ -77,6 +79,9 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
                 in(Singleton.class.getName()).
                 localOnly().
                 build());
+        
+        dci.bind(BuilderHelper.createConstantDescriptor(
+                new DefaultClassAnalyzer(sli)));
         
         dci.commit();
         

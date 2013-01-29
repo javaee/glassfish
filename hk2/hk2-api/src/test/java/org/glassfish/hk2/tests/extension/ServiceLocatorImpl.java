@@ -370,4 +370,34 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public ServiceLocatorState getState() {
         return ServiceLocatorState.RUNNING;
     }
+
+    @Override
+    public <T> T create(Class<T> createMe, String strategy) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void inject(Object injectMe, String strategy) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void postConstruct(Object postConstructMe, String strategy) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void preDestroy(Object preDestroyMe, String strategy) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public <U> U createAndInitialize(Class<U> createMe, String strategy) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

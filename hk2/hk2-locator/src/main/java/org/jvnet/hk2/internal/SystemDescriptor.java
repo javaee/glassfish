@@ -228,6 +228,11 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return baseDescriptor.isProxiable();
     }
     
+    @Override
+    public String getClassAnalysisName() {
+        return baseDescriptor.getClassAnalysisName();
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#setRanking(int)
      */
@@ -783,6 +788,4 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         
         return sb.toString();
     }
-
-     
 }

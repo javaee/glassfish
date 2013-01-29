@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
@@ -79,6 +80,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
     private final static String METADATA_KEY = "metadata=";
     private final static String RANKING_KEY = "rank=";
     private final static String PROXIABLE_KEY = "proxiable=";
+    private final static String ANALYSIS_KEY = "analysis=";
     private final static String PROVIDE_METHOD_DT = "PROVIDE";
     private final static String LOCAL_DT = "LOCAL";
     private final static String START_START = "[";
@@ -96,6 +98,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private HK2Loader loader;
 	private int rank;
 	private Boolean proxiable;
+	private String analysisName;
 	private Descriptor baseDescriptor;
 	private Long id;
 	private Long locatorId;
@@ -123,6 +126,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
         id = copyMe.getServiceId();
         locatorId = copyMe.getLocatorId();
         baseDescriptor = copyMe.getBaseDescriptor();
+        analysisName = copyMe.getClassAnalysisName();
         
 	    if (copyMe.getAdvertisedContracts() != null) {
 	        contracts.addAll(copyMe.getAdvertisedContracts());
@@ -152,6 +156,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @param rank The rank to initially associate with this descriptor
 	 * @param proxiable The proxiable value to associate with this descriptor (may be null)
 	 * @param baseDescriptor The base descriptor to associated with this descriptor
+	 * @param analysisName The name of the ClassAnalysis service to use
 	 * @param id The ID this descriptor should take (may be null)
 	 * @param locatorId The locator ID this descriptor should take (may be null)
 	 */
@@ -167,6 +172,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			HK2Loader loader,
 			int rank,
 			Boolean proxiable,
+			String analysisName,
 			Descriptor baseDescriptor,
 			Long id,
 			Long locatorId) {
@@ -183,6 +189,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.id = id;
 		this.rank = rank;
 		this.proxiable = proxiable;
+		this.analysisName = analysisName;
 		this.locatorId = locatorId;
 		this.loader = loader;
 		this.baseDescriptor = baseDescriptor;
@@ -437,6 +444,15 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	}
 	
 	@Override
+    public String getClassAnalysisName() {
+        return analysisName;
+    }
+	
+	public void setClassAnalysisName(String name) {
+	    analysisName = name;
+	}
+	
+	@Override
 	public synchronized Long getLocatorId() {
 	    return locatorId;
 	}
@@ -493,6 +509,9 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	        else {
 	            retVal ^= -1;
 	        }
+	    }
+	    if (analysisName != null) {
+	        retVal ^= analysisName.hashCode();
 	    }
 	    
 	    return retVal;
@@ -556,6 +575,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    if (!safeEquals(descriptorVisibility, d.getDescriptorVisibility())) return false;
 	    if (!equalMetadata(metadatas, d.getMetadata())) return false;
 	    if (!safeEquals(proxiable, d.isProxiable())) return false;
+	    if (!safeEquals(analysisName, d.getClassAnalysisName())) return false;
 	    
 	    return true;
 	}
@@ -595,6 +615,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
         sb.append("\n\tloader=" + d.getLoader());
         
         sb.append("\n\tproxiable=" + d.isProxiable());
+        
+        sb.append("\n\tanalysisName=" + d.getClassAnalysisName());
         
         sb.append("\n\tid=" + d.getServiceId());
         
@@ -663,6 +685,11 @@ public class DescriptorImpl implements Descriptor, Serializable {
         
         if (proxiable != null) {
             out.println(PROXIABLE_KEY + proxiable.booleanValue());
+        }
+        
+        if (analysisName != null &&
+                !ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME.equals(analysisName)) {
+            out.println(ANALYSIS_KEY + analysisName);
         }
         
         if (metadatas != null && !metadatas.isEmpty()) {
@@ -752,6 +779,9 @@ public class DescriptorImpl implements Descriptor, Serializable {
                     else if (leftHandSide.equals(PROXIABLE_KEY)) {
                         proxiable = Boolean.parseBoolean(rightHandSide);
                     }
+                    else if (leftHandSide.equals(ANALYSIS_KEY)) {
+                        analysisName = rightHandSide;
+                    }
                     
                     // Otherwise it is an unknown type, just forget it
                 }
@@ -762,4 +792,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
         
         return sectionStarted;
     }
+
+    
 }

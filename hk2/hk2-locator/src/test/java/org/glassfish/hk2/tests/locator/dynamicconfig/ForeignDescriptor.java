@@ -183,4 +183,9 @@ public class ForeignDescriptor implements Descriptor {
     public Boolean isProxiable() {
         return null;
     }
+
+    @Override
+    public String getClassAnalysisName() {
+        return null;
+    }
 }

@@ -220,6 +220,19 @@ public interface Descriptor {
     public Boolean isProxiable();
     
     /**
+     * Returns the name of the {@link ClassAnalysis} service that
+     * should be used to discover the constructors, initialization methods,
+     * field and postConstruct and preDestory methods.  If null the default
+     * implementation will be used.  Will be ignored for descriptors that
+     * are not automatically analyzed by hk2
+     * 
+     * @return the possibly null name of the ClassAnalysis service that
+     * should be used to analyze the class represented by this descriptor.
+     * If null then the HK2 default analysis will be performed
+     */
+    public String getClassAnalysisName();
+    
+    /**
      * If this descriptor is based on another descriptor (for example
      * via the {@link Configuration} bind call) then this method will
      * return the original basis for this descriptor.

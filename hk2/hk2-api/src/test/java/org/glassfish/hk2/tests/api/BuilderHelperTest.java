@@ -83,6 +83,8 @@ public class BuilderHelperTest {
 	public final static String QUALIFIER_VALUE = "qualValue";
 	public final static int QUALIFIER_ANOTHER_VALUE = -1;
 	
+	public final static String ANALYZE_SERVICE = "analyzeMe";
+	
 	/**
 	 * This predicate will only have an implementation and a contract
 	 */
@@ -135,6 +137,7 @@ public class BuilderHelperTest {
 				has(KEY_B, multiValue).
 				qualifiedBy(Red.class.getName()).
 				localOnly().
+				analyzeWith(ANALYZE_SERVICE).
 				build();
 		
 		Assert.assertNotNull(predicate);
@@ -188,6 +191,8 @@ public class BuilderHelperTest {
 		Assert.assertTrue(bValue.size() == 2);
 		Assert.assertEquals(bValue.get(0), VALUE_B1);
 		Assert.assertEquals(bValue.get(1), VALUE_B2);
+		
+		Assert.assertSame(ANALYZE_SERVICE, predicate.getClassAnalysisName());
 	}
 	
 	/**

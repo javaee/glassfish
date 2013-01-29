@@ -203,6 +203,16 @@ public interface DescriptorBuilder {
      * @throws IllegalArgumentException if the HK2Loader is set non-null more than once
      */
     public DescriptorBuilder andLoadWith(HK2Loader loader) throws IllegalArgumentException;
+    
+    /**
+     * Call this if the descriptor should be analyzed with the
+     * {@link ClassAnalyzer} service of the given name
+     * 
+     * @param serviceName the name of the {@link ClassAnalyzer} service
+     * that should be used to analyze this service
+     * @return A DescriptorBuilder with the given analysis service
+     */
+    public DescriptorBuilder analyzeWith(String serviceName);
 	
 	/**
 	 * Generates a descriptor that can be used in binding operations

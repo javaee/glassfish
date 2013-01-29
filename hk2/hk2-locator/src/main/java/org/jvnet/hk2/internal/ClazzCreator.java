@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.InstanceLifecycleEventType;
@@ -80,17 +81,34 @@ public class ClazzCreator<T> implements Creator<T> {
     private Method postConstructMethod;
     private Method preDestroyMethod;
 
-    /* package */ ClazzCreator(ServiceLocatorImpl locator, Class<?> implClass, ActiveDescriptor<?> selfDescriptor, Collector collector) {
+    /* package */ ClazzCreator(ServiceLocatorImpl locator,
+            Class<?> implClass,
+            ActiveDescriptor<?> selfDescriptor,
+            Collector collector) {
         this.locator = locator;
         this.implClass = implClass;
         this.selfDescriptor = selfDescriptor;
+
+        String analyzerName = (selfDescriptor == null) ? null : 
+            selfDescriptor.getClassAnalysisName() ;
+        
+        ClassAnalyzer analyzer = ((analyzerName == null) ||
+                analyzerName.equals(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)) ?
+                locator.getDefaultClassAnalyzer() :
+                locator.getService(ClassAnalyzer.class, analyzerName) ;
+                
+        if (analyzer == null) {
+            collector.addThrowable(new AssertionError("Could not find an implementation of ClassAnalyzer with name " + analyzerName));
+            myConstructor = null;
+            return;
+        }
 
         List<Injectee> baseAllInjectees = new LinkedList<Injectee>();
 
         AnnotatedElement element;
         List<Injectee> injectees;
 
-        element = Utilities.findProducerConstructor(implClass, locator, collector);
+        element = Utilities.getConstructor(implClass, analyzer, collector);
         if (element == null) {
             myConstructor = null;
             return;
@@ -106,7 +124,7 @@ public class ClazzCreator<T> implements Creator<T> {
 
         myConstructor = new ResolutionInfo(element, injectees);
 
-        Set<Method> initMethods = Utilities.findInitializerMethods(implClass, locator, collector);
+        Set<Method> initMethods = Utilities.getInitMethods(implClass, analyzer, collector);
         for (Method initMethod : initMethods) {
             element = initMethod;
 
@@ -118,7 +136,7 @@ public class ClazzCreator<T> implements Creator<T> {
             myInitializers.add(new ResolutionInfo(element, injectees));
         }
 
-        Set<Field> fields = Utilities.findInitializerFields(implClass, locator, collector);
+        Set<Field> fields = Utilities.getInitFields(implClass, analyzer, collector);
         for (Field field : fields) {
             element = field;
 
@@ -130,8 +148,8 @@ public class ClazzCreator<T> implements Creator<T> {
             myFields.add(new ResolutionInfo(element, injectees));
         }
 
-        postConstructMethod = Utilities.findPostConstruct(implClass, collector);
-        preDestroyMethod = Utilities.findPreDestroy(implClass, collector);
+        postConstructMethod = Utilities.getPostConstruct(implClass, analyzer, collector);
+        preDestroyMethod = Utilities.getPreDestroy(implClass, analyzer, collector);
 
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
 
