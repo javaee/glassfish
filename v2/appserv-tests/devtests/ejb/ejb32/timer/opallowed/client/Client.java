@@ -50,8 +50,8 @@ public class Client {
         }
     }
 
-    private String execute(String type) {
-        String connection = "http://localhost:8080/ejb-timer-opallowed/VerifyServlet?" + type;
+    private String execute(String type, String httpPort) {
+        String connection = "http://localhost:" + httpPort + "/ejb-timer-opallowed/VerifyServlet?" + type;
 
         System.out.println("invoking webclient servlet at " + connection);
         String result = null;
@@ -104,7 +104,7 @@ public class Client {
             // the Servlet will invoke both local and remote interface of the EJB.
             // for local interface, TimerHandle/Timer invocation is permitted.
             // for remote interface, TimerHandle/Timer invocation is forbidden.
-            if ("RESULT: PASS".equals(c.execute("ejb"))) {
+            if ("RESULT: PASS".equals(c.execute("ejb", args[1]))) {
                 stat.addStatus("opallowed webapp: ", stat.PASS);
             } else {
                 stat.addStatus("opallowed webapp: ", stat.FAIL);
@@ -122,7 +122,7 @@ public class Client {
         } else if ("managedbean".equals(args[0])) {
             // the managedbean is injected to servlet
             // and the TimerHandle/Timer invocation from a managedbean is permitted
-            if ("RESULT: PASS".equals(c.execute("managedbean"))) {
+            if ("RESULT: PASS".equals(c.execute("managedbean", args[1]))) {
                 stat.addStatus("opallowed managedbean: ", stat.PASS);
             } else {
                 stat.addStatus("opallowed managedbean: ", stat.FAIL);

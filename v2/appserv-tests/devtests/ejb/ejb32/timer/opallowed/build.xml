@@ -79,6 +79,7 @@
               classname="${test.client}">
 					 <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
            <arg line="${client.type}"/>
+           <arg line="${http.port}"/>
         </java>
 	  </target>
 
