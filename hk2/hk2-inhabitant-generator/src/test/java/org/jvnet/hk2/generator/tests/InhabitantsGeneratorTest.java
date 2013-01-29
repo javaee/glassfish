@@ -131,6 +131,9 @@ public class InhabitantsGeneratorTest {
     /** The rank to use when testing for rank on factory method */
     public final static int FACTORY_METHOD_RANK = -1;
     
+    /** A custom analyzer for a descriptor */
+    public final static String CUSTOM_ANALYZER = "CustomAnalyzer";
+    
     private final static Map<DescriptorImpl, Integer> EXPECTED_DESCRIPTORS = new HashMap<DescriptorImpl, Integer>();
     
     static {
@@ -541,6 +544,17 @@ public class InhabitantsGeneratorTest {
             envItself.addAdvertisedContract(String.class.getName());
             envItself.setDescriptorVisibility(DescriptorVisibility.LOCAL);
             envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+            
+            EXPECTED_DESCRIPTORS.put(envItself, 0);
+        }
+        
+        {
+            // From a factory with LOCAL visibility (method descriptor)
+            DescriptorImpl envItself = new DescriptorImpl();
+            envItself.setImplementation(CustomAnalysisService.class.getName());
+            envItself.addAdvertisedContract(CustomAnalysisService.class.getName());
+            envItself.setClassAnalysisName(CUSTOM_ANALYZER);
+            envItself.setScope(Singleton.class.getName());
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
