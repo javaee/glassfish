@@ -208,4 +208,9 @@ public class NullDescriptorImpl implements Descriptor {
         return null;
     }
 
+    @Override
+    public String getClassAnalysisName() {
+        return null;
+    }
+
 }

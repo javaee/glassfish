@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,59 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.classanalysis;
 
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
- * This class collects errors, and can then also produce a MultiException
- * from those errors if necessary
- * 
  * @author jwells
+ *
  */
-public class Collector {
-    private final LinkedHashSet<Throwable> throwables = new LinkedHashSet<Throwable>();
-    
-    public void addMultiException(MultiException me) {
-        if (me == null) return;
-        throwables.addAll(me.getErrors());
-    }
-    
-    /**
-     * Adds a throwable to the list of throwables in this collector
-     * @param th The throwable to add to the list
+@Singleton
+public class DoubleFactory implements Factory<Double> {
+    public static final Double DOUBLE = new Double(3.141); 
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#provide()
      */
-    public void addThrowable(Throwable th) {
-        if (th == null) return;
-        if (th instanceof MultiException) {
-            throwables.addAll(((MultiException) th).getErrors());
-        }
-        else {
-          throwables.add(th);
-        }
+    @Override @PerLookup
+    public Double provide() {
+        return DOUBLE;
     }
-    
-    /**
-     * This method will throw if the list of throwables associated with this
-     * collector is not empty
-     * 
-     * @throws MultiException An exception with all the throwables found in this collector
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
-    public void throwIfErrors() throws MultiException {
-        if (throwables.isEmpty()) return;
-        
-        throw new MultiException(new LinkedList<Throwable>(throwables));
+    @Override
+    public void dispose(Double instance) {
+        // Does nothing
+
     }
-    
-    /**
-     * Returns true if this collector has errors
-     * 
-     * @return true if the collector has errors
-     */
-    public boolean hasErrors() {
-        return !throwables.isEmpty();
-    }
+
 }

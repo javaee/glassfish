@@ -98,6 +98,8 @@ public class DescriptorImplTest {
         
         Assert.assertNull(desc.isProxiable());
         
+        Assert.assertNull(desc.getClassAnalysisName());
+        
         Assert.assertNull(desc.getBaseDescriptor());
         
         Assert.assertNull(desc.getServiceId());
@@ -152,6 +154,8 @@ public class DescriptorImplTest {
         Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_RANK, full.getRanking());
         
         Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_PROXIABLE, full.isProxiable());
+        
+        Assert.assertEquals(FullDescriptorImpl.FULL_ANALYSIS_SERVICE, full.getClassAnalysisName());
         
         Assert.assertNotNull(full.getBaseDescriptor());
         
@@ -381,6 +385,26 @@ public class DescriptorImplTest {
         Assert.assertFalse(desc.isProxiable());
         
         desc.setProxiable(null);
+    }
+    
+    private final static String CLASS_ANALYSIS_NAME = "customAnalyzer";
+    
+    /**
+     * Tests setting the ranking
+     */
+    @Test
+    public void testSetAnalysisService() {
+        DescriptorImpl desc = new DescriptorImpl();
+        
+        Assert.assertNull(desc.getClassAnalysisName());
+        
+        desc.setClassAnalysisName(CLASS_ANALYSIS_NAME);
+        
+        Assert.assertSame(CLASS_ANALYSIS_NAME, desc.getClassAnalysisName());
+        
+        desc.setClassAnalysisName(null);
+        
+        Assert.assertNull(desc.getClassAnalysisName());
     }
     
     /**

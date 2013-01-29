@@ -75,6 +75,7 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
@@ -114,6 +115,143 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    /**
+     * Gets the constructor given the implClass and analyzer.  Checks service output
+     * 
+     * @param implClass The implementation class (not null)
+     * @param analyzer The analyzer (not null)
+     * @param collector A collector for errors (not null)
+     * @return null on failure (collector will have failures), non-null on success
+     */
+    public static <T> Constructor<T> getConstructor(Class<T> implClass, ClassAnalyzer analyzer, Collector collector) {
+        Constructor<T> element = null;
+        try {
+            element = analyzer.getConstructor(implClass);
+        }
+        catch (MultiException me) {
+            collector.addMultiException(me);
+            return element;
+        }
+        catch (Throwable th) {
+            collector.addThrowable(th);
+            return element;
+        }
+        
+        if (element == null) {
+            collector.addThrowable(new AssertionError("null return from getConstructor method of analyzer " +
+                analyzer + " for class " + implClass.getName()));
+            return element;
+        }
+        
+        return element;
+    }
+    
+    /**
+     * Gets the initializer methods from the given class and analyzer.  Checks service output
+     * 
+     * @param implClass the non-null impl class
+     * @param analyzer the non-null analyzer
+     * @param collector for gathering errors
+     * @return a non-null set (even in error cases, check the collector)
+     */
+    public static Set<Method> getInitMethods(Class<?> implClass, ClassAnalyzer analyzer, Collector collector) {
+        Set<Method> retVal;
+        try {
+            retVal = analyzer.getInitializerMethods(implClass);
+        }
+        catch (MultiException me) {
+            collector.addMultiException(me);
+            return Collections.emptySet();
+        }
+        catch (Throwable th) {
+            collector.addThrowable(th);
+            return Collections.emptySet();
+        }
+        
+        if (retVal == null) {
+            collector.addThrowable(new AssertionError("null return from getInitializerMethods method of analyzer " +
+                    analyzer + " for class " + implClass.getName()));
+            return Collections.emptySet();
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Gets the initializer fields from the given class and analyzer.  Checks service output
+     * 
+     * @param implClass the non-null impl class
+     * @param analyzer the non-null analyzer
+     * @param collector for gathering errors
+     * @return a non-null set (even in error cases, check the collector)
+     */
+    public static Set<Field> getInitFields(Class<?> implClass, ClassAnalyzer analyzer, Collector collector) {
+        Set<Field> retVal;
+        try {
+            retVal = analyzer.getFields(implClass);
+        }
+        catch (MultiException me) {
+            collector.addMultiException(me);
+            return Collections.emptySet();
+        }
+        catch (Throwable th) {
+            collector.addThrowable(th);
+            return Collections.emptySet();
+        }
+        
+        if (retVal == null) {
+            collector.addThrowable(new AssertionError("null return from getFields method of analyzer " +
+                    analyzer + " for class " + implClass.getName()));
+            return Collections.emptySet();
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Gets the post construct from the analyzer, checking output
+     * 
+     * @param implClass The non-null implementation class
+     * @param analyzer The non-null analyzer
+     * @param collector The non-null error collector
+     * @return The possibly null post-construct method (check the collector for errors)
+     */
+    public static Method getPostConstruct(Class<?> implClass, ClassAnalyzer analyzer, Collector collector) {
+        try {
+            return analyzer.getPostConstructMethod(implClass);
+        }
+        catch (MultiException me) {
+            collector.addMultiException(me);
+            return null;
+        }
+        catch (Throwable th) {
+            collector.addThrowable(th);
+            return null;
+        }
+    }
+    
+    /**
+     * Gets the preDestroy from the analyzer, checking output
+     * 
+     * @param implClass The non-null implementation class
+     * @param analyzer The non-null analyzer
+     * @param collector The non-null error collector
+     * @return The possibly null pre-destroy method (check the collector for errors)
+     */
+    public static Method getPreDestroy(Class<?> implClass, ClassAnalyzer analyzer, Collector collector) {
+        try {
+            return analyzer.getPreDestroyMethod(implClass);
+        }
+        catch (MultiException me) {
+            collector.addMultiException(me);
+            return null;
+        }
+        catch (Throwable th) {
+            collector.addThrowable(th);
+            return null;
+        }
+    }
+    
     /**
      * This utility will return the proper implementation class, taking into account that the
      * descriptor may be a factory
@@ -518,7 +656,7 @@ public class Utilities {
      *
      * @param preMe pre destroys the thing
      */
-    public static void justPreDestroy(Object preMe) {
+    public static void justPreDestroy(Object preMe, String strategy) {
         if (preMe == null) throw new IllegalArgumentException();
 
         Class<?> baseClass = preMe.getClass();
@@ -542,7 +680,7 @@ public class Utilities {
      *
      * @param postMe post constructs the thing
      */
-    public static void justPostConstruct(Object postMe) {
+    public static void justPostConstruct(Object postMe, String strategy) {
         if (postMe == null) throw new IllegalArgumentException();
 
         Class<?> baseClass = postMe.getClass();
@@ -566,7 +704,7 @@ public class Utilities {
      * @param injectMe The object to inject into
      * @param locator The locator to find the injection points with
      */
-    public static void justInject(Object injectMe, ServiceLocatorImpl locator) {
+    public static void justInject(Object injectMe, ServiceLocatorImpl locator, String strategy) {
         if (injectMe == null) throw new IllegalArgumentException();
 
         Class<?> baseClass = injectMe.getClass();
@@ -627,7 +765,7 @@ public class Utilities {
      * @return The constructed thing, no further injection is performed
      */
     @SuppressWarnings("unchecked")
-    public static <T> T justCreate(Class<T> createMe, ServiceLocatorImpl locator) {
+    public static <T> T justCreate(Class<T> createMe, ServiceLocatorImpl locator, String strategy) {
         if (createMe == null) throw new IllegalArgumentException();
 
         Collector collector = new Collector();

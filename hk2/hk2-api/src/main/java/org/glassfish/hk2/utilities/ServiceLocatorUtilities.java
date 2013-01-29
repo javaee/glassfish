@@ -456,4 +456,8 @@ public abstract class ServiceLocatorUtilities {
     public static String getOneMetadataField(ServiceHandle<?> h, String field) {
         return getOneMetadataField(h.getActiveDescriptor(), field);
     }
+    
+    public static void addPreferLargestConstructorClassAnalyzer(ServiceLocator locator) {
+        throw new AssertionError("not yet implemented");
+    }
 }

@@ -470,12 +470,34 @@ public interface ServiceLocator {
     public <T> T create(Class<T> createMe);
     
     /**
+     * This method will analyze the given class, and create it if can.  The object
+     * created in this way will not be managed by HK2.  It is the responsibility of
+     * the caller to ensure that any lifecycle this object has is honored
+     * 
+     * @param createMe The class to create, may not be null
+     * @param strategy The name of the {@link ClassAnalyzer} that should be used. If
+     * null the default analyzer will be used
+     * @return An instance of the object
+     */
+    public <T> T create(Class<T> createMe, String strategy);
+    
+    /**
      * This will analyze the given object and inject into its fields and methods.
      * The object injected in this way will not be managed by HK2
      * 
      * @param injectMe The object to be analyzed and injected into
      */
     public void inject(Object injectMe);
+    
+    /**
+     * This will analyze the given object and inject into its fields and methods.
+     * The object injected in this way will not be managed by HK2
+     * 
+     * @param injectMe The object to be analyzed and injected into
+     * @param strategy The name of the {@link ClassAnalyzer} that should be used. If
+     * null the default analyzer will be used
+     */
+    public void inject(Object injectMe, String strategy);
     
     /**
      * This will analyze the given object and call the postConstruct method.
@@ -486,12 +508,32 @@ public interface ServiceLocator {
     public void postConstruct(Object postConstructMe);
     
     /**
+     * This will analyze the given object and call the postConstruct method.
+     * The object given will not be managed by HK2
+     * 
+     * @param postConstructMe The object to postConstruct
+     * @param strategy The name of the {@link ClassAnalyzer} that should be used. If
+     * null the default analyzer will be used
+     */
+    public void postConstruct(Object postConstructMe, String strategy);
+    
+    /**
      * This will analyze the given object and call the preDestroy method.
      * The object given will not be managed by HK2
      * 
      * @param preDestroyMe The object to preDestroy
      */
     public void preDestroy(Object preDestroyMe);
+    
+    /**
+     * This will analyze the given object and call the preDestroy method.
+     * The object given will not be managed by HK2
+     * 
+     * @param preDestroyMe The object to preDestroy
+     * @param strategy The name of the {@link ClassAnalyzer} that should be used. If
+     * null the default analyzer will be used
+     */
+    public void preDestroy(Object preDestroyMe, String strategy);
     
     /**
      * This method creates, injects and post-constructs an object with the given
@@ -506,6 +548,22 @@ public interface ServiceLocator {
      * @throws MultiException if there was an error when creating or initializing the object
      */
     public <U> U createAndInitialize(Class<U> createMe);
+    
+    /**
+     * This method creates, injects and post-constructs an object with the given
+     * class. This is equivalent to calling the {@link ServiceLocator#create(Class)}
+     * method followed by the {@link ServiceLocator#inject(Object)} method followed
+     * by the {@link ServiceLocator#postConstruct(Object)} method.
+     * <p>
+     * The object created is not managed by the locator.
+     *
+     * @param createMe The non-null class to create this object from
+     * @param strategy The name of the {@link ClassAnalyzer} that should be used. If
+     * null the default analyzer will be used
+     * @return An instance of the object that has been created, injected and post constructed
+     * @throws MultiException if there was an error when creating or initializing the object
+     */
+    public <U> U createAndInitialize(Class<U> createMe, String strategy);
 
 }
 

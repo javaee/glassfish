@@ -62,6 +62,7 @@ import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
@@ -161,6 +162,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final HashMap<String, List<CacheEntry>> cacheEntries = new HashMap<String, List<CacheEntry>>();
     private final Map<ServiceLocatorImpl, ServiceLocatorImpl> children =
             new WeakHashMap<ServiceLocatorImpl, ServiceLocatorImpl>(); // Must be Weak for throw away children
+    private ClassAnalyzer defaultClassAnalyzer;
     
     private ServiceLocatorState state = ServiceLocatorState.RUNNING;
     
@@ -744,9 +746,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public <T> T create(Class<T> createMe) {
+        return create(createMe, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#create(java.lang.Class)
+     */
+    @Override
+    public <T> T create(Class<T> createMe, String strategy) {
         checkState();
         
-        return Utilities.justCreate(createMe, this);
+        return Utilities.justCreate(createMe, this, strategy);
     }
 
     /* (non-Javadoc)
@@ -754,9 +764,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void inject(Object injectMe) {
+        inject(injectMe, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#inject(java.lang.Object)
+     */
+    @Override
+    public void inject(Object injectMe, String strategy) {
         checkState();
         
-        Utilities.justInject(injectMe, this);
+        Utilities.justInject(injectMe, this, strategy);
     }
 
     /* (non-Javadoc)
@@ -764,17 +782,27 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void postConstruct(Object postConstructMe) {
+        postConstruct(postConstructMe, null);
+
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#postConstruct(java.lang.Object)
+     */
+    @Override
+    public void postConstruct(Object postConstructMe, String strategy) {
         checkState();
         
         if (postConstructMe == null) {
             throw new IllegalArgumentException();
         }
         
-        if (postConstructMe instanceof PostConstruct) {
+        if (((strategy == null) || strategy.equals(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)) &&
+                (postConstructMe instanceof PostConstruct)) {
             ((PostConstruct) postConstructMe).postConstruct();
         }
         else {
-            Utilities.justPostConstruct(postConstructMe);
+            Utilities.justPostConstruct(postConstructMe, strategy);
         }
 
     }
@@ -784,17 +812,26 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void preDestroy(Object preDestroyMe) {
+        preDestroy(preDestroyMe, null);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#preDestroy(java.lang.Object)
+     */
+    @Override
+    public void preDestroy(Object preDestroyMe, String strategy) {
         checkState();
         
         if (preDestroyMe == null) {
             throw new IllegalArgumentException();
         }
         
-        if (preDestroyMe instanceof PreDestroy) {
+        if (((strategy == null) || strategy.equals(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)) &&
+                (preDestroyMe instanceof PreDestroy)) {
             ((PreDestroy) preDestroyMe).preDestroy();
         }
         else {
-            Utilities.justPreDestroy(preDestroyMe);
+            Utilities.justPreDestroy(preDestroyMe, strategy);
         }
     }
     
@@ -802,9 +839,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * Creates, injects and postConstructs, all in one
      */
     public <U> U createAndInitialize(Class<U> createMe) {
-        U retVal = create(createMe);
-        inject(retVal);
-        postConstruct(retVal);
+        return createAndInitialize(createMe, null);
+    }
+    
+    /**
+     * Creates, injects and postConstructs, all in one
+     */
+    public <U> U createAndInitialize(Class<U> createMe, String strategy) {
+        U retVal = create(createMe, strategy);
+        inject(retVal, strategy);
+        postConstruct(retVal, strategy);
         return retVal;
     }
     
@@ -1725,6 +1769,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
         retVal.addAll(allValidators);
         
         return retVal;
+    }
+    
+    /* package */ void setDefaultClassAnalyzer(ClassAnalyzer ca) {
+        defaultClassAnalyzer = ca;
+    }
+    
+    /* package */ ClassAnalyzer getDefaultClassAnalyzer() {
+        return defaultClassAnalyzer;
     }
     
     private static class CheckConfigurationData {

@@ -82,6 +82,8 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
     public final static Long FULL_INITIAL_SID = new Long(-2);
     /** Given initial locator id */
     public final static Long FULL_INITIAL_LID = new Long(-3);
+    /** The name of the class analysis service */
+    public final static String FULL_ANALYSIS_SERVICE = "jax-rs";
     
     static {
         FULL_CONTRACTS.add(FullDescriptorImpl.class.getName());
@@ -121,6 +123,7 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
                 new HK2LoaderImpl(),
                 FULL_INITIAL_RANK,
                 FULL_INITIAL_PROXIABLE,
+                FULL_ANALYSIS_SERVICE,
                 new DescriptorImpl(),
                 FULL_INITIAL_SID,
                 FULL_INITIAL_LID);
