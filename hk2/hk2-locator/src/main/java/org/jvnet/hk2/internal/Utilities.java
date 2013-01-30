@@ -1601,6 +1601,10 @@ public class Utilities {
                 if (parent instanceof Class) {
                     return Pretty.clazz((Class<?>) parent);
                 }
+                
+                if (parent instanceof Field) {
+                    return ((Field) parent).getName();
+                }
 
                 throw new MultiException(new IllegalStateException("@Named must have a value for " + parent));
             }
@@ -1772,6 +1776,22 @@ public class Utilities {
 
         return retVal;
     }
+    
+    private static Set<Annotation> getFieldAdjustedQualifierAnnotations(Field f) {
+        Set<Annotation> unadjustedAnnotations = ReflectionHelper.getQualifierAnnotations(f);
+        
+        // The getQualifierAnnotations will NOT add a Named annotation that has no
+        // value.  So we must now determine if that is the case, and if so add
+        // our own NamedImpl based on the name of the field
+        Named n = f.getAnnotation(Named.class);
+        if (n == null) return unadjustedAnnotations;
+        
+        if (n.value() == null || "".equals(n.value())) {
+            unadjustedAnnotations.add(new NamedImpl(f.getName()));
+        }
+        
+        return unadjustedAnnotations;
+    }
 
     /**
      * Returns the injectees for a field
@@ -1783,7 +1803,7 @@ public class Utilities {
         Unqualified unqualified = f.getAnnotation(Unqualified.class);
 
         retVal.add(new InjecteeImpl(f.getGenericType(),
-                ReflectionHelper.getQualifierAnnotations(f),
+                getFieldAdjustedQualifierAnnotations(f),
                 -1,
                 f,
                 isOptional(f.getAnnotations()),

@@ -544,6 +544,17 @@ public class ReflectionHelper {
         
         for (Annotation annotation : annotatedGuy.getAnnotations()) {
             if (isAnnotationAQualifier(annotation)) {
+                if ((annotatedGuy instanceof Field) &&
+                        Named.class.equals(annotation.annotationType())) {
+                    Named n = (Named) annotation;
+                    if (n.value() == null || "".equals(n.value())) {
+                        // Because we do not have access to AnnotationLiteral
+                        // we cannot "fix" a Named annotation that has no explicit
+                        // value here, and we must rely on the caller of this
+                        // method to "fix" that case for us
+                        continue;
+                    }
+                }
                 retVal.add(annotation);
             }
         }
@@ -569,6 +580,14 @@ public class ReflectionHelper {
     
     /**
      * Gets all the qualifier annotations from the object
+     * <p>
+     * A strange behavior of this method is that if the annotatedGuy is
+     * a field and that field has the Named annotation on it with no
+     * value, then that Named annotation will NOT be added to the return
+     * list.  This is because we have no access at this level to
+     * AnnotationLiteral, and hence cannot create a NamedImpl with which
+     * to fix the annotation.  It is the responsibility of the caller
+     * of this method to add in the NamedImpl in that circumstance
      * 
      * @param annotatedGuy The thing to analyze
      * @return The set of qualifiers.  Will not return null but may return an empty set

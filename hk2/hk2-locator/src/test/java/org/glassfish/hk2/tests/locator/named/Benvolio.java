@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,30 +39,20 @@
  */
 package org.glassfish.hk2.tests.locator.named;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import javax.inject.Named;
 
 /**
+ * Romeos cousin
+ * 
  * @author jwells
  *
  */
-public class NamedModule implements TestModule {
+@Named @Montague
+public class Benvolio implements CitizenOfVerona {
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
-     */
     @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(Romeo.class);
-        config.addActiveDescriptor(Juliet.class);
-        config.addActiveDescriptor(Mercutio.class);
-        config.addActiveDescriptor(Benvolio.class);
-        
-        config.addActiveDescriptor(Verona.class);
-        
-        // Roses
-        config.addActiveDescriptor(Centifolia.class);
-        config.addActiveDescriptor(Damask.class);
+    public String getName() {
+        return NamedTest.BENVOLIO;
     }
 
 }

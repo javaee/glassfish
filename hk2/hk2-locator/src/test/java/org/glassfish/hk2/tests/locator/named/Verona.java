@@ -52,6 +52,9 @@ public class Verona {
     @Inject @Named(NamedTest.ROMEO)
     private CitizenOfVerona romeo;
     
+    @Inject @Named
+    private CitizenOfVerona Benvolio;
+    
     private CitizenOfVerona mercutio;
     
     @Inject
@@ -85,6 +88,8 @@ public class Verona {
         return mercutio;
     }
     
-    
+    public CitizenOfVerona getBenvolio() {
+        return Benvolio;
+    }
 
 }
