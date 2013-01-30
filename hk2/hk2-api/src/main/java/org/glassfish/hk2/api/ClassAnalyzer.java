@@ -76,8 +76,10 @@ public interface ClassAnalyzer {
      * @param clazz the non-null class to analyze
      * @return The non-null constructor to use for creating this service
      * @throws MultiException on an error when analyzing the class
+     * @throws NoSuchMethodException if there was no available constructor
      */
-    public <T> Constructor<T> getConstructor(Class<T> clazz) throws MultiException;
+    public <T> Constructor<T> getConstructor(Class<T> clazz) throws MultiException,
+        NoSuchMethodException;
     
     /**
      * Will return the set of initializer method to be used when initializing

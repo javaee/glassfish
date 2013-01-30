@@ -67,6 +67,7 @@ public class UnreifiedActiveDescriptor extends AbstractActiveDescriptor<Object> 
                 DescriptorVisibility.NORMAL,
                 0,
                 null,
+                null,
                 null);
         
     }

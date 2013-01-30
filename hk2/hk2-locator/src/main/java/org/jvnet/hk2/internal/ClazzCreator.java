@@ -80,17 +80,15 @@ public class ClazzCreator<T> implements Creator<T> {
 
     private Method postConstructMethod;
     private Method preDestroyMethod;
-
+    
     /* package */ ClazzCreator(ServiceLocatorImpl locator,
             Class<?> implClass,
             ActiveDescriptor<?> selfDescriptor,
+            String analyzerName,
             Collector collector) {
         this.locator = locator;
         this.implClass = implClass;
         this.selfDescriptor = selfDescriptor;
-
-        String analyzerName = (selfDescriptor == null) ? null : 
-            selfDescriptor.getClassAnalysisName() ;
         
         ClassAnalyzer analyzer = Utilities.getClassAnalyzer(locator, analyzerName);     
         if (analyzer == null) {
@@ -150,6 +148,15 @@ public class ClazzCreator<T> implements Creator<T> {
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
 
         Utilities.validateSelfInjectees(selfDescriptor, allInjectees, collector);
+        
+    }
+
+    /* package */ ClazzCreator(ServiceLocatorImpl locator,
+            Class<?> implClass,
+            ActiveDescriptor<?> selfDescriptor,
+            Collector collector) {
+        this(locator, implClass, selfDescriptor, (selfDescriptor == null) ? null : 
+            selfDescriptor.getClassAnalysisName(), collector);
     }
 
     private void resolve(Map<Injectee, Object> addToMe,

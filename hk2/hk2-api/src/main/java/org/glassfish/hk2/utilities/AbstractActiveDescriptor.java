@@ -124,6 +124,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
             DescriptorVisibility descriptorVisibility,
             int ranking,
             Boolean proxy,
+            String analyzerName,
             Map<String, List<String>> metadata) {
         super();
         
@@ -151,6 +152,8 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         for (Annotation q : qualifiers) {
             addQualifier(q.annotationType().getName());
         }
+        
+        setClassAnalysisName(analyzerName);
         
         if (metadata == null) return;
         

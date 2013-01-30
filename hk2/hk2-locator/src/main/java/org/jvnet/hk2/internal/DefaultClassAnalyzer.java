@@ -68,13 +68,24 @@ public class DefaultClassAnalyzer implements ClassAnalyzer {
     @SuppressWarnings("unchecked")
     @Override
     public <T> Constructor<T> getConstructor(Class<T> clazz)
-            throws MultiException {
+            throws MultiException, NoSuchMethodException {
         Collector collector = new Collector();
         
         Constructor<T> retVal = (Constructor<T>)
                 Utilities.findProducerConstructor(clazz, locator, collector);
         
-        collector.throwIfErrors();
+        try {
+            collector.throwIfErrors();
+        }
+        catch (MultiException me) {
+            for (Throwable th : me.getErrors()) {
+                if (th instanceof NoSuchMethodException) {
+                    throw (NoSuchMethodException) th;
+                }
+            }
+            
+            throw me;
+        }
         
         return retVal;
     }

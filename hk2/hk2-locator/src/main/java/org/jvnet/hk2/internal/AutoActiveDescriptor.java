@@ -83,6 +83,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             DescriptorVisibility descriptorVisibility,
             int ranking,
             Boolean proxy,
+            String classAnalysisName,
             Map<String, List<String>> metadata) {
         super(advertisedContracts,
                 scope,
@@ -92,6 +93,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
                 descriptorVisibility,
                 ranking,
                 proxy,
+                classAnalysisName,
                 metadata);
         
         implClass = clazz;

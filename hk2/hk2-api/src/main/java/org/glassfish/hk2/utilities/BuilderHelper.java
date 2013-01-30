@@ -68,6 +68,7 @@ import org.glassfish.hk2.internal.SpecificFilterImpl;
 import org.glassfish.hk2.internal.StarFilter;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * This class is used to generate DescriptorBuilders to be used
@@ -324,6 +325,12 @@ public class BuilderHelper {
             visibility = vi.value();
         }
         
+        String classAnalysisName = null;
+        Service service = constant.getClass().getAnnotation(Service.class);
+        if (service != null) {
+            classAnalysisName = service.analyzer();
+        }
+        
         return new ConstantActiveDescriptor<T>(
                 constant,
                 contractsAsSet,
@@ -332,6 +339,7 @@ public class BuilderHelper {
                 qualifiers,
                 visibility,
                 proxy,
+                classAnalysisName,
                 metadata);
     }
     

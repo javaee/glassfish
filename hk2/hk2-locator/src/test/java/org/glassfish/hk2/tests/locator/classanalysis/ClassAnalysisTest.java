@@ -39,9 +39,12 @@
  */
 package org.glassfish.hk2.tests.locator.classanalysis;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -100,5 +103,72 @@ public class ClassAnalysisTest {
                 DoubleClassAnalyzer.DOUBLE_ANALYZER);
         
         service.checkFullCreateWithoutDestroy();
+    }
+    
+    @Test
+    public void testLongestConstructor() {
+        ServiceLocatorUtilities.addPreferLargestConstructorClassAnalyzer(locator);
+        
+        JaxRsService jrs = locator.getService(JaxRsService.class);
+        Assert.assertNotNull(jrs);
+        
+        jrs.checkProperConstructor();
+    }
+    
+    /**
+     * This test also ensures that the analyzer field of Service
+     * is honored by the automatic analysis in addActiveDescriptor
+     */
+    @Test
+    public void testLongestConstructorWithNoZeroArgConstructor() {
+        ServiceLocatorUtilities.addPreferLargestConstructorClassAnalyzer(locator);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(ServiceWithNoValidHK2Constructor.class);
+        
+        config.commit();
+        
+        ServiceWithNoValidHK2Constructor service = locator.getService(ServiceWithNoValidHK2Constructor.class);
+        service.check();
+    }
+    
+    /**
+     * This test also ensures that the analyzer field of Service
+     * is honored by the automatic analysis in addActiveDescriptor
+     */
+    @Test
+    public void testLongestConstructorWithValidHK2Constructor() {
+        ServiceLocatorUtilities.addPreferLargestConstructorClassAnalyzer(locator);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(ServiceWithValidHK2NonZeroArgConstructor.class);
+        
+        config.commit();
+        
+        ServiceWithValidHK2NonZeroArgConstructor service = locator.getService(ServiceWithValidHK2NonZeroArgConstructor.class);
+        service.check();
+    }
+    
+    /**
+     * This test also ensures that the analyzer field of Service
+     * is honored by the automatic analysis in addActiveDescriptor
+     */
+    @Test
+    public void testLongestConstructorWithValidHK2ZeroArgConstructor() {
+        ServiceLocatorUtilities.addPreferLargestConstructorClassAnalyzer(locator);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(ServiceWithValidHK2NoArgConstructor.class);
+        
+        config.commit();
+        
+        ServiceWithValidHK2NoArgConstructor service = locator.getService(ServiceWithValidHK2NoArgConstructor.class);
+        service.check();
     }
 }
