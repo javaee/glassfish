@@ -67,5 +67,9 @@ public class NamedImpl extends AnnotationLiteral<Named> implements Named {
     public String value() {
         return name;
     }
+    
+    public String toString() {
+        return "@Named(" + name + ")";
+    }
 
 }

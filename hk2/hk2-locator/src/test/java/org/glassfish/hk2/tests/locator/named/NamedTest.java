@@ -65,6 +65,8 @@ public class NamedTest {
     public final static String JULIET = "Juliet";
     /** Queen Mab */
     public final static String MERCUTIO = "Mercutio";
+    /** Romeos' cousin */
+    public final static String BENVOLIO = "Benvolio";
     /** A rose by any other name */
     public final static String ROSE = "Rose";
     
@@ -90,6 +92,7 @@ public class NamedTest {
         Assert.assertEquals(ROMEO, v.getRomeo().getName());
         Assert.assertEquals(JULIET, v.getJuliet().getName());
         Assert.assertEquals(MERCUTIO, v.getMercutio().getName());
+        Assert.assertEquals(BENVOLIO, v.getBenvolio().getName());
     }
     
     /**
@@ -171,7 +174,7 @@ public class NamedTest {
         }
         
         List<ActiveDescriptor<?>> montagues = locator.getDescriptors(new DoubleNullIndexFilter(false));
-        Assert.assertEquals(2, montagues.size());
+        Assert.assertEquals(3, montagues.size());
         
         lcv = 0;
         for (ActiveDescriptor<?> montague : montagues) {
@@ -181,6 +184,9 @@ public class NamedTest {
                 break;
             case 1:
                 Assert.assertTrue(montague.getImplementation().equals(Mercutio.class.getName()));
+                break;
+            case 2:
+                Assert.assertTrue(montague.getImplementation().equals(Benvolio.class.getName()));
                 break;
             }
             
