@@ -39,46 +39,59 @@
  */
 package org.glassfish.hk2.tests.locator.classanalysis;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ClassAnalyzer;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.junit.Assert;
 
 /**
  * @author jwells
  *
  */
-public class ClassAnalysisModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+public class JaxRsService {
+    private boolean calledProperConstructor = false;
+    
+    public JaxRsService() {
+        
+    }
+    
+    public JaxRsService(Double d) {
+        
+    }
+    
+    public JaxRsService(Double d, ServiceLocator sl) {
+        
+    }
+    
+    /**
+     * One of these two constructors will be called (which one is random)
+     * @param d
+     * @param sl
+     * @param dcs
+     * @param sl1
      */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(DoubleFactory.class).
-                to(Double.class.getName()).
-                in(PerLookup.class.getName()).
-                buildFactory(Singleton.class.getName()));
+    public JaxRsService(Double d, ServiceLocator sl, DynamicConfigurationService dcs, ServiceLocator sl1) {
+        calledProperConstructor = true;
         
-        config.bind(BuilderHelper.link(DoubleClassAnalyzer.class.getName()).
-                to(ClassAnalyzer.class.getName()).
-                in(Singleton.class.getName()).
-                named(DoubleClassAnalyzer.DOUBLE_ANALYZER).
-                build());
+    }
+    
+    /**
+     * One of these two constructors will be called (which one is random)
+     * @param d
+     * @param sl
+     * @param dcs
+     * @param sl1
+     */
+    public JaxRsService(DynamicConfigurationService dcs, ServiceLocator sl, ServiceLocator sl1, Double d) {
+        calledProperConstructor = true;
         
-        config.bind(BuilderHelper.link(ServiceWithManyDoubles.class.getName()).
-                to(ServiceWithManyDoubles.class.getName()).
-                in(PerLookup.class.getName()).
-                analyzeWith(DoubleClassAnalyzer.DOUBLE_ANALYZER).
-                build());
+    }
+    
+    public JaxRsService(String hello) {
         
-        config.bind(BuilderHelper.link(JaxRsService.class.getName()).
-                analyzeWith(ServiceLocatorUtilities.PREFER_LARGEST_CONSTRUCTOR).
-                build());
+    }
+    
+    public void checkProperConstructor() {
+        Assert.assertTrue(calledProperConstructor);
     }
 
 }

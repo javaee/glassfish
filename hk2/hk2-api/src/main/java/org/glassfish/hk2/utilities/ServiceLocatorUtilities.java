@@ -47,6 +47,7 @@ import java.util.Map;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -59,6 +60,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.internal.JaxRsClassAnalyzer;
 import org.glassfish.hk2.internal.PerThreadContext;
 
 /**
@@ -457,7 +459,32 @@ public abstract class ServiceLocatorUtilities {
         return getOneMetadataField(h.getActiveDescriptor(), field);
     }
     
+    /** This is the name of the {@link ClassAnalyzer} service that prefers the largest constructor */
+    public static final String PREFER_LARGEST_CONSTRUCTOR = "PreferLargestConstructor";
+    
+    /**
+     * This method adds in an implementation of {@link ClassAnalyzer} with the name
+     * {@link PREFER_LARGEST_CONSTRUCTOR} that prefers to use the constructor with
+     * the largest number of parameters over the no-args default constructor (in
+     * cases where there is no constructor annotated with {@link Inject}.  In all
+     * other respects this ClassAnalyzer behaves the same as the default 
+     * ClassAnalyzer
+     * <p>
+     * If there is already a {@link ClassAnalyzer} with this name then this method
+     * does nothing
+     * 
+     * @param locator The non-null service locator to add the ClassAnalyzer service to
+     */
     public static void addPreferLargestConstructorClassAnalyzer(ServiceLocator locator) {
-        throw new AssertionError("not yet implemented");
+        ClassAnalyzer ca = locator.getService(ClassAnalyzer.class, PREFER_LARGEST_CONSTRUCTOR);
+        if (ca != null) return;
+        
+        Descriptor d = BuilderHelper.link(JaxRsClassAnalyzer.class).
+                to(ClassAnalyzer.class.getName()).
+                in(Singleton.class.getName()).
+                named(PREFER_LARGEST_CONSTRUCTOR).
+                build();
+        
+        addOneDescriptor(locator, d);
     }
 }

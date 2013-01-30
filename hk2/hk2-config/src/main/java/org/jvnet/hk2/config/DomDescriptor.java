@@ -59,7 +59,8 @@ public class DomDescriptor<T>
                 qualifiers,
                 DescriptorType.CLASS,
                 DescriptorVisibility.NORMAL,
-                0, 
+                0,
+                null,
                 null,
                 null);
         super.addAdvertisedContract(ConfigBeanProxy.class.getName());

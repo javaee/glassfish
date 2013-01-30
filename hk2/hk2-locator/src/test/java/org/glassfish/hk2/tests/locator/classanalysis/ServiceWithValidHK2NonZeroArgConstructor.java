@@ -39,46 +39,35 @@
  */
 package org.glassfish.hk2.tests.locator.classanalysis;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
-import org.glassfish.hk2.api.ClassAnalyzer;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-public class ClassAnalysisModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+@Service(analyzer=ServiceLocatorUtilities.PREFER_LARGEST_CONSTRUCTOR)
+public class ServiceWithValidHK2NonZeroArgConstructor {
+    private final ServiceLocator locator;
+    
+    /**
+     * This constructor is a valid hk2 constructor because it
+     * is annotated
+     * 
+     * @param locator Will contain the proper locator
      */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(DoubleFactory.class).
-                to(Double.class.getName()).
-                in(PerLookup.class.getName()).
-                buildFactory(Singleton.class.getName()));
+    @Inject
+    private ServiceWithValidHK2NonZeroArgConstructor(ServiceLocator locator) {
+        this.locator = locator;
         
-        config.bind(BuilderHelper.link(DoubleClassAnalyzer.class.getName()).
-                to(ClassAnalyzer.class.getName()).
-                in(Singleton.class.getName()).
-                named(DoubleClassAnalyzer.DOUBLE_ANALYZER).
-                build());
-        
-        config.bind(BuilderHelper.link(ServiceWithManyDoubles.class.getName()).
-                to(ServiceWithManyDoubles.class.getName()).
-                in(PerLookup.class.getName()).
-                analyzeWith(DoubleClassAnalyzer.DOUBLE_ANALYZER).
-                build());
-        
-        config.bind(BuilderHelper.link(JaxRsService.class.getName()).
-                analyzeWith(ServiceLocatorUtilities.PREFER_LARGEST_CONSTRUCTOR).
-                build());
+    }
+    
+    public void check() {
+        Assert.assertNotNull(locator);
     }
 
 }

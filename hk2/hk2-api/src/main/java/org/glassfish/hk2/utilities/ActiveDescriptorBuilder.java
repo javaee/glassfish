@@ -181,6 +181,16 @@ public interface ActiveDescriptorBuilder {
     public ActiveDescriptorBuilder andLoadWith(HK2Loader loader) throws IllegalArgumentException;
     
     /**
+     * Call this if the descriptor should be analyzed with the
+     * {@link ClassAnalyzer} service of the given name
+     * 
+     * @param serviceName the name of the {@link ClassAnalyzer} service
+     * that should be used to analyze this service
+     * @return A DescriptorBuilder with the given analysis service
+     */
+    public ActiveDescriptorBuilder analyzeWith(String serviceName);
+    
+    /**
      * Generates a descriptor that can be used in binding operations
      * 
      * @return The descriptor that has been built up

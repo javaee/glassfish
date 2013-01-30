@@ -619,6 +619,7 @@ public class Utilities {
         Class<? extends Annotation> scope;
         String name;
         Boolean proxy = null;
+        String analyzerName;
 
         // Qualifiers naming dance
         qualifiers = ReflectionHelper.getQualifierAnnotations(clazz);
@@ -628,8 +629,9 @@ public class Utilities {
         contracts = getAutoAdvertisedTypes(clazz);
         ScopeInfo scopeInfo = getScopeInfo(clazz, null, collector);
         scope = scopeInfo.getAnnoType();
+        analyzerName = getAutoAnalyzerName(clazz);
 
-        creator = new ClazzCreator<T>(locator, clazz, null, collector);
+        creator = new ClazzCreator<T>(locator, clazz, null, analyzerName, collector);
 
         collector.throwIfErrors();
 
@@ -663,6 +665,7 @@ public class Utilities {
                 visibility,
                 0,
                 proxy,
+                analyzerName,
                 metadata);
     }
 
@@ -954,6 +957,7 @@ public class Utilities {
                         DescriptorVisibility.LOCAL,
                         0,
                         null,
+                        null,
                         locator.getLocatorId(),
                         null);
 
@@ -989,6 +993,7 @@ public class Utilities {
                         qualifiers,
                         DescriptorVisibility.NORMAL,
                         0,
+                        null,
                         null,
                         locator.getLocatorId(),
                         null);
@@ -1043,7 +1048,7 @@ public class Utilities {
         }
 
         if (zeroArgConstructor == null) {
-            collector.addThrowable(new IllegalArgumentException("The class " + Pretty.clazz(annotatedType) +
+            collector.addThrowable(new NoSuchMethodException("The class " + Pretty.clazz(annotatedType) +
                     " has no constructor marked @Inject and no zero argument constructor"));
             return null;
         }
@@ -1362,6 +1367,19 @@ public class Utilities {
         int modifiers = member.getModifiers();
 
         return ((modifiers & Modifier.FINAL) != 0);
+    }
+    
+    /**
+     * Gets the analyzer name from the Service annotation
+     * 
+     * @param c The class to get the analyzer name from
+     * @return The name of the analyzer (null for default)
+     */
+    public static String getAutoAnalyzerName(Class<?> c) {
+        Service s = c.getAnnotation(Service.class);
+        if (s == null) return null;
+        
+        return s.analyzer();
     }
 
     @SuppressWarnings("unchecked")

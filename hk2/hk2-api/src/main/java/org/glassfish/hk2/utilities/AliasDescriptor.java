@@ -125,6 +125,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
                 descriptor.getDescriptorVisibility(),
                 descriptor.getRanking(),
                 descriptor.isProxiable(),
+                descriptor.getClassAnalysisName(),
                 descriptor.getMetadata());
         this.locator    = locator;
         this.descriptor = descriptor;

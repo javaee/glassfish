@@ -71,6 +71,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     private int rank = 0;
     private Boolean proxy = null;
     private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
+    private String classAnalysisName = null;
     
     public ActiveDescriptorBuilderImpl(Class<?> implementation) {
         this.implementation = implementation;
@@ -178,6 +179,12 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         return this;
     }
     
+    public ActiveDescriptorBuilder analyzeWith(String serviceName) {
+        classAnalysisName = serviceName;
+        
+        return this;
+    }
+    
     @Override
     public ActiveDescriptorBuilder localOnly() {
         visibility = DescriptorVisibility.LOCAL;
@@ -209,6 +216,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 visibility,
                 rank,
                 proxy,
+                classAnalysisName,
                 metadatas,
                 loader);
     }
@@ -237,6 +245,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 visibility,
                 rank,
                 proxy,
+                classAnalysisName,
                 metadatas,
                 loader);
     }
@@ -258,6 +267,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 DescriptorVisibility descriptorVisibility,
                 int ranking,
                 Boolean proxy,
+                String classAnalysisName,
                 Map<String, List<String>> metadata,
                 HK2Loader loader) {
             super(advertisedContracts,
@@ -268,6 +278,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                     descriptorVisibility,
                     ranking,
                     proxy,
+                    classAnalysisName,
                     metadata);
             
             super.setReified(false);
