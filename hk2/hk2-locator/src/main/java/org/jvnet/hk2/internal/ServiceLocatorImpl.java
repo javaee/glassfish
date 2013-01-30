@@ -831,7 +831,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ((PreDestroy) preDestroyMe).preDestroy();
         }
         else {
-            Utilities.justPreDestroy(preDestroyMe, strategy);
+            Utilities.justPreDestroy(preDestroyMe, this, strategy);
         }
     }
     

@@ -674,13 +674,18 @@ public class Utilities {
      *
      * @param preMe pre destroys the thing
      */
-    public static void justPreDestroy(Object preMe, String strategy) {
+    public static void justPreDestroy(Object preMe, ServiceLocatorImpl locator, String strategy) {
         if (preMe == null) throw new IllegalArgumentException();
+        
+        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy);
+        if (analyzer == null) {
+            throw new IllegalArgumentException("No class analyzer with name " + strategy);
+        }
 
         Class<?> baseClass = preMe.getClass();
 
         Collector collector = new Collector();
-        Method preDestroy = findPreDestroy(baseClass, collector);
+        Method preDestroy = getPreDestroy(baseClass, analyzer, collector);
 
         collector.throwIfErrors();
 
