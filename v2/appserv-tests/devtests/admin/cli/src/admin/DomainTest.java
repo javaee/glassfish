@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,8 +41,10 @@
 package admin;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
+
 import javax.xml.xpath.XPathConstants;
 
 /**
@@ -50,6 +52,33 @@ import javax.xml.xpath.XPathConstants;
  * @author tmueller
  */
 public class DomainTest extends AdminBaseDevTest {
+
+    private final String NUCLEUS_DOMAIN_TEMPLATE_NAME = "nucleus-domain.jar";
+    private final String DEFAULT_DOMAIN_TEMPLATE_NAME = "default_domain_template";
+    private final String BRANDING_FILE_RELATIVE_PATH = "config" + File.separator + "branding" + File.separator + "glassfish-version.properties";
+    private Properties _brandingProperties;
+
+    public DomainTest(){
+        init();
+    }
+
+    private void init() {
+        if (_brandingProperties == null) {
+            _brandingProperties = new Properties();
+            try {
+                File brandingFile = new File(TestEnv.getGlassFishHome(), BRANDING_FILE_RELATIVE_PATH);
+                _brandingProperties.load(new FileInputStream(brandingFile));
+            } catch (IOException e) {
+                System.out.println("Not able to load branding file.");
+            } 
+        }
+    }
+
+    private String getDefaultTemplateName() {
+        return _brandingProperties != null ? _brandingProperties.getProperty(DEFAULT_DOMAIN_TEMPLATE_NAME,
+                NUCLEUS_DOMAIN_TEMPLATE_NAME) : NUCLEUS_DOMAIN_TEMPLATE_NAME;
+    }
+
     @Override
     protected String getTestDescription() {
         return "Tests domain functionality such as create-domain, etc.";
@@ -60,99 +89,57 @@ public class DomainTest extends AdminBaseDevTest {
     }
 
     private void runTests() {
-        testCreateDomainTemplate();
+        testCreateDomain();
         testDeleteDomain();
         stat.printSummary();
     }
 
-    /*
-     * This is a test for requirement INFRA-001
+    /**
+     * Test domain creation.
      */
-    static final String testdom =
-            "<domain log-root=\"${com.sun.aas.instanceRoot}/logs\" application-root=\"${com.sun.aas.instanceRoot}/applications\" version=\"10.0\">\n" +
-            "  <servers>\n" +
-            "    <server name=\"%%%SERVER_ID%%%\" config-ref=\"%%%CONFIG_MODEL_NAME%%%\"/>\n" +
-            "  </servers>\n" +
-            "  <configs>\n" +
-            "    <config name=\"%%%CONFIG_MODEL_NAME%%%\">\n" +
-            "      <http-service>\n" +
-            "        <virtual-server id=\"__asadmin\" network-listeners=\"admin-listener\"/>\n" +
-            "      </http-service>\n" +
-            "      <network-config>\n" +
-            "        <protocols>\n" +
-            "          <protocol name=\"admin-listener\">\n" +
-            "            <http default-virtual-server=\"__asadmin\" max-connections=\"250\">\n" +
-            "              <file-cache enabled=\"false\" />\n" +
-            "            </http>\n" +
-            "          </protocol>\n" +
-            "        </protocols>\n" +
-            "        <network-listeners>\n" +
-            "          <network-listener port=\"4849\" protocol=\"admin-listener\" transport=\"tcp\" name=\"admin-listener\"/>\n" +
-            "        </network-listeners>\n" +
-            "        <transports><transport name=\"tcp\"/></transports>\n" +
-            "      </network-config>\n" +
-            "    </config>\n" +
-            "  </configs>\n" +
-            "</domain>\n";
-
-    void testCreateDomainTemplate() {
+    void testCreateDomain() {
         final String tn = "create-domain-template-";
+        File defaultDomainDir = TestEnv.getDefaultTemplateDir();
 
-        // test a template from the lib/templates directory
-        File t1 = new File(getGlassFishHome(), "lib/templates/t1.xml");
-        try {
-            FileWriter fw = new FileWriter(t1);
-            fw.write(testdom);
-            fw.close();
-            t1.deleteOnExit();
-        } catch (IOException ex) {
-            report(tn + "t1write", false);
-            ex.printStackTrace();
-            return;
-        }
+        // Test domain creation for the default template.
         report(tn + "create-domain1", asadmin("create-domain",
-                "--nopassword=true", "--checkports=false", "--adminport", "4849",
-                "--template", "t1.xml", "domt1"));
-        report(tn + "check1", checkDomain("domt1"));
+                "--nopassword=true", "--checkports=false", "domt1"));
+        report(tn + "check1", checkDomain("domt1", new File(defaultDomainDir, getDefaultTemplateName()).getAbsolutePath()));
         report(tn + "delete-domain1", asadmin("delete-domain", "domt1"));
 
-        // test a template with an absolute pathname
-        File t2 = null;
-        try {
-            t2 = File.createTempFile("t2dom", ".xml");
-            FileWriter fw = new FileWriter(t2);
-            fw.write(testdom);
-            fw.close();
-            t2.deleteOnExit();
-        } catch (IOException ex) {
-            report(tn + "t2write", false);
-            ex.printStackTrace();
-            return;
+        File templateJar = new File(TestEnv.getDefaultTemplateDir(), NUCLEUS_DOMAIN_TEMPLATE_NAME);
+        // Test domain creation with --template argument.
+        if (templateJar.exists()) {
+            report(tn + "create-domain2", asadmin("create-domain",
+                    "--nopassword=true", "--checkports=false", "--template",
+                    templateJar.getAbsolutePath(), "domt2"));
+            report(tn + "check2", checkDomain("domt2", templateJar.getAbsolutePath()));
+            report(tn + "delete-domain2", asadmin("delete-domain", "domt2"));
         }
-        report(tn + "create-domain2", asadmin("create-domain",
-                "--nopassword=true", "--checkports=false", "--adminport", "4849",
-                "--template", t2.getAbsolutePath(), "domt2"));
-        report(tn + "check2", checkDomain("domt2"));
-        report(tn + "delete-domain2", asadmin("delete-domain", "domt2"));
     }
 
-    /*
-     * Check to see that the only port defined in the domain.xml is 4849. This
-     * checks to see that the template we provided was used.
+    /**
+     * Check's the template used to create domain against the given template path.
+     *
+     * @param name Domain name.
+     * @param templatePath absolute template path.
+     * @return true if the given template is used for domain creation. 
      */
-    boolean checkDomain(String name) {
-        File domxml = getDASDomainXML(name);
-        String xpathExpr = "//@port";
-        Object o = evalXPath(xpathExpr, domxml, XPathConstants.STRING);
-        System.out.println("o=" + o.toString());
-        return o instanceof String && "4849".equals((String)o);
-
+    boolean checkDomain(String name, String templatePath) {
+        File domInfoXml = TestEnv.getDomainInfoXml(name);
+        String xpathExpr = "//@location";
+        Object o = evalXPath(xpathExpr, domInfoXml, XPathConstants.STRING);
+        if (!(o instanceof String && templatePath.equals((String)o))) {
+            return false;
+        }
+        File domainFile = getDASDomainXML(name);
+        return domainFile.exists();
     }
 
     void testDeleteDomain() {
-         final String tn = "delete-domain-";
-         report(tn + "create", asadmin("create-domain", "foo"));
-         report(tn + "baddir", !asadmin("delete-domain", "--domainsdir", "blah", "foo"));
-         report(tn + "delete", asadmin("delete-domain", "foo"));
+        final String tn = "delete-domain-";
+        report(tn + "create", asadmin("create-domain", "foo"));
+        report(tn + "baddir", !asadmin("delete-domain", "--domainsdir", "blah", "foo"));
+        report(tn + "delete", asadmin("delete-domain", "foo"));
     }
 }

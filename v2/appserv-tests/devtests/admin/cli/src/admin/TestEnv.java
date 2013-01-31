@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,6 +78,9 @@ public final class TestEnv {
     public static File getDomainConfigDir(String domainName) {
         return new File(getDomainServerHome(domainName), CONFIG);
     }
+    public static File getInfoDir(String domainName) {
+        return new File(getDomainServerHome(domainName), INFO_DIRECTORY);
+    }
     public static File getDomainXml(String domainName) {
         return new File(getDomainConfigDir(domainName), DOMAIN_XML);
     }
@@ -119,7 +122,9 @@ public final class TestEnv {
     public static File getDomainLog(String domainName) {
         return new File(getDomainServerHome(domainName), SERVER_LOG);
     }
-    
+    public static File getDomainInfoXml(String domainName) {
+        return new File(getInfoDir(domainName), DOMAIN_INFO_XML);
+    }
     // ***************************
     // convenience methods that plug-in "domain1"
     // ****************************/
@@ -160,6 +165,9 @@ public final class TestEnv {
     public static File getDomainLog() {
         return new File(getDomainServerHome(), SERVER_LOG);
     }
+    public static File getDefaultTemplateDir() {
+        return new File(gf_home, DEFUALT_TEMPLATE_RELATIVE_PATH);
+    }
 
     ///////////////////////////////////////////////////////////////////////
     //  internal stuff below
@@ -177,6 +185,12 @@ public final class TestEnv {
     private static String DOMAIN_XML = "domain.xml";
     private static final String DAS_PROPS_PATH = "agent/config/das.properties";
     private final static String SERVER_LOG = "logs/server.log";
+
+    /** Name of directory stores the domain information. */
+    private static final String INFO_DIRECTORY = "init-info";
+    /** The file name stores the basic domain information. */
+    private static final String DOMAIN_INFO_XML = "domain-info.xml";
+    private final static String DEFUALT_TEMPLATE_RELATIVE_PATH = "common" + File.separator + "templates" + File.separator + "gf";
 
     static {
         isHadas = Boolean.getBoolean("HADAS")
