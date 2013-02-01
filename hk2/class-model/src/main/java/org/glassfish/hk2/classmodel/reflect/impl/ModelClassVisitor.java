@@ -158,13 +158,15 @@ public class ModelClassVisitor implements ClassVisitor {
                 if (!typeType.equals(AnnotationType.class)) {
                     for (String intf : interfaces) {
                         String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
+                        TypeImpl interfaceModel = typeBuilder.getType(Opcodes.ACC_INTERFACE, interfaceName, null);
                         TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
+                        if (typeProxy.get() == null)
+                            typeProxy.set((InterfaceModel) interfaceModel);
                         if (typeProxy!=null) {
                             classModel.isImplementing(typeProxy);
                             if (classModel instanceof ClassModel)
                                 typeProxy.addImplementation((ClassModel) classModel);
                         }
-
                     }
                 }
             }
