@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,17 +39,17 @@
  */
 package com.sun.enterprise.tools.apt;
 
-import com.sun.mirror.declaration.AnnotationMirror;
-import com.sun.mirror.declaration.AnnotationTypeElementDeclaration;
-import com.sun.mirror.declaration.AnnotationValue;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.AnnotationType;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.TypeMirror;
-
 import org.glassfish.hk2.api.Metadata;
 import org.jvnet.hk2.component.MultiMap;
 
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
@@ -62,23 +62,23 @@ import java.util.Map;
  */
 public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<MultiMap<String,String>> {
 
-    private final Map<AnnotationType,Model> models = new HashMap<AnnotationType, Model>();
+    private final Map<DeclaredType, Model> models = new HashMap<DeclaredType, Model>();
 
     /**
-     * For a particular {@link AnnotationType}, remember what properties are to be added as metadata.
+     * For a particular {@link DeclaredType}, remember what properties are to be added as metadata.
      */
     private static final class Model {
-        private final AnnotationType type;
-        private final Map<AnnotationTypeElementDeclaration,String> metadataProperties = new HashMap<AnnotationTypeElementDeclaration, String>();
+        private final DeclaredType type;
+        private final Map<ExecutableElement, String> metadataProperties = new HashMap<ExecutableElement, String>();
 
-        public Model(AnnotationType type) {
+        public Model(DeclaredType type) {
             this.type = type;
-            for (AnnotationTypeElementDeclaration e : type.getDeclaration().getMethods()) {
+            for (ExecutableElement e : ElementFilter.methodsIn(type.asElement().getEnclosedElements())) {
                 Metadata im = e.getAnnotation(Metadata.class);
                 if(im==null)    continue;
 
                 String name = im.value();
-                if(name.length()==0)    name=type.getDeclaration().getQualifiedName()+'.'+e.getSimpleName();
+                if (name.length() == 0) name = ((TypeElement) type.asElement()).getQualifiedName().toString() + '.' + e.getSimpleName();
 
                 metadataProperties.put(e,name);
             }
@@ -91,15 +91,14 @@ public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<MultiMap<S
         public void parse(AnnotationMirror a, MultiMap<String,String> metadataBag) {
             assert a.getAnnotationType().equals(type);
 
-            for (Map.Entry<AnnotationTypeElementDeclaration, String> e : metadataProperties.entrySet()) {
-                Map<AnnotationTypeElementDeclaration, AnnotationValue> vals = a.getElementValues();
+            for (Map.Entry<ExecutableElement, String> e : metadataProperties.entrySet()) {
+                Map<? extends ExecutableElement, ? extends AnnotationValue> vals = a.getElementValues();
                 AnnotationValue value = vals.get(e.getKey());
                 if (value!=null) {
                     metadataBag.add(e.getValue(), toString(value));
                 } else {
-                    Collection<AnnotationTypeElementDeclaration> methods = 
-                      a.getAnnotationType().getDeclaration().getMethods();
-                    for (AnnotationTypeElementDeclaration decl : methods) {
+                    Collection<ExecutableElement> methods = ElementFilter.methodsIn(a.getAnnotationType().asElement().getEnclosedElements());
+                    for (ExecutableElement decl : methods) {
                         if (e.getKey().equals(decl)) {
                             value = decl.getDefaultValue();
                             metadataBag.add(e.getValue(), toString(value));
@@ -113,10 +112,9 @@ public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<MultiMap<S
         private String toString(AnnotationValue value) {
             if (value.getValue() instanceof TypeMirror) {
                 TypeMirror tm = (TypeMirror) value.getValue();
-                // TODO: needs to be more robust
-                if (tm instanceof DeclaredType) {
+                if (tm.getKind().equals(TypeKind.DECLARED)) {
                     DeclaredType dt = (DeclaredType) tm;
-                    return getClassName(dt.getDeclaration());
+                    return getClassName((TypeElement) dt.asElement());
                 }
             }
             return value.toString();
@@ -124,36 +122,36 @@ public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<MultiMap<S
 
         /**
          * Returns the fully qualified class name.
-         * The difference between this and {@link TypeDeclaration#getQualifiedName()}
+         * The difference between this and {@link TypeElement#getQualifiedName()}
          * is that this method returns the same format as {@link Class#getName()}.
          *
          * Notably, separator for nested classes is '$', not '.'
          */
-        private String getClassName(TypeDeclaration d) {
-            if(d.getDeclaringType()!=null)
-                return getClassName(d.getDeclaringType())+'$'+d.getSimpleName();
+        private String getClassName(TypeElement d) {
+            if (d.getEnclosingElement() != null)
+                return getClassName((TypeElement) d.getEnclosingElement()) + '$' + d.getSimpleName();
             else
-                return d.getQualifiedName();
+                return d.getQualifiedName().toString();
         }
     }
 
-    public MultiMap<String,String> process(TypeDeclaration d) {
+    public MultiMap<String, String> process(TypeElement d) {
         visited.clear();
         MultiMap<String,String> r = new MultiMap<String, String>();
         check(d,r);
         return r;
     }
 
-    protected void check(TypeDeclaration d, MultiMap<String,String> result) {
+    protected void check(TypeElement d, MultiMap<String, String> result) {
         checkAnnotations(d, result);
         super.check(d,result);
     }
 
-    private void checkAnnotations(TypeDeclaration d, MultiMap<String, String> result) {
+    private void checkAnnotations(TypeElement d, MultiMap<String, String> result) {
         for (AnnotationMirror a : d.getAnnotationMirrors()) {
             getModel(a.getAnnotationType()).parse(a,result);
             // check meta-annotations
-            for (AnnotationMirror b : a.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
+            for (AnnotationMirror b : a.getAnnotationType().asElement().getAnnotationMirrors()) {
                 getModel(b.getAnnotationType()).parse(b,result);
             }
         }
@@ -163,10 +161,10 @@ public class InhabitantMetadataProcessor extends TypeHierarchyVisitor<MultiMap<S
      * Checks if the given annotation mirror has the given meta-annotation on it.
      */
     private boolean hasMetaAnnotation(AnnotationMirror a, Class<? extends Annotation> type) {
-        return a.getAnnotationType().getDeclaration().getAnnotation(type)!=null;
+        return a.getAnnotationType().asElement().getAnnotation(type) != null;
     }
 
-    private Model getModel(AnnotationType type) {
+    private Model getModel(DeclaredType type) {
         Model model = models.get(type);
         if(model==null)
             models.put(type,model=new Model(type));

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,7 +39,6 @@
  */
 package org.jvnet.hk2.config.generator.maven;
 
-import com.sun.tools.apt.Main;
 import java.io.File;
 import java.util.*;
 import org.apache.maven.artifact.Artifact;
@@ -48,7 +47,13 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
-import org.jvnet.hk2.config.generator.AnnotationProcessorFactoryImpl;
+import org.jvnet.hk2.config.generator.ConfigInjectorGenerator;
+
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 
 /**
  * @author jwells
@@ -132,34 +137,47 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
         File phaseGeneratedFile = (test) ? new File(generatedSources, TEST_NAME) : new File(generatedSources, MAIN_NAME);
         File javaGeneratedFile = new File(phaseGeneratedFile, JAVA_NAME);
         javaGeneratedFile.mkdirs();
-        
+        String outputPath = javaGeneratedFile.getAbsolutePath();
+
         // prepare command line arguments
-        LinkedList<String> args = new LinkedList<String>();
-        args.add("-nocompile");
-        args.add("-s");
-        args.add(javaGeneratedFile.getAbsolutePath());
-        args.add("-cp");
-        args.add(getBuildClasspath());
-        args.addAll(FileUtils.getFileNames(srcDir, includes, excludes,true));
+        List<String> options = new ArrayList<String>();
+        options.add("-proc:only");
+        options.add("-s");
+        options.add(outputPath);
+        options.add("-d");
+        options.add(outputPath);
+        options.add("-cp");
+        options.add(getBuildClasspath());
+        List<String> classNames = new ArrayList<String>();
+        classNames.addAll(FileUtils.getFileNames(srcDir, includes, excludes,true));
         
-        String[] cmdLine = args.toArray(new String[args.size()]);
         if(verbose){
             getLog().info("");
-            getLog().info("-- Apt Command Line --");
+            getLog().info("-- AnnotationProcessing Command Line --");
             getLog().info("");
-            getLog().info(Arrays.toString(cmdLine));
+            getLog().info(options.toString());
+            getLog().info(classNames.toString());
             getLog().info("");
         }
-        Main.process(new AnnotationProcessorFactoryImpl(), cmdLine);
-        
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+        Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromStrings(classNames);
+        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, compilationUnits);
+        task.setProcessors(Collections.singleton(new ConfigInjectorGenerator()));
+
+        boolean compilationResult = task.call();
+        if(verbose)
+            getLog().info("Result: " + (compilationResult ? "OK" : "!!! failed !!!"));
+
         // make the generated source directory visible for compilation
         if(test){
-            project.addTestCompileSourceRoot(javaGeneratedFile.getAbsolutePath());
+            project.addTestCompileSourceRoot(outputPath);
             if (getLog().isInfoEnabled()) {
                 getLog().info("Test Source directory: " + javaGeneratedFile + " added.");
             }            
         } else {
-            project.addCompileSourceRoot(javaGeneratedFile.getAbsolutePath());
+            project.addCompileSourceRoot(outputPath);
             if (getLog().isInfoEnabled()) {
                 getLog().info("Source directory: " + javaGeneratedFile + " added.");
             }
@@ -224,5 +242,5 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
             getLog().info("");
         }
         return classpath;
-    } 
+    }
 }

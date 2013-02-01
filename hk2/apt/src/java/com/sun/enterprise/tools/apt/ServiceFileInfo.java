@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,12 +39,10 @@
  */
 package com.sun.enterprise.tools.apt;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.apt.Filer;
-
-import java.io.File;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.tools.StandardLocation;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Set;
 
 /**
@@ -56,8 +54,7 @@ final class ServiceFileInfo {
 
     private final String serviceName;
     private Set<String> implementors;
-    private PrintWriter writer=null;
-
+    private Writer writer = null;
 
     public ServiceFileInfo(String serviceName, Set<String> initialImplementors) {
         this.serviceName = serviceName;
@@ -68,11 +65,10 @@ final class ServiceFileInfo {
         return writer!=null;
     }
 
-    public void createFile(AnnotationProcessorEnvironment env) throws IOException {
+    public void createFile(ProcessingEnvironment env) throws IOException {
         // create the file at this time.
         if (writer==null) {
-            File out = new File(new File("META-INF/services"),serviceName);
-            writer = env.getFiler().createTextFile(Filer.Location.SOURCE_TREE, "", out, "UTF-8");
+            writer = env.getFiler().createResource(StandardLocation.SOURCE_OUTPUT, "META-INF/services", serviceName).openWriter();
         }
     }
 
@@ -84,7 +80,7 @@ final class ServiceFileInfo {
         return implementors;
     }
 
-    public PrintWriter getWriter() {
+    public Writer getWriter() {
         return writer;
     }
 }
