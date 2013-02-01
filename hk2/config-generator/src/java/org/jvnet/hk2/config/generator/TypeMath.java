@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,20 +41,18 @@ package org.jvnet.hk2.config.generator;
 
 import com.sun.codemodel.JExpr;
 import com.sun.codemodel.JExpression;
-import com.sun.istack.tools.APTTypeVisitor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.ArrayType;
-import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.PrimitiveType;
-import com.sun.mirror.type.ReferenceType;
-import com.sun.mirror.type.TypeMirror;
-import com.sun.mirror.type.TypeVariable;
-import com.sun.mirror.type.VoidType;
-import com.sun.mirror.type.WildcardType;
 
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
+import javax.lang.model.type.WildcardType;
+import javax.lang.model.util.SimpleTypeVisitor6;
 import java.util.Collection;
 
 /**
@@ -62,127 +60,106 @@ import java.util.Collection;
  * @author Kohsuke Kawaguchi
  */
 class TypeMath {
-    protected final AnnotationProcessorEnvironment env;
 
-    public TypeMath(AnnotationProcessorEnvironment env) {
-        this.env = env;
-    }
-
-    TypeMirror isCollection(TypeMirror t) {
-        TypeMirror collectionType = baseClassFinder.apply(t, env.getTypeDeclaration(Collection.class.getName()));
-        if(collectionType!=null) {
-            DeclaredType d = (DeclaredType)collectionType;
-            return d.getActualTypeArguments().iterator().next();
-        } else
-            return null;
-    }
+    protected final ProcessingEnvironment env;
 
     /**
-     * Given a declaration X and mirror Y, finds the parameterization of Z=X&lt;...> such that
+     * Given a declaration X and mirror Y, finds the parametrization of Z=X&lt;...> such that
      * Y is assignable to Z.
      */
-    static final APTTypeVisitor<TypeMirror,TypeDeclaration> baseClassFinder = new APTTypeVisitor<TypeMirror,TypeDeclaration>(){
-        public TypeMirror onClassType(ClassType type, TypeDeclaration sup) {
-            TypeMirror r = onDeclaredType(type,sup);
-            if(r!=null)     return r;
+    final SimpleTypeVisitor6<TypeMirror, TypeElement> baseClassFinder = new SimpleTypeVisitor6<TypeMirror, TypeElement>() {
 
-            // otherwise recursively apply super class and base types
-            if(type.getSuperclass()!=null) {
-                r = onClassType(type.getSuperclass(),sup);
-                if(r!=null)     return r;
+        @Override
+        public TypeMirror visitDeclared(DeclaredType t, TypeElement sup) {
+
+            TypeMirror r = onDeclaredType(t, sup);
+            if (r != null) return r;
+
+            Element e = t.asElement();
+            switch (e.getKind()) {
+                case CLASS: {
+                    // otherwise recursively apply super class and base types
+                    TypeMirror sc = ((TypeElement) e).getSuperclass();
+                    if (!TypeKind.NONE.equals(sc.getKind()))
+                        r = visitDeclared((DeclaredType) sc, sup);
+                    if (r != null) return r;
+                }
             }
-
             return null;
         }
 
-        protected TypeMirror onPrimitiveType(PrimitiveType type, TypeDeclaration param) {
+        @Override
+        protected TypeMirror defaultAction(TypeMirror e, TypeElement typeElement) {
             return null;
         }
 
-        protected TypeMirror onVoidType(VoidType type, TypeDeclaration param) {
-            return null;
-        }
-
-        public TypeMirror onInterfaceType(InterfaceType type, TypeDeclaration sup) {
-            return onDeclaredType(type,sup);
-        }
-
-        private TypeMirror onDeclaredType(DeclaredType t, TypeDeclaration sup) {
+        private TypeMirror onDeclaredType(DeclaredType t, TypeElement sup) {
             // t = sup<...>
-            if(t.getDeclaration().equals(sup))
+            if (t.asElement().equals(sup))
                 return t;
 
-            for(InterfaceType i : t.getSuperinterfaces()) {
-                TypeMirror r = onInterfaceType(i,sup);
-                if(r!=null)     return r;
+            for (TypeMirror i : env.getTypeUtils().directSupertypes(t)) {
+                TypeMirror r = visitDeclared((DeclaredType) i, sup);
+                if (r != null) return r;
             }
 
             return null;
         }
 
-        public TypeMirror onTypeVariable(TypeVariable t, TypeDeclaration sup) {
+        @Override
+        public TypeMirror visitTypeVariable(TypeVariable t, TypeElement sup) {
             // we are checking if T (declared as T extends A&B&C) is assignable to sup.
             // so apply bounds recursively.
-            for( ReferenceType r : t.getDeclaration().getBounds() ) {
-                TypeMirror m = apply(r,sup);
-                if(m!=null)     return m;
+            for (TypeMirror r : ((TypeParameterElement) t.asElement()).getBounds()) {
+                TypeMirror m = visit(r, sup);
+                if (m != null) return m;
             }
             return null;
         }
 
-        public TypeMirror onArrayType(ArrayType type, TypeDeclaration sup) {
-            // we are checking if t=T[] is assignable to sup.
-            // the only case this is allowed is sup=Object,
-            // and Object isn't parameterized.
-            return null;
-        }
-
-        public TypeMirror onWildcard(WildcardType type, TypeDeclaration sup) {
+        @Override
+        public TypeMirror visitWildcard(WildcardType type, TypeElement sup) {
             // we are checking if T (= ? extends A&B&C) is assignable to sup.
             // so apply bounds recursively.
-            for( ReferenceType r : type.getLowerBounds() ) {
-                TypeMirror m = apply(r,sup);
-                if(m!=null)     return m;
-            }
-            return null;
+            return visit(type.getExtendsBound(), sup);
         }
     };
-
     /**
      * Adapts the string expression into the expression of the given type.
      */
-    final APTTypeVisitor<JExpression,JExpression> SIMPLE_VALUE_CONVERTER = new APTTypeVisitor<JExpression,JExpression>() {
-        protected JExpression onPrimitiveType(PrimitiveType p, JExpression param) {
-            String kind = p.getKind().toString();
-            return JExpr.invoke("as"+kind.charAt(0)+kind.substring(1).toLowerCase()).arg(param);
+    final SimpleTypeVisitor6<JExpression, JExpression> simpleValueConverter = new SimpleTypeVisitor6<JExpression, JExpression>() {
+
+        @Override
+        public JExpression visitPrimitive(PrimitiveType type, JExpression param) {
+            String kind = type.getKind().toString();
+            return JExpr.invoke("as" + kind.charAt(0) + kind.substring(1).toLowerCase()).arg(param);
         }
 
-        protected JExpression onClassType(ClassType type, JExpression param) {
-            String qn = type.getDeclaration().getQualifiedName();
-            if(qn.equals("java.lang.String"))
+        @Override
+        public JExpression visitDeclared(DeclaredType type, JExpression param) {
+            String qn = ((TypeElement) type.asElement()).getQualifiedName().toString();
+            if (qn.equals("java.lang.String"))
                 return param;   // no conversion needed for string
             // return JExpr.invoke("as"+type.getDeclaration().getSimpleName()).arg(param);
             throw new UnsupportedOperationException();
         }
 
-        protected JExpression onArrayType(ArrayType type, JExpression param) {
-            throw new UnsupportedOperationException();
-        }
-
-        protected JExpression onInterfaceType(InterfaceType type, JExpression param) {
-            throw new UnsupportedOperationException();
-        }
-
-        protected JExpression onTypeVariable(TypeVariable type, JExpression param) {
-            throw new UnsupportedOperationException();
-        }
-
-        protected JExpression onVoidType(VoidType type, JExpression param) {
-            throw new UnsupportedOperationException();
-        }
-
-        protected JExpression onWildcard(WildcardType type, JExpression param) {
+        @Override
+        protected JExpression defaultAction(TypeMirror e, JExpression jExpression) {
             throw new UnsupportedOperationException();
         }
     };
+
+    public TypeMath(ProcessingEnvironment env) {
+        this.env = env;
+    }
+
+    TypeMirror isCollection(TypeMirror t) {
+        TypeMirror collectionType = baseClassFinder.visit(t, env.getElementUtils().getTypeElement(Collection.class.getName()));
+        if (collectionType != null) {
+            DeclaredType d = (DeclaredType) collectionType;
+            return d.getTypeArguments().iterator().next();
+        } else
+            return null;
+    }
 }

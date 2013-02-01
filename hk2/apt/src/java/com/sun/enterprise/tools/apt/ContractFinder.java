@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,20 +39,18 @@
  */
 package com.sun.enterprise.tools.apt;
 
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.InterfaceDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.DeclaredType;
-import com.sun.mirror.type.InterfaceType;
-import com.sun.mirror.type.MirroredTypeException;
-import com.sun.mirror.type.ClassType;
 import org.jvnet.hk2.annotations.Contract;
 
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Given a {@link TypeDeclaration},
+ * Given a {@link TypeElement},
  * find all super-types that have {@link Contract},
  * including ones pointed by {@link ContractProvided}.
  *
@@ -62,32 +60,31 @@ public class ContractFinder {
     /**
      * The entry point.
      */
-    public static Set<TypeDeclaration> find(TypeDeclaration d) {
+    public static Set<TypeElement> find(TypeElement d) {
         return new ContractFinder().check(d).result;
     }
 
-
     /**
-     * {@link InterfaceType}s whose contracts are already checked.
+     * {@link TypeElement}s whose contracts are already checked.
      */
-    private final Set<InterfaceDeclaration> checkedInterfaces = new HashSet<InterfaceDeclaration>();
+    private final Set<TypeElement> checkedInterfaces = new HashSet<TypeElement>();
 
-    private final Set<TypeDeclaration> result = new HashSet<TypeDeclaration>();
+    private final Set<TypeElement> result = new HashSet<TypeElement>();
 
     private ContractFinder() {
     }
 
-    private ContractFinder check(TypeDeclaration d) {
+    private ContractFinder check(TypeElement d) {
 
         // traverse up the inheritance tree and find all supertypes that have @Contract
         while(true) {
             checkSuperInterfaces(d);
-            if (d instanceof ClassDeclaration) {
-                ClassDeclaration cd = (ClassDeclaration) d;
-                checkContract(cd);
-                ClassType sc = cd.getSuperclass();
-                if(sc==null)    break;
-                d = sc.getDeclaration();
+            if (ElementKind.CLASS.equals(d.getKind())) {
+                checkContract(d);
+                TypeMirror sc = d.getSuperclass();
+                if (sc.getKind().equals(TypeKind.NONE))
+                    break;
+                d = (TypeElement) ((DeclaredType) sc).asElement();
             } else
                 break;
         }
@@ -95,14 +92,14 @@ public class ContractFinder {
         return this;
     }
 
-    private void checkContract(TypeDeclaration type) {
+    private void checkContract(TypeElement type) {
         if (type.getAnnotation(Contract.class) != null)
             result.add(type);
     }
 
-    private void checkSuperInterfaces(TypeDeclaration d) {
-        for (InterfaceType intf : d.getSuperinterfaces()) {
-            InterfaceDeclaration i = intf.getDeclaration();
+    private void checkSuperInterfaces(TypeElement d) {
+        for (TypeMirror intf : d.getInterfaces()) {
+            TypeElement i = (TypeElement) ((DeclaredType) intf).asElement();
             if(checkedInterfaces.add(i)) {
                 checkContract(i);
                 checkSuperInterfaces(i);

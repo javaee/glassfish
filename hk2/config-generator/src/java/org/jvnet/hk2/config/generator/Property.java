@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,18 +42,14 @@ package org.jvnet.hk2.config.generator;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JExpression;
 import com.sun.codemodel.JVar;
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.MemberDeclaration;
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.type.TypeMirror;
 import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.Element;
 
-import java.beans.Introspector;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Represents configurable property of the component.
@@ -65,15 +61,15 @@ abstract class Property {
      * Field/method declaration of this property.
      * Used to read annotations on this property.
      */
-    abstract MemberDeclaration decl();
+    abstract javax.lang.model.element.Element decl();
 
     /**
      * Name used as a seed for the XML name of this property.
      * This is the property name / field name.
      */
     String seedName() {
-        return decl().getSimpleName();
-    };
+        return decl().getSimpleName().toString();
+    }
 
     /**
      * The type of the property.
@@ -87,7 +83,7 @@ abstract class Property {
     }
 
     private Boolean isKey=null;
-    
+
     /**
      * Does this property have {@link Attribute#key()} or {@link Element#key()}.
      */
@@ -102,9 +98,7 @@ abstract class Property {
         if(e!=null && e.key())  return true;
 
         Attribute a = getAnnotation(Attribute.class);
-        if(a!=null && a.key())  return true;
-
-        return false;
+        return a != null && a.key();
     }
 
     String inferName(String name) {
@@ -117,30 +111,30 @@ abstract class Property {
      * Property that consists of a set/add/get method.
      */
     static final class Method extends Property {
-        final MethodDeclaration decl;
+        final ExecutableElement method;
         /**
          * True if this property is based on the getter method. False if the setter/adder.
          */
         final boolean getter;
 
-        public Method(MethodDeclaration decl) {
-            this.decl = decl;
-            getter = !decl.getReturnType().toString().equals("void");
+        public Method(ExecutableElement method) {
+            this.method = method;
+            getter = !method.getReturnType().toString().equals("void");
         }
 
-        MemberDeclaration decl() {
-            return decl;
+        javax.lang.model.element.Element decl() {
+            return method;
         }
 
         TypeMirror type() {
             if(getter)
-                return decl.getReturnType();
+                return method.getReturnType();
             else
-                return decl.getParameters().iterator().next().getType();
+                return method.getParameters().iterator().next().asType();
         }
 
         void assign(JVar $target, JBlock block, JExpression rhs) {
-            block.invoke($target,decl.getSimpleName()).arg(rhs);
+            block.invoke($target, method.getSimpleName().toString()).arg(rhs);
         }
     }
 
@@ -148,22 +142,22 @@ abstract class Property {
      * Property that consists of a field.
      */
     static final class Field extends Property {
-        final FieldDeclaration decl;
+        final VariableElement field;
 
-        public Field(FieldDeclaration decl) {
-            this.decl = decl;
+        public Field(VariableElement field) {
+            this.field = field;
         }
 
-        MemberDeclaration decl() {
-            return decl;
+        javax.lang.model.element.Element decl() {
+            return field;
         }
 
         TypeMirror type() {
-            return decl.getType();
+            return field.asType();
         }
 
         void assign(JVar $target, JBlock block, JExpression rhs) {
-            block.assign($target.ref(decl.getSimpleName()),rhs);
+            block.assign($target.ref(field.getSimpleName().toString()), rhs);
         }
     }
 }

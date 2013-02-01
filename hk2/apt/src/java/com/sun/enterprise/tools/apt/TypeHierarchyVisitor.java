@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,12 +39,11 @@
  */
 package com.sun.enterprise.tools.apt;
 
-import com.sun.mirror.declaration.ClassDeclaration;
-import com.sun.mirror.declaration.InterfaceDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.type.ClassType;
-import com.sun.mirror.type.InterfaceType;
-
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,32 +54,32 @@ import java.util.Set;
  */
 abstract class TypeHierarchyVisitor<P> {
     /**
-     * {@link InterfaceType}s whose contracts are already checked.
+     * {@link DeclaredType}s whose contracts are already checked.
      */
-    protected final Set<InterfaceDeclaration> visited = new HashSet<InterfaceDeclaration>();
+    protected final Set<TypeElement> visited = new HashSet<TypeElement>();
 
-    protected void check(TypeDeclaration d, P param) {
-        if (d instanceof ClassDeclaration)
-            checkClass((ClassDeclaration) d,param);
+    protected void check(TypeElement d, P param) {
+        if (ElementKind.CLASS.equals(d.getKind()))
+            checkClass(d, param);
         else
-            checkInterface((InterfaceDeclaration)d,param);
+            checkInterface(d, param);
     }
 
-    protected void checkInterface(InterfaceDeclaration id, P param) {
+    protected void checkInterface(TypeElement id, P param) {
         checkSuperInterfaces(id,param);
     }
 
-    protected void checkClass(ClassDeclaration cd, P param) {
-        ClassType sc = cd.getSuperclass();
-        if(sc!=null)
-            check(sc.getDeclaration(),param);
+    protected void checkClass(TypeElement cd, P param) {
+        TypeMirror sc = cd.getSuperclass();
+        if (sc.getKind().equals(TypeKind.NONE))
+            check((TypeElement) ((DeclaredType) sc).asElement(), param);
 
         checkSuperInterfaces(cd,param);
     }
 
-    protected void checkSuperInterfaces(TypeDeclaration d, P param) {
-        for (InterfaceType intf : d.getSuperinterfaces()) {
-            InterfaceDeclaration i = intf.getDeclaration();
+    protected void checkSuperInterfaces(TypeElement d, P param) {
+        for (TypeMirror intf : d.getInterfaces()) {
+            TypeElement i = (TypeElement) ((DeclaredType) intf).asElement();
             if(visited.add(i)) {
                 check(i,param);
             }

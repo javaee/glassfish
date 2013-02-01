@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.config.generator;
 
+import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JBlock;
 import com.sun.codemodel.JClass;
@@ -51,17 +52,10 @@ import com.sun.codemodel.JForEach;
 import com.sun.codemodel.JInvocation;
 import com.sun.codemodel.JMethod;
 import com.sun.codemodel.JMod;
+import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 import com.sun.enterprise.tools.apt.ContractFinder;
-import com.sun.istack.tools.APTTypeVisitor;
-import com.sun.mirror.apt.AnnotationProcessor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.declaration.*;
-import com.sun.mirror.type.*;
-import com.sun.mirror.util.SimpleDeclarationVisitor;
-import com.sun.mirror.util.Types;
-import com.sun.tools.xjc.api.util.FilerCodeWriter;
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
@@ -75,15 +69,42 @@ import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.InjectionTarget;
 import org.jvnet.hk2.config.NoopConfigInjector;
 
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.MirroredTypeException;
+import javax.lang.model.type.NoType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.SimpleElementVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
+import javax.tools.StandardLocation;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+
+import static javax.tools.StandardLocation.CLASS_PATH;
+import static javax.tools.StandardLocation.SOURCE_PATH;
 
 /**
  * Generates {@link ConfigInjector} implementations for {@link Configured} objects
@@ -91,70 +112,101 @@ import java.util.Stack;
  * 
  * @author Kohsuke Kawaguchi
  */
-public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements AnnotationProcessor {
-    private final AnnotationProcessorEnvironment env;
+
+public class ConfigInjectorGenerator extends AbstractProcessor {
+
     private JCodeModel cm;
 
-    final TypeMath math;
+    private TypeMath math;
     /**
      * Reference to the {@link ConfigBeanProxy} type.
      */
-    private final TypeDeclaration configBeanProxy;
+    private TypeElement configBeanProxy;
 
-    public ConfigInjectorGenerator(AnnotationProcessorEnvironment env) {
-        this.env = env;
-        this.math = new TypeMath(env);
-        configBeanProxy = env.getTypeDeclaration(ConfigBeanProxy.class.getName());
+    private final GeneratorVisitor visitor = new GeneratorVisitor();
+
+    public ConfigInjectorGenerator() {
     }
 
-    public void process() {
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest(); // to avoid version warnings
+    }
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        return Collections.singleton(Configured.class.getName());
+    }
+
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        this.math = new TypeMath(processingEnv);
+        configBeanProxy = processingEnv.getElementUtils().getTypeElement(ConfigBeanProxy.class.getName());
+    }
+
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         cm = new JCodeModel();
 
-        AnnotationTypeDeclaration ann = (AnnotationTypeDeclaration) env.getTypeDeclaration(Configured.class.getName());
-        for(Declaration d : env.getDeclarationsAnnotatedWith(ann))
-            d.accept(this);
+        for (TypeElement annotation : annotations) {
+            for(javax.lang.model.element.Element d : roundEnv.getElementsAnnotatedWith(annotation))
+                d.accept(visitor, null);
 
-        try {
-            cm.build(new FilerCodeWriter(env.getFiler()));
-        } catch (IOException e) {
-            throw new Error(e);
+            try {
+                cm.build(new FilerCodeWriter(processingEnv.getFiler()));
+            } catch (IOException e) {
+                throw new Error(e);
+            }
         }
-        cm = null;
+        return true;
     }
 
-    /**
-     * For each class annotated with {@link Configured}.
-     */
-    public void visitClassDeclaration(ClassDeclaration clz) {
-        try {
-            new ClassGenerator(clz,false).generate();
-        } catch (JClassAlreadyExistsException e) {
-            env.getMessager().printError(clz.getPosition(),e.toString());
+
+    private class GeneratorVisitor extends SimpleElementVisitor6<Void, Void> {
+
+        @Override
+        public Void visitType(TypeElement element, Void aVoid) {
+            switch (element.getKind()) {
+                /**
+                 * For each {@link ConfigBeanProxy} annotated with {@link Configured}.
+                 */
+                case INTERFACE: {
+                    try {
+                        if(!isSubType(element,configBeanProxy)) {
+                            printError(element.getQualifiedName() + " has @Configured but doesn't extend ConfigBeanProxy", element);
+                        } else
+                            new ClassGenerator(element,true).generate();
+                    } catch (JClassAlreadyExistsException ex) {
+                        printError(ex.toString(), element);
+                    }
+                    break;
+                }
+                /**
+                 * For each class annotated with {@link Configured}.
+                 */
+                case CLASS: {
+                    try {
+                        new ClassGenerator(element,false).generate();
+                    } catch (JClassAlreadyExistsException ex) {
+                        printError(ex.toString(), element);
+                    }
+                    break;
+                }
+            }
+            return null;
         }
     }
 
-    /**
-     * For each {@link ConfigBeanProxy} annotated with {@link Configured}.
-     */
-    public void visitInterfaceDeclaration(InterfaceDeclaration clz) {
-        try {
-            if(!isSubType(clz,configBeanProxy)) {
-                env.getMessager().printError(clz.getPosition(),
-                    clz.getQualifiedName()+" has @Configured but doesn't extend ConfigBeanProxy");
-            } else
-                new ClassGenerator(clz,true).generate();
-        } catch (JClassAlreadyExistsException e) {
-            env.getMessager().printError(clz.getPosition(),e.toString());
-        }
-    }
 
-    private boolean isSubType(TypeDeclaration subType, TypeDeclaration baseType) {
-        Types u = env.getTypeUtils();
-        return u.isSubtype(u.getDeclaredType(subType),u.getDeclaredType(baseType));
+
+    private boolean isSubType(TypeElement subType, TypeElement baseType) {
+        Types types = processingEnv.getTypeUtils();
+        return types.isSubtype(types.getDeclaredType(subType), types.getDeclaredType(baseType));
     }
 
     /*package*/ class ClassGenerator {
-        final TypeDeclaration clz;
+        final TypeElement clz;
         final JDefinedClass injector;
         final JClass targetType;
         final JAnnotationUse service;
@@ -177,12 +229,12 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
         private final boolean generateNoopConfigInjector;
 
 
-        public ClassGenerator(TypeDeclaration clz, boolean generateNoopConfigInjector) throws JClassAlreadyExistsException {
+        public ClassGenerator(TypeElement clz, boolean generateNoopConfigInjector) throws JClassAlreadyExistsException {
             this.clz = clz;
             this.generateNoopConfigInjector = generateNoopConfigInjector;
             Configured c = clz.getAnnotation(Configured.class);
 
-            String name = clz.getQualifiedName();
+            String name = clz.getQualifiedName().toString();
             targetType = cm.ref(name);
 
             // [RESULT]
@@ -193,24 +245,22 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             String elementName = c.name();
             if(c.local()) {
                 if(elementName.length()>0) {
-                    env.getMessager().printError(clz.getPosition(),"@Configured.local and @Configured.name is mutually exclusive");
+                    printError("@Configured.local and @Configured.name is mutually exclusive", clz);
                     elementName = ""; // error recovery
                 }
             } else {
                 if(elementName.length()==0) // infer default
-                    elementName = Dom.convertName(clz.getSimpleName());
+                    elementName = Dom.convertName(clz.getSimpleName().toString());
             }
 
             service = injector.annotate(Service.class).param("name",elementName);
             injector.annotate(InjectionTarget.class).param("value",targetType);
 
             Set<String> targetHabitats = new HashSet<String>();
-            if (c != null) {
-                for (AnnotationMirror am : clz.getAnnotationMirrors()) {
-                    InhabitantAnnotation ia = am.getAnnotationType().getDeclaration().getAnnotation(InhabitantAnnotation.class);
-                    if (ia != null) {
-                        targetHabitats.add(ia.value());
-                    }
+            for (AnnotationMirror am : clz.getAnnotationMirrors()) {
+                InhabitantAnnotation ia = am.getAnnotationType().asElement().getAnnotation(InhabitantAnnotation.class);
+                if (ia != null) {
+                    targetHabitats.add(ia.value());
                 }
             }
 
@@ -239,8 +289,8 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             metadata.add(ConfigMetadata.TARGET,name);
 
             // locate additional contracts for the target.
-            for (TypeDeclaration t : ContractFinder.find(clz))
-                metadata.add(ConfigMetadata.TARGET_CONTRACTS,t.getQualifiedName());
+            for (TypeElement t : ContractFinder.find(clz))
+                metadata.add(ConfigMetadata.TARGET_CONTRACTS,t.getQualifiedName().toString());
             if (targetHabitats.size() > 0) {
                 StringBuilder sb = new StringBuilder();
                 for (String h : targetHabitats) {
@@ -248,20 +298,6 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 }
                 metadata.add(ConfigMetadata.TARGET_HABITATS, sb.toString());
             }
-        }
-
-        private boolean isSubAnnotationOf(String base, AnnotationMirror sub) {
-            if (sub.toString().equals(base)) {
-                return true;
-            }
-
-            for (AnnotationMirror am : sub.getAnnotationType().getDeclaration().getAnnotationMirrors()) {
-                if (isSubAnnotationOf(base, am)) {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         private void addReinjectionParam(JMethod method) {
@@ -275,27 +311,32 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
          * generates the body of the {@link ConfigInjector#inject(Dom, Object)} code.
          */
         public void generate() {
-            Stack<TypeDeclaration> q = new Stack<TypeDeclaration>();
-            Set<TypeDeclaration> visited = new HashSet<TypeDeclaration>();
+            Stack<TypeElement> q = new Stack<TypeElement>();
+            Set<TypeElement> visited = new HashSet<TypeElement>();
             q.push(clz);
 
             while(!q.isEmpty()) {
-                TypeDeclaration t = q.pop();
+                TypeElement t = q.pop();
                 if(!visited.add(t)) continue;   // been here already
+                for (javax.lang.model.element.Element child : t.getEnclosedElements()) {
+                    switch (child.getKind()) {
+                        case FIELD: { // ElementFilter.fieldsIn
+                            generate(new Property.Field((VariableElement) child));
+                            break;
+                        }
+                        case METHOD: {
+                            generate(new Property.Method((ExecutableElement) child));
+                        }
+                    }
+                }
 
-                for (FieldDeclaration f : t.getFields())
-                    generate(new Property.Field(f));
+                for (TypeMirror it : clz.getInterfaces())
+                    q.add((TypeElement) ((DeclaredType)it).asElement());
 
-                for (MethodDeclaration m : t.getMethods())
-                    generate(new Property.Method(m));
-
-                for (InterfaceType it : clz.getSuperinterfaces())
-                    q.add(it.getDeclaration());
-
-                if (t instanceof ClassDeclaration) {
-                    ClassDeclaration cd = (ClassDeclaration) t;
-                    if(cd.getSuperclass()!=null)
-                        q.add(cd.getSuperclass().getDeclaration());
+                if (ElementKind.CLASS.equals(t.getKind())) {
+                    TypeMirror sc = t.getSuperclass();
+                    if(!TypeKind.NONE.equals(sc.getKind()))
+                        q.add((TypeElement) ((DeclaredType) sc).asElement());
                 }
             }
 
@@ -309,7 +350,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             if(a!=null) {
                 new AttributeMethodGenerator(p,a).generate();
                 if(e!=null)
-                    env.getMessager().printError(p.decl().getPosition(),"Cannot have both @Element and @Attribute at the same time");
+                    printError("Cannot have both @Element and @Attribute at the same time", p.decl());
             } else {
                 if(e!=null)
                     new ElementMethodGenerator(p,e).generate();
@@ -318,8 +359,8 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             // Updates #key with error check.
             if(p.isKey()) {
                 if(key!=null) {
-                    env.getMessager().printError(p.decl().getPosition(),"Multiple key properties");
-                    env.getMessager().printError(key.decl().getPosition(),"Another one is at here");
+                    printError("Multiple key properties", p.decl());
+                    processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Another one is at here", key.decl());
                 }
                 key = p;
             }
@@ -397,8 +438,8 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 conv = createConverter(itemType);
                 conv.addMetadata(xmlTokenName(),itemType);
 
-                if(!isVariableExpansion() && TO_JTYPE.apply(itemType,null)!=cm.ref(String.class))
-                    env.getMessager().printError(p.decl().getPosition(),"variableExpansion=false is only allowed on String");
+                if(!isVariableExpansion() && toJtype.visit(itemType,null)!=cm.ref(String.class))
+                    printError("variableExpansion=false is only allowed on String", p.decl());
 
                 if(!generateNoopConfigInjector) {
                     JVar value = var(
@@ -423,7 +464,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             protected abstract boolean isRequired();
 
             /**
-             * Returns true if the property is a referenec to another element
+             * Returns true if the property is a reference to another element
              */
             protected abstract boolean isReference();
 
@@ -445,7 +486,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
             private void addKey() {
                 metadata.add(ConfigMetadata.KEY, xmlTokenName());
-                metadata.add(ConfigMetadata.KEYED_AS,p.decl().getDeclaringType().getQualifiedName());
+                metadata.add(ConfigMetadata.KEYED_AS, ((TypeElement) p.decl().getEnclosingElement()).getQualifiedName().toString());
             }
 
             /**
@@ -500,13 +541,12 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                     return new ListPacker(type,itemType);
                 }
 
-                TypeMirror mapType = TypeMath.baseClassFinder.apply(type, env.getTypeDeclaration(Map.class.getName()));
+                TypeMirror mapType = math.baseClassFinder.visit(type, processingEnv.getElementUtils().getTypeElement(Map.class.getName()));
                 if(mapType!=null) {
                     // T=Map<...>
                     DeclaredType d = (DeclaredType)mapType;
-                    Iterator<TypeMirror> itr = d.getActualTypeArguments().iterator();
-                    itr.next();
-                    return new MapPacker(itr.next());
+                    List<? extends TypeMirror> itr = d.getTypeArguments();
+                    return new MapPacker(itr.get(1));
                 }
 
                 return null;
@@ -537,7 +577,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
                 public ArrayPacker(ArrayType t) {
                     this.at = t;
-                    this.componentT = TO_JTYPE.apply(itemType(),null);
+                    this.componentT = toJtype.visit(itemType(), null);
                     this.arrayT = componentT.array();
                 }
 
@@ -569,8 +609,8 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 private final TypeMirror itemT;
 
                 public ListPacker(TypeMirror collectionType, TypeMirror itemType) {
-                    this.collectionType = TO_JTYPE.apply(collectionType,null).boxify();
-                    this.itemType       = TO_JTYPE.apply(itemType,null).boxify();
+                    this.collectionType = toJtype.visit(collectionType, null).boxify();
+                    this.itemType       = toJtype.visit(itemType, null).boxify();
                     this.itemT = itemType;
                 }
 
@@ -636,20 +676,15 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
             private Converter createConverter(TypeMirror itemType) {
                 try {
                     // is this a leaf value?
-                    math.SIMPLE_VALUE_CONVERTER.apply(itemType, JExpr._null());
+                    math.simpleValueConverter.visit(itemType, JExpr._null());
                     return new LeafConverter();
                 } catch (UnsupportedOperationException e) {
                     // nope
                 }
 
                 // try to handle it as a reference
-                if (itemType instanceof DeclaredType) {
-                    if (!(itemType instanceof ClassType || itemType instanceof InterfaceType)) {
-                        env.getMessager().printError(p.decl().getPosition(),
-                        "I only inject interfaces or classes,  "+itemType+" is not one of them");
-                        return new NodeConverter();
-                    }
-                    TypeDeclaration decl = ((DeclaredType)itemType).getDeclaration();
+                if (TypeKind.DECLARED.equals(itemType.getKind())) {
+                    TypeElement decl = (TypeElement) ((DeclaredType)itemType).asElement();
                     Configured cfg = decl.getAnnotation(Configured.class);
                     if(cfg!=null) {
                         // node value
@@ -664,8 +699,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                     return new NodeByTypeConverter(itemType);
                 }
 
-                env.getMessager().printError(p.decl().getPosition(),
-                    "I don't know how to inject "+itemType+" from configuration");
+                printError("I don't know how to inject "+itemType+" from configuration", p.decl());
                 return new NodeConverter(); // error recovery
             }
 
@@ -702,7 +736,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
             class LeafConverter extends Converter {
                 JExpression as(JExpression rhs, TypeMirror targetType) {
-                    return math.SIMPLE_VALUE_CONVERTER.apply(targetType, rhs);
+                    return math.simpleValueConverter.visit(targetType, rhs);
                 }
                 JClass sourceType() {
                     return cm.ref(String.class);
@@ -719,7 +753,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
             class NodeConverter extends Converter {
                 JExpression as(JExpression rhs, TypeMirror targetType) {
-                    return JExpr.cast(TO_JTYPE.apply(targetType,null),rhs.invoke("get"));
+                    return JExpr.cast(toJtype.visit(targetType, null), rhs.invoke("get"));
                 }
                 JClass sourceType() {
                     return cm.ref(Dom.class);
@@ -738,7 +772,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 final JClass sourceType;
 
                 NodeByTypeConverter(TypeMirror sourceType) {
-                    this.sourceType = TO_JTYPE.apply(sourceType,null).boxify();
+                    this.sourceType = toJtype.visit(sourceType, null).boxify();
                 }
 
                 JExpression as(JExpression rhs, TypeMirror targetType) {
@@ -757,7 +791,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
             class ReferenceConverter extends Converter {
                 JExpression as(JExpression rhs, TypeMirror targetType) {
-                    return JExpr.invoke("reference").arg($dom).arg(rhs).arg(TO_JTYPE.apply(targetType,null).boxify().dotclass());
+                    return JExpr.invoke("reference").arg($dom).arg(rhs).arg(toJtype.visit(targetType, null).boxify().dotclass());
                 }
                 JClass sourceType() {
                     return cm.ref(String.class);
@@ -823,13 +857,13 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 }
                 String ant = "";
                 try {
-                    Class c = a.dataType();
+                    a.dataType();
                 } catch(MirroredTypeException me) { //hack?
                      ant = getCanonicalTypeFrom(me);
                 }
                 if (ant.length() == 0) { //take it from the return type of method
                     Property.Method m = (Property.Method)p; // Method needn't be Property's inner class
-                    String typeReturnedByMethodDecl = m.decl.getReturnType().toString();
+                    String typeReturnedByMethodDecl = m.method.getReturnType().toString();
                     metadata.add(xmlTokenName(), "datatype:" + typeReturnedByMethodDecl);
                 } else {
                     metadata.add(xmlTokenName(), "datatype:" + ant);
@@ -839,8 +873,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
 
             protected JExpression getXmlValue() {
                 if(!isVariableExpansion() && packer!=null) {
-                    env.getMessager().printError(p.decl().getPosition(),
-                        "collection attribute property is inconsistent with variableExpansion=false");
+                    printError("collection attribute property is inconsistent with variableExpansion=false", p.decl());
                 }
                 return invokeDom(isVariableExpansion()?"attribute":"rawAttribute").arg(xmlName);
             }
@@ -867,7 +900,7 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
                 } else {
                     assert isVariableExpansion();   // this error is checked earlier.
                     if(xmlName.equals("*")) {
-                        return invokeDom("nodeByTypeElement").arg(TO_JTYPE.apply(itemType,null).boxify().dotclass());
+                        return invokeDom("nodeByTypeElement").arg(toJtype.visit(itemType, null).boxify().dotclass());
                     } else
                         name = "nodeElement";
                 }
@@ -908,57 +941,102 @@ public class ConfigInjectorGenerator extends SimpleDeclarationVisitor implements
         TypeMirror tm = me.getTypeMirror();
         if (tm instanceof DeclaredType) {
             DeclaredType dec = (DeclaredType) tm;
-            String qn = dec.getDeclaration().getQualifiedName();
-            return ( qn );
+            return ((TypeElement)dec.asElement()).getQualifiedName().toString();
         }
         return "";  //ok?
     }
+
     private TypeMirror erasure(TypeMirror type) {
-        return env.getTypeUtils().getErasure(type);
+        return processingEnv.getTypeUtils().erasure(type);
     }
 
     /**
      * Takes {@link TypeMirror} and returns the corresponding {@link JType}.
      */
-    final APTTypeVisitor<JType,Void> TO_JTYPE = new APTTypeVisitor<JType,Void>() {
-        protected JType onPrimitiveType(PrimitiveType type, Void param) {
+    final SimpleTypeVisitor6<JType,Void> toJtype = new SimpleTypeVisitor6<JType,Void>() {
+
+        @Override
+        public JType visitPrimitive(PrimitiveType type, Void param) {
             switch (type.getKind()) {
-            case BOOLEAN:   return cm.BOOLEAN;
-            case BYTE:      return cm.BYTE;
-            case CHAR:      return cm.CHAR;
-            case DOUBLE:    return cm.DOUBLE;
-            case FLOAT:     return cm.FLOAT;
-            case INT:       return cm.INT;
-            case LONG:      return cm.LONG;
-            case SHORT:     return cm.SHORT;
+                case BOOLEAN:   return cm.BOOLEAN;
+                case BYTE:      return cm.BYTE;
+                case CHAR:      return cm.CHAR;
+                case DOUBLE:    return cm.DOUBLE;
+                case FLOAT:     return cm.FLOAT;
+                case INT:       return cm.INT;
+                case LONG:      return cm.LONG;
+                case SHORT:     return cm.SHORT;
             }
             throw new AssertionError();
         }
 
-        protected JType onArrayType(ArrayType type, Void param) {
-            return apply(type.getComponentType(),null).array();
+        @Override
+        public JType visitArray(ArrayType type, Void param) {
+            return visit(type.getComponentType(), null).array();
         }
 
-        protected JType onClassType(ClassType type, Void param) {
+        @Override
+        public JType visitDeclared(DeclaredType type, Void param) {
             // TODO: generics support
-            return cm.ref(type.getDeclaration().getQualifiedName());
+            return cm.ref(((TypeElement) type.asElement()).getQualifiedName().toString());
         }
 
-        protected JType onInterfaceType(InterfaceType type, Void param) {
-            // TODO: generics support
-            return cm.ref(type.getDeclaration().getQualifiedName());
-        }
-
-        protected JType onTypeVariable(TypeVariable type, Void param) {
+        @Override
+        protected JType defaultAction(TypeMirror e, Void aVoid) {
             throw new UnsupportedOperationException();
         }
 
-        protected JType onVoidType(VoidType type, Void param) {
+        @Override
+        public JType visitNoType(NoType t, Void aVoid) {
             return cm.VOID;
         }
-
-        protected JType onWildcard(WildcardType type, Void param) {
-            throw new UnsupportedOperationException();
-        }
     };
+
+    private void printError(String error, javax.lang.model.element.Element element) {
+        processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, error, element);
+    }
+
+    /**
+     * {@link CodeWriter} that generates source code to {@link Filer}.
+     *
+     * @author Kohsuke Kawaguchi
+     *
+     * Moved from jaxb-xjc to break unneeded dependency.
+     */
+    public static final class FilerCodeWriter extends CodeWriter {
+
+        private final Filer filer;
+
+        public FilerCodeWriter(Filer filer) {
+            this.filer = filer;
+        }
+
+        public OutputStream openBinary(JPackage pkg, String fileName) throws IOException {
+            StandardLocation loc;
+            if(fileName.endsWith(".java")) {
+                // Annotation Processing doesn't do the proper Unicode escaping on Java source files,
+                // so we can't rely on Filer.createSourceFile.
+                loc = SOURCE_PATH;
+            } else {
+                // put non-Java files directly to the output folder
+                loc = CLASS_PATH;
+            }
+            return filer.createResource(loc, pkg.name(), fileName).openOutputStream();
+        }
+
+        public Writer openSource(JPackage pkg, String fileName) throws IOException {
+            String name;
+            if(pkg.isUnnamed())
+                name = fileName;
+            else
+                name = pkg.name()+'.'+fileName;
+
+            name = name.substring(0,name.length()-5);   // strip ".java"
+
+            return filer.createSourceFile(name).openWriter();
+        }
+
+        public void close() {}
+    }
+
 }
