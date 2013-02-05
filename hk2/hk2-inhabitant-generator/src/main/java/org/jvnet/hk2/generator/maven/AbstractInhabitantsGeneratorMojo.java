@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,29 +52,15 @@ import org.apache.maven.project.MavenProject;
 import org.jvnet.hk2.generator.HabitatGenerator;
 
 /**
- * Calls the generator with maven
- * 
- * @goal generateInhabitants
- * @phase process-classes 
- * @requiresDependencyResolution test
+ * Abstract Mojo for inhabitant generator
  */
-public class MavenInhabitantsGenerator extends AbstractMojo {
+public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
     /**
      * The maven project.
      *
      * @parameter expression="${project}" @required @readonly
      */
     protected MavenProject project;
-    
-    /**
-     * @parameter expression="${project.build.outputDirectory}"
-     */
-    private File outputDirectory;
-    
-    /**
-     * @parameter expression="${project.build.testOutputDirectory}"
-     */
-    private File testOutputDirectory;
     
     /**
      * @parameter
@@ -87,19 +73,17 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
     private String locator;
     
     /**
-     * @parameter
-     */
-    private boolean test = false;
-    
-    /**
-     * @parameter
-     */
-    private boolean noswap;
-    
-    /**
      * @parameter expression="${supportedProjectTypes}" default-value="jar"
      */
     private String supportedProjectTypes;
+    
+    /**
+     * @parameter default-value="${project.build.outputDirectory}"
+     */
+    private File buildOutputDirectory;
+    
+    protected abstract boolean getNoSwap();
+    protected abstract File getOutputDirectory();
     
     /**
      * This method will compile the inhabitants file based on
@@ -112,25 +96,23 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
             return;
         }
         
-        File output = (test)? testOutputDirectory : outputDirectory;
-        output.mkdirs();
-        
-        if (!output.exists()) {
+        getOutputDirectory().mkdirs();
+        if (!getOutputDirectory().exists()) {
             getLog().info("Exiting hk2-inhabitant-generator because could not find output directory " +
-                  output.getAbsolutePath());
+                  getOutputDirectory().getAbsolutePath());
             return;
         }
         
         if (verbose) {
             getLog().info("");
-            getLog().info("hk2-inhabitant-generator generating into location " + output.getAbsolutePath());
+            getLog().info("hk2-inhabitant-generator generating into location " + getOutputDirectory().getAbsolutePath());
             getLog().info("");
         }
         
         LinkedList<String> arguments = new LinkedList<String>();
         
         arguments.add(HabitatGenerator.FILE_ARG);
-        arguments.add(output.getAbsolutePath());
+        arguments.add(getOutputDirectory().getAbsolutePath());
         
         if (verbose) {
             arguments.add(HabitatGenerator.VERBOSE_ARG);
@@ -144,28 +126,24 @@ public class MavenInhabitantsGenerator extends AbstractMojo {
         arguments.add(HabitatGenerator.SEARCHPATH_ARG);
         arguments.add(getBuildClasspath());
         
-        if (noswap) {
+        if (getNoSwap()) {
             arguments.add(HabitatGenerator.NOSWAP_ARG);
         }
         
         String argv[] = arguments.toArray(new String[arguments.size()]);
         
         int result = HabitatGenerator.embeddedMain(argv);
-        
         if (result != 0) {
-            throw new MojoFailureException("Could not generate inhabitants file for " +
-                (test ? testOutputDirectory : outputDirectory));
+            throw new MojoFailureException("Could not generate inhabitants file for " + getOutputDirectory());
         }
     }
     
     private String getBuildClasspath() {
         StringBuilder sb = new StringBuilder();
-        // Make sure to add in the directory that has been built
-        if (test) {
-            sb.append(outputDirectory.getAbsolutePath());
-            sb.append(File.pathSeparator);
-        }        
         
+        sb.append(buildOutputDirectory.getAbsolutePath());
+        sb.append(File.pathSeparator);
+
         List<Artifact> artList = new ArrayList<Artifact>(project.getArtifacts());
         Iterator<Artifact> i = artList.iterator();
         

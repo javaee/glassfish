@@ -41,6 +41,11 @@ package org.jvnet.hk2.config.generator.maven;
 
 import java.io.File;
 import java.util.*;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -49,24 +54,16 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 import org.jvnet.hk2.config.generator.ConfigInjectorGenerator;
 
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
-
 /**
  * @author jwells
  * 
- * @goal generateInjectors
- * @phase generate-sources 
- * @requiresDependencyResolution test
+ * Abstract Mojo for config generator
  */
-public class ConfigGeneratorPlugin extends AbstractMojo {
-    private final static String GENERATED_SOURCES = "generated-sources/hk2-config-generator/src";
-    private final static String MAIN_NAME = "main";
-    private final static String TEST_NAME = "test";
-    private final static String JAVA_NAME = "java";
+public abstract class AbstractConfigGeneratorMojo extends AbstractMojo {
+    protected final static String GENERATED_SOURCES = "generated-sources/hk2-config-generator/src";
+    protected final static String MAIN_NAME = "main";
+    protected final static String TEST_NAME = "test";
+    protected final static String JAVA_NAME = "java";
 
     /**
      * The maven project.
@@ -74,31 +71,6 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
      * @parameter expression="${project}" @required @readonly
      */
     protected MavenProject project;
-    
-    /**
-     * @parameter expression="${project.build.directory}"
-     */
-    private File buildDirectory;
-    
-    /**
-     * @parameter expression="${project.build.sourceDirectory}"
-     */
-    private File sourceDirectory;
-    
-    /**
-     * @parameter expression="${project.build.testSourceDirectory}"
-     */
-    private File testSourceDirectory;
-    
-    /**
-     * @parameter expression="${project.build.outputDirectory}"
-     */
-    private File outputDirectory;
-    
-    /**
-     * @parameter
-     */
-    private boolean test;
     
     /**
      * @parameter
@@ -120,24 +92,29 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
      */
     private String excludes;
     
+    /**
+     * @parameter default-value="${project.build.outputDirectory}"
+     */
+    private File buildOutputDirectory;    
+    
+    protected abstract File getSourceDirectory();
+    protected abstract File getGeneratedDirectory();
+    protected abstract File getOutputDirectory();
+    protected abstract void addCompileSourceRoot(String path);
+    
     /* (non-Javadoc)
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     private void internalExecute() throws Throwable {
         List<String> projectTypes = Arrays.asList(supportedProjectTypes.split(","));
-        File srcDir = (test) ? testSourceDirectory : sourceDirectory;
         if(!projectTypes.contains(project.getPackaging())
-                || !srcDir.exists() 
-                || !srcDir.isDirectory()){
+                || !getSourceDirectory().exists() 
+                || !getSourceDirectory().isDirectory()){
             return;
         }
         
-        // prepare the generated source directory
-        File generatedSources = new File(buildDirectory, GENERATED_SOURCES);
-        File phaseGeneratedFile = (test) ? new File(generatedSources, TEST_NAME) : new File(generatedSources, MAIN_NAME);
-        File javaGeneratedFile = new File(phaseGeneratedFile, JAVA_NAME);
-        javaGeneratedFile.mkdirs();
-        String outputPath = javaGeneratedFile.getAbsolutePath();
+        getGeneratedDirectory().mkdirs();
+        String outputPath = getGeneratedDirectory().getAbsolutePath();
 
         // prepare command line arguments
         List<String> options = new ArrayList<String>();
@@ -149,7 +126,7 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
         options.add("-cp");
         options.add(getBuildClasspath());
         List<String> classNames = new ArrayList<String>();
-        classNames.addAll(FileUtils.getFileNames(srcDir, includes, excludes,true));
+        classNames.addAll(FileUtils.getFileNames(getSourceDirectory(), includes, excludes,true));
         
         if(verbose){
             getLog().info("");
@@ -167,20 +144,14 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
         task.setProcessors(Collections.singleton(new ConfigInjectorGenerator()));
 
         boolean compilationResult = task.call();
-        if(verbose)
+        if(verbose) {
             getLog().info("Result: " + (compilationResult ? "OK" : "!!! failed !!!"));
+        }
 
         // make the generated source directory visible for compilation
-        if(test){
-            project.addTestCompileSourceRoot(outputPath);
-            if (getLog().isInfoEnabled()) {
-                getLog().info("Test Source directory: " + javaGeneratedFile + " added.");
-            }            
-        } else {
-            project.addCompileSourceRoot(outputPath);
-            if (getLog().isInfoEnabled()) {
-                getLog().info("Source directory: " + javaGeneratedFile + " added.");
-            }
+        addCompileSourceRoot(outputPath);
+        if (getLog().isInfoEnabled()) {
+            getLog().info("Source directory: " + outputPath + " added.");
         }
     }
 
@@ -215,11 +186,9 @@ public class ConfigGeneratorPlugin extends AbstractMojo {
     
     private String getBuildClasspath() {
         StringBuilder sb = new StringBuilder();
-        // Make sure to add in the directory that has been built
-        if (test) {
-            sb.append(outputDirectory.getAbsolutePath());
-            sb.append(File.pathSeparator);
-        }        
+        
+        sb.append(buildOutputDirectory.getAbsolutePath());
+        sb.append(File.pathSeparator);
         
         List<Artifact> artList = new ArrayList<Artifact>(project.getArtifacts());
         Iterator<Artifact> i = artList.iterator();

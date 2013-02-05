@@ -53,11 +53,6 @@
     <artifactId>config-generator</artifactId>
     <name>HK2 configuration reader generator module</name>
     <packaging>maven-plugin</packaging>
-     
-    <build>
-        <sourceDirectory>src/java</sourceDirectory>
-        <testSourceDirectory>test/java</testSourceDirectory>
-    </build>
  
     <dependencies>
         <dependency>
@@ -92,14 +87,4 @@
             <version>2.6</version>
         </dependency>
     </dependencies>
-
- <!--
-    <repositories>
-        <repository>
-            <id>codehaus</id>
-            <name>Codehaus repository</name>
-            <url>http://repository.codehaus.org/</url>
-        </repository>
-    </repositories>
--->
 </project>
