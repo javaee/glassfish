@@ -86,21 +86,21 @@ public class ProxiableTest {
      */
     @Test
     public void testProxiedSingletonUsingProxyCtl() {
-        ProxiableService.resetConstructorCalled();
+        ProxiableService2.resetConstructorCalled();
         
-        ServiceHandle<ProxiableService> psHandle = locator.getServiceHandle(ProxiableService.class);
+        ServiceHandle<ProxiableService2> psHandle = locator.getServiceHandle(ProxiableService2.class);
         Assert.assertNotNull(psHandle);
         
         try {
-            ProxiableService ps = psHandle.getService();
+            ProxiableService2 ps = psHandle.getService();
         
-            Assert.assertEquals(0, ProxiableService.getConstructorCalled());
+            Assert.assertEquals(0, ProxiableService2.getConstructorCalled());
             
             Assert.assertTrue(ps instanceof ProxyCtl);
         
             ((ProxyCtl) ps).__make();  // Forces true creation
         
-            Assert.assertEquals(1, ProxiableService.getConstructorCalled());
+            Assert.assertEquals(1, ProxiableService2.getConstructorCalled());
         }
         finally {
             // Removes it from Singleton scope
