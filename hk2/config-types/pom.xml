@@ -80,7 +80,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>generateInjectors</goal>
+                            <goal>generate-injectors</goal>
                         </goals>
                     </execution>
                 </executions>

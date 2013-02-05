@@ -49,30 +49,39 @@
     <groupId>org.glassfish.hk2.external</groupId>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cglib</artifactId>
-    <!-- Don't use bundle packaging. There are issues in using
-         maven-bundle-plugin and hk2-maven-plugin together -->
-    <packaging>jar</packaging>
     <name>cglib version ${cglib.version} repackaged as a module</name>
+
+    <developers>
+        <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
                 <executions>
                     <execution>
-			<id>enforce-clean</id>
-			<!--
-			    maven-source-plugin invokes generate-sources phase prior to itself
-			    we use process-sources phase to clean only once...
-			-->
+                        <id>enforce-clean</id>
+                        <!--
+                            maven-source-plugin invokes generate-sources phase prior to itself
+                            we use process-sources phase to clean only once...
+                        -->
                         <phase>process-sources</phase>
                         <goals>
                             <goal>clean</goal>
                         </goals>
-		    </execution>
-	    	</executions>
-	    </plugin>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -173,38 +182,27 @@
                             <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
-                 </executions>
-             </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-          </archive>
-        </configuration>
-      </plugin>
-         </plugins>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
+    
     <dependencies>
         <!-- Mark them as optional so that GF distribution mechanism
              won't package them. It is sufficient to package the wrapped jar.
         -->
         <dependency>
-          <groupId>cglib</groupId>
-          <artifactId>cglib</artifactId>
-          <version>${cglib.version}</version>
-          <optional>true</optional>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>${cglib.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
-    <developers>
-        <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 </project>

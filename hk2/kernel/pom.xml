@@ -66,21 +66,14 @@
                 <version>${project.version}</version>
                 <executions>
                     <execution>
-                        <configuration>
-                            <noswap>true</noswap>
-                        </configuration>
                         <goals>
-                            <goal>generateInhabitants</goal>
+                            <goal>generate-inhabitants</goal>
                         </goals>
                     </execution>
                     <execution>
-                        <id>test</id>
-                        <phase>process-test-classes</phase>
-                        <configuration>
-                            <test>true</test>
-                        </configuration>
+			<id>test-inhabitants</id>
                         <goals>
-                            <goal>generateInhabitants</goal>
+                            <goal>generate-test-inhabitants</goal>
                         </goals>
                     </execution>
                 </executions>
