@@ -40,7 +40,6 @@
 package org.jvnet.hk2.generator.maven;
 
 import java.io.File;
-import javax.annotation.sql;
 
 /**
  * Generates inhabitant
