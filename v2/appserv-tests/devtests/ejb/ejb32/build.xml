@@ -16,6 +16,7 @@
         <antcall target="methodintf"/>
         <antcall target="timer"/>
         <antcall target="intfces"/>
+        <antcall target="persistence"/>
         <antcall target="embedded"/>
     </target>
 
@@ -64,6 +65,12 @@
         <record name="embedded.output" action="start" />
             <ant dir="embedded" target="lite"/>
         <record name="embedded.output" action="stop" />
+    </target>
+
+    <target name="persistence">
+        <record name="persistence.output" action="start" />
+            <ant dir="persistence" target="all"/>
+        <record name="persistence.output" action="stop" />
     </target>
 
     <target name="usage">
