@@ -30,8 +30,6 @@ popd
 export APS_HOME=$PWD/appserv-tests
 export AS_LOGFILE=$S1AS_HOME/cli.log 
 
-svn --non-interactive --trust-server-cert -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests
-
 cd $APS_HOME
 
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
