@@ -128,6 +128,11 @@ public abstract class AbstractConfigGeneratorMojo extends AbstractMojo {
         List<String> classNames = new ArrayList<String>();
         classNames.addAll(FileUtils.getFileNames(getSourceDirectory(), includes, excludes,true));
         
+        if(classNames.isEmpty()){
+            getLog().info("No source file");
+            return;
+        }
+        
         if(verbose){
             getLog().info("");
             getLog().info("-- AnnotationProcessing Command Line --");
