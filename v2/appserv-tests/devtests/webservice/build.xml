@@ -35,6 +35,7 @@
 	<ant dir="ejb_annotations" target="all"/>
         <ant dir="mapping/j2w/signature" target="all"/> <!-- 2 tests -->
         <ant dir="google" target="all"/> <!-- 1 test -->
+        <ant dir="gf_dd/endpoint_address_uri" target="all"/> <!-- 1 test -->
         <record name="webservice.output" action="stop" />
         <antcall target="report"/>
         <antcall target="dev-report"/>
