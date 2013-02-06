@@ -73,6 +73,7 @@ public class GeneratorRunner {
     private final String locatorName;
     private final boolean verbose;
     private final boolean noSwap;
+    private final String outputDirectory;  // Not used in the JAR case
 
     /**
      * This initializes the GeneratorRunner with the values needed to run
@@ -89,12 +90,14 @@ public class GeneratorRunner {
             String locatorName,
             boolean verbose,
             String searchPath,
-            boolean noSwap) {
+            boolean noSwap,
+            String outputDirectory) {
         this.fileOrDirectory = fileOrDirectory;
         this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
         this.noSwap = noSwap;
+        this.outputDirectory = outputDirectory;
         utilities = new Utilities(verbose, searchPath);
     }
     
@@ -116,7 +119,7 @@ public class GeneratorRunner {
         if (toInspect.isDirectory()) {
             allDescriptors = findAllServicesFromDirectory(toInspect, toInspect);
             if (allDescriptors.isEmpty()) return;
-            writeToDirectory(toInspect, allDescriptors);
+            writeToDirectory(allDescriptors);
         }
         else {
             allDescriptors = findAllServicesFromJar(toInspect);
@@ -174,7 +177,7 @@ public class GeneratorRunner {
     }
 
 
-    private void writeToDirectory(File parent, List<DescriptorImpl> allDescriptors) throws IOException {
+    private void writeToDirectory(List<DescriptorImpl> allDescriptors) throws IOException {
         Map<String, List<DescriptorImpl>> targetHabitatMap = new HashMap<String, List<DescriptorImpl>>();
         targetHabitatMap.put(locatorName, new ArrayList<DescriptorImpl>());
         for (DescriptorImpl d : allDescriptors) {
@@ -202,8 +205,8 @@ public class GeneratorRunner {
             if (descriptors.size() == 0) {
                 continue;
             }
-            File META_INF_dir = new File(parent, META_INF);
-            File inhabitantsDir = new File(META_INF_dir, INHABITANTS);
+            
+            File inhabitantsDir = new File(outputDirectory);
             File outputFile = new File(inhabitantsDir, targetHabitatName);
 
             if (!inhabitantsDir.exists()) {

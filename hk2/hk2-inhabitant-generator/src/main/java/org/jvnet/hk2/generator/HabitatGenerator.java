@@ -68,6 +68,8 @@ public class HabitatGenerator {
     public final static String SEARCHPATH_ARG = "--searchPath";
     /** This option will write files in-place, which is quicker but will remove existing files prior to writing new ones */
     public final static String NOSWAP_ARG = "--noswap";
+    /** This option gives the name of directory in the target location where the file should be placed */
+    public final static String DIRECTORY_ARG = "--directory";
     
     private final String directoryOrFileToGenerateFor;
     private final String outjarName;
@@ -75,19 +77,22 @@ public class HabitatGenerator {
     private final boolean verbose;
     private final String searchPath;
     private final boolean noSwap;
+    private final String outputDirectory;
     
     private HabitatGenerator(String directoryOrFileToGenerateFor,
             String outjarName,
             String locatorName,
             boolean verbose,
             String searchPath,
-            boolean noSwap) {
+            boolean noSwap,
+            String outputDirectory) {
         this.directoryOrFileToGenerateFor = directoryOrFileToGenerateFor;
         this.outjarName = outjarName;
         this.locatorName = locatorName;
         this.verbose = verbose;
         this.searchPath = searchPath;
         this.noSwap = noSwap;
+        this.outputDirectory = outputDirectory;
     }
     
     private void printThrowable(Throwable th) {
@@ -104,7 +109,7 @@ public class HabitatGenerator {
     
     private int go() {
         GeneratorRunner runner = new GeneratorRunner(directoryOrFileToGenerateFor,
-                outjarName, locatorName, verbose, searchPath, noSwap);
+                outjarName, locatorName, verbose, searchPath, noSwap, outputDirectory);
         
         try {
             runner.go();
@@ -143,12 +148,14 @@ public class HabitatGenerator {
     
     
     private final static String LOCATOR_DEFAULT = "default";
+    private final static String META_INF = "META-INF";
+    public final static String HK2_LOCATOR = "hk2-locator";
     
     /**
      * A utility to generate inhabitants files.  By default the first element of the classpath will be analyzed and
      * an inhabitants file will be put into the JAR or directory.  The arguments are as follows:
      * <p>
-     * HabitatGenerator [--file jarFileOrDirectory] [--searchPath path-separator-delimited-classpath] [--outjar jarfile] [--locator locatorName] [--verbose]
+     * HabitatGenerator [--file jarFileOrDirectory] [--searchPath path-separator-delimited-classpath] [--outjar jarfile] [--locator locatorName] [--directory targetDirectory] [--verbose]
      * </p>
      * If the input file is a directory then the output file will go into META-INF/locatorName in the
      * original directory
@@ -171,6 +178,7 @@ public class HabitatGenerator {
         String outjarFile = null;
         String searchPath = CLASSPATH;
         boolean userNoSwap = false;
+        String outputDirectory = null;
         
         for (int lcv = 0; lcv < argv.length; lcv++) {
             if (VERBOSE_ARG.equals(argv[lcv])) {
@@ -215,6 +223,15 @@ public class HabitatGenerator {
             else if (NOSWAP_ARG.equals(argv[lcv])) {
                 userNoSwap = true;
             }
+            else if (DIRECTORY_ARG.equals(argv[lcv])) {
+                lcv++;
+                if (lcv >= argv.length) {
+                    usage();
+                    return 5;
+                }
+                
+                outputDirectory = argv[lcv];
+            }
             else {
                 System.err.println("Uknown argument: " + argv[lcv]);
             }
@@ -238,8 +255,18 @@ public class HabitatGenerator {
         
         if (outjarFile == null) outjarFile = defaultFileToHandle;
         
+        if (outputDirectory == null) {
+            File defaultFileAsFile = new File(defaultFileToHandle);
+            if (!defaultFileAsFile.exists() || defaultFileAsFile.isDirectory()) {
+                File defaultDirectoryAsFile = new File(defaultFileAsFile, META_INF);
+                defaultDirectoryAsFile = new File(defaultDirectoryAsFile, HK2_LOCATOR);
+                
+                outputDirectory = defaultDirectoryAsFile.getAbsolutePath();
+            }
+        }    
+        
         HabitatGenerator hg = new HabitatGenerator(defaultFileToHandle, outjarFile,
-                defaultLocatorName, defaultVerbose, searchPath, userNoSwap);
+                defaultLocatorName, defaultVerbose, searchPath, userNoSwap, outputDirectory);
         
         return hg.go();
     }

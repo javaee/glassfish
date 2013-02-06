@@ -55,6 +55,16 @@ import org.jvnet.hk2.generator.HabitatGenerator;
  * Abstract Mojo for inhabitant generator
  */
 public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
+    private final static String WAR_PACKAGING = "war";
+    
+    private final static String WEB_INF = "WEB-INF";
+    private final static String CLASSES = "classes";
+    
+    /**
+     * @parameter expression="${project.build.directory}"
+     */
+    private File targetDirectory;
+    
     /**
      * The maven project.
      *
@@ -73,7 +83,7 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
     private String locator;
     
     /**
-     * @parameter expression="${supportedProjectTypes}" default-value="jar"
+     * @parameter expression="${supportedProjectTypes}" default-value="jar,ejb,war"
      */
     private String supportedProjectTypes;
     
@@ -84,6 +94,10 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
     
     protected abstract boolean getNoSwap();
     protected abstract File getOutputDirectory();
+    
+    protected boolean isWar() {
+       return WAR_PACKAGING.equals(project.getPackaging());
+    }
     
     /**
      * This method will compile the inhabitants file based on
@@ -128,6 +142,18 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
         
         if (getNoSwap()) {
             arguments.add(HabitatGenerator.NOSWAP_ARG);
+        }
+        
+        if (isWar()) {
+            // For WAR files, the hk2-locator files goes under WEB-INF/classes/hk2-locator, not META-INF/hk2-locator
+            
+            File outDir = new File(targetDirectory, project.getArtifactId());
+            outDir = new File(outDir, WEB_INF);
+            outDir = new File(outDir, CLASSES);
+            outDir = new File(outDir, HabitatGenerator.HK2_LOCATOR);
+            
+            arguments.add(HabitatGenerator.DIRECTORY_ARG);
+            arguments.add(outDir.getAbsolutePath());
         }
         
         String argv[] = arguments.toArray(new String[arguments.size()]);
