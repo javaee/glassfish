@@ -52,9 +52,9 @@ $S1AS_HOME/bin/asadmin start-database
 
 ant all
 
-- start GlassFish
+# start GlassFish
 $S1AS_HOME/bin/asadmin stop-domain domain1
-- start Derby
+# start Derby
 $S1AS_HOME/bin/asadmin stop-database
 
 egrep 'FAILED= *0' count.txt
