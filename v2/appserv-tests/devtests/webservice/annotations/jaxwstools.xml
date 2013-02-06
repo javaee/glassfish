@@ -1,9 +1,3 @@
-<target name="setJAXWSToolsForWin" if="isWindows">
-    <property name="WSGEN" value="${env.S1AS_HOME}/bin/wsgen.bat"/>
-    <property name="WSIMPORT" value="${env.S1AS_HOME}/bin/wsimport.bat"/>
-    <property name="ASAPT" value="${env.S1AS_HOME}/bin/asapt.bat"/>
-</target>
-
 <path id="classpath">
         <fileset dir="${env.S1AS_HOME}/modules">
                       <include name="*.jar"/>
@@ -16,20 +10,13 @@
         </fileset>
     </path>
 
-
-<target name="setJAXWSToolsForUnix" if="isUnix">
-    <property name="WSGEN" value="${env.S1AS_HOME}/bin/wsgen"/>
-    <property name="WSIMPORT" value="${env.S1AS_HOME}/bin/wsimport"/>
-    <property name="ASAPT" value="${env.S1AS_HOME}/bin/asapt"/>
-</target>
-
-<target name="wsgen" depends="init-common,setJAXWSToolsForWin,setJAXWSToolsForUnix">
+<target name="wsgen" depends="init-common">
     <exec executable="${WSGEN}" failonerror="true" >
         <arg line="${wsgen.args}" />
     </exec>
 </target>
 
-<target name="wsimport" depends="init-common,setJAXWSToolsForWin,setJAXWSToolsForUnix">
+<target name="wsimport" depends="init-common">
     <exec executable="${WSIMPORT}" failonerror="true" >
         <arg line="${wsimport.args}" />
     </exec>
