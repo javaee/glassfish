@@ -30,7 +30,7 @@ popd
 export APS_HOME=$PWD/appserv-tests
 export AS_LOGFILE=$S1AS_HOME/cli.log 
 
-svn -N co http://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests
+svn --non-interactive --trust-server-cert -N co https://svn.java.net/svn/glassfish~svn/trunk/v2/appserv-tests
 
 cd $APS_HOME
 
