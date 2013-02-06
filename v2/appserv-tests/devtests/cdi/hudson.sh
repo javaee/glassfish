@@ -30,8 +30,6 @@ popd
 export APS_HOME=$PWD/appserv-tests
 export AS_LOGFILE=$S1AS_HOME/cli.log 
 
-rm -rf $S1AS_HOME/domains/domain1
-
 cd $APS_HOME
 
 (jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
