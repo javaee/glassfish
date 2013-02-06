@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,7 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
+    <target name="all" depends="setup,build,deploy,runAndUndeploy, restore"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -77,12 +77,11 @@
             <param name="password" value="${testpassword2}"/>
             <param name="groups" value="${testgroup2}"/>
         </antcall>
-        <antcall target="asadmin-common-ignore-fail">
-              <param name="admin.command" value="set" />
-              <param name="operand.props"
-                     value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.trace-enabled=true"/>
-          </antcall>
 
+        <antcall target="stop-server"/>
+        <move file="${admin.domain.dir}/${admin.domain}/logs/server.log"
+            tofile="${admin.domain.dir}/${admin.domain}/logs/server.log.save"/>
+        <antcall target="start-server"/>
     </target>
 
     <target name="build" depends="compile">
@@ -105,21 +104,20 @@
         <antcall target="deploy-war-common"/>
     </target>
     
-    <target name="run" depends="init-common">
+    <target name="runAndUndeploy" depends="init-common">
         <java classname="WebTest">
-          <arg value="${http.host}"/>
-          <arg value="${http.port}"/>
-          <arg value="${contextroot}"/>
-          <classpath>
-           <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-           <pathelement location="."/>
-         </classpath>
+            <arg value="${http.host}"/>
+            <arg value="${http.port}"/>
+            <arg value="${contextroot}"/>
+            <arg value="${admin.domain}"/>
+            <arg value="${admin.domain.dir}/${admin.domain}/logs/server.log"/>
+            <arg value="${appname}-web"/>
+            <classpath>
+                <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
+                <pathelement location="."/>
+            </classpath>
         </java>
     </target>
-
-    <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-war-common"/>
-    </target>   
 
     <target name="restore" depends="init-common">
         <antcall target="delete-user-common">
@@ -128,12 +126,6 @@
         <antcall target="delete-user-common">
             <param name="user" value="${testuser2}"/>
         </antcall>
-        <antcall target="asadmin-common-ignore-fail">
-              <param name="admin.command" value="set" />
-              <param name="operand.props"
-                     value="configs.config.server-config.network-config.protocols.protocol.http-listener-1.http.trace-enabled=false"/>
-          </antcall>
-
     </target>
 
     <target name="usage">

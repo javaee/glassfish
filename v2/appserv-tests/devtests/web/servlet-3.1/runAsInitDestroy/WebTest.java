@@ -40,15 +40,21 @@
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import com.sun.ejte.ccl.reporter.*;
+import com.sun.appserv.test.BaseDevTest;
 
 /*
  * Unit test for @RunAs with init and destroy
  */
-public class WebTest {
+public class WebTest extends BaseDevTest {
 
     private static final String TEST_NAME = "run-as-init-destroy";
-    private static final String EXPECTED_RESPONSE = "Hello javaee";
+    private static final String EXPECTED_RESPONSE = "RunAsInitDestroy-SL: Hello javaee";
+    private static final String EXPECTED_RESPONSE2 = "RunAsInitDestroy-SL: Hello destroy";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -56,11 +62,17 @@ public class WebTest {
     private String host;
     private int port;
     private String contextRoot;
+    private String domain;
+    private String serverLog;
+    private String appName;
 
     public WebTest(String[] args) {
         host = args[0];
         port = Integer.parseInt(args[1]);
         contextRoot = args[2];
+        domain = args[3];
+        serverLog = args[4];
+        appName = args[5];
     }
     
     public static void main(String[] args) {
@@ -70,13 +82,24 @@ public class WebTest {
 
         try {
             boolean ok = webTest.run();
-            stat.addStatus(TEST_NAME, ((ok)? stat.PASS : stat.FAIL));
+            boolean ok2 = webTest.undeployAndCheckLog();
+            stat.addStatus(TEST_NAME, ((ok && ok2)? stat.PASS : stat.FAIL));
         } catch( Exception ex) {
             ex.printStackTrace();
             stat.addStatus(TEST_NAME, stat.FAIL);
         }
 
     	stat.printSummary();
+    }
+
+    @Override
+    public String getTestName() {
+        return TEST_NAME;
+    }
+
+    @Override
+    public String getTestDescription() {
+        return TEST_NAME;
     }
 
     private boolean run() throws Exception {
@@ -124,5 +147,21 @@ public class WebTest {
         }
 
         return ok;
+    }
+
+    private boolean undeployAndCheckLog() throws Exception {
+        asadmin("undeploy", appName);
+        boolean found = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader(serverLog));) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(EXPECTED_RESPONSE2)) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        return found;
     }
 }

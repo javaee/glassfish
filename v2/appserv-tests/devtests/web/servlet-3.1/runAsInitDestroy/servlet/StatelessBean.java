@@ -46,6 +46,6 @@ import javax.ejb.Stateless;
 @RolesAllowed("staff")
 public class StatelessBean {
     public String hello(String mesg) {
-        return "Hello " + mesg;
+        return "RunAsInitDestroy-SL: Hello " + mesg;
     }
 }
