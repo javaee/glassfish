@@ -37,7 +37,12 @@ cd $APS_HOME
 pushd $APS_HOME/devtests/cdi
 rm count.txt || true
 
-rm -rf bin .classpath  .project; ant clean; rm RepRunConf.txt; rm *.output
+rm -rf bin .classpath  .project 
+
+ant clean || true;
+
+rm RepRunConf.txt; rm *.output
+
 rm alltests.res
 rm $APS_HOME/test_results*
 #clean all RepRunConf.txt
