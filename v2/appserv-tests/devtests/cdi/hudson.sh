@@ -41,12 +41,12 @@ rm -rf bin .classpath  .project
 
 ant clean || true;
 
-rm RepRunConf.txt; rm *.output
+rm -f RepRunConf.txt; rm -f *.output
 
-rm alltests.res
-rm $APS_HOME/test_results*
+rm -f alltests.res
+rm -f $APS_HOME/test_results*
 #clean all RepRunConf.txt
-find . -name "RepRunConf.txt" | xargs rm
+find . -name "RepRunConf.txt" | xargs rm -f
 
 # start GlassFish
 $S1AS_HOME/bin/asadmin start-domain domain1
