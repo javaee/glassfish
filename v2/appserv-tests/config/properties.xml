@@ -154,6 +154,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}</echo>
   <property name="TNAMESERV" value="${env.S1AS_HOME}/jdk/bin/tnameserv.exe"/>
 
   <property name="WSCOMPILE" value="${env.S1AS_HOME}/bin/wscompile.bat"/>
+  <property name="WSGEN" value="${env.S1AS_HOME}/bin/wsgen.bat"/>
   <property name="WSIMPORT" value="${env.S1AS_HOME}/bin/wsimport.bat"/>
   <property name="pb.start.server" 
       value="${env.S1AS_HOME}/pointbase/server/StartServer.bat"/>
@@ -182,6 +183,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}</echo>
   <property name="RMIC" value="${env.S1AS_HOME}/jdk/bin/rmic"/>
   <property name="TNAMESERV" value="${env.S1AS_HOME}/jdk/bin/tnameserv"/>
   <property name="WSCOMPILE" value="${env.S1AS_HOME}/bin/wscompile"/>
+  <property name="WSGEN" value="${env.S1AS_HOME}/bin/wsgen"/>
   <property name="WSIMPORT" value="${env.S1AS_HOME}/bin/wsimport"/>
   <property name="pb.start.server" 
       value="${env.S1AS_HOME}/pointbase/server/StartServer"/>
