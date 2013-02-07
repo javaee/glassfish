@@ -101,9 +101,10 @@ public class WebTest {
                     String line = new String(b, 0, len);
                     sb.append(line);
                     boolean hasInfo = sb.toString().replace("/", "").contains(EXPECTED_RESPONSE);
-                    if (hasInfo || System.currentTimeMillis() - startTime > 20 * 1000) {
+                    boolean hasError = sb.toString().contains("WrongClassLoader");
+                    if (hasInfo || hasError || System.currentTimeMillis() - startTime > 20 * 1000) {
                         break;
-                    }
+                    } 
                 }
 
                 System.out.println(sb.toString());

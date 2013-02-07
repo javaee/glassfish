@@ -101,7 +101,14 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             try {
                 StringBuilder sb = new StringBuilder();
                 System.out.println("--> onDataAvailable");
-                System.out.println("#### Thread.currentThread.getContextClassloader(): " + Thread.currentThread().getContextClassLoader());
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                System.out.println("#### Thread.currentThread.getContextClassloader(): " + cl);
+                if (cl instanceof org.glassfish.web.loader.WebappClassLoader) {
+                    System.out.println("Correct ClassLoader");
+                } else {
+                    System.out.println("ERROR Wrong ClassLoader!!!");
+                    sb.append("WrongClassLoader"); 
+                }
 
                 int len = -1;
                 byte b[] = new byte[1024];
