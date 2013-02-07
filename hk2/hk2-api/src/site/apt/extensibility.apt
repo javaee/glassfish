@@ -25,6 +25,8 @@ Extensibility of HK2
  
  * {{Instance Lifecycle}}
  
+ * {{Class Analysis}}
+ 
 * {Adding a Scope and Context to the system}
 
  In HK2 a {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is a class that is used to control the lifecycle of service instances.  A
@@ -120,4 +122,31 @@ Extensibility of HK2
  the {{{./apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html}InstanceLifecycleListener}} is notified whenever an instance
  of a service is created or destroyed.  This is a useful facility for tracing or for scenarios where a service wishes to become
  an automatic listener for anything that it is injected into.
+ 
+* {Class Analysis}
+
+ HK2 often needs to look at a java class in order to find things about that class such as its set
+ of constructors, methods or fields.  The choices HK2 makes is usually determined by specifications
+ such as JSR-330 or JSR-299.  However, in some cases different specifications make different choices,
+ or the user of the HK2 system may have some other scheme it would like to use in order to
+ select the parts of class which HK2 should manipulate.  For example, the JAX-RS specification
+ requires the system to choose the constructor with the largest number of parameters (by default)
+ while the JSR-299 specification requires the system to choose the zero-argument constructor
+ or else fail.
+ 
+ The HK2 system allows the user to register named implementation of the
+ {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} in order to modify
+ or completely replace the constructors, fields and methods HK2 would choose.  
+ Individual HK2 {{{./apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptors}} can
+ set the name of the {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} that
+ should be used to analyze the implementation class.
+ 
+ HK2 always adds an implementation of {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}}
+ with the name "default" that implements the JSR-299 style of selection.  However, the HK2 system
+ also provides an implementation of the
+ {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} which picks the constructor
+ with the largest number of parameters.  This implementation of
+ {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} can be added to a
+ ServiceLocator by using the addPreferLargestConstructorClassAnalyzer method of
+ {{{./apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html}ServiceLocatorUtilities}}.
  
