@@ -15,10 +15,12 @@
 
     <target name="all">
         <antcall target="setup"/>
+        <antcall target="ActivationProperties"/>
         <antcall target="Annotation"/>
         <antcall target="DefaultConnectionFactory"/>
         <antcall target="Injection"/>
         <antcall target="JMSXDeliveryCount"/>
+        <antcall target="MDBDestination"/>
         <antcall target="unsetup"/>
         <antcall target="report"/>
     </target>
@@ -69,6 +71,18 @@
         <record name="JMSXDeliveryCount.output" action="start" />
             <ant dir="JMSXDeliveryCount" target="all"/>
         <record name="JMSXDeliveryCount.output" action="stop" />
+    </target>
+
+    <target name="ActivationProperties">
+        <record name="ActivationProperties.output" action="start" />
+            <ant dir="activationProperties" target="all"/>
+        <record name="ActivationProperties.output" action="stop" />
+    </target>
+
+    <target name="MDBDestination">
+        <record name="MDBDestination.output" action="start" />
+            <ant dir="mdbDest" target="all"/>
+        <record name="MDBDestination.output" action="stop" />
     </target>
 
     <target name="usage">
