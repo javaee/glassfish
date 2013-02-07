@@ -1,4 +1,4 @@
-package org.glassfish.test.jms.jmsxdeliverycount.ejb;
+package org.glassfish.test.jms.mdbdest.ejb;
 
 import javax.ejb.Remote;
 
@@ -12,5 +12,5 @@ public interface MySessionBeanRemote {
     
     public void sendMessage(String text);
     
-    public boolean checkMessage(String text);
+    public int checkMessage(String text, int expectedCount);
 }

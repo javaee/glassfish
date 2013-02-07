@@ -1,4 +1,4 @@
-package org.glassfish.test.jms.jmsxdeliverycount.ejb;
+package org.glassfish.test.jms.mdbdest.ejb;
 
 import java.util.logging.*;
 import javax.annotation.Resource;
@@ -6,10 +6,9 @@ import javax.ejb.*;
 import javax.inject.Inject;
 import javax.jms.*;
 
-@MessageDriven(mappedName = "jms/jms_unit_test_Queue", activationConfig = {
+@MessageDriven(name = "test0", mappedName = "jms/jms_unit_test_Topic", activationConfig = {
     @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-    @ActivationConfigProperty(propertyName = "endpointExceptionRedeliveryAttempts", propertyValue = "1")
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic")
 })
 public class NewMessageBean implements MessageListener {
     private static final Logger logger = Logger.getLogger(NewMessageBean.class.getName());
@@ -18,9 +17,6 @@ public class NewMessageBean implements MessageListener {
     
     @Resource
     private MessageDrivenContext mdc;
-
-    @Resource(mappedName = "jms/jms_unit_test_Queue")
-    private Queue queue;
 
     @Resource(mappedName = "jms/jms_unit_result_Queue")
     private Queue resultQueue;
@@ -36,31 +32,9 @@ public class NewMessageBean implements MessageListener {
     @Override
     @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public void onMessage(Message message) {
-        count++;
-        try {
-            int deliveryCount = message.getIntProperty("JMSXDeliveryCount");
-            if (count == 1) {
-                if (deliveryCount != 1) {
-                    sendMsg(false, "Invalid JMSXDeliveryCount - Got <" + deliveryCount + ">, but expected <1>.");
-                    return;
-                }
-                throw new RuntimeException("This is a fake runtime exception!!!");
-            } else if (count ==2) {
-                if (deliveryCount != 2) {
-                    sendMsg(false, "Invalid JMSXDeliveryCount - Got <" + deliveryCount + ">, but expected <2>.");
-                    return;
-                } else {
-                    sendMsg(true, null);
-                }
-            }
-        } catch (JMSException ex) {
-            Logger.getLogger(NewMessageBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    private void sendMsg(boolean success, String msg) {
         JMSProducer producer = jmsContext.createProducer();
-        TextMessage tmsg = jmsContext.createTextMessage(success + ":" + msg);
+        TextMessage tmsg = jmsContext.createTextMessage("Received: " + this.getClass().getName());
         producer.send(resultQueue, tmsg);
+        System.out.println(this.getClass().getName() + " sent message!!!");
     }
 }

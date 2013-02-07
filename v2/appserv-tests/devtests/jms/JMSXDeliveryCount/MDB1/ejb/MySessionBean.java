@@ -1,4 +1,4 @@
-package org.glassfish.test.jms.jmsxdeliverycount.ejb;
+package org.glassfish.test.jms.mdbdest.ejb;
 
 import java.util.logging.Logger;
 import javax.annotation.Resource;
@@ -12,8 +12,8 @@ import javax.jms.*;
  */
 @Stateless(mappedName="MySessionBean/remote")
 public class MySessionBean implements MySessionBeanRemote {
-    @Resource(mappedName = "jms/jms_unit_test_Queue")
-    private Queue queue;
+    @Resource(mappedName = "jms/jms_unit_test_Topic")
+    private Topic topic;
 
     @Resource(mappedName = "jms/jms_unit_result_Queue")
     private Queue resultQueue;
@@ -30,49 +30,48 @@ public class MySessionBean implements MySessionBeanRemote {
     EJBContext ctx;
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public void sendMessage(String text) {
         try {
             JMSProducer producer = jmsContext.createProducer();
             TextMessage msg = jmsContext.createTextMessage(text);
-            producer.send(queue, msg);
+            producer.send(topic, msg);
         } catch (Exception e) {
             throw new EJBException(e);
         }
     }
 
     @Override
-    public boolean checkMessage(String text) {
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public int checkMessage(String text, int expectedCount) {
         Connection conn = null;
         Session session = null;
+        int count = 0;
         try {
             conn = myQueueFactory.createConnection();
             conn.start();
             session = conn.createSession();
 
             MessageConsumer consumer = session.createConsumer(resultQueue);
-            TextMessage msg = (TextMessage) consumer.receive(10000);
-            if (msg == null) {
-                Logger.getLogger("MySessionBean").severe("No result message received.");
-                return false;
-            } else {
-                String result = msg.getText();
-                if (result.startsWith("true")) {
-                    return true;
-                } else {
-                    String errMsg = result.substring(result.indexOf(":") + 1);
-                    Logger.getLogger("MySessionBean").severe(errMsg);
-                    return false;
-                }
+            while (count < expectedCount) {
+                TextMessage msg = (TextMessage) consumer.receive(120000);
+                if (msg != null)
+                    count ++;
+                else
+                    break;
             }
         } catch (Exception e) {
             throw new EJBException(e);
         } finally {
             try {
-                session.close();
-                conn.close();
+                if (session != null)
+                    session.close();
+                if (conn != null)
+                    conn.close();
             }catch(Exception e) {
                 throw new EJBException(e);
             }
         }
+        return count;
     }
 }

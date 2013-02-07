@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <!DOCTYPE project [
-<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
-<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="JMSXDeliveryCount-mdb1App" default="usage" basedir=".">
+<project name="mdbDestApp" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
@@ -30,7 +30,7 @@
     <target name="build" depends="compile">
         <antcall target="build-ear-common">
             <param name="ejbjar.classes" 
-              value="**/MySessionBean*.class, **/*MessageBean.class" />
+              value="**/MySessionBean*.class, **/*MessageBean*.class" />
             <param name="appclientjar.classes" 
               value="**/*Client.class,**/MySessionBean*.class" />
         </antcall>
@@ -57,7 +57,7 @@
         <java fork="on" 
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${assemble.dir}/${appname}-client.jar:${env.APS_HOME}/lib/reporter.jar"
-              classname="org.glassfish.test.jms.jmsxdeliverycount.client.Client">
+              classname="org.glassfish.test.jms.mdbdest.client.Client">
             <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
         </java>
     </target>
