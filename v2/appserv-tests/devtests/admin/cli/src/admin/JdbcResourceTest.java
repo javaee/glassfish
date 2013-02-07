@@ -63,6 +63,8 @@ public class JdbcResourceTest extends AdminBaseDevTest {
 
     private static final String CREATE_RESOURCE_REF = "create-resource-ref";
     private static final String DELETE_RESOURCE_REF = "delete-resource-ref";
+    private static final String LIST_RESOURCE_REF = "list-resource-refs";
+    private static final String LIST_JNDI_ENTRIES = "list-jndi-entries";
 
     private static final String DELETE_JDBC_RESOURCE = "delete-jdbc-resource";
     private static final String CREATE_JDBC_RESOURCE = "create-jdbc-resource";
@@ -149,6 +151,8 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         testListJdbcResourceTargetDomain();
 
         testCreateResourceRefInCluster();
+        testListResourceRefInCluster();
+        //testListJndiEntriesInCluster();
         testListJdbcResourceTargetCluster();
         testDeleteJdbcResourceInDomainExpectFailure();
         testDeleteJdbcResourceExpectFailure(STANDALONE_INSTANCE_NAME);
@@ -158,6 +162,8 @@ public class JdbcResourceTest extends AdminBaseDevTest {
 
 
         testCreateResourceRefInStandaloneInstance();
+        testListResourceRefInStandaloneInstance();
+        //testListJndiEntriesInStandaloneInstance();
         testListJdbcResourceTargetStandaloneInstance();
         testDeleteJdbcResourceInDomainExpectFailure();
         testDeleteJdbcResourceExpectFailure(CLUSTER_NAME);
@@ -166,6 +172,8 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         testListJdbcResourceTargetDomain();
 
         testCreateResourceRefInServer();
+        testListResourceRefInServer();
+        testListJndiEntriesInServer();
         testListJdbcResourceInServer();
         testDeleteJdbcResourceInDomainExpectFailure();
         testDeleteJdbcResourceExpectFailure(CLUSTER_NAME);
@@ -240,6 +248,20 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME);
     }
 
+    private void testListResourceRefInCluster() {
+        String testName = "testListResourceRefInCluster";
+        AsadminReturn result = asadminWithOutput(LIST_RESOURCE_REF,CLUSTER_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, RESOURCE_NAME);
+    }
+
+    private void testListJndiEntriesInCluster() {
+        String testName = "testListJndiEntriesInCluster";
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_ENTRIES,CLUSTER_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, RESOURCE_NAME);
+    }
+
     private void testCreateResourceRefInStandaloneInstance(){
         String testName = "testCreateResourceRefInStandaloneInstance";
         AsadminReturn result = asadminWithOutput(CREATE_RESOURCE_REF,TARGET_OPTION, STANDALONE_INSTANCE_NAME, RESOURCE_NAME);
@@ -249,6 +271,20 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         reportUnexpectedResult(testName, result, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
     }
 
+    private void testListResourceRefInStandaloneInstance(){
+        String testName = "testListResourceRefInStandaloneInstance";
+        AsadminReturn result = asadminWithOutput(LIST_RESOURCE_REF,STANDALONE_INSTANCE_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, RESOURCE_NAME);
+    }
+
+    private void testListJndiEntriesInStandaloneInstance(){
+        String testName = "testListJndiEntriesInStandaloneInstance";
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_ENTRIES,STANDALONE_INSTANCE_NAME);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, RESOURCE_NAME);
+    }
+
     private void testCreateResourceRefInServer(){
         String testName = "testCreateResourceRefInServer";
         AsadminReturn result = asadminWithOutput(CREATE_RESOURCE_REF,TARGET_OPTION, SERVER, RESOURCE_NAME);
@@ -256,6 +292,20 @@ public class JdbcResourceTest extends AdminBaseDevTest {
         //reportExpectedResult(testName, result, "Command create-resource-ref executed successfully.");
         reportExpectedResult(testName, result, SERVER );
         reportUnexpectedResult(testName, result, STANDALONE_INSTANCE_NAME, INSTANCE2_NAME, INSTANCE1_NAME,CLUSTER_NAME);
+    }
+
+    private void testListResourceRefInServer(){
+        String testName = "testListResourceRefInServer";
+        AsadminReturn result = asadminWithOutput(LIST_RESOURCE_REF,SERVER);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, RESOURCE_NAME);
+    }
+
+    private void testListJndiEntriesInServer(){
+        String testName = "testListJndiEntriesInServer";
+        AsadminReturn result = asadminWithOutput(LIST_JNDI_ENTRIES,SERVER);
+        reportResultStatus(testName, result);
+        reportExpectedResult(testName, result, RESOURCE_NAME);
     }
 
 
