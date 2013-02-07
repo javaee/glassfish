@@ -9,7 +9,7 @@ Implementation-Vendor: GlassFish Community
 Implementation-Title: osgi-resources_test
 Implementation-Version: 3.1-SNAPSHOT
 Bundle-SymbolicName: org.glassfish.osgi_resources_test
-Class-Path: hk2.jar hk2-core.jar class-model.jar config.jar auto-depen
+Class-Path: hk2-api.jar hk2.jar hk2-core.jar class-model.jar config.jar auto-depen
  ds.jar asm-all-repackaged.jar tiger-types.jar bean-validator.jar jtyp
  e.jar osgi-javaee-base.jar glassfish-api.jar config-types.jar grizzly
  -utils.jar grizzly-lzma.jar management-api.jar internal-api.jar confi
@@ -23,6 +23,6 @@ Bundle-Activator: org.glassfish.osgi_resources_test.ResourcesTestActivator
 Bundle-License: https://glassfish.dev.java.net/nonav/public/CDDL+GPL.h
  tml
 Import-Package: javax.sql,org.osgi.framework;version="1.5",org.osgi.se
- rvice.jdbc;version="1.0",org.glassfish.api,org.glassfish.internal.api,org.glassfish.api.admin,org.jvnet.hk2.component,javax.jms
+ rvice.jdbc;version="1.0",org.glassfish.api,org.glassfish.internal.api,org.glassfish.api.admin,org.jvnet.hk2.component,org.glassfish.hk2.api,javax.jms
 Bundle-DocURL: https://glassfish.dev.java.net
 
