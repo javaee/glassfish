@@ -51,11 +51,11 @@ import java.util.*;
  */
 public class SignatureVisitorImpl implements SignatureVisitor {
 
-    final TypeBuilder typeBuilder;
-    final Stack<ParameterizedInterfaceModelImpl> stack = new Stack<ParameterizedInterfaceModelImpl>();
-    final Map<String, ParameterizedInterfaceModelImpl> formalTypes = new HashMap<String, ParameterizedInterfaceModelImpl>();
-    final Stack<String> formalTypesNames = new Stack<String>();
-    final List<ParameterizedInterfaceModelImpl> parameterizedIntf = new ArrayList<ParameterizedInterfaceModelImpl>();
+    private final TypeBuilder typeBuilder;
+    private final Stack<ParameterizedInterfaceModelImpl> stack = new Stack<ParameterizedInterfaceModelImpl>();
+    private final Map<String, ParameterizedInterfaceModelImpl> formalTypes = new HashMap<String, ParameterizedInterfaceModelImpl>();
+    private final Stack<String> formalTypesNames = new Stack<String>();
+    private final List<ParameterizedInterfaceModelImpl> parameterizedIntf = new ArrayList<ParameterizedInterfaceModelImpl>();
 
     public SignatureVisitorImpl(TypeBuilder typeBuilder) {
         this.typeBuilder = typeBuilder;
@@ -119,7 +119,9 @@ public class SignatureVisitorImpl implements SignatureVisitor {
                     interfaceName, InterfaceModel.class);
             if (interfaceTypeProxy!=null) {
                 ParameterizedInterfaceModelImpl childParameterized = new ParameterizedInterfaceModelImpl(interfaceTypeProxy);
-                stack.peek().addParameterizedType(childParameterized);
+                if (!stack.empty()) {
+                    stack.peek().addParameterizedType(childParameterized);
+                }
             }
         }
     }
