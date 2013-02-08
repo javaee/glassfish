@@ -54,7 +54,7 @@
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>2.1.60-SNAPSHOT</version>
+    <version>2.1.59-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 
@@ -146,32 +146,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.0-beta-1</version>
-                <executions>
-                    <execution>
-                        <id>enforce-versions</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>[${jdk.version},)</version>
-                                    <message>You need JDK ${jdk.version} and above!</message>
-                                </requireJavaVersion>
-                                <requireMavenVersion>
-                                    <version>[3.0.3,)</version>
-                                    <message>You need Maven 3.0.3 or above!</message>
-                                </requireMavenVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
 	   <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-eclipse-plugin</artifactId>
@@ -347,7 +321,6 @@
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
         <site.url>file:../www/</site.url>
-        <jdk.version>1.7.0-09</jdk.version>
     </properties>
 
   <reporting>
