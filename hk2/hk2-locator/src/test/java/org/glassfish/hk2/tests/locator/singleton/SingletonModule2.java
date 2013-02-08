@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  * @author jwells
  *
  */
-public class SingletonModule implements TestModule {
+public class SingletonModule2 implements TestModule {
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
@@ -55,7 +55,8 @@ public class SingletonModule implements TestModule {
     @Override
     public void configure(DynamicConfiguration config) {
         config.bind(BuilderHelper.createDescriptorFromClass(Single.class));
-        
+        config.bind(BuilderHelper.createDescriptorFromClass(Double.class));
+        config.bind(BuilderHelper.createDescriptorFromClass(Triple.class));
 
     }
 
