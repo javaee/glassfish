@@ -78,7 +78,7 @@ public class SingletonTest {
         List<Thread> serviceHandles = new LinkedList<Thread>();
         for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
             ActiveDescriptor<?> ad = locator.getBestDescriptor(
-                    BuilderHelper.createContractFilter(Single.class.getName()));
+                    BuilderHelper.createContractFilter(ConstructorCounterService.class.getName()));
             ServiceHandle<?> handle = locator.getServiceHandle(ad);
             Assert.assertNotNull(handle);
             
@@ -97,7 +97,7 @@ public class SingletonTest {
             Assert.assertEquals(threadsRun, NUM_THREADS);
         }
         
-        Assert.assertEquals(Single.getNumTimesInitialized(), 1);
+        Assert.assertEquals(ConstructorCounterService.getNumTimesInitialized(), 1);
     }
     
     /**

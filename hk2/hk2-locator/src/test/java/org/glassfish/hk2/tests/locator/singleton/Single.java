@@ -47,14 +47,4 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class Single {
-    private static int numTimesInitialized = 0;
-    
-    public Single() throws InterruptedException {
-        Thread.sleep(100); // This sleep makes this fail nearly every time
-        numTimesInitialized++;
-    }
-
-    public static int getNumTimesInitialized() {
-        return numTimesInitialized;
-    }
 }
