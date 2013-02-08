@@ -74,7 +74,7 @@ public class ConfigTest {
         config.commit();
     }
 
-    @Test
+    // @Test
     public void lookupAllInjectors() {
         String[] expected = {
                 SimpleConnectorInjector.class.getName(), EjbContainerAvailabilityInjector.class.getName(),
@@ -91,7 +91,7 @@ public class ConfigTest {
         assert(inhabitants.size() == expected.length && inhabitantNames.containsAll(expectedInjectors));
     }
 
-    @Test
+    // @Test
     public void lookupInjectorByName() {
         ServiceHandle inhabitant1 = habitat.getServiceHandle(ConfigInjector.class, "simple-connector");
         ServiceHandle inhabitant2 = habitat.getServiceHandle(ConfigInjector.class, "ejb-container-availability");
@@ -101,7 +101,7 @@ public class ConfigTest {
                 && inhabitant2.getActiveDescriptor().getImplementation().equals(EjbContainerAvailabilityInjector.class.getName()));
     }
 
-    @Test
+    // @Test
     public void testLookupOfInjectorAndCheckIfActive() {
         ServiceHandle inhabitant1 = habitat.getServiceHandle(ConfigInjector.class, "simple-connector");
         ServiceHandle inhabitant2 = habitat.getServiceHandle(ConfigInjector.class, "ejb-container-availability");
@@ -110,7 +110,7 @@ public class ConfigTest {
                 && inhabitant2.isActive() == false);
     }
 
-    @Test
+    // @Test
     public void lookupInjectorByFilter() {
         ActiveDescriptor desc = habitat.getBestDescriptor(
                 new InjectionTargetFilter(EjbContainerAvailability.class.getName()));
@@ -118,7 +118,7 @@ public class ConfigTest {
                 && desc.getImplementation().equals(EjbContainerAvailabilityInjector.class.getName()));
     }
 
-    @Test
+    // @Test
     public void getDomainXmlURL() {
         URL url = this.getClass().getResource("/domain.xml");
         System.out.println("URL : " + url);
@@ -126,7 +126,7 @@ public class ConfigTest {
         assert(url != null);
     }
     
-    @Test
+    // @Test
     public void parseDomainXml() {
         ConfigParser parser = new ConfigParser(habitat);
         URL url = this.getClass().getResource("/domain.xml");
@@ -142,7 +142,7 @@ public class ConfigTest {
         }
     }
 
-    @Test
+    // @Test
     public void lookupConnectorServiceAndEnsureNotActive() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         System.out.println("[lookupConnectorService] Got sc : " + sc.getClass().getName());
@@ -151,7 +151,7 @@ public class ConfigTest {
     }
 
 
-    @Test
+    // @Test
     public void getConnectorServiceAndCheckIfActive() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         String port = sc.getPort();
@@ -159,14 +159,14 @@ public class ConfigTest {
         assert(port.equals("8080")); // && inhabitant1.isActive());
     }
 
-    @Test
+    // @Test
     public void testConfig() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         System.out.println("[testConfig] : " + sc.getClass().getName());
         assert(Proxy.isProxyClass(sc.getClass()));
     }
     
-    @Test
+    // @Test
     public void testDefaultValuesFromConfig() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         assert(
@@ -177,7 +177,7 @@ public class ConfigTest {
         );
     }
 
-    @Test
+    // @Test
     public void testDom() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
@@ -186,7 +186,7 @@ public class ConfigTest {
                 && ConfigBeanProxy.class.isAssignableFrom(ejb.getClass()));
     }
 
-    @Test
+    // @Test
     public void testHabitatFromDom() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
@@ -195,7 +195,7 @@ public class ConfigTest {
         assert(ejbDom.getHabitat() != null);
     }
 
-    @Test
+    // @Test
     public void testDomTx() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
@@ -225,7 +225,7 @@ public class ConfigTest {
         }
     }
     
-    @Test
+    // @Test
     public void testDomTxReadOnlyAttributes() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         final EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
@@ -259,7 +259,7 @@ public class ConfigTest {
         }
     }
 
-    @Test
+    // @Test
     public void testGetImplAndAddListener() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         final EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
@@ -319,7 +319,7 @@ public class ConfigTest {
         }
     }
 
-    @Test
+    // @Test
     public void testGetConfigBean() {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         final EjbContainerAvailability ejb = sc.getEjbContainerAvailability();
@@ -328,7 +328,7 @@ public class ConfigTest {
         assert(ejbConfigBean != null);
     }
 
-    @Test
+    // @Test
     public void testGenericContainerInjector() {
         ServiceHandle sh = habitat.getServiceHandle(ConfigInjector.class, "generic-container");
 
@@ -336,7 +336,7 @@ public class ConfigTest {
 
     }
 
-    @Test
+    // @Test
     public void testLongDataType() {
         GenericContainer gc = habitat.getService(GenericContainer.class);
         Object obj = gc.getStartupTime();
@@ -344,7 +344,7 @@ public class ConfigTest {
 
     }
 
-    @Test
+    // @Test
     public void testIntDataType() {
         GenericContainer gc = habitat.getService(GenericContainer.class);
         Object obj = gc.getIntValue();
@@ -352,7 +352,7 @@ public class ConfigTest {
 
     }
     
-    @Test
+    // @Test
     public void testConfigurationPopulator() {
         DummyPopulator pop = (DummyPopulator) habitat.getService(Populator.class);
 
@@ -362,7 +362,7 @@ public class ConfigTest {
         assert(pop.isPopulateCalled());
     }
 
-    @Test
+    // @Test
     public void testSingletonProxy() {
         SimpleConnector simpleConnector1 = habitat.getService(SimpleConnector.class);
         SimpleConnector simpleConnector2 = habitat.getService(SimpleConnector.class);
@@ -371,6 +371,37 @@ public class ConfigTest {
         System.out.println("[testSingleProxy] Got simpleConnector2 : " + simpleConnector2.getClass().getName());
 
         assert(simpleConnector1 != null && simpleConnector1 == simpleConnector2);
+    }
+    
+    /**
+     * This test is an unfortunate reaction to the fact that JDK 7 does not run the
+     * tests above in order, and that the fact that the ordering seems to be important
+     * to the passing of the above tests
+     */
+    @Test
+    public void runTestsInOrder() {
+        lookupAllInjectors();
+        lookupInjectorByName();
+        testLookupOfInjectorAndCheckIfActive();
+        lookupInjectorByFilter();
+        getDomainXmlURL();
+        parseDomainXml();
+        lookupConnectorServiceAndEnsureNotActive();
+        getConnectorServiceAndCheckIfActive();
+        testConfig();
+        testDefaultValuesFromConfig();
+        testDom();
+        testHabitatFromDom();
+        testDomTx();
+        testDomTxReadOnlyAttributes();
+        testGetImplAndAddListener();
+        testGetConfigBean();
+        testGenericContainerInjector();
+        testLongDataType();
+        testIntDataType();
+        testConfigurationPopulator();
+        testSingletonProxy();
+        
     }
 
     private static void printEjb(String message, EjbContainerAvailability ejb) {
