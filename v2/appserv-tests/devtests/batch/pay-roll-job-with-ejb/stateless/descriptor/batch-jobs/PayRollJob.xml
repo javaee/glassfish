@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="job1" xmlns="http://batch.jsr352/jsl">
+    <step id="step1">
+        <chunk reader="SimpleItemReader" processor="SimpleItemProcessor"  writer="SimpleItemWriter" 
+               checkpoint-policy="item" buffer-size="3"  />
+    </step>
+</job>
