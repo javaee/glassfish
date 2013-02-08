@@ -60,6 +60,9 @@ public class SingletonTest {
     private final static String TEST_NAME = "SingletonTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new SingletonModule());
     
+    private final static String TEST_NAME2 = "SingletonTest2";
+    private final static ServiceLocator locator2 = LocatorHelper.create(TEST_NAME2, new SingletonModule2());
+    
     private final static int NUM_THREADS = 20;
     private final Object lock = new Object();
     private int threadsRun = 0;
@@ -103,14 +106,14 @@ public class SingletonTest {
      */
     @Test
     public void testLocatorShutDown() {
-        Triple triple = locator.getService(Triple.class);
+        Triple triple = locator2.getService(Triple.class);
         Assert.assertFalse(triple.getWasPreDestroyed());
         
-        Double myDouble = locator.getService(Double.class);
+        Double myDouble = locator2.getService(Double.class);
         Assert.assertFalse(myDouble.getWasPreDestroyed());
         
         // Shut down the locator
-        ServiceLocatorFactory.getInstance().destroy(TEST_NAME);
+        ServiceLocatorFactory.getInstance().destroy(TEST_NAME2);
         
         Assert.assertTrue(myDouble.getWasPreDestroyed());
         Assert.assertTrue(triple.getWasPreDestroyed());
