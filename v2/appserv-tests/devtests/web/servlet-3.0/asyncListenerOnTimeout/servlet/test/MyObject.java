@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,56 +40,10 @@
 
 package test;
 
-import java.io.IOException;
-import javax.servlet.AsyncContext;
-import javax.servlet.AsyncEvent;
-import javax.servlet.AsyncListener;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public class MyObject {
 
-public class AsyncListenerTimeoutServlet extends HttpServlet implements AsyncListener {
-
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
-
-        if (!req.isAsyncSupported()) {
-            throw new ServletException("Async not supported when it should");
-        }
-
-        AsyncContext ac = null;
-        boolean isWrap = Boolean.parseBoolean(req.getParameter("wrap"));
-        if (isWrap) {
-            ac = req.startAsync(req, res);
-        } else {
-            ac = req.startAsync();
-        }
-
-        ac.addListener(this);
-    }
-
-    public void onComplete(AsyncEvent event) throws IOException {
-        // do nothing
-    }
-
-    public void onTimeout(AsyncEvent event) throws IOException {
-        AsyncContext ac = event.getAsyncContext();
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        System.out.println("classLoader = " + cl);
-        try {
-            ac.getResponse().getWriter().println(cl.loadClass("test.MyObject").newInstance());
-        } catch(Exception ex) {
-            throw new RuntimeException(ex);
-        }
-        ac.complete();
-    }
-
-    public void onError(AsyncEvent event) throws IOException {
-        // do nothing
-    }
-
-    public void onStartAsync(AsyncEvent event) throws IOException {
-        // do nothing
+    @Override
+    public String toString() {
+        return "Hello world";
     }
 }
