@@ -36,7 +36,7 @@
     
     <target name="deploy" 
             depends="init-common">
-        <antcall target="deploy-common"/>
+        <antcall target="deploy-jar-common"/>
     </target>
 
     <target name="run" depends="init-common">
@@ -45,12 +45,12 @@
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
            <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
-           <arg line="${jndiroot}"/>
+           <arg line="${appname}-ejb"/>
         </java>
     </target>
  
     <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-common"/>
+        <antcall target="undeploy-jar-common"/>
     </target>   
 
     <target name="usage">
