@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,27 +77,22 @@ public class TestServlet extends HttpServlet {
             ac = c;
         }
 
-        public void onWritePossible() {
-            try {
-                if (count == 0) {
-                    long startTime = System.currentTimeMillis();
-                    while (output.isReady()) {
-                        writeData(output);
-                        count++;    
-                        if (System.currentTimeMillis() - startTime > MAX_TIME_MILLIS
-                                || count > 10) {
-                            throw new Exception("Cannot fill the write buffer");
-                        }
+        public void onWritePossible() throws IOException {
+            if (count == 0) {
+                long startTime = System.currentTimeMillis();
+                while (output.isReady()) {
+                    writeData(output);
+                    count++;    
+                    if (System.currentTimeMillis() - startTime > MAX_TIME_MILLIS
+                            || count > 10) {
+                        throw new IOException("Cannot fill the write buffer");
                     }
-                } else if (count > 0) {
-                    String message = "onWritePossible";
-                    System.out.println("--> " + message);
-                    output.write(message.getBytes());
-                    ac.complete();
                 }
-            } catch(Exception ex) {
+            } else if (count > 0) {
+                String message = "onWritePossible";
+                System.out.println("--> " + message);
+                output.write(message.getBytes());
                 ac.complete();
-                throw new IllegalStateException(ex);
             }
         }
 
