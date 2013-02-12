@@ -97,45 +97,36 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             this.wc = wc;
         }
 
-        public void onDataAvailable() {
-            try {
-                StringBuilder sb = new StringBuilder();
-                System.out.println("--> onDataAvailable");
-                ClassLoader cl = Thread.currentThread().getContextClassLoader();
-                System.out.println("#### Thread.currentThread.getContextClassloader(): " + cl);
-                if (cl instanceof org.glassfish.web.loader.WebappClassLoader) {
-                    System.out.println("Correct ClassLoader");
-                } else {
-                    System.out.println("ERROR Wrong ClassLoader!!!");
-                    sb.append("WrongClassLoader"); 
-                }
-
-                int len = -1;
-                byte b[] = new byte[1024];
-                while (input.isReady()
-                        && (len = input.read(b)) != -1) {
-                    String data = new String(b, 0, len);
-                    System.out.println("--> " + data);
-                    sb.append(data);
-                }
-                output.print(delimiter + sb.toString());
-                output.flush();
-
-                // Server side connection close 
-                //wc.close();
-
-            } catch(Exception ex) {
-                throw new IllegalStateException(ex);
+        public void onDataAvailable() throws IOException {
+            StringBuilder sb = new StringBuilder();
+            System.out.println("--> onDataAvailable");
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            System.out.println("#### Thread.currentThread.getContextClassloader(): " + cl);
+            if (cl instanceof org.glassfish.web.loader.WebappClassLoader) {
+                System.out.println("Correct ClassLoader");
+            } else {
+                System.out.println("ERROR Wrong ClassLoader!!!");
+                sb.append("WrongClassLoader"); 
             }
+
+            int len = -1;
+            byte b[] = new byte[1024];
+            while (input.isReady()
+                    && (len = input.read(b)) != -1) {
+                String data = new String(b, 0, len);
+                System.out.println("--> " + data);
+                sb.append(data);
+            }
+            output.print(delimiter + sb.toString());
+            output.flush();
+
+            // Server side connection close 
+            //wc.close();
         }
 
-        public void onAllDataRead() {
-            try {
-                System.out.println("--> onAllDataRead");
-                output.println("-onAllDataRead");
-            } catch(Exception ex) {
-                throw new IllegalStateException(ex);
-            }
+        public void onAllDataRead() throws IOException {
+            System.out.println("--> onAllDataRead");
+            output.println("-onAllDataRead");
         }
 
         public void onError(final Throwable t) {
