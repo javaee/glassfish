@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import javax.servlet.AsyncContext;
+import javax.servlet.AsyncEvent;
+import javax.servlet.AsyncListener;
 import javax.servlet.ReadListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -60,6 +62,20 @@ public class TestServlet extends HttpServlet {
             throws IOException, ServletException {
 
         AsyncContext ac = req.startAsync();
+        ac.addListener(new AsyncListener() {
+            public void onComplete(AsyncEvent event) {
+                System.out.println("my asyncListener.onComplete");
+            }
+            public void onError(AsyncEvent event) {
+                System.out.println("my asyncListener.onError");
+            }
+            public void onStartAsync(AsyncEvent event) {
+                System.out.println("my asyncListener.onStartAsync");
+            }
+            public void onTimeout(AsyncEvent event) {
+                System.out.println("my asyncListener.onTimeout");
+            }
+        });
         ServletOutputStream output = res.getOutputStream();
         ServletInputStream input = req.getInputStream();
         ReadListenerImpl readListener = new ReadListenerImpl(input, output, ac);
@@ -78,31 +94,25 @@ public class TestServlet extends HttpServlet {
             ac = c;
         }
 
-        public void onDataAvailable() {
-            try {
-                StringBuilder sb = new StringBuilder();
-                System.out.println("--> onDataAvailable");
-                int len = -1;
-                byte b[] = new byte[1024];
-                while (input.isReady() 
-                        && (len = input.read(b)) != -1) {
-                    String data = new String(b, 0, len);
-                    System.out.println("--> " + data);
-                    sb.append('/' + data);
-                    //output.print('/' + data);
-                }
-                output.print(sb.toString());
-            } catch(Exception ex) {
-                throw new IllegalStateException(ex);
+        public void onDataAvailable() throws IOException {
+            StringBuilder sb = new StringBuilder();
+            System.out.println("--> onDataAvailable");
+            int len = -1;
+            byte b[] = new byte[1024];
+            while (input.isReady() 
+                    && (len = input.read(b)) != -1) {
+                String data = new String(b, 0, len);
+                System.out.println("--> " + data);
+                sb.append('/' + data);
+                //output.print('/' + data);
             }
+            output.print(sb.toString());
         }
 
-        public void onAllDataRead() {
+        public void onAllDataRead() throws IOException {
             try {
                 System.out.println("--> onAllDataRead");
                 output.println("-onAllDataRead");
-            } catch(Exception ex) {
-                throw new IllegalStateException(ex);
             } finally {
                 ac.complete();
             }
