@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -76,31 +76,23 @@ public class TestServlet extends HttpServlet {
             ac = c;
         }
 
-        public void onDataAvailable() {
-            try {
-                System.out.println("--> onDataAvailable");
-                int len = -1;
-                byte b[] = new byte[1024];
-                while (input.isReady() 
-                        && (len = input.read(b)) != -1) {
-                    String data = new String(b, 0, len);
-                    System.out.println("--> " + data);
-                    sb.append('/' + data);
-                }
-            } catch(Exception ex) {
-                throw new IllegalStateException(ex);
+        public void onDataAvailable() throws IOException {
+            System.out.println("--> onDataAvailable");
+            int len = -1;
+            byte b[] = new byte[1024];
+            while (input.isReady() 
+                    && (len = input.read(b)) != -1) {
+                String data = new String(b, 0, len);
+                System.out.println("--> " + data);
+                sb.append('/' + data);
             }
         }
 
-        public void onAllDataRead() {
-            try {
-                System.out.println("--> onAllDataRead");
-                sb.append("-onAllDataRead");
-                ac.getRequest().setAttribute("mysb", sb.toString());
-                ac.dispatch("test2");
-            } catch(Exception ex) {
-                throw new IllegalStateException(ex);
-            }
+        public void onAllDataRead() throws IOException {
+            System.out.println("--> onAllDataRead");
+            sb.append("-onAllDataRead");
+            ac.getRequest().setAttribute("mysb", sb.toString());
+            ac.dispatch("test2");
         }
 
         public void onError(final Throwable t) {
