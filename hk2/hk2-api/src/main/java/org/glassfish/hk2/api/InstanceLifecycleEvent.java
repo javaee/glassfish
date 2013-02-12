@@ -90,7 +90,7 @@ public interface InstanceLifecycleEvent {
      * system does not know what objects were injected into
      * the produced object, which happens in the case of objects
      * created by a {@link Factory} or objects created by
-     * third-parth (pre-reified) ActiveDescriptors.  If this
+     * third-party (pre-reified) ActiveDescriptors.  If this
      * method returns an empty map then the system knows that
      * nothing was injected into to produced object.
      * 
