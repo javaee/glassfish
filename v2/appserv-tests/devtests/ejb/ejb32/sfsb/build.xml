@@ -13,12 +13,19 @@
 
     <target name="all">
         <antcall target="basic"/>
+        <antcall target="descriptor"/>
     </target>
 
     <target name="basic">
         <record name="basic.output" action="start" />
             <ant dir="basic" target="all"/>
         <record name="basic.output" action="stop" />
+    </target>
+
+    <target name="descriptor">
+        <record name="descriptor.output" action="start" />
+            <ant dir="descriptor" target="all"/>
+        <record name="descriptor.output" action="stop" />
     </target>
 
     <target name="usage">
