@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="true" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="true" version="3.1" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
   <servlet>
     <servlet-class>test.ServletTest</servlet-class>
     <load-on-startup>-1</load-on-startup>
