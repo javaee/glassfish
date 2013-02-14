@@ -66,7 +66,9 @@ public abstract class ServiceLocatorFactory {
    * If there is already a ServiceLocator with the given
    * name then this method will return that locator.
    * 
-   * @param name The name of this service locator.  May not be null
+   * @param name The name of this service locator.  Passing a null
+   * name will result in a newly created service locator with a
+   * generated name and that will not be tracked by the system
    * @return The created or found named ServiceLocator
    */
   public abstract ServiceLocator create(String name);
@@ -78,7 +80,9 @@ public abstract class ServiceLocatorFactory {
    * name then this method will return that ServiceLocator.  The
    * parent argument will be ignored in that case
    * 
-   * @param name The name of this service locator.  May not be null
+   * @param name The name of this service locator.  Passing a null
+   * name will result in a newly created service locator with a
+   * generated name and that will not be tracked by the system
    * @param parent The parent of this ServiceLocator.  Services can
    * be found in the parent (and all grand-parents).  May be null
    * if the returned ServiceLocator should not be parented
@@ -98,7 +102,7 @@ public abstract class ServiceLocatorFactory {
    * 
    * @param name The name of this service locator.  Passing a null
    * name will result in a newly created service locator with a
-   * generated name.
+   * generated name and that will not be tracked by the system
    * @param parent The parent of this ServiceLocator.  Services can
    * be found in the parent (and all grand-parents).  May be null
    * if the returned ServiceLocator should not be parented
@@ -139,5 +143,24 @@ public abstract class ServiceLocatorFactory {
    * If the ServiceLocator given was already destroyed this will do nothing
    */
   public abstract void destroy(ServiceLocator locator);
+  
+  /**
+   * Adds a service listener to the unordered set of listeners that
+   * will be notified when named listeners are added or removed
+   * from the system.  If this listener is already registered
+   * this method does nothing
+   * 
+   * @param listener The non-null listener to add to the system
+   */
+  public abstract void addListener(ServiceLocatorListener listener);
+  
+  /**
+   * Removes a service listener from the set of listeners that
+   * are notified when named listeners are added or removed
+   * from the system
+   * 
+   * @param listener The non-null listener to remove from the system
+   */
+  public abstract void removeListener(ServiceLocatorListener listener);
 
 }
