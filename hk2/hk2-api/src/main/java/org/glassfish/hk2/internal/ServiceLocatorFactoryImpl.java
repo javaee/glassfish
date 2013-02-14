@@ -41,7 +41,9 @@ package org.glassfish.hk2.internal;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 import java.util.logging.Level;
@@ -49,6 +51,7 @@ import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.api.ServiceLocatorListener;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
 
@@ -64,6 +67,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
   private final ServiceLocatorGenerator defaultGenerator;
   private final Object lock = new Object();
   private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
+  private final HashSet<ServiceLocatorListener> listeners = new HashSet<ServiceLocatorListener>();
   private static int name_count = 0;
   private static final String GENERATED_NAME_PREFIX = "__HK2_Generated_";
 
@@ -148,6 +152,17 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
     
       synchronized (lock) {
           killMe = serviceLocators.remove(name);
+          
+          if (killMe != null) {
+              for (ServiceLocatorListener listener : listeners) {
+                  try {
+                      listener.listenerDestroyed(killMe);
+                  }
+                  catch (Throwable th) {
+                      logger.log(Level.FINE, "Exception thrown from listenerDestroyed method of " + listener, th);
+                  }
+              }
+          }
       }
     
       if (killMe != null) {
@@ -191,6 +206,15 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             if (retVal != null) return retVal;
             retVal = internalCreate(name, parent, generator);
             serviceLocators.put(name, retVal);
+            
+            for (ServiceLocatorListener listener : listeners) {
+                try {
+                    listener.listenerAdded(retVal);
+                }
+                catch (Throwable th) {
+                    logger.log(Level.FINE, "Exception thrown from listenerAdded method of " + listener, th);
+                }
+            }
 
             return retVal;
         }
@@ -204,6 +228,38 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             generator = defaultGenerator;
         }
         return generator.create(name, parent);
+    }
+
+    @Override
+    public void addListener(ServiceLocatorListener listener) {
+        if (listener == null) throw new IllegalArgumentException();
+        
+        synchronized (lock) {
+            if (listeners.contains(listener)) return;
+            
+            try {
+                HashSet<ServiceLocator> currentLocators = new HashSet<ServiceLocator>(serviceLocators.values());
+                listener.initialize(Collections.unmodifiableSet(currentLocators));
+            }
+            catch (Throwable th) {
+                // Not added to the set of listeners
+                logger.log(Level.FINE, "Exception thrown from init method of " + listener, th);
+                return;
+            }
+            
+            listeners.add(listener);
+        }
+        
+    }
+
+    @Override
+    public void removeListener(ServiceLocatorListener listener) {
+        if (listener == null) throw new IllegalArgumentException();
+        
+        synchronized (lock) {
+            listeners.remove(listener);
+        }
+        
     }
 
 }

@@ -39,10 +39,15 @@
  */
 package org.glassfish.hk2.tests;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.api.ServiceLocatorListener;
 import org.glassfish.hk2.tests.extension.ServiceLocatorImpl;
 import org.junit.Test;
 
@@ -51,7 +56,8 @@ import org.junit.Test;
  *
  */
 public class ServiceLocatorFactoryTest {
-  private final static String LOCATOR_NAME = "Locator1";
+  private final static String LOCATOR1_NAME = "Locator1";
+  private final static String LOCATOR2_NAME = "Locator2";
   
   /**
    * Tests you can add a locator to the system
@@ -61,7 +67,7 @@ public class ServiceLocatorFactoryTest {
     ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
     Assert.assertNotNull(slf);
     
-    ServiceLocator sl = slf.create(LOCATOR_NAME);
+    ServiceLocator sl = slf.create(LOCATOR1_NAME);
     Assert.assertNotNull(sl);
   }
   
@@ -71,13 +77,13 @@ public class ServiceLocatorFactoryTest {
   @Test
   public void testFindFromServiceLocatorFactory() {
     ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
-    slf.create(LOCATOR_NAME);
+    slf.create(LOCATOR1_NAME);
     
-    ServiceLocator sl = slf.find(LOCATOR_NAME);
+    ServiceLocator sl = slf.find(LOCATOR1_NAME);
     Assert.assertNotNull(sl);
     
     // Do it a second time to make sure it didn't get removed
-    sl = slf.find(LOCATOR_NAME);
+    sl = slf.find(LOCATOR1_NAME);
     Assert.assertNotNull(sl);
   }
   
@@ -87,17 +93,97 @@ public class ServiceLocatorFactoryTest {
   @Test
   public void testDeleteFromServiceLocatorFactory() {
     ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
-    ServiceLocatorImpl sl = (ServiceLocatorImpl) slf.create(LOCATOR_NAME);
+    ServiceLocatorImpl sl = (ServiceLocatorImpl) slf.create(LOCATOR1_NAME);
     Assert.assertNotNull(sl);
     Assert.assertFalse(sl.isShutdown());
     
-    slf.destroy(LOCATOR_NAME);
+    slf.destroy(LOCATOR1_NAME);
     Assert.assertTrue(sl.isShutdown());
     
     // Make sure it is really gone
-    Assert.assertNull(slf.find(LOCATOR_NAME));
+    Assert.assertNull(slf.find(LOCATOR1_NAME));
     
     // And that destroying it again does no damage
-    slf.destroy(LOCATOR_NAME); 
+    slf.destroy(LOCATOR1_NAME); 
+  }
+  
+  @Test
+  public void testListenerMethods() {
+      ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
+      
+      ServiceLocatorListenerImpl listener1 = new ServiceLocatorListenerImpl();
+      
+      slf.addListener(listener1);
+      
+      // there should be no listeners
+      Assert.assertTrue(listener1.getLocatorNames().isEmpty());
+      
+      slf.create(LOCATOR1_NAME);
+      slf.create(LOCATOR2_NAME);
+      
+      // Ensures a second listener can be added and will be initialized properly
+      ServiceLocatorListenerImpl listener2 = new ServiceLocatorListenerImpl();
+      slf.addListener(listener2);
+      
+      Set<String> names1 = listener1.getLocatorNames();
+      Assert.assertEquals(2, names1.size());
+      
+      Assert.assertTrue(names1.contains(LOCATOR1_NAME));
+      Assert.assertTrue(names1.contains(LOCATOR2_NAME));
+      
+      Set<String> names2 = listener2.getLocatorNames();
+      Assert.assertEquals(2, names2.size());
+      
+      Assert.assertTrue(names2.contains(LOCATOR1_NAME));
+      Assert.assertTrue(names2.contains(LOCATOR2_NAME));
+      
+      slf.destroy(LOCATOR1_NAME);
+      
+      Assert.assertFalse(names1.contains(LOCATOR1_NAME));
+      Assert.assertTrue(names1.contains(LOCATOR2_NAME));
+      
+      Assert.assertFalse(names2.contains(LOCATOR1_NAME));
+      Assert.assertTrue(names2.contains(LOCATOR2_NAME));
+      
+      slf.removeListener(listener1);
+      
+      slf.destroy(LOCATOR2_NAME);
+      
+      Assert.assertFalse(names1.contains(LOCATOR1_NAME));
+      Assert.assertTrue(names1.contains(LOCATOR2_NAME));
+      
+      Assert.assertFalse(names2.contains(LOCATOR1_NAME));
+      Assert.assertFalse(names2.contains(LOCATOR2_NAME));
+      
+      slf.removeListener(listener2);
+  }
+  
+  private static class ServiceLocatorListenerImpl implements ServiceLocatorListener {
+      private final HashSet<String> locators = new HashSet<String>();
+
+      @Override
+      public void initialize(Set<ServiceLocator> initialLocators) {
+        for (ServiceLocator locator : initialLocators) {
+            locators.add(locator.getName());
+        }
+        
+      }
+
+      @Override
+      public void listenerAdded(ServiceLocator added) {
+          locators.add(added.getName());
+        
+      }
+
+      @Override
+      public void listenerDestroyed(ServiceLocator destroyed) {
+          locators.remove(destroyed.getName());
+        
+      }
+      
+      public Set<String> getLocatorNames() {
+          return locators;
+      }
+      
   }
 }
