@@ -52,7 +52,7 @@ public class TestHttpSessionIdListener implements HttpSessionIdListener {
     public void sessionIdChanged(HttpSessionEvent event, String oldId) {
         HttpSession session = event.getSession();
         String sessionId = session.getId();
-        System.out.println("XXX " + sessionId + ", " + oldId);
+        System.out.println("sessionId: " + sessionId + ", " + oldId);
         if (!oldId.equals(sessionId)) {
             session.setAttribute("A", "two");
         }
