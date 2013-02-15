@@ -74,7 +74,7 @@
 # Record finderprints of files to track usage: glassfish-v3-image/glassfish.zip
 #     Fingerprint all archived artifacts
 #
-# Archive the artifacts: appserv-tests/test_results*.*,glassfish-v3-image/glassfish3/glassfish/domains/domain1/logs/*
+# Archive the artifacts: appserv-tests/test_results*.*,glassfish-v3-image/glassfish4/glassfish/domains/domain1/logs/*
 #
 # Publish SQE test result report
 #     SQE report XMLs: appserv-tests/test_resultsValid.xml
@@ -107,7 +107,7 @@ wget -O glassfish.zip $GLASSFISH_DOWNLOAD_URL
 
 unzip -q glassfish.zip
 
-export S1AS_HOME=$PWD/glassfish3/glassfish
+export S1AS_HOME=$PWD/glassfish4444/glassfish
 popd
 export APS_HOME=$PWD/appserv-tests
 export AS_LOGFILE=$S1AS_HOME/cli.log 

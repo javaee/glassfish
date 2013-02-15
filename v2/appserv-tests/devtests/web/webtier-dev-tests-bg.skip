@@ -1,4 +1,2 @@
 instanceHttpPortDynamicReconfig #investigate random failures
-elUninterpretedTag #regression from EL 3.0
-tagplugin #regression from EL 3.0
 
