@@ -184,7 +184,23 @@ public class SyncTest extends AdminBaseDevTest {
         report(tn + "start-local-instance1a", asadmin("start-local-instance", i1name));
 
         // make sure the instance and app are still there
-        report(tn + "getindex1a", matchString("GlassFish Server", getURL(i1url)));
+
+
+
+
+        String s = getURL(i1url);
+        boolean b = matchString("GlassFish Server", s);
+        String testname = tn + "getindex1a";
+
+        if(!b)
+            TestUtils.writeCommandToDebugLog(testname + ": getURL returned: \n" + s);
+
+        report(testname, b);
+
+
+
+
+
         //report(tn + "getapp1a", matchString("Hello", getURL(i1url + "helloworld2/hi.jsp")));
 
         // stop the instance

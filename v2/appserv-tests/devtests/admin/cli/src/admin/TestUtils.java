@@ -50,7 +50,7 @@ final class TestUtils {
     private TestUtils() {
         // all-static class!
     }
-    
+
     static File createPasswordFile() throws IOException {
         File f = File.createTempFile("password_junk", ".txt");
         //f.deleteOnExit();   // just in case
@@ -102,6 +102,40 @@ final class TestUtils {
             return getExpandedSystemProperty(substring);
         } else {
             return value;
+        }
+    }
+// temp temp temp
+    public final static String logfile = System.getenv("AS_LOGFILE");
+  public static void writeCommandToDebugLog(String message) {
+        if(logfile == null)
+            return;
+
+        File log = new File(logfile);
+
+        if (log == null)
+            return;
+
+        BufferedWriter out = null;
+        try {
+            out = new BufferedWriter(new FileWriter(log, true));
+            out.write("\n");
+            out.write(message);
+            out.write("\n");
+        } catch (IOException e) {
+            // It is just a debug file.
+        } finally {
+            if (out != null) {
+                try {
+                    out.write("\n");
+                } catch (Exception e) {
+                    // ignore
+                }
+                try {
+                    out.close();
+                } catch (Exception e) {
+                    // ignore
+                }
+            }
         }
     }
 }
