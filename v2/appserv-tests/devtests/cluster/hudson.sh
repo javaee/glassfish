@@ -13,7 +13,7 @@ cp $DEVTEST/hosted-nodes .
 
 echo "Cleanup up from previous tests..."
 cmd_on_hosted_nodes "/usr/jdk/jdk1.6.0_21/bin/jps |egrep 'ASMain|admin-cli' |cut -f1 -d' ' | xargs -l10 kill -9; rm -rf /export/home/hudson/testnode"
-rm -rf glassfish3 apps
+rm -rf glassfish4 apps
 ln -s appserv-tests/devtests/cluster/apps apps
 #echo "Revision under test: " `cat $GFBUILDDIR/revision.txt`
 echo "Installing GlassFish..."
@@ -21,10 +21,10 @@ echo "Installing GlassFish..."
 wget -q --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip || exit 1
 
-export S1AS_HOME="$ROOT/glassfish3/glassfish"
+export S1AS_HOME="$ROOT/glassfish4/glassfish"
 export AS_LOGFILE="$S1AS_HOME/cli.log"
 asadmin start-domain || exit 1
-asadmin install-node --installdir /export/home/hudson/testnode/glassfish3 `grep -v '^#' hosted-nodes | cut -d" " -f2` || exit 1
+asadmin install-node --installdir /export/home/hudson/testnode/glassfish4 `grep -v '^#' hosted-nodes | cut -d" " -f2` || exit 1
 echo "Benchmark of commands: base case"
 benchmark_commands || exit 1
 create_hosted_nodes || exit 1
