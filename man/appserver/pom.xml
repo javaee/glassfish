@@ -43,20 +43,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.glassfish.docs</groupId>
-        <artifactId>parent-pom</artifactId>
+        <groupId>org.glassfish.docs.man</groupId>
+        <artifactId>manpages</artifactId>
         <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>    
 
-   <groupId>org.glassfish.docs.man</groupId>
-   <artifactId>manpages</artifactId>
-   <name>Man Pages for asadmin Utility Subcommnads</name>
+   <artifactId>manpages-appserver</artifactId>
+   <name>Man Pages for appserver</name>
    <packaging>pom</packaging>
    <version>4.0-SNAPSHOT</version>
    <modules>
-       <module>appserver</module>
-       <module>nucleus</module>
+      <module>admin/cli-optional</module>
+      <module>appclient/client/acc</module>
+      <module>appclient/server/core</module>
+      <module>connectors/admin</module>
+      <module>deployment/javaee-core</module>
+      <module>ejb/ejb-container</module>
+      <module>jdbc/admin</module>
+      <module>jms/admin</module>
+      <module>load-balancer/admin</module>
+      <module>orb/orb-connector</module>
+      <module>transaction/jta</module>
+      <module>transaction/jts</module>
+      <module>web/admin</module>
+      <module>web/gui-plugin-common</module>
     </modules>
     <build>
         <pluginManagement>
