@@ -1,0 +1,48 @@
+delete-context-service(1) asadmin Utility Subcommandsdelete-context-service(1)
+
+NAME
+       delete-context-service - deletes a context service resource
+
+SYNOPSIS
+           delete-context-service [--help]
+           [--target target]
+           context_service_name
+
+DESCRIPTION
+       The delete-context-service subcommand deletes a context service
+       resource.
+
+       This subcommand is supported in remote mode only.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --target
+           TBD
+
+OPERANDS
+       context_service_name
+           The name of the context service resource to be deleted.
+
+EXAMPLES
+       Example 1, Deleting a Context Service Resource
+           This example deletes the named context service resource.
+
+               asadmin> delete-context-service
+
+               Command delete-context-service executed successfully.
+
+EXIT STATUS
+       0
+           command executed successfully
+
+       1
+           error in executing the command
+
+SEE ALSO
+       create-context-service(1), list-context-services(1)
+
+       asadmin(1M)
+
+Java EE 7                         09 Feb 2013        delete-context-service(1)

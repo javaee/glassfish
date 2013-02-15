@@ -1,0 +1,45 @@
+list-managed-executor-servasadmin Utility Sublist-managed-executor-services(1)
+
+NAME
+       list-managed-executor-services - lists the managed executor service
+       resources
+
+SYNOPSIS
+           list-managed-executor-services [--help]
+           [target]
+
+DESCRIPTION
+       The list-managed-executor-services subcommand lists the managed
+       executor service resources.
+
+       This subcommand is supported in remote mode only.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+OPERANDS
+       target
+           TBD
+
+EXAMPLES
+       Example 1, Listing the Managed Executor Service Resources
+           The following example lists the managed executor service resources.
+
+               asadmin> list-managed-executor-services
+
+               Command list-managed-executor-services executed successfully.
+
+EXIT STATUS
+       0
+           subcommand executed successfully
+
+       1
+           error in executing the subcommand
+
+SEE ALSO
+       create-managed-executor-service(1), delete-managed-executor-service(1)
+
+       asadmin(1M)
+
+Java EE 7                         09 Feb 2013list-managed-executor-services(1)

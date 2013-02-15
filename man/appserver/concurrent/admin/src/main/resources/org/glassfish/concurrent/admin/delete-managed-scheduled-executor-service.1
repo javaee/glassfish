@@ -1,0 +1,52 @@
+delete-managed-scheduled-easadmin-delete-managed-scheduled-executor-service(1)
+
+NAME
+       delete-managed-scheduled-executor-service - deletes a managed scheduled
+       executor service resource
+
+SYNOPSIS
+           delete-managed-scheduled-executor-service [--help]
+           [--target target]
+           managed_scheduled_executor_service_name
+
+DESCRIPTION
+       The delete-managed-scheduled-executor-service subcommand deletes a
+       managed scheduled executor service resource.
+
+       This subcommand is supported in remote mode only.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --target
+           TBD
+
+OPERANDS
+       managed_scheduled_executor_service_name
+           The name of the managed scheduled executor service resource to be
+           deleted.
+
+EXAMPLES
+       Example 1, Deleting a Managed Scheduled Executor Service Resource
+           This example deletes the named managed scheduled executor service
+           resource.
+
+               asadmin> delete-managed-scheduled-executor-service
+
+               Command delete-managed-scheduled-executor-service executed successfully.
+
+EXIT STATUS
+       0
+           command executed successfully
+
+       1
+           error in executing the command
+
+SEE ALSO
+       create-managed-scheduled-executor-service(1),
+       list-managed-scheduled-executor-services(1)
+
+       asadmin(1M)
+
+Java EE 7                         delete-managed-scheduled-executor-service(1)

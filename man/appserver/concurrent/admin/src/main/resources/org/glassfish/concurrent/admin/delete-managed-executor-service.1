@@ -1,0 +1,49 @@
+delete-managed-executor-seasadmin)Utility Sudelete-managed-executor-service(1)
+
+NAME
+       delete-managed-executor-service - deletes a managed executor service
+       resource
+
+SYNOPSIS
+           delete-managed-executor-service [--help]
+           [--target target]
+           managed_executor_service_name
+
+DESCRIPTION
+       The delete-managed-executor-service subcommand deletes a managed
+       executor service resource.
+
+       This subcommand is supported in remote mode only.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --target
+           TBD
+
+OPERANDS
+       managed_executor_service_name
+           The name of the managed executor service resource to be deleted.
+
+EXAMPLES
+       Example 1, Deleting a Managed Executor Service Resource
+           This example deletes the named managed executor service resource.
+
+               asadmin> delete-managed-executor-service
+
+               Command delete-managed-executor-service executed successfully.
+
+EXIT STATUS
+       0
+           command executed successfully
+
+       1
+           error in executing the command
+
+SEE ALSO
+       create-managed-executor-service(1), list-managed-executor-services(1)
+
+       asadmin(1M)
+
+Java EE 7                         09 Feb 201delete-managed-executor-service(1)

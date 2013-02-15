@@ -1,0 +1,78 @@
+create-managed-thread-factasadmin Utility Subccreate-managed-thread-factory(1)
+
+NAME
+       create-managed-thread-factory - creates a managed thread factory
+       resource
+
+SYNOPSIS
+           create-managed-thread-factory [--help]
+           [--enabled[={false|true}]]
+           [--contextinfo contextinfo]
+           [--threadpriority threadpriority]
+           [--description description]
+           [--property property]
+           [--target target]
+           jndi_name
+
+DESCRIPTION
+       The create-managed-thread-factory subcommand creates a managed thread
+       factory resource.
+
+       This subcommand is supported in remote mode only.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --enabled
+           Specifies whether the managed thread factory is enabled at runtime.
+
+           The default value is true.
+
+       --contextinfo
+           A comma separated text string specifying the context types to be
+           propagated. Context types are Security, Classloader, JNDI, and
+           WorkArea. If omitted, all context types are propagated.
+
+       --threadpriority
+           Specifies the priority of threads to be created for the managed
+           thread factory instance.
+
+           The default value is 5.
+
+       --description
+           Text providing descriptive details about the managed thread
+           factory.
+
+       --property
+           Optional attribute name/value pairs for configuring the managed
+           thread factory instance.
+
+       --target
+           TBD
+
+OPERANDS
+       jndi_name
+           The JNDI name to look up the managed thread factory instance.
+
+EXAMPLES
+       Example 1, Creating a Managed Thread Factory Resource
+           This example creates a managed thread factory resource.
+
+               asadmin> create-managed-thread-factory concurrent/SampleThreadFactory
+               Managed thread factory concurrent/SampleThreadFactory created successfully.
+               Command create-managed-thread-factory executed successfully.
+
+EXIT STATUS
+       0
+           subcommand executed successfully
+
+       1
+           error in executing the subcommand
+
+SEE ALSO
+       delete-managed-thread-factory(1), list-managed-thread-factories(1)
+
+       asadmin(1M)
+
+Java EE 7                         09 Feb 2013 create-managed-thread-factory(1)

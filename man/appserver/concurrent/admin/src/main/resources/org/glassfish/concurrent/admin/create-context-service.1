@@ -1,0 +1,70 @@
+create-context-service(1) asadmin Utility Subcommandscreate-context-service(1)
+
+NAME
+       create-context-service - creates a context service resource
+
+SYNOPSIS
+           create-context-service [--help]
+           [--enabled[={false|true}]]
+           [--contextinfo contextinfo]
+           [--description description]
+           [--property property]
+           [--target target]
+           jndi_name
+
+DESCRIPTION
+       The create-context-service subcommand creates a context service
+       resource.
+
+       This subcommand is supported in remote mode only.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       ----enabled
+           Specifies whether the context service is enabled at runtime.
+
+           The default value is true.
+
+       --contextinfo
+           A comma separated string specifying a list of context types to be
+           propagated. The types of contexts to be propagated include
+           Security, Classloader, JNDI, and WorkArea. If omitted, all context
+           types are propagated.
+
+       --description
+           Descriptive details about the context service instance.
+
+       --property
+           Optional attribute name/value pairs for configuring the context
+           service instance.
+
+       --target
+           TBD
+
+OPERANDS
+       jndi_name
+           The JNDI name to look up the context service instance.
+
+EXAMPLES
+       Example 1, Creating a Context Service Resource
+           This example creates a context service resource.
+
+               asadmin> create-context-service concurrent/SampleContextService
+               Context service concurrent/SampleContextService created successfully.
+               Command create-context-service executed successfully.
+
+EXIT STATUS
+       0
+           subcommand executed successfully
+
+       1
+           error in executing the subcommand
+
+SEE ALSO
+       delete-context-service(1), list-context-services(1)
+
+       asadmin(1M)
+
+Java EE 7                         09 Feb 2013        create-context-service(1)

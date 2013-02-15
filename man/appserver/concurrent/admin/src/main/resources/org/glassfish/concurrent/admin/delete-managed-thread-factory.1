@@ -1,0 +1,49 @@
+delete-managed-thread-factasadmin Utility Subcdelete-managed-thread-factory(1)
+
+NAME
+       delete-managed-thread-factory - deletes a managed thread factory
+       resource
+
+SYNOPSIS
+           delete-managed-thread-factory [--help]
+           [--target target]
+           managed_thread_factory_name
+
+DESCRIPTION
+       The delete-managed-thread-factory subcommand deletes a managed thread
+       factory resource.
+
+       This subcommand is supported in remote mode only.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --target
+           TBD
+
+OPERANDS
+       managed_thread_factory_name
+           The name of the managed thread factory resource to be deleted.
+
+EXAMPLES
+       Example 1, Deleting a Managed Thread Factory Resource
+           This example deletes the named managed thread factory resource.
+
+               asadmin> delete-managed-thread-factory
+
+               Command delete-managed-thread-factory executed successfully.
+
+EXIT STATUS
+       0
+           command executed successfully
+
+       1
+           error in executing the command
+
+SEE ALSO
+       create-managed-thread-factory(1), list-managed-thread-factories(1)
+
+       asadmin(1M)
+
+Java EE 7                         09 Feb 2013 delete-managed-thread-factory(1)

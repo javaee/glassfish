@@ -1,0 +1,80 @@
+list-batch-runtime-configuasadmin1Utility Slist-batch-runtime-configuration(1)
+
+NAME
+       list-batch-runtime-configuration - displays the configuration of the
+       batch runtime
+
+SYNOPSIS
+           list-batch-runtime-configuration [--help]
+           [--long[={false|true}]]
+           [--output output]
+           [--header[={false|true}]]
+
+DESCRIPTION
+       The list-batch-runtime-configuration subcommand displays the
+       configuration of the batch runtime. Batch runtime configuration data is
+       stored in the config element in domain.xml.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --long, -l
+           Displays detailed information about the batch runtime. The default
+           value is false.
+
+       --output, -o
+           Displays specific details about the batch runtime. Use a
+           comma-separated list to specify the details you want to display and
+           their order. The values are case-insensitive. The
+           min-thread-pool-size, max-thread-pool-size, max-queue-size, and
+           data-source-name column headings are displayed by default.
+
+           Possible values are as follows:
+
+           min-thread-pool-size
+               The minimum thread pool size.
+
+           max-thread-pool-size
+               The maximum thread pool size.
+
+           max-idle-thread-timeout-in-seconds
+               The maximum idle time before the thread is destroyed.
+
+           max-queue-size
+               The maximum queue size for holding jobs.
+
+           data-source-name
+               The name of the datasource where data about jobs is persisted
+               by the job runtime.
+
+           max-data-retention-time-in-seconds
+               The maximum amount of time completed jobs are retained in the
+               job repository.
+
+       --header, -h
+           Specifies whether column headings are displayed when the --long
+           option is used. The default value is true. To suppress the
+           headings, set the --header option to false.
+
+EXAMPLES
+       Example 1, List Batch Runtime Configuration
+           The following example lists the configuration of the batch runtime.
+
+               asadmin> list-batch-runtime-configuration
+               MIN-THREAD-POOL-SIZE  MAX-THREAD-POOL-SIZE  DATA-SOURCE-NAME  4                     16                    jdbc/__TimerPool
+               Command list-batch-runtime-configuration executed successfully.
+
+EXIT STATUS
+       0
+           subcommand executed successfully
+
+       1
+           error in executing the subcommand
+
+SEE ALSO
+       list-batch-jobs(1)
+
+       asadmin(1M)
+
+Java EE 7                         13 Feb 20list-batch-runtime-configuration(1)

@@ -1,0 +1,93 @@
+list-batch-jobs(1)        asadmin Utility Subcommands       list-batch-jobs(1)
+
+NAME
+       list-batch-jobs - lists batch jobs
+
+SYNOPSIS
+           list-batch-jobs [--help]
+           [--job-name job-name]
+           [--instance-id instance-id]
+           [--execution-id execution-id]
+           [--long[={false|true}]]
+           [--output output]
+           [--header[={false|true}]]
+
+DESCRIPTION
+       The list-batch-jobs subcommand lists batch jobs and job details. A job
+       represents the entire batch process.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --job-name, -j
+           Specifies the name of a job.
+
+       --instance-id, -i
+           Specifies the instance ID of a job.
+
+       --execution-id, -e
+           Specifies the execution ID of a job.
+
+       --long, -l
+           Displays detailed information about the jobs. The default value is
+           false.
+
+       --output, -o
+           Displays specific details about each job. Use a comma-separated
+           list to specify the details you want to display and their order.
+           The values are case-insensitive. The job-name and instance-count
+           column headings are displayed by default.
+
+           Possible values are as follows:
+
+           job-name
+               Displays the name of the job.
+
+           instance-count
+               Displays the number of job instances that are running.
+
+           execution-id
+               Displays the execution ID of a particular job instance.
+
+           status
+               Displays the status of the job.
+
+           exit-status
+               Displays the exit status of the job.
+
+           start-time
+               Displays the start time of the job.
+
+           end-time
+               Displays the finish time of the job.
+
+           job-parameters
+               Displays the job parameters.
+
+       --header, -h
+           Specifies whether column headings are displayed when the --long
+           option is used. The default value is true. To suppress the
+           headings, set the --header option to false.
+
+EXAMPLES
+       Example 1, List Batch Jobs
+           The following example lists the batch jobs.
+
+               asadmin> list-batch-jobs
+
+               Command list-batch-jobs executed successfully.
+
+EXIT STATUS
+       0
+           subcommand executed successfully
+
+       1
+           error in executing the subcommand
+
+SEE ALSO
+       list-batch-runtime-configuration(1)
+
+       asadmin(1M)
+
+Java EE 7                         13 Feb 2013               list-batch-jobs(1)

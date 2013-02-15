@@ -1,0 +1,128 @@
+create-managed-executor-seasadmin)Utility Sucreate-managed-executor-service(1)
+
+NAME
+       create-managed-executor-service - creates a managed executor service
+       resource
+
+SYNOPSIS
+           create-managed-executor-service [--help]
+           [--enabled[={false|true}]]
+           [--contextinfo contextinfo]
+           [--threadpriority threadpriority]
+           [--longrunningtasks[={false|true}]]]
+           [--hungafterseconds hungafterseconds]
+           [--corepoolsize corepoolsize]
+           [--maximumpoolsize maximumpoolsize]
+           [--keepaliveseconds keepaliveseconds]
+           [--threadlifetimeseconds threadlifetimeseconds]
+           [--taskqueuecapacity taskqueuecapacity]
+           [--description description]
+           [--property property]
+           [--target target]
+           jndi_name
+
+DESCRIPTION
+       The create-managed-executor-service subcommand creates a managed
+       executor service resource.
+
+       This subcommand is supported in remote mode only.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --enabled
+           Specifies whether the managed executor service resource is enabled
+           at runtime.
+
+           The default value is true.
+
+       --contextinfo
+           A comma separated text string specifying the context types to be
+           propagated. Context types are Security, Classloader, JNDI, and
+           WorkArea. If omitted, all context types are propagated.
+
+       --threadpriority
+           Specifies the priority of threads to be created for the managed
+           executor service instance.
+
+           The default value is 5.
+
+       --longrunningtasks
+           Specifies how a container should handle threads.For example, if set
+           to true, stuck threads will not be reported and shutdown of the
+           managed executor service will not be blocked waiting for
+           long-running tasks. The default value is false.
+
+       --hungafterseconds
+           Specifies the time in seconds that a task can execute before it is
+           considered hung. If omitted, tasks are never considered hung.
+
+       --corepoolsize
+           Specifies the number of threads to keep in a thread pool.
+
+           The default value is 0.
+
+       ---maximumpoolsize
+           Specifies the maximum number of threads a thread pool can contain.
+
+           The default value is 2147483647.
+
+       --keepaliveseconds
+           Specifies the time in seconds threads can remain idle when the
+           number of threads is greater than core size.
+
+           The default value is 60.
+
+       --threadlifetimeseconds
+           Specifies the time in seconds each thread remains in a thread pool
+           before it is purged, regardless of whether the number of threads is
+           greater than core size or whether the thread is idle. Threads are
+           not interrupted while executing requests. Threads exceeding the
+           thread-lifetime-seconds value are not returned to the thread pool
+           after completion of the current request.
+
+           The default value is 0.
+
+       --taskqueuecapacity
+           Specifies the size of the queue holding submitted tasks waiting to
+           be executed.
+
+           The default value is 2147483647.
+
+       --description
+           Text providing descriptive details about the managed executor
+           service resource.
+
+       --property
+           Optional attribute name/value pairs for configuring the managed
+           executor service instance.
+
+       --target
+           TBD
+
+OPERANDS
+       jndi_name
+           The JNDI name to look up the managed executor service instance.
+
+EXAMPLES
+       Example 1, Creating a Managed Executor Service Resource
+           This example creates a managed executor service resource.
+
+               asadmin> create-managed-executor-service concurrent/SampleExecutor
+               Managed executor service concurrent/SampleExecutor created successfully.
+               Command create-managed-executor-service executed successfully.
+
+EXIT STATUS
+       0
+           subcommand executed successfully
+
+       1
+           error in executing the subcommand
+
+SEE ALSO
+       delete-managed-executor-service(1), list-managed-executor-services(1)
+
+       asadmin(1M)
+
+Java EE 7                         09 Feb 201create-managed-executor-service(1)
