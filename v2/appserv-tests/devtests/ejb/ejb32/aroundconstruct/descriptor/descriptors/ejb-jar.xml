@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ejb-jar>
+<ejb-jar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.2" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/ejb-jar_3_2.xsd" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
   <interceptors>
     <interceptor>
       <interceptor-class>com.acme.InterceptorB</interceptor-class>
@@ -7,6 +7,10 @@
         <class>com.acme.InterceptorB</class>
         <method-name>interceptCall</method-name>
       </around-invoke>
+      <around-construct>
+        <lifecycle-callback-class>com.acme.InterceptorB</lifecycle-callback-class>
+        <lifecycle-callback-method>create</lifecycle-callback-method>
+      </around-construct>
       <post-construct>
         <lifecycle-callback-class>com.acme.InterceptorB</lifecycle-callback-class>
         <lifecycle-callback-method>afterCreation</lifecycle-callback-method>
@@ -15,10 +19,6 @@
         <lifecycle-callback-class>com.acme.InterceptorB</lifecycle-callback-class>
         <lifecycle-callback-method>preDestroy</lifecycle-callback-method>
       </pre-destroy>
-      <around-construct>
-        <lifecycle-callback-class>com.acme.InterceptorB</lifecycle-callback-class>
-        <lifecycle-callback-method>create</lifecycle-callback-method>
-      </around-construct>
     </interceptor>
     <interceptor>
       <interceptor-class>com.acme.InterceptorA</interceptor-class>
@@ -26,6 +26,10 @@
         <class>com.acme.InterceptorA</class>
         <method-name>interceptCall</method-name>
       </around-invoke>
+      <around-construct>
+        <lifecycle-callback-class>com.acme.InterceptorA</lifecycle-callback-class>
+        <lifecycle-callback-method>create</lifecycle-callback-method>
+      </around-construct>
       <post-construct>
         <lifecycle-callback-class>com.acme.InterceptorA</lifecycle-callback-class>
         <lifecycle-callback-method>afterCreation</lifecycle-callback-method>
@@ -34,10 +38,6 @@
         <lifecycle-callback-class>com.acme.InterceptorA</lifecycle-callback-class>
         <lifecycle-callback-method>preDestroy</lifecycle-callback-method>
       </pre-destroy>
-      <around-construct>
-        <lifecycle-callback-class>com.acme.InterceptorA</lifecycle-callback-class>
-        <lifecycle-callback-method>create</lifecycle-callback-method>
-      </around-construct>
     </interceptor>
   </interceptors>
   <assembly-descriptor>
