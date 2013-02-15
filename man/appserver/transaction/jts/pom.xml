@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>    
-    <artifactId>transaction-jts-manpage</artifactId>
+    <artifactId>jts-manpage</artifactId>
     <packaging>pom</packaging>
     <name>Man Pages for Transaction Service Subcommands of the asadmin Utility</name>
 

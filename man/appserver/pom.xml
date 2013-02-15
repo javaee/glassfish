@@ -54,9 +54,12 @@
    <packaging>pom</packaging>
    <version>4.0-SNAPSHOT</version>
    <modules>
+      <module>admin/cli</module>
       <module>admin/cli-optional</module>
       <module>appclient/client/acc</module>
       <module>appclient/server/core</module>
+      <module>batch/batch-connector</module>
+      <module>concurrent/admin</module>
       <module>connectors/admin</module>
       <module>deployment/javaee-core</module>
       <module>ejb/ejb-container</module>

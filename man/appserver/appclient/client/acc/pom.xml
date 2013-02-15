@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../../../pom.xml</relativePath>
     </parent>    
-    <artifactId>appclient-client-acc-manpage</artifactId>
+    <artifactId>gf-client-module-manpage</artifactId>
     <packaging>pom</packaging>
     <name>Man Pages for App Client Client-Side Subcommands of the asadmin Utility</name>
 

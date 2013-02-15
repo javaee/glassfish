@@ -48,9 +48,9 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>    
-    <artifactId>orb-connector-manpage</artifactId>
+    <artifactId>appserver-cli-manpage</artifactId>
     <packaging>pom</packaging>
-    <name>Man Pages for ORB Connector Subcommands of the asadmin Utility</name>
+    <name>Man Pages for Optional AdminSubcommands of the asadmin Utility</name>
 
     <developers>
         <developer>

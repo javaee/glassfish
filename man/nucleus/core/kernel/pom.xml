@@ -48,7 +48,7 @@
         <version>4.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>    
-    <artifactId>core-kernel-manpage</artifactId>
+    <artifactId>kernel-manpage</artifactId>
     <packaging>pom</packaging>
     <name>Man Pages for Core-Kernel Subcommands of the asadmin Utility</name>
 

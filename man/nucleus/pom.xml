@@ -57,6 +57,7 @@
       <module>admin/cli</module>
       <module>admin/config-api</module>
       <module>admin/monitor</module>
+      <module>admin/server-mgmt</module>
       <module>admin/util</module>
       <module>cluster/admin</module>
       <module>cluster/cli</module>
