@@ -2,9 +2,9 @@ java -version
 ant -version
 echo `which ant`
 
-rm -rf glassfish-v3-image
-mkdir glassfish-v3-image
-pushd glassfish-v3-image
+rm -rf glassfish-v4-image
+mkdir glassfish-v4-image
+pushd glassfish-v4-image
 
 export http_proxy=http://www-proxy.us.oracle.com:80
 
@@ -15,10 +15,10 @@ unzip -q glassfish.zip
 
 # PUT IN GMS PATCH
 #wget http://java.net/jira/secure/attachment/45919/shoal-gms-impl.jar
-#mv shoal-gms-impl.jar $PWD/glassfish3/glassfish/modules
+#mv shoal-gms-impl.jar $PWD/glassfish4/glassfish/modules
 # PUT IN GMS PATCH
 
-export S1AS_HOME=$PWD/glassfish3/glassfish
+export S1AS_HOME=$PWD/glassfish4/glassfish
 popd
 export APS_HOME=$PWD/appserv-tests
 #export AS_DEBUG=true 
