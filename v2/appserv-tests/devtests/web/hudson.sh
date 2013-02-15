@@ -107,7 +107,7 @@ wget -O glassfish.zip $GLASSFISH_DOWNLOAD_URL
 
 unzip -q glassfish.zip
 
-export S1AS_HOME=$PWD/glassfish4444/glassfish
+export S1AS_HOME=$PWD/glassfish4/glassfish
 popd
 export APS_HOME=$PWD/appserv-tests
 export AS_LOGFILE=$S1AS_HOME/cli.log 
