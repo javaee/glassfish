@@ -1,125 +1,118 @@
-
-asadmin Utility Subcommands                   restart-instance(1)
+restart-instance(1)       asadmin Utility Subcommands      restart-instance(1)
 
 NAME
-     restart-instance  -  restarts  a  running  GlassFish  Server
-     instance
+       restart-instance - restarts a running GlassFish Server instance
 
 SYNOPSIS
-     restart-instance [--help]
-     [--debug={false|true}] instance-name
+           restart-instance [--help]
+           [--debug={false|true}] instance-name
 
 DESCRIPTION
-     The restart-instance subcommand restarts a running GlassFish
-     Server instance. This subcommand requires secure shell (SSH)
-     to be configured on the machine where the domain administra-
-     tion  server  (DAS)  is running and on the machine where the
-     instance resides.
+       The restart-instance subcommand restarts a running GlassFish Server
+       instance. This subcommand requires secure shell (SSH) to be configured
+       on the machine where the domain administration server (DAS) is running
+       and on the machine where the instance resides.
 
-     Note
+           Note
+           +----------------------------------------+
+           |                                        |
+           |           SSH is not required if the   |
+           |           instance resides on a node   |
+           |           of type CONFIG that          |
+           |           represents the local host. A |
+           |           node of type CONFIG is not   |
+           |           enabled for communication    |
+           |           over SSH.                    |
+           +----------------------------------------+
 
-     SSH is not required if the instance resides  on  a  node  of
-     type  CONFIG  that represents the local host. A node of type
-     CONFIG is not enabled for communication over SSH.
+       You may run this subcommand from any machine that can contact the DAS.
 
-     You may run this subcommand from any machine that  can  con-
-     tact the DAS.
+       The subcommand can restart any GlassFish Server instance, regardless of
+       how the instance was created. For example, this subcommand can restart
+       an instance that was created by using the create-local-instance(1)
+       subcommand.
 
-     The subcommand can restart any  GlassFish  Server  instance,
-     regardless  of  how  the  instance was created. For example,
-     this subcommand can restart an instance that was created  by
-     using the create-local-instance(1) subcommand.
+       When this subcommand restarts an instance, the DAS synchronizes the
+       instance with changes since the last synchronization as follows:
 
-     When this subcommand restarts an instance, the DAS synchron-
-     izes  the  instance with changes since the last synchroniza-
-     tion as follows:
+       *   For the config directory, the DAS synchronizes the instance with
+           all changes.
 
-     o For  the  config  directory,  the  DAS  synchronizes   the
-       instance with all changes.
+       *   For the applications directory and docroot directory, only a change
+           to a top-level subdirectory causes the DAS to synchronize all files
+           under that subdirectory.
 
-     o For the applications directory and docroot directory, only
-       a  change  to  a  top-level subdirectory causes the DAS to
-       synchronize all files under that subdirectory.
+           If a file below a top level subdirectory is changed without a
+           change to a file in the top level subdirectory, full
+           synchronization is required. In normal operation, files below the
+           top level subdirectories of these directories are not changed. If
+           an application is deployed and undeployed, full synchronization is
+           not necessary to update the instance with the change.
 
-       If a file  below  a  top  level  subdirectory  is  changed
-       without  a change to a file in the top level subdirectory,
-       full synchronization is  required.  In  normal  operation,
-       files  below  the top level subdirectories of these direc-
-       tories are not changed. If an application is deployed  and
-       undeployed,  full  synchronization  is  not  necessary  to
-       update the instance with the change.
+       If different synchronization behavior is required, the instance must be
+       stopped and restarted by using following sequence of subcommands:
 
-     If  different  synchronization  behavior  is  required,  the
-     instance  must  be  stopped and restarted by using following
-     sequence of subcommands:
+        1. stop-instance(1)
 
-Java EE 6           Last change: 20 Oct 2010                    1
+        2. start-instance(1)
 
-asadmin Utility Subcommands                   restart-instance(1)
-
-     1.  stop-instance(1)
-
-     2.  start-instance(1)
-
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --debug
-          Specifies whether the instance  is  restarted  withJava
-          Platform       Debugger       Architecture       (JPDA)
-          (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
-          debugging enabled.
+       --debug
+           Specifies whether the instance is restarted with Java Platform
+           Debugger Architecture (JPDA)
 
-          Possible values are as follows:
+           (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-          true The instance  is  restarted  with  JPDA  debugging
-               enabled  and the port number for JPDA debugging is
-               displayed.
+           debugging enabled.
 
-          false
-               The instance is restarted with JPDA debugging dis-
-               abled.
+           Possible values are as follows:
 
-     The default is the current setting of this  option  for  the
-     instance that is being restarted.
+           true
+               The instance is restarted with JPDA debugging enabled and the
+               port number for JPDA debugging is displayed.
+
+           false
+               The instance is restarted with JPDA debugging disabled.
+
+           The default is the current setting of this option for the instance
+           that is being restarted.
 
 OPERANDS
-     instance-name
-          The name of the GlassFish Server instance  to  restart.
-          If the instance is not running, the subcommand displays
-          a warning message and attempts to start the instance.
+       instance-name
+           The name of the GlassFish Server instance to restart. If the
+           instance is not running, the subcommand displays a warning message
+           and attempts to start the instance.
 
 EXAMPLES
-     Example 1 Restarting a GlassFish Server Instance
+       Example 1, Restarting a GlassFish Server Instance
+           This example restarts the GlassFish Server instance pmdsa1.
 
-     This example restarts the GlassFish Server instance pmdsa1.
-     asadmin> restart-instance pmdsa1
-     Instance pmdsa1 was restarted.
-     Command restart-instance executed successfully.
+               asadmin> restart-instance pmdsa1
+               Instance pmdsa1 was restarted.
+
+               Command restart-instance executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     create-instance(1),    create-local-instance(1),     delete-
-     instance(1),     delete-local-instance(1),    restart-local-
+       create-instance(1), create-local-instance(1), delete-instance(1),
+       delete-local-instance(1), restart-local-instance(1), setup-ssh(1),
+       start-instance(1), start-local-instance(1), stop-instance(1),
+       stop-local-instance(1)
 
-Java EE 6           Last change: 20 Oct 2010                    2
+       asadmin(1M)
 
-asadmin Utility Subcommands                   restart-instance(1)
+       Java Platform Debugger Architecture (JPDA)
+       (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-     instance(1), setup-ssh(1),  start-instance(1),  start-local-
-     instance(1), stop-instance(1), stop-local-instance(1)
-
-     asadmin(1M)
-
-     Java     Platform     Debugger      Architecture      (JPDA)
-     (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
-
-Java EE 6           Last change: 20 Oct 2010                    3
-
+Java EE 7                         20 Oct 2010              restart-instance(1)

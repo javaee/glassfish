@@ -1,160 +1,189 @@
-
-asadmin Utility Subcommands                       start-domain(1)
+start-domain(1)           asadmin Utility Subcommands          start-domain(1)
 
 NAME
-     start-domain - starts the DAS of the specified domain
+       start-domain - starts the DAS of the specified domain
 
 SYNOPSIS
-     start-domain [--help] [--debug={true|false}] [--domaindir domain-dir]
-     [--upgrade={true|false}] [--verbose={true|false}] [domain-name]
+           start-domain [--help]
+           [--debug={true|false}] [--domaindir domain-dir]
+           [--dry-run={true|false}] [--upgrade={true|false}]
+           [--verbose={true|false}] [--watchdog={true|false}]
+           [domain-name]
 
 DESCRIPTION
-     The start-domain subcommand starts the domain administration
-     server  (DAS)  of  the  specified domain. If a domain is not
-     specified, the default domain is  assumed.  If  the  domains
-     directory  contains  two  or  more  domains, the domain-name
-     operand must be specified.
+       The start-domain subcommand starts the domain administration server
+       (DAS) of the specified domain. If a domain is not specified, the
+       default domain is assumed. If the domains directory contains two or
+       more domains, the domain-name operand must be specified.
 
-     Note
+           Note
+           +----------------------------------------+
+           |                                        |
+           |           On the Windows platform,     |
+           |           processes can bind to the    |
+           |           same port. To avoid this     |
+           |           problem, do not start        |
+           |           multiple domains with the    |
+           |           same port number at the same |
+           |           time.                        |
+           +----------------------------------------+
 
-     On the Windows platform, processes  can  bind  to  the  same
-     port.  To  avoid this problem, do not start multiple domains
-     with the same port number at the same time.
+       This subcommand is supported in local mode only.
 
-     This subcommand is supported in local mode only.
-
-     Note
-
-     In Oracle  GlassFish  Server,  the  start-domain  subcommand
-     prompts  for  a  new  admin user password if no password has
-     been set for the admin user. Additionally,  the  admin  user
-     password  must  not  be  blank  if  secure administration is
-     enabled; otherwise, the start-domain subcommand fails.
-
-     To provide the new admin user password, you can use  the  --
-     passwordfile utility option of the asadmin(1M) command after
-     adding the entry AS_ADMIN_NEWPASSWORD to the password file.
+           Note
+           +----------------------------------------+
+           |                                        |
+           |           In Oracle GlassFish Server,  |
+           |           the start-domain subcommand  |
+           |           prompts for a new admin user |
+           |           password if no password has  |
+           |           been set for the admin user. |
+           |           Additionally, the admin user |
+           |           password must not be blank   |
+           |           if secure administration is  |
+           |           enabled; otherwise, the      |
+           |           start-domain subcommand      |
+           |           fails.                       |
+           |                                        |
+           |           To provide the new admin     |
+           |           user password, you can use   |
+           |           the --passwordfile utility   |
+           |           option of the asadmin(1M)    |
+           |           command after adding the     |
+           |           entry AS_ADMIN_NEWPASSWORD   |
+           |           to the password file.        |
+           +----------------------------------------+
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --debug
-          Specifies whether the domain is started withJava  Plat-
-          form         Debugger        Architecture        (JPDA)
-          (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
-          debugging enabled.
+       --debug
+           Specifies whether the domain is started with Java Platform Debugger
+           Architecture (JPDA)
 
-          Possible values are as follows:
+           (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-          true The  instance  is  started  with  JPDA   debugging
-               enabled  and the port number for JPDA debugging is
-               displayed.
+           debugging enabled.
 
-          false
-               The  instance  is  started  with  JPDA   debugging
+           Possible values are as follows:
 
-Java EE 6           Last change: 22 Oct 2010                    1
+           true
+               The instance is started with JPDA debugging enabled and the
+               port number for JPDA debugging is displayed.
 
-asadmin Utility Subcommands                       start-domain(1)
+           false
+               The instance is started with JPDA debugging disabled (default).
 
-               disabled (default).
+       --dry-run, -n
+           Suppresses actual starting of the domain. Instead, start-domain
+           displays the full java command that would be used to start the
+           domain, including all options. Reviewing this command can be useful
+           to confirm JVM options and when troubleshooting startup issues.
 
-     --domaindir
-          The domain root directory, which contains the directory
-          of  the  domain  that is to be restarted. If specified,
-          the path must be accessible in  the  file  system.  The
-          default  location  of  the domain root directory is as-
-          install/domains.
+           The default value is false.
 
-     --upgrade
-          Specifies  whether  the  configuration  of  the  domain
-          administration  server (DAS) is upgraded to the current
-          release. Normally, if the subcommand detects  that  the
-          configuration  is  from  an  older release of GlassFish
-          Server, the  configuration  is  upgraded  automatically
-          before  being  started. You should not need to use this
-          option explicitly.
+       --domaindir
+           The domain root directory, which contains the directory of the
+           domain that is to be restarted. If specified, the path must be
+           accessible in the file system. The default location of the domain
+           root directory is as-install/domains.
 
-          Possible values are as follows:
+       --upgrade
+           Specifies whether the configuration of the domain administration
+           server (DAS) is upgraded to the current release. Normally, if the
+           subcommand detects that the configuration is from an older release
+           of GlassFish Server, the configuration is upgraded automatically
+           before being started. You should not need to use this option
+           explicitly.
 
-          true When the domain is started, the  configuration  is
-               modified  to  be  compatible  with this release of
-               GlassFish Server, and the GlassFish Server process
-               stops.
+           Possible values are as follows:
 
-          false
-               The  configuration  of  the  DAS  is  not  updated
-               (default).
+           true
+               When the domain is started, the configuration is modified to be
+               compatible with this release of GlassFish Server, and the
+               GlassFish Server process stops.
 
-     --verbose , -v
-          Specifies whether detailed information about the domain
-          is displayed in the console window where the subcommand
-          is run.
+           false
+               The configuration of the DAS is not updated (default).
 
-          Possible values are as follows:
+       --verbose, -v
+           Specifies whether detailed information about the domain is
+           displayed in the console window where the subcommand is run.
 
-          true Detailed startup messages and log  messages  about
-               the  domain  are  displayed  in the console window
-               where the subcommand is  run.  If  the  domain  is
-               later  restarted  by running the restart-domain(1)
-               subcommand from a different console  window,  mes-
-               sages  continue  to  be  displayed in the original
-               console window.
+           Possible values are as follows:
 
-               You can kill the GlassFish Server process by  typ-
-               ing CTRL-C in the console window.
+           true
+               Detailed startup messages and log messages about the domain are
+               displayed in the console window where the subcommand is run. If
+               the domain is later restarted by running the restart-domain(1)
+               subcommand from a different console window, messages continue
+               to be displayed in the original console window.
 
-               You can kill  the  GlassFish  Server  process  and
-               obtain  a thread dump for the server by typing one
-               of the following key combinations in  the  console
+               You can kill the GlassFish Server process by typing CTRL-C in
+               the console window.
 
-Java EE 6           Last change: 22 Oct 2010                    2
+               You can kill the GlassFish Server process and obtain a thread
+               dump for the server by typing one of the following key
+               combinations in the console window:
 
-asadmin Utility Subcommands                       start-domain(1)
+               *   CTRL-\ on UNIX systems
 
-               window:
+               *   CTRL-Break on Windows systems
 
-               o CTRL-\ on UNIX systems
-
-               o CTRL-Break on Windows systems
-
-          false
+           false
                Detailed information is not displayed (default).
 
-OPERANDS
-     domain-name
-          The unique name of the domain you want to start.
+       --watchdog, -w
+           Specifies whether limited information about the domain is displayed
+           in the console window where the subcommand is run. The --watchdog
+           option is similar to --verbose but does not display the detailed
+           startup messages and log messages. This option is useful when
+           running the asadmin utility in the background or with no attached
+           console.
 
-          This operand is optional if only one domain  exists  in
-          the GlassFish Server installation.
+           Possible values are as follows:
+
+           true
+               Limited information is displayed in the console window.
+
+           false
+               Limited information is not displayed in the console window
+               (default).
+
+OPERANDS
+       domain-name
+           The unique name of the domain you want to start.
+
+           This operand is optional if only one domain exists in the GlassFish
+           Server installation.
 
 EXAMPLES
-     Example 1 Starting a Domain
+       Example 1, Starting a Domain
+           This example starts mydomain4 in the default domains directory.
 
-     This example starts mydomain4 in the default domains  direc-
-     tory.
-     asadmin> start-domain mydomain4
-     Waiting for DAS to start. ...........
-     Started domain: mydomain4
-     Domain location: /myhome/glassfishv3/glassfish/domains/mydomain4
-     Log file: /myhome/glassfishv3/glassfish/domains/mydomain4/logs/server.log
-     Admin port for the domain: 4848
-     Command start-domain executed successfully.
+               asadmin> start-domain mydomain4
+               Waiting for DAS to start. ...........
+               Started domain: mydomain4
+               Domain location: /myhome/glassfishv3/glassfish/domains/mydomain4
+               Log file: /myhome/glassfishv3/glassfish/domains/mydomain4/logs/server.log
+               Admin port for the domain: 4848
+               Command start-domain executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     create-domain(1),     delete-domain(1),     list-domains(1),
-     restart-domain(1), stop-domain(1)
+       create-domain(1), delete-domain(1), list-domains(1), restart-domain(1),
+       stop-domain(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-     Java     Platform     Debugger      Architecture      (JPDA)
-     (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
+       Java Platform Debugger Architecture (JPDA)
+       (http://java.sun.com/javase/technologies/core/toolsapis/jpda/)
 
-Java EE 6           Last change: 22 Oct 2010                    3
-
+Java EE 7                         13 Feb 2013                  start-domain(1)

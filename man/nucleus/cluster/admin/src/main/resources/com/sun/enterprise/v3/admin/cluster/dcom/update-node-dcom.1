@@ -1,161 +1,144 @@
-
-asadmin Utility Subcommands                   update-node-dcom(1)
+update-node-dcom(1)       asadmin Utility Subcommands      update-node-dcom(1)
 
 NAME
-     update-node-dcom - updates the configuration data of a node
+       update-node-dcom - updates the configuration data of a node
 
 SYNOPSIS
-     update-node-dcom [--help]
-     [--nodehost node-host]
-     [--installdir
-     as-install-parent] [--nodedir node-dir]
-     [--windowsuser windows-user] [--windowsdomain windows-domain]
-     [--force={false|true}]
-     node-name
+           update-node-dcom [--help]
+           [--nodehost node-host]
+           [--installdir as-install-parent] [--nodedir node-dir]
+           [--windowsuser windows-user] [--windowsdomain windows-domain]
+           [--force={false|true}]
+           node-name
 
 DESCRIPTION
-     The update-node-dcom subcommand  updates  the  configuration
-     data  of  a  node.  This subcommand requires the Distributed
-     Component Object Model (DCOM) remote protocol to be  config-
-     ured  on  the  host  where  the domain administration server
-     (DAS) is running and on the host where the node resides. The
-     DCOM  protocol  is available only on Windows systems.You may
-     run this subcommand from any host that can contact the DAS.
+       The update-node-dcom subcommand updates the configuration data of a
+       node. This subcommand requires the Distributed Component Object Model
+       (DCOM) remote protocol to be configured on the host where the domain
+       administration server (DAS) is running and on the host where the node
+       resides. The DCOM protocol is available only on Windows systems.You may
+       run this subcommand from any host that can contact the DAS.
 
-     This subcommand can update any node, regardless  of  whether
-     the node is enabled for remote communication. If the node is
-     not enabled for remote communication, the subcommand enables
-     DCOM communication for the node and updates any other speci-
-     fied configuration data.
+       This subcommand can update any node, regardless of whether the node is
+       enabled for remote communication. If the node is not enabled for remote
+       communication, the subcommand enables DCOM communication for the node
+       and updates any other specified configuration data.
 
-     Options of this subcommand specify the  new  values  of  the
-     node's  configuration  data. The default for most options is
-     to leave the existing value unchanged. However, if this sub-
-     command  is  run  to  enable  DCOM communication for a node,
-     default values are applied if any of the  following  options
-     is omitted:
+       Options of this subcommand specify the new values of the node's
+       configuration data. The default for most options is to leave the
+       existing value unchanged. However, if this subcommand is run to enable
+       DCOM communication for a node, default values are applied if any of the
+       following options is omitted:
 
-     o --windowsuser
+       *   --windowsuser
 
-     o --windowsdomain
+       *   --windowsdomain
 
-     By default, the subcommand fails and the node is not updated
-     if  the  DAS cannot contact the node's host through DCOM. To
-     force the node to be updated even if the host cannot be con-
-     tacted through DCOM, set the --force option to true.
+       By default, the subcommand fails and the node is not updated if the DAS
+       cannot contact the node's host through DCOM. To force the node to be
+       updated even if the host cannot be contacted through DCOM, set the
+       --force option to true.
 
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --nodehost
-          The name of the host that  the  node  is  to  represent
-          after the node is updated.
+       --nodehost
+           The name of the host that the node is to represent after the node
+           is updated.
 
-Java EE 6           Last change: 29 Nov 2011                    1
+       --installdir
+           The full path to the parent of the base installation directory of
+           the GlassFish Server software on the host, for example,
+           /export/glassfish3/.
 
-asadmin Utility Subcommands                   update-node-dcom(1)
+       --nodedir
+           The path to the directory that is to contain GlassFish Server
+           instances that are created on the node. If a relative path is
+           specified, the path is relative to the as-install directory, where
+           as-install is the base installation directory of the GlassFish
+           Server software on the host.
 
-     --installdir
-          The full path to the parent of  the  base  installation
-          directory of the GlassFish Server software on the host,
-          for example, /export/glassfish3/.
+       --windowsuser, -w
+           The user on this node's host that is to run the process for
+           connecting to the host through DCOM. The default depends on whether
+           this subcommand is run to enable DCOM communication for the node:
 
-     --nodedir
-          The path to the directory that is to contain  GlassFish
-          Server  instances  that  are  created on the node. If a
-          relative path is specified, the path is relative to the
-          as-install directory, where as-install is the base ins-
-          tallation directory of the GlassFish Server software on
-          the host.
+           *   If the node is already enabled for communication over DCOM, the
+               default is to leave the user unchanged.
 
-     --windowsuser , -w
-          The user on this node's host that is to run the process
-          for  connecting  to  the host through DCOM. The default
-          depends on whether this subcommand  is  run  to  enable
-          DCOM communication for the node:
+           *   If this subcommand is run to enable DCOM communication for the
+               node, the default is the user that is running the DAS process.
 
-          o If the node is already enabled for communication over
-            DCOM, the default is to leave the user unchanged.
+           If the --nodehost option is set to localhost, the --windowsuser
+           option is ignored.
 
-          o If this subcommand is run to enable  DCOM  communica-
-            tion  for  the  node, the default is the user that is
-            running the DAS process.
+       --windowsdomain, -d
+           The name of the Windows domain that contains the user that the
+           --windowsuser option specifies. The default depends on whether this
+           subcommand is run to enable DCOM communication for the node:
 
-     If the  --nodehost  option  is  set  to  localhost,  the  --
-     windowsuser option is ignored.
+           *   If the node is already enabled for communication over DCOM, the
+               default is to leave the domain unchanged.
 
-     --windowsdomain , -d
-          The name of the Windows domain that contains  the  user
-          that  the  --windowsuser  option specifies. The default
-          depends on whether this subcommand  is  run  to  enable
-          DCOM communication for the node:
+           *   If this subcommand is run to enable DCOM communication for the
+               node, the default is the name of the host on which the
+               subcommand is run.
 
-          o If the node is already enabled for communication over
-            DCOM, the default is to leave the domain unchanged.
+       --force
+           Specifies whether the node is updated even if validation of the
+           node's parameters fails. To validate a node's parameters, the DAS
+           must be able to contact the node's host through DCOM. Possible
+           values are as follows:
 
-          o If this subcommand is run to enable  DCOM  communica-
-            tion  for  the  node,  the default is the name of the
-            host on which the subcommand is run.
+           false
+               The node is not updated if validation of the node's parameters
+               fails (default).
 
-     --force
-          Specifies whether the node is updated even  if  valida-
-          tion  of  the  node's  parameters  fails. To validate a
-          node's parameters, the DAS must be able to contact  the
-          node's  host  through DCOM. Possible values are as fol-
-          lows:
-
-          false
-
-Java EE 6           Last change: 29 Nov 2011                    2
-
-asadmin Utility Subcommands                   update-node-dcom(1)
-
-               The node is  not  updated  if  validation  of  the
-               node's parameters fails (default).
-
-          true The node is updated  even  if  validation  of  the
-               node's parameters fails.
+           true
+               The node is updated even if validation of the node's parameters
+               fails.
 
 OPERANDS
-     node-name
-          The name of the node to update. The  node  must  exist.
-          Otherwise, an error occurs.
+       node-name
+           The name of the node to update. The node must exist. Otherwise, an
+           error occurs.
 
 EXAMPLES
-     Example 1 Updating the Host That a Node Represents
+       Example 1, Updating the Host That a Node Represents
+           This example updates the host that the node wpmdl1 represents to
+           wj01.
 
-     This  example  updates  the  host  that  the   node   wpmdl1
-     represents to wj01.
-     asadmin> update-node-dcom --nodehost wj01 wpmdl1
-     Command update-node-dcom executed successfully.
-     Example 2 Forcing the Update of a Node
+               asadmin> update-node-dcom --nodehost wj01 wpmdl1
+               Command update-node-dcom executed successfully.
 
-     This example forces the update of the node  xkyd  to  enable
-     the node to communicate over DCOM.
-     asadmin> update-node-dcom --force xkyd
-     Warning: some parameters appear to be invalid.
-     Could not find a remote Glassfish installation on host: xkyd.example.com at
-     C:\glassfish3\glassfish
-     Continuing with node update due to use of --force.
-     Command update-node-dcom executed successfully.
+       Example 2, Forcing the Update of a Node
+           This example forces the update of the node xkyd to enable the node
+           to communicate over DCOM.
+
+               asadmin> update-node-dcom --force xkyd
+               Warning: some parameters appear to be invalid.
+               Could not find a remote Glassfish installation on host: xkyd.example.com at
+               C:\glassfish3\glassfish
+               Continuing with node update due to use of --force.
+               Command update-node-dcom executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     create-node-config(1),   create-node-dcom(1),   create-node-
-     ssh(1),  delete-node-config(1), delete-node-dcom(1), delete-
-     node-ssh(1),     install-node(1),      install-node-dcom(1),
-     install-node-ssh(1),    list-nodes(1),    uninstall-node(1),
-     uninstall-node-dcom(1), uninstall-node-ssh(1),  update-node-
-     config(1), update-node-ssh(1)
+       create-node-config(1), create-node-dcom(1), create-node-ssh(1),
+       delete-node-config(1), delete-node-dcom(1), delete-node-ssh(1),
+       install-node(1), install-node-dcom(1), install-node-ssh(1),
+       list-nodes(1), uninstall-node(1), uninstall-node-dcom(1),
+       uninstall-node-ssh(1), update-node-config(1), update-node-ssh(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 29 Nov 2011                    3
-
+Java EE 7                         29 Nov 2011              update-node-dcom(1)

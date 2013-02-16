@@ -1,451 +1,439 @@
-
-asadmin Utility Subcommands                          deploydir(1)
+deploydir(1)              asadmin Utility Subcommands             deploydir(1)
 
 NAME
-     deploydir  -  deploys  an  exploded  format  of  application
-     archive
+       deploydir - deploys an exploded format of application archive
 
 SYNOPSIS
-     deploydir [--help]
-     [--force={false|true}]
-     [--virtualservers virtual_servers]
-     [--contextroot context_root]
-     [--verify={false|true}]
-     [--precompilejsp={false|true}]
-     [--name component-name]
-     [--retrieve local_dirpath]
-     [--uniquetablenames={true|false}]
-     [--dbvendorname dbvendorname]
-     [--createtables={false|true}|--dropandcreatetables={false|true}]
-     [--deploymentplan deployment_plan]
-     [--enabled={true|false}]
-     [--generatermistubs={false|true}]
-     [--availabilityenabled={false|true}]
-     [--asyncreplication={true|false}]
-     [--lbenabled={true|false}]
-     [--keepstate={false|true}]
-     [--libraries jar_file[,jar_file]*]
-     [--target target]
-     [--type pkg-type]
-     [--properties(name=value)[:name=value]*]
-     dirpath
+           deploydir [--help]
+           [--force={false|true}]
+           [--virtualservers virtual_servers]
+           [--contextroot context_root]
+           [--verify={false|true}]
+           [--precompilejsp={false|true}]
+           [--name component-name]
+           [--retrieve local_dirpath]
+           [--uniquetablenames={true|false}]
+           [--dbvendorname dbvendorname]
+           [--createtables={false|true}|--dropandcreatetables={false|true}]
+           [--deploymentplan deployment_plan]
+           [--altdd alternate_deploymentdescriptor]
+           [--runtimealtdd runtime_alternate_deploymentdescriptor]
+           [--deploymentorder deployment_order]
+           [--enabled={true|false}]
+           [--generatermistubs={false|true}]
+           [--availabilityenabled={false|true}]
+           [--asyncreplication={true|false}]
+           [--lbenabled={true|false}]
+           [--keepstate={false|true}]
+           [--libraries jar_file[,jar_file]*]
+           [--target target]
+           [--type pkg-type]
+           [--properties(name=value)[:name=value]*]
+           dirpath
 
 DESCRIPTION
-     Note
+           Note
+           +---------------------------------------+
+           |                                       |
+           |           The deploydir subcommand is |
+           |           deprecated. Use the deploy  |
+           |           subcommand instead.         |
+           +---------------------------------------+
 
-     The deploydir subcommand is deprecated. Use the deploy  sub-
-     command instead.
+       The deploydir subcommand deploys an application directly from a
+       development directory. The appropriate directory hierarchy and
+       deployment descriptors conforming to the Java EE specification must
+       exist in the deployment directory.
 
-     The deploydir subcommand  deploys  an  application  directly
-     from  a  development  directory.  The  appropriate directory
-     hierarchy and deployment descriptors conforming to the  Java
-     EE specification must exist in the deployment directory.
+       Directory deployment is for advanced developers only. Do not use
+       deploydir in production environments. Instead, use the deploy
+       subcommand. Directory deployment is only supported on localhost, that
+       is, the client and server must reside on the same machine. For this
+       reason, the only values for the --host option are:
 
-     Directory deployment is for advanced developers only. Do not
-     use  deploydir  in production environments. Instead, use the
-     deploy subcommand. Directory deployment is only supported on
-     localhost, that is, the client and server must reside on the
-     same machine. For this reason, the only values  for  the  --
-     host option are:
+       *   localhost
 
-     o localhost
+       *   The value of the $HOSTNAME environment variable
 
-     o The value of the $HOSTNAME environment variable
+       *   The IP address of the machine
 
-     o The IP address of the machine
+       If the --uniquetablenames, --createtables, and --dropandcreatetables
+       options are not specified, the entries in the deployment descriptors
+       are used.
 
-Java EE 6           Last change: 19 Nov 2010                    1
+       The --force option makes sure the component is forcefully (re)deployed
+       even if the specified component has already been deployed or already
+       exists. Set the --force option to false for an initial deployment. If
+       the specified application is running and the --force option is set to
+       false, the subcommand fails.
 
-asadmin Utility Subcommands                          deploydir(1)
-
-     If   the   --uniquetablenames,   --createtables,   and    --
-     dropandcreatetables  options  are not specified, the entries
-     in the deployment descriptors are used.
-
-     The --force option makes sure the  component  is  forcefully
-     (re)deployed  even  if  the  specified component has already
-     been deployed or already exists. Set the --force  option  to
-     false  for  an initial deployment. If the specified applica-
-     tion is running and the --force option is set to false,  the
-     subcommand fails.
-
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --force
-          If set to true, redeploys the  component  even  if  the
-          specified   component  has  already  been  deployed  or
-          already exists. Default is false.
+       --force
+           If set to true, redeploys the component even if the specified
+           component has already been deployed or already exists. Default is
+           false.
 
-     --virtualservers
-          One or  more  virtual  server  IDs.  Multiple  IDs  are
-          separated by commas.
+       --virtualservers
+           One or more virtual server IDs. Multiple IDs are separated by
+           commas.
 
-     --contextroot
-          Valid only if the  archive  is  a  web  module.  It  is
-          ignored  for  other archive types; defaults to filename
-          without extension.
+       --contextroot
+           Valid only if the archive is a web module. It is ignored for other
+           archive types; defaults to filename without extension.
 
-     --precompilejsp
-          By default this option does not allow  the  JSP  to  be
-          precompiled  during  deployment. Instead, JSPs are com-
-          piled during runtime. Default is false.
+       --precompilejsp
+           By default this option does not allow the JSP to be precompiled
+           during deployment. Instead, JSPs are compiled during runtime.
+           Default is false.
 
-     --verify
-          If set to true and the required verifier  packages  are
-          installed  from  the Update Tool, the syntax and seman-
-          tics of the deployment descriptor is verified.  Default
-          is false.
+       --verify
+           If set to true and the required verifier packages are installed
+           from the Update Tool, the syntax and semantics of the deployment
+           descriptor is verified. Default is false.
 
-     --name
-          Name of the deployable component.
+       --name
+           Name of the deployable component.
 
-          The name can include an  optional  version  identifier,
-          which  follows  the name and is separated from the name
-          by a colon (:). The version identifier must begin  with
-          a letter or number. It can contain alphanumeric charac-
-          ters plus underscore (_),  dash  (-),  and  period  (.)
-          characters.  For  more  information  about  module  and
-          application  versions,  see  "Module  and   Application
+           The name can include an optional version identifier, which follows
+           the name and is separated from the name by a colon (:). The version
+           identifier must begin with a letter or number. It can contain
+           alphanumeric characters plus underscore (_), dash (-), and period
+           (.) characters. For more information about module and application
+           versions, see "Module and Application Versions" in Oracle GlassFish
+           Server Application Deployment Guide.
 
-Java EE 6           Last change: 19 Nov 2010                    2
+       --retrieve
+           Retrieves the client stub JAR file from the server machine to the
+           local directory.
 
-asadmin Utility Subcommands                          deploydir(1)
+       --dbvendorname
+           Specifies the name of the database vendor for which tables are
+           created. Supported values include db2, mssql, mysql, oracle, derby,
+           javadb, postgresql, and sybase. These values are case-insensitive.
+           If not specified, the value of the database-vendor-name attribute
+           in glassfish-ejb-jar.xml is used. If no value is specified, a
+           connection is made to the resource specified by the jndi-name
+           subelement of the cmp-resource element in the glassfish-ejb-jar.xml
+           file, and the database vendor name is read. If the connection
+           cannot be established, or if the value is not recognized, SQL-92
+           compliance is presumed.
 
-          Versions"   in   Oracle  GlassFish  Server  Application
-          Deployment Guide.
+       --createtables
+           If specified as true, creates tables at deployment of an
+           application with unmapped CMP beans. If specified as false, tables
+           are not created. If not specified, the value of the
+           create-tables-at-deploy entry in the cmp-resource element of the
+           glassfish-ejb-jar.xml file determines whether or not tables are
+           created. No unique constraints are created for the tables.
 
-     --retrieve
-          Retrieves the client stub  JAR  file  from  the  server
-          machine to the local directory.
+       --dropandcreatetables
+           If specified as true when the component is redeployed, the tables
+           created by the previous deployment are dropped before creating the
+           new tables. Applies to deployed applications with unmapped CMP
+           beans. Preexisting tables will not be dropped on the initial
+           deployment of an application or on a deployment that follows an
+           explicit undeploy. If specified as false, tables are neither
+           dropped nor created. If not specified, the tables are dropped if
+           the drop-tables-at-undeploy entry in the cmp-resource element of
+           the glassfish-ejb-jar.xml file is set to true, and the new tables
+           are created if the create-tables-at-deploy entry in the
+           cmp-resource element of the glassfish-ejb-jar.xml file is set to
+           true.
 
-     --dbvendorname
-          Specifies the name of the  database  vendor  for  which
-          tables  are  created.  Supported  values  include  db2,
-          mssql, mysql, oracle, derby,  javadb,  postgresql,  and
-          sybase.  These  values  are  case-insensitive.  If  not
-          specified, the value of the database-vendor-name attri-
-          bute  in  glassfish-ejb-jar.xml is used. If no value is
-          specified, a connection is made to the resource  speci-
-          fied  by  the  jndi-name subelement of the cmp-resource
-          element in  the  glassfish-ejb-jar.xml  file,  and  the
-          database  vendor name is read. If the connection cannot
-          be established, or if  the  value  is  not  recognized,
-          SQL-92 compliance is presumed.
+       --uniquetablenames
+           Guarantees unique table names for all the beans and results in a
+           hash code added to the table names. This is useful if you have an
+           application with case-sensitive bean names. Applies to applications
+           with unmapped CMP beans.
 
-     --createtables
-          If specified as true, creates tables at  deployment  of
-          an application with unmapped CMP beans. If specified as
-          false, tables are not created. If  not  specified,  the
-          value  of the create-tables-at-deploy entry in the cmp-
-          resource  element  of  the  glassfish-ejb-jar.xml  file
-          determines whether or not tables are created. No unique
-          constraints are created for the tables.
+       --deploymentplan
+           Deploys the deployment plan, which is a JAR file that contains
+           GlassFish Server descriptors. Specify this option when deploying a
+           pure EAR file. A pure EAR file is an EAR without GlassFish Server
+           descriptors.
 
-     --dropandcreatetables
-          If specified as true when the component is  redeployed,
-          the  tables  created  by  the  previous  deployment are
-          dropped before creating  the  new  tables.  Applies  to
-          deployed  applications  with unmapped CMP beans. Preex-
-          isting tables  will  not  be  dropped  on  the  initial
-          deployment  of  an  application or on a deployment that
-          follows an explicit undeploy. If  specified  as  false,
-          tables  are  neither dropped nor created. If not speci-
-          fied, the tables are  dropped  if  the  drop-tables-at-
-          undeploy  entry  in  the  cmp-resource  element  of the
-          glassfish-ejb-jar.xml file is set to true, and the  new
-          tables are created if the create-tables-at-deploy entry
-          in  the  cmp-resource  element  of  the  glassfish-ejb-
-          jar.xml file is set to true.
+       --altdd
+           Deploys the application using a Java EE standard deployment
+           descriptor that resides outside of the application archive. Specify
+           an absolute path or a relative path to the alternate deployment
+           descriptor file. The alternate deployment descriptor overrides the
+           top-level deployment descriptor packaged in the archive. For
+           example, for an EAR, the use of --altdd overrides application.xml.
+           For a standalone module, the use of --altdd overrides the top-level
+           module descriptor such as web.xml.
 
-     --uniquetablenames
-          Guarantees unique table names for  all  the  beans  and
-          results  in  a hash code added to the table names. This
-          is  useful  if  you  have  an  application  with  case-
-          sensitive  bean  names.  Applies  to  applications with
-          unmapped CMP beans.
+       --runtimealtdd
+           Deploys the application using a GlassFish Server runtime deployment
+           descriptor that resides outside of the application archive. Specify
+           an absolute path or a relative path to the alternate deployment
+           descriptor file. The alternate deployment descriptor overrides the
+           top-level deployment descriptor packaged in the archive. For
+           example, for an EAR, the use of --runtimealtdd overrides
+           glassfish-application.xml. For a standalone module, the use of
+           --runtimealtdd overrides the top-level module descriptor such as
+           glassfish-web.xml. Applies to GlassFish Server deployment
+           descriptors only (glassfish-*.xml); the name of the alternate
+           deployment descriptor file must begin with glassfish-. Does not
+           apply to sun-*.xml deployment descriptors, which are deprecated.
 
-Java EE 6           Last change: 19 Nov 2010                    3
+       --deploymentorder
+           Specifies the deployment order of the application. This is useful
+           if the application has dependencies and must be loaded in a certain
+           order at server startup. The deployment order is specified as an
+           integer. The default value is 100. Applications with a lower number
+           are loaded before applications with a higher number. For example,
+           an application with a deployment order of 102 is loaded before an
+           application with a deployment order of 110. If a deployment order
+           is not specified, the default value of 100 is assigned. If two
+           applications have the same deployment order, the first application
+           to be deployed is the first application to be loaded at server
+           startup.
 
-asadmin Utility Subcommands                          deploydir(1)
+           The deployment order is typically specified when the application is
+           first deployed but can also be specified or changed after initial
+           deployment using the set subcommand. You can view the deployment
+           order of an application using the get subcommand
 
-     --deploymentplan
-          Deploys the deployment plan, which is a JAR  file  that
-          contains  GlassFish  Server  descriptors.  Specify this
-          option when deploying a pure EAR file. A pure EAR  file
-          is an EAR without GlassFish Server descriptors.
+       --enabled
+           Allows users to access the application. If set to false, users will
+           not be able to access the application. This option enables the
+           application on the specified target instance or cluster. If you
+           deploy to the target domain, this option is ignored, since
+           deploying to the domain doesn't deploy to a specific instance or
+           cluster. The default is true.
 
-     --enabled
-          Allows users to  access  the  application.  If  set  to
-          false,  users  will  not be able to access the applica-
-          tion. This option enables the application on the speci-
-          fied  target  instance or cluster. If you deploy to the
-          target domain, this option is ignored, since  deploying
-          to  the domain doesn't deploy to a specific instance or
-          cluster. The default is true.
+       --generatermistubs
+           If set to true, static RMI-IIOP stubs are generated and put into
+           the client.jar. If set to false, the stubs are not generated.
+           Default is false.
 
-     --generatermistubs
-          If set to true, static RMI-IIOP stubs are generated and
-          put into the client.jar. If set to false, the stubs are
-          not generated. Default is false.
+       --availabilityenabled
+           This option controls whether high-availability is enabled for web
+           sessions and for stateful session bean (SFSB) checkpointing and
+           potentially passivation. If set to false (default) all web session
+           saving and SFSB checkpointing is disabled for the specified
+           application, web application, or EJB module. If set to true, the
+           specified application or module is enabled for high-availability.
+           Set this option to true only if high availability is configured and
+           enabled at higher levels, such as the server and container levels.
 
-     --availabilityenabled
-          This  option  controls  whether  high-availability   is
-          enabled  for web sessions and for stateful session bean
-          (SFSB) checkpointing and  potentially  passivation.  If
-          set  to false (default) all web session saving and SFSB
-          checkpointing is disabled for  the  specified  applica-
-          tion,  web  application, or EJB module. If set to true,
-          the specified application  or  module  is  enabled  for
-          high-availability. Set this option to true only if high
-          availability is configured and enabled at  higher  lev-
-          els, such as the server and container levels.
+       --asyncreplication
+           This option controls whether web session and SFSB states for which
+           high availability is enabled are first buffered and then replicated
+           using a separate asynchronous thread. If set to true (default),
+           performance is improved but availability is reduced. If the
+           instance where states are buffered but not yet replicated fails,
+           the states are lost. If set to false, performance is reduced but
+           availability is guaranteed. States are not buffered but immediately
+           transmitted to other instances in the cluster.
 
-     --asyncreplication
-          This option  controls  whether  web  session  and  SFSB
-          states for which high availability is enabled are first
-          buffered and then replicated using a separate asynchro-
-          nous  thread.  If set to true (default), performance is
-          improved but availability is reduced. If  the  instance
-          where states are buffered but not yet replicated fails,
-          the states are lost. If set to  false,  performance  is
-          reduced  but availability is guaranteed. States are not
-          buffered but immediately transmitted to other instances
-          in the cluster.
+       --lbenabled
+           This option controls whether the deployed application is available
+           for load balancing. The default is true.
 
-     --lbenabled
-          This option controls whether the  deployed  application
-          is available for load balancing. The default is true.
+       --keepstate
+           This option controls whether web sessions, SFSB instances, and
+           persistently created EJB timers are retained between redeployments.
 
-     --keepstate
-          This  option  controls  whether  web   sessions,   SFSB
-          instances,  and  persistently  created  EJB  timers are
-          retained between redeployments.
+           The default is false. This option is supported only on the default
+           server instance, named server. It is not supported and ignored for
+           any other target.
 
-Java EE 6           Last change: 19 Nov 2010                    4
+           Some changes to an application between redeployments prevent this
+           feature from working properly. For example, do not change the set
+           of instance variables in the SFSB bean class.
 
-asadmin Utility Subcommands                          deploydir(1)
+           For web applications, this feature is applicable only if in the
+           glassfish-web-app.xml file the persistence-type attribute of the
+           session-manager element is file.
 
-          The default is false. This option is supported only  on
-          the  default  server  instance, named server. It is not
-          supported and ignored for any other target.
+           For stateful session bean instances, the persistence type without
+           high availability is set in the server (the sfsb-persistence-type
+           attribute) and must be set to file, which is the default and
+           recommended value.
 
-          Some changes to an  application  between  redeployments
-          prevent  this  feature from working properly. For exam-
-          ple, do not change the set of instance variables in the
-          SFSB bean class.
+           If any active web session, SFSB instance, or EJB timer fails to be
+           preserved or restored, none of these will be available when the
+           redeployment is complete. However, the redeployment continues and a
+           warning is logged.
 
-          For web applications, this feature is  applicable  only
-          if  in  the glassfish-web-app.xml file the persistence-
-          type attribute of the session-manager element is file.
+           To preserve active state data, GlassFish Server serializes the data
+           and saves it in memory. To restore the data, the class loader of
+           the newly redeployed application deserializes the data that was
+           previously saved.
 
-          For stateful session bean  instances,  the  persistence
-          type  without  high  availability  is set in the server
-          (the sfsb-persistence-type attribute) and must  be  set
-          to file, which is the default and recommended value.
+       --libraries
+           A comma-separated list of library JAR files. Specify the library
+           JAR files by their relative or absolute paths. Specify relative
+           paths relative to domain-dir/lib/applibs. The libraries are made
+           available to the application in the order specified.
 
-          If any active web session, SFSB instance, or EJB  timer
-          fails  to  be preserved or restored, none of these will
-          be available when the redeployment  is  complete.  How-
-          ever,  the  redeployment  continues  and  a  warning is
-          logged.
+       --target
+           Specifies the target to which you are deploying. Valid values are:
 
-          To preserve active state data, GlassFish Server serial-
-          izes  the  data  and saves it in memory. To restore the
-          data, the class loader of the newly redeployed applica-
-          tion deserializes the data that was previously saved.
+           server
+               Deploys the component to the default server instance server and
+               is the default value.
 
-     --libraries
-          A comma-separated list of library  JAR  files.  Specify
-          the  library  JAR  files  by their relative or absolute
-          paths.  Specify  relative  paths  relative  to  domain-
-          dir/lib/applibs.  The  libraries  are made available to
-          the application in the order specified.
+           domain
+               Deploys the component to the domain. If domain is the target
+               for an initial deployment, the application is deployed to the
+               domain, but no server instances or clusters reference the
+               application. If domain is the target for a redeployment (the
+               --force option is set to true), and dynamic reconfiguration is
+               enabled for the clusters or server instances that reference the
+               application, the referencing clusters or server instances
+               automatically get the new version of the application. If
+               redeploying, and dynamic configuration is disabled, the
+               referencing clusters or server instances do not get the new
+               version of the application until the clustered or standalone
+               server instances are restarted.
 
-     --target
-          Specifies the target to which you are deploying.  Valid
-          values are:
+           cluster_name
+               Deploys the component to every server instance in the cluster.
 
-          server
-               Deploys  the  component  to  the  default   server
-               instance server and is the default value.
+           instance_name
+               Deploys the component to a particular stand-alone server
+               instance.
 
-          domain
-               Deploys the component to the domain. If domain  is
-               the target for an initial deployment, the applica-
-               tion is deployed to  the  domain,  but  no  server
-               instances  or  clusters reference the application.
-               If domain is the target for  a  redeployment  (the
-               --force option is set to true), and dynamic recon-
-               figuration is enabled for the clusters  or  server
+       --type
+           The packaging archive type of the component that is being deployed.
+           Possible values are as follows:
 
-Java EE 6           Last change: 19 Nov 2010                    5
+           car
+               The component is packaged as a CAR file.
 
-asadmin Utility Subcommands                          deploydir(1)
+           ear
+               The component is packaged as an EAR file.
 
-               instances  that  reference  the  application,  the
-               referencing clusters or server instances automati-
-               cally  get  the new version of the application. If
-               redeploying, and  dynamic  configuration  is  dis-
-               abled,   the   referencing   clusters   or  server
-               instances do not get the new version of the appli-
-               cation  until  the  clustered or standalone server
-               instances are restarted.
+           ejb
+               The component is an EJB packaged as a JAR file.
 
-          cluster_name
-               Deploys the component to every server instance  in
-               the cluster.
+           osgi
+               The component is packaged as an OSGi bundle.
 
-          instance_name
-               Deploys the component to a particular  stand-alone
-               server instance.
+           rar
+               The component is packaged as a RAR file.
 
-     --type
-          The packaging archive type of  the  component  that  is
-          being deployed. Possible values are as follows:
+           war
+               The component is packaged as a WAR file.
 
-          osgi The component is packaged as an OSGi Alliance bun-
-               dle.
+       --properties or --property
+           Optional keyword-value pairs that specify additional properties for
+           the deployment. The available properties are determined by the
+           implementation of the component that is being deployed or
+           redeployed. The --properties option and the --property option are
+           equivalent. You can use either option regardless of the number of
+           properties that you specify.
 
-     The --type option is optional. If the component is  packaged
-     as a regular archive, omit this option.
+           You can specify the following properties for a deployment:
 
-     --properties or --property
-          Optional keyword-value pairs  that  specify  additional
-          properties for the deployment. The available properties
-          are determined by the implementation of  the  component
-          that  is being deployed or redeployed. The --properties
-          option and the --property option  are  equivalent.  You
-          can  use either option regardless of the number of pro-
-          perties that you specify.
+           jar-signing-alias
+               Specifies the alias for the security certificate with which the
+               application client container JAR file is signed. Java Web Start
+               will not run code that requires elevated permissions unless it
+               resides in a JAR file signed with a certificate that the user's
+               system trusts. For your convenience, GlassFish Server signs the
+               JAR file automatically using the certificate with this alias
+               from the domain's keystore. Java Web Start then asks the user
+               whether to trust the code and displays the GlassFish Server
+               certificate information. To sign this JAR file with a different
+               certificate, add the certificate to the domain keystore, then
+               use this property. For example, you can use a certificate from
+               a trusted authority, which avoids the Java Web Start prompt, or
+               from your own company, which users know they can trust. Default
+               is s1as, the alias for the self-signed certificate created for
+               every domain.
 
-          You can specify the following properties for a  deploy-
-          ment:
+           java-web-start-enabled
+               Specifies whether Java Web Start access is permitted for an
+               application client module. Default is true.
 
-          jar-signing-alias
-               Specifies the alias for the  security  certificate
-               with  which  the  application client container JAR
-               file is signed. Java Web Start will not  run  code
-               that   requires  elevated  permissions  unless  it
-               resides in a JAR file signed  with  a  certificate
-               that  the  user's system trusts. For your conveni-
-               ence, GlassFish Server signs the JAR file automat-
-               ically  using the certificate with this alias from
-               the domain's keystore. Java Web  Start  then  asks
-               the  user  whether  to trust the code and displays
+           compatibility
+               Specifies the GlassFish Server release with which to be
+               backward compatible in terms of JAR visibility requirements for
+               applications. The only allowed value is v2, which refers to Sun
+               GlassFish Enterprise Server version 2 or Sun Java System
+               Application Server version 9.1 or 9.1.1. The Java EE 6 platform
+               specification imposes stricter requirements than Java EE 5 did
+               on which JAR files can be visible to various modules within an
+               EAR file. In particular, application clients must not have
+               access to EJB JAR files or other JAR files in the EAR file
+               unless references use the standard Java SE mechanisms
+               (extensions, for example) or the Java EE library-directory
+               mechanism. Setting this property to v2 removes these Java EE 6
+               restrictions.
 
-Java EE 6           Last change: 19 Nov 2010                    6
-
-asadmin Utility Subcommands                          deploydir(1)
-
-               the GlassFish Server certificate  information.  To
-               sign  this  JAR file with a different certificate,
-               add the certificate to the domain  keystore,  then
-               use this property. For example, you can use a cer-
-               tificate from a trusted  authority,  which  avoids
-               the  Java  Web Start prompt, or from your own com-
-               pany, which users know they can trust. Default  is
-               s1as,  the  alias  for the self-signed certificate
-               created for every domain.
-
-          java-web-start-enabled
-               Specifies whether Java Web Start access is permit-
-               ted  for  an application client module. Default is
-               true.
-
-          compatibility
-               Specifies the GlassFish Server release with  which
-               to be backward compatible in terms of JAR visibil-
-               ity  requirements  for  applications.   The   only
-               allowed value is v2, which refers to Sun GlassFish
-               Enterprise Server version 2  or  Sun  Java  System
-               Application  Server version 9.1 or 9.1.1. The Java
-               EE  6  platform  specification  imposes   stricter
-               requirements than Java EE 5 did on which JAR files
-               can be visible to various modules  within  an  EAR
-               file.  In particular, application clients must not
-               have access to EJB JAR files or other JAR files in
-               the  EAR  file  unless references use the standard
-               Java SE mechanisms (extensions,  for  example)  or
-               the  Java  EE library-directory mechanism. Setting
-               this property to v2 removes these Java EE  6  res-
-               trictions.
-
-          keepSessions={false|true}
+           keepSessions={false|true}
                Superseded by the --keepstate option.
 
-               If the --force option is set to  true,  this  pro-
-               perty  can  by used to specify whether active ses-
-               sions of the application that is being  redeployed
-               are preserved and then restored when the redeploy-
-               ment is complete. Applies to HTTP  sessions  in  a
-               web container. Default is false.
+               If the --force option is set to true, this property can by used
+               to specify whether active sessions of the application that is
+               being redeployed are preserved and then restored when the
+               redeployment is complete. Applies to HTTP sessions in a web
+               container. Default is false.
 
                false
-                    Active sessions of the  application  are  not
-                    preserved and restored (default).
+                   Active sessions of the application are not preserved and
+                   restored (default).
 
-               true Active  sessions  of  the   application   are
-                    preserved and restored.
+               true
+                   Active sessions of the application are preserved and
+                   restored.
 
-                    If any  active  session  of  the  application
-                    fails  to  be  preserved or restored, none of
+                   If any active session of the application fails to be
+                   preserved or restored, none of the sessions will be
+                   available when the redeployment is complete. However, the
+                   redeployment continues and a warning is logged.
 
-Java EE 6           Last change: 19 Nov 2010                    7
+                   To preserve active sessions, GlassFish Server serializes
+                   the sessions and saves them in memory. To restore the
+                   sessions, the class loader of the newly redeployed
+                   application deserializes any sessions that were previously
+                   saved.
 
-asadmin Utility Subcommands                          deploydir(1)
+           preserveAppScopedResources
+               If set to true, preserves any application-scoped resources and
+               restores them during redeployment. Default is false.
 
-                    the sessions will be available when the rede-
-                    ployment  is complete. However, the redeploy-
-                    ment continues and a warning is logged.
-
-                    To preserve active sessions, GlassFish Server
-                    serializes  the  sessions  and  saves them in
-                    memory. To restore the  sessions,  the  class
-                    loader  of  the  newly redeployed application
-                    deserializes any sessions  that  were  previ-
-                    ously saved.
-
-          preserveAppScopedResources
-               If set to true, preserves  any  application-scoped
-               resources  and  restores them during redeployment.
-               Default is false.
-
-     Other available properties are determined by the implementa-
-     tion of the component that is being redeployed.
+           Other available properties are determined by the implementation of
+           the component that is being redeployed.
 
 OPERANDS
-     dirpath
-          Path to the directory containing the exploded format of
-          the  deployable archive. This is the path to the direc-
-          tory on the server machine.
+       dirpath
+           Path to the directory containing the exploded format of the
+           deployable archive. This is the path to the directory on the server
+           machine.
 
 EXAMPLES
-     Example 1 Deploying an Application From a Directory
+       Example 1, Deploying an Application From a Directory
+           In this example, the exploded application to be deployed is in the
+           /home/temp/sampleApp directory. Because the --force option is set
+           to true, if an application of that name already exists, the
+           application is redeployed.
 
-     In this example, the exploded application to be deployed  is
-     in  the  /home/temp/sampleApp directory. Because the --force
-     option is set to  true,  if  an  application  of  that  name
-     already exists, the application is redeployed.
-     asadmin> deploydir --force=true --precompilejsp=true /home/temp/sampleApp
-     Application deployed successfully with name sampleApp.
-     WARNING : deploydir command deprecated. Please use deploy command instead.
-     Command deploydir executed successfully
+               asadmin> deploydir --force=true --precompilejsp=true /home/temp/sampleApp
+               Application deployed successfully with name sampleApp.
+               WARNING : deploydir command deprecated. Please use deploy command instead.
+               Command deploydir executed successfully
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     deploy(1), , redeploy(1), undeploy(1)
+       deploy(1), , redeploy(1), undeploy(1), get(1), set(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-     Oracle GlassFish Server Application Deployment Guide
+       Oracle GlassFish Server Application Deployment Guide
 
-Java EE 6           Last change: 19 Nov 2010                    8
-
+Java EE 7                         12 Feb 2013                     deploydir(1)

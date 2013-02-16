@@ -1,110 +1,111 @@
-
-asadmin Utility Subcommands                    list-nodes-dcom(1)
+list-nodes-dcom(1)        asadmin Utility Subcommands       list-nodes-dcom(1)
 
 NAME
-     list-nodes-dcom - lists all GlassFish Server nodes that sup-
-     port communication over DCOM in a domain
+       list-nodes-dcom - lists all GlassFish Server nodes that support
+       communication over DCOM in a domain
 
 SYNOPSIS
-     list-nodes-dcom [--help] [--long={false|true}]
+           list-nodes-dcom [--help] [--long={false|true}]
 
 DESCRIPTION
-     The list-nodes-dcom subcommand lists  all  GlassFish  Server
-     nodes  that  support communication over the Distributed Com-
-     ponent Object Model (DCOM) remote protocol. The DCOM  proto-
-     col is available only on Windows systems.
+       The list-nodes-dcom subcommand lists all GlassFish Server nodes that
+       support communication over the Distributed Component Object Model
+       (DCOM) remote protocol. The DCOM protocol is available only on Windows
+       systems.
 
-     Note
+           Note
+           +-------------------------------------+
+           |                                     |
+           |           To list all nodes in a    |
+           |           domain regardless of the  |
+           |           type of the node, run the |
+           |           list-nodes(1) subcommand. |
+           +-------------------------------------+
 
-     To list all nodes in a domain regardless of the type of  the
-     node, run the list-nodes(1) subcommand.
+       By default, the subcommand displays the following information for each
+       node that is listed:
 
-     By default, the subcommand displays the  following  informa-
-     tion for each node that is listed:
+       *   The name of the node
 
-     o The name of the node
+       *   The type of the node, which is DCOM
 
-     o The type of the node, which is DCOM
+       *   The name of the host that the node represents
 
-     o The name of the host that the node represents
+       The --long option of the subcommand specifies whether the nodes are
+       listed in long format. In long format, the following additional
+       information about each node is displayed:
 
-     The --long option of the subcommand  specifies  whether  the
-     nodes are listed in long format. In long format, the follow-
-     ing additional information about each node is displayed:
+       *   The path to the parent of the base installation directory of
+           GlassFish Server on the host that the node represents
 
-     o The path to the parent of the base installation  directory
-       of GlassFish Server on the host that the node represents
+       *   A comma-separated list of the names of the GlassFish Server
+           instances that reside on the node
 
-     o A comma-separated list  of  the  names  of  the  GlassFish
-       Server instances that reside on the node
+       If the --terse option of the asadmin(1M) utility is true and the --long
+       option of the subcommand is false, the subcommand lists only the name
+       of each node.
 
-     If the --terse option of the asadmin(1M) utility is true and
-     the --long option of the subcommand is false, the subcommand
-     lists only the name of each node.
-
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --long , -l
-          Specifies whether the nodes are listed in long format.
+       --long, -l
+           Specifies whether the nodes are listed in long format.
 
-          Possible values are as follows:
+           Possible values are as follows:
 
-Java EE 6           Last change: 05 Dec 2011                    1
+           true
+               The nodes are listed in long format.
 
-asadmin Utility Subcommands                    list-nodes-dcom(1)
-
-          true The nodes are listed in long format.
-
-          false
+           false
                The nodes are listed in short format (default).
 
 EXAMPLES
-     Example 1 Listing GlassFish Server Nodes
+       Example 1, Listing GlassFish Server Nodes
+           This example displays the name, type, and host for all GlassFish
+           Server nodes that support communication over DCOM in a domain.
 
-     This example displays the  name,  type,  and  host  for  all
-     GlassFish  Server nodes that support communication over DCOM
-     in a domain.
-     asadmin> list-nodes-dcom
-     xkyd  DCOM  xkyd.example.com
-     wpmdl2  DCOM  wpmdl2.example.com
-     wpmdl1  DCOM  wpmdl1.example.com
-     Command list-nodes-dcom executed successfully.
-     Example 2 Listing Only the Names of GlassFish Server Nodes
+               asadmin> list-nodes-dcom
+               xkyd  DCOM  xkyd.example.com
+               wpmdl2  DCOM  wpmdl2.example.com
+               wpmdl1  DCOM  wpmdl1.example.com
+               Command list-nodes-dcom executed successfully.
 
-     This example uses the --terse option of the asadmin  utility
-     to  list  only  the names of the GlassFish Server nodes that
-     support communication over DCOM in a domain.
-     asadmin> list-nodes-dcom --terse=true
-     xkyd
-     wpmdl2
-     wpmdl1
-     Example 3 Listing GlassFish Server Nodes in Long Format
+       Example 2, Listing Only the Names of GlassFish Server Nodes
+           This example uses the --terse option of the asadmin utility to list
+           only the names of the GlassFish Server nodes that support
+           communication over DCOM in a domain.
 
-     This example lists the GlassFish Server nodes  that  support
-     communication over DCOM in a domain in long format.
-     asadmin> list-nodes-dcom --long=true
-     NODE NAME    TYPE   NODE HOST            INSTALL DIRECTORY   REFERENCED BY
-     xkyd         DCOM   xkyd.example.com     C:\glassfish3
-     wpmdl2       DCOM   wpmdl2.example.com   C:\glassfish3       wdi2
-     wpmdl1       DCOM   wpmdl1.example.com   C:\glassfish3       wdi1
-     Command list-nodes-dcom executed successfully.
+               asadmin> list-nodes-dcom --terse=true
+               xkyd
+               wpmdl2
+               wpmdl1
+
+       Example 3, Listing GlassFish Server Nodes in Long Format
+           This example lists the GlassFish Server nodes that support
+           communication over DCOM in a domain in long format.
+
+               asadmin> list-nodes-dcom --long=true
+               NODE NAME    TYPE   NODE HOST            INSTALL DIRECTORY   REFERENCED BY
+               xkyd         DCOM   xkyd.example.com     C:\glassfish3
+               wpmdl2       DCOM   wpmdl2.example.com   C:\glassfish3       wdi2
+               wpmdl1       DCOM   wpmdl1.example.com   C:\glassfish3       wdi1
+               Command list-nodes-dcom executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     create-node-config(1),   create-node-dcom(1),   create-node-
-     ssh(1),  delete-node-config(1), delete-node-dcom(1), delete-
-     node-ssh(1),  list-nodes(1),   list-nodes-config(1),   list-
-     nodes-dcom(1)
+       create-node-config(1), create-node-dcom(1), create-node-ssh(1),
+       delete-node-config(1), delete-node-dcom(1), delete-node-ssh(1),
+       list-nodes(1), list-nodes-config(1), list-nodes-dcom(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 05 Dec 2011                    2
-
+Java EE 7                         05 Dec 2011               list-nodes-dcom(1)

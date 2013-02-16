@@ -1,103 +1,100 @@
-
-asadmin Utility Subcommands                     ping-node-dcom(1)
+ping-node-dcom(1)         asadmin Utility Subcommands        ping-node-dcom(1)
 
 NAME
-     ping-node-dcom - tests if a node that is enabled for commun-
-     ication over DCOM is usable
+       ping-node-dcom - tests if a node that is enabled for communication over
+       DCOM is usable
 
 SYNOPSIS
-     ping-node-dcom [--help]
-     [--validate={false|true}] node-name
+           ping-node-dcom [--help]
+           [--validate={false|true}] node-name
 
 DESCRIPTION
-     The ping-node-dcom  subcommand  tests  if  a  node  that  is
-     enabled  for  communication  over  the Distributed Component
-     Object Model (DCOM) remote protocol is usable. The DCOM pro-
-     tocol  is available only on Windows systems. This subcommand
-     requires DCOM to be configured  on  the  machine  where  the
-     domain  administration  server  (DAS)  is running and on the
-     machine where the node resides. You  may  run  this  command
-     from any machine that can contact the DAS.
+       The ping-node-dcom subcommand tests if a node that is enabled for
+       communication over the Distributed Component Object Model (DCOM) remote
+       protocol is usable. The DCOM protocol is available only on Windows
+       systems. This subcommand requires DCOM to be configured on the machine
+       where the domain administration server (DAS) is running and on the
+       machine where the node resides. You may run this command from any
+       machine that can contact the DAS.
 
-     If the node is usable, the subcommand displays  a  confirma-
-     tion  that  the subcommand could connect to the node through
-     DCOM. This confirmation includes the name of the  host  that
-     the node represents.
+       If the node is usable, the subcommand displays a confirmation that the
+       subcommand could connect to the node through DCOM. This confirmation
+       includes the name of the host that the node represents.
 
-     Optionally, the subcommand can also  validate  the  node  to
-     determine  if  the  asadmin(1M)  utility can run on the host
-     that the node represents. To validate a node, the subcommand
-     runs  the  version(1)  subcommand. If the node is valid, the
-     subcommand displays the version that the version  subcommand
-     returns.
+       Optionally, the subcommand can also validate the node to determine if
+       the asadmin(1M) utility can run on the host that the node represents.
+       To validate a node, the subcommand runs the version(1) subcommand. If
+       the node is valid, the subcommand displays the version that the version
+       subcommand returns.
 
-     The node that is specified as the operand of this subcommand
-     must  be enabled for communication over DCOM. If the node is
-     not enabled for communication over DCOM, an error occurs. To
-     determine  whether  a node is enabled for communication over
-     DCOM, use the list-nodes(1) subcommand.
+       The node that is specified as the operand of this subcommand must be
+       enabled for communication over DCOM. If the node is not enabled for
+       communication over DCOM, an error occurs. To determine whether a node
+       is enabled for communication over DCOM, use the list-nodes(1)
+       subcommand.
 
-     Note
+           Note
+           +----------------------------------------+
+           |                                        |
+           |           To test whether a node that  |
+           |           is enabled for communication |
+           |           over secure shell (SSH) is   |
+           |           usable, use the              |
+           |           ping-node-ssh(1) subcommand. |
+           +----------------------------------------+
 
-     To test whether a node that  is  enabled  for  communication
-     over  secure shell (SSH) is usable, use the ping-node-ssh(1)
-     subcommand.
-
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --validate
-          Specifies whether the subcommand validates the node.
+       --validate
+           Specifies whether the subcommand validates the node.
 
-          Possible values are as follows:
+           Possible values are as follows:
 
-Java EE 6           Last change: 05 Dec 2011                    1
+           true
+               The node is validated.
 
-asadmin Utility Subcommands                     ping-node-dcom(1)
-
-          true The node is validated.
-
-          false
+           false
                The node is not validated (default).
 
 OPERANDS
-     node-name
-          The name of the node to test. The node must be  enabled
-          for   communication  over  DCOM.  Otherwise,  an  error
-          occurs.
+       node-name
+           The name of the node to test. The node must be enabled for
+           communication over DCOM. Otherwise, an error occurs.
 
 EXAMPLES
-     Example 1 Testing if a DCOM-Enabled Node Is Usable
+       Example 1, Testing if a DCOM-Enabled Node Is Usable
+           This example tests if the DCOM-enabled node wpmd2 is usable.
 
-     This example tests if the DCOM-enabled node wpmd2 is usable.
-     asadmin> ping-node-dcom wpmdl2
-     Successfully made DCOM connection to node wpmdl2 (wpmdl2.example.com)
-     Command ping-node-dcom executed successfully.
-     Example 2 Validating a DCOM-Enabled Node
+               asadmin> ping-node-dcom wpmdl2
+               Successfully made DCOM connection to node wpmdl2 (wpmdl2.example.com)
+               Command ping-node-dcom executed successfully.
 
-     This example validates the DCOM-enabled node adc-node.
-     asadmin> ping-node-dcom --validate=true adc-node
-     Successfully made DCOM connection to node adc-node (adc-node.example.com)
-     GlassFish version found at C:\glassfish3:
-     Using locally retrieved version string from version class.
-     Version = GlassFish Server Open Source Edition 3.1.2 (build 18)
-     Command version executed successfully.
-     Command ping-node-dcom executed successfully.
+       Example 2, Validating a DCOM-Enabled Node
+           This example validates the DCOM-enabled node adc-node.
+
+               asadmin> ping-node-dcom --validate=true adc-node
+               Successfully made DCOM connection to node adc-node (adc-node.example.com)
+               GlassFish version found at C:\glassfish3:
+               Using locally retrieved version string from version class.
+               Version = GlassFish Server Open Source Edition 3.1.2 (build 18)
+               Command version executed successfully.
+               Command ping-node-dcom executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     create-node-dcom(1),   delete-node-dcom(1),   list-nodes(1),
-     ping-node-ssh(1),   update-node-dcom(1),   validate-dcom(1),
-     version(1)
+       create-node-dcom(1), delete-node-dcom(1), list-nodes(1),
+       ping-node-ssh(1), update-node-dcom(1), validate-dcom(1), version(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 05 Dec 2011                    2
-
+Java EE 7                         05 Dec 2011                ping-node-dcom(1)

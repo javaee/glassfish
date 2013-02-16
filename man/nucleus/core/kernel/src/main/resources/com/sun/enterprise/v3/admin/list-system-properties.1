@@ -1,74 +1,63 @@
-
-asadmin Utility Subcommands             list-system-properties(1)
+list-system-properties(1) asadmin Utility Subcommandslist-system-properties(1)
 
 NAME
-     list-system-properties - lists the system properties of  the
-     domain, configuration, cluster, or server instance
+       list-system-properties - lists the system properties of the domain,
+       configuration, cluster, or server instance
 
 SYNOPSIS
-     list-system-properties [--help] [target]
+           list-system-properties [--help] [target]
 
 DESCRIPTION
-     Shared or clustered server  instances  will  often  need  to
-     override  attributes  defined in their referenced configura-
-     tion. Any configuration attribute in a server  instance  can
-     be overridden through a system property of the corresponding
-     name. The list-system-properties subcommand lists the system
-     properties  of  a  domain, configuration, cluster, or server
-     instance.
+       The list-system-properties subcommand lists the system properties of a
+       domain, configuration, cluster, or server instance.
 
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
 OPERANDS
-     target
-          This restricts the listing to system properties  for  a
-          specific target. Valid values are:
+       target
+           This restricts the listing to system properties for a specific
+           target. Valid values are:
 
-          domain
-               Lists  the  system  properties  defined  for   the
+           domain
+               Lists the system properties defined for the domain.
+
+           configuration_name
+               Lists the system properties for the named configuration as well
+               as those the cluster inherits from the domain.
+
+           cluster_name
+               Lists the system properties defined for the named cluster as
+               well as those the cluster. inherits from its configuration and
+               the domain.
+
+           instance_name
+               Lists the system properties defined for the named server
+               instance as well as those the server inherits from its cluster
+               (if the instance is clustered), its configuration, and the
                domain.
 
-          configuration_name
-               Lists the system properties for the  named  confi-
-               guration  as  well  as  those the cluster inherits
-               from the domain.
-
-          cluster_name
-               Lists the system properties defined for the  named
-               cluster  as  well  as  those the cluster. inherits
-               from its configuration and the domain.
-
-          instance_name
-               Lists the system properties defined for the  named
-               server instance as well as those the server inher-
-               its  from  its  cluster  (if   the   instance   is
-               clustered), its configuration, and the domain.
-
 EXAMPLES
-     Example 1 Listing System Properties
+       Example 1, Listing System Properties
+           This example lists the system properties on localhost.
 
-Java EE 6           Last change: 22 Dec 2010                    1
-
-asadmin Utility Subcommands             list-system-properties(1)
-
-     This example lists the system properties on localhost.
-     asadmin> list-system-properties
-     http-listener-port=1088
-     Command list-system-properties executed successfully.
+               asadmin> list-system-properties
+               http-listener-port=1088
+               Command list-system-properties executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     create-system-properties(1), delete-system-property(1)
+       create-system-properties(1), delete-system-property(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 22 Dec 2010                    2
-
+Java EE 7                         22 Dec 2010        list-system-properties(1)

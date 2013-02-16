@@ -1,149 +1,133 @@
-
-asadmin Utility Subcommands                   create-transport(1)
+create-transport(1)       asadmin Utility Subcommands      create-transport(1)
 
 NAME
-     create-transport - adds a new transport
+       create-transport - adds a new transport
 
 SYNOPSIS
-     create-transport [--help]
-     [--acceptorthreads acceptor-threads]
-     [--buffersizebytes buffer-size]
-     [--bytebuffertype byte-buffer-type]
-     [--classname class-name]
-     [--displayconfiguration={false|true}]
-     [--enablesnoop={false|true}]
-     [--idlekeytimeoutseconds idle-key-timeout]
-     [--maxconnectionscount max-connections]
-     [--readtimeoutmillis read-timeout]
-     [--writetimeoutmillis write-timeout]
-     [--selectionkeyhandler selection-key-handler]
-     [--selectorpolltimeoutmillis selector-poll-timeout]
-     [--tcpnodelay={false|true}]
-     [--target target]
-     transport-name
+           create-transport [--help]
+           [--acceptorthreads acceptor-threads]
+           [--buffersizebytes buffer-size]
+           [--bytebuffertype byte-buffer-type]
+           [--classname class-name]
+           [--displayconfiguration={false|true}]
+           [--enablesnoop={false|true}]
+           [--idlekeytimeoutseconds idle-key-timeout]
+           [--maxconnectionscount max-connections]
+           [--readtimeoutmillis read-timeout]
+           [--writetimeoutmillis write-timeout]
+           [--selectionkeyhandler selection-key-handler]
+           [--selectorpolltimeoutmillis selector-poll-timeout]
+           [--tcpnodelay={false|true}]
+           [--target target]
+           transport-name
 
 DESCRIPTION
-     The create-transport subcommand creates a  transport  for  a
-     network  listener.  This  subcommand  is supported in remote
-     mode only.
+       The create-transport subcommand creates a transport for a network
+       listener. This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --acceptorthreads
-          The number of acceptor threads for the  transport.  The
-          recommended  value  is  the number of processors in the
-          machine. The default value is 1.
+       --acceptorthreads
+           The number of acceptor threads for the transport. The recommended
+           value is the number of processors in the machine. The default value
+           is 1.
 
-     --buffersizebytes
-          The size, in bytes, of the buffer to  be  provided  for
-          input  streams  created  by  the  network listener that
-          references this transport. The default value is 8192.
+       --buffersizebytes
+           The size, in bytes, of the buffer to be provided for input streams
+           created by the network listener that references this transport. The
+           default value is 8192.
 
-     --bytebuffertype
-          The type of the buffer to be provided for input streams
-          created  by a network-listener. Allowed values are HEAP
-          and DIRECT. The default value is HEAP.
+       --bytebuffertype
+           The type of the buffer to be provided for input streams created by
+           a network-listener. Allowed values are HEAP and DIRECT. The default
+           value is HEAP.
 
-     --classname
-          The fully qualified name of the Java class that  imple-
-          ments     the     transport.     The     default     is
-          com.sun.grizzly.TCPSelectorHandler.
+       --classname
+           The fully qualified name of the Java class that implements the
+           transport. The default is org.glassfish.grizzly.TCPSelectorHandler.
 
-     --displayconfiguration
-          If true, flushes the internal network configuration  to
+       --displayconfiguration
+           If true, flushes the internal network configuration to the server
+           log. Useful for debugging, but reduces performance. The default is
+           false.
 
-Java EE 6           Last change: 11 Feb 2011                    1
+       --enablesnoop
+           If true, writes request/response information to the server log.
+           Useful for debugging, but reduces performance. The default is
+           false.
 
-asadmin Utility Subcommands                   create-transport(1)
+       --idlekeytimeoutseconds
+           The idle key timeout. The default is 30 seconds.
 
-          the  server log. Useful for debugging, but reduces per-
-          formance. The default is false.
+       --maxconnectionscount
+           The maximum number of connections for the network listener that
+           references this transport. A value of -1 specifies no limit. The
+           default value is 4096.
 
-     --enablesnoop
-          If true, writes  request/response  information  to  the
-          server  log.  Useful for debugging, but reduces perfor-
-          mance. The default is false.
+       --readtimeoutmillis
+           The amount of time the server waits during the header and body
+           parsing phase. The default is 30000 milliseconds, or 30 seconds.
 
-     --idlekeytimeoutseconds
-          The idle key timeout. The default is 30 seconds.
+       --writetimeoutmillis
+           The amount of time the server waits before considering the remote
+           client disconnected when writing the response. The default is 30000
+           milliseconds, or 30 seconds.
 
-     --maxconnectionscount
-          The maximum  number  of  connections  for  the  network
-          listener  that references this transport. A value of -1
-          specifies no limit. The default value is 4096.
+       --selectionkeyhandler
+           The name of the selection key handler associated with this
+           transport. There is no default.
 
-     --readtimeoutmillis
-          The amount of time the server waits during  the  header
-          and  body  parsing  phase.  The  default  is 30000 mil-
-          liseconds, or 30 seconds.
+       --selectorpolltimeoutmillis
+           The number of milliseconds a NIO Selector blocks waiting for events
+           (user requests). The default value is 1000 milliseconds.
 
-     --writetimeoutmillis
-          The amount of time the server waits before  considering
-          the   remote   client  disconnected  when  writing  the
-          response. The default  is  30000  milliseconds,  or  30
-          seconds.
+       --tcpnodelay
+           If true, the default, enables TCP_NODELAY (also called Nagle's
+           algorithm). The default is false.
 
-     --selectionkeyhandler
-          The name of the selection key handler  associated  with
-          this transport. There is no default.
+       --target
+           Creates the transport only on the specified target. Valid values
+           are as follows:
 
-     --selectorpolltimeoutmillis
-          The number of milliseconds a NIO Selector blocks  wait-
-          ing  for  events  (user requests). The default value is
-          1000 milliseconds.
+           server
+               Creates the transport on the default server instance. This is
+               the default value.
 
-     --tcpnodelay
-          If true, the default, enables TCP_NODELAY (also  called
-          Nagle's algorithm). The default is false.
+           configuration-name
+               Creates the transport in the specified configuration.
 
-     --target
-          Creates the transport only  on  the  specified  target.
-          Valid values are as follows:
+           cluster-name
+               Creates the transport on all server instances in the specified
+               cluster.
 
-          server
-               Creates  the  transport  on  the  default   server
-               instance. This is the default value.
-
-          configuration-name
-               Creates the transport in the specified  configura-
-               tion.
-
-Java EE 6           Last change: 11 Feb 2011                    2
-
-asadmin Utility Subcommands                   create-transport(1)
-
-          cluster-name
-               Creates the transport on all server  instances  in
-               the specified cluster.
-
-          standalone-instance-name
-               Creates the transport on the specified  standalone
-               server instance.
+           standalone-instance-name
+               Creates the transport on the specified standalone server
+               instance.
 
 OPERANDS
-     transport-name
-          The name of the transport.
+       transport-name
+           The name of the transport.
 
 EXAMPLES
-     Example 1 Creating a Transport
+       Example 1, Creating a Transport
+           The following command creates a transport named http1-trans that
+           uses a non-default number of acceptor threads:
 
-     The following command creates a transport named  http1-trans
-     that uses a non-default number of acceptor threads:
-     asadmin> create-transport --acceptorthreads 100 http1-trans
-     Command create-transport executed successfully.
+               asadmin> create-transport --acceptorthreads 100 http1-trans
+               Command create-transport executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     delete-transport(1),   list-transports(1),   create-network-
-     listener(1)
+       delete-transport(1), list-transports(1), create-network-listener(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 11 Feb 2011                    3
-
+Java EE 7                         11 Feb 2011              create-transport(1)

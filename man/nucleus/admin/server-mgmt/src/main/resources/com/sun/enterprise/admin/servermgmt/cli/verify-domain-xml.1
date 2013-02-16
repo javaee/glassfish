@@ -1,51 +1,49 @@
-
-asadmin Utility Subcommands                  verify-domain-xml(1)
+verify-domain-xml(1)      asadmin Utility Subcommands     verify-domain-xml(1)
 
 NAME
-     verify-domain-xml - verifies the content of  the  domain.xml
-     file
+       verify-domain-xml - verifies the content of the domain.xml file
 
 SYNOPSIS
-     verify-domain-xml [--help]
-     [--domaindir domain-dir] [domain-name]
+           verify-domain-xml [--help]
+           [--domaindir domain-dir] [domain-name]
 
 DESCRIPTION
-     Verifies the content of the domain.xml file by checking  the
-     following:
+       Verifies the content of the domain.xml file by checking the following:
 
-     o That the domain.xml file can be parsed
+       *   That the domain.xml file can be parsed
 
-     o That the names for elements that have them are unique
+       *   That the names for elements that have them are unique
 
-     This subcommand is supported in local mode only.
+       This subcommand is supported in local mode only.
 
 OPTIONS
-     -h--help
-          Displays the help text for the subcommand.
+       -h --help
+           Displays the help text for the subcommand.
 
-     --domaindir
-          Specifies the domain root directory, where the  domains
-          are  located.  The  path must be accessible in the file
-          system. The default is as-install/domains.
+       --domaindir
+           Specifies the domain root directory, where the domains are located.
+           The path must be accessible in the file system. The default is
+           as-install/domains.
 
 OPERANDS
-     domain_name
-          Specifies the  name  of  the  domain.  The  default  is
-          domain1.
+       domain_name
+           Specifies the name of the domain. The default is domain1.
 
 EXAMPLES
-     Example 1 Using verify-domain-xml
-     asadmin> verify-domain-xml
-     All Tests Passed.
-     domain.xml is valid
+       Example 1, Using verify-domain-xml
+
+               asadmin> verify-domain-xml
+               All Tests Passed.
+               domain.xml is valid
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 17 Nov 2010                    1
-
+Java EE 7                         17 Nov 2010             verify-domain-xml(1)

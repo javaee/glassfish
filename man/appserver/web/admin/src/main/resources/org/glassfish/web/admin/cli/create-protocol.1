@@ -1,76 +1,69 @@
-
-asadmin Utility Subcommands                    create-protocol(1)
+create-protocol(1)        asadmin Utility Subcommands       create-protocol(1)
 
 NAME
-     create-protocol - adds a new protocol
+       create-protocol - adds a new protocol
 
 SYNOPSIS
-     create-protocol [--help]
-     [--securityenabled={false|true}]
-     [--target target]
-     protocol-name
+           create-protocol [--help]
+           [--securityenabled={false|true}]
+           [--target target]
+           protocol-name
 
 DESCRIPTION
-     The create-protocol subcommand creates a protocol. This sub-
-     command is supported in remote mode only.
+       The create-protocol subcommand creates a protocol. This subcommand is
+       supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --securityenabled
-          If set to true, the protocol runs  SSL.  You  can  turn
-          SSL2  or  SSL3  ON  or OFF and set ciphers using an ssl
-          element. The security setting globally enables or  dis-
-          ables  SSL  by  making  certificates  available  to the
-          server instance. The default value is false.
+       --securityenabled
+           If set to true, the protocol runs SSL. You can turn SSL2 or SSL3 ON
+           or OFF and set ciphers using an ssl element. The security setting
+           globally enables or disables SSL by making certificates available
+           to the server instance. The default value is false.
 
-     --target
-          Creates the protocol  only  on  the  specified  target.
-          Valid values are as follows:
+       --target
+           Creates the protocol only on the specified target. Valid values are
+           as follows:
 
-          server
-               Creates  the  protocol  on  the   default   server
-               instance. This is the default value.
+           server
+               Creates the protocol on the default server instance. This is
+               the default value.
 
-          configuration-name
-               Creates the protocol in the  specified  configura-
-               tion.
+           configuration-name
+               Creates the protocol in the specified configuration.
 
-          cluster-name
-               Creates the protocol on all  server  instances  in
-               the specified cluster.
+           cluster-name
+               Creates the protocol on all server instances in the specified
+               cluster.
 
-          standalone-instance-name
-               Creates the protocol on the  specified  standalone
-               server instance.
+           standalone-instance-name
+               Creates the protocol on the specified standalone server
+               instance.
 
 OPERANDS
-     protocol-name
-          The name of the protocol.
+       protocol-name
+           The name of the protocol.
 
 EXAMPLES
-     Example 1 Creating a Protocol
+       Example 1, Creating a Protocol
+           The following command creates a protocol named http-1 with security
+           enabled:
 
-Java EE 6           Last change: 11 Feb 2011                    1
-
-asadmin Utility Subcommands                    create-protocol(1)
-
-     The following command creates a protocol named  http-1  with
-     security enabled:
-     asadmin> create-protocol --securityenabled=true http-1
-     Command create-protocol executed successfully.
+               asadmin> create-protocol --securityenabled=true http-1
+               Command create-protocol executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     delete-protocol(1),    list-protocols(1),    create-network-
-     listener(1)
+       delete-protocol(1), list-protocols(1), create-network-listener(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 11 Feb 2011                    2
-
+Java EE 7                         11 Feb 2011               create-protocol(1)

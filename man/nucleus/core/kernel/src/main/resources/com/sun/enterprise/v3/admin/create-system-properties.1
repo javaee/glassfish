@@ -1,100 +1,88 @@
-
-asadmin Utility Subcommands           create-system-properties(1)
+create-system-properties(1asadmin Utility Subcommancreate-system-properties(1)
 
 NAME
-     create-system-properties - adds one or more system  property
-     elements  that can be referenced elsewhere in the configura-
-     tion.
+       create-system-properties - adds one or more system property elements
+       that can be referenced elsewhere in the configuration.
 
 SYNOPSIS
-     create-system-properties [--help]
-     [--target target]
-     [name=value)[:name=value]*]
+           create-system-properties [--help]
+           [--target target]
+           [name=value)[:name=value]*]
 
 DESCRIPTION
-     The create-system-properties subcommand adds or updates sys-
-     tem  properties  that  can  be  referenced  elsewhere on the
-     server.
+       The create-system-properties subcommand adds or updates system
+       properties that can be referenced elsewhere on the server.
 
-     GlassFish Server provides hooks where tokens (system proper-
-     ties)  can  be  specified. Because GlassFish Server does not
-     have multiple server elements, you can specify a  particular
-     token at any level. When a domain supports multiple servers,
-     the override potential can be exploited. When  a  domain  is
-     started  or  restarted,  all  <system-property> elements are
-     resolved and available to the Java Virtual Machine by  using
-     the System.setProperty() call on each of them (with its name
-     and value derived from the corresponding attributes  of  the
-     element).  This  is  analogous to sending the elements as -D
-     parameters on the Java command line.
+       GlassFish Server provides hooks where tokens (system properties) can be
+       specified. Because GlassFish Server does not have multiple server
+       elements, you can specify a particular token at any level. When a
+       domain supports multiple servers, the override potential can be
+       exploited. When a domain is started or restarted, all <system-property>
+       elements are resolved and available to the Java Virtual Machine by
+       using the System.setProperty() call on each of them (with its name and
+       value derived from the corresponding attributes of the element). This
+       is analogous to sending the elements as -D parameters on the Java
+       command line.
 
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --target
-          The target on which you are creating the system proper-
-          ties.
+       --target
+           The target on which you are creating the system properties.
 
 OPERANDS
-     target
-          The valid targets for  this  subcommand  are  instance,
-          cluster,  configuration,  domain, and server. Server is
-          the default option. Valid values are:
+       target
+           The valid targets for this subcommand are instance, cluster,
+           configuration, domain, and server. Server is the default option.
+           Valid values are:
 
-          server
-               Creates  the  properties  on  the  default  server
-               instance. This is the default value.
+           server
+               Creates the properties on the default server instance. This is
+               the default value.
 
-          domain
-               Creates the properties for all server instances in
-               the default domain.
+           domain
+               Creates the properties for all server instances in the default
+               domain.
 
-          configuration_name
+           configuration_name
+               Creates the properties in the specified configuration.
 
-Java EE 6           Last change: 11 Feb 2011                    1
+           cluster_name
+               Creates the properties on all server instances in the specified
+               cluster.
 
-asadmin Utility Subcommands           create-system-properties(1)
+           instance_name
+               Creates the properties on a specified server instance.
 
-               Creates the properties in the specified configura-
-               tion.
-
-          cluster_name
-               Creates the properties on all server instances  in
-               the specified cluster.
-
-          instance_name
-               Creates  the  properties  on  a  specified  server
-               instance.
-
-     name=value
-          The name value pairs of the system properties to add to
-          the  specified  target. Multiple system properties must
-          be separated by a : (colon). If a : (colon) appears  in
-          the  name  or  value  of  a system property, it must be
-          escaped with a \ (blackslash). If any system properties
-          were  previously defined, they are updated with the new
-          values.
+       name=value
+           The name value pairs of the system properties to add to the
+           specified target. Multiple system properties must be separated by a
+           : (colon). If a : (colon) appears in the name or value of a system
+           property, it must be escaped with a \ (blackslash). If any system
+           properties were previously defined, they are updated with the new
+           values.
 
 EXAMPLES
-     Example 1 Creating System Properties
+       Example 1, Creating System Properties
+           This example creates a system property associated with an HTTP
+           listener on a server instance named myserver.
 
-     This example creates a system property  associated  with  an
-     HTTP listener on a server instance named myserver.
-     asadmin> create-system-properties --target myserver http-listener-port=1088
-     Command create-system-properties executed successfully.
+               asadmin> create-system-properties --target myserver http-listener-port=1088
+               Command create-system-properties executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     delete-system-property(1), list-system-properties(1)
+       delete-system-property(1), list-system-properties(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 11 Feb 2011                    2
-
+Java EE 7                         11 Feb 2011      create-system-properties(1)

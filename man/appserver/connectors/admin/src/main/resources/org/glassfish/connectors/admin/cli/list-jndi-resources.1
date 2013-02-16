@@ -1,67 +1,61 @@
-
-asadmin Utility Subcommands                list-jndi-resources(1)
+list-jndi-resources(1)    asadmin Utility Subcommands   list-jndi-resources(1)
 
 NAME
-     list-jndi-resources - lists all existing JNDI resources
+       list-jndi-resources - lists all existing JNDI resources
 
 SYNOPSIS
-     list-jndi-resources [--help] [target]
+           list-jndi-resources [--help] [target]
 
 DESCRIPTION
-     The list-jndi-resources subcommand identifies  all  existing
-     JNDI resources.
+       The list-jndi-resources subcommand identifies all existing JNDI
+       resources.
 
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
 OPERANDS
-     target
-          The target for which  the  JNDI  resources  are  to  be
-          listed. Valid values are as follows:
+       target
+           The target for which the JNDI resources are to be listed. Valid
+           values are as follows:
 
-          server
-               Lists the JNDI resources  on  the  default  server
-               instance. This is the default value.
+           server
+               Lists the JNDI resources on the default server instance. This
+               is the default value.
 
-          configuration-name
-               Lists the JNDI resources for the specified  confi-
-               guration.
+           configuration-name
+               Lists the JNDI resources for the specified configuration.
 
-          cluster-name
-               Lists the JNDI resources on all  server  instances
-               in the specified cluster.
+           cluster-name
+               Lists the JNDI resources on all server instances in the
+               specified cluster.
 
-          instance-name
-               Lists the JNDI resources  on  a  specified  server
-               instance.
+           instance-name
+               Lists the JNDI resources on a specified server instance.
 
 EXAMPLES
-     Example 1 Listing JNDI Resources
+       Example 1, Listing JNDI Resources
+           This example lists the JNDI resources on the default server
+           instance.
 
-     This example lists the JNDI resources on the default  server
-     instance.
-     asadmin> list-jndi-resources
-     jndi_resource1
-     jndi_resource2
-     jndi_resource3
-     Command list-jndi-resources executed successfully
+               asadmin> list-jndi-resources
+               jndi_resource1
+               jndi_resource2
+               jndi_resource3
+               Command list-jndi-resources executed successfully
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-Java EE 6           Last change: 21 Jun 2011                    1
-
-asadmin Utility Subcommands                list-jndi-resources(1)
-
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     create-jndi-resource(1), delete-jndi-resource(1)
+       create-jndi-resource(1), delete-jndi-resource(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 21 Jun 2011                    2
-
+Java EE 7                         21 Jun 2011           list-jndi-resources(1)

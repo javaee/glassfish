@@ -1,100 +1,68 @@
-
-asadmin Utility Subcommands                     list-libraries(1)
+list-libraries(1)         asadmin Utility Subcommands        list-libraries(1)
 
 NAME
-     list-libraries - lists library JAR files on GlassFish Server
+       list-libraries - lists library JAR files on GlassFish Server
 
 SYNOPSIS
-     list-libraries [--help] [--type={common|ext|app}]
-     [--target target]
+           list-libraries [--help] [--type={common|ext|app}]
 
 DESCRIPTION
-     The list-libraries subcommand lists library archive files on
-     GlassFish Server.
+       The list-libraries subcommand lists library archive files on GlassFish
+       Server.
 
-     The --type option specifies the library type and the GlassF-
-     ish Server directory for which libraries are to be listed.
+       The --type option specifies the library type and the GlassFish Server
+       directory for which libraries are to be listed.
 
-     The --target option specifies the target for which  you  are
-     listing  the libraries. If this option specifies the domain,
-     all libraries are listed for  the  entire  domain.  If  this
-     option  specifies any other target, the libraries are listed
-     for that target only.
-
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --type
-          Specifies the library type  and  the  GlassFish  Server
-          directory  for which libraries are listed. Valid values
-          are as follows:
+       --type
+           Specifies the library type and the GlassFish Server directory for
+           which libraries are listed. Valid values are as follows:
 
-          common
-               Lists the  library  files  for  the  Common  class
-               loader  directory,  domain-dir/lib.  This  is  the
-               default.
+           common
+               Lists the library files for the Common class loader directory,
+               domain-dir/lib. This is the default.
 
-          ext  Lists the library  files  for  the  Java  optional
-               package directory, domain-dir/lib/ext.
+           ext
+               Lists the library files for the Java optional package
+               directory, domain-dir/lib/ext.
 
-          app  Lists  the  library  files  for  the  application-
-               specific    class    loader   directory,   domain-
-               dir/lib/applibs.
+           app
+               Lists the library files for the application-specific class
+               loader directory, domain-dir/lib/applibs.
 
-     For more information about  these  directories,  see  "Class
-     Loaders"  in Oracle GlassFish Server Application Development
-     Guide.
-
-     --target
-          Specifies  the  target  for  which  you   are   listing
-          libraries. Valid values are as follows:
-
-Java EE 6           Last change: 16 Nov 2011                    1
-
-asadmin Utility Subcommands                     list-libraries(1)
-
-          server
-               Lists  the  libraries  for  the   default   server
-               instance server. This is the default.
-
-          domain
-               Lists the libraries for the domain.
-
-          cluster-name
-               Lists the libraries for every server  instance  in
-               the cluster.
-
-          instance-name
-               Lists the libraries  for  a  particular  GlassFish
-               Server instance.
+           For more information about these directories, see "Class Loaders"
+           in Oracle GlassFish Server Application Development Guide.
 
 EXAMPLES
-     Example 1 Listing Libraries
+       Example 1, Listing Libraries
+           This example lists the libraries in the application-specific class
+           loader directory on the default server instance.
 
-     This example lists the libraries in the application-specific
-     class loader directory on the default server instance.
-     asadmin> list-libraries --type app
-     mylib.jar
-     xlib.jar
-     ylib.jar
-     zlib.jar
-     Command list-libraries executed successfully.
+               asadmin> list-libraries --type app
+               mylib.jar
+               xlib.jar
+               ylib.jar
+               zlib.jar
+               Command list-libraries executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     add-library(1), remove-library(1)
+       add-library(1), remove-library(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-     "Class  Loaders"  in  Oracle  GlassFish  Server  Application
-     Development Guide
+       "Class Loaders" in Oracle GlassFish Server Application Development
+       Guide
 
-Java EE 6           Last change: 16 Nov 2011                    2
-
+Java EE 7                         16 Nov 2011                list-libraries(1)

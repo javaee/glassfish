@@ -1,130 +1,116 @@
-
-asadmin Utility Subcommands               create-jacc-provider(1)
+create-jacc-provider(1)   asadmin Utility Subcommands  create-jacc-provider(1)
 
 NAME
-     create-jacc-provider - enables administrators  to  create  a
-     JACC  provider that can be used by third-party authorization
-     modules for applications running in GlassFish Server
+       create-jacc-provider - enables administrators to create a JACC provider
+       that can be used by third-party authorization modules for applications
+       running in GlassFish Server
 
 SYNOPSIS
-     create-jacc-provider [--help]
-     [--policyproviderclass pol-provider-class]
-     [--policyconfigfactoryclass pc-factory-class]
-     [--property name=value)[:name=value]*]
-     [--target target] jacc-provider-name
+           create-jacc-provider [--help]
+           [--policyproviderclass pol-provider-class]
+           [--policyconfigfactoryclass pc-factory-class]
+           [--property name=value)[:name=value]*]
+           [--target target] jacc-provider-name
 
 DESCRIPTION
-     The  create-jacc-provider  subcommand  creates  a   JSR-115-
-     compliant  Java Authorization Contract for Containers (JACC)
-     provider that can be used for authorization of  applications
-     running in GlassFish Server. The JACC provider is created as
-     a jacc-provider element within the security-service  element
-     in the domain's domain.xml file.
+       The create-jacc-provider subcommand creates a JSR-115—compliant Java
+       Authorization Contract for Containers (JACC) provider that can be used
+       for authorization of applications running in GlassFish Server. The JACC
+       provider is created as a jacc-provider element within the
+       security-service element in the domain's domain.xml file.
 
-     The default GlassFish Server installation includes two  JACC
-     providers,  named  default  and  simple.  Any JACC providers
-     created with  the  create-jacc-provider  subcommand  are  in
-     addition to these two default providers. The default GlassF-
-     ish Server JACC providers  implement  a  simple,  file-based
-     authorization  engine that complies with the JACC specifica-
-     tion. The create-jacc-provider subcommand makes it  possible
-     to specify additional third-party JACC providers.
+       The default GlassFish Server installation includes two JACC providers,
+       named default and simple. Any JACC providers created with the
+       create-jacc-provider subcommand are in addition to these two default
+       providers. The default GlassFish Server JACC providers implement a
+       simple, file-based authorization engine that complies with the JACC
+       specification. The create-jacc-provider subcommand makes it possible to
+       specify additional third-party JACC providers.
 
-     You can create any  number  of  JACC  providers  within  the
-     security-service  element,  but the GlassFish Server runtime
-     uses only one of them at any given time.  The  jacc-provider
-     element  in  the security-service element points to the name
-     of the provider  that  is  currently  in  use  by  GlassFish
-     Server.  If  you change this element to point to a different
-     JACC provider, restart GlassFish Server.
+       You can create any number of JACC providers within the security-service
+       element, but the GlassFish Server runtime uses only one of them at any
+       given time. The jacc-provider element in the security-service element
+       points to the name of the provider that is currently in use by
+       GlassFish Server. If you change this element to point to a different
+       JACC provider, restart GlassFish Server.
 
-     This command is supported in remote mode only.
+       This command is supported in remote mode only.
 
 OPTIONS
-     If an option has a short option name, then the short  option
-     precedes  the  long option name. Short options have one dash
-     whereas long options have two dashes.
+       If an option has a short option name, then the short option precedes
+       the long option name. Short options have one dash whereas long options
+       have two dashes.
 
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --policyproviderclass
-          Specifies  the  fully  qualified  class  name  for  the
-          javax.security.jacc.policy.provider that implements the
-          java.security.Policy.
+       --policyproviderclass
+           Specifies the fully qualified class name for the
+           javax.security.jacc.policy.provider that implements the
+           java.security.Policy.
 
-Java EE 6            Last change: 14 Jun2011                    1
+       --policyconfigfactoryclass
+           Specifies the fully qualified class name for the
+           javax.security.jacc.PolicyConfigurationFactory.provider that
+           implements the provider-specific
+           javax.security.jacc.PolicyConfigurationFactory.
 
-asadmin Utility Subcommands               create-jacc-provider(1)
+       --property
+           Optional attribute name/value pairs for configuring the JACC
+           provider. The following properties are available:
 
-     --policyconfigfactoryclass
-          Specifies  the  fully  qualified  class  name  for  the
-          javax.security.jacc.PolicyConfigurationFactory.provider
-          that       implements       the       provider-specific
-          javax.security.jacc.PolicyConfigurationFactory.
+           repository
+               The directory containing the JACC policy file. For the default
+               GlassFish Server JACC provider, the default directory is
+               ${com.sun.aas.instanceRoot}/generated/policy. This property is
+               not defined by default for the simple GlassFish Server JACC
+               provider.
 
-     --property
-          Optional attribute name/value pairs for configuring the
-          JACC provider. The following properties are available:
+       --target
+           Specifies the target for which you are creating the JACC provider.
+           The following values are valid:
 
-          repository
-               The directory containing the JACC policy file. For
-               the  default  GlassFish  Server JACC provider, the
-               default                directory                is
-               ${com.sun.aas.instanceRoot}/generated/policy. This
-               property is not defined by default for the  simple
-               GlassFish Server JACC provider.
+           server
+               Creates the JACC provider on the default server instance. This
+               is the default value.
 
-     --target
-          Specifies the target for which  you  are  creating  the
-          JACC provider. The following values are valid:
+           configuration_name
+               Creates the JACC provider in the specified configuration.
 
-          server
-               Creates the JACC provider on  the  default  server
-               instance. This is the default value.
+           cluster_name
+               Creates the JACC provider on all server instances in the
+               specified cluster.
 
-          configuration_name
-               Creates the JACC provider in the specified  confi-
-               guration.
-
-          cluster_name
-               Creates the JACC provider on all server  instances
-               in the specified cluster.
-
-          instance_name
-               Creates the JACC provider on  a  specified  server
-               instance.
+           instance_name
+               Creates the JACC provider on a specified server instance.
 
 OPERANDS
-     jacc-provider-name
-          The name of the provider used to  reference  the  jacc-
-          provider element in domain.xml.
+       jacc-provider-name
+           The name of the provider used to reference the jacc-provider
+           element in domain.xml.
 
 EXAMPLES
-     Example 1 Creating a JACC Provider
+       Example 1, Creating a JACC Provider
+           The following example shows how to create a JACC provider named
+           testJACC on the default server target.
 
-     The following example shows how to create  a  JACC  provider
-     named testJACC on the default server target.
-     asadmin> create-jacc-provider
-     --policyproviderclass com.sun.enterprise.security.provider.PolicyWrapper
+               asadmin> create-jacc-provider
+               --policyproviderclass com.sun.enterprise.security.provider.PolicyWrapper
+               --policyconfigfactoryclass com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl
+               testJACC
 
-Java EE 6            Last change: 14 Jun2011                    2
-
-asadmin Utility Subcommands               create-jacc-provider(1)
-
-     --policyconfigfactoryclass com.sun.enterprise.security.provider.PolicyConfigurationFactoryImpl
-     testJACC
-     Command create-jacc-provider executed successfully.
+               Command create-jacc-provider executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     delete-jacc-provider(1), list-jacc-providers(1)
+       delete-jacc-provider(1), list-jacc-providers(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6            Last change: 14 Jun2011                    3
-
+Java EE 7                         14 Jun2011           create-jacc-provider(1)

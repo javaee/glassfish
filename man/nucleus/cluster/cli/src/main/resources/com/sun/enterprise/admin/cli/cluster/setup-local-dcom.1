@@ -1,4 +1,4 @@
-asadmin Utility Subcommands                             setup-local-dcom(1)
+setup-local-dcom(1)       asadmin Utility Subcommands      setup-local-dcom(1)
 
 NAME
        setup-local-dcom - sets up DCOM on a host
@@ -29,10 +29,15 @@ DESCRIPTION
        these keys to allow full control over them for the Windows user.
 
            Caution
-           
-           This subcommand might modify the permissions of some keys in the 
-           Windows registry Before running this command, back up the Windows‚
-           registry. 
+           +----------------------------------------+
+           |                                        |
+           |           This subcommand might modify |
+           |           the permissions of some keys |
+           |           in the Windows registry.     |
+           |           Before running this command, |
+           |           back up the Windows          |
+           |           registry.                    |
+           +----------------------------------------+
 
        By default, the subcommand prompts you to confirm that you want to
        update the Windows registry. To run the subcommand without being
@@ -73,25 +78,24 @@ OPTIONS
                prompting you.
 
 EXAMPLES
-       Example 1 Setting Up DCOM on a Host
-       
-       This example sets up DCOM on the host where the subcommand is run.
+       Example 1, Setting Up DCOM on a Host
+           This example sets up DCOM on the host where the subcommand is run.
 
-       asadmin> setup-local-dcom
-       Caution: This command might modify the permissions of some keys in the Windows registry.
-       Before running this command, back up the Windows registry.
-       The modification allows the Windows user full control over these keys.
+               asadmin> setup-local-dcom
+               Caution: This command might modify the permissions of some keys in the Windows
+               registry.
+               Before running this command, back up the Windows registry.
+               The modification allows the Windows user full control over these keys.
 
-       Are you sure that you want to edit the Windows registry? If so, type yes in full: yes
-       Command setup-local-dcom executed successfully.
+               Are you sure that you want to edit the Windows registry? If so, type yes in full: yes
+               Command setup-local-dcom executed successfully.
 
-       Example 2 Forcibly Setting Up DCOM on a Host
+       Example 2, Forcibly Setting Up DCOM on a Host
+           This example sets up DCOM without prompting for confirmation that
+           the user wants to update the Windows registry.
 
-       This example sets up DCOM without prompting for confirmation that the
-       user wants to update the Windows registry.
-
-       asadmin> setup-local-dcom --force=true
-       Command setup-local-dcom executed successfully.
+               asadmin> setup-local-dcom --force=true
+               Command setup-local-dcom executed successfully.
 
 EXIT STATUS
        0
@@ -106,4 +110,4 @@ SEE ALSO
        "Windows Operating System Settings" in Oracle GlassFish Server High
        Availability Administration Guide
 
-Java EE 6           Last change: 10 Feb 2012
+Java EE 7                         10 Feb 2012              setup-local-dcom(1)

@@ -1,74 +1,67 @@
-
-asadmin Utility Subcommands;             list-custom-resources(1)
+list-custom-resources(1) asadmin Utility Subcommands; list-custom-resources(1)
 
 NAME
-     list-custom-resources - gets all custom resources
+       list-custom-resources - gets all custom resources
 
 SYNOPSIS
-     list-custom-resources [--help] [target]
+           list-custom-resources [--help] [target]
 
 DESCRIPTION
-     The  list-custom-resources  subcommand  lists   the   custom
-     resources.
+       The list-custom-resources subcommand lists the custom resources.
 
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
 OPERANDS
-     target
-          This operand  specifies  the  location  of  the  custom
-          resources. Valid targets are:
+       target
+           This operand specifies the location of the custom resources. Valid
+           targets are:
 
-          server
-               Lists  the  resources  on   the   default   server
-               instance. This is the default value
+           server
+               Lists the resources on the default server instance. This is the
+               default value
 
-          domain
+           domain
                Lists the resources in the domain.
 
-          cluster_name
-               Lists the resources for every server  instance  in
-               the cluster.
+           cluster_name
+               Lists the resources for every server instance in the cluster.
 
-          instance_name
-               Lists  the  resources  for  a  particular   server
-               instance.
+           instance_name
+               Lists the resources for a particular server instance.
 
 EXAMPLES
-     Example 1 Listing Custom Resources
+       Example 1, Listing Custom Resources
+           This example lists the current custom resources.
 
-     This example lists the current custom resources.
-     asadmin> list-custom-resources
-     sample_custom_resource01
-     sample_custom_resource02
-     Command list-custom-resources executed successfully.
-     Example 2 Using the  list-custom-resources  command  with  a
-     target
+               asadmin> list-custom-resources
+               sample_custom_resource01
+               sample_custom_resource02
+               Command list-custom-resources executed successfully.
 
-     The following example displays the usage of this command.
-     asadmin> list-custom-resources --user admin --passwordfile
-     passwords.txt --host plum --port 4848 target6
-     sample_custom_resource03
+       Example 2, Using the list-custom-resources command with a target
+           The following example displays the usage of this command.
 
-Java EE 6           Last change: 22 Dec 2010                    1
+               asadmin> list-custom-resources --user admin --passwordfile
+               passwords.txt --host plum --port 4848 target6
 
-asadmin Utility Subcommands;             list-custom-resources(1)
-
-     sample_custom_resource04
-     Command list-custom-resources executed successfully.
+               sample_custom_resource03
+               sample_custom_resource04
+               Command list-custom-resources executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     create-custom-resource(1),delete-custom-resource(1)
+       create-custom-resource(1),delete-custom-resource(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 22 Dec 2010                    2
-
+Java EE 7                         22 Dec 2010         list-custom-resources(1)

@@ -1,41 +1,40 @@
-
-asadmin Utility Subcommands         list-jdbc-connection-pools(1)
+list-jdbc-connection-poolsasadmin Utility Subcommlist-jdbc-connection-pools(1)
 
 NAME
-     list-jdbc-connection-pools - lists all JDBC connection pools
+       list-jdbc-connection-pools - lists all JDBC connection pools
 
 SYNOPSIS
-     list-jdbc-connection-pools [--help]
+           list-jdbc-connection-pools [--help]
 
 DESCRIPTION
-     The list-jdbc-connection-pools subcommand lists the  current
-     JDBC connection pools.
+       The list-jdbc-connection-pools subcommand lists the current JDBC
+       connection pools.
 
-     This subcommand is supported in the remote mode only.
+       This subcommand is supported in the remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
 EXAMPLES
-     Example 1 Listing the JDBC Connection Pools
+       Example 1, Listing the JDBC Connection Pools
+           This example lists the existing JDBC connection pools.
 
-     This example lists the existing JDBC connection pools.
-     asadmin> list-jdbc-connection-pools
-     sample_derby_pool
-     __TimerPool
-     Command list-jdbc-connection-pools executed successfully.
+               asadmin> list-jdbc-connection-pools
+               sample_derby_pool
+               __TimerPool
+               Command list-jdbc-connection-pools executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     create-jdbc-connection-pool(1),      delete-jdbc-connection-
-     pool(1)
+       create-jdbc-connection-pool(1), delete-jdbc-connection-pool(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 17 Sep 2010                    1
-
+Java EE 7                         17 Sep 2010    list-jdbc-connection-pools(1)

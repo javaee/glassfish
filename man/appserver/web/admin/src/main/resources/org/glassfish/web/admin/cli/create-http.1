@@ -1,289 +1,103 @@
-
-asadmin Utility Subcommands                        create-http(1)
+create-http(1)            asadmin Utility Subcommands           create-http(1)
 
 NAME
-     create-http - sets HTTP parameters for a protocol
+       create-http - sets HTTP parameters for a protocol
 
 SYNOPSIS
-     create-http [--help]
-     --default-virtual-server virtual-server
-     [--request-timeout-seconds timeout]
-     [--timeout-seconds timeout]
-     [--max-connection max-keepalive]
-     [--dns-lookup-enabled={false|true}]
-     [--servername server-name]
-     [--target target]
-     [--redirectport redirect-port]
-     [--xpowered={true|false}]
-     [--requestbuffersize buffer-size]
-     [--sendbuffersize buffer-size]
-     [--authpassthrough={true|false}]
-     [--trace={true|false}]
-     [--comet={true|false}]
-     [--compression={true|false}]
-     [--compressablemimetype mime-type]
-     [--nocompressionuseragents user-agents]
-     [--compressionminsize min-size]
-     [--uploadtimeout={true|false}]
-     [--connectionuploadtimeout timeout]
-     [--uriencoding encoding]
-     [--restricteduseragents user-agents]
-     [--chunking={true|false}]
-     [--version version]
-     [--forcedresponsetype response-type]
-     [--defaultresponsetype response-type]
-     [--headerbufferlength buffer-length]
-     [--adapter adapter]
-     [--maxpostsize post-size]
-     [--rcm={true|false}]
-     protocol-name
+           create-http [--help]
+           --default-virtual-server virtual-server
+           [--request-timeout-seconds timeout]
+           [--timeout-seconds timeout]
+           [--max-connection max-keepalive]
+           [--dns-lookup-enabled={false|true}]
+           [--servername server-name]
+           [--target target]
+
+           protocol-name
 
 DESCRIPTION
-     The create-http subcommand creates a set of HTTP  parameters
-     for a protocol, which in turn configures one or more network
-     listeners. This subcommand is supported in remote mode only.
+       The create-http subcommand creates a set of HTTP parameters for a
+       protocol, which in turn configures one or more network listeners. This
+       subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --default-virtual-server
-          The ID attribute of the default virtual server for  the
-          associated network listeners.
+       --default-virtual-server
+           The ID attribute of the default virtual server for the associated
+           network listeners.
 
-     --request-timeout-seconds
-          The time in seconds at which the request times out.  If
+       --request-timeout-seconds
+           The time in seconds at which the request times out. If you do not
+           set this option, the request times out in 30 seconds.
 
-Java EE 6           Last change: 11 Feb 2011                    1
+       --timeout-seconds
+           The maximum time in seconds for which a keep alive connection is
+           kept open. A value of 0 or less means keep alive connections are
+           kept open indefinitely. The default is 30.
 
-asadmin Utility Subcommands                        create-http(1)
+       --max-connection
+           The maximum number of HTTP requests that can be pipelined until the
+           connection is closed by the server. Set this property to 1 to
+           disable HTTP/1.0 keep-alive, as well as HTTP/1.1 keep-alive and
+           pipelining. The default is 256.
 
-          you do not set this option, the request times out in 30
-          seconds.
+       --dns-lookup-enabled
+           If set to true, looks up the DNS entry for the client. The default
+           is false.
 
-     --timeout-seconds
-          The maximum time in seconds for which a keep alive con-
-          nection  is  kept open. A value of 0 or less means keep
-          alive  connections  are  kept  open  indefinitely.  The
-          default is 30.
+       --servername
+           Tells the server what to put in the host name section of any URLs
+           it sends to the client. This affects URLs the server automatically
+           generates; it doesn't affect the URLs for directories and files
+           stored in the server. This name should be the alias name if your
+           server uses an alias. If a colon and port number are appended, that
+           port will be used in URLs that the server sends to the client.
 
-     --max-connection
-          The maximum number of HTTP requests that can  be  pipe-
-          lined until the connection is closed by the server. Set
-          this property to 1 to disable HTTP/1.0  keep-alive,  as
-          well as HTTP/1.1 keep-alive and pipelining. The default
-          is 256.
+       --target
+           Creates the set of HTTP parameters only on the specified target.
+           Valid values are as follows:
 
-     --dns-lookup-enabled
-          If set to true, looks up the DNS entry for the  client.
-          The default is false.
+           server
+               Creates the set of HTTP parameters on the default server
+               instance. This is the default value.
 
-     --servername
-          Tells the server what to put in the host  name  section
-          of  any  URLs it sends to the client. This affects URLs
-          the server automatically generates; it  doesn't  affect
-          the  URLs  for  directories  and  files  stored  in the
-          server. This name should be  the  alias  name  if  your
-          server  uses  an  alias. If a colon and port number are
-          appended, that port will  be  used  in  URLs  that  the
-          server sends to the client.
+           configuration-name
+               Creates the set of HTTP parameters in the specified
+               configuration.
 
-     --target
-          Creates the set of HTTP parameters only on  the  speci-
-          fied target. Valid values are as follows:
+           cluster-name
+               Creates the set of HTTP parameters on all server instances in
+               the specified cluster.
 
-          server
-               Creates the set of HTTP parameters on the  default
-               server instance. This is the default value.
-
-          configuration-name
-               Creates the set of HTTP parameters in  the  speci-
-               fied configuration.
-
-          cluster-name
-               Creates the set of HTTP parameters on  all  server
-               instances in the specified cluster.
-
-          standalone-instance-name
-               Creates the set of HTTP parameters on  the  speci-
-               fied standalone server instance.
-
-     --redirectport
-
-Java EE 6           Last change: 11 Feb 2011                    2
-
-asadmin Utility Subcommands                        create-http(1)
-
-          Do not specify this option. This option is retained for
-          compatibility  with  earlier  releases.  If you specify
-          this option, a syntax error does  not  occur.  Instead,
-          the subcommand runs successfully and displays a warning
-          message that the option is ignored.
-
-     --xpowered
-          If set to true, adds the X-Powered-By: Servlet/2.4  and
-          X-Powered-By:   JSP/2.0   headers  to  the  appropriate
-          responses. The Servlet 2.4  specification  defines  the
-          X-Powered-By:  Servlet/2.4 header, which containers may
-          add to servlet-generated responses. Similarly, the  JSP
-          2.0  specification  defines  the  X-Powered-By: JSP/2.0
-          header, which containers may add to responses that  use
-          JSP  technology. The goal of these headers is to aid in
-          gathering statistical data about the use of Servlet and
-          JSP technology. The default is true.
-
-     --requestbuffersize
-          The size of the request buffer for  associated  network
-          listeners. The default is 4096.
-
-     --sendbuffersize
-          The size of the  send  buffer  for  associated  network
-          listeners. The default is 8192.
-
-     --authpassthrough
-          If set to true, indicates that the  associated  network
-          listeners receive traffic from an SSL-terminating proxy
-          server. The default is false.
-
-     --trace
-          If set to true, enables the TRACE operation.  Set  this
-          property  to  false  to  make the GlassFish Server less
-          susceptible  to  cross-site  scripting   attacks.   The
-          default is true.
-
-     --comet
-          If set to true, enables Comet support for  the  associ-
-          ated network listeners. The default is false.
-
-     --compression
-          Specifies use of  HTTP/1.1  GZIP  compression  to  save
-          server bandwidth. Allowed values are:
-
-          o off - Disables compression. This is the default.
-
-          o on - Compresses data.
-
-          o force - Forces data compression in all cases.
-
-          o positive integer - Specifies the  minimum  amount  of
-
-Java EE 6           Last change: 11 Feb 2011                    3
-
-asadmin Utility Subcommands                        create-http(1)
-
-            data required before the output is compressed.
-
-     If the content-length is not known, the output is compressed
-     only if compression is set to on or force.
-
-     --compressablemimetype
-          A comma-separated list of MIME  types  for  which  HTTP
-          compression    is    used.   The   default   value   is
-          text/html,text/xml,text/plain.
-
-     --nocompressionuseragents
-          A comma-separated list of regular expressions  matching
-          user-agents  of  HTTP  clients  for  which  compression
-          should not be used. The default  is  an  empty  string,
-          which disables regexp matching.
-
-     --compressionminsize
-          The minimum size of a file when compression is applied.
-          There is no default.
-
-     --uploadtimeout
-          If true, the connection for a servlet that reads  bytes
-          slowly  is  closed after the connectionuploadtimeout is
-          reached. The default is false.
-
-     --connectionuploadtimeout
-          The timeout for uploads.  Applicable  only  if  upload-
-          timeout is set to true. The default is 5.
-
-     --uriencoding
-          The character set  used  to  decode  the  request  URIs
-          received  on  associated  network  listeners. Must be a
-          valid IANA character set name. The default is UTF-8.
-
-     --restricteduseragents
-          A comma-separated list of regular expressions  matching
-          user-agents  of HTTP clients that should be restricted.
-          The default is an empty string.
-
-     --chunking
-          If set to true, enables  HTTP  response  chunking.  The
-          default is true.
-
-     --version
-          The version of the HTTP protocol used. The  default  is
-          HTTP/1.1.
-
-     --forcedresponsetype
-          The request type used if no MIME mapping  is  available
-          that  matches  the  file  extension.  The  format  is a
-          semicolon-delimited string consisting of  the  content-
-
-Java EE 6           Last change: 11 Feb 2011                    4
-
-asadmin Utility Subcommands                        create-http(1)
-
-          type,  encoding,  language, and charset. The default is
-          text/html; charset=iso-8859-1.
-
-     --defaultresponsetype
-          The default response type. The format is  a  semicolon-
-          delimited string consisting of the content-type, encod-
-          ing, language, and charset. The default  is  text/html;
-          charset=iso-8859-1.
-
-     --headerbufferlength
-          The size of the buffer used by the  request  processing
-          threads to read the request data. The default is 8192.
-
-     --adapter
-          The class name of the  static  resources  adapter.  The
-          default is com.sun.grizzly.tcp.StaticResourcesAdapter.
-
-     --maxpostsize
-          The maximum size of the body of a  POST  request.  POST
-          requests  greater  than this size are rejected. A value
-          of zero means the maximum post size is  unlimited.  The
-          default is 2097152.
-
-     --rcm
-          If set to true, enables support for  resource  consump-
-          tion  management  (RCM).  A ResourceAllocationFilter is
-          added to the HTTP protocol chain, and a thread pool for
-          request  processing  is  assigned to each HTTP resource
-          (such as a web application). The default is false.
+           standalone-instance-name
+               Creates the set of HTTP parameters on the specified standalone
+               server instance.
 
 OPERANDS
-     protocol-name
-          The name of the protocol to which this  HTTP  parameter
-          set applies.
+       protocol-name
+           The name of the protocol to which this HTTP parameter set applies.
 
 EXAMPLES
-     Example 1 Using the create-http Subcommand
+       Example 1, Using the create-http Subcommand
+           The following command creates an HTTP parameter set for the
+           protocol named http-1:
 
-     The following command creates an HTTP parameter set for  the
-     protocol named http-1:
-     asadmin> create-http --timeout-seconds 60 --default-virtual-server server http-1
-     Command create-http executed successfully.
+               asadmin> create-http --timeout-seconds 60 --default-virtual-server server http-1
+               Command create-http executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     delete-http(1),     create-network-listener(1),      create-
-     protocol(1), create-virtual-server(1)
+       delete-http(1), create-network-listener(1), create-protocol(1),
+       create-virtual-server(1)
 
-Java EE 6           Last change: 11 Feb 2011                    5
+       asadmin(1M)
 
-asadmin Utility Subcommands                        create-http(1)
-
-     asadmin(1M)
-
-Java EE 6           Last change: 11 Feb 2011                    6
-
+Java EE 7                         11 Feb 2011                   create-http(1)

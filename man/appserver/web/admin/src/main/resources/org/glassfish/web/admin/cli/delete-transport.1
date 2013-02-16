@@ -1,67 +1,61 @@
-
-asadmin Utility Subcommands                   delete-transport(1)
+delete-transport(1)       asadmin Utility Subcommands      delete-transport(1)
 
 NAME
-     delete-transport - removes a transport
+       delete-transport - removes a transport
 
 SYNOPSIS
-     delete-transport [--help]
-     [--target target]
-     transport-name
+           delete-transport [--help]
+           [--target target]
+           transport-name
 
 DESCRIPTION
-     The delete-transport subcommand removes the specified  tran-
-     sport. This subcommand is supported in remote mode only.
+       The delete-transport subcommand removes the specified transport. This
+       subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --target
-          Deletes the transport only from the  specified  target.
-          Valid values are as follows:
+       --target
+           Deletes the transport only from the specified target. Valid values
+           are as follows:
 
-          server
-               Deletes the  transport  from  the  default  server
-               instance. This is the default value.
+           server
+               Deletes the transport from the default server instance. This is
+               the default value.
 
-          configuration-name
-               Deletes the transport from  the  specified  confi-
-               guration.
+           configuration-name
+               Deletes the transport from the specified configuration.
 
-          cluster-name
-               Deletes the transport from all server instances in
-               the specified cluster.
+           cluster-name
+               Deletes the transport from all server instances in the
+               specified cluster.
 
-          standalone-instance-name
-               Deletes the transport  from  the  specified  stan-
-               dalone server instance.
+           standalone-instance-name
+               Deletes the transport from the specified standalone server
+               instance.
 
 OPERANDS
-     transport-name
-          The name of the transport to be deleted.
+       transport-name
+           The name of the transport to be deleted.
 
 EXAMPLES
-     Example 1 Deleting a Transport
+       Example 1, Deleting a Transport
+           The following command deletes the transport named http1-trans:
 
-     The following command deletes  the  transport  named  http1-
-     trans:
-     asadmin> delete-transport http1-trans
-     Command delete-transport executed successfully.
+               asadmin> delete-transport http1-trans
+               Command delete-transport executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-Java EE 6           Last change: 08 Oct 2010                    1
-
-asadmin Utility Subcommands                   delete-transport(1)
-
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     create-transport(1), list-transports(1)
+       create-transport(1), list-transports(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 08 Oct 2010                    2
-
+Java EE 7                         08 Oct 2010              delete-transport(1)

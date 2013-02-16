@@ -1,157 +1,141 @@
-
-asadmin Utility Subcommands                     start-database(1)
+start-database(1)         asadmin Utility Subcommands        start-database(1)
 
 NAME
-     start-database - starts the Java DB
+       start-database - starts the Java DB
 
 SYNOPSIS
-     start-database [--help] [--jvmoptions jvm-options]
-     [--dbhost host] [--dbport port-no]
-     [--dbhome db-file-path]
+           start-database [--help] [--jvmoptions jvm-options]
+           [--dbhost host] [--dbport port-no]
+           [--dbhome db-file-path]
 
 DESCRIPTION
-     The start-database subcommand starts the Java DB server that
-     is available for use with GlassFish Server. Java DB is based
-     upon Apache Derby. Use this subcommand only for working with
-     applications deployed to the server.
+       The start-database subcommand starts the Java DB server that is
+       available for use with GlassFish Server. Java DB is based upon Apache
+       Derby. Use this subcommand only for working with applications deployed
+       to the server.
 
-     When you start Java DB server by  using  the  start-database
-     subcommand, the database server is started in Network Server
-     mode.  Clients  connecting  to  it  must  use  the  Java  DB
-     ClientDriver.  For  details  on  connecting to the database,
-     refer to the Apache Derby documentation.
+       When you start Java DB server by using the start-database subcommand,
+       the database server is started in Network Server mode. Clients
+       connecting to it must use the Java DB ClientDriver. For details on
+       connecting to the database, refer to the Apache Derby documentation.
 
-     When the database server starts, or a client connects to  it
-     successfully, the following files are created:
+       When the database server starts, or a client connects to it
+       successfully, the following files are created:
 
-     o The derby.log file that contains the database server  pro-
-       cess log along with its standard output and standard error
-       information
+       *   The derby.log file that contains the database server process log
+           along with its standard output and standard error information
 
-     o The database files that contain your schema (for  example,
-       database tables)
+       *   The database files that contain your schema (for example, database
+           tables)
 
-     These files are created at the location that is specified by
-     the  --dbhome option. To create the database files at a par-
-     ticular location, you must set the --dbhome option.  If  the
-     --dbhome option is not specified, the start-database subcom-
-     mand determines where to create these files as follows:
+       These files are created at the location that is specified by the
+       --dbhome option. To create the database files at a particular location,
+       you must set the --dbhome option. If the --dbhome option is not
+       specified, the start-database subcommand determines where to create
+       these files as follows:
 
-     o If the current working directory contains a file  that  is
-       named derby.log, the start-database subcommand creates the
-       files in the current working directory.
+       *   If the current working directory contains a file that is named
+           derby.log, the start-database subcommand creates the files in the
+           current working directory.
 
-     o Otherwise, the start-database subcommand creates the files
-       in the as-install/databases directory.
+       *   Otherwise, the start-database subcommand creates the files in the
+           as-install/databases directory.
 
-     The start-database subcommand starts the  database  process,
-     even if it cannot write to the log file.
+       The start-database subcommand starts the database process, even if it
+       cannot write to the log file.
 
-     This subcommand is supported in local mode only.
+       This subcommand is supported in local mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-Java EE 6            Last change: 8 Dec 2011                    1
+       --jvmoptions
+           A space-separated list of command-line options that are passed to
+           the Java application launcher when the database is started. By
+           default, no options are passed.
 
-asadmin Utility Subcommands                     start-database(1)
+           The format of an option depends on whether the option has a name
+           and a value or only a name:
 
-     --jvmoptions
-          A space-separated list of command-line options that are
-          passed  to the Java application launcher when the data-
-          base is started. By default, no options are passed.
+           *   If the option has a name and a value, the format is
+               option-name=value.
 
-          The format of an option depends on whether  the  option
-          has a name and a value or only a name:
+           *   If the option has only a name, the format is option-name. For
+               example, -Xmx512m.
 
-          o If the option has a name and a value, the  format  is
-            option-name=value.
+       --dbhost
+           The host name or IP address of the Java DB server process. The
+           default is the IP address 0.0.0.0, which denotes all network
+           interfaces on the host where you run the start-database subcommand.
 
-          o If the option has only a name, the format is  option-
-            name. For example, -Xmx512m.
+       --dbport
+           The port number where the Java DB server listens for client
+           connections. This port must be available for the listen socket,
+           otherwise the database server will not start. The default is 1527.
 
-     --dbhost
-          The host name or IP address of the Java DB server  pro-
-          cess.  The  default  is  the  IP address 0.0.0.0, which
-          denotes all network interfaces on the  host  where  you
-          run the start-database subcommand.
+       --dbhome
+           The absolute path to the directory where the database files and the
+           derby.log file are created. If the --dbhome option is not
+           specified, the start-database subcommand determines where to create
+           these files as follows:
 
-     --dbport
-          The port number where the Java DB  server  listens  for
-          client connections. This port must be available for the
-          listen socket, otherwise the database server  will  not
-          start. The default is 1527.
+           *   If the current working directory contains a file that is named
+               derby.log, the start-database subcommand creates the files in
+               the current working directory.
 
-     --dbhome
-          The absolute path to the directory where  the  database
-          files  and  the  derby.log  file are created. If the --
-          dbhome option is not specified, the start-database sub-
-          command  determines where to create these files as fol-
-          lows:
+           *   Otherwise, the start-database subcommand creates the files in
+               the as-install/databases directory.
 
-          o If the current working directory contains a file that
-            is  named  derby.log,  the  start-database subcommand
-            creates the files in the current working directory.
-
-          o Otherwise, the start-database subcommand creates  the
-            files in the as-install/databases directory.
-
-     To create the database files at a particular  location,  you
-     must set the --dbhome option.
+           To create the database files at a particular location, you must set
+           the --dbhome option.
 
 EXAMPLES
-     Example 1 Starting Java DB
+       Example 1, Starting Java DB
+           This example starts Java DB on the host host1 and port 5001.
 
-     This example starts Java DB on the host host1 and port 5001.
-     asadmin> start-database --dbhost host1 --dbport 5001 --terse=true
-     Starting database in the background.  Log redirected to
-     /opt/SUNWappserver/databases/derby.log.
+               asadmin> start-database --dbhost host1 --dbport 5001 --terse=true
+               Starting database in the background.  Log redirected to
+               /opt/SUNWappserver/databases/derby.log.
 
-Java EE 6            Last change: 8 Dec 2011                    2
+       Example 2, Starting Java DB With Options for the Java Application
+       Launcher
+           This example starts Java DB with the options for setting the
+           minimum heap memory size to 128 megabytes and the maximum heap
+           memory size to 512 megabytes.
 
-asadmin Utility Subcommands                     start-database(1)
-
-     Example 2 Starting Java DB With Options for the Java  Appli-
-     cation Launcher
-
-     This example starts Java DB with the options for setting the
-     minimum  heap  memory  size to 128 megabytes and the maximum
-     heap memory size to 512 megabytes.
-     asadmin> start-database --jvmoptions="-Xms128m -Xmx512m" --terse=true
-     Starting database in the background.
-     Log redirected to /export/glassfish3/glassfish/databases/derby.log.
+               asadmin> start-database --jvmoptions="-Xms128m -Xmx512m" --terse=true
+               Starting database in the background.
+               Log redirected to /export/glassfish3/glassfish/databases/derby.log.
 
 EXIT STATUS
-     The exit status applies to errors in executing  the  asadmin
-     utility.   For  information  on  database  errors,  see  the
-     derby.log file. This file is located in  the  directory  you
-     specify  by  using  the  --dbhome  option  when  you run the
-     start-database subcommand. If you did not specify  --dbhome,
-     the value of DERBY_INSTALL defaults to as-install/javadb.
+       The exit status applies to errors in executing the asadmin utility. For
+       information on database errors, see the derby.log file. This file is
+       located in the directory you specify by using the --dbhome option when
+       you run the start-database subcommand. If you did not specify --dbhome,
+       the value of DERBY_INSTALL defaults to as-install/javadb.
 
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     stop-database(1)
+       stop-database(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-     "Administering Database Connectivity"  in  Oracle  GlassFish
-     Server Administration Guide
+       "Administering Database Connectivity" in Oracle GlassFish Server
+       Administration Guide
 
-     For more information about the  Java  application  launcher,
-     see the reference page for the operating system that you are
-     using:
+       For more information about the Java application launcher, see the
+       reference page for the operating system that you are using:
 
-     o Oracle Solaris and Linux:  java  -  the  Java  application
-       launcher
-       (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
+       *   Oracle Solaris and Linux: java - the Java application launcher
+           (http://java.sun.com/javase/6/docs/technotes/tools/solaris/java.html)
 
-     o Windows:   java   -   the   Java   application    launcher
-       (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
+       *   Windows: java - the Java application launcher
+           (http://java.sun.com/javase/6/docs/technotes/tools/windows/java.html)
 
-Java EE 6            Last change: 8 Dec 2011                    3
-
+Java EE 7                         8 Dec 2011                 start-database(1)

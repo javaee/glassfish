@@ -1,68 +1,60 @@
-
-asadmin Utility Subcommands                     list-jms-hosts(1)
+list-jms-hosts(1)         asadmin Utility Subcommands        list-jms-hosts(1)
 
 NAME
-     list-jms-hosts - lists the existing JMS hosts
+       list-jms-hosts - lists the existing JMS hosts
 
 SYNOPSIS
-     list-jms-hosts [--help]
-     [--target target]
+           list-jms-hosts [--help]
+           [--target target]
 
 DESCRIPTION
-     The list-jms-hosts subcommand lists the existing  Java  Mes-
-     sage Service (JMS) hosts for the JMS service.
+       The list-jms-hosts subcommand lists the existing Java Message Service
+       (JMS) hosts for the JMS service.
 
-     This subcommand is supported in  remote  mode  only.  Remote
-     asadmin  subcommands require a running domain administration
-     server (DAS).
+       This subcommand is supported in remote mode only. Remote asadmin
+       subcommands require a running domain administration server (DAS).
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --target
-          Restricts the listing to JMS hosts for a specified tar-
-          get. Valid values are as follows:
+       --target
+           Restricts the listing to JMS hosts for a specified target. Valid
+           values are as follows:
 
-          server
-               Lists  the  JMS  hosts  for  the  default   server
-               instance. This is the default value.
+           server
+               Lists the JMS hosts for the default server instance. This is
+               the default value.
 
-          configuration-name
-               Lists the JMS hosts for the  specified  configura-
-               tion.
+           configuration-name
+               Lists the JMS hosts for the specified configuration.
 
-          cluster-name
-               Lists the JMS hosts for all  server  instances  in
-               the specified cluster.
+           cluster-name
+               Lists the JMS hosts for all server instances in the specified
+               cluster.
 
-          instance-name
-               Lists the  JMS  hosts  for  the  specified  server
-               instance.
+           instance-name
+               Lists the JMS hosts for the specified server instance.
 
 EXAMPLES
-     Example 1 Listing all JMS hosts
+       Example 1, Listing all JMS hosts
+           The following subcommand lists the JMS hosts for the JMS service.
 
-     The following subcommand lists the JMS  hosts  for  the  JMS
-     service.
-     asadmin> list-jms-hosts server-config
-     default_JMS_host
-     MyNewHost
-     Command list-jms-hosts executed successfully.
+               asadmin> list-jms-hosts server-config
+               default_JMS_host
+               MyNewHost
+               Command list-jms-hosts executed successfully.
 
 EXIT STATUS
-     0    subcommand executed successfully
+       0
+           subcommand executed successfully
 
-Java EE 6           Last change: 22 Oct 2010                    1
-
-asadmin Utility Subcommands                     list-jms-hosts(1)
-
-     1    error in executing the subcommand
+       1
+           error in executing the subcommand
 
 SEE ALSO
-     create-jms-host(1), delete-jms-host(1), jms-ping(1)
+       create-jms-host(1), delete-jms-host(1), jms-ping(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6           Last change: 22 Oct 2010                    2
-
+Java EE 7                         22 Oct 2010                list-jms-hosts(1)

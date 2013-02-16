@@ -1,213 +1,191 @@
-
-asadmin Utility Subcommands                   create-node-dcom(1)
+create-node-dcom(1)       asadmin Utility Subcommands      create-node-dcom(1)
 
 NAME
-     create-node-dcom - creates a node that is enabled  for  com-
-     munication over DCOM
+       create-node-dcom - creates a node that is enabled for communication
+       over DCOM
 
 SYNOPSIS
-     create-node-dcom [--help]
-     --nodehost node-host
-     [--installdir as-install-parent] [--nodedir node-dir]
-     [--windowsuser windows-user] [--windowsdomain windows-domain]
-     [--force={false|true}]
-     [--install={false|true}] [--archive archive]
-     node-name
+           create-node-dcom [--help]
+           --nodehost node-host
+           [--installdir as-install-parent] [--nodedir node-dir]
+           [--windowsuser windows-user] [--windowsdomain windows-domain]
+           [--force={false|true}]
+           [--install={false|true}] [--archive archive]
+           node-name
 
 DESCRIPTION
-     The create-node-dcom  subcommand  creates  a  node  that  is
-     enabled  for  communication  over  the Distributed Component
-     Object Model (DCOM) remote protocol. The  DCOM  protocol  is
-     available only on Windows systems.
+       The create-node-dcom subcommand creates a node that is enabled for
+       communication over the Distributed Component Object Model (DCOM) remote
+       protocol. The DCOM protocol is available only on Windows systems.
 
-     A node represents a  host  on  which  the  GlassFish  Server
-     software  is  installed. A node must exist for every host on
-     which GlassFish Server instances reside.
+       A node represents a host on which the GlassFish Server software is
+       installed. A node must exist for every host on which GlassFish Server
+       instances reside.
 
-     In a DCOM-enabled network, the domain administration  server
-     (DAS)  contacts  a node's host through the DCOM connector to
-     manage GlassFish Server instances that reside on  the  node.
-     DCOM  is used only for communications between hosts. DCOM is
-     never used for communications within a single host.
+       In a DCOM-enabled network, the domain administration server (DAS)
+       contacts a node's host through the DCOM connector to manage GlassFish
+       Server instances that reside on the node. DCOM is used only for
+       communications between hosts. DCOM is never used for communications
+       within a single host.
 
-     By default, the subcommand fails and the node is not created
-     if  the  DAS cannot contact the node's host through DCOM. To
-     force the node to be created in the DAS  configuration  even
-     if  the  host  cannot  be contacted through DCOM, set the --
-     force option to true.
+       By default, the subcommand fails and the node is not created if the DAS
+       cannot contact the node's host through DCOM. To force the node to be
+       created in the DAS configuration even if the host cannot be contacted
+       through DCOM, set the --force option to true.
 
-     The create-node-dcom subcommand cannot create  a  node  that
-     represents  the  local  host, that is, the host on which the
-     subcommand is run. The subcommand fails  regardless  of  how
-     the  local host is specified, for example, by using the key-
-     word localhost, the Internet Protocol (IP)  address  of  the
-     host, or the host name.
+       The create-node-dcom subcommand cannot create a node that represents
+       the local host, that is, the host on which the subcommand is run. The
+       subcommand fails regardless of how the local host is specified, for
+       example, by using the keyword localhost, the Internet Protocol (IP)
+       address of the host, or the host name.
 
-     This subcommand is supported in remote mode only.
+       This subcommand is supported in remote mode only.
 
 OPTIONS
-     --help , -?
-          Displays the help text for the subcommand.
+       --help, -?
+           Displays the help text for the subcommand.
 
-     --nodehost
-          The name of the host that the node represents. The name
-          of  the  host  must  be  specified. Otherwise, an error
-          occurs.
+       --nodehost
+           The name of the host that the node represents. The name of the host
+           must be specified. Otherwise, an error occurs.
 
-Java EE 6            Last change: 5 Jan 2012                    1
+       --installdir
+           The full path to the parent of the base installation directory of
+           the GlassFish Server software on the host, for example,
+           C:\glassfish3. The default is the parent of the default base
+           installation directory of the GlassFish Server software for the
+           DAS. This default is useful only if GlassFish Server is installed
+           in the same location on all hosts.
 
-asadmin Utility Subcommands                   create-node-dcom(1)
+       --nodedir
+           The path to the directory that is to contain GlassFish Server
+           instances that are created on the node. The default is
+           as-install\nodes, where as-install is the base installation
+           directory of the GlassFish Server software on the host. If a
+           relative path is specified, the path is relative to the as-install
+           directory.
 
-     --installdir
-          The full path to the parent of  the  base  installation
-          directory of the GlassFish Server software on the host,
-          for example, C:\glassfish3. The default is  the  parent
-          of  the  default  base  installation  directory  of the
-          GlassFish Server software for the DAS. This default  is
-          useful  only  if  GlassFish  Server is installed in the
-          same location on all hosts.
+       --windowsuser, -w
+           The user on this node's host that is to run the process for
+           connecting to the host through DCOM. The default is the user that
+           is running the DAS process. If the --nodehost option is set to
+           localhost-domain, the --windowsuser option is ignored
 
-     --nodedir
-          The path to the directory that is to contain  GlassFish
-          Server  instances  that  are  created  on the node. The
-          default is as-install\nodes, where  as-install  is  the
-          base  installation  directory  of  the GlassFish Server
-          software on the host. If a relative path is  specified,
-          the path is relative to the as-install directory.
+       --windowsdomain, -d
+           The name of the Windows domain that contains the user that the
+           --windowsuser option specifies. The default is the name of the host
+           on which the subcommand is run.
 
-     --windowsuser , -w
-          The user on this node's host that is to run the process
-          for connecting to the host through DCOM. The default is
-          the user that is running the DAS  process.  If  the  --
-          nodehost  option  is  set  to  localhost-domain, the --
-          windowsuser option is ignored
+       --force
+           Specifies whether the node is created in the DAS configuration even
+           if validation of the node's parameters fails. To validate a node's
+           parameters, the DAS must be able to contact the node's host through
+           DCOM. Possible values are as follows:
 
-     --windowsdomain , -d
-          The name of the Windows domain that contains  the  user
-          that the --windowsuser option specifies. The default is
-          the name of the host on which the subcommand is run.
+           false
+               The node is not created if validation of the node's parameters
+               fails (default).
 
-     --force
-          Specifies whether the node is created in the DAS confi-
-          guration  even  if  validation of the node's parameters
-          fails. To validate a node's parameters, the DAS must be
-          able  to contact the node's host through DCOM. Possible
-          values are as follows:
+           true
+               The node is created even if validation of the node's parameters
+               fails.
 
-          false
-               The node is  not  created  if  validation  of  the
-               node's parameters fails (default).
+       --install
+           Specifies whether the subcommand shall install the GlassFish Server
+           software on the host that the node represents.
 
-          true The node is created  even  if  validation  of  the
-               node's parameters fails.
+           Possible values are as follows:
 
-     --install
-          Specifies whether  the  subcommand  shall  install  the
-          GlassFish  Server  software  on  the host that the node
-          represents.
+           false
+               The subcommand shall not install the GlassFish Server software
+               on the host (default).
 
-          Possible values are as follows:
+           true
+               The subcommand shall install the GlassFish Server software on
+               the host.
 
-          false
-
-Java EE 6            Last change: 5 Jan 2012                    2
-
-asadmin Utility Subcommands                   create-node-dcom(1)
-
-               The subcommand shall  not  install  the  GlassFish
-               Server software on the host (default).
-
-          true The subcommand shall install the GlassFish  Server
-               software on the host.
-
-     --archive
-          The absolute path to the archive file of the  GlassFish
-          Server software that is to be installed. If this option
-          is omitted and the --install is  true,  the  subcommand
-          creates  a ZIP archive of the GlassFish Server software
-          from the installation where this subcommand is run. The
-          archive  does  not contain the domains directory or the
-          nodes directory.
+       --archive
+           The absolute path to the archive file of the GlassFish Server
+           software that is to be installed. If this option is omitted and the
+           --install is true, the subcommand creates a ZIP archive of the
+           GlassFish Server software from the installation where this
+           subcommand is run. The archive does not contain the domains
+           directory or the nodes directory.
 
 OPERANDS
-     node-name
-          The name of the node.
+       node-name
+           The name of the node.
 
-          The name must meet the following requirements:
+           The name must meet the following requirements:
 
-          o The name may contain only ASCII characters.
+           *   The name may contain only ASCII characters.
 
-          o The name must start with a letter, a  number,  or  an
-            underscore.
+           *   The name must start with a letter, a number, or an underscore.
 
-          o The name may contain only the following characters:
+           *   The name may contain only the following characters:
 
-            o Lowercase letters
+               *   Lowercase letters
 
-            o Uppercase letters
+               *   Uppercase letters
 
-            o Numbers
+               *   Numbers
 
-            o Hyphen
+               *   Hyphen
 
-            o Period
+               *   Period
 
-            o Underscore
+               *   Underscore
 
-          o The name must be unique in the domain and must not be
-            the  name  of another node, a cluster, a named confi-
-            guration, or a GlassFish Server instance.
+           *   The name must be unique in the domain and must not be the name
+               of another node, a cluster, a named configuration, or a
+               GlassFish Server instance.
 
-          o The name must not be domain,  server,  or  any  other
-            keyword that is reserved by GlassFish Server.
+           *   The name must not be domain, server, or any other keyword that
+               is reserved by GlassFish Server.
 
 EXAMPLES
-     Example 1 Creating a Node
+       Example 1, Creating a Node
+           This example creates the node wpmdl1 for the host
+           wpmdl1.example.com. By default, the parent of the base installation
+           directory of the GlassFish Server software is C:\glassfish3.
 
-Java EE 6            Last change: 5 Jan 2012                    3
+               asadmin> create-node-dcom
+               --nodehost wpmdl1.example.com wpmdl1
+               Command create-node-dcom executed successfully.
 
-asadmin Utility Subcommands                   create-node-dcom(1)
+       Example 2, Creating a Node With a Specific Installation Directory
+           This example creates the node wyml1 for the host wyml1.example.com.
+           The parent of the base installation directory of the GlassFish
+           Server software on this host is C:\middleware\glassfish3.
 
-     This  example  creates  the  node  wpmdl1   for   the   host
-     wpmdl1.example.com.  By default, the parent of the base ins-
-     tallation directory of  the  GlassFish  Server  software  is
-     C:\glassfish3.
-     asadmin> create-node-dcom
-     --nodehost wpmdl1.example.comwpmdl1
-     Command create-node-dcom executed successfully.
-     Example 2 Creating  a  Node  With  a  Specific  Installation
-     Directory
+               asadmin> create-node-dcom --installdir C:\middleware\glassfish3
+               --nodehost wyml1.example.com wyml1
+               Command create-node-dcom executed successfully.
 
-     This  example  creates  the  node   wyml1   for   the   host
-     wyml1.example.com.  The  parent  of  the  base  installation
-     directory of the GlassFish Server software on this  host  is
-     C:\middleware\glassfish3.
-     asadmin> create-node-dcom --installdir C:\middleware\glassfish3
-     --nodehost wyml1.example.comwyml1
-     Command create-node-dcom executed successfully.
-     Example 3 Forcing the Creation of a Node
+       Example 3, Forcing the Creation of a Node
+           This example forces the creation of node xkyd for the host
+           xkyd.example.com. The node is created despite the failure of the
+           DAS to contact the host xkyd.example.com to validate the node's
+           parameters.
 
-     This example forces the creation of node xkyd for  the  host
-     xkyd.example.com. The node is created despite the failure of
-     the DAS to contact the host xkyd.example.com to validate the
-     node's parameters.
-     asadmin> create-node-dcom --force --nodehost xkyd.example.com xkyd
-     Warning: some parameters appear to be invalid.
-     com.sun.enterprise.universal.process.WindowsException: Connection in error
-     Continuing with node creation due to use of --force.
-     Command create-node-dcom executed successfully.
+               asadmin> create-node-dcom --force --nodehost xkyd.example.com xkyd
+               Warning: some parameters appear to be invalid.
+               com.sun.enterprise.universal.process.WindowsException: Connection in error
+               Continuing with node creation due to use of --force.
+               Command create-node-dcom executed successfully.
 
 EXIT STATUS
-     0    command executed successfully
+       0
+           command executed successfully
 
-     1    error in executing the command
+       1
+           error in executing the command
 
 SEE ALSO
-     create-node-config(1),   create-node-ssh(1),    delete-node-
-     dcom(1),   install-node-dcom(1),  list-nodes(1),  uninstall-
-     node-dcom(1), update-node-dcom(1)
+       create-node-config(1), create-node-ssh(1), delete-node-dcom(1),
+       install-node-dcom(1), list-nodes(1), uninstall-node-dcom(1),
+       update-node-dcom(1)
 
-     asadmin(1M)
+       asadmin(1M)
 
-Java EE 6            Last change: 5 Jan 2012                    4
-
+Java EE 7                         5 Jan 2012               create-node-dcom(1)

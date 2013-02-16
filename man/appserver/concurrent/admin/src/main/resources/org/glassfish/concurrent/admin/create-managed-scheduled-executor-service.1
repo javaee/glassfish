@@ -49,9 +49,9 @@ OPTIONS
            The default value is 5.
 
        --longrunningtasks
-           Specifies how a container should handle threads.For example, if set
-           to true, stuck threads will not be reported and shutdown of the
-           managed scheduled executor service will not be blocked waiting for
+           Specifies how a container should handle threads.If set to true,
+           stuck threads will not be reported and shutdown of the managed
+           scheduled executor service will not be blocked waiting for
            long-running tasks. The default value is false.
 
        --hungafterseconds
@@ -81,7 +81,7 @@ OPTIONS
            greater than core size or whether the thread is idle. Threads are
            not interrupted while executing requests. Threads exceeding the
            thread-lifetime-seconds value are not returned to the thread pool
-           after completion of the current request.
+           after the current request completes.
 
            The default value is 0.
 
@@ -100,7 +100,8 @@ OPTIONS
            executor service instance.
 
        --target
-           TBD
+           The target for which the managed scheduled executor service
+           resource is being created.
 
 OPERANDS
        jndi_name
