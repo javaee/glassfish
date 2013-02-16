@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
 <p><a id="task-eelogging" name="task-eelogging"></a><a id="GHCOM00177" name="GHCOM00177"></a></p>
 
-<h4><a id="sthref121" name="sthref121"></a>To Configure General Logging Settings</h4>
+<h4><a id="sthref117" name="sthref117"></a>To Configure General Logging Settings</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <ol>
 <li>
@@ -24,12 +24,19 @@ Use is subject to License Terms  -->
 <p>This feature is available on Solaris and Linux systems only. This option is disabled by default.</p>
 </li>
 <li>
-<p>In the Log File field, type an alternative name or location for the server log file.</p>
-<p>The default location is <code>${com.sun.aas.instanceRoot}/logs/server.log</code>.</p>
+<p>Select the Log to Console Enabled checkbox to send logging output to the system console.</p>
 </li>
 <li>
-<p>In the Log Handler field, type the absolute class name of a custom log handler.</p>
-<p>A custom log handler enables you to send logs to a destination other than <code>server.log</code> or <code>syslog</code>. The custom handler must extend the class <code>java.util.logging.ConsoleHandler</code> (a JSR 047 compliant API). Put the handler class in the GlassFish Server classpath so that the handler is installed during server startup.</p>
+<p>Select the Rotation on Date Change Enabled checkbox to rotate server log files every day at midnight.</p>
+</li>
+<li>
+<p>Select the Multi Line Mode Enabled checkbox to format log messages so that they are easier to read. The log message body is indented and starts on a new line.</p>
+</li>
+<li>
+<p>From the Console Logging Format drop-down list, select the format for logging to the console. The defaut option is ODL (Oracle Diagnostics Logging). The other option is ULF (UniformLogFormatter).</p>
+</li>
+<li>
+<p>From the LogFile Logging Format drop-down list, select the format for logging to the server log file. The defaut option is ODL.</p>
 </li>
 <li>
 <p>In the File Rotation Limit field, type the size in bytes that the server log file must reach before it is rotated.</p>
@@ -51,6 +58,17 @@ Use is subject to License Terms  -->
 <p>The default value is 1.</p>
 </li>
 <li>
+<p>In the Maximum History Files field, type the maximum number of log files that GlassFish Server should keep before deleting the oldest file. If you set this value to zero (0), GlassFish Server does not delete any old log files.</p>
+</li>
+<li>
+<p>In the Log File field, type an alternative name or location for the server log file.</p>
+<p>The default location is <code>${com.sun.aas.instanceRoot}/logs/server.log</code>.</p>
+</li>
+<li>
+<p>In the Log Handler field, type the absolute class name of a custom log handler.</p>
+<p>A custom log handler enables you to send logs to a destination other than <code>server.log</code> or <code>syslog</code>. The custom handler must extend the class <code>java.util.logging.ConsoleHandler</code> (a JSR 047 compliant API). Put the handler class in the GlassFish Server classpath so that the handler is installed during server startup.</p>
+</li>
+<li>
 <p>Click Save.</p>
 
 <hr>
@@ -62,7 +80,7 @@ Use is subject to License Terms  -->
 
 </li>
 </ol>
-<a id="sthref122" name="sthref122"></a>
+<a id="sthref118" name="sthref118"></a>
 <h5>See Also</h5>
 <ul>
 <li>

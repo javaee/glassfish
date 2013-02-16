@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
 <p><a id="ref-uploaddev" name="ref-uploaddev"></a><a id="GHCOM00077" name="GHCOM00077"></a></p>
 
-<h4><a id="sthref303" name="sthref303"></a><a id="sthref304" name="sthref304"></a><a id="sthref305" name="sthref305"></a><a id="sthref306" name="sthref306"></a><a id="sthref307" name="sthref307"></a><a id="sthref308" name="sthref308"></a><a id="sthref309" name="sthref309"></a><a id="sthref310" name="sthref310"></a><a id="sthref311" name="sthref311"></a><a id="sthref312" name="sthref312"></a><a id="sthref313" name="sthref313"></a><a id="sthref314" name="sthref314"></a>Deploy Applications or Modules</h4>
+<h4><a id="sthref294" name="sthref294"></a><a id="sthref295" name="sthref295"></a><a id="sthref296" name="sthref296"></a><a id="sthref297" name="sthref297"></a><a id="sthref298" name="sthref298"></a><a id="sthref299" name="sthref299"></a><a id="sthref300" name="sthref300"></a><a id="sthref301" name="sthref301"></a><a id="sthref302" name="sthref302"></a><a id="sthref303" name="sthref303"></a><a id="sthref304" name="sthref304"></a><a id="sthref305" name="sthref305"></a>Deploy Applications or Modules</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the Deploy Applications or Modules page to deploy an application.</p>
 <p>The Deploy Applications or Modules page contains the following options for all applications. Additional options appear only after you specify the Location field for the application.</p>
@@ -129,6 +129,11 @@ Use is subject to License Terms  -->
 <dd>
 <p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
 </dd>
+<dt>Deployment Order</dt>
+<dd>
+<p>The deployment order of the application.</p>
+<p>Applications with a lower number are loaded first at server startup. An application with a deployment order of 102 is loaded before an application with a deployment order of 110. If a deployment order is not specified at the time an application is deployed, the default deployment order of 100 is assigned. If two applications have the same deployment order, the application that was deployed first is loaded first. Specifying a deployment order is useful if the application has dependencies and must be loaded in a certain order.</p>
+</dd>
 <dt>Libraries</dt>
 <dd>
 <p>A comma-separated list of library JAR files specific to this module or application. The paths may be absolute or relative. A relative path is relative to <i>domain-dir</i><code>/lib/applibs</code>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <i>domain-dir</i>. The libraries are made available to the application in the order in which they are specified.</p>
@@ -176,7 +181,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Compatibility</dt>
 <dd>
-<p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1.2. This option is not checked by default.</p>
+<p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 4.0. This option is not checked by default.</p>
 <p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
 </dd>
 <dt>Force Redeploy</dt>
@@ -196,6 +201,11 @@ Use is subject to License Terms  -->
 <dt>Preserve Application Scoped Resources</dt>
 <dd>
 <p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
+</dd>
+<dt>Deployment Order</dt>
+<dd>
+<p>The deployment order of the application.</p>
+<p>Applications with a lower number are loaded first at server startup. An application with a deployment order of 102 is loaded before an application with a deployment order of 110. If a deployment order is not specified at the time an application is deployed, the default deployment order of 100 is assigned. If two applications have the same deployment order, the application that was deployed first is loaded first. Specifying a deployment order is useful if the application has dependencies and must be loaded in a certain order.</p>
 </dd>
 <dt>Libraries</dt>
 <dd>
@@ -228,6 +238,11 @@ Use is subject to License Terms  -->
 <dd>
 <p>If this option is selected, the application is redeployed if it is already deployed. If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
 </dd>
+<dt>Deployment Order</dt>
+<dd>
+<p>The deployment order of the application.</p>
+<p>Applications with a lower number are loaded first at server startup. An application with a deployment order of 102 is loaded before an application with a deployment order of 110. If a deployment order is not specified at the time an application is deployed, the default deployment order of 100 is assigned. If two applications have the same deployment order, the application that was deployed first is loaded first. Specifying a deployment order is useful if the application has dependencies and must be loaded in a certain order.</p>
+</dd>
 <dt>Description</dt>
 <dd>
 <p>A description of the application.</p>
@@ -259,6 +274,11 @@ Use is subject to License Terms  -->
 <dd>
 <p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
 </dd>
+<dt>Deployment Order</dt>
+<dd>
+<p>The deployment order of the application.</p>
+<p>Applications with a lower number are loaded first at server startup. An application with a deployment order of 102 is loaded before an application with a deployment order of 110. If a deployment order is not specified at the time an application is deployed, the default deployment order of 100 is assigned. If two applications have the same deployment order, the application that was deployed first is loaded first. Specifying a deployment order is useful if the application has dependencies and must be loaded in a certain order.</p>
+</dd>
 <dt>Description</dt>
 <dd>
 <p>A description of the application.</p>
@@ -289,7 +309,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Compatibility</dt>
 <dd>
-<p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1.2. This option is not checked by default.</p>
+<p>If checked, uses GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 4.0. This option is not checked by default.</p>
 <p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
 </dd>
 <dt>Force Redeploy</dt>
@@ -310,6 +330,11 @@ Use is subject to License Terms  -->
 <dd>
 <p>If checked, preserves any application-scoped resources and restores them during redeployment. This option is not checked by default.</p>
 </dd>
+<dt>Deployment Order</dt>
+<dd>
+<p>The deployment order of the application.</p>
+<p>Applications with a lower number are loaded first at server startup. An application with a deployment order of 102 is loaded before an application with a deployment order of 110. If a deployment order is not specified at the time an application is deployed, the default deployment order of 100 is assigned. If two applications have the same deployment order, the application that was deployed first is loaded first. Specifying a deployment order is useful if the application has dependencies and must be loaded in a certain order.</p>
+</dd>
 <dt>Libraries</dt>
 <dd>
 <p>A comma-separated list of library JAR files specific to this module or application. Specifies an absolute or relative path. A relative path is relative to <i>domain-dir</i><code>/lib/applibs</code>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <i>domain-dir</i>. The libraries are made available to the application in the order in which they are specified.</p>
@@ -319,7 +344,7 @@ Use is subject to License Terms  -->
 <p>A description of the application.</p>
 </dd>
 </dl>
-<a id="sthref315" name="sthref315"></a>
+<a id="sthref306" name="sthref306"></a>
 <h5>Additional Options for Applications of Type Other</h5>
 <p>If the application type is Other, the following options appear.</p>
 <dl>
@@ -369,6 +394,11 @@ Use is subject to License Terms  -->
 <p>If any active web session, SFSB instance, or EJB timer fails to be preserved or restored, <i>none</i> of these will be available when the redeployment is complete. However, the redeployment continues and a warning is logged.</p>
 <p>To preserve active state data, GlassFish Server serializes the data and saves it in memory. To restore the data, the class loader of the newly redeployed application deserializes the data that was previously saved.</p>
 </dd>
+<dt>Deployment Order</dt>
+<dd>
+<p>The deployment order of the application.</p>
+<p>Applications with a lower number are loaded first at server startup. An application with a deployment order of 102 is loaded before an application with a deployment order of 110. If a deployment order is not specified at the time an application is deployed, the default deployment order of 100 is assigned. If two applications have the same deployment order, the application that was deployed first is loaded first. Specifying a deployment order is useful if the application has dependencies and must be loaded in a certain order.</p>
+</dd>
 <dt>Libraries</dt>
 <dd>
 <p>A comma-separated list of library JAR files specific to this module or application. Specifies an absolute or relative path. A relative path is relative to <i>domain-dir</i><code>/lib/applibs</code>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <i>domain-dir</i>. The libraries are made available to the application in the order in which they are specified.</p>
@@ -378,7 +408,7 @@ Use is subject to License Terms  -->
 <p>A description of the application.</p>
 </dd>
 </dl>
-<a id="sthref316" name="sthref316"></a>
+<a id="sthref307" name="sthref307"></a>
 <h5>Related Tasks</h5>
 <ul>
 <li>
@@ -430,7 +460,7 @@ Use is subject to License Terms  -->
 <p><a href="task-appscopedresourcesedit.html">To Modify Application Scoped Resources</a></p>
 </li>
 </ul>
-<a id="sthref317" name="sthref317"></a>
+<a id="sthref308" name="sthref308"></a>
 <h5>Related asadmin Commands</h5>
 <ul>
 <li>

@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
 <p><a id="ref-eelogging" name="ref-eelogging"></a><a id="GHCOM00094" name="GHCOM00094"></a></p>
 
-<h4><a id="sthref350" name="sthref350"></a>Logger Settings</h4>
+<h4><a id="sthref341" name="sthref341"></a>Logger Settings</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the Logger Settings page to configure logging for the selected GlassFish Server instance or cluster.</p>
 <p>The Logger Settings page contains the following options.</p>
@@ -16,15 +16,27 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Write to System Log</dt>
 <dd>
-<p>If this option is selected, logging output is sent to the <code>syslog</code> facility in addition to the server log. This feature is available on Solaris and Linux systems only. This option is disabled by default.</p>
+<p>When enabled, logging output is sent to the <code>syslog</code> facility in addition to the server log. This feature is available on Solaris and Linux systems only. This option is disabled by default.</p>
 </dd>
-<dt>Log File</dt>
+<dt>Log to Console</dt>
 <dd>
-<p>An alternative name or location for the server log file. The default location is <i>domain-dir</i><code>/logs/server.log</code>.</p>
+<p>When enabled, logging output is sent to the system console.</p>
 </dd>
-<dt>Log Handler</dt>
+<dt>Rotation on Date Change</dt>
 <dd>
-<p>The absolute class name of a custom log handler. A custom log handler enables you to send logs to a destination other than <code>server.log</code> or <code>syslog</code>. The custom handler must extend the class <code>java.util.logging.Handler</code> (a JSR 047 compliant API). Put the handler class in the GlassFish Server classpath so that the handler is installed during server startup.</p>
+<p>When enabled, GlassFish Server rotates log files every day at midnight.</p>
+</dd>
+<dt>Multi Line Mode</dt>
+<dd>
+<p>When enabled, log messages are formatted in a way that makes them easier to read. The log message body is indented and starts on a new line.</p>
+</dd>
+<dt>Console Logging Format</dt>
+<dd>
+<p>The logging format for logging to the console. Available choices are ULF (UniformLogFormatter) and ODL (Oracle Diagnostics Logging). The default is ODL.</p>
+</dd>
+<dt>LogFile Logging Format</dt>
+<dd>
+<p>The logging format for logging to the server log file. Available choices are ULF and ODL. The default is ODL.</p>
 </dd>
 <dt>File Rotation Limit</dt>
 <dd>
@@ -38,8 +50,20 @@ Use is subject to License Terms  -->
 <dd>
 <p>The maximum number of messages to be written from the queue to the server log at a time. The default value is 1.</p>
 </dd>
+<dt>Maximum History Files</dt>
+<dd>
+<p>The maximum number of log files that GlassFish Server keeps before deleting the oldest file. If you set this value to zero (0), GlassFish Server does not delete any old log files.</p>
+</dd>
+<dt>Log File</dt>
+<dd>
+<p>An alternative name or location for the server log file. The default location is <i>domain-dir</i><code>/logs/server.log</code>.</p>
+</dd>
+<dt>Log Handler</dt>
+<dd>
+<p>The absolute class name of a custom log handler. A custom log handler enables you to send logs to a destination other than <code>server.log</code> or <code>syslog</code>. The custom handler must extend the class <code>java.util.logging.Handler</code> (a JSR 047 compliant API). Put the handler class in the GlassFish Server classpath so that the handler is installed during server startup.</p>
+</dd>
 </dl>
-<a id="sthref351" name="sthref351"></a>
+<a id="sthref342" name="sthref342"></a>
 <h5>Related Tasks</h5>
 <ul>
 <li>
@@ -52,7 +76,7 @@ Use is subject to License Terms  -->
 <p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
 </li>
 </ul>
-<a id="sthref352" name="sthref352"></a>
+<a id="sthref343" name="sthref343"></a>
 <h5>Related asadmin Commands</h5>
 <ul>
 <li>

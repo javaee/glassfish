@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
 <p><a id="task-appdeployclient" name="task-appdeployclient"></a><a id="GHCOM00158" name="GHCOM00158"></a></p>
 
-<h4><a id="sthref63" name="sthref63"></a><a id="sthref64" name="sthref64"></a><a id="sthref65" name="sthref65"></a>To Deploy an Application Client</h4>
+<h4><a id="sthref59" name="sthref59"></a><a id="sthref60" name="sthref60"></a><a id="sthref61" name="sthref61"></a>To Deploy an Application Client</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <ol>
 <li>
@@ -54,6 +54,10 @@ Use is subject to License Terms  -->
 <p>If this option is not selected, an attempt to deploy an application that is already deployed results in an error. This option is disabled by default.</p>
 </li>
 <li>
+<p>In the Deployment Order field, type a number to specify the deployment order of the application.</p>
+<p>Applications with a lower number are loaded first at server startup. An application with a deployment order of 102 is loaded before an application with a deployment order of 110. If a deployment order is not specified at the time an application is deployed, the default deployment order of 100 is assigned. If two applications have the same deployment order, the application that was deployed first is loaded first. Specifying a deployment order is useful if the application has dependencies and must be loaded in a certain order.</p>
+</li>
+<li>
 <p>In the Description field, type a description for this application.</p>
 </li>
 <li>
@@ -64,7 +68,7 @@ Use is subject to License Terms  -->
 <p>Click OK.</p>
 </li>
 </ol>
-<a id="sthref66" name="sthref66"></a>
+<a id="sthref62" name="sthref62"></a>
 <h5>See Also</h5>
 <ul>
 <li>

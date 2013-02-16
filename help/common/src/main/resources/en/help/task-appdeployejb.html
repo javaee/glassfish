@@ -1,11 +1,11 @@
 <!--   DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-Copyright 2005, 2012 Oracle and/or its affiliates. All rights reserved.
+Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms  -->
 <p><a id="task-appdeployejb" name="task-appdeployejb"></a><a id="GHCOM00160" name="GHCOM00160"></a></p>
 
-<h4><a id="sthref71" name="sthref71"></a><a id="sthref72" name="sthref72"></a><a id="sthref73" name="sthref73"></a>To Deploy an EJB Jar</h4>
+<h4><a id="sthref67" name="sthref67"></a><a id="sthref68" name="sthref68"></a><a id="sthref69" name="sthref69"></a>To Deploy an EJB Jar</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <ol>
 <li>
@@ -55,7 +55,7 @@ Use is subject to License Terms  -->
 <p>Verifier packages must be installed from the Update Tool or a warning is logged and this option is ignored.</p>
 </li>
 <li>
-<p>Select the Compatibility checkbox to use GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 3.1.2.</p>
+<p>Select the Compatibility checkbox to use GlassFish Server v2 JAR visibility requirements for applications instead of the stricter Java EE 6 requirements implemented in GlassFish Server v3 releases, including 4.0.</p>
 <p>This option is disabled by default.</p>
 <p>The Java EE 6 platform specification imposes stricter requirements than Java EE 5 did on which JAR files can be visible to various modules within an EAR file. In particular, application clients must not have access to EJB JAR files or other JAR files in the EAR file unless references use the standard Java SE mechanisms (extensions, for example) or the Java EE library-directory mechanism. Checking this box removes these Java EE 6 restrictions.</p>
 </li>
@@ -77,6 +77,10 @@ Use is subject to License Terms  -->
 <p>This option is disabled by default.</p>
 </li>
 <li>
+<p>In the Deployment Order field, type a number to specify the deployment order of the application.</p>
+<p>Applications with a lower number are loaded first at server startup. An application with a deployment order of 102 is loaded before an application with a deployment order of 110. If a deployment order is not specified at the time an application is deployed, the default deployment order of 100 is assigned. If two applications have the same deployment order, the application that was deployed first is loaded first. Specifying a deployment order is useful if the application has dependencies and must be loaded in a certain order.</p>
+</li>
+<li>
 <p>In the Libraries field, type a comma-separated list of library JAR files specific to this application.</p>
 <p>The paths may be absolute or relative. A relative path is relative to <i>domain-dir</i><code>/lib/applibs</code>. If the path is absolute, the path must be accessible to the domain administration server (DAS), which means it must be under <i>domain-dir</i>. The libraries are made available to the application in the order in which they are specified.</p>
 </li>
@@ -91,7 +95,7 @@ Use is subject to License Terms  -->
 <p>Click OK.</p>
 </li>
 </ol>
-<a id="sthref74" name="sthref74"></a>
+<a id="sthref70" name="sthref70"></a>
 <h5>See Also</h5>
 <ul>
 <li>
