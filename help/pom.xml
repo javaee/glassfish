@@ -55,8 +55,9 @@
    <packaging>pom</packaging>
    <version>4.0-SNAPSHOT</version>
    <modules>
-       <module>common</module>
        <module>cluster</module>
+       <module>common</module>
+       <module>concurrent</module>
        <module>corba</module>
        <module>ejb</module>
        <module>ejb-lite</module>
