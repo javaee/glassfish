@@ -51,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
@@ -86,12 +88,16 @@ public class DescriptorImpl implements Descriptor, Serializable {
     private final static String START_START = "[";
     private final static String END_START = "]";
     private final static char END_START_CHAR = ']';
+    private final static String SINGLETON_DIRECTIVE = "S";
+    private final static String NOT_IN_CONTRACTS_DIRECTIVE = "-";
+    private final static char SINGLETON_DIRECTIVE_CHAR = 'S';
+    private final static char NOT_IN_CONTRACTS_DIRECTIVE_CHAR = '-';
 	
 	private Set<String> contracts = new LinkedHashSet<String>();
 	private String implementation;
 	private String name;
 	private String scope = PerLookup.class.getName();
-	private final Map<String, List<String>> metadatas = new LinkedHashMap<String, List<String>>();
+	private Map<String, List<String>> metadatas = new LinkedHashMap<String, List<String>>();
 	private Set<String> qualifiers = new LinkedHashSet<String>();
 	private DescriptorType descriptorType = DescriptorType.CLASS;
 	private DescriptorVisibility descriptorVisibility = DescriptorVisibility.NORMAL;
@@ -652,18 +658,35 @@ public class DescriptorImpl implements Descriptor, Serializable {
             out.print(implementation);
         }
         
-        out.println(END_START);
+        out.print(END_START);
+        
+        if (scope != null && scope.equals(Singleton.class.getName())) {
+            out.print(SINGLETON_DIRECTIVE);
+        }
+        
+        boolean implementationInContracts = true;
+        if (contracts != null && implementation != null && !contracts.contains(implementation)) {
+            out.print(NOT_IN_CONTRACTS_DIRECTIVE);
+            implementationInContracts = false;
+        }
+        
+        out.println();
         
         // Contracts
-        if (contracts != null && !contracts.isEmpty()) {
-            out.println(CONTRACT_KEY + ReflectionHelper.writeSet(contracts));
+        if (contracts != null && !contracts.isEmpty() &&
+                (!implementationInContracts || (contracts.size() > 1))) {
+            String excluded = (implementationInContracts) ? implementation : null ;
+            
+            out.println(CONTRACT_KEY + ReflectionHelper.writeSet(contracts, excluded));
         }
         
         if (name != null) {
             out.println(NAME_KEY + name);
         }
         
-        if (scope != null && !scope.equals(PerLookup.class.getName())) {
+        if ((scope != null) && !(
+                scope.equals(PerLookup.class.getName()) ||
+                scope.equals(Singleton.class.getName()))) {
             out.println(SCOPE_KEY + scope);
         }
         
@@ -698,6 +721,24 @@ public class DescriptorImpl implements Descriptor, Serializable {
         
         out.println();  // This demarks the end of the section
     }
+	
+	private void reinitialize() {
+	    contracts = new LinkedHashSet<String>();
+	    implementation = null;
+	    name = null;
+	    scope = PerLookup.class.getName();
+	    metadatas = new LinkedHashMap<String, List<String>>();
+	    qualifiers = new LinkedHashSet<String>();
+	    descriptorType = DescriptorType.CLASS;
+	    descriptorVisibility = DescriptorVisibility.NORMAL;
+	    loader = null;
+	    rank = 0;
+	    proxiable = null;
+	    analysisName = null;
+	    baseDescriptor = null;
+	    id = null;
+	    locatorId = null;
+	}
 
 	/**
 	 * This can be used to read in instances of this object that were previously written out with
@@ -708,6 +749,9 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	 * @throws IOException on failure
 	 */
 	public boolean readObject(BufferedReader in) throws IOException {
+	    // Reinitialize all fields
+	    reinitialize();
+	    
         String line = in.readLine();
         
         boolean sectionStarted = false;
@@ -727,6 +771,26 @@ public class DescriptorImpl implements Descriptor, Serializable {
                     if (endStartIndex > 1) {
                         implementation = trimmed.substring(1, endStartIndex);
                     }
+                    
+                    String directives = trimmed.substring(endStartIndex + 1);
+                    
+                    boolean doesNotContainImplementation = false;
+                    if (directives != null) {
+                        for (int lcv = 0; lcv < directives.length(); lcv++) {
+                            char charAt = directives.charAt(lcv);
+                            
+                            if (charAt == SINGLETON_DIRECTIVE_CHAR) {
+                                scope = Singleton.class.getName();
+                            }
+                            else if (charAt == NOT_IN_CONTRACTS_DIRECTIVE_CHAR) {
+                                doesNotContainImplementation = true;
+                            }
+                        }
+                    }
+                    
+                    if (!doesNotContainImplementation && (implementation != null)) {
+                        contracts.add(implementation);
+                    }
                 }
             }
             else {
@@ -743,13 +807,9 @@ public class DescriptorImpl implements Descriptor, Serializable {
                     String rightHandSide = trimmed.substring(equalsIndex + 1);
                     
                     if (leftHandSide.equalsIgnoreCase(CONTRACT_KEY)) {
-                        contracts = new LinkedHashSet<String>();
-                        
                         ReflectionHelper.readSet(rightHandSide, contracts);
                     }
                     else if (leftHandSide.equals(QUALIFIER_KEY)) {
-                        qualifiers = new LinkedHashSet<String>();
-                        
                         ReflectionHelper.readSet(rightHandSide, qualifiers);
                     }
                     else if (leftHandSide.equals(NAME_KEY)) {
@@ -769,8 +829,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
                         }
                     }
                     else if (leftHandSide.equals(METADATA_KEY)) {
-                        metadatas.clear();
-                        
                         ReflectionHelper.readMetadataMap(rightHandSide, metadatas);
                     }
                     else if (leftHandSide.equals(RANKING_KEY)) {
