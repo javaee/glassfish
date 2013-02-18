@@ -565,6 +565,23 @@ public class DescriptorImplTest {
         writeB.setRanking(13);
         DescriptorImpl writeC = new DescriptorImpl();  // Write out a completely empty one
         
+        // Write out ones that use directives
+        DescriptorImpl singletonOnlyContract = new DescriptorImpl();
+        singletonOnlyContract.setImplementation(DescriptorImplTest.class.getName());
+        singletonOnlyContract.addAdvertisedContract(DescriptorImplTest.class.getName());
+        singletonOnlyContract.setScope(Singleton.class.getName());
+        
+        // This one has a set of contracts that does NOT contain the implementation
+        DescriptorImpl implNotInContractsPerLookup = new DescriptorImpl();
+        implNotInContractsPerLookup.setImplementation(DescriptorImplTest.class.getName());
+        implNotInContractsPerLookup.addAdvertisedContract(String.class.getName());
+        
+        // This one has a set of contracts that does NOT contain the implementation and is singleton
+        DescriptorImpl implNotInContractsSingleton = new DescriptorImpl();
+        implNotInContractsSingleton.setImplementation(DescriptorImplTest.class.getName());
+        implNotInContractsSingleton.addAdvertisedContract(String.class.getName());
+        implNotInContractsSingleton.setScope(Singleton.class.getName());
+        
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintWriter pw = new PrintWriter(baos);
         
@@ -575,10 +592,15 @@ public class DescriptorImplTest {
         pw.println("# I can add a multi-line comment");
         pw.println("# that has multiple lines");
         writeC.writeObject(pw);
+        singletonOnlyContract.writeObject(pw);
+        implNotInContractsPerLookup.writeObject(pw);
+        implNotInContractsSingleton.writeObject(pw);
         pw.println("# I can add a comment and the end of the file");
         
         pw.close();
         baos.close();
+        
+        // System.out.println(new String(baos.toByteArray()));
         
         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
         BufferedReader br = new BufferedReader(new InputStreamReader(bais));
@@ -604,12 +626,26 @@ public class DescriptorImplTest {
                 Assert.assertEquals(writeC, di);
                 Assert.assertEquals(writeC.hashCode(), di.hashCode());
             }
+            else if (lcv == 3) {
+                Assert.assertEquals(singletonOnlyContract, di);
+                Assert.assertEquals(singletonOnlyContract.hashCode(), di.hashCode());
+            }
+            else if (lcv == 4) {
+                Assert.assertEquals(implNotInContractsPerLookup, di);
+                Assert.assertEquals(implNotInContractsPerLookup.hashCode(), di.hashCode());
+            }
+            else if (lcv == 5) {
+                Assert.assertEquals(implNotInContractsSingleton, di);
+                Assert.assertEquals(implNotInContractsSingleton.hashCode(), di.hashCode());
+            }
             else {
                 Assert.fail("More descriptors were read than were written: " + di + " lcv=" + lcv);
             }
             
             lcv++;
         }
+        
+        Assert.assertEquals(6, lcv);
         
     }
     

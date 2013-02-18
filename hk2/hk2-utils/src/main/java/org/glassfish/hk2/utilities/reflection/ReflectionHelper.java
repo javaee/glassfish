@@ -612,12 +612,27 @@ public class ReflectionHelper {
      * @return a representation of a list
      */
     public static String writeSet(Set<?> set) {
+        return writeSet(set, null);
+    }
+    
+    /**
+     * Writes a set in a way that can be read from an input stream as well
+     * 
+     * @param set The set to write
+     * @param excludeMe An object to exclude from the list of things written
+     * @return a representation of a list
+     */
+    public static String writeSet(Set<?> set, Object excludeMe) {
         if (set == null) return "{}";
         
         StringBuffer sb = new StringBuffer("{");
         
         boolean first = true;
         for (Object writeMe : set) {
+            if (excludeMe != null && excludeMe.equals(writeMe)) {
+                // Excluded
+                continue;
+            }
             if (first) {
                 first = false;
                 sb.append(escapeString(writeMe.toString()));
