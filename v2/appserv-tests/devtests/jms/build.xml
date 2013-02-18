@@ -15,7 +15,7 @@
 
     <target name="all">
         <antcall target="setup"/>
-        <antcall target="ActivationProperties"/>
+        <!--<antcall target="ActivationProperties"/>-->
         <antcall target="Annotation"/>
         <antcall target="DefaultConnectionFactory"/>
         <antcall target="Injection"/>
