@@ -1,16 +1,28 @@
-<!--Arbortext, Inc., 1988-2008, v.4002-->
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<?Pub Inc>
 <html lang="en">
-<head>
 <!--DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
 Copyright 2010, 2012 Oracle and/or its affiliates. All rights reserved.
 
 Use is subject to License Terms-->
-<style type="text/css">  body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:10pt   }      body{margin-top:0}      h1 {font-size:18pt}   h2 {font-size:14pt}   h3 {font-size:12pt}   code,kbd,tt,pre {     font-family:monaco,courier,"courier new";     font-size:10pt;   }    p.copy, p.copy a {     font-family:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:8pt     }   p.copy {text-align: center}    table.grey1,tr.grey1,td.grey1{background:#f1f1f1}   th {   fontfamily:geneva,helvetica,arial,"lucida sans",sans-serif;     font-size:12pt   }   td.insidehead {     font-weight:bold;     background:white;     text-align: left;   }   a {text-decoration:none; color:#3E6B8A}   a:visited{color:#917E9C}   a:hover {text-decoration:underline}      
+<head>
+<style type="text/css">
+	body{margin-top:0}
+	body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {font-family:geneva,helvetica,arial,"lucida sans",sans-serif; font-size:10pt}
+	h1 {font-size:18pt}
+	h2 {font-size:14pt}
+	h3 {font-size:12pt}
+	code,kbd,tt,pre {font-family:monaco,courier,"courier new"; font-size:10pt;}
+	p.copy, p.copy a {font-family:geneva,helvetica,arial,"lucida sans",sans-serif; font-size:8pt}
+	p.copy {text-align: center}
+	table.grey1,tr.grey1,td.grey1{background:#f1f1f1}
+	th {color:#ffffff; font-family:geneva,helvetica,arial,"lucida sans",sans-serif; font-size:12pt}
+	td.insidehead {font-weight:bold; background:white; text-align: left;}
+	a {text-decoration:none; color:#3E6B8A}
+	a:visited{color:#917E9C}
+	a:hover {text-decoration:underline}
 </style>
-<title>GlassFish Server 3.1.2 Quick Start Guide</title>
+<title>GlassFish Server 4.0 Quick Start Guide</title>
 </head>
 <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
 link="#594fbf" vlink="#1005fb" alink="#333366"><table width="100%" border="0"
@@ -20,12 +32,12 @@ cellspacing="4" cellpadding="2">
 <td align="right" valign="top"> <a href="http://www.oracle.com">oracle.com</a> </td>
 </tr>
 <tr>
-<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>GlassFish Server 3.1.2</b></font></td>
+<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>GlassFish Server 4.0</b></font></td>
 </tr>
 </tbody>
 </table><div class="maincontent">
-<a name="aboaa"></a><h1>GlassFish Server 3.1.2 Quick Start Guide</h1>
-<p>Oracle GlassFish Server (GlassFish Server) provides a server for the development and deployment of Java Platform, Enterprise Edition (Java EE platform) applications and web technologies based on Java technology. GlassFish Server 3.1.2 provides the following:</p>
+<a name="aboaa"></a><h1>GlassFish Server 4.0 Quick Start Guide</h1>
+<p>Oracle GlassFish Server (GlassFish Server) provides a server for the development and deployment of Java Platform, Enterprise Edition (Java EE platform) applications and web technologies based on Java technology. GlassFish Server 4.0 provides the following:</p>
 <ul>
 <li>
 <p>A lightweight and extensible core based on OSGi Alliance standards</p>
@@ -73,7 +85,7 @@ cellspacing="4" cellpadding="2">
 <p><a href="#gjahq">Updating and Extending an Existing Installation</a></p>
 </li>
 <li>
-<p><a href="#ghgqg">Removing GlassFish Server 3.1.2 Software</a></p>
+<p><a href="#ghgqg">Removing GlassFish Server 4.0 Software</a></p>
 </li>
 <li>
 <p><a href="#ggkzh">For More Information</a></p>
@@ -82,8 +94,8 @@ cellspacing="4" cellpadding="2">
 <a id="ghgpe" name="ghgpe"></a><a id="GSQSG00030" name="GSQSG00030"></a>
 
 <h2>About This Quick Start Guide</h2>
-<p><i>Oracle GlassFish Server 3.1.2 Quick Start Guide</i> demonstrates key features of the GlassFish Server product and enables you to quickly learn the basics. Step-by-step procedures introduce you to product features and enable you to use them immediately.</p>
-<p>This guide assumes that you have already obtained and installed the GlassFish Server 3.1.2 software. For more information about installing GlassFish Server 3.1.2, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSING"><i>Oracle GlassFish Server Installation Guide</i></a>.</p>
+<p><i>Oracle GlassFish Server 4.0 Quick Start Guide</i> demonstrates key features of the GlassFish Server product and enables you to quickly learn the basics. Step-by-step procedures introduce you to product features and enable you to use them immediately.</p>
+<p>This guide assumes that you have already obtained and installed the GlassFish Server 4.0 software. For more information about installing GlassFish Server 4.0, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSING"><i>Oracle GlassFish Server Installation Guide</i></a>.</p>
 <p>Instructions and examples in this guide that apply to all supported operating systems use the forward slash character (<code>/</code>) as path separators in all file names and commands. Ensure that you use the correct character for the system on which GlassFish Server is installed. For example:</p>
 <ul>
 <li>
@@ -94,7 +106,7 @@ cellspacing="4" cellpadding="2">
 </li>
 </ul>
 <p>This guide provides basic information only. For comprehensive information about GlassFish Server and other entities mentioned in this guide, see <a href="#ggkzh">For More Information</a>.</p>
-<p>To review additional details about this release before you begin using the software, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRLN"><i>Oracle GlassFish Server Release Notes</i></a>. The <i>Release Notes</i> provide important information about the GlassFish Server 3.1.2 release, including details about new features, information about known issues and possible workarounds, and tips for installing and working with GlassFish Server 3.1.2 software.</p>
+<p>To review additional details about this release before you begin using the software, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRLN"><i>Oracle GlassFish Server Release Notes</i></a>. The <i>Release Notes</i> provide important information about the GlassFish Server 4.0 release, including details about new features, information about known issues and possible workarounds, and tips for installing and working with GlassFish Server 4.0 software.</p>
 
 
 <a id="ghpfg" name="ghpfg"></a><a id="GSQSG00031" name="GSQSG00031"></a>
@@ -804,7 +816,7 @@ Hi, my name is Duke. What's yours?
 
 <a id="ghgqg" name="ghgqg"></a><a id="GSQSG00039" name="GSQSG00039"></a>
 
-<h2>Removing GlassFish Server 3.1.2 Software</h2>
+<h2>Removing GlassFish Server 4.0 Software</h2>
 <p>Before removing the GlassFish Server software, stop the following processes:</p>
 <ul>
 <li>
@@ -866,7 +878,7 @@ Hi, my name is Duke. What's yours?
 <a id="ggkzh" name="ggkzh"></a><a id="GSQSG00040" name="GSQSG00040"></a>
 
 <h2>For More Information</h2>
-<p>Additional resources are available to help you learn more about GlassFish Server 3.1.2 and related technologies.</p>
+<p>Additional resources are available to help you learn more about GlassFish Server 4.0 and related technologies.</p>
 <p>The following resources are described here:</p>
 <ul>
 <li>
@@ -879,7 +891,7 @@ Hi, my name is Duke. What's yours?
 <p><a href="#giyjo">Tutorials</a></p>
 </li>
 <li>
-<p><a href="#gintm">Java EE 6 Samples</a></p>
+<p><a href="#gintm">Java EE 7 Samples</a></p>
 </li>
 </ul>
 <a id="ghhir" name="ghhir"></a><a id="GSQSG00050" name="GSQSG00050"></a>
@@ -894,7 +906,7 @@ Hi, my name is Duke. What's yours?
 <p><a href="http://docs.oracle.com/cd/E26576_01/index.htm">Oracle GlassFish Server Documentation Library</a>: Collection of guides that document Oracle GlassFish Server features and functions.</p>
 </li>
 <li>
-<p>GlassFish Server Open Source Edition all-in-one documentation archive (available for download from the <a href="http://glassfish.java.net/downloads/3.1.2-final.html">GlassFish Server Open Source Edition - 3.1.2 Final</a> page): Collection of guides that document GlassFish Server Open Source Edition features and functions.</p>
+<p>GlassFish Server Open Source Edition all-in-one documentation archive (available for download from the <a href="http://glassfish.java.net/downloads/4.0-final.html">GlassFish Server Open Source Edition - 4.0 Final</a> page): Collection of guides that document GlassFish Server Open Source Edition features and functions.</p>
 </li>
 <li>
 <p><a href="http://wikis.oracle.com/display/GlassFish/Screencasts+and+Other+Videos">GlassFish Server Screencasts</a>: Collection of video recordings that demonstrate various features and provide examples for working with GlassFish Server and related technologies.</p>
@@ -928,21 +940,21 @@ Hi, my name is Duke. What's yours?
 <a id="giyjo" name="giyjo"></a><a id="GSQSG00052" name="GSQSG00052"></a>
 
 <h3>Tutorials</h3>
-<p>The following tutorials provide working examples and detailed instructions for creating enterprise applications for the Java EE 6 platform.</p>
+<p>The following tutorials provide working examples and detailed instructions for creating enterprise applications for the Java EE 7 platform.</p>
 <ul>
 <li>
-<p><a href="http://docs.oracle.com/javaee/6/firstcup/doc/">Your First Cup: An Introduction to the Java EE Platform</a>: Provides a short tutorial for beginning Java EE programmers that shows how to develop a simple enterprise application from scratch. The sample application consists of four main components: a JAX-RS RESTful web service, an enterprise bean, a Java Persistence API entity, and a web application created with JavaServer Faces Facelets technology.</p>
+<p><a href="http://docs.oracle.com/javaee/7/firstcup/doc/">Your First Cup: An Introduction to the Java EE Platform</a>: Provides a short tutorial for beginning Java EE programmers that shows how to develop a simple enterprise application from scratch. The sample application consists of four main components: a JAX-RS RESTful web service, an enterprise bean, a Java Persistence API entity, and a web application created with JavaServer Faces Facelets technology.</p>
 </li>
 <li>
-<p><a href="http://docs.oracle.com/javaee/6/tutorial/doc/">The Java EE 6 Tutorial</a>: Provides a beginner's guide to developing enterprise applications for GlassFish Server. The tutorial includes working examples and instructions for creating applications with Java EE 6 technologies, including Java Servlets, JavaServer Faces, Facelets, RESTful Web Services, Enterprise JavaBeans, Java Persistence API, Contexts and Dependency Injection for the Java EE platform, and more. The document is also available through Update Tool.</p>
+<p><a href="http://docs.oracle.com/javaee/7/tutorial/doc/">The Java EE 7 Tutorial</a>: Provides a beginner's guide to developing enterprise applications for GlassFish Server. The tutorial includes working examples and instructions for creating applications with Java EE 7 technologies, including Java Servlets, JavaServer Faces, Facelets, RESTful Web Services, Enterprise JavaBeans, Java Persistence API, Contexts and Dependency Injection for the Java EE platform, and more. The document is also available through Update Tool.</p>
 </li>
 </ul>
 
 
 <a id="gintm" name="gintm"></a><a id="GSQSG00053" name="GSQSG00053"></a>
 
-<h3>Java EE 6 Samples</h3>
-<p>The sample applications demonstrate Java EE 6 technologies. The samples are available through Update Tool and also as part of the Java EE 6 SDK distributions. The SDK distributions are available from the <a href="http://www.oracle.com/technetwork/java/javaee/downloads/index.html">Java EE SDK downloads page</a>.</p>
+<h3>Java EE 7 Samples</h3>
+<p>The sample applications demonstrate Java EE technologies. The samples are available through Update Tool and also as part of the Java EE 7 SDK distributions. The SDK distributions are available from the <a href="http://www.oracle.com/technetwork/java/javaee/downloads/index.html">Java EE SDK downloads page</a>.</p>
 </div> <hr style="width: 80%; height: 2px;"> <p
 class="copy"><a href="http://www.oracle.com/corporate/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
 href="http://www.oracle.com/corporate/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp;
