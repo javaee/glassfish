@@ -105,6 +105,17 @@ abstract class AbstractBindingBuilder<T> implements
         this.proxiable = proxiable;
         return this;
     }
+    
+    /**
+     * Analyzer to use with this descriptor
+     */
+    String analyzer = null;
+    
+    @Override
+    public AbstractBindingBuilder<T> analyzeWith(String analyzer) {
+        this.analyzer = analyzer;
+        return this;
+    }
 
     @Override
     public AbstractBindingBuilder<T> to(Class<? super T> contract) {
@@ -189,7 +200,8 @@ abstract class AbstractBindingBuilder<T> implements
 
             ActiveDescriptorBuilder builder = BuilderHelper.activeLink(service)
                     .named(name)
-                    .andLoadWith(this.loader);
+                    .andLoadWith(this.loader)
+                    .analyzeWith(this.analyzer);
 
             if (scope != null) {
                 builder.in(scope);
@@ -233,9 +245,10 @@ abstract class AbstractBindingBuilder<T> implements
             if (this.loader == null) {
                 this.loader = defaultLoader;
             }
-            AbstractActiveDescriptor descriptor = BuilderHelper.createConstantDescriptor(service);
+            AbstractActiveDescriptor<?> descriptor = BuilderHelper.createConstantDescriptor(service);
             descriptor.setName(name);
             descriptor.setLoader(this.loader);
+            descriptor.setClassAnalysisName(this.analyzer);
 
             if (scope != null) {
                 descriptor.setScope(scope.getName());
@@ -278,15 +291,18 @@ abstract class AbstractBindingBuilder<T> implements
                 this.loader = defaultLoader;
             }
 
-            AbstractActiveDescriptor factoryContractDescriptor = BuilderHelper.createConstantDescriptor(factory);
+            AbstractActiveDescriptor<?> factoryContractDescriptor = BuilderHelper.createConstantDescriptor(factory);
             factoryContractDescriptor.addContractType(factory.getClass());
             factoryContractDescriptor.setName(name);
             factoryContractDescriptor.setLoader(this.loader);
             factoryContractDescriptor.setProxiable(proxiable);
+            factoryContractDescriptor.setClassAnalysisName(this.analyzer);
 
             ActiveDescriptorBuilder descriptorBuilder = BuilderHelper.activeLink(factory.getClass())
                     .named(name)
-                    .andLoadWith(this.loader);
+                    .andLoadWith(this.loader)
+                    .analyzeWith(this.analyzer);
+            
             if (scope != null) {
                 descriptorBuilder.in(scope);
             }
@@ -328,7 +344,9 @@ abstract class AbstractBindingBuilder<T> implements
 
             ActiveDescriptorBuilder factoryDescriptorBuilder = BuilderHelper.activeLink(factoryClass)
              .named(name)
-             .andLoadWith(this.loader);
+             .andLoadWith(this.loader)
+             .analyzeWith(this.analyzer);
+            
             if (factoryScope != null) {
                 factoryDescriptorBuilder.in(factoryScope);
             }
@@ -336,7 +354,8 @@ abstract class AbstractBindingBuilder<T> implements
             ActiveDescriptorBuilder descriptorBuilder = BuilderHelper.activeLink(factoryClass)
                     .named(name)
                     .andLoadWith(this.loader)
-                    .proxy(proxiable);
+                    .proxy(proxiable)
+                    .analyzeWith(this.analyzer);
 
             if (scope != null) {
                 descriptorBuilder.in(scope);

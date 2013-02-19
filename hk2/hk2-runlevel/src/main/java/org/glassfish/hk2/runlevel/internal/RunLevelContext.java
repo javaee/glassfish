@@ -39,18 +39,17 @@
  */
 package org.glassfish.hk2.runlevel.internal;
 
-
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelException;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.runlevel.utilities.Utilities;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -68,14 +67,14 @@ public class RunLevelContext implements Context<RunLevel> {
     /**
      * The backing maps for this context.
      */
-    private Map<String, Map<ActiveDescriptor<?>, Object>> backingMaps =
-            new HashMap<String, Map<ActiveDescriptor<?>, Object>>();
+    private final Map<ActiveDescriptor<?>, Object> backingMap =
+            new HashMap<ActiveDescriptor<?>, Object>();
 
     /**
      * The run level controllers.
      */
     @Inject
-    private IterableProvider<RunLevelController> allRunLevelControllers;
+    private Provider<RunLevelController> runLevelController;
 
 
     // ----- Context --------------------------------------------------------
@@ -95,43 +94,29 @@ public class RunLevelContext implements Context<RunLevel> {
     @Override
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
                               ServiceHandle<?> root) {
-
-        String rlsName = Utilities.getRunLevelControllerName(activeDescriptor);
-
-        Map<ActiveDescriptor<?>, Object> backingMap = getBackingMap(rlsName);
-
         if (backingMap.containsKey(activeDescriptor)) {
             return (T) backingMap.get(activeDescriptor);
         }
 
-
         int mode = Utilities.getRunLevelMode(activeDescriptor);
 
-        RunLevelController RunLevelController = getRunLevelController(rlsName);
-
-        if (RunLevelController == null) {
-            throw new RunLevelException("Can't find a run level controller for " + rlsName);
-        }
-
         if (mode == RunLevel.RUNLEVEL_MODE_VALIDATING) {
-            validate(activeDescriptor, RunLevelController);
+            validate(activeDescriptor, runLevelController.get());
         }
+        
         T service = activeDescriptor.create(root);
         backingMap.put(activeDescriptor, service);
-        RunLevelController.recordActivation(activeDescriptor);
+        
+        runLevelController.get().recordActivation(activeDescriptor);
         return service;
     }
 
     /* (non-Javadoc)
     * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.ActiveDescriptor)
     */
-    @SuppressWarnings("unchecked")
     @Override
     public boolean containsKey(ActiveDescriptor<?> activeDescriptor) {
-        Map<ActiveDescriptor<?>, Object> backingStore =
-                getBackingMap(Utilities.getRunLevelControllerName(activeDescriptor));
-
-        return backingStore.containsKey(activeDescriptor);
+        return backingMap.containsKey(activeDescriptor);
     }
 
     /* (non-Javadoc)
@@ -157,13 +142,11 @@ public class RunLevelContext implements Context<RunLevel> {
      * @param activeDescriptor  the descriptor
      * @param <T>               the descriptor type
      */
+    @SuppressWarnings("unchecked")
     public <T> void deactivate(ActiveDescriptor<T> activeDescriptor) {
-        Map<ActiveDescriptor<?>, Object> backingStore =
-                getBackingMap(Utilities.getRunLevelControllerName(activeDescriptor));
-
-        if (backingStore.containsKey(activeDescriptor)) {
-            activeDescriptor.dispose((T) backingStore.get(activeDescriptor));
-            backingStore.remove(activeDescriptor);
+        if (backingMap.containsKey(activeDescriptor)) {
+            activeDescriptor.dispose((T) backingMap.get(activeDescriptor));
+            backingMap.remove(activeDescriptor);
         }
     }
 
@@ -192,39 +175,6 @@ public class RunLevelContext implements Context<RunLevel> {
                     "; planned is: " + planned +
                     "; current is: " + current + ".");
         }
-    }
-
-    /**
-     * Get the backing map associated with the given run level service name.
-     *
-     * @param name  the run level service name
-     *
-     * @return the backing map
-     */
-    private Map<ActiveDescriptor<?>, Object> getBackingMap(String name) {
-        Map<ActiveDescriptor<?>, Object> backingMap = backingMaps.get(name);
-        if (backingMap == null) {
-            backingMap = new HashMap<ActiveDescriptor<?>, Object>();
-            backingMaps.put(name, backingMap);
-        }
-        return backingMap;
-    }
-
-    /**
-     * Get the {@link org.glassfish.hk2.runlevel.RunLevelController} for the given name.
-     *
-     * @param name  the run level service name
-     * @param <T>   the {@link org.glassfish.hk2.runlevel.RunLevelController} type
-     *
-     * @return the {@link org.glassfish.hk2.runlevel.RunLevelController} for the given name; null if none
-     *         exists
-     */
-    private <T> RunLevelController getRunLevelController(String name) {
-        RunLevelController controller =
-                allRunLevelControllers.named(name).get();
-
-        return controller == null ?
-                allRunLevelControllers.get() : controller;
     }
 
     /* (non-Javadoc)

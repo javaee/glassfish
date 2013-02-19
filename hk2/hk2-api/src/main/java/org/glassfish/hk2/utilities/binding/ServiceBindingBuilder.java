@@ -139,4 +139,12 @@ public interface ServiceBindingBuilder<T> extends BindingBuilder<T> {
      * @param proxiable flag to determine if the binding should be proxiable.
      */
     public ServiceBindingBuilder<T> proxy(boolean proxiable);
+    
+    /**
+     * Set the name of the {@link org.glassfish.hk2.api.ClassAnalyzer} on the binding.
+     *
+     * @param analyzer The name of the analyzer that should be used.  May be null
+     * to indicate the default class analzyer
+     */
+    public ServiceBindingBuilder<T> analyzeWith(String analyzer);
 }

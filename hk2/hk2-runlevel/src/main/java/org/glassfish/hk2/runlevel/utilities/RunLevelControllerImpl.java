@@ -40,7 +40,11 @@
 package org.glassfish.hk2.runlevel.utilities;
 
 
-import org.glassfish.hk2.api.*;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.Activator;
 import org.glassfish.hk2.runlevel.RunLevelController;
@@ -48,12 +52,9 @@ import org.glassfish.hk2.runlevel.RunLevelException;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.Sorter;
 import org.glassfish.hk2.runlevel.internal.RunLevelContext;
-import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -241,9 +242,6 @@ public class RunLevelControllerImpl implements RunLevelController {
     // async mode.
     private final ExecutorService exec;
 
-    // the name for this instance
-    private String name;
-
     // the current run level (the last one successfully achieved)
     private Integer currentRunLevel = RunLevel.RUNLEVEL_VAL_INITIAL;
 
@@ -302,22 +300,7 @@ public class RunLevelControllerImpl implements RunLevelController {
         }
     }
 
-
-    // ----- PostConstruct -------------------------------------------------
-
-    @PostConstruct
-    public void postConstruct() {
-        Named named = getClass().getAnnotation(Named.class);
-        name = named == null ? RUNLEVEL_CONTROLLER_DEFAULT_NAME : named.value();
-    }
-
-
     // ----- RunLevelController ------------------------------------------------
-
-    @Override
-    public String getName() {
-        return name;
-    }
 
     @Override
     public Integer getCurrentRunLevel() {
@@ -370,7 +353,7 @@ public class RunLevelControllerImpl implements RunLevelController {
 
         @Override
         public void activate(ActiveDescriptor<?> descriptor) {
-            ServiceHandle serviceHandle = serviceLocator.getServiceHandle(descriptor);
+            ServiceHandle<?> serviceHandle = serviceLocator.getServiceHandle(descriptor);
             serviceLocator.reifyDescriptor( descriptor );
             if ( ! serviceHandle.isActive() ) {
                 serviceHandle.getService();
@@ -410,7 +393,6 @@ public class RunLevelControllerImpl implements RunLevelController {
         b.append("curr=").append(getCurrentRunLevel()).append(", ");
         b.append("act=").append(getActivatingRunLevel()).append(", ");
         b.append("plan=").append(getPlannedRunLevel()).append(", ");
-        b.append("scope=").append(getName()).append(", ");
         if (extended) {
             b.append("thrd=").append(Thread.currentThread()).append(", ");
         }
@@ -436,7 +418,7 @@ public class RunLevelControllerImpl implements RunLevelController {
      * @return true if the RunLevel for the given descriptor in question should
      *         be processed by this RunLevelController instance
      */
-    protected boolean accept(Descriptor descriptor, int activeRunLevel) {
+    private boolean accept(Descriptor descriptor, int activeRunLevel) {
         Integer runLevel = Utilities.getRunLevelValue(descriptor);
         if (runLevel != null) {
             if (runLevel != activeRunLevel) {
@@ -444,7 +426,7 @@ public class RunLevelControllerImpl implements RunLevelController {
             }
         }
 
-        return getName().equals(Utilities.getRunLevelControllerName(descriptor));
+        return true;
     }
 
     private boolean isCancelled(Worker worker) {
@@ -583,35 +565,11 @@ public class RunLevelControllerImpl implements RunLevelController {
      *
      * @return the listeners
      */
-    protected synchronized Collection<RunLevelListener> getListeners() {
-        Collection<RunLevelListener> listeners = new ArrayList<RunLevelListener>();
-        List<ActiveDescriptor<?>> allRunLevelListeners =
-                serviceLocator.getDescriptors(BuilderHelper.createContractFilter(RunLevelListener.class.getName()));
+    private synchronized List<RunLevelListener> getListeners() {
+        List<RunLevelListener> allRunLevelListeners =
+                serviceLocator.getAllServices(RunLevelListener.class);
 
-        for (ActiveDescriptor<?> descriptor : allRunLevelListeners) {
-            if (name.equals(Utilities.getRunLevelControllerName(descriptor))) {
-                listeners.add((RunLevelListener) serviceLocator.getServiceHandle(descriptor).getService());
-            }
-        }
-        return listeners;
-    }
-
-    /**
-     * Get the best {@link Sorter}.
-     *
-     * @return the best sorter; null if none exists
-     */
-    protected synchronized Sorter getSorter() {
-        Collection<Sorter> sorters = new ArrayList<Sorter>();
-        List<ActiveDescriptor<?>> allSorters =
-                serviceLocator.getDescriptors(BuilderHelper.createContractFilter(Sorter.class.getName()));
-
-        for (ActiveDescriptor<?> descriptor : allSorters) {
-            if (name.equals(Utilities.getRunLevelControllerName(descriptor))) {
-                sorters.add((Sorter) serviceLocator.getServiceHandle(descriptor).getService());
-            }
-        }
-        return (sorters.isEmpty()) ? null : sorters.iterator().next();
+        return allRunLevelListeners;
     }
 
 
@@ -805,7 +763,7 @@ public class RunLevelControllerImpl implements RunLevelController {
                     logger.log(LEVEL, "sorting {0}", activations);
                 }
 
-                Sorter sorter = getSorter();
+                Sorter sorter = serviceLocator.getService(Sorter.class);
                 if (sorter != null) {
                     sorter.sort(activations);
                 }
