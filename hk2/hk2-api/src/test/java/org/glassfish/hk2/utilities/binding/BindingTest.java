@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BindingTest {
+    private final static String MY_CUSTOM_ANALYZER = "MyCustomAnalyzer";
 
     @Test
     public void testBindingBuilderFactory () {
@@ -32,7 +33,13 @@ public class BindingTest {
 
         }};
 
-        ScopedNamedBindingBuilder<Foo> bindingBuilder = binderFactory.in(Singleton.class).loadedBy(hk2Loader).named("foo").withMetadata("foo", "bar").to(MyContract.class);
+        ScopedNamedBindingBuilder<Foo> bindingBuilder = binderFactory.
+                in(Singleton.class).
+                loadedBy(hk2Loader).
+                named("foo").
+                withMetadata("foo", "bar").
+                to(MyContract.class).
+                analyzeWith(MY_CUSTOM_ANALYZER);
 
         DynamicConfiguration dc = EasyMock.createMock(DynamicConfiguration.class);
 
@@ -44,6 +51,7 @@ public class BindingTest {
         expectedDescriptor.addMetadata("foo", "bar");
         expectedDescriptor.addQualifier("javax.inject.Named");
         expectedDescriptor.addAdvertisedContract("org.glassfish.hk2.utilities.binding.BindingTest$MyContract");
+        expectedDescriptor.setClassAnalysisName(MY_CUSTOM_ANALYZER);
 
         EasyMock.expect(dc.bind(expectedDescriptor)).andReturn(null);
 

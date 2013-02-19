@@ -45,7 +45,6 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelController;
-import org.glassfish.hk2.runlevel.RunLevelControllerIndicator;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.Sorter;
 import org.glassfish.hk2.runlevel.utilities.RunLevelControllerImpl;
@@ -482,28 +481,6 @@ public class RunLevelServiceTest {
     }
 
     @Test
-    public void namedProceedUpTo5() throws Exception {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("namedProceedUpTo5");
-
-        configureLocator(locator, new Class[]{
-                FooRunLevelControllerImpl.class,
-                RunLevelControllerFive.class,
-                FooRunLevelControllerFive.class});
-
-        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class, "foo");
-
-        proceedToAndWait(rlc, locator, 5);
-        assertEquals(5, rlc.getCurrentRunLevel());
-        assertEquals(null, rlc.getPlannedRunLevel());
-
-        HashMap<Integer, Stack<ActiveDescriptor<?>>> recorders = rlc.getRecorders();
-
-        assertEquals(1, recorders.size());
-        Stack<ActiveDescriptor<?>> recorder = recorders.get(5);
-        assertNotNull(recorder);
-    }
-
-    @Test
     public void proceedUpAndDownWithListener() throws Exception {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create("proceedUpAndDownWithListener");
 
@@ -524,36 +501,6 @@ public class RunLevelServiceTest {
         proceedToAndWait(rlc, locator, 0);
 
         assertEquals(0, listener.getLastRunLevel());
-    }
-
-    @Test
-    public void namedProceedUpAndDownWithListener() throws Exception {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("namedProceedUpAndDownWithListener");
-
-        configureLocator(locator, new Class[]{
-                FooRunLevelControllerImpl.class,
-                Listener.class,
-                FooListener.class,
-                RunLevelControllerFive.class,
-                FooRunLevelControllerFive.class});
-
-        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class, "foo");
-
-        Listener listener = locator.getService(Listener.class);
-        Listener fooListener = locator.getService(FooListener.class);
-
-        assertEquals(0, listener.getLastRunLevel());
-        assertEquals(0, fooListener.getLastRunLevel());
-
-        proceedToAndWait(rlc, locator, 5);
-
-        assertEquals(0, listener.getLastRunLevel());
-        assertEquals(5, fooListener.getLastRunLevel());
-
-        proceedToAndWait(rlc, locator, 0);
-
-        assertEquals(0, listener.getLastRunLevel());
-        assertEquals(0, fooListener.getLastRunLevel());
     }
 
     @Test
@@ -579,44 +526,6 @@ public class RunLevelServiceTest {
         proceedToAndWait(rlc, locator, 0, activator);
 
         assertEquals(RunLevelControllerFive.class, activator.getLastDeactivated().getImplementationClass());
-    }
-
-    @Test
-    public void namedProceedUpAndDownWithActivator() throws Exception {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("namedProceedUpAndDownWithActivator");
-
-        configureLocator(locator, new Class[]{
-                FooRunLevelControllerImpl.class,
-                Activator.class,
-                FooActivator.class,
-                RunLevelControllerFive.class,
-                FooRunLevelControllerFive.class});
-
-        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class, "foo");
-
-        BaseActivator activator = locator.getService(Activator.class);
-        BaseActivator fooActivator = locator.getService(FooActivator.class);
-
-        assertNull(activator.getLastActivated());
-        assertNull(activator.getLastDeactivated());
-
-        assertNull(fooActivator.getLastActivated());
-        assertNull(fooActivator.getLastDeactivated());
-
-        proceedToAndWait(rlc, locator, 5, fooActivator);
-
-        assertNull(activator.getLastActivated());
-        assertNull(activator.getLastDeactivated());
-
-        assertEquals(FooRunLevelControllerFive.class, fooActivator.getLastActivated().getImplementationClass());
-        assertNull(fooActivator.getLastDeactivated());
-
-        proceedToAndWait(rlc, locator, 0, fooActivator);
-
-        assertNull(activator.getLastActivated());
-        assertNull(activator.getLastDeactivated());
-
-        assertEquals(FooRunLevelControllerFive.class, fooActivator.getLastDeactivated().getImplementationClass());
     }
 
     @Test @Ignore
@@ -713,11 +622,6 @@ public class RunLevelServiceTest {
                 clazz = clazz.getSuperclass();
             }
 
-            final RunLevelControllerIndicator runLevelControllerIndicator = service.getAnnotation(RunLevelControllerIndicator.class);
-            if (runLevelControllerIndicator != null) {
-                descriptorBuilder.has(RunLevelControllerIndicator.RUNLEVEL_CONTROLLER_NAME_META_TAG, runLevelControllerIndicator.value());
-            }
-
             final Named named = service.getAnnotation(Named.class);
             if (named != null) {
                 descriptorBuilder.named(named.value());
@@ -755,12 +659,6 @@ public class RunLevelServiceTest {
     @RunLevel(5)
     @Service
     public static class RunLevelControllerFive extends TestService {
-    }
-
-    @RunLevel(5)
-    @Service
-    @RunLevelControllerIndicator("foo")
-    public static class FooRunLevelControllerFive extends TestService {
     }
 
     @RunLevel(10)
@@ -889,11 +787,6 @@ public class RunLevelServiceTest {
     }
 
     @Service
-    @Named("foo")
-    public static class FooRunLevelControllerImpl extends RunLevelControllerImpl {
-    }
-
-    @Service
     public static class TestListener implements RunLevelListener {
         private int waitForRunLevel;
 
@@ -951,15 +844,6 @@ public class RunLevelServiceTest {
         }
     }
 
-    @Service
-    @RunLevelControllerIndicator("foo")
-    public static class FooListener extends Listener {
-        @Override
-        protected String getName() {
-            return "foo";
-        }
-    }
-
     public static abstract class BaseActivator implements org.glassfish.hk2.runlevel.Activator {
 
         ActiveDescriptor lastActivated = null;
@@ -1009,18 +893,6 @@ public class RunLevelServiceTest {
         }
     }
 
-    @Service
-    @RunLevelControllerIndicator("foo")
-    public static class FooActivator extends BaseActivator {
-        @Inject
-        private FooRunLevelControllerImpl rlc;
-
-        @Override
-        protected RunLevelControllerImpl getRunLevelController() {
-            return rlc;
-        }
-    }
-
     public static class PrioritySorter implements Sorter {
 
         @Inject
@@ -1041,11 +913,6 @@ public class RunLevelServiceTest {
             // Priority priority = descriptor.getImplementationClass().getAnnotation(Priority.class);
             // return priority != null ? priority.value() : 5;
         }
-    }
-
-    @Service
-    @RunLevelControllerIndicator("foo")
-    public static class FooPrioritySorter extends PrioritySorter {
     }
 }
 

@@ -62,14 +62,6 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface RunLevelController {
 
-    // ----- Constants ------------------------------------------------------
-
-    /**
-     * The default run level service name.
-     */
-    public static final String RUNLEVEL_CONTROLLER_DEFAULT_NAME = "__runLevelControllerDefaultName";
-
-
     // ----- Methods --------------------------------------------------------
 
     /**
@@ -138,13 +130,6 @@ public interface RunLevelController {
      * @return the planned run level, or null if there is no planned level
      */
     Integer getPlannedRunLevel();
-
-    /**
-     * Get the name of this RunLevelController.
-     *
-     * @return the name
-     */
-    String getName();
 
     /**
      * Record the activation the run level service associated with the given

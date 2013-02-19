@@ -41,8 +41,6 @@ package org.glassfish.hk2.runlevel.utilities;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.runlevel.RunLevel;
-import org.glassfish.hk2.runlevel.RunLevelController;
-import org.glassfish.hk2.runlevel.RunLevelControllerIndicator;
 
 import java.util.List;
 
@@ -66,23 +64,6 @@ public class Utilities {
         return list == null ?
                 RunLevel.RUNLEVEL_VAL_IMMEDIATE :
                 Integer.valueOf(list.get(0));
-    }
-
-    /**
-     * Get the run level service name from the metadata of the given
-     * descriptor.
-     *
-     * @param descriptor  the descriptor
-     *
-     * @return the run level service name
-     */
-    public static String getRunLevelControllerName(Descriptor descriptor) {
-        List<String> list = descriptor.getBaseDescriptor().getMetadata().
-                get(RunLevelControllerIndicator.RUNLEVEL_CONTROLLER_NAME_META_TAG);
-
-        return list == null ?
-                RunLevelController.RUNLEVEL_CONTROLLER_DEFAULT_NAME :
-                list.get(0);
     }
 
     /**
