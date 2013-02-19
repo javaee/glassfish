@@ -104,10 +104,18 @@ public class WebTest {
 
             is = conn.getInputStream();
             input = new BufferedReader(new InputStreamReader(is));
-            String response = input.readLine();
-            if (!EXPECTED_RESPONSE.equals(response)) {
+            int count = 0;
+            String response = null;
+            while ((response = input.readLine()) != null) {
+                System.out.println(response);
+                if (EXPECTED_RESPONSE.equals(response)) {
+                    count++;
+                }
+            }
+            if (count != 1) {
                 throw new Exception("Missing or wrong response. Expected: " +
-                    EXPECTED_RESPONSE + ", received: " + response);
+                    EXPECTED_RESPONSE + ", received: " + response +
+                    ". With count = " + count);
             }
         } finally {
             try {
