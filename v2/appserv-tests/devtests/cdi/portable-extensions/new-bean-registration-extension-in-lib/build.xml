@@ -64,31 +64,32 @@
         <antcall target="compile-common">
             <param name="src" value="extension"/>
         </antcall>
-      <mkdir dir="lib"/>
-	  <mkdir dir="${build.classes.dir}/META-INF"/>
-	  <mkdir dir="${build.classes.dir}/META-INF/services"/>
-	  <copy file="${cdi.extension}" 
-	    tofile="${build.classes.dir}/META-INF/services/javax.enterprise.inject.spi.Extension"
-	    failonerror="false"/>
-	  <copy file="${beans.xml}" 
-	    tofile="${build.classes.dir}/META-INF/beans.xml"
-	    failonerror="false"/>
-	  <jar jarfile="lib/${extension.jar}" basedir="${build.classes.dir}" update="true"
-	    includes ="${build.classes.dir}">
-	    <metainf dir="${build.classes.dir}/META-INF">
-		<include name="services/javax.enterprise.inject.spi.Extension"/>
-	    </metainf>
-	    <fileset dir="${build.classes.dir}/" casesensitive="yes">
-	      <include name="**/*class*"/>
-	    </fileset>
-	  </jar>       
-	  <delete dir="${build.classes.dir}/META-INF"/>
-	<antcall target="compile-common">
-		<param name="src" value="servlet"/>
-	</antcall>
-	  <delete dir="${build.classes.dir}/test/fwk"/>
-	  <delete dir="${build.classes.dir}/test/extension"/>
 
+        <mkdir dir="lib"/>
+        <mkdir dir="${build.classes.dir}/META-INF"/>
+        <mkdir dir="${build.classes.dir}/META-INF/services"/>
+        <copy file="${cdi.extension}"
+              tofile="${build.classes.dir}/META-INF/services/javax.enterprise.inject.spi.Extension"
+              failonerror="false"/>
+        <copy file="${beans.xml}"
+	          tofile="${build.classes.dir}/META-INF/beans.xml"
+              failonerror="false"/>
+        <jar jarfile="lib/${extension.jar}" basedir="${build.classes.dir}" update="true" includes ="${build.classes.dir}">
+            <metainf dir="${build.classes.dir}/META-INF">
+                <include name="services/javax.enterprise.inject.spi.Extension"/>
+            </metainf>
+            <fileset dir="${build.classes.dir}/" casesensitive="yes">
+                <include name="**/*class*"/>
+            </fileset>
+        </jar>
+
+        <delete dir="${build.classes.dir}/META-INF"/>
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+
+        <delete dir="${build.classes.dir}/test/fwk"/>
+        <delete dir="${build.classes.dir}/test/extension"/>
     </target>
 
     <target name="build" depends="compile">
@@ -96,7 +97,6 @@
         <antcall target="webclient-war-common">
             <param name="hasWebclient" value="yes"/>
             <param name="webclient.war.classes" value="**/*.class"/>
-        	<param name="cdi-extension.service" value="cdi-extension.service"/>
         </antcall>
 
         <javac srcdir="client" classpath="${env.APS_HOME}/lib/reportbuilder.jar"
