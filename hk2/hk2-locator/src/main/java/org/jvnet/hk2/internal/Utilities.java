@@ -123,11 +123,7 @@ public class Utilities {
      * @return The ClassAnalyzer corresponding to the name, or null if none was found
      */
     public static ClassAnalyzer getClassAnalyzer(ServiceLocatorImpl sli, String analyzerName) {
-        if (analyzerName == null || analyzerName.equals(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)) {
-            return sli.getDefaultClassAnalyzer();
-        }
-        
-        return sli.getService(ClassAnalyzer.class, analyzerName);
+        return sli.getAnalyzer(analyzerName);
     }
     
     /**

@@ -400,4 +400,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public String getDefaultClassAnalyzerName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setDefaultClassAnalyzerName(String defaultClassAnalyzer)
+            throws MultiException {
+        // TODO Auto-generated method stub
+        
+    }
 }

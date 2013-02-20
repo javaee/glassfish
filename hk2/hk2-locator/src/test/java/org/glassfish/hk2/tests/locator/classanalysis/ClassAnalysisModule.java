@@ -79,6 +79,18 @@ public class ClassAnalysisModule implements TestModule {
         config.bind(BuilderHelper.link(JaxRsService.class.getName()).
                 analyzeWith(ServiceLocatorUtilities.PREFER_LARGEST_CONSTRUCTOR).
                 build());
+        
+        config.bind(BuilderHelper.link(SimpleService1.class.getName()).
+                build());
+        config.bind(BuilderHelper.link(SimpleService2.class.getName()).
+                build());
+        
+        config.bind(BuilderHelper.link(AlternateDefaultAnalyzer.class.getName()).
+                to(ClassAnalyzer.class.getName()).
+                in(Singleton.class.getName()).
+                named(ClassAnalysisTest.ALTERNATE_DEFAULT_ANALYZER).
+                analyzeWith(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME).
+                build());
     }
 
 }

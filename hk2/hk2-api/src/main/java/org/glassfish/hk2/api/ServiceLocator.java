@@ -430,6 +430,25 @@ public interface ServiceLocator {
      * @throws MultiException if there was an error during service creation
      */
     public <T> T getService(ActiveDescriptor<T> activeDescriptor, ServiceHandle<?> root, Injectee injectee) throws MultiException;
+    
+    /**
+     * Gets the name of the default class analyzer service
+     *  
+     * @return The name of the default class analyzer.  Will not return null
+     */
+    public String getDefaultClassAnalyzerName();
+    
+    /**
+     * Sets the name of the default class analyzer that should be used for all
+     * {@link Descriptor}s that return null as their class analyzer.  If null is given
+     * then the default class analyzer name of {@link ClassAnalyzer#DEFAULT_IMPLEMENTATION_NAME}
+     * will be used
+     * 
+     * @param defaultClassAnalyzer The possibly null name of the default class
+     * analyzer (the class analyzer that will be used if a descriptor has not
+     * explicitly set the name of its class analyzer)
+     */
+    public void setDefaultClassAnalyzerName(String defaultClassAnalyzer);
   
     /**
      * Returns the name of this ServiceLocator

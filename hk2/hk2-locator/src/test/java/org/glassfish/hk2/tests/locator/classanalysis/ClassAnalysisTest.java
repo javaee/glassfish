@@ -58,6 +58,36 @@ public class ClassAnalysisTest {
     private final static String TEST_NAME = "ClassAnalysisTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new ClassAnalysisModule());
     
+    public static final String ALTERNATE_DEFAULT_ANALYZER = "AlternateDefaultAnalyzer";
+    
+    @Test
+    public void testChangeDefaultAnalyzer() {
+        AlternateDefaultAnalyzer alternate = null;
+        
+        locator.setDefaultClassAnalyzerName(ALTERNATE_DEFAULT_ANALYZER);
+        try {
+            alternate = locator.getService(AlternateDefaultAnalyzer.class);
+            Assert.assertNotNull(alternate);
+            
+            alternate.reset();
+            
+            // Now lookup a simple service, which should be analyzed with the alternate
+            Assert.assertNotNull(locator.getService(SimpleService1.class));
+            
+            alternate.check();
+        }
+        finally {
+            locator.setDefaultClassAnalyzerName(null);
+        }
+        
+        alternate.reset();
+        
+        // Now make sure that the other default has taken over
+        Assert.assertNotNull(locator.getService(SimpleService2.class));
+        
+        alternate.unused();
+    }
+    
     @Test
     public void testCustomClassAnalyzer() {
         ServiceHandle<ServiceWithManyDoubles> handle = locator.getServiceHandle(ServiceWithManyDoubles.class);
