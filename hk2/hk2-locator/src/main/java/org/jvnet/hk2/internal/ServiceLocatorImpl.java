@@ -162,7 +162,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final HashMap<String, List<CacheEntry>> cacheEntries = new HashMap<String, List<CacheEntry>>();
     private final Map<ServiceLocatorImpl, ServiceLocatorImpl> children =
             new WeakHashMap<ServiceLocatorImpl, ServiceLocatorImpl>(); // Must be Weak for throw away children
-    private ClassAnalyzer defaultClassAnalyzer;
+    private final HashMap<String, ClassAnalyzer> classAnalyzers =
+            new HashMap<String, ClassAnalyzer>();
+    private String defaultClassAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
     
     private ServiceLocatorState state = ServiceLocatorState.RUNNING;
     
@@ -1225,6 +1227,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         boolean addOrRemoveOfInstanceListener = false;
         boolean addOrRemoveOfInjectionResolver = false;
         boolean addOrRemoveOfErrorHandler = false;
+        boolean addOrRemoveOfClazzAnalyzer = false;
         HashSet<String> affectedContracts = new HashSet<String>();
         
         for (Filter unbindFilter : dci.getUnbindFilters()) {
@@ -1251,6 +1254,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
                 if (candidate.getAdvertisedContracts().contains(ErrorService.class.getName())) {
                     addOrRemoveOfErrorHandler = true;
+                }
+                if (candidate.getAdvertisedContracts().contains(ClassAnalyzer.class.getName())) {
+                    addOrRemoveOfClazzAnalyzer = true;
                 }
                 
                 retVal.add(candidate);
@@ -1297,6 +1303,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 checkScope = true;
             }
             
+            if (sd.getAdvertisedContracts().contains(ClassAnalyzer.class.getName())) {
+                addOrRemoveOfClazzAnalyzer = true;
+            }
+            
             if (checkScope) {
                 String scope = (sd.getScope() == null) ? PerLookup.class.getName() : sd.getScope() ;
                 
@@ -1323,6 +1333,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 addOrRemoveOfInstanceListener,
                 addOrRemoveOfInjectionResolver,
                 addOrRemoveOfErrorHandler,
+                addOrRemoveOfClazzAnalyzer,
                 affectedContracts);
     }
     
@@ -1505,6 +1516,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             boolean instanceListenersModified,
             boolean injectionResolversModified,
             boolean errorHandlersModified,
+            boolean classAnalyzersModified,
             HashSet<String> affectedContracts) {
         
         // This MUST come before the other re-ups, in case the other re-ups look for
@@ -1526,9 +1538,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
             reupInstanceListenersHandlers(thingsAdded);
         }
         
+        if (classAnalyzersModified) {
+            classAnalyzers.clear();
+        }
+        
         contextCache.clear();
-        
-        
     }
     
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
@@ -1544,6 +1558,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     checkData.getInstanceLifecycleModificationsMade(),
                     checkData.getInjectionResolverModificationMade(),
                     checkData.getErrorHandlerModificationMade(),
+                    checkData.getClassAnalyzerModificationMade(),
                     checkData.getAffectedContracts());
         }
     }
@@ -1771,12 +1786,38 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return retVal;
     }
     
-    /* package */ void setDefaultClassAnalyzer(ClassAnalyzer ca) {
-        defaultClassAnalyzer = ca;
+    @Override
+    public String getDefaultClassAnalyzerName() {
+        return defaultClassAnalyzer;
+    }
+
+    @Override
+    public void setDefaultClassAnalyzerName(String defaultClassAnalyzer) {
+        if (defaultClassAnalyzer == null) {
+            this.defaultClassAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
+        }
+        else {
+            this.defaultClassAnalyzer = defaultClassAnalyzer;
+        }
     }
     
-    /* package */ ClassAnalyzer getDefaultClassAnalyzer() {
-        return defaultClassAnalyzer;
+    /* package */ ClassAnalyzer getAnalyzer(String name) {
+        if (name == null) {
+            name = defaultClassAnalyzer ;
+        }
+        
+        synchronized (lock) {
+            ClassAnalyzer retVal = classAnalyzers.get(name);
+            if (retVal != null) return retVal;
+            
+            retVal = getService(ClassAnalyzer.class, name);
+            if (retVal == null) return null;
+            
+            classAnalyzers.put(name, retVal);
+            
+            return retVal;
+        }
+        
     }
     
     private static class CheckConfigurationData {
@@ -1784,17 +1825,20 @@ public class ServiceLocatorImpl implements ServiceLocator {
         private final boolean instanceLifeycleModificationMade;
         private final boolean injectionResolverModificationMade;
         private final boolean errorHandlerModificationMade;
+        private final boolean classAnalyzerModificationMade;
         private final HashSet<String> affectedContracts;
         
         private CheckConfigurationData(SortedSet<SystemDescriptor<?>> unbinds,
                 boolean instanceLifecycleModificationMade,
                 boolean injectionResolverModificationMade,
                 boolean errorHandlerModificationMade,
+                boolean classAnalyzerModificationMade,
                 HashSet<String> affectedContracts) {
             this.unbinds = unbinds;
             this.instanceLifeycleModificationMade = instanceLifecycleModificationMade;
             this.injectionResolverModificationMade = injectionResolverModificationMade;
             this.errorHandlerModificationMade = errorHandlerModificationMade;
+            this.classAnalyzerModificationMade = classAnalyzerModificationMade;
             this.affectedContracts = affectedContracts;
         }
         
@@ -1812,6 +1856,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         private boolean getErrorHandlerModificationMade() {
             return errorHandlerModificationMade;
+        }
+        
+        private boolean getClassAnalyzerModificationMade() {
+            return classAnalyzerModificationMade;
         }
         
         private HashSet<String> getAffectedContracts() {
