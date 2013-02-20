@@ -1793,11 +1793,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     @Override
     public void setDefaultClassAnalyzerName(String defaultClassAnalyzer) {
-        if (defaultClassAnalyzer == null) {
-            this.defaultClassAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
-        }
-        else {
-            this.defaultClassAnalyzer = defaultClassAnalyzer;
+        synchronized (lock) {
+            if (defaultClassAnalyzer == null) {
+                this.defaultClassAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
+            }
+            else {
+                this.defaultClassAnalyzer = defaultClassAnalyzer;
+            }
         }
     }
     
