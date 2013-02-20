@@ -1788,7 +1788,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     @Override
     public String getDefaultClassAnalyzerName() {
-        return defaultClassAnalyzer;
+        synchronized (lock) {
+            return defaultClassAnalyzer;
+        }
     }
 
     @Override
@@ -1804,11 +1806,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     /* package */ ClassAnalyzer getAnalyzer(String name) {
-        if (name == null) {
-            name = defaultClassAnalyzer ;
-        }
-        
         synchronized (lock) {
+            if (name == null) {
+                name = defaultClassAnalyzer ;
+            }
+            
             ClassAnalyzer retVal = classAnalyzers.get(name);
             if (retVal != null) return retVal;
             
