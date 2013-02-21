@@ -58,17 +58,17 @@
     </target>
 
     <target name="run-lite">
-        <antcall target="simple"/>
+        <antcall target="autoclose"/>
     </target>
 
     <target name="run-full">
         <!-- Add tests require Full Profile -->
     </target>
 
-    <target name="simple">
-        <record name="simple.output" action="start" />
-            <ant dir="simple" target="all"/>
-        <record name="simple.output" action="stop" />
+    <target name="autoclose">
+        <record name="autoclose.output" action="start" />
+            <ant dir="autoclose" target="all"/>
+        <record name="autoclose.output" action="stop" />
     </target>
 
     <target name="usage">
