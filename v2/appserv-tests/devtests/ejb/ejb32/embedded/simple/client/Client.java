@@ -40,11 +40,29 @@ public class Client {
             Context ic = c.getContext();
             SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + module + "/SimpleEjb");
             String result = ejb.saySomething();
-            System.out.println("EJB said: " + result);
+            System.out.println("EJB said in try-with-resource: " + result);
         } catch (Exception e) {
             res  = false;
             System.out.println("ERROR calling EJB:");
             e.printStackTrace();
+        }
+
+        // Try again after it was suppose to be closed
+        System.out.println(".....Verifying auto-close closed ........");
+        EJBContainer c = null;
+        try {
+            c = EJBContainer.createEJBContainer();
+            Context ic = c.getContext();
+            SimpleEjb ejb = (SimpleEjb) ic.lookup("java:global/" + module + "/SimpleEjb");
+            String result = ejb.saySomething();
+            System.out.println("EJB said in try-without-resource: " + result);
+        } catch (Exception e) {
+            res  = false;
+            System.out.println("ERROR calling EJB:");
+            e.printStackTrace();
+        } finally {
+            if (c != null)
+                c.close();
         }
         stat.addStatus("EJB embedded with autoclosable", ((res)? stat.PASS : stat.FAIL));
     }
