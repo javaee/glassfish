@@ -71,7 +71,7 @@ public class ClusterTest extends AdminBaseDevTest {
         if(o instanceof Double) {
             startingNumberOfClusters = (Double)o;
         }
-       
+
         // should fail since cluster not created yet
         report("get-health-no-cluster-before", !asadmin("get-health", "cl1"));
 
@@ -197,7 +197,7 @@ public class ClusterTest extends AdminBaseDevTest {
 
     private void testGetHealthInstancesNotStarted(String c) {
         if (!runGMSTests) return;
-        
+
         final String state = "not started";
         String out = asadminWithOutput("get-health", c).outAndErr;
         boolean success = out.indexOf(state) > 0;
@@ -225,8 +225,8 @@ public class ClusterTest extends AdminBaseDevTest {
     }
 
     /*
-     * Use the validate-multicast command to see if multicast is working for the 
-     * local machine.  It is known not to work on Oracle VPN. If it's not 
+     * Use the validate-multicast command to see if multicast is working for the
+     * local machine.  It is known not to work on Oracle VPN. If it's not
      * working, skip the GMS tests.
      */
     private void checkIfMulticastIsAvailable() {
@@ -246,7 +246,7 @@ public class ClusterTest extends AdminBaseDevTest {
         report(testName +"create-cl" , asadmin("create-cluster", cname));
         for (int i = 0 ; i<3; i ++) {
             report(testName +"create-li"+i , asadmin("create-local-instance","--cluster", cname,iname+i));
-           
+
         }
         report(testName+"list-cl" , !isClusterRunning(cname));
 
@@ -261,9 +261,9 @@ public class ClusterTest extends AdminBaseDevTest {
 
         testGetHealthStopRestartInstance(cname, iname+1);
         testGetHealthRestartedDomain(cname, iname+0);
-        
+
         report(testName +"stop-one" , asadmin("stop-local-instance",iname+1));
-        report(testName+"list-cl2" , isClusterPartiallyRunning(cname));        
+        report(testName+"list-cl2" , isClusterPartiallyRunning(cname));
         report(testName +"start-one" , asadmin("start-local-instance",iname+1));
 
         for (int i = 0 ; i<3; i ++) {
@@ -405,7 +405,7 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "getREST3a", matchString(i1name, s));
         report(tn + "getREST3b", matchString(i2name, s));
         report(tn + "getREST3c", matchString("server", s));
-        
+
         // dynamic configuration
 
         // create several resources
@@ -479,6 +479,14 @@ public class ClusterTest extends AdminBaseDevTest {
         // start the instances
         report(tn + "start-local-instance1", asadmin("start-local-instance", i1name));
         report(tn + "start-local-instance2", asadmin("start-local-instance", i2name));
+
+
+
+
+        sleep(15);
+
+
+
 
         // check that the instances are there
         report(tn + "list-instances", asadmin("list-instances"));
@@ -584,6 +592,12 @@ public class ClusterTest extends AdminBaseDevTest {
         // start the instances
         report(tn + "start-cluster", asadmin("start-cluster", cname));
         report(tn + "start-local-instance3", asadmin("start-local-instance", i3name));
+
+
+        sleep(10);
+
+
+
 
         // check that the instances are there
         report(tn + "getindex1", matchString("GlassFish Server", getURL(i1url)));
@@ -992,7 +1006,7 @@ public class ClusterTest extends AdminBaseDevTest {
         ret = asadminWithOutput("get", dottedattributename);
         success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
         report(tn+"test-set-get-gms-enabled="+expected, success);
-        
+
         expected="228.9.1.3";
         dottedattributename="clusters.cluster."+cname+".gms-multicast-address";
         ret = asadminWithOutput("get", dottedattributename);
@@ -1017,7 +1031,7 @@ public class ClusterTest extends AdminBaseDevTest {
         ret = asadminWithOutput("set", dottedattributename+"="+expected);
         ret = asadminWithOutput("get", dottedattributename);
         success = ret.outAndErr.indexOf(dottedattributename+"="+expected) >= 0;
-        report(tn+"test-set-get-gms-multicast-port="+expected, success); 
+        report(tn+"test-set-get-gms-multicast-port="+expected, success);
 
         expected="3";
         dottedattributename="configs.config."+cname+"-config.group-management-service.failure-detection.max-missed-heartbeats";
@@ -1083,7 +1097,7 @@ public class ClusterTest extends AdminBaseDevTest {
         ret = asadminWithOutput("get", dottedattributename);
         success = ret.outAndErr.indexOf(dottedattributename+"="+expected2) >= 0;
         report(tn+"test-create-system-properties-get-das-GMS-BIND-INTERFACE-ADDRESS-value="+expected2, success);
-        
+
         expected="${GMS_LISTENER_PORT-"+cname+"}";
         dottedattributename="clusters.cluster."+cname+".property.GMS_LISTENER_PORT";
         ret = asadminWithOutput("get", dottedattributename);
