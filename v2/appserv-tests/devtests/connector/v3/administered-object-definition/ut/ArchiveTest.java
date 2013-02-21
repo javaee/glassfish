@@ -76,7 +76,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:global/env/AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
 
@@ -85,7 +85,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:app/env/AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
 
@@ -135,7 +135,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:global/env/Servlet_ModByDD_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
 
@@ -144,7 +144,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:global/env/Servlet_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
         
@@ -153,7 +153,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:app/env/Servlet_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
         
@@ -162,7 +162,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:module/env/Servlet_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
         
@@ -171,7 +171,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:comp/env/Servlet_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
         
@@ -180,7 +180,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:global/env/Web_DD_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
         
@@ -189,7 +189,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:app/env/Web_DD_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
         
@@ -198,7 +198,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:module/env/Web_DD_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
 
@@ -249,7 +249,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:global/env/HelloStatefulEJB_ModByDD_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
 
@@ -257,7 +257,7 @@ public class ArchiveTest extends TestCase {
         desc.setName("java:global/env/HelloEJB_ModByDD_AdminObject");
         desc.setInterfaceName("javax.jms.Destination");
         desc.setClassName("connector.MyAdminObject");
-        desc.setResourceAdapterName("aod-ra");
+        desc.setResourceAdapter("aod-ra");
         desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
         expectedAODDs.put(desc.getName(), desc);
 
@@ -268,7 +268,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:global/env/HelloStatefulEJB_DD_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
@@ -277,7 +277,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:app/env/HelloStatefulEJB_DD_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
@@ -286,7 +286,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:module/env/HelloStatefulEJB_DD_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
@@ -295,7 +295,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:comp/env/HelloStatefulEJB_DD_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
         }
@@ -306,7 +306,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:global/env/HelloEJB_DD_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
@@ -315,7 +315,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:app/env/HelloEJB_DD_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
@@ -324,7 +324,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:module/env/HelloEJB_DD_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
@@ -333,7 +333,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:comp/env/HelloEJB_DD_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
         }
@@ -345,7 +345,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:global/env/HelloStatefulEJB_Annotation_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
             
@@ -354,7 +354,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:app/env/HelloStatefulEJB_Annotation_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
@@ -363,7 +363,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:module/env/HelloStatefulEJB_Annotation_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
 
@@ -372,7 +372,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:comp/env/HelloStatefulEJB_Annotation_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
         }
@@ -384,7 +384,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:global/env/HelloEJB_Annotation_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
             
@@ -393,7 +393,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:app/env/HelloEJB_Annotation_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
             
@@ -402,7 +402,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:module/env/HelloEJB_Annotation_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
             
@@ -411,7 +411,7 @@ public class ArchiveTest extends TestCase {
             desc.setName("java:comp/env/HelloEJB_Annotation_AdminObject");
             desc.setInterfaceName("javax.jms.Destination");
             desc.setClassName("connector.MyAdminObject");
-            desc.setResourceAdapterName("aod-ra");
+            desc.setResourceAdapter("aod-ra");
             desc.addProperty("org.glassfish.admin-object.resType", "connector.MyAdminObject");
             expectedAODDs.put(desc.getName(), desc);
         }

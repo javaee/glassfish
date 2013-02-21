@@ -27,17 +27,8 @@ public class MyManagedConnectionFactory implements ManagedConnectionFactory, Tra
     private String testName;
     private ConnectionManager cm;
     private PrintWriter writer;
-    private String resourceAdapterName;
     private TransactionSupportLevel transactionSupport = TransactionSupportLevel.LocalTransaction;;
     
-    public String getResourceAdapterName() {
-        return resourceAdapterName;
-    }
-
-    public void setResourceAdapterName(String resourceAdapterName) {
-        this.resourceAdapterName = resourceAdapterName;
-    }
-
     public String getTestName() {
         return testName;
     }

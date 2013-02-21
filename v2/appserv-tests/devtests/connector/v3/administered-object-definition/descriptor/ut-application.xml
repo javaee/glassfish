@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_7.xsd">
+<application xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/application_7.xsd">
     <display-name>administered-object-definitionApp</display-name>
     
     <module>
@@ -12,7 +12,7 @@
        <name>java:global/env/AdminObject</name>
        <interface-name>javax.jms.Destination</interface-name>
        <class-name>connector.MyAdminObject</class-name>
-       <resource-adapter-name>aod-ra</resource-adapter-name>
+       <resource-adapter>aod-ra</resource-adapter>
        <property>
          <name>org.glassfish.admin-object.resType</name>
          <value>connector.MyAdminObject</value>
@@ -24,7 +24,7 @@
        <name>java:app/env/AdminObject</name>
        <interface-name>javax.jms.Destination</interface-name>
        <class-name>connector.MyAdminObject</class-name>
-       <resource-adapter-name>aod-ra</resource-adapter-name>
+       <resource-adapter>aod-ra</resource-adapter>
        <property>
          <name>org.glassfish.admin-object.resType</name>
          <value>connector.MyAdminObject</value>

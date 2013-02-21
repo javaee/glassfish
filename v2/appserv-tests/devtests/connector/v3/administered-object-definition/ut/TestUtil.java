@@ -35,8 +35,8 @@ public class TestUtil {
             assertEquals("Fail to verify description of the AODD:"+actualDesc.getName(),
                     expectedDesc.getDescription(), actualDesc.getDescription());
             
-            assertEquals("Fail to verify resourceAdapterName of the AODD:"+actualDesc.getName(),
-                    expectedDesc.getResourceAdapterName(), actualDesc.getResourceAdapterName());
+            assertEquals("Fail to verify resourceAdapter of the AODD:"+actualDesc.getName(),
+                    expectedDesc.getResourceAdapter(), actualDesc.getResourceAdapter());
             
             Properties expectedProps = expectedDesc.getProperties();
             Properties actualProps = actualDesc.getProperties();

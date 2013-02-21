@@ -37,7 +37,6 @@ public class SimpleResourceAdapterImpl extends AbstractResourceAdapter
     private WorkManager wm;
 
     private Work work;
-    private String instanceName;
 
     public SimpleResourceAdapterImpl() {
         debug("constructor...");
@@ -61,8 +60,6 @@ public class SimpleResourceAdapterImpl extends AbstractResourceAdapter
             throw new ResourceAdapterInternalException("Error form bootstrap");
         }
         debug("004. Simple RA start...");
-        instanceName = ctx.getInstanceName();
-        debug("005. Simple RA start...instanceName = "+instanceName);
     }
 
     public void stop() {

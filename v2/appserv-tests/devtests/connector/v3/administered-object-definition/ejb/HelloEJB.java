@@ -13,7 +13,7 @@ import javax.resource.AdministeredObjectDefinition;
                 name = "java:global/env/HelloEJB_ModByDD_AdminObject",
                 interfaceName = "javax.jms.Destination",
                 className = "connector.MyAdminObject",
-                resourceAdapterName="aod-ra",
+                resourceAdapter="aod-ra",
                 properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
           ),
           @AdministeredObjectDefinition(
@@ -21,7 +21,7 @@ import javax.resource.AdministeredObjectDefinition;
                name = "java:global/env/HelloEJB_Annotation_AdminObject", 
                interfaceName = "javax.jms.Destination",
                className = "connector.MyAdminObject",
-               resourceAdapterName="aod-ra",
+               resourceAdapter="aod-ra",
                properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
           ),
           
@@ -30,7 +30,7 @@ import javax.resource.AdministeredObjectDefinition;
                name = "java:app/env/HelloEJB_Annotation_AdminObject", 
                interfaceName = "javax.jms.Destination",
                className = "connector.MyAdminObject",
-               resourceAdapterName="aod-ra",
+               resourceAdapter="aod-ra",
                properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
           ),
           
@@ -39,7 +39,7 @@ import javax.resource.AdministeredObjectDefinition;
                name = "java:module/env/HelloEJB_Annotation_AdminObject", 
                interfaceName = "javax.jms.Destination",
                className = "connector.MyAdminObject",
-               resourceAdapterName="aod-ra",
+               resourceAdapter="aod-ra",
                properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
           ),
           
@@ -48,7 +48,7 @@ import javax.resource.AdministeredObjectDefinition;
                name = "java:comp/env/HelloEJB_Annotation_AdminObject", 
                interfaceName = "javax.jms.Destination",
                className = "connector.MyAdminObject",
-               resourceAdapterName="aod-ra",
+               resourceAdapter="aod-ra",
                properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
           )
 

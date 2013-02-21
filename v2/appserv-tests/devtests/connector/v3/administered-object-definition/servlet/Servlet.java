@@ -29,7 +29,7 @@ import javax.transaction.UserTransaction;
                 @AdministeredObjectDefinition(
                         description="global-scope resource defined by @AdministeredObjectDefinition",
                         name = "java:global/env/Servlet_ModByDD_AdminObject",
-                        resourceAdapterName="aod-ra",
+                        resourceAdapter="aod-ra",
                         interfaceName = "javax.jms.Destination",
                         className = "connector.MyAdminObject",
                         properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
@@ -40,7 +40,7 @@ import javax.transaction.UserTransaction;
                         name = "java:global/env/Servlet_AdminObject",
                         interfaceName = "javax.jms.Destination",
                         className = "connector.MyAdminObject",
-                        resourceAdapterName="aod-ra",
+                        resourceAdapter="aod-ra",
                         properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
                 ),
 
@@ -49,7 +49,7 @@ import javax.transaction.UserTransaction;
                         name = "java:app/env/Servlet_AdminObject",
                         interfaceName = "javax.jms.Destination",
                         className = "connector.MyAdminObject",
-                        resourceAdapterName="aod-ra",
+                        resourceAdapter="aod-ra",
                         properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
                 ),
                 
@@ -58,7 +58,7 @@ import javax.transaction.UserTransaction;
                         name = "java:module/env/Servlet_AdminObject",
                         interfaceName = "javax.jms.Destination",
                         className = "connector.MyAdminObject",
-                        resourceAdapterName="aod-ra",
+                        resourceAdapter="aod-ra",
                         properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
                 ),
                 
@@ -67,7 +67,7 @@ import javax.transaction.UserTransaction;
                         name = "java:comp/env/Servlet_AdminObject",
                         interfaceName = "javax.jms.Destination",
                         className = "connector.MyAdminObject",
-                        resourceAdapterName="aod-ra",
+                        resourceAdapter="aod-ra",
                         properties = {"org.glassfish.admin-object.resType=connector.MyAdminObject"}
                 )
         }
