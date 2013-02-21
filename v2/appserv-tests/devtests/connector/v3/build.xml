@@ -286,8 +286,8 @@
         <echo message="@@## datasource-definition##@@"/>
         <ant dir="datasource-definition" target="${connector-target}"/>
 
-        <echo message="@@## connector-resource-definition##@@"/>
-        <ant dir="connector-resource-definition" target="${connector-target}"/>
+        <echo message="@@## connection-factory-definition##@@"/>
+        <ant dir="connection-factory-definition" target="${connector-target}"/>
 
         <echo message="@@## administered-object-definition##@@"/>
         <ant dir="administered-object-definition" target="${connector-target}"/>

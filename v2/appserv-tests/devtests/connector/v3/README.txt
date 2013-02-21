@@ -21,8 +21,8 @@ cd connector/v3
 set environment :
 export APS_HOME=<appserv-tests> directory
 export S1AS_HOME=<GlassFish Installation> directory
-Set CLASSPATH to contain javax.resource.jar.
-export CLASSPATH=$S1AS_HOME/modules/javax.resource.jar:$CLASSPATH
+Set CLASSPATH to contain javax.resource-api.jar.
+export CLASSPATH=$S1AS_HOME/modules/javax.resource-api.jar:$CLASSPATH
 Note: You need install and configure ant manually:
 export ANT_HOME=<your ant home directory>
 export PATH=$ANT_HOME/bin:$PATH 
