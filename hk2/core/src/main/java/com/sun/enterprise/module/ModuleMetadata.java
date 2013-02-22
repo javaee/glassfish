@@ -39,10 +39,12 @@
  */
 package com.sun.enterprise.module;
 
-import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.component.MultiMap;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,22 +71,9 @@ import java.util.StringTokenizer;
 public final class ModuleMetadata implements Serializable {
 
     /**
-     * META-INF/hk2-locator/* cache
-     */
-    private List<Descriptor> descriptors;
-
-    /**
      * META-INF/inhabitants/* files.
      */
     private final MultiMap<String, InhabitantsDescriptor> inhabitants = new MultiMap<String, InhabitantsDescriptor>();
-
-    public List<Descriptor> getDescriptors() {
-        return descriptors;
-    }
-
-    public void setDescriptors(List<Descriptor> descriptors) {
-        this.descriptors = descriptors;
-    }
 
     public static final class Entry implements Serializable {
         public final List<String> providerNames = new ArrayList<String>();

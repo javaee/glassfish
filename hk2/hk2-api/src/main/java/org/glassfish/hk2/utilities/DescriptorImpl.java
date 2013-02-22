@@ -101,7 +101,7 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private Set<String> qualifiers = new LinkedHashSet<String>();
 	private DescriptorType descriptorType = DescriptorType.CLASS;
 	private DescriptorVisibility descriptorVisibility = DescriptorVisibility.NORMAL;
-	private transient HK2Loader loader;
+	private HK2Loader loader;
 	private int rank;
 	private Boolean proxiable;
 	private String analysisName;
