@@ -2,12 +2,13 @@ package com.acme;
 
 import javax.interceptor.InvocationContext;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.AroundConstruct;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 public class InterceptorA {
 
-    @com.sun.ejb.containers.interceptors.AroundConstruct
+    @AroundConstruct
     private void create(InvocationContext ctx) {
         System.out.println("In InterceptorA.AroundConstruct");
 
