@@ -221,8 +221,13 @@ public abstract class AbstractBinder implements Binder, DynamicConfiguration {
      */
     @Override
     public <T> ActiveDescriptor<T> bind(Descriptor descriptor) {
+        return bind(descriptor, true);
+    }
+    
+    @Override
+    public <T> ActiveDescriptor<T> bind(Descriptor descriptor, boolean requiresDeepCopy) {
         setLoader(descriptor);
-        return configuration().bind(descriptor);
+        return configuration().bind(descriptor, requiresDeepCopy);
     }
 
     /**
@@ -234,10 +239,15 @@ public abstract class AbstractBinder implements Binder, DynamicConfiguration {
      */
     @Override
     public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors) {
+        return bind(factoryDescriptors, true);
+    }
+    
+    @Override
+    public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors, boolean requiresDeepCopy) {
         setLoader(factoryDescriptors.getFactoryAsAService());
         setLoader(factoryDescriptors.getFactoryAsAFactory());
 
-        return configuration().bind(factoryDescriptors);
+        return configuration().bind(factoryDescriptors, requiresDeepCopy);
     }
 
     /**
@@ -249,7 +259,12 @@ public abstract class AbstractBinder implements Binder, DynamicConfiguration {
      */
     @Override
     public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor) throws IllegalArgumentException {
-        return configuration().addActiveDescriptor(activeDescriptor);
+        return addActiveDescriptor(activeDescriptor, true);
+    }
+    
+    @Override
+    public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor, boolean requiresDeepCopy) throws IllegalArgumentException {
+        return configuration().addActiveDescriptor(activeDescriptor, requiresDeepCopy);
     }
 
     /**
