@@ -62,7 +62,6 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
@@ -87,9 +86,6 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     private Manifest manifest;
     private String lifecyclePolicyClassName;
     private ModuleMetadata metadata = new ModuleMetadata();
-
-
-    List<ActiveDescriptor> descriptors;
 
     public OSGiModuleDefinition(File jar) throws IOException {
         this(Jar.create(jar), jar.toURI());
@@ -225,8 +221,6 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     }
 
     private static class BundleJar extends Jar {
-        private static final String HK2_DESCRIPTOR_LOCATION = "META-INF/hk2-locator";
-
         private static final String SERVICE_LOCATION = "META-INF/services";
         Bundle b;
         Manifest m;
@@ -241,7 +235,25 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         }
 
         public void loadMetadata(ModuleMetadata result) {
+            parseInhabitantsDescriptors(result);
             parseServiceDescriptors(result);
+        }
+
+        private void parseInhabitantsDescriptors(ModuleMetadata result) {
+
+            final URL url = b.getEntry("META-INF/hk2-locator/default");
+            
+            if (url==null) return;
+//            try {
+//                result.addHabitat("default",
+//                        new ByteArrayInhabitantsDescriptor(
+//                                url, loadFully(url)
+//                        ));
+//            } catch (IOException e) {
+//                LogHelper.getDefaultLogger().log(Level.SEVERE,
+//                        "Error reading inhabitants list in " + b.getLocation(), e);
+//            }
+            
         }
 
         private void parseServiceDescriptors(ModuleMetadata result) {
