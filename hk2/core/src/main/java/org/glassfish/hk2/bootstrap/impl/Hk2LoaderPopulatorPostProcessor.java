@@ -54,7 +54,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  */
 public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 
-	private final ClassLoader classLoader;
+	private final HK2Loader hk2Loader;
 	
 	/**
 	 * Creates the post-processor to use the given classloader
@@ -62,11 +62,23 @@ public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 	 * @param classLoader The classloader to use, may not be null
 	 */
 	public Hk2LoaderPopulatorPostProcessor(ClassLoader classLoader) {
-		if (classLoader != null) {
-           this.classLoader = classLoader;
-		} else {
-			this.classLoader = getClass().getClassLoader();
+		if (classLoader == null) {
+			classLoader = getClass().getClassLoader();
 		}
+		
+		final ClassLoader fClassLoader = classLoader;
+		hk2Loader = new HK2Loader() {
+
+            @Override
+            public Class<?> loadClass(String className) throws MultiException {
+                try {
+                    return fClassLoader.loadClass(className);
+                } catch (ClassNotFoundException e) {
+                    throw new MultiException(e);
+                }
+            }
+		    
+		} ;
     }
 
 	public Hk2LoaderPopulatorPostProcessor() {
@@ -78,17 +90,7 @@ public class Hk2LoaderPopulatorPostProcessor implements PopulatorPostProcessor {
 	 */
 	@Override
 	public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
-		descriptorImpl.setLoader(new HK2Loader() {
-			
-			@Override
-			public Class<?> loadClass(String className) throws MultiException {
-				try {
-					return classLoader.loadClass(className);
-				} catch (ClassNotFoundException e) {
-					throw new MultiException(e);
-				}
-		    }
-		});
+		descriptorImpl.setLoader(hk2Loader);
 		
 		return descriptorImpl;
 	}	
