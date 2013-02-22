@@ -17,6 +17,7 @@
         <antcall target="timer"/>
         <antcall target="intfces"/>
         <antcall target="persistence"/>
+        <antcall target="aroundconstruct"/>
         <antcall target="embedded"/>
     </target>
 
@@ -71,6 +72,12 @@
         <record name="persistence.output" action="start" />
             <ant dir="persistence" target="all"/>
         <record name="persistence.output" action="stop" />
+    </target>
+
+    <target name="aroundconstruct">
+        <record name="aroundconstruct.output" action="start" />
+            <ant dir="aroundconstruct" target="all"/>
+        <record name="aroundconstruct.output" action="stop" />
     </target>
 
     <target name="usage">
