@@ -105,7 +105,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	private int rank;
 	private Boolean proxiable;
 	private String analysisName;
-	private Descriptor baseDescriptor;
 	private Long id;
 	private Long locatorId;
 	
@@ -131,7 +130,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
         proxiable = copyMe.isProxiable();
         id = copyMe.getServiceId();
         locatorId = copyMe.getLocatorId();
-        baseDescriptor = copyMe.getBaseDescriptor();
         analysisName = copyMe.getClassAnalysisName();
         
 	    if (copyMe.getAdvertisedContracts() != null) {
@@ -179,7 +177,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 			int rank,
 			Boolean proxiable,
 			String analysisName,
-			Descriptor baseDescriptor,
 			Long id,
 			Long locatorId) {
 		this.contracts.addAll(contracts);
@@ -198,7 +195,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 		this.analysisName = analysisName;
 		this.locatorId = locatorId;
 		this.loader = loader;
-		this.baseDescriptor = baseDescriptor;
 	}
 	
 	@Override
@@ -408,23 +404,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
         int retVal = rank;
         rank = ranking;
         return retVal;
-    }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
-     */
-    @Override
-    public synchronized Descriptor getBaseDescriptor() {
-        return baseDescriptor;
-    }
-    
-    /**
-     * Sets the base descriptor to be associated with this descriptor
-     * 
-     * @param baseDescriptor The base descriptor to be associated with this descriptor
-     */
-    public synchronized void setBaseDescriptor(Descriptor baseDescriptor) {
-        this.baseDescriptor = baseDescriptor;
     }
 	
 	@Override
@@ -735,7 +714,6 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	    rank = 0;
 	    proxiable = null;
 	    analysisName = null;
-	    baseDescriptor = null;
 	    id = null;
 	    locatorId = null;
 	}

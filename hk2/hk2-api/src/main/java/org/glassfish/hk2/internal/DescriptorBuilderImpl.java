@@ -294,7 +294,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
 				proxy,
 				analysisName,
 				null,
-				null,
 				null);
 	}
 
@@ -323,7 +322,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 null,
                 analysisName,
                 null,
-                null,
                 null);
         
         // We want to remove the impl class from the contracts in this case
@@ -342,7 +340,6 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
                 loader,
                 rank,
                 proxy,
-                null,
                 null,
                 null,
                 null);

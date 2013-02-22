@@ -156,14 +156,6 @@ public class ForeignDescriptor implements Descriptor {
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
-     */
-    @Override
-    public Descriptor getBaseDescriptor() {
-        return null;
-    }
-
-    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getServiceId()
      */
     @Override

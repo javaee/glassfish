@@ -258,7 +258,6 @@ public class BuilderHelperTest {
         Assert.assertTrue(cDesc.getMetadata().isEmpty());
         Assert.assertNull(cDesc.getLoader());
         Assert.assertEquals(0, cDesc.getRanking());
-        Assert.assertNull(cDesc.getBaseDescriptor());
         Assert.assertNull(cDesc.getServiceId());
         Assert.assertNull(cDesc.getLocatorId());
         Assert.assertTrue(cDesc.isReified());

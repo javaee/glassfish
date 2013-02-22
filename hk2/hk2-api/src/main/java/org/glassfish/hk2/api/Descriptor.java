@@ -231,24 +231,6 @@ public interface Descriptor {
      * If null then the HK2 default analysis will be performed
      */
     public String getClassAnalysisName();
-    
-    /**
-     * If this descriptor is based on another descriptor (for example
-     * via the {@link Configuration} bind call) then this method will
-     * return the original basis for this descriptor.
-     * <p>
-     * On bind calls the value of this parameter will be ignored, and
-     * will be filled in by the system.
-     * <p>
-     * Note that even if the values in the returned descriptor are modified
-     * it will not affect the values in the parent descriptor (the fields
-     * must have been copied out of the base descriptor, not referenced)
-     * 
-     * @return The original descriptor upon which this descriptor is based, or
-     * null if there is no known base descriptor.  This field is filled in by
-     * the system at bind time
-     */
-    public Descriptor getBaseDescriptor();
 	
 	/**
 	 * This returns the unique identifier for this descriptor.

@@ -52,8 +52,6 @@ import javax.inject.Singleton;
 
 import junit.framework.Assert;
 
-
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.PerLookup;
@@ -99,8 +97,6 @@ public class DescriptorImplTest {
         Assert.assertNull(desc.isProxiable());
         
         Assert.assertNull(desc.getClassAnalysisName());
-        
-        Assert.assertNull(desc.getBaseDescriptor());
         
         Assert.assertNull(desc.getServiceId());
         
@@ -156,8 +152,6 @@ public class DescriptorImplTest {
         Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_PROXIABLE, full.isProxiable());
         
         Assert.assertEquals(FullDescriptorImpl.FULL_ANALYSIS_SERVICE, full.getClassAnalysisName());
-        
-        Assert.assertNotNull(full.getBaseDescriptor());
         
         Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_SID, full.getServiceId());
         
@@ -405,21 +399,6 @@ public class DescriptorImplTest {
         desc.setClassAnalysisName(null);
         
         Assert.assertNull(desc.getClassAnalysisName());
-    }
-    
-    /**
-     * Tests setting the base descriptor
-     */
-    @Test
-    public void testSetBase() {
-        Descriptor base = new FullDescriptorImpl();
-        DescriptorImpl desc = new DescriptorImpl();
-        
-        desc.setBaseDescriptor(base);
-        Assert.assertEquals(base, desc.getBaseDescriptor());
-        
-        desc.setBaseDescriptor(null);
-        Assert.assertNull(desc.getBaseDescriptor());
     }
     
     /**
