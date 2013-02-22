@@ -55,7 +55,8 @@ public interface DynamicConfiguration {
      * provided fields set.  If the descriptor given is a reified
      * ActiveDescriptor then the descriptor returned will be a
      * reified ActiveDescriptor that takes all values except for the
-     * id from the given descriptor
+     * id from the given descriptor.  A deep copy will be made
+     * of the incoming descriptor
      * 
      * @param key May not be null.  Will be used to derive the various
      * key fields associated with the given provider
@@ -66,11 +67,34 @@ public interface DynamicConfiguration {
     public <T> ActiveDescriptor<T> bind(Descriptor key);
     
     /**
+     * This method will bind the given descriptor to this Module.
+     * If the descriptor given is not an ActiveDescriptor then a
+     * non-reified ActiveDescriptor will be returned with the system
+     * provided fields set.  If the descriptor given is a reified
+     * ActiveDescriptor then the descriptor returned will be a
+     * reified ActiveDescriptor that takes all values except for the
+     * id from the given descriptor.
+     * 
+     * @param key May not be null.  Will be used to derive the various
+     * key fields associated with the given provider
+     * @param requiresDeepCopy If true a deep copy will be made of the
+     * key.  If false then the Descriptor will be used as is, and it
+     * is the responsibility of the caller to ensure that the fields
+     * of the Descriptor never change (with the exception of any
+     * writeable fields, such as ranking)
+     * @return The entry as added to the service registry, with fields
+     * of the Descriptor filled in by the system as appropriate
+     * @throws IllegalArgumentException if there is an error in the key
+     */
+    public <T> ActiveDescriptor<T> bind(Descriptor key, boolean requiresDeepCopy);
+    
+    /**
      * This method will bind the descriptors found in the
      * {@link FactoryDescriptors}.  This method will first
      * validate the descriptors from the {@link FactoryDescriptors}
      * and then simply bind them into this configuration as
-     * two independent descriptors. 
+     * two independent descriptors.  A deep copy will be made
+     * of both descriptors
      * 
      * @param factoryDescriptors A description of a factory service
      * and the type the factory service provides.  May not be null
@@ -82,9 +106,32 @@ public interface DynamicConfiguration {
     public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors);
     
     /**
+     * This method will bind the descriptors found in the
+     * {@link FactoryDescriptors}.  This method will first
+     * validate the descriptors from the {@link FactoryDescriptors}
+     * and then simply bind them into this configuration as
+     * two independent descriptors.  A deep copy will be made
+     * of both descriptors
+     * 
+     * @param factoryDescriptors A description of a factory service
+     * and the type the factory service provides.  May not be null
+     * @param requiresDeepCopy If true a deep copy will be made of the
+     * key.  If false then the Descriptor will be used as is, and it
+     * is the responsibility of the caller to ensure that the fields
+     * of the Descriptor never change (with the exception of any
+     * writeable fields, such as ranking)
+     * @return The descriptors returned from this object may be cast
+     * to ActiveDescriptor and will contain all the fields of the descriptors
+     * filled in by the system 
+     * @throws IllegalArgumentException if there is an error in the input parameter
+     */
+    public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors, boolean requiresDeepCopy);
+    
+    /**
      * This allows third party systems to add reified active descriptors to the system.
      * The active descriptor given must be fully reified (isReified must return true) and
-     * the create and destroy methods must be implemented.
+     * the create and destroy methods must be implemented.  A deep copy will
+     * be made of the descriptor
      * 
      * @param activeDescriptor The reified active descriptor to be added to the system.  The
      * system will not attempt to reify this descriptor itself
@@ -93,6 +140,26 @@ public interface DynamicConfiguration {
      * @throws IllegalArgumentException if the descriptor is not reified
      */
     public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor)
+            throws IllegalArgumentException;
+    
+    /**
+     * This allows third party systems to add reified active descriptors to the system.
+     * The active descriptor given must be fully reified (isReified must return true) and
+     * the create and destroy methods must be implemented.  A deep copy will
+     * be made of the descriptor
+     * 
+     * @param activeDescriptor The reified active descriptor to be added to the system.  The
+     * system will not attempt to reify this descriptor itself
+     * @param requiresDeepCopy If true a deep copy will be made of the
+     * key.  If false then the Descriptor will be used as is, and it
+     * is the responsibility of the caller to ensure that the fields
+     * of the Descriptor never change (with the exception of any
+     * writeable fields, such as ranking)
+     * @return The entry as added to the service registry, with fields
+     * of the Descriptor filled in by the system as appropriate
+     * @throws IllegalArgumentException if the descriptor is not reified
+     */
+    public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor, boolean requiresDeepCopy)
             throws IllegalArgumentException;
     
     /**

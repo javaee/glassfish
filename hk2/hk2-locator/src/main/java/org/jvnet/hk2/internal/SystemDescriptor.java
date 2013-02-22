@@ -110,8 +110,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private int singletonGeneration = Integer.MAX_VALUE;
 
     /* package */ @SuppressWarnings("unchecked")
-    SystemDescriptor(Descriptor baseDescriptor, ServiceLocatorImpl locator, Long serviceId) {
-        this.baseDescriptor = BuilderHelper.deepCopyDescriptor(baseDescriptor);
+    SystemDescriptor(Descriptor baseDescriptor, boolean requiresDeepCopy, ServiceLocatorImpl locator, Long serviceId) {
+        if (requiresDeepCopy) {
+            this.baseDescriptor = BuilderHelper.deepCopyDescriptor(baseDescriptor);
+        }
+        else {
+            this.baseDescriptor = baseDescriptor;
+        }
+        
         this.sdLocator = locator;
         this.id = serviceId;
  

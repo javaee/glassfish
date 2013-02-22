@@ -76,10 +76,16 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
      */
     @Override
     public <T> ActiveDescriptor<T> bind(Descriptor key) {
+        return bind(key, true);
+    }
+    
+    @Override
+    public <T> ActiveDescriptor<T> bind(Descriptor key, boolean requiresDeepCopy) {
         checkState();
         checkDescriptor(key);
 
         SystemDescriptor<T> sd = new SystemDescriptor<T>(key,
+                requiresDeepCopy,
                 locator,
                 new Long(locator.getNextServiceId()));
 
@@ -93,6 +99,11 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
      */
     @Override
     public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors) {
+        return bind(factoryDescriptors, true);
+    }
+    
+    @Override
+    public FactoryDescriptors bind(FactoryDescriptors factoryDescriptors, boolean requiresDeepCopy) {
         if (factoryDescriptors == null) throw new IllegalArgumentException("factoryDescriptors is null");
         
         // Now a bunch of validations
@@ -118,11 +129,13 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         }
         
         final SystemDescriptor<?> boundAsService = new SystemDescriptor<Object>(asService,
+                requiresDeepCopy,
                 locator,
                 new Long(locator.getNextServiceId()));
 
         // Link the factory descriptor to the service descriptor for the factory
         final SystemDescriptor<?> boundAsFactory = new SystemDescriptor<Object>(asFactory,
+                requiresDeepCopy,
                 locator,
                 new Long(locator.getNextServiceId()));
         
@@ -156,6 +169,12 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     @Override
     public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor)
             throws IllegalArgumentException {
+        return addActiveDescriptor(activeDescriptor, true);
+    }
+    
+    @Override
+    public <T> ActiveDescriptor<T> addActiveDescriptor(ActiveDescriptor<T> activeDescriptor, boolean requiresDeepCopy)
+            throws IllegalArgumentException {
         checkState();
         checkDescriptor(activeDescriptor);
         
@@ -166,6 +185,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         checkReifiedDescriptor(activeDescriptor);
         
         SystemDescriptor<T> retVal = new SystemDescriptor<T>(activeDescriptor,
+                requiresDeepCopy,
                 locator,
                 new Long(locator.getNextServiceId()));
         
@@ -184,7 +204,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         
         checkReifiedDescriptor(ad);
         
-        return addActiveDescriptor(ad);
+        return addActiveDescriptor(ad, false);
     }
     
     /* (non-Javadoc)

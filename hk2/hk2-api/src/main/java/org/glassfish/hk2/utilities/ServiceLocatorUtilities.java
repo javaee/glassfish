@@ -104,7 +104,7 @@ public abstract class ServiceLocatorUtilities {
             }
         });
 
-        config.bind(descriptor);
+        config.bind(descriptor, false);
         config.commit();
     }
 
@@ -172,7 +172,7 @@ public abstract class ServiceLocatorUtilities {
     public static <T> ActiveDescriptor<T> addOneConstant(ServiceLocator locator, Object constant) {
         if (locator == null || constant == null) throw new IllegalArgumentException();
         
-        return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant));
+        return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant), false);
     }
     
     /**
@@ -192,7 +192,22 @@ public abstract class ServiceLocatorUtilities {
     public static <T> ActiveDescriptor<T> addOneConstant(ServiceLocator locator, Object constant, String name, Type... contracts) {
         if (locator == null || constant == null) throw new IllegalArgumentException();
         
-        return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant, name, contracts));
+        return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant, name, contracts), false);
+    }
+    
+    /**
+     * It is very often the case that one wishes to add a single descriptor to
+     * a service locator.  This method adds that one descriptor.  If the descriptor
+     * is an {@link ActiveDescriptor} and is reified, it will be added as an
+     * {@link ActiveDescriptor}.  Otherwise it will be bound as a {@link Descriptor}.
+     * A deep copy will be made of the descriptor passed in
+     *
+     * @param locator The non-null locator to add this descriptor to
+     * @param descriptor The non-null descriptor to add to this locator
+     * @throws MultiException On a commit failure
+     */
+    public static <T> ActiveDescriptor<T> addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
+        return addOneDescriptor(locator, descriptor, true);
     }
 
     /**
@@ -203,10 +218,16 @@ public abstract class ServiceLocatorUtilities {
      *
      * @param locator The non-null locator to add this descriptor to
      * @param descriptor The non-null descriptor to add to this locator
+     * @param requiresDeepCopy If true a deep copy will be made of the
+     * key.  If false then the Descriptor will be used as is, and it
+     * is the responsibility of the caller to ensure that the fields
+     * of the Descriptor never change (with the exception of any
+     * writeable fields, such as ranking)
      * @throws MultiException On a commit failure
      */
     @SuppressWarnings("unchecked")
-    public static <T> ActiveDescriptor<T> addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
+    public static <T> ActiveDescriptor<T> addOneDescriptor(ServiceLocator locator, Descriptor descriptor,
+            boolean requiresDeepCopy) {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
@@ -215,15 +236,15 @@ public abstract class ServiceLocatorUtilities {
             ActiveDescriptor<T> active = (ActiveDescriptor<T>) descriptor;
 
             if (active.isReified()) {
-                retVal = config.addActiveDescriptor(active);
+                retVal = config.addActiveDescriptor(active, requiresDeepCopy);
             }
             else {
-                retVal = config.bind(descriptor);
+                retVal = config.bind(descriptor, requiresDeepCopy);
             }
 
         }
         else {
-            retVal = config.bind(descriptor);
+            retVal = config.bind(descriptor, requiresDeepCopy);
         }
 
         config.commit();
@@ -485,6 +506,6 @@ public abstract class ServiceLocatorUtilities {
                 named(PREFER_LARGEST_CONSTRUCTOR).
                 build();
         
-        addOneDescriptor(locator, d);
+        addOneDescriptor(locator, d, false);
     }
 }

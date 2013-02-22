@@ -120,10 +120,10 @@ public class HK2Populator {
 								}
 							}
 							if (descriptorImpl != null) {
-								descriptors.add(config.bind(descriptorImpl));
+								descriptors.add(config.bind(descriptorImpl, false));
 							}
 						}  else {
-                            descriptors.add(config.bind(descriptorImpl));  // if postProcessors was null, take the descriptor as-is
+                            descriptors.add(config.bind(descriptorImpl, false));  // if postProcessors was null, take the descriptor as-is
                         }
 
 					}
