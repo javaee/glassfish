@@ -50,14 +50,7 @@ import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 import java.util.*;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.TraversableResolver;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
-import javax.validation.Validator;
-import javax.validation.ValidatorContext;
+import javax.validation.*;
 import javax.validation.metadata.ConstraintDescriptor;
 import javax.validation.metadata.ElementDescriptor;
 
@@ -753,6 +746,16 @@ private class ProtectedList extends AbstractList {
                 }
 
                 @Override
+                public Object[] getExecutableParameters() {
+                    return null;
+                }
+
+                @Override
+                public Object getExecutableReturnValue() {
+                    return null;
+                }
+
+                @Override
                 public Path getPropertyPath() {
                     final Set<Path.Node> nodes = new HashSet<Path.Node>();
                     nodes.add(new Path.Node() {
@@ -776,41 +779,15 @@ private class ProtectedList extends AbstractList {
                             return null;
                         }
 
-						@Override
-						public ElementDescriptor getElementDescriptor() {
-							return new ElementDescriptor(){
+                        @Override
+                        public ElementKind getKind() {
+                            return null;  
+                        }
 
-								@Override
-								public boolean hasConstraints() {
-									return false;
-								}
-
-								@Override
-								public Class<?> getElementClass() {
-									return null;
-								}
-
-								@Override
-								public Set<ConstraintDescriptor<?>> getConstraintDescriptors() {
-									return null;
-								}
-
-								@Override
-								public ConstraintFinder findConstraints() {
-									return null;
-								}
-
-								@Override
-								public Kind getKind() {
-									return null;
-								}
-
-								@Override
-								public <T extends ElementDescriptor> T as(
-										Class<T> descriptorType) {
-									return null;
-								}};
-						}
+                        @Override
+                        public <T extends Path.Node> T as(Class<T> tClass) {
+                            return null;  
+                        }
                     });
                     return new javax.validation.Path() {
                         @Override
@@ -829,8 +806,15 @@ private class ProtectedList extends AbstractList {
                 public ConstraintDescriptor<?> getConstraintDescriptor() {
                     return null;
                 }
+
+                @Override
+                public Object unwrap(Class type) {
+                    return null;  
+                }
+
+
             };
-        }
+        };
         return null;
     }
     
