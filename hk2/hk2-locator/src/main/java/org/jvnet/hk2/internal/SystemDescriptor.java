@@ -78,7 +78,6 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  * @param <T> The type from the cache
  */
 public class SystemDescriptor<T> implements ActiveDescriptor<T> {
-    private final Descriptor originalDescriptor;
     private final Descriptor baseDescriptor;
     private final Long id;
     private final ActiveDescriptor<T> activeDescriptor;
@@ -112,7 +111,6 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
 
     /* package */ @SuppressWarnings("unchecked")
     SystemDescriptor(Descriptor baseDescriptor, ServiceLocatorImpl locator, Long serviceId) {
-        this.originalDescriptor = baseDescriptor;
         this.baseDescriptor = BuilderHelper.deepCopyDescriptor(baseDescriptor);
         this.sdLocator = locator;
         this.id = serviceId;
@@ -254,14 +252,6 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     /* package */ void removeList(IndexedListData indexedList) {
         myLists.remove(indexedList);
     }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Descriptor#getBaseDescriptor()
-     */
-    @Override
-    public Descriptor getBaseDescriptor() {
-        return originalDescriptor;
-    } 
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getServiceId()

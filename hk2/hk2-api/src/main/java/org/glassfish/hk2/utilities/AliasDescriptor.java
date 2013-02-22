@@ -132,7 +132,6 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         this.contract   = contract;
         addAdvertisedContract(contract);
         super.setScope(descriptor.getScope());
-        super.setBaseDescriptor(descriptor.getBaseDescriptor());
     }
 
 

@@ -124,7 +124,6 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
                 FULL_INITIAL_RANK,
                 FULL_INITIAL_PROXIABLE,
                 FULL_ANALYSIS_SERVICE,
-                new DescriptorImpl(),
                 FULL_INITIAL_SID,
                 FULL_INITIAL_LID);
     }

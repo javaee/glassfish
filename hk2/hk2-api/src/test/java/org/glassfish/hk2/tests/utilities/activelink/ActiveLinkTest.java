@@ -84,7 +84,6 @@ public class ActiveLinkTest {
         Assert.assertTrue(desc.getQualifiers().isEmpty());
         Assert.assertTrue(desc.getQualifierAnnotations().isEmpty());
         
-        Assert.assertNull(desc.getBaseDescriptor());
         Assert.assertNull(desc.getLoader());
         Assert.assertSame(DescriptorType.CLASS, desc.getDescriptorType());
         Assert.assertTrue(desc.getInjectees().isEmpty());
@@ -165,7 +164,6 @@ public class ActiveLinkTest {
         Assert.assertTrue(foundName);
         Assert.assertTrue(foundSQ1);
         
-        Assert.assertNull(desc.getBaseDescriptor());
         Assert.assertNotNull(desc.getLoader());
         Assert.assertSame(DescriptorType.CLASS, desc.getDescriptorType());
         Assert.assertTrue(desc.getInjectees().isEmpty());
@@ -173,6 +171,7 @@ public class ActiveLinkTest {
         Assert.assertFalse(desc.isReified());
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     public void testFactoryDescWithFields() {
         SimpleQualifier1 sq1 = new SimpleQualifier1Impl();
@@ -246,7 +245,6 @@ public class ActiveLinkTest {
         Assert.assertTrue(foundName);
         Assert.assertTrue(foundSQ1);
         
-        Assert.assertNull(desc.getBaseDescriptor());
         Assert.assertNotNull(desc.getLoader());
         Assert.assertSame(DescriptorType.PROVIDE_METHOD, desc.getDescriptorType());
         Assert.assertTrue(desc.getInjectees().isEmpty());

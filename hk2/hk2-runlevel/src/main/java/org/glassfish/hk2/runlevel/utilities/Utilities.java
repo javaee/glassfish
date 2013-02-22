@@ -58,7 +58,7 @@ public class Utilities {
      * @return the run level
      */
     public static Integer getRunLevelValue(Descriptor descriptor) {
-        List<String> list = descriptor.getBaseDescriptor().getMetadata().
+        List<String> list = descriptor.getMetadata().
                 get(RunLevel.RUNLEVEL_VAL_META_TAG);
 
         return list == null ?
@@ -74,11 +74,13 @@ public class Utilities {
      * @return the mode
      */
     public static int getRunLevelMode(Descriptor descriptor) {
-        List<String> list = descriptor.getBaseDescriptor().getMetadata().
+        List<String> list = descriptor.getMetadata().
                 get(RunLevel.RUNLEVEL_MODE_META_TAG);
-
-        return list == null ?
+        
+        int retVal = list == null ?
                 RunLevel.RUNLEVEL_MODE_VALIDATING :
                 Integer.valueOf(list.get(0));
+
+        return retVal;
     }
 }
