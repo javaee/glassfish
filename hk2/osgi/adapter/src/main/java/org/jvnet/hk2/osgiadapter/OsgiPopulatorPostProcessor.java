@@ -63,43 +63,46 @@ public class OsgiPopulatorPostProcessor implements
 	public static final String BUNDLE_VERSION = "Bundle-Version";
 	public static final String BUNDLE_SYMBOLIC_NAME = "Bundle-SymbolicName";
 	private final OSGiModuleImpl osgiModule;
+	private final HK2Loader loader;
 
-	OsgiPopulatorPostProcessor(OSGiModuleImpl osgiModule) {
-		this.osgiModule = osgiModule;	
+	OsgiPopulatorPostProcessor(OSGiModuleImpl paramOsgiModule) {
+		this.osgiModule = paramOsgiModule;
+		
+		loader = new HK2Loader() {
+
+            @SuppressWarnings({ "unchecked", "rawtypes" })
+            @Override
+            public Class<?> loadClass(final String className)
+                    throws MultiException {
+                osgiModule.start();
+                return (Class<?>) AccessController.doPrivileged(new PrivilegedAction() {
+                    public java.lang.Object run() {
+                        try {
+                            return osgiModule.getBundle().loadClass(className);
+                        } catch (Throwable e) {
+                            logger.logp(Level.SEVERE, "OSGiModuleImpl",
+                                    "loadClass",
+                                    "Exception in module " + osgiModule.getBundle().toString(), e);
+
+                            throw new MultiException(e);
+                        }
+                    }
+                });
+
+            }
+            
+            public String toString() {
+                return "OsgiPopulatorPostProcessor.HK2Loader(" +
+                        osgiModule + "," + System.identityHashCode(this) + ")";
+            }
+            
+        };
 	}
 
 	@Override
 	public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
-        HK2Loader hk2Loader = new HK2Loader() {
-
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			@Override
-			public Class<?> loadClass(final String className)
-					throws MultiException {
-                osgiModule.start();
-				return (Class<?>) AccessController.doPrivileged(new PrivilegedAction() {
-					public java.lang.Object run() {
-						try {
-							return osgiModule.getBundle().loadClass(className);
-						} catch (Throwable e) {
-							logger.logp(Level.SEVERE, "OSGiModuleImpl",
-									"loadClass",
-									"Exception in module " + osgiModule.getBundle().toString(), e);
-
-							throw new MultiException(e);
-						}
-					}
-				});
-
-			}
-			
-			public String toString() {
-			    return "OsgiPopulatorPostProcessor.HK2Loader(" +
-			    		osgiModule + "," + System.identityHashCode(this) + ")";
-			}
-        	
-        };
-		descriptorImpl.setLoader(hk2Loader);
+        
+		descriptorImpl.setLoader(loader);
 		
 		descriptorImpl.addMetadata(BUNDLE_SYMBOLIC_NAME,osgiModule.getBundle().getSymbolicName());
 		descriptorImpl.addMetadata(BUNDLE_VERSION, osgiModule.getBundle().getVersion().toString());
