@@ -8,7 +8,8 @@ import javax.jms.*;
 
 @MessageDriven(name = "test0", mappedName = "jms/jms_unit_test_Topic", activationConfig = {
     @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge"),
-    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic")
+    @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"),
+    @ActivationConfigProperty(propertyName = "connectionFactoryLookup", propertyValue = "java:comp/DefaultJMSConnectionFactory")
 })
 public class NewMessageBean implements MessageListener {
     private static final Logger logger = Logger.getLogger(NewMessageBean.class.getName());
