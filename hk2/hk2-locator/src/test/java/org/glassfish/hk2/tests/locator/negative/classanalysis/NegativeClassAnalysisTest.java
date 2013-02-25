@@ -41,9 +41,12 @@ package org.glassfish.hk2.tests.locator.negative.classanalysis;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
 
 /**
@@ -63,6 +66,7 @@ public class NegativeClassAnalysisTest {
     public final static String PD_THROW = "Expected throw from pd";
     
     public final static String NULL_RETURN = "null return";
+    public final static String SELF_ANALYZER = "Narcissus";
     
     @Test
     public void testBadConstructorThrow() {
@@ -196,6 +200,26 @@ public class NegativeClassAnalysisTest {
             Assert.assertTrue(me.toString().contains("null return"));
         }
         
+    }
+    
+    /**
+     * This test makes sure a class analyzer is not its own analyzer
+     */
+    @Test
+    public void testSelfAnalyzer() {
+        ActiveDescriptor<?> selfDescriptor =
+                locator.getBestDescriptor(BuilderHelper.createNameAndContractFilter(
+                        ClassAnalyzer.class.getName(),
+                        SELF_ANALYZER));
+        Assert.assertNotNull(selfDescriptor);
+        
+        try {
+            locator.reifyDescriptor(selfDescriptor);
+            Assert.fail("Should have failed, a class may not analyze itself");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.toString().contains("is its own ClassAnalyzer"));
+        }
     }
 
 }

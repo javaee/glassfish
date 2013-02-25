@@ -90,9 +90,27 @@ public class ClazzCreator<T> implements Creator<T> {
         this.implClass = implClass;
         this.selfDescriptor = selfDescriptor;
         
-        ClassAnalyzer analyzer = Utilities.getClassAnalyzer(locator, analyzerName);     
+        if ((selfDescriptor != null) &&
+                selfDescriptor.getAdvertisedContracts().contains(
+                ClassAnalyzer.class.getName())) {
+            String descriptorAnalyzerName = selfDescriptor.getName();
+            if (descriptorAnalyzerName == null) descriptorAnalyzerName = locator.getDefaultClassAnalyzerName();
+            
+            String incomingAnalyzerName = analyzerName;
+            if (incomingAnalyzerName == null) incomingAnalyzerName = locator.getDefaultClassAnalyzerName();
+            
+            if (descriptorAnalyzerName.equals(incomingAnalyzerName)) {
+                collector.addThrowable(new IllegalArgumentException(
+                        "The ClassAnalyzer named " + descriptorAnalyzerName + 
+                        " is its own ClassAnalyzer. Ensure that an implementation of" +
+                        " ClassAnalyzer is not its own ClassAnalyzer"));
+                myConstructor = null;
+                return;
+            }
+        }
+        
+        ClassAnalyzer analyzer = Utilities.getClassAnalyzer(locator, analyzerName, collector);     
         if (analyzer == null) {
-            collector.addThrowable(new AssertionError("Could not find an implementation of ClassAnalyzer with name " + analyzerName));
             myConstructor = null;
             return;
         }
