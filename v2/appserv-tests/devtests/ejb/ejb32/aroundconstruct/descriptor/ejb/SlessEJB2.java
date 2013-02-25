@@ -21,9 +21,4 @@ public class SlessEJB2 extends BaseBean {
         return "Hello";
     }
 
-    @PostConstruct
-    private void init() {
-        System.out.println("**SlessEJB2 PostConstruct");
-    }
-
 }
