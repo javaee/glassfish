@@ -7,8 +7,9 @@ import javax.annotation.*;
 @Stateless
 public class SlessEJB2 extends BaseBean {
 
-    @Resource
-    private SomeManagedBean mb;
+    @Resource private SomeManagedBean mb;
+    @Resource private SomeManagedBean2 mb2;
+    @Resource private SomeManagedBean3 mb3;
 
     public String sayHello() {
         try {
@@ -18,12 +19,9 @@ public class SlessEJB2 extends BaseBean {
             // ok
         }
         mb.foo();
+        mb2.foo();
+        mb3.foo();
         return "Hello";
-    }
-
-    @PostConstruct
-    private void init() {
-        System.out.println("**SlessEJB2 PostConstruct");
     }
 
 }

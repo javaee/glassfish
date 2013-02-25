@@ -20,4 +20,12 @@ public class BaseBean {
         if (!pc) throw new RuntimeException("[" + name + "] InterceptorA.PostConstruct was not called");
         if (!pc1) throw new RuntimeException("[" + name + "] InterceptorB.PostConstruct was not called");
     }
+
+    void verifyA(String name) {
+        if (!ac) throw new RuntimeException("[" + name + "] InterceptorA.AroundConstruct was not called");
+        if (ac1) throw new RuntimeException("[" + name + "] InterceptorB.AroundConstruct was called");
+
+        if (!pc) throw new RuntimeException("[" + name + "] InterceptorA.PostConstruct was not called");
+        if (pc1) throw new RuntimeException("[" + name + "] InterceptorB.PostConstruct was called");
+    }
 }
