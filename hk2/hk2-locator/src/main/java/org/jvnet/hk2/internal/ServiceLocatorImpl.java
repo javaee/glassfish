@@ -1805,7 +1805,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
-    /* package */ ClassAnalyzer getAnalyzer(String name) {
+    /* package */ @SuppressWarnings("unchecked")
+    ClassAnalyzer getAnalyzer(String name, Collector collector) {
         synchronized (lock) {
             if (name == null) {
                 name = defaultClassAnalyzer ;
@@ -1814,8 +1815,34 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ClassAnalyzer retVal = classAnalyzers.get(name);
             if (retVal != null) return retVal;
             
-            retVal = getService(ClassAnalyzer.class, name);
-            if (retVal == null) return null;
+            ActiveDescriptor<?> descriptor =
+                    getBestDescriptor(BuilderHelper.createNameAndContractFilter(
+                            ClassAnalyzer.class.getName(), name));
+            if (descriptor == null) {
+                collector.addThrowable(new IllegalStateException(
+                        "Could not find an implementation of ClassAnalyzer with name " +
+                        name));
+                return null;
+            }
+            
+            try {
+                descriptor = reifyDescriptor(descriptor);
+            }
+            catch (Throwable th) {
+                collector.addThrowable(th);
+                return null;
+            }
+            
+            ServiceHandle<ClassAnalyzer> handle = (ServiceHandle<ClassAnalyzer>)
+                    getServiceHandle(descriptor);
+            retVal = handle.getService();
+            
+            if (retVal == null) {
+                collector.addThrowable(new IllegalStateException(
+                        "Context returned a null ClassAnalyzer of name " +
+                        name));
+                return null;
+            }
             
             classAnalyzers.put(name, retVal);
             

@@ -122,8 +122,11 @@ public class Utilities {
      * @param analyzerName The name of the analyzer (may be null for the default analyzer)
      * @return The ClassAnalyzer corresponding to the name, or null if none was found
      */
-    public static ClassAnalyzer getClassAnalyzer(ServiceLocatorImpl sli, String analyzerName) {
-        return sli.getAnalyzer(analyzerName);
+    public static ClassAnalyzer getClassAnalyzer(
+            ServiceLocatorImpl sli,
+            String analyzerName,
+            Collector errorCollector) {
+        return sli.getAnalyzer(analyzerName, errorCollector);
     }
     
     /**
@@ -673,14 +676,15 @@ public class Utilities {
     public static void justPreDestroy(Object preMe, ServiceLocatorImpl locator, String strategy) {
         if (preMe == null) throw new IllegalArgumentException();
         
-        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy);
-        if (analyzer == null) {
-            throw new IllegalArgumentException("No class analyzer with name " + strategy);
-        }
+        Collector collector = new Collector();
+        
+        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy, collector);
+        collector.throwIfErrors();
+        
+        collector.throwIfErrors();
 
         Class<?> baseClass = preMe.getClass();
 
-        Collector collector = new Collector();
         Method preDestroy = getPreDestroy(baseClass, analyzer, collector);
 
         collector.throwIfErrors();
@@ -702,14 +706,13 @@ public class Utilities {
     public static void justPostConstruct(Object postMe, ServiceLocatorImpl locator, String strategy) {
         if (postMe == null) throw new IllegalArgumentException();
         
-        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy);
-        if (analyzer == null) {
-            throw new IllegalArgumentException("No class analyzer with name " + strategy);
-        }
+        Collector collector = new Collector();
+        
+        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy, collector);
+        collector.throwIfErrors();
 
         Class<?> baseClass = postMe.getClass();
 
-        Collector collector = new Collector();
         Method postConstruct = getPostConstruct(baseClass, analyzer, collector);
 
         collector.throwIfErrors();
@@ -731,14 +734,12 @@ public class Utilities {
     public static void justInject(Object injectMe, ServiceLocatorImpl locator, String strategy) {
         if (injectMe == null) throw new IllegalArgumentException();
         
-        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy);
-        if (analyzer == null) {
-            throw new IllegalArgumentException("No class analyzer with name " + strategy);
-        }
-
-        Class<?> baseClass = injectMe.getClass();
-
         Collector collector = new Collector();
+        
+        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy, collector);
+        collector.throwIfErrors();
+        
+        Class<?> baseClass = injectMe.getClass();
 
         Set<Field> fields = Utilities.getInitFields(baseClass, analyzer, collector);
         Set<Method> methods = Utilities.getInitMethods(baseClass, analyzer, collector);
@@ -797,12 +798,9 @@ public class Utilities {
     public static <T> T justCreate(Class<T> createMe, ServiceLocatorImpl locator, String strategy) {
         if (createMe == null) throw new IllegalArgumentException();
         
-        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy);
-        if (analyzer == null) {
-            throw new IllegalArgumentException("No class analyzer with name " + strategy);
-        }
-
         Collector collector = new Collector();
+        ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy, collector);
+        collector.throwIfErrors();
 
         Constructor<?> c = getConstructor(createMe, analyzer, collector);
 

@@ -39,29 +39,66 @@
  */
 package org.glassfish.hk2.tests.locator.negative.classanalysis;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Set;
+
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.ClassAnalyzer;
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.MultiException;
 
 /**
+ * This analyzer will be its own analyzer!
+ * 
  * @author jwells
  *
  */
-public class NegativeClassAnalysisModule implements TestModule {
+@Named(NegativeClassAnalysisTest.SELF_ANALYZER)
+public class SelfAnalyzer implements ClassAnalyzer {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+     * @see org.glassfish.hk2.api.ClassAnalyzer#getConstructor(java.lang.Class)
      */
     @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(ConfigurablyBadClassAnalyzer.class);
-        
-        config.bind(BuilderHelper.link(SelfAnalyzer.class.getName()).
-                to(ClassAnalyzer.class.getName()).
-                analyzeWith(NegativeClassAnalysisTest.SELF_ANALYZER).
-                named(NegativeClassAnalysisTest.SELF_ANALYZER).
-                build());
+    public <T> Constructor<T> getConstructor(Class<T> clazz)
+            throws MultiException, NoSuchMethodException {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ClassAnalyzer#getInitializerMethods(java.lang.Class)
+     */
+    @Override
+    public <T> Set<Method> getInitializerMethods(Class<T> clazz)
+            throws MultiException {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ClassAnalyzer#getFields(java.lang.Class)
+     */
+    @Override
+    public <T> Set<Field> getFields(Class<T> clazz) throws MultiException {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ClassAnalyzer#getPostConstructMethod(java.lang.Class)
+     */
+    @Override
+    public <T> Method getPostConstructMethod(Class<T> clazz)
+            throws MultiException {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ClassAnalyzer#getPreDestroyMethod(java.lang.Class)
+     */
+    @Override
+    public <T> Method getPreDestroyMethod(Class<T> clazz) throws MultiException {
+        throw new AssertionError("not called");
     }
 
 }
