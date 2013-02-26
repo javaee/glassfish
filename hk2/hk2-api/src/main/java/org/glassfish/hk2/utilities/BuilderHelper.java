@@ -118,13 +118,7 @@ public class BuilderHelper {
      * @return A filter to use that will match this descriptor exactly
      */
     public static IndexedFilter createSpecificDescriptorFilter(Descriptor descriptor) {
-        Set<String> contracts = descriptor.getAdvertisedContracts();
-        
-        String contract = null;
-        for (String candidate : contracts) {
-            contract = candidate;
-            break;
-        }
+        String contract = ServiceLocatorUtilities.getBestContract(descriptor);
         
         String name = descriptor.getName();
         
