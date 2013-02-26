@@ -43,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -54,6 +55,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -252,6 +254,18 @@ public abstract class ServiceLocatorUtilities {
         return retVal;
     }
     
+    /* package */ static String getBestContract(Descriptor d) {
+        String impl = d.getImplementation();
+        Set<String> contracts = d.getAdvertisedContracts();
+        if (contracts.contains(impl)) return impl;
+        
+        for (String candidate : contracts) {
+            return candidate;
+        }
+        
+        return impl;
+    }
+    
     /**
      * Finds a descriptor in the given service locator.  If the descriptor has the serviceId and
      * locatorId set then it will first attempt to use those values to get the exact descriptor
@@ -284,11 +298,24 @@ public abstract class ServiceLocatorUtilities {
             di = new DescriptorImpl(descriptor);
         }
         
-        ActiveDescriptor<T> retVal = (ActiveDescriptor<T>) locator.getBestDescriptor(new Filter() {
+        final String contract = getBestContract(descriptor);
+        final String name = descriptor.getName();
+        
+        ActiveDescriptor<T> retVal = (ActiveDescriptor<T>) locator.getBestDescriptor(new IndexedFilter() {
 
             @Override
             public boolean matches(Descriptor d) {
                 return di.equals(d);
+            }
+
+            @Override
+            public String getAdvertisedContract() {
+                return contract;
+            }
+
+            @Override
+            public String getName() {
+                return name;
             }
             
         });
