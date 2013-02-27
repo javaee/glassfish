@@ -40,7 +40,6 @@
 package org.jvnet.hk2.internal;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
@@ -54,42 +53,83 @@ import java.util.TreeSet;
  *
  */
 public class IndexedListData {
-    private TreeSet<SystemDescriptor<?>> currentList = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
+    private LinkedList<SystemDescriptor<?>> unsortedList = new LinkedList<SystemDescriptor<?>>();
+    private TreeSet<SystemDescriptor<?>> sortedList = null;
     
     public Collection<SystemDescriptor<?>> getSortedList() {
-        return currentList;
+        if (sortedList != null) return sortedList;
+        
+        sortedList = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
+        sortedList.addAll(unsortedList);
+        
+        unsortedList.clear();
+        unsortedList = null;
+        
+        return sortedList;
     }
     
     public void addDescriptor(SystemDescriptor<?> descriptor) {
-        currentList.add(descriptor);
+        if (sortedList != null) {  
+            sortedList.add(descriptor);
+        }
+        else {
+            unsortedList.add(descriptor);
+        }
+        
         descriptor.addList(this);
     }
     
     public void removeDescriptor(SystemDescriptor<?> descriptor) {
-        currentList.remove(descriptor);
+        if (sortedList != null) {
+            sortedList.remove(descriptor);
+        }
+        else {
+            unsortedList.remove(descriptor);
+        }
+        
         descriptor.removeList(this);
     }
     
     public boolean isEmpty() {
-        return currentList.isEmpty();
+        if (sortedList != null) {
+            return sortedList.isEmpty();
+        }
+        return unsortedList.isEmpty();
     }
     
     /**
      * Called by a SystemDescriptor when its ranking has changed
      */
     public void unSort() {
-        TreeSet<SystemDescriptor<?>> oldList = currentList;
-        currentList = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
-        currentList.addAll(oldList);
-        
-        oldList.clear();
+        if (sortedList != null) {
+            unsortedList = new LinkedList<SystemDescriptor<?>>(sortedList);
+            
+            sortedList.clear();
+            sortedList = null;
+        }
     }
     
     public void clear() {
-        for (SystemDescriptor<?> descriptor : currentList) {
+        Collection<SystemDescriptor<?>> removeMe;
+        if (sortedList != null) {
+            removeMe = sortedList;
+        }
+        else {
+            removeMe = unsortedList;
+        }
+        
+        for (SystemDescriptor<?> descriptor : removeMe) {
             descriptor.removeList(this);
         }
         
-        currentList.clear();
+        if (sortedList != null) {
+            sortedList.clear();
+            sortedList = null;
+            
+            unsortedList = new LinkedList<SystemDescriptor<?>>();
+        }
+        else {
+            unsortedList.clear();
+        }
     }
 }
