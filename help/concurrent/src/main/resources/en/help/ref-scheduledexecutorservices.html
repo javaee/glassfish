@@ -5,10 +5,11 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-scheduledexecutorservices" name="ref-scheduledexecutorservices"></a><a id="GHCON146" name="GHCON146"></a></p>
 
-<h4>Managed Scheduled Executor Services</h4>
+<h4>Managed Scheduled Executor Services<a id="sthref22" name="sthref22"></a><a id="sthref23" name="sthref23"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Use the Managed Scheduled Executor Services page to configure scheduled managed executor service resources.</p>
-<p>For each scheduled managed executor service resource, the following information is provided.</p>
+<p>Managed scheduled executor services are managed objects used by applications to execute submitted tasks asynchronously on a specific schedule. Tasks are executed on threads started and managed by the container. The context of the container is propagated to the thread executing the task.</p>
+<p>Use the Managed Scheduled Executor Services page to configure managed scheduled executor service resources that are used by applications.</p>
+<p>For each managed scheduled executor service resource, the following information is provided.</p>
 <dl>
 <dt>JNDI Name</dt>
 <dd>
@@ -20,11 +21,11 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Context Information</dt>
 <dd>
-<p>The context of the resource: Classloader, JNDI, Security, or WorkArea.</p>
+<p>The context propagated to threads: Classloader, JNDI, Security, or WorkArea.</p>
 </dd>
 <dt>Thread Priority</dt>
 <dd>
-<p>The priority of threads to be created for the managed scheduled executor service instance. The default is 5.</p>
+<p>The priority of created threads. The default is 5.</p>
 </dd>
 <dt>Description</dt>
 <dd>
@@ -54,13 +55,13 @@ Use is subject to License Terms  -->
 <h5>Related asadmin Commands</h5>
 <ul>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00022"><code>create-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM680"><code>create-managed-scheduled-executor-service</code>(1)</a></p>
 </li>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00162"><code>list-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM873"><code>list-managed-scheduled-executor-services</code>(1)</a></p>
 </li>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00074"><code>delete-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM850"><code>delete-managed-scheduled-executor-service</code>(1)</a></p>
 </li>
 </ul>
 

@@ -5,9 +5,9 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-scheduledexecutorserviceedit" name="ref-scheduledexecutorserviceedit"></a><a id="GHCON150" name="GHCON150"></a></p>
 
-<h4>Edit Managed Scheduled Executor Service</h4>
+<h4>Edit Managed Scheduled Executor Service<a id="sthref25" name="sthref25"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Use the Edit Managed Scheduled Executor Service page to edit a scheduled managed executor service resource.</p>
+<p>Use the Edit Managed Scheduled Executor Service page to edit a managed scheduled executor service resource.</p>
 <p>The Edit Context Service page contains the following options.</p>
 <dl>
 <dt>Load Defaults</dt>
@@ -20,7 +20,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Context Information</dt>
 <dd>
-<p>The context of the resource: Classloader, JNDI, Security, or WorkArea..</p>
+<p>The context to be propagated to threads: Classloader, JNDI, Security, or WorkArea. If no context is specified (the default), all context types are propagated.</p>
 </dd>
 <dt>Status</dt>
 <dd>
@@ -28,7 +28,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Thread Priority</dt>
 <dd>
-<p>The priority of threads to be created for the managed scheduled executor service instance. The default is 5.</p>
+<p>The priority to assign to threads that are created. The default is 5.</p>
 </dd>
 <dt>Long Running Tasks</dt>
 <dd>
@@ -56,7 +56,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Task Queue Capacity</dt>
 <dd>
-<p>The size of the queue holding submitted tasks that are waiting to be executed. The default is 2147483647.</p>
+<p>The number of submitted tasks that can be stored in the task queue, awaiting execution. The default is 2147483647.</p>
 </dd>
 <dt>Description</dt>
 <dd>
@@ -64,20 +64,20 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Additional Properties</dt>
 <dd>
-<p>Additional properties for the resource. GlassFish Server does not define any additional properties for scheduled managed executor service resources.</p>
+<p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type.</p>
 </dd>
 </dl>
 <a id="GHCON151" name="GHCON151"></a>
 <h5>Related asadmin Commands</h5>
 <ul>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00022"><code>create-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM680"><code>create-managed-scheduled-executor-service</code>(1)</a></p>
 </li>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00162"><code>list-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM873"><code>list-managed-scheduled-executor-services</code>(1)</a></p>
 </li>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00074"><code>delete-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM850"><code>delete-managed-scheduled-executor-service</code>(1)</a></p>
 </li>
 </ul>
 

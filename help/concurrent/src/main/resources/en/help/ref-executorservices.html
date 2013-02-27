@@ -5,10 +5,11 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-executorservices" name="ref-executorservices"></a><a id="GHCON139" name="GHCON139"></a></p>
 
-<h4>Managed Executor Services</h4>
+<h4>Managed Executor Services<a id="sthref18" name="sthref18"></a><a id="sthref19" name="sthref19"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Use the Managed Executor Services page to configure managed executor service resources.</p>
-<p>For each context service resource, the following information is provided.</p>
+<p>Managed executor services are managed objects used by applications to execute submitted tasks asynchronously. Tasks are executed on threads created and managed by the container. The context of the container is propagated to the thread executing the task.</p>
+<p>Use the Managed Executor Services page to configure managed executor service resources that are used by applications.</p>
+<p>For each managed executor service resource, the following information is provided.</p>
 <dl>
 <dt>JNDI Name</dt>
 <dd>
@@ -20,11 +21,11 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Context Information</dt>
 <dd>
-<p>The context of the resource: Classloader, JNDI, Security, or WorkArea.</p>
+<p>The context propagated to threads: Classloader, JNDI, Security, or WorkArea.</p>
 </dd>
 <dt>Thread Priority</dt>
 <dd>
-<p>The priority of threads to be created for the managed executor service instance. The default is 5.</p>
+<p>The priority of created threads. The default is 5.</p>
 </dd>
 <dt>Description</dt>
 <dd>
@@ -54,13 +55,13 @@ Use is subject to License Terms  -->
 <h5>Related asadmin Commands</h5>
 <ul>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00022"><code>create-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM840"><code>create-managed-executor-service</code>(1)</a></p>
 </li>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00162"><code>list-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM871"><code>list-managed-executor-services</code>(1)</a></p>
 </li>
 <li>
-<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00074"><code>delete-XXX</code>(1)</a></p>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM848"><code>delete-managed-executor-service</code>(1)</a></p>
 </li>
 </ul>
 
