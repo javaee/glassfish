@@ -62,6 +62,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -115,6 +116,17 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    private final static Object lock = new Object();
+    
+    // We don't want to hold onto these classes if they are released by others
+    private static final Map<Class<?>, Set<MemberKey>> methodKeyCache = new WeakHashMap<Class<?>, Set<MemberKey>>();
+    private static Map<Class<?>, Set<MemberKey>> fieldCache = new WeakHashMap<Class<?>, Set<MemberKey>>();
+    private final static Map<Class<?>, Method> postConstructCache = new WeakHashMap<Class<?>, Method>();
+    private final static Map<Class<?>, Method> preDestroyCache = new WeakHashMap<Class<?>, Method>();
+    
+    private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
+    private final static String CONVENTION_PRE_DESTROY = "preDestroy";
+    
     /**
      * Returns the class analyzer with the given name
      * 
@@ -916,9 +928,21 @@ public class Utilities {
 
         return retVal;
     }
+    
+    
 
     private static void getAllFieldKeys(Class<?> clazz, Set<MemberKey> currentFields, Collector collector) {
         if (clazz == null) return;
+        
+        Set<MemberKey> discovered;
+        synchronized (lock) {
+            discovered = fieldCache.get(clazz);
+        }
+        
+        if (discovered != null) {
+            currentFields.addAll(discovered);
+            return;
+        }
 
         // Do superclasses first, so that inherited methods are
         // overriden in the set
@@ -926,7 +950,11 @@ public class Utilities {
 
         try {
             for (Field field : getDeclaredFields(clazz)) {
-                currentFields.add(new MemberKey(field));
+                currentFields.add(new MemberKey(field, false, false));
+            }
+            
+            synchronized (lock) {
+                fieldCache.put(clazz, new HashSet<MemberKey>(currentFields));
             }
         } catch (Throwable th) {
             collector.addThrowable(new IllegalStateException("Error while getting fields of class " + clazz.getName(), th));
@@ -1111,7 +1139,7 @@ public class Utilities {
         // Constructors for the superclass do not equal constructors for this class
 
         for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
-            currentConstructors.add(new MemberKey(constructor));
+            currentConstructors.add(new MemberKey(constructor, false, false));
         }
 
     }
@@ -1130,22 +1158,69 @@ public class Utilities {
 
         getAllMethodKeys(clazz, keys);
 
+        Method postConstructMethod = null;
+        Method preDestroyMethod = null;
         for (MemberKey key : keys) {
             retVal.add((Method) key.getBackingMember());
+            if (key.isPostConstruct()) {
+                postConstructMethod = (Method) key.getBackingMember();
+            }
+            if (key.isPreDestroy()) {
+                preDestroyMethod = (Method) key.getBackingMember();
+            }
+        }
+        
+        synchronized (lock) {
+            // It is ok for postConstructMethod to be null
+            postConstructCache.put(clazz, postConstructMethod);
+            
+            // It is ok for preDestroyMethod to be null
+            preDestroyCache.put(clazz, preDestroyMethod);
         }
 
         return retVal;
     }
+    
+    private static boolean isPostConstruct(Method m) {
+        if (m.isAnnotationPresent(PostConstruct.class)) return true;
+        
+        if (m.getParameterTypes().length != 0) return false;
+        return CONVENTION_POST_CONSTRUCT.equals(m.getName());
+    }
+    
+    private static boolean isPreDestroy(Method m) {
+        if (m.isAnnotationPresent(PreDestroy.class)) return true;
+        
+        if (m.getParameterTypes().length != 0) return false;
+        return CONVENTION_PRE_DESTROY.equals(m.getName());
+    }
 
     private static void getAllMethodKeys(Class<?> clazz, Set<MemberKey> currentMethods) {
         if (clazz == null) return;
+        
+        Set<MemberKey> discoveredMethods;
+        synchronized (lock) {
+            discoveredMethods = methodKeyCache.get(clazz);
+        }
+        
+        if (discoveredMethods != null) {
+            currentMethods.addAll(discoveredMethods);
+            return;
+        }
 
         // Do superclasses first, so that inherited methods are
         // overriden in the set
         getAllMethodKeys(clazz.getSuperclass(), currentMethods);
 
         for (Method method : getDeclaredMethods(clazz)) {
-            currentMethods.add(new MemberKey(method));
+            boolean isPostConstruct = isPostConstruct(method);
+            boolean isPreDestroy = isPreDestroy(method);
+            
+            currentMethods.add(new MemberKey(method, isPostConstruct, isPreDestroy));
+        }
+        
+        synchronized (lock) {
+            methodKeyCache.put(clazz, new HashSet<MemberKey>(currentMethods));
         }
     }
 
@@ -1847,8 +1922,7 @@ public class Utilities {
 
     }
 
-    private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
-    private final static String CONVENTION_PRE_DESTROY = "preDestroy";
+    
 
     /**
      * Finds the post construct method on this class
@@ -1859,27 +1933,39 @@ public class Utilities {
     public static Method findPostConstruct(Class<?> clazz, Collector collector) {
         if (org.glassfish.hk2.api.PostConstruct.class.isAssignableFrom(clazz)) {
             // A little performance optimization
+            try {
+                return clazz.getMethod(CONVENTION_POST_CONSTRUCT, new Class<?>[0]);
+            }
+            catch (NoSuchMethodException e) {
+                return null;
+            }
+        }
+        
+        boolean containsKey;
+        Method retVal;
+        synchronized (lock) {
+            containsKey = postConstructCache.containsKey(clazz);
+            retVal = postConstructCache.get(clazz);
+        }
+        
+        if (!containsKey) {
+            getAllMethods(clazz);  // Fills in the cache
+            
+            synchronized (lock) {
+                retVal = postConstructCache.get(clazz);
+            }
+        }
+        
+        if (retVal == null) return null;
+            
+        if (retVal.isAnnotationPresent(PostConstruct.class) &&
+                (retVal.getParameterTypes().length != 0)) {
+            collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(retVal) +
+                        " annotated with @PostConstruct must not have any arguments"));
             return null;
         }
-
-        for (Method method : getAllMethods(clazz)) {
-            if (method.isAnnotationPresent(PostConstruct.class)) {
-                if (method.getParameterTypes().length != 0) {
-                    collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(method) +
-                            " annotated with @PostConstruct must not have any arguments"));
-                    return null;
-                }
-
-                return method;
-            }
-
-            if (method.getParameterTypes().length != 0) continue;
-            if (!method.getName().equals(CONVENTION_POST_CONSTRUCT)) continue;
-
-            return method;
-        }
-
-        return null;
+            
+        return retVal;
     }
 
     /**
@@ -1890,28 +1976,39 @@ public class Utilities {
      */
     public static Method findPreDestroy(Class<?> clazz, Collector collector) {
         if (org.glassfish.hk2.api.PreDestroy.class.isAssignableFrom(clazz)) {
-            // A little performance optimization
+            try {
+                return clazz.getMethod(CONVENTION_PRE_DESTROY, new Class<?>[0]);
+            }
+            catch (NoSuchMethodException e) {
+                return null;
+            }
+        }
+        
+        boolean containsKey;
+        Method retVal;
+        synchronized (lock) {
+            containsKey = preDestroyCache.containsKey(clazz);
+            retVal = preDestroyCache.get(clazz);
+        }
+        
+        if (!containsKey) {
+            getAllMethods(clazz);  // Fills in the cache
+            
+            synchronized (lock) {
+                retVal = preDestroyCache.get(clazz);
+            }
+        }
+        
+        if (retVal == null) return null;
+        
+        if (retVal.isAnnotationPresent(PreDestroy.class) &&
+                (retVal.getParameterTypes().length != 0)) {
+            collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(retVal) +
+                    " annotated with @PreDestroy must not have any arguments"));
             return null;
         }
-
-        for (Method method : getAllMethods(clazz)) {
-            if (method.isAnnotationPresent(PreDestroy.class)) {
-                if (method.getParameterTypes().length != 0) {
-                    collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(method) +
-                            " annotated with @PreDestroy must not have any arguments"));
-                    return null;
-                }
-
-                return method;
-            }
-
-            if (method.getParameterTypes().length != 0) continue;
-            if (!method.getName().equals(CONVENTION_PRE_DESTROY)) continue;
-
-            return method;
-        }
-
-        return null;
+            
+        return retVal;
     }
 
     /**
@@ -2102,16 +2199,30 @@ public class Utilities {
 
     private static class MemberKey {
         private final Member backingMember;
+        private final int hashCode;
+        private final boolean postConstruct;
+        private final boolean preDestroy;
 
-        private MemberKey(Member method) {
+        private MemberKey(Member method, boolean isPostConstruct, boolean isPreDestroy) {
             backingMember = method;
+            hashCode = calculateHashCode();
+            postConstruct = isPostConstruct;
+            preDestroy = isPreDestroy;
         }
 
         private Member getBackingMember() {
             return backingMember;
         }
+        
+        private boolean isPostConstruct() {
+            return postConstruct;
+        }
+        
+        private boolean isPreDestroy() {
+            return preDestroy;
+        }
 
-        public int hashCode() {
+        private int calculateHashCode() {
             int startCode = 0;
             if (backingMember instanceof Method) {
                 startCode = 1;
@@ -2136,12 +2247,17 @@ public class Utilities {
 
             return startCode;
         }
+        
+        public int hashCode() {
+            return hashCode;
+        }
 
         public boolean equals(Object o) {
             if (o == null) return false;
             if (!(o instanceof MemberKey)) return false;
 
             MemberKey omk = (MemberKey) o;
+            if (hashCode != omk.hashCode) return false;
 
             Member oMember = omk.backingMember;
 
