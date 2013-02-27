@@ -1223,7 +1223,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @return A set of descriptors that is being removed fromthe configuration
      */
     private CheckConfigurationData checkConfiguration(DynamicConfigurationImpl dci) {
-        TreeSet<SystemDescriptor<?>> retVal = new TreeSet<SystemDescriptor<?>>(DESCRIPTOR_COMPARATOR);
+        List<SystemDescriptor<?>> retVal = new LinkedList<SystemDescriptor<?>>();
         boolean addOrRemoveOfInstanceListener = false;
         boolean addOrRemoveOfInjectionResolver = false;
         boolean addOrRemoveOfErrorHandler = false;
@@ -1347,7 +1347,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     @SuppressWarnings("unchecked")
-    private void removeConfigurationInternal(SortedSet<SystemDescriptor<?>> unbinds) {
+    private void removeConfigurationInternal(List<SystemDescriptor<?>> unbinds) {
         for (SystemDescriptor<?> unbind : unbinds) {
             if ((BIND_TRACING_PATTERN != null) && doTrace(unbind)) {
                 Logger.getLogger().debug("HK2 Bind Tracing: Removing Descriptor " + unbind);
@@ -1852,14 +1852,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     private static class CheckConfigurationData {
-        private final SortedSet<SystemDescriptor<?>> unbinds;
+        private final List<SystemDescriptor<?>> unbinds;
         private final boolean instanceLifeycleModificationMade;
         private final boolean injectionResolverModificationMade;
         private final boolean errorHandlerModificationMade;
         private final boolean classAnalyzerModificationMade;
         private final HashSet<String> affectedContracts;
         
-        private CheckConfigurationData(SortedSet<SystemDescriptor<?>> unbinds,
+        private CheckConfigurationData(List<SystemDescriptor<?>> unbinds,
                 boolean instanceLifecycleModificationMade,
                 boolean injectionResolverModificationMade,
                 boolean errorHandlerModificationMade,
@@ -1873,7 +1873,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             this.affectedContracts = affectedContracts;
         }
         
-        private SortedSet<SystemDescriptor<?>> getUnbinds() {
+        private List<SystemDescriptor<?>> getUnbinds() {
             return unbinds;
         }
         
