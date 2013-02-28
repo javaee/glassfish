@@ -289,6 +289,12 @@ Variables Used:
   <copy file="${beans.xml}"
     tofile="${build.classes.dir}/META-INF/beans.xml"
     failonerror="false"/>
+  <copy file="${batch.xml}"
+    tofile="${build.classes.dir}/META-INF/batch.xml"
+    failonerror="false"/>
+  <copy todir="${build.classes.dir}/META-INF/batch-jobs" failonerror="false">
+  	<fileset dir="${batch.jobs.dir}"/>
+  </copy>
   <copy file="${dbschema}" todir="${build.classes.dir}" failonerror="false"/>
   <jar jarfile="${ejb.jar}" basedir="${ejbjar.files}" update="true"
     includes ="${ejbjar.classes}">
@@ -302,6 +308,8 @@ Variables Used:
       <include name="glassfish-ejb-jar.xml"/>
       <include name="sun-cmp-mappings.xml"/>
       <include name="beans.xml"/>
+      <include name="batch-jobs/**/*.xml"/>
+      <include name="batch.xml"/>
     </metainf>
   </jar>       
   <delete dir="${build.classes.dir}/META-INF" failonerror="false"/>
