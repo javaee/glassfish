@@ -61,7 +61,8 @@
       <module>admin/util</module>
       <module>cluster/admin</module>
       <module>cluster/cli</module>
-      <module>cluster/gms-adapter</module>
+      <!-- don't build cluster-gms-adapter-manpage; it's empty now -->
+<!--      <module>cluster/gms-adapter</module> -->
       <module>core/kernel</module>
       <module>core/logging</module>
       <module>deployment/admin</module>
