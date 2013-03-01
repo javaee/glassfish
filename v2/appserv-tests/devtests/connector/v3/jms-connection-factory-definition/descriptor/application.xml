@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="7"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_7.xsd">
+<application xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             version="7"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/application_7.xsd">
     <display-name>jms-connection-factory-definitionApp</display-name>
     <module>
         <java>jms-connection-factory-definition-client.jar</java>
@@ -19,7 +21,7 @@
         <description>global-scope resource defined in Application DD</description>
         <name>java:global/env/Application_DD_JMSConnectionFactory</name>
         <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -33,7 +35,7 @@
         <description>application-scope resource defined in Application DD</description>
         <name>java:app/env/Application_DD_JMSConnectionFactory</name>
         <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -44,3 +46,4 @@
     </jms-connection-factory>
 
 </application>
+

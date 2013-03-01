@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee web-app_3_1.xsd"    version="3.1">
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee web-app_3_1.xsd"
+         version="3.1">
 
     <display-name>jms-connection-factory-definition</display-name>
     <distributable></distributable>
@@ -18,7 +20,7 @@
         <description>global-scope resource to be modified by Web DD</description>
         <name>java:global/env/Servlet_ModByDD_JMSConnectionFactory</name>
         <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -32,7 +34,7 @@
         <description>global-scope resource defined in Web DD</description>
         <name>java:global/env/Web_DD_JMSConnectionFactory</name>
         <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -46,7 +48,7 @@
         <description>application-scope resource defined in Web DD</description>
         <name>java:app/env/Web_DD_JMSConnectionFactory</name>
         <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -60,7 +62,7 @@
         <description>module-scope resource defined in Web DD</description>
         <name>java:module/env/Web_DD_JMSConnectionFactory</name>
         <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -74,7 +76,7 @@
         <description>component-scope resource defined in Web DD</description>
         <name>java:comp/env/Web_DD_JMSConnectionFactory</name>
         <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -85,3 +87,4 @@
     </jms-connection-factory>
 
 </web-app>
+

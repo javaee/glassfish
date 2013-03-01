@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
-<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="false" version="3.2" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_2.xsd">
+<ejb-jar xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         metadata-complete="false"
+         version="3.2"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/ejb-jar_3_2.xsd">
     <module-name>jms-connection-factory-definition-ejb</module-name>
+
     <enterprise-beans>
         <session>
             <display-name>HelloStatefulEJB</display-name>
@@ -13,7 +17,7 @@
                 <description>global-scope resource to be modified by EJB DD</description>
                 <name>java:global/env/HelloStatefulEJB_ModByDD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -27,7 +31,7 @@
                 <description>global-scope resource defined in EJB DD</description>
                 <name>java:global/env/HelloStatefulEJB_DD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -41,7 +45,7 @@
                 <description>application-scope resource defined in EJB DD</description>
                 <name>java:app/env/HelloStatefulEJB_DD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -55,7 +59,7 @@
                 <description>module-scope resource defined in EJB DD</description>
                 <name>java:module/env/HelloStatefulEJB_DD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -69,7 +73,7 @@
                 <description>component-scope resource defined in EJB DD</description>
                 <name>java:comp/env/HelloStatefulEJB_DD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -91,7 +95,7 @@
                 <description>global-scope resource to be modified by EJB DD</description>
                 <name>java:global/env/HelloEJB_ModByDD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -105,7 +109,7 @@
                 <description>global-scope resource defined in EJB DD</description>
                 <name>java:global/env/HelloEJB_DD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -119,7 +123,7 @@
                 <description>application-scope resource defined in EJB DD</description>
                 <name>java:app/env/HelloEJB_DD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -133,7 +137,7 @@
                 <description>module-scope resource defined in EJB DD</description>
                 <name>java:module/env/HelloEJB_DD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -147,7 +151,7 @@
                 <description>component-scope resource defined in EJB DD</description>
                 <name>java:comp/env/HelloEJB_DD_JMSConnectionFactory</name>
                 <class-name>javax.jms.ConnectionFactory</class-name>
-                <resource-adapter-name>jmsra</resource-adapter-name>
+                <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
                 <property>
@@ -160,3 +164,4 @@
         </session>
     </enterprise-beans>
 </ejb-jar>
+
