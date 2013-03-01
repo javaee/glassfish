@@ -1,4 +1,4 @@
-package com.oracle.javaee7.samples.batch.simple;
+package com.oracle.javaee7.samples.batch.twosteps;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -28,18 +28,18 @@ public class SlessBean
 
 	  Properties props = new Properties();
 	  for (int i=0; i<9; i++)
-		props.put(i, i);
+		props.put("Param-For-TwoSteps-Job-" + i, "Value-" + i);
 	  return  jobOperator.start("TwoStepsJob", props);
         } catch (Exception ex) {
 	  throw new RuntimeException(ex);
 	}
     }
 
-    public boolean isDone(long executionId) {
+    public String getJobExitStatus(long executionId) {
 	try {
 	  JobOperator jobOperator = BatchRuntime.getJobOperator();
 	  JobExecution je =  jobOperator.getJobExecution(executionId);
-	  return "COMPLETED".equals(je.getExitStatus());
+	  return je.getExitStatus();
 	} catch (Exception ex) {
 	  throw new RuntimeException(ex);
 	}

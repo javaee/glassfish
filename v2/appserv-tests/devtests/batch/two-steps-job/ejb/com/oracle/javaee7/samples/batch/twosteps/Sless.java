@@ -1,4 +1,4 @@
-package com.oracle.javaee7.samples.batch.simple;
+package com.oracle.javaee7.samples.batch.twosteps;
 
 import javax.ejb.Remote;
 
@@ -7,7 +7,7 @@ public interface Sless {
 
     public long submitJob();
 
-    public boolean isDone(long executionId);
+    public String getJobExitStatus(long executionId);
 
     public boolean wasEjbCreateCalled();
 

@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import javax.naming.*;
 import javax.ejb.EJB;
-import com.oracle.javaee7.samples.batch.simple.*;
+import com.oracle.javaee7.samples.batch.twosteps.*;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 @EJB(name="ejb/GG", beanInterface=Sless.class)
@@ -15,10 +15,10 @@ public class Client {
 
     public static void main (String[] args) {
 
-        stat.addDescription("batch-pay-rool-job-ejb-stateless");
+        stat.addDescription("batch-two-steps-stateless");
         Client client = new Client(args);
         client.doTest();
-        stat.printSummary("batch-pay-rool-job-ejb-stateless");
+        stat.printSummary("batch-two-steps-stateless");
     }  
     
     public Client (String[] args) {
@@ -29,13 +29,24 @@ public class Client {
     public void doTest() {
         try {
             (new InitialContext()).lookup("java:comp/env/ejb/GG");
-	    long result = sless.submitJob();
+	    long executionId = sless.submitJob();
 	    System.out.println("************************************************");
-	    System.out.println("******* JobID: " + result + " ******************");
+	    System.out.println("******* JobID: " + executionId + " ******************");
 	    System.out.println("************************************************");
-            stat.addStatus("batch payroll", stat.PASS);
+	    String jobBatchStatus = "";
+	    for (int sec=10; sec>0; sec--) {
+	        try {
+		    jobBatchStatus = sless.getJobExitStatus(executionId);
+		    if (! "COMPLETED".equals(jobBatchStatus)) {
+		        System.out.println("Will sleep for " + sec + " more seconds...: " + jobBatchStatus);
+		        Thread.currentThread().sleep(1000);
+		    }
+		} catch (Exception ex) {
+		}
+	    }
+            stat.addStatus("batch-two-steps-stateless", ("COMPLETED".equals(jobBatchStatus) ? stat.PASS : stat.FAIL));
 	} catch (Exception ex) {
-            stat.addStatus("batch payroll", stat.FAIL);
+            stat.addStatus("batch-two-steps-stateless", stat.FAIL);
         }
     }
 
