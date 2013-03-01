@@ -13,7 +13,7 @@ import javax.naming.InitialContext;
                         description = "global-scope resource defined by @JMSDestinationDefinition",
                         name = "java:global/env/HelloStatefulEJB_ModByDD_JMSDestination",
                         className = "javax.jms.Queue",
-                        resourceAdapterName = "jmsra",
+                        resourceAdapter = "jmsra",
                         destinationName = "myPhysicalQueue"
                 ),
 
@@ -21,7 +21,7 @@ import javax.naming.InitialContext;
                         description = "global-scope resource defined by @JMSDestinationDefinition",
                         name = "java:global/env/HelloStatefulEJB_Annotation_JMSDestination",
                         className = "javax.jms.Queue",
-                        resourceAdapterName = "jmsra",
+                        resourceAdapter = "jmsra",
                         destinationName = "myPhysicalQueue"
                 ),
 
@@ -29,7 +29,7 @@ import javax.naming.InitialContext;
                         description = "application-scope resource defined by @JMSDestinationDefinition",
                         name = "java:app/env/HelloStatefulEJB_Annotation_JMSDestination",
                         className = "javax.jms.Topic",
-                        resourceAdapterName = "jmsra",
+                        resourceAdapter = "jmsra",
                         destinationName = "myPhysicalTopic"
                 ),
 
@@ -37,7 +37,7 @@ import javax.naming.InitialContext;
                         description = "module-scope resource defined by @JMSDestinationDefinition",
                         name = "java:module/env/HelloStatefulEJB_Annotation_JMSDestination",
                         className = "javax.jms.Topic",
-                        resourceAdapterName = "jmsra",
+                        resourceAdapter = "jmsra",
                         destinationName = "myPhysicalTopic"
                 ),
 
@@ -45,7 +45,7 @@ import javax.naming.InitialContext;
                         description = "component-scope resource defined by @JMSDestinationDefinition",
                         name = "java:comp/env/HelloStatefulEJB_Annotation_JMSDestination",
                         className = "javax.jms.Queue",
-                        resourceAdapterName = "jmsra",
+                        resourceAdapter = "jmsra",
                         destinationName = "myPhysicalQueue"
                 )
         }

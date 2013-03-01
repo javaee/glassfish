@@ -71,7 +71,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("global-scope jms destination defined in UT Application DD");
         desc.setName("java:global/env/UT_Application_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -79,7 +79,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("application-scope jms destination defined in UT Application DD");
         desc.setName("java:app/env/UT_Application_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -121,7 +121,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("global-scope resource to be modified by Appclient DD");
         desc.setName("java:global/env/Appclient_ModByDD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -129,7 +129,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("global-scope resource defined by @JMSDestinationDefinition");
         desc.setName("java:global/env/Appclient_Annotation_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -137,7 +137,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("application-scope resource defined by @JMSDestinationDefinition");
         desc.setName("java:app/env/Appclient_Annotation_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -145,7 +145,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("module-scope resource defined by @JMSDestinationDefinition");
         desc.setName("java:module/env/Appclient_Annotation_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -153,7 +153,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("component-scope resource defined by @JMSDestinationDefinition");
         desc.setName("java:comp/env/Appclient_Annotation_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -161,7 +161,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("global-scope resource defined in Appclient DD");
         desc.setName("java:global/env/Appclient_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -169,7 +169,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("application-scope resource defined in Appclient DD");
         desc.setName("java:app/env/Appclient_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -177,7 +177,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("module-scope resource defined in Appclient DD");
         desc.setName("java:module/env/Appclient_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -185,7 +185,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("component-scope resource defined in Appclient DD");
         desc.setName("java:comp/env/Appclient_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -227,7 +227,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("global-scope resource to be modified by Web DD");
         desc.setName("java:global/env/Servlet_ModByDD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -235,7 +235,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("global-scope resource defined by @JMSDestinationDefinition");
         desc.setName("java:global/env/Servlet_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -243,7 +243,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("application-scope resource defined by @JMSDestinationDefinition");
         desc.setName("java:app/env/Servlet_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -251,7 +251,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("module-scope resource defined by @JMSDestinationDefinition");
         desc.setName("java:module/env/Servlet_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -259,7 +259,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("component-scope resource defined by @JMSDestinationDefinition");
         desc.setName("java:comp/env/Servlet_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -267,7 +267,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("global-scope resource defined in Web DD");
         desc.setName("java:global/env/Web_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -275,7 +275,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("application-scope resource defined in Web DD");
         desc.setName("java:app/env/Web_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -283,7 +283,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("module-scope resource defined in Web DD");
         desc.setName("java:module/env/Web_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -291,7 +291,7 @@ public class ArchiveTest extends TestCase {
         desc.setDescription("component-scope resource defined in Web DD");
         desc.setName("java:comp/env/Web_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -339,7 +339,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("global-scope resource to be modified by EJB DD");
             desc.setName("java:global/env/HelloStatefulEJB_ModByDD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -347,7 +347,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("global-scope resource defined in EJB DD");
             desc.setName("java:global/env/HelloStatefulEJB_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -355,7 +355,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("application-scope resource defined in EJB DD");
             desc.setName("java:app/env/HelloStatefulEJB_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -363,7 +363,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("module-scope resource defined in EJB DD");
             desc.setName("java:module/env/HelloStatefulEJB_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -371,7 +371,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("component-scope resource defined in EJB DD");
             desc.setName("java:comp/env/HelloStatefulEJB_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
         }
@@ -382,7 +382,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("global-scope resource to be modified by EJB DD");
             desc.setName("java:global/env/HelloEJB_ModByDD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -390,7 +390,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("global-scope resource defined in EJB DD");
             desc.setName("java:global/env/HelloEJB_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -398,7 +398,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("application-scope resource defined in EJB DD");
             desc.setName("java:app/env/HelloEJB_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -406,7 +406,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("module-scope resource defined in EJB DD");
             desc.setName("java:module/env/HelloEJB_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -414,7 +414,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("component-scope resource defined in EJB DD");
             desc.setName("java:comp/env/HelloEJB_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
         }
@@ -425,7 +425,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("global-scope resource defined by @JMSDestinationDefinition");
             desc.setName("java:global/env/HelloStatefulEJB_Annotation_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -433,7 +433,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("application-scope resource defined by @JMSDestinationDefinition");
             desc.setName("java:app/env/HelloStatefulEJB_Annotation_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -441,7 +441,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("module-scope resource defined by @JMSDestinationDefinition");
             desc.setName("java:module/env/HelloStatefulEJB_Annotation_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -449,7 +449,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("component-scope resource defined by @JMSDestinationDefinition");
             desc.setName("java:comp/env/HelloStatefulEJB_Annotation_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
         }
@@ -460,7 +460,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("global-scope resource defined by @JMSDestinationDefinition");
             desc.setName("java:global/env/HelloEJB_Annotation_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -468,7 +468,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("application-scope resource defined by @JMSDestinationDefinition");
             desc.setName("java:app/env/HelloEJB_Annotation_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -476,7 +476,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("module-scope resource defined by @JMSDestinationDefinition");
             desc.setName("java:module/env/HelloEJB_Annotation_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -484,7 +484,7 @@ public class ArchiveTest extends TestCase {
             desc.setDescription("component-scope resource defined by @JMSDestinationDefinition");
             desc.setName("java:comp/env/HelloEJB_Annotation_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
         }

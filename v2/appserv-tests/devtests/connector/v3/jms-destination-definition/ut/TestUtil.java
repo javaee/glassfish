@@ -33,7 +33,7 @@ public class TestUtil {
                     expectedDesc.getClassName(), actualDesc.getClassName());
 
             assertEquals("Fail to verify resource-adapter-name of the JMSDestinationDefinitionDescriptor:" + actualDesc.getName(),
-                    expectedDesc.getResourceAdapterName(), actualDesc.getResourceAdapterName());
+                    expectedDesc.getResourceAdapter(), actualDesc.getResourceAdapter());
 
             assertEquals("Fail to verify destination-name of the JMSDestinationDefinitionDescriptor:" + actualDesc.getName(),
                     expectedDesc.getDestinationName(), actualDesc.getDestinationName());

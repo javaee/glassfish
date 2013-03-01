@@ -59,7 +59,7 @@ public class DDTest extends TestCase {
             desc.setDescription("global-scope jms destination defined in UT Application DD");
             desc.setName("java:global/env/UT_Application_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -67,7 +67,7 @@ public class DDTest extends TestCase {
             desc.setDescription("application-scope jms destination defined in UT Application DD");
             desc.setName("java:app/env/UT_Application_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -104,7 +104,7 @@ public class DDTest extends TestCase {
             desc.setDescription("global-scope jms destination defined in UT Appclient DD");
             desc.setName("java:global/env/UT_Appclient_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -112,7 +112,7 @@ public class DDTest extends TestCase {
             desc.setDescription("application-scope jms destination defined in UT Appclient DD");
             desc.setName("java:app/env/UT_Appclient_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -120,7 +120,7 @@ public class DDTest extends TestCase {
             desc.setDescription("module-scope jms destination defined in UT Appclient DD");
             desc.setName("java:module/env/UT_Appclient_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -128,7 +128,7 @@ public class DDTest extends TestCase {
             desc.setDescription("component-scope jms destination defined in UT Appclient DD");
             desc.setName("java:comp/env/UT_Appclient_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -190,7 +190,7 @@ public class DDTest extends TestCase {
         desc.setDescription("global-scope jms destination defined in UT Session EJB DD");
         desc.setName("java:global/env/UT_HelloStatefulEJB_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -198,7 +198,7 @@ public class DDTest extends TestCase {
         desc.setDescription("application-scope jms destination defined in UT Session EJB DD");
         desc.setName("java:app/env/UT_HelloStatefulEJB_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -206,7 +206,7 @@ public class DDTest extends TestCase {
         desc.setDescription("module-scope jms destination defined in UT Session EJB DD");
         desc.setName("java:module/env/UT_HelloStatefulEJB_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -214,7 +214,7 @@ public class DDTest extends TestCase {
         desc.setDescription("component-scope jms destination defined in UT Session EJB DD");
         desc.setName("java:comp/env/UT_HelloStatefulEJB_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -229,7 +229,7 @@ public class DDTest extends TestCase {
         desc.setDescription("global-scope jms destination defined in UT Session EJB DD");
         desc.setName("java:global/env/UT_HelloEJB_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -237,7 +237,7 @@ public class DDTest extends TestCase {
         desc.setDescription("application-scope jms destination defined in UT Session EJB DD");
         desc.setName("java:app/env/UT_HelloEJB_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -245,7 +245,7 @@ public class DDTest extends TestCase {
         desc.setDescription("module-scope jms destination defined in UT Session EJB DD");
         desc.setName("java:module/env/UT_HelloEJB_DD_JMSDestination");
         desc.setClassName("javax.jms.Topic");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalTopic");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -253,7 +253,7 @@ public class DDTest extends TestCase {
         desc.setDescription("component-scope jms destination defined in UT Session EJB DD");
         desc.setName("java:comp/env/UT_HelloEJB_DD_JMSDestination");
         desc.setClassName("javax.jms.Queue");
-        desc.setResourceAdapterName("jmsra");
+        desc.setResourceAdapter("jmsra");
         desc.setDestinationName("myPhysicalQueue");
         expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -281,7 +281,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("global-scope jms destination defined in UT Entity EJB DD");
                 desc.setName("java:global/env/UT_Entity_DD_JMSDestination");
                 desc.setClassName("javax.jms.Queue");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -289,7 +289,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("application-scope jms destination defined in UT Entity EJB DD");
                 desc.setName("java:app/env/UT_Entity_DD_JMSDestination");
                 desc.setClassName("javax.jms.Topic");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalTopic");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -297,7 +297,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("module-scope jms destination defined in UT Entity EJB DD");
                 desc.setName("java:module/env/UT_Entity_DD_JMSDestination");
                 desc.setClassName("javax.jms.Topic");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalTopic");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -305,7 +305,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("component-scope jms destination defined in UT Entity EJB DD");
                 desc.setName("java:comp/env/UT_Entity_DD_JMSDestination");
                 desc.setClassName("javax.jms.Queue");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -345,7 +345,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("global-scope jms destination defined in UT MDB EJB DD");
                 desc.setName("java:global/env/UT_MDB_DD_JMSDestination");
                 desc.setClassName("javax.jms.Queue");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -353,7 +353,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("application-scope jms destination defined in UT MDB EJB DD");
                 desc.setName("java:app/env/UT_MDB_DD_JMSDestination");
                 desc.setClassName("javax.jms.Topic");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalTopic");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -361,7 +361,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("module-scope jms destination defined in UT MDB EJB DD");
                 desc.setName("java:module/env/UT_MDB_DD_JMSDestination");
                 desc.setClassName("javax.jms.Topic");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalTopic");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -369,7 +369,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("component-scope jms destination defined in UT MDB EJB DD");
                 desc.setName("java:comp/env/UT_MDB_DD_JMSDestination");
                 desc.setClassName("javax.jms.Queue");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -409,7 +409,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("global-scope jms destination defined in UT Interceptor EJB DD");
                 desc.setName("java:global/env/UT_Interceptor_DD_JMSDestination");
                 desc.setClassName("javax.jms.Queue");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -417,7 +417,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("application-scope jms destination defined in UT Interceptor EJB DD");
                 desc.setName("java:app/env/UT_Interceptor_DD_JMSDestination");
                 desc.setClassName("javax.jms.Topic");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalTopic");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -425,7 +425,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("module-scope jms destination defined in UT Interceptor EJB DD");
                 desc.setName("java:module/env/UT_Interceptor_DD_JMSDestination");
                 desc.setClassName("javax.jms.Topic");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalTopic");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -433,7 +433,7 @@ public class DDTest extends TestCase {
                 desc.setDescription("component-scope jms destination defined in UT Interceptor EJB DD");
                 desc.setName("java:comp/env/UT_Interceptor_DD_JMSDestination");
                 desc.setClassName("javax.jms.Queue");
-                desc.setResourceAdapterName("jmsra");
+                desc.setResourceAdapter("jmsra");
                 desc.setDestinationName("myPhysicalQueue");
                 expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -472,7 +472,7 @@ public class DDTest extends TestCase {
             desc.setDescription("global-scope jms destination defined in UT Web DD");
             desc.setName("java:global/env/UT_Web_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -480,7 +480,7 @@ public class DDTest extends TestCase {
             desc.setDescription("application-scope jms destination defined in UT Web DD");
             desc.setName("java:app/env/UT_Web_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -488,7 +488,7 @@ public class DDTest extends TestCase {
             desc.setDescription("module-scope jms destination defined in UT Web DD");
             desc.setName("java:module/env/UT_Web_DD_JMSDestination");
             desc.setClassName("javax.jms.Topic");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalTopic");
             expectedJMSDDDs.put(desc.getName(), desc);
 
@@ -496,7 +496,7 @@ public class DDTest extends TestCase {
             desc.setDescription("component-scope jms destination defined in UT Web DD");
             desc.setName("java:comp/env/UT_Web_DD_JMSDestination");
             desc.setClassName("javax.jms.Queue");
-            desc.setResourceAdapterName("jmsra");
+            desc.setResourceAdapter("jmsra");
             desc.setDestinationName("myPhysicalQueue");
             expectedJMSDDDs.put(desc.getName(), desc);
 

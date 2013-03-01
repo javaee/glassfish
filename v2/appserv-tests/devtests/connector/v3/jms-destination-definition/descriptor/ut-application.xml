@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<application xmlns="http://java.sun.com/xml/ns/javaee"
+<application xmlns="http://xmlns.jcp.org/xml/ns/javaee"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              version="7"
-             xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_7.xsd">
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/application_7.xsd">
     <display-name>jms-destination-definitionApp</display-name>
 
     <module>
@@ -13,7 +13,7 @@
         <description>global-scope jms destination defined in UT Application DD</description>
         <name>java:global/env/UT_Application_DD_JMSDestination</name>
         <class-name>javax.jms.Queue</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <destination-name>myPhysicalQueue</destination-name>
     </jms-destination>
 
@@ -21,7 +21,8 @@
         <description>application-scope jms destination defined in UT Application DD</description>
         <name>java:app/env/UT_Application_DD_JMSDestination</name>
         <class-name>javax.jms.Topic</class-name>
-        <resource-adapter-name>jmsra</resource-adapter-name>
+        <resource-adapter>jmsra</resource-adapter>
         <destination-name>myPhysicalTopic</destination-name>
      </jms-destination>
 </application>
+
