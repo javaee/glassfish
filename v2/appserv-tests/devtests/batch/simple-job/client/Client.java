@@ -29,13 +29,24 @@ public class Client {
     public void doTest() {
         try {
             (new InitialContext()).lookup("java:comp/env/ejb/GG");
-	    long result = sless.submitJob();
+	    long executionId = sless.submitJob();
 	    System.out.println("************************************************");
-	    System.out.println("******* JobID: " + result + " ******************");
+	    System.out.println("******* JobID: " + executionId + " ******************");
 	    System.out.println("************************************************");
-            stat.addStatus("batch payroll", stat.PASS);
+	    String jobBatchStatus = "";
+	    for (int sec=10; sec>0; sec--) {
+	        try {
+		    jobBatchStatus = sless.getJobExitStatus(executionId);
+		    if (! "COMPLETED".equals(jobBatchStatus)) {
+		        System.out.println("Will sleep for " + sec + " more seconds...: " + jobBatchStatus);
+		        Thread.currentThread().sleep(1000);
+		    }
+		} catch (Exception ex) {
+		}
+	    }
+            stat.addStatus("simple-batchlet payroll", ("COMPLETED".equals(jobBatchStatus) ? stat.PASS : stat.FAIL));
 	} catch (Exception ex) {
-            stat.addStatus("batch payroll", stat.FAIL);
+            stat.addStatus("simple-batchlet payroll", stat.FAIL);
         }
     }
 

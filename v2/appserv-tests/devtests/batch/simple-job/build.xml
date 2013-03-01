@@ -6,7 +6,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="devtest-intro-simple-job-App" default="usage" basedir=".">
+<project name="devtest-intro-simple-batchlet-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;

@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 
 import javax.batch.operations.JobOperator;
 import javax.batch.runtime.BatchRuntime;
+import javax.batch.runtime.JobExecution;
 import javax.ejb.Stateless;
 import javax.ejb.EJB;
 
@@ -28,11 +29,18 @@ public class SlessBean
 	  Properties props = new Properties();
 	  for (int i=0; i<9; i++)
 		props.put(i, i);
-	  return  jobOperator.start("SimpleJob", props);
+	  return  jobOperator.start("simpleBatchletJob", props);
         } catch (Exception ex) {
 	  throw new RuntimeException(ex);
 	}
     }
+
+    public String getJobExitStatus(long executionId) {
+	JobOperator jobOperator = BatchRuntime.getJobOperator();
+	JobExecution jobExecution = jobOperator.getJobExecution(executionId);
+	return jobExecution.getExitStatus();
+    }
+
 
     public boolean wasEjbCreateCalled() {
 	return ejbCreateCalled;

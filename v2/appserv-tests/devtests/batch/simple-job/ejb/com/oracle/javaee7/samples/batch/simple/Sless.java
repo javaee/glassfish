@@ -9,5 +9,7 @@ public interface Sless {
 
     public boolean wasEjbCreateCalled();
 
+    public String getJobExitStatus(long executionId);
+
 }
 
