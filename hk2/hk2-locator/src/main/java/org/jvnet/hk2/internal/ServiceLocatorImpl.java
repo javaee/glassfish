@@ -338,7 +338,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Class<?> implClass = loadClass(descriptor, injectee);
             
             Collector collector = new Collector();
-            sd.reify(implClass, collector);
+            synchronized (lock) {
+                sd.reify(implClass, collector);
+            }
             
             collector.throwIfErrors();
             
@@ -363,7 +365,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         Collector collector = new Collector();
-        sd.reify(implClass, collector);
+        synchronized (lock) {
+            sd.reify(implClass, collector);
+        }
         
         collector.throwIfErrors();
         
