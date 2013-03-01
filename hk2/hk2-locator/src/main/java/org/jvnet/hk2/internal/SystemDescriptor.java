@@ -551,7 +551,13 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return retVal;
     }
     
-    /* package */ synchronized void reify(Class<?> implClass, Collector collector) {
+    /**
+     * The service locator must hold its lock for this cal
+     * 
+     * @param implClass The impl class to reify
+     * @param collector An error collector for errors
+     */
+    /* package */ void reify(Class<?> implClass, Collector collector) {
         if (!preAnalyzed) {
             this.implClass = implClass;
         }
