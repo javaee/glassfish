@@ -37,14 +37,18 @@ public class TestBeanInWebInfLib {
         for (Bean b: webinfLibBeans) {
             debug(b);
         }
-        
-        Iterable<Bean<?>> accessibleBeans = ((org.jboss.weld.manager.BeanManagerImpl) bm).getAccessibleBeans();
+
+        // Get the proxy delegate
+        org.jboss.weld.manager.BeanManagerImpl delegate =
+                                     ((org.jboss.weld.bean.builtin.BeanManagerProxy) bm).delegate();
+
+        Iterable<Bean<?>> accessibleBeans = delegate.getAccessibleBeans();
         System.out.println("BeanManagerImpl.getAccessibleBeans:" + accessibleBeans);
         for (Bean b : accessibleBeans) {
             debug(b);
         }
 
-        Iterable<Bean<?>> beans = ((org.jboss.weld.manager.BeanManagerImpl) bm).getBeans();
+        Iterable<Bean<?>> beans = delegate.getBeans();
         System.out.println("BeanManagerImpl.getBeans:" + beans);
         for (Bean b : beans) {
             debug(b);
