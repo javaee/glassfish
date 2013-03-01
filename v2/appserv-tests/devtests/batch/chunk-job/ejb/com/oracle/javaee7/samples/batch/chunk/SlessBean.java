@@ -1,4 +1,4 @@
-package com.oracle.javaee7.samples.batch.twosteps;
+package com.oracle.javaee7.samples.batch.chunk;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -28,8 +28,8 @@ public class SlessBean
 
 	  Properties props = new Properties();
 	  for (int i=0; i<9; i++)
-		props.put("Param-For-TwoSteps-Job-" + i, "Value-" + i);
-	  return  jobOperator.start("TwoStepsJob", props);
+		props.put("Chunk-Key-"+ i, "Chunk-Value-" + i);
+	  return  jobOperator.start("ChunkJob", props);
         } catch (Exception ex) {
 	  throw new RuntimeException(ex);
 	}

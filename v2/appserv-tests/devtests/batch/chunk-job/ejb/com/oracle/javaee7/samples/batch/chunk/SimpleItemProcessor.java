@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.oracle.javaee7.samples.batch.twosteps;
+package com.oracle.javaee7.samples.batch.chunk;
 
 import javax.inject.Inject;
 

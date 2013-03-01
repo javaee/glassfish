@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 import javax.naming.*;
 import javax.ejb.EJB;
-import com.oracle.javaee7.samples.batch.twosteps.*;
+import com.oracle.javaee7.samples.batch.chunk.*;
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
 @EJB(name="ejb/GG", beanInterface=Sless.class)
@@ -15,10 +15,10 @@ public class Client {
 
     public static void main (String[] args) {
 
-        stat.addDescription("batch-two-steps-stateless");
+        stat.addDescription("batch-chunk-stateless");
         Client client = new Client(args);
         client.doTest();
-        stat.printSummary("batch-two-steps-stateless");
+        stat.printSummary("batch-chunk-stateless");
     }  
     
     public Client (String[] args) {
@@ -44,9 +44,9 @@ public class Client {
 		} catch (Exception ex) {
 		}
 	    }
-            stat.addStatus("batch-two-steps-stateless", ("COMPLETED".equals(jobBatchStatus) ? stat.PASS : stat.FAIL));
+            stat.addStatus("batch-chunk-stateless", ("COMPLETED".equals(jobBatchStatus) ? stat.PASS : stat.FAIL));
 	} catch (Exception ex) {
-            stat.addStatus("batch-two-steps-stateless", stat.FAIL);
+            stat.addStatus("batch-chunk-stateless", stat.FAIL);
         }
     }
 

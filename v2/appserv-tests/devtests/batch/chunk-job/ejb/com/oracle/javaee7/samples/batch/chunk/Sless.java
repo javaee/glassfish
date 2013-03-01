@@ -1,4 +1,4 @@
-package com.oracle.javaee7.samples.batch.twosteps;
+package com.oracle.javaee7.samples.batch.chunk;
 
 import javax.ejb.Remote;
 
