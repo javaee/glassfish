@@ -28,7 +28,7 @@ import javax.jms.TextMessage;
     description = "application-scope CF defined by @JMSConnectionFactoryDefinition",
     name = "java:app/env/annotation_CF",
     className = "javax.jms.ConnectionFactory",
-    resourceAdapterName = "jmsra",
+    resourceAdapter = "jmsra",
     user = "admin",
     password = "admin",
     properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},
@@ -41,7 +41,7 @@ import javax.jms.TextMessage;
             description = "application-scope test queue defined by @JMSDestinationDefinition",
             name = "java:app/env/annotation_testQueue",
             className = "javax.jms.Queue",
-            resourceAdapterName = "jmsra",
+            resourceAdapter = "jmsra",
             destinationName = "myPhysicalTestQueue"
         ),
 
@@ -49,7 +49,7 @@ import javax.jms.TextMessage;
             description = "application-scope result queue defined by @JMSDestinationDefinition",
             name = "java:app/env/annotation_resultQueue",
             className = "javax.jms.Queue",
-            resourceAdapterName = "jmsra",
+            resourceAdapter = "jmsra",
             destinationName = "myPhysicalResultQueue"
         )
     }

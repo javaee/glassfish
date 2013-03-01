@@ -27,7 +27,7 @@ import javax.jms.TextMessage;
     description = "global-scope CF defined by @JMSConnectionFactoryDefinition",
     name = "java:global/env/annotation_CF",
     className = "javax.jms.ConnectionFactory",
-    resourceAdapterName = "jmsra",
+    resourceAdapter = "jmsra",
     user = "admin",
     password = "admin",
     properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},
@@ -38,7 +38,7 @@ import javax.jms.TextMessage;
     description = "global-scope test queue defined by @JMSDestinationDefinition",
     name = "java:global/env/annotation_testQueue",
     className = "javax.jms.Queue",
-    resourceAdapterName = "jmsra",
+    resourceAdapter = "jmsra",
     destinationName = "myPhysicalTestQueue"
 )
 
