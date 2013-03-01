@@ -46,5 +46,5 @@ public class SlessBean
 	return ejbCreateCalled;
     }
 
-														            
+
 }
