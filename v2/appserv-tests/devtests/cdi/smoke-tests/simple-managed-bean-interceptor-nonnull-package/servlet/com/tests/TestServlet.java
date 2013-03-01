@@ -77,15 +77,16 @@ public class TestServlet extends HttpServlet {
     }
 
     private String testInterceptors(){
+        // The interceptors should be invoked for both of these cases
         System.out.println("calling foo on an @Resource injected Managed Bean");
         tb.foo();
         System.out.println("calling foo on an @Inject Managed Bean");
-        tb1.foo(); //TestAroundInvokeInterceptor is not called in this case
+        tb1.foo();
 
         int count = TestAroundInvokeInterceptor.aroundInvokeCount;
         System.out.println("TestAroundInvokeInterceptor called " + count + " times");
         TestAroundInvokeInterceptor.reset();
-        if (count == 1) return ""; 
+        if (count == 2) return "";
             else return "Interceptor invocation count" + count + " invalid";
    }
 
