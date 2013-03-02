@@ -13,7 +13,9 @@
 
     <target name="all">
         <antcall target="annotation"/>
+<--
         <antcall target="descriptor"/>
+-->
     </target>
 
     <target name="annotation">
