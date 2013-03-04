@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.internal;
+package org.glassfish.hk2.tests.locator.classanalysis;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -64,8 +64,10 @@ import org.glassfish.hk2.utilities.reflection.Logger;
  * @author jwells
  *
  */
-@Singleton @Named(ServiceLocatorUtilities.PREFER_LARGEST_CONSTRUCTOR)
+@Singleton @Named(JaxRsClassAnalyzer.PREFER_LARGEST_CONSTRUCTOR)
 public class JaxRsClassAnalyzer implements ClassAnalyzer {
+    public final static String PREFER_LARGEST_CONSTRUCTOR = "PreferLargestConstructor";
+    
     @Inject @Named(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)
     private ClassAnalyzer defaultAnalyzer;
 
@@ -109,12 +111,6 @@ public class JaxRsClassAnalyzer implements ClassAnalyzer {
             else if (params.length == currentBestSize) {
                 allMaximums.add(candidate);
             }
-        }
-        
-        if (allMaximums.size() > 1) {
-            Logger.getLogger().warning("There were " + allMaximums.size() + " constructors with " + currentBestSize +
-                    " parameters on class " + clazz.getName() +
-                    ", making choice of the proper constructor ambiguous.  A random constructor shall be chosen");    
         }
         
         if (allMaximums.isEmpty()) {
