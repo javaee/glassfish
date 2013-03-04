@@ -169,7 +169,7 @@ public class Servlet extends HttpServlet {
                 throw new EJBException("Got some wierd exception: " + th);
             }
 
-            System.out.println("successfully accessed connector resource definitions");
+            System.out.println("successfully accessed connector factory definitions");
 
             out.println("<HTML> <HEAD> <TITLE> Servlet Output </TITLE> </HEAD> <BODY BGCOLOR=white>");
             out.println("<CENTER> <FONT size=+1 COLOR=blue>Servlet :: All information I can give </FONT> </CENTER> <p> ");
@@ -187,7 +187,7 @@ public class Servlet extends HttpServlet {
 
 
     public void destroy() {
-        System.out.println("in Connectore-Resource-Definition-Test client::servlet destroy");
+        System.out.println("in Connector-Factory-Definition-Test client::servlet destroy");
     }
 
     class MyThread extends Thread {
@@ -223,12 +223,12 @@ public class Servlet extends HttpServlet {
             InitialContext ic = new InitialContext();
             ConnectionFactory ds = (ConnectionFactory) ic.lookup(jndiName);
             c = ds.getConnection();
-            System.out.println("Servlet can access connector resource : " + jndiName);
+            System.out.println("Servlet can access connector factory : " + jndiName);
         } catch (Exception e) {
             if(expectSuccess){
-                throw new RuntimeException("Fail to access connector resource: "+jndiName, e);
+                throw new RuntimeException("Fail to access connector factory: "+jndiName, e);
             }else{
-                System.out.println("Servlet cannot access connector resource : " + jndiName);
+                System.out.println("Servlet cannot access connector factory : " + jndiName);
             }
         } finally {
             try {
