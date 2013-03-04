@@ -289,6 +289,12 @@
         <echo message="@@## connection-factory-definition##@@"/>
         <ant dir="connection-factory-definition" target="${connector-target}"/>
 
+        <echo message="@@## connection-factory-definition-embedra##@@"/>
+        <ant dir="connection-factory-definition-embedra" target="${connector-target}"/>
+
+        <echo message="@@## administered-object-definition-embedra##@@"/>
+        <ant dir="administered-object-definition-embedra" target="${connector-target}"/>
+
         <echo message="@@## administered-object-definition##@@"/>
         <ant dir="administered-object-definition" target="${connector-target}"/>
 
