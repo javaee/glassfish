@@ -59,6 +59,8 @@ public class ClassAnalysisModule implements TestModule {
      */
     @Override
     public void configure(DynamicConfiguration config) {
+        config.addActiveDescriptor(JaxRsClassAnalyzer.class);
+        
         config.bind(BuilderHelper.link(DoubleFactory.class).
                 to(Double.class.getName()).
                 in(PerLookup.class.getName()).
@@ -77,7 +79,7 @@ public class ClassAnalysisModule implements TestModule {
                 build());
         
         config.bind(BuilderHelper.link(JaxRsService.class.getName()).
-                analyzeWith(ServiceLocatorUtilities.PREFER_LARGEST_CONSTRUCTOR).
+                analyzeWith(JaxRsClassAnalyzer.PREFER_LARGEST_CONSTRUCTOR).
                 build());
         
         config.bind(BuilderHelper.link(SimpleService1.class.getName()).

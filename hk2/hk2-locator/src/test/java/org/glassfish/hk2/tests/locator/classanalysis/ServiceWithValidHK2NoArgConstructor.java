@@ -42,7 +42,6 @@ package org.glassfish.hk2.tests.locator.classanalysis;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.jvnet.hk2.annotations.Service;
 
@@ -50,7 +49,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service(analyzer=ServiceLocatorUtilities.PREFER_LARGEST_CONSTRUCTOR)
+@Service(analyzer=JaxRsClassAnalyzer.PREFER_LARGEST_CONSTRUCTOR)
 public class ServiceWithValidHK2NoArgConstructor {
     private ServiceLocator locator = null;
     
