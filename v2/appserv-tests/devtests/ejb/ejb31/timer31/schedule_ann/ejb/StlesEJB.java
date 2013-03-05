@@ -93,8 +93,10 @@ public class StlesEJB implements Stles {
         }
         
         if (!expected_callers.isEmpty()) {
+            System.out.println("Missed info count: " + expected_callers.size());
             StringBuffer sb = new StringBuffer();
             for (String c : expected_callers) {
+                System.out.println("Missed info: " + c);
                 sb.append(c).append(", ");
             }
             throw new EJBException("Timers DID NOT expire for infos: " + sb.toString() );
