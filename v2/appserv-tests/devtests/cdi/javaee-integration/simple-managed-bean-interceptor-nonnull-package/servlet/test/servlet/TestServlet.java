@@ -88,7 +88,7 @@ public class TestServlet extends HttpServlet {
         int count = TestAroundInvokeInterceptor.aroundInvokeCount;
         System.out.println("TestAroundInvokeInterceptor called " + count + " times");
         TestAroundInvokeInterceptor.reset();
-        if (count == 1) return ""; 
+        if (count == 2) return "";
             else return "Interceptor invocation count" + count + " invalid";
    }
 
