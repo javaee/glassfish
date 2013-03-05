@@ -62,6 +62,9 @@ public class QualifierModule implements TestModule {
         configurator.bind(BuilderHelper.link(BlueImpl.class).to(Color.class).qualifiedBy(Blue.class.getName()).build());
         configurator.bind(BuilderHelper.link(YellowImpl.class).to(Color.class).qualifiedBy(Yellow.class.getName()).build());
         
+        configurator.bind(BuilderHelper.link(MauveQualified.class.getName()).qualifiedBy(Mauve.class.getName()).build());
+        configurator.bind(BuilderHelper.link(MaroonQualified.class.getName()).qualifiedBy(Maroon.class.getName()).build());
+        
         // Now the factory pairs
         configurator.bind(BuilderHelper.link(GreenFactory.class).
                 to(Color.class).
