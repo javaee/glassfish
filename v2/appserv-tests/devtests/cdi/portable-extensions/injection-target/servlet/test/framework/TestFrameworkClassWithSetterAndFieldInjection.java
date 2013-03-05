@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,7 +54,11 @@ public class TestFrameworkClassWithSetterAndFieldInjection {
 
     private boolean postConstructCalled = false;
     private boolean preDestroyCalled = false;
-    
+
+    // must have default no-arg constructor or weld will puke
+    public TestFrameworkClassWithSetterAndFieldInjection() {
+    }
+
     public TestFrameworkClassWithSetterAndFieldInjection(String magicKey){
         if(!magicKey.equals("test")) throw new RuntimeException();
     }
