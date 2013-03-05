@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
     private static final String TEST_NAME = "servlet-context-injection-in-cdi";
-    private static final String EXPECTED_RESPONSE = "Hello from Servlet 3.0. initParams: n1=v1, n2=v2";
+    private static final String EXPECTED_RESPONSE = "Hello from Servlet 3.0. initParams: n1=v1, n2=v2 Servlet context: /cdi-servlet-context-injection";
 
     private String host;
     private String port;

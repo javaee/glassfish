@@ -2,7 +2,7 @@ package tests.cdi.servlet;
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -75,7 +75,7 @@ public class TestServlet extends HttpServlet {
             msg += "BeanManager Injection via @Inject failed";
         if (sc == null)
             msg += "ServletContext Injection via @Inject failed";
-        tb.m1();
+        String servletContext = tb.m1();
         try {
             bm1 = (BeanManager) ((new InitialContext())
                     .lookup("java:comp/BeanManager"));
@@ -88,7 +88,9 @@ public class TestServlet extends HttpServlet {
 
         System.out.println("BeanManager is " + bm);
         System.out.println("BeanManager via lookup is " + bm1);
-        writer.write("initParams: " + msg + "\n");
+
+        msg = "initParams: " + msg + " Servlet context: " + servletContext + "\n";
+        writer.write(msg);
     }
 
 }

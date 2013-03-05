@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,39 +36,40 @@
 
 package tests.cdi.context;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-
-import tests.cdi.artifacts.Destroyed;
-import tests.cdi.artifacts.Initialized;
-
-@ApplicationScoped
+//JJS: With cdi 1.1 the ServletContext is produced by Weld (2.0) and so producing one creates an ambiguous dependency.
+//import javax.enterprise.context.ApplicationScoped;
+//import javax.enterprise.event.Observes;
+//import javax.enterprise.inject.Produces;
+//import javax.enterprise.inject.spi.BeanManager;
+//import javax.inject.Inject;
+//import javax.servlet.ServletContext;
+//import javax.servlet.ServletContextEvent;
+//
+//import tests.cdi.artifacts.Destroyed;
+//import tests.cdi.artifacts.Initialized;
+//
+//@ApplicationScoped
 public class ServletContextProducer {
-    private ServletContext servletContext;
-
-//    @Inject
-//    private BeanManager beanManager;
-
-    protected void contextInitialized(
-            @Observes @Initialized ServletContextEvent e) {
-        System.out.println("Servlet context initialized with event -" + e);
-        servletContext = e.getServletContext();
-//        servletContext.setAttribute(BeanManager.class.getName(), beanManager);
-    }
-
-    protected void contextDestroyed(@Observes @Destroyed ServletContextEvent e) {
-        System.out.println("Servlet context destroyed with event #0" + e);
-        servletContext = null;
-    }
-
-    @Produces
-    @ApplicationScoped
-    public ServletContext getServletContext() {
-        return servletContext;
-    }
+//    private ServletContext servletContext;
+//
+////    @Inject
+////    private BeanManager beanManager;
+//
+//    protected void contextInitialized(
+//            @Observes @Initialized ServletContextEvent e) {
+//        System.out.println("Servlet context initialized with event -" + e);
+//        servletContext = e.getServletContext();
+////        servletContext.setAttribute(BeanManager.class.getName(), beanManager);
+//    }
+//
+//    protected void contextDestroyed(@Observes @Destroyed ServletContextEvent e) {
+//        System.out.println("Servlet context destroyed with event #0" + e);
+//        servletContext = null;
+//    }
+//
+//    @Produces
+//    @ApplicationScoped
+//    public ServletContext getServletContext() {
+//        return servletContext;
+//    }
 }
