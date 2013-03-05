@@ -44,6 +44,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
@@ -168,5 +169,37 @@ public class QualifierTest {
     public void testDoubleQualifier() {
         locator.getAllServiceHandles(new ImplementationQualifierImpl(SpecifiedImplementation.class.getName()),
                 new ImplementationQualifierImpl(SpecifiedImplementation.class.getName() + "_another"));
+    }
+    
+    @Test
+    public void testLazyReificationWhenLookedUpByQualifierWithGetAllServiceHandles() {
+        List<ServiceHandle<Mauve>> handles = locator.getAllServiceHandles(Mauve.class);
+        Assert.assertNotNull(handles);
+        Assert.assertEquals(1, handles.size());
+        
+        ServiceHandle<Mauve> mauveHandle = handles.get(0);
+        ActiveDescriptor<Mauve> mauveDescriptor = mauveHandle.getActiveDescriptor();
+        
+        // The true test
+        Assert.assertFalse(mauveDescriptor.isReified());
+    }
+    
+    @Test
+    public void testLazyReificationWhenLookedUpByQualifierWithGetServiceHandle() {
+        ServiceHandle<Mauve> handle = locator.getServiceHandle(Mauve.class);
+        Assert.assertNotNull(handle);
+        
+        ActiveDescriptor<Mauve> mauveDescriptor = handle.getActiveDescriptor();
+        
+        // The true test
+        Assert.assertFalse(mauveDescriptor.isReified());
+    }
+    
+    @Test
+    public void testLookupViaQualifierWithGetService() {
+        Object maroonQualified = locator.getService(Maroon.class);
+        Assert.assertNotNull(maroonQualified);
+        
+        Assert.assertTrue(maroonQualified instanceof MaroonQualified);
     }
 }

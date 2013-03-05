@@ -1651,6 +1651,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         return retVal;
     }
+    
+    private static int fuck = 0;
 
     private ImmediateResults narrow(ServiceLocator locator,
             List<SystemDescriptor<?>> candidates,
@@ -1678,6 +1680,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
             retVal.addValidatedResult(previousResult);
             
             if (onlyOne) return retVal;
+        }
+        
+        if ((requiredType != null) &&
+                (requiredType instanceof Class) &&
+                ((Class<?>) requiredType).isAnnotation()) {
+            // In the annotation case we need not do type checking, so do not reify
+            requiredType = null;
         }
         
         ActiveDescriptor<?> candidate;
