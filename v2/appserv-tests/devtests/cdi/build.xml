@@ -190,12 +190,13 @@
 		<echo message="@@## Running all CDI developer tests##@@"/>
         <ant dir="smoke-tests" target="${cdi-target}"/>
         <ant dir="qualifiers" target="${cdi-target}"/>
-        <ant dir="alternatives" target="${cdi-target}"/>
+
         <!--
         Not running until https://issues.jboss.org/browse/CDI-331 is sorted out.
         In 1.1.10.Final the test passes.
         In 2.0 Beta it fails.
         See email from Jozef 3/4/13
+        <ant dir="alternatives" target="${cdi-target}"/>
         <ant dir="ambiguous-deps" target="${cdi-target}"/>
         -->
         <ant dir="events" target="${cdi-target}"/>
