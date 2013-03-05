@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,15 +50,19 @@ import javax.servlet.http.HttpServletResponse;
 public class ProducerMethodTestServlet extends HttpServlet {
     @Inject
     TestBean tb;
+
     @Inject
     @RandomLessThanOrEqualToHundred
     int randomNumber;
+
     @Inject
     @RandomLessThanOrEqualToHundred
     int randomNumber2;
+
     @Inject
     @RandomGreaterThanHundred
     int randomNumber3;
+
     @Inject
     @RandomGreaterThanHundred
     int randomNumber4;

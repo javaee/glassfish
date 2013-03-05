@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,20 +41,17 @@ import javax.inject.Named;
 
 @ApplicationScoped
 public class RandomNumberGenerator {
-    private java.util.Random random = new java.util.Random(System.currentTimeMillis());
+    private static int lessThan100 = 99;
+    private static int greaterThan100 = 101;
 
     //Generate a number less than or equal to hundred
     @Produces @Named @RandomLessThanOrEqualToHundred int getRandomNumber(){
-        return random.nextInt(100);
+        return lessThan100--;
     }
     
     //Generate a number greater than 100
     @Produces @Named @RandomGreaterThanHundred int getRandomNumberGreatherThanHundred(){
-        int i;
-        while((i = random.nextInt(10000)) > 100){
-            return i;
-        }
-        return -1;
+        return greaterThan100++;
     }
     
 }
