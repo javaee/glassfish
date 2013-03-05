@@ -205,7 +205,15 @@
         <ant dir="javaee-integration" target="${cdi-target}"/>
         <ant dir="portable-extensions" target="${cdi-target}"/>
         <ant dir="producer-methods" target="${cdi-target}"/>
+
+        <!--
+        Not running until https://issues.jboss.org/browse/CDI-331 is sorted out.
+        In 1.1.10.Final the test passes.
+        In 2.0 Beta it fails.
+        See email from Jozef 3/4/13
         <ant dir="programmatic-lookup" target="${cdi-target}"/>
+        -->
+
         <ant dir="scopes" target="${cdi-target}"/>
         <ant dir="specialization" target="${cdi-target}"/>
         <ant dir="stereotypes" target="${cdi-target}"/>
