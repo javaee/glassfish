@@ -1651,8 +1651,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         return retVal;
     }
-    
-    private static int fuck = 0;
 
     private ImmediateResults narrow(ServiceLocator locator,
             List<SystemDescriptor<?>> candidates,
