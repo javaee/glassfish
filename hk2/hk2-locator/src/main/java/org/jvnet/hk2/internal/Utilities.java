@@ -2184,7 +2184,20 @@ public class Utilities {
             context = locator.resolveContext(root.getScopeAnnotation());
         }
         catch (Throwable th) {
-            throw new MultiException(th);
+            Exception addMe = new IllegalStateException("While attempting to create a service for " + root +
+                    " in scope " + root.getScope() + " an error occured while locating the context");
+            
+            if (th instanceof MultiException) {
+                MultiException me = (MultiException) th;
+
+                me.addError(addMe);
+
+                throw me;
+            }
+
+            MultiException me = new MultiException(th);
+            me.addError(addMe);
+            throw me;
         }
 
         service = context.findOrCreate(root, handle);
