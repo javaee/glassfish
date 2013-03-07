@@ -39,18 +39,22 @@
  */
 package org.glassfish.hk2.runlevel.tests.ordering;
 
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.InstanceLifecycleEvent;
+import org.glassfish.hk2.api.InstanceLifecycleEventType;
+import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.runlevel.Activator;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -58,7 +62,7 @@ import org.junit.Test;
  *
  */
 public class OrderingTest {
-    private final ServiceLocator locator = Utilities.getServiceLocator("OrderingTest", Music.class, Opera.class);
+    private final ServiceLocator locator = Utilities.getServiceLocator("OrderingTest", Music.class, Opera.class, TimerActivator.class);
     
     /**
      * This ensures that we can get the proper timings for services
@@ -70,18 +74,20 @@ public class OrderingTest {
      * Opera service is a subordinate of the Music service that its timing
      * would still be accounted for properly
      */
-    @Test @Ignore
+    @Test
     public void testCanGetCorrectTiming() {
         RunLevelController controller = locator.getService(RunLevelController.class);
+        Assert.assertNotNull(controller);
         
-        TimerActivator activator = new TimerActivator(controller.getDefaultActivator());
+        TimerActivator activator = locator.getService(TimerActivator.class);
+        Assert.assertNotNull(activator);
         
-        controller.proceedTo(5, activator);
+        controller.proceedTo(5);
         
         LinkedList<ServiceData> records = activator.getRecords();
         
-        ServiceData operaData = records.get(1);
-        ServiceData musicData = records.get(0);
+        ServiceData operaData = records.get(0);
+        ServiceData musicData = records.get(1);
         
         Assert.assertEquals(operaData.descriptor.getImplementation(), Opera.class.getName());
         Assert.assertEquals(musicData.descriptor.getImplementation(), Music.class.getName());
@@ -102,50 +108,51 @@ public class OrderingTest {
         
     }
     
-    private static class TimerActivator implements Activator {
-        private final Activator dActivator;
-        private final LinkedList<ServiceData> records = new LinkedList<ServiceData>();
-        
-        public TimerActivator(Activator dActivator) {
-            this.dActivator = dActivator;
-        }
+    @Singleton
+    private static class TimerActivator implements InstanceLifecycleListener {
+        private static final Filter FILTER = new Filter() {
 
-        @Override
-        public void activate(ActiveDescriptor<?> activeDescriptor) {
-            long startTime = System.currentTimeMillis();
+            @Override
+            public boolean matches(Descriptor d) {
+                if (d.getScope() != null && d.getScope().equals(RunLevel.class.getName())) return true;
+                
+                return false;
+            }
             
-            dActivator.activate(activeDescriptor);
-            
-            long finishTime = System.currentTimeMillis();
-            
-            records.add(new ServiceData(activeDescriptor, finishTime - startTime));
-            
-        }
+        };
+        private final LinkedList<ServiceData> records = new LinkedList<ServiceData>();
+        private final HashMap<String, Long> startTimes = new HashMap<String, Long>();
         
-        private LinkedList<ServiceData> getRecords() {
+        public LinkedList<ServiceData> getRecords() {
             return records;
         }
 
         @Override
-        public void deactivate(ActiveDescriptor<?> activeDescriptor) {
-            // Do nothing
-            
+        public Filter getFilter() {
+            return FILTER;
         }
 
         @Override
-        public void awaitCompletion() throws ExecutionException,
-                InterruptedException, TimeoutException {
-            // Do nothing
+        public void lifecycleEvent(InstanceLifecycleEvent lifecycleEvent) {
+            if (lifecycleEvent.getEventType().equals(InstanceLifecycleEventType.PRE_PRODUCTION)) {
+                startTimes.put(lifecycleEvent.getActiveDescriptor().getImplementation(),
+                        System.currentTimeMillis());
+                return;
+            }
+            
+            if (lifecycleEvent.getEventType().equals(InstanceLifecycleEventType.POST_PRODUCTION)) {
+                Long startTime = startTimes.remove(lifecycleEvent.getActiveDescriptor().getImplementation());
+                if (startTime == null) return;
+                
+                records.add(new ServiceData(lifecycleEvent.getActiveDescriptor(),
+                        (System.currentTimeMillis() - startTime)));
+            }
+            
+            // Ignore others
             
         }
 
-        @Override
-        public void awaitCompletion(long timeout, TimeUnit unit)
-                throws ExecutionException, InterruptedException,
-                TimeoutException {
-            // Do nothing
-            
-        }
+        
         
     }
     
