@@ -85,8 +85,8 @@ public class Client {
             lookupJMSDestination("java:global/env/Appclient_ModByDD_JMSDestination", true);
             lookupJMSDestination("java:global/env/Appclient_Annotation_JMSDestination", true);
             lookupJMSDestination("java:app/env/Appclient_Annotation_JMSDestination", true);
-//            lookupJMSDestination("java:module/env/Appclient_Annotation_JMSDestination", true);
-//            lookupJMSDestination("java:comp/env/Appclient_Annotation_JMSDestination", true);
+            lookupJMSDestination("java:module/env/Appclient_Annotation_JMSDestination", true);
+            lookupJMSDestination("java:comp/env/Appclient_Annotation_JMSDestination", true);
 
             lookupJMSDestination("java:global/env/Servlet_ModByDD_JMSDestination", true);
             lookupJMSDestination("java:global/env/Servlet_JMSDestination", true);
