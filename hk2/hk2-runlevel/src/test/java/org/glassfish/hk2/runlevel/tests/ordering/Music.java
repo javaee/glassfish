@@ -61,8 +61,6 @@ public class Music {
     @SuppressWarnings("unused")
     @PostConstruct
     private void sleep100() {
-        System.out.println("JRW(10) Music postConstruct");
-        
         try {
             Thread.sleep(100);
         }

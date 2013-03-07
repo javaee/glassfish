@@ -54,8 +54,6 @@ public class Opera {
     @SuppressWarnings("unused")
     @PostConstruct
     private void sleep100() {
-        System.out.println("JRW(10) Opera postConstruct");
-        
         try {
             Thread.sleep(100);
         }
