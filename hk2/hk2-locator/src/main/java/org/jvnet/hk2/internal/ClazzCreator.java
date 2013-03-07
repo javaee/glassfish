@@ -306,10 +306,15 @@ public class ClazzCreator<T> implements Creator<T> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public InstanceLifecycleEventImpl create(ServiceHandle<?> root) {
+    public T create(ServiceHandle<?> root, SystemDescriptor<?> eventThrower) {
         String failureLocation = "resolve";
         try {
             Map<Injectee, Object> allResolved = resolveAllDependencies(root);
+            
+            if (eventThrower != null) {
+                eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.PRE_PRODUCTION,
+                    null, allResolved, eventThrower));
+            }
 
             failureLocation = "create";
             T retVal = (T) createMe(allResolved);
@@ -323,8 +328,12 @@ public class ClazzCreator<T> implements Creator<T> {
             failureLocation = "post construct";
             postConstructMe(retVal);
 
-            return new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
-                    retVal, allResolved);
+            if (eventThrower != null) {
+                eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
+                    retVal, allResolved, eventThrower));
+            }
+            
+            return retVal;
         } catch (Throwable th) {
             if (th instanceof MultiException) {
                 MultiException me = (MultiException) th;

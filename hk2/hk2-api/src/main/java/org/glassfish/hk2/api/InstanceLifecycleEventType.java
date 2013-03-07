@@ -48,6 +48,12 @@ package org.glassfish.hk2.api;
  */
 public enum InstanceLifecycleEventType {
     /**
+     * This lifecycle event is called before an object will be
+     * created
+     */
+    PRE_PRODUCTION,
+    
+    /**
      * This lifecycle event is called after an object has been
      * created
      */

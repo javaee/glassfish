@@ -64,6 +64,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     private final Class<?> implClass;
     private final Creator<T> creator;
     private final String implClassString;
+    private SystemDescriptor<?> hk2Parent;
     
     /**
      * @param clazz 
@@ -100,6 +101,10 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
         this.creator = creator;
         implClassString = implClass.getName();
     }
+    
+    /* package */ void setHK2Parent(SystemDescriptor<?> hk2Parent) {
+        this.hk2Parent = hk2Parent;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
@@ -112,10 +117,9 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public T create(ServiceHandle<?> root) {
-        return (T) creator.create(root).getLifecycleObject();
+        return creator.create(root, hk2Parent);
     }
     
     /* (non-Javadoc)

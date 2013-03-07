@@ -80,6 +80,31 @@ public class LifecycleModule implements TestModule {
                 in(PerLookup.class.getName()).
                 build());
         
+        // The earth wind and fire ordered service, to check that ordering of the PRE_PRODUCTION is ok
+        config.bind(BuilderHelper.link(OrderedLifecycleListener.class.getName()).
+                to(InstanceLifecycleListener.class.getName()).
+                in(Singleton.class.getName()).
+                build());
+        
+        // This is earth, wind and fire as basic descriptors
+        config.bind(BuilderHelper.link(Earth.class.getName()).
+                to(EarthWindAndFire.class.getName()).
+                in(Singleton.class.getName()).
+                build());
+        
+        config.bind(BuilderHelper.link(Wind.class.getName()).
+                to(EarthWindAndFire.class.getName()).
+                build());
+        
+        config.bind(BuilderHelper.link(Fire.class.getName()).
+                to(EarthWindAndFire.class.getName()).
+                build());
+        
+        // This is water, sand and space done as active descriptors (but as a class)
+        config.addActiveDescriptor(Water.class);
+        config.addActiveDescriptor(Sand.class);
+        config.addActiveDescriptor(Space.class);
+        
     }
 
 }

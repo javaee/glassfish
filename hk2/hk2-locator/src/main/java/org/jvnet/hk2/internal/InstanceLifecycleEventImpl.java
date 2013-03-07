@@ -53,12 +53,12 @@ import org.glassfish.hk2.api.InstanceLifecycleEventType;
  */
 public class InstanceLifecycleEventImpl implements InstanceLifecycleEvent {
     private final InstanceLifecycleEventType eventType;
-    private ActiveDescriptor<?> descriptor;
+    private final ActiveDescriptor<?> descriptor;
     private final Object lifecycleObject;
     private final Map<Injectee, Object> knownInjectees;
     
     /* package */ InstanceLifecycleEventImpl(InstanceLifecycleEventType eventType,
-            Object lifecycleObject, Map<Injectee,Object> knownInjectees) {
+            Object lifecycleObject, Map<Injectee,Object> knownInjectees, ActiveDescriptor<?> descriptor) {
         this.eventType = eventType;
         this.lifecycleObject = lifecycleObject;
         if (knownInjectees == null) {
@@ -67,11 +67,12 @@ public class InstanceLifecycleEventImpl implements InstanceLifecycleEvent {
         else {
             this.knownInjectees = Collections.unmodifiableMap(knownInjectees);
         }
+        this.descriptor = descriptor;
     }
     
     /* package */ InstanceLifecycleEventImpl(InstanceLifecycleEventType eventType,
-            Object lifecycleObject) {
-        this(eventType, lifecycleObject, null);
+            Object lifecycleObject, ActiveDescriptor<?> descriptor) {
+        this(eventType, lifecycleObject, null, descriptor);
     }
 
     /* (non-Javadoc)
@@ -80,10 +81,6 @@ public class InstanceLifecycleEventImpl implements InstanceLifecycleEvent {
     @Override
     public InstanceLifecycleEventType getEventType() {
         return eventType;
-    }
-    
-    /* package */ void setActiveDescriptor(ActiveDescriptor<?> descriptor) {
-        this.descriptor = descriptor;
     }
 
     /* (non-Javadoc)

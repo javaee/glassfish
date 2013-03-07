@@ -63,8 +63,8 @@ public interface InstanceLifecycleListener {
     
     /**
      * This method will be called when any lifecycle event occurs.  The currently supported
-     * lifecycle events are POST_PRODUCTION and PRE_DESTRUCTION.  Code should be written to
-     * allow for future events to be generated.
+     * lifecycle events are PRE_PRODUCTION, POST_PRODUCTION and PRE_DESTRUCTION.  Code should be written to
+     * allow for future events to be generated.  This method should not throw exceptions
      * 
      * @param lifecycleEvent The event that has occurred, will not be null
      */

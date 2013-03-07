@@ -43,6 +43,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
@@ -98,6 +99,54 @@ public class LifecycleTest {
         
         Assert.assertTrue("Unknown notification message: " + notification, notification.contains(Notifier.DEFAULT_NAME));
         Assert.assertTrue("Unknown notification message: " + notification, notification.contains(MESSAGE_ONE)); 
+    }
+    
+    @Test
+    public void testTrueCreateOrderForDescriptors() {
+        OrderedLifecycleListener ordered = locator.getService(OrderedLifecycleListener.class);
+        ordered.clear();
+        
+        // We are getting Fire here, but Fire depends on Wind which depends on Earth so
+        // the true creation ordering is Earth, Wind and Fire
+        Fire fire = locator.getService(Fire.class);
+        Assert.assertNotNull(fire);
+        
+        List<ActiveDescriptor<?>> orderedList = ordered.getOrderedList();
+        
+        Assert.assertEquals(3, orderedList.size());
+        
+        ActiveDescriptor<?> earthDescriptor = orderedList.get(0);
+        Assert.assertEquals(earthDescriptor.getImplementation(), Earth.class.getName());
+        
+        ActiveDescriptor<?> windDescriptor = orderedList.get(1);
+        Assert.assertEquals(windDescriptor.getImplementation(), Wind.class.getName());
+        
+        ActiveDescriptor<?> fireDescriptor = orderedList.get(2);
+        Assert.assertEquals(fireDescriptor.getImplementation(), Fire.class.getName());
+    }
+    
+    @Test
+    public void testTrueCreateOrderForAddActiveDescriptorAsClass() {
+        OrderedLifecycleListener ordered = locator.getService(OrderedLifecycleListener.class);
+        ordered.clear();
+        
+        // We are getting Space here, but Space depends on Sand which depends on Water so
+        // the true creation ordering is Water, Sand and Space
+        Space space = locator.getService(Space.class);
+        Assert.assertNotNull(space);
+        
+        List<ActiveDescriptor<?>> orderedList = ordered.getOrderedList();
+        
+        Assert.assertEquals(3, orderedList.size());
+        
+        ActiveDescriptor<?> waterDescriptor = orderedList.get(0);
+        Assert.assertEquals(waterDescriptor.getImplementation(), Water.class.getName());
+        
+        ActiveDescriptor<?> sandDescriptor = orderedList.get(1);
+        Assert.assertEquals(sandDescriptor.getImplementation(), Sand.class.getName());
+        
+        ActiveDescriptor<?> spaceDescriptor = orderedList.get(2);
+        Assert.assertEquals(spaceDescriptor.getImplementation(), Space.class.getName());
     }
 
 }

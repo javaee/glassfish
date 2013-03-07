@@ -84,7 +84,6 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     
     private final ServiceLocatorImpl sdLocator;
     private boolean reified;
-    private boolean reifying = false;  // Am I currently reifying myself?
     private boolean preAnalyzed = false;
     
     private final Object cacheLock = new Object();
@@ -127,6 +126,9 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             if (active.isReified()) {
                 activeDescriptor = active;
                 reified = true;
+                if (active instanceof AutoActiveDescriptor) {
+                    ((AutoActiveDescriptor<?>) active).setHK2Parent(this);
+                }
             }
             else {
             	activeDescriptor = null;
@@ -312,10 +314,8 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
      * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
      */
     @Override
-    public boolean isReified() {
-        synchronized (this) {
-            return reified;
-        }
+    public synchronized boolean isReified() {
+        return reified;
     }
 
     /* (non-Javadoc)
@@ -409,7 +409,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         this.factoryServiceId = factoryServiceId;
     }
     
-    private void invokeInstanceListeners(InstanceLifecycleEvent event) {
+    /* package */ void invokeInstanceListeners(InstanceLifecycleEvent event) {
         for (InstanceLifecycleListener listener : instanceListeners) {
             listener.lifecycleEvent(event);
         }
@@ -418,26 +418,30 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public T create(ServiceHandle<?> root) {
         checkState();
         
-        InstanceLifecycleEventImpl event;
+        T retVal;
         if (activeDescriptor != null) {
-            event = new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
-                    activeDescriptor.create(root));
+            if (!(activeDescriptor instanceof AutoActiveDescriptor)) {
+                // An auto-active descriptor will do the even in its create method
+                invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.PRE_PRODUCTION, null, this));
+            }
+            
+            
+            retVal = activeDescriptor.create(root);
+            
+            if (!(activeDescriptor instanceof AutoActiveDescriptor)) {
+                // An auto-active descriptor will do the even in its create method
+                invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION, retVal, this));
+            }
         }
         else {
-            event = creator.create(root);
+            retVal = creator.create(root, this);
         }
         
-        event.setActiveDescriptor(this);
-        
-        // invoke the listeners
-        invokeInstanceListeners(event);
-        
-        return (T) event.getLifecycleObject();
+        return retVal;
     }
 
     /* (non-Javadoc)
@@ -449,8 +453,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         
         InstanceLifecycleEventImpl event = new InstanceLifecycleEventImpl(
                 InstanceLifecycleEventType.PRE_DESTRUCTION,
-                instance);
-        event.setActiveDescriptor(this);
+                instance, this);
         
         // invoke listeners BEFORE destroying the instance
         invokeInstanceListeners(event);
@@ -464,7 +467,9 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     }
     
     private void checkState() {
-        synchronized (this) {
+        if (reified) return;
+        
+        synchronized(this) {
             if (!reified) throw new IllegalStateException();
         }
     }
@@ -556,56 +561,15 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return retVal;
     }
     
-    /* package */ void reify(Class<?> implClass, Collector collector) {
-        if (reified) return;
-        
-        synchronized(this) {
-            if (reified) return;
-            
-            while (reifying) {
-                try {
-                    this.wait();
-                }
-                catch (InterruptedException e) {
-                    collector.addThrowable(e);
-                    return;
-                }
-            }
-            
-            if (reified) return;
-            reifying = true;
-        }
-        
-        try {
-            // This call can NOT hold the SystemDescriptor lock
-            // because this method could be called with the ServiceLocatorImpl
-            // lock held, and if the other thread was also trying to
-            // reify this descriptor that could lead to a deadlock
-            internalReify(implClass, collector);
-        }
-        finally {
-            synchronized (this) {
-                if (!collector.hasErrors()) {
-                    reified = true;
-                }
-                else {
-                    collector.addThrowable(new IllegalArgumentException("Errors were discovered while reifying " + this));
-                }
-                
-                reifying = false;
-                this.notifyAll();
-            }
-        }
-        
-    }
-    
     /**
      * The service locator must hold its lock for this cal
      * 
      * @param implClass The impl class to reify
      * @param collector An error collector for errors
      */
-    private void internalReify(Class<?> implClass, Collector collector) {
+    /* package */ synchronized void reify(Class<?> implClass, Collector collector) {
+        if (reified) return;
+        
         if (!preAnalyzed) {
             this.implClass = implClass;
         }
@@ -703,7 +667,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                 " isProxiable set to true"));
         }
         
-        
+        if (!collector.hasErrors()) reified = true;
     }
     
     @Override
