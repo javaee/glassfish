@@ -87,11 +87,6 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
      */
     private String supportedProjectTypes;
     
-    /**
-     * @parameter default-value="${project.build.outputDirectory}"
-     */
-    private File buildOutputDirectory;
-    
     protected abstract boolean getNoSwap();
     protected abstract File getOutputDirectory();
     
@@ -167,8 +162,15 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
     private String getBuildClasspath() {
         StringBuilder sb = new StringBuilder();
         
-        sb.append(buildOutputDirectory.getAbsolutePath());
+        sb.append(project.getBuild().getOutputDirectory());
         sb.append(File.pathSeparator);
+        
+        if (!getOutputDirectory().getAbsolutePath().equals(
+                project.getBuild().getOutputDirectory())) {
+            
+            sb.append(getOutputDirectory().getAbsolutePath());
+            sb.append(File.pathSeparator);
+        }
 
         List<Artifact> artList = new ArrayList<Artifact>(project.getArtifacts());
         Iterator<Artifact> i = artList.iterator();
