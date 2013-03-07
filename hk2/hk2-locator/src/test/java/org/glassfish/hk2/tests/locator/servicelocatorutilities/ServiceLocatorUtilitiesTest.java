@@ -64,9 +64,9 @@ import org.junit.Test;
  */
 public class ServiceLocatorUtilitiesTest {
     private final static String TEST_NAME = "ServiceLocatorUtilitiesTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, null);
+    private static int gen = 0;
     
-    private SimpleService addSimpleService() {
+    private SimpleService addSimpleService(ServiceLocator locator) {
         SimpleService ss1 = locator.getService(SimpleService.class);
         if (ss1 == null) {
             SimpleService ss = new SimpleService();
@@ -80,10 +80,18 @@ public class ServiceLocatorUtilitiesTest {
         
         return ss1;
     }
+    
+    private static ServiceLocator uniqueCreate() {
+        synchronized (ServiceLocatorUtilitiesTest.class) {
+            return LocatorHelper.create(TEST_NAME + "_" + gen++, null);
+        }
+    }
 
     @Test
     public void testAddActiveDescriptor() {
-        SimpleService ss = addSimpleService();
+        ServiceLocator locator = uniqueCreate();
+        
+        SimpleService ss = addSimpleService(locator);
         
         SimpleService ss1 = locator.getService(SimpleService.class);
         Assert.assertNotNull(ss1);
@@ -93,6 +101,8 @@ public class ServiceLocatorUtilitiesTest {
     
     @Test
     public void testAddDescriptor() {
+        ServiceLocator locator = uniqueCreate();
+        
         Descriptor descriptor = BuilderHelper.createDescriptorFromClass(SimpleService1.class);
         
         ServiceLocatorUtilities.addOneDescriptor(locator, descriptor);
@@ -103,6 +113,8 @@ public class ServiceLocatorUtilitiesTest {
     
     @Test
     public void testAddNonReifiedActiveDescriptor() {
+        ServiceLocator locator = uniqueCreate();
+        
         SimpleService2 ss = new SimpleService2();
         
         AbstractActiveDescriptor<SimpleService2> active = BuilderHelper.createConstantDescriptor(ss);
@@ -125,7 +137,9 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testCreateAndInitialize() {
-        addSimpleService();
+        ServiceLocator locator = uniqueCreate();
+        
+        addSimpleService(locator);
         
         ServiceWithPostConstruct swpc = locator.createAndInitialize(
                 ServiceWithPostConstruct.class);
@@ -139,6 +153,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testAddAndRemoveConstant() {
+        ServiceLocator locator = uniqueCreate();
+        
         SimpleService3 ss3 = new SimpleService3();
         
         ActiveDescriptor<?> ss3Descriptor = ServiceLocatorUtilities.addOneConstant(locator, ss3);
@@ -168,6 +184,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testRemoveNonSpecificDescriptor() {
+        ServiceLocator locator = uniqueCreate();
+        
         Descriptor d = BuilderHelper.link(SimpleService4.class.getName()).
                 to(SimpleContract.class).
                 in(Singleton.class.getName()).build();
@@ -189,6 +207,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testAddContractWithSpecificContracts() {
+        ServiceLocator locator = uniqueCreate();
+        
         SimpleService3 ss3 = new SimpleService3();
         
         ActiveDescriptor<?> ad = ServiceLocatorUtilities.addOneConstant(locator, ss3, null, SimpleContract.class);
@@ -210,6 +230,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testAddContractWithDifferentNames() {
+        ServiceLocator locator = uniqueCreate();
+        
         SimpleService3 ss3_alice = new SimpleService3();
         SimpleService3 ss3_bob = new SimpleService3();
         
@@ -241,6 +263,8 @@ public class ServiceLocatorUtilitiesTest {
     
     @Test
     public void testFindOneDescriptor() {
+        ServiceLocator locator = uniqueCreate();
+        
         Descriptor addMe = BuilderHelper.link(SimpleService3.class).
                 to(SimpleContract.class).build();
         
@@ -273,6 +297,8 @@ public class ServiceLocatorUtilitiesTest {
     
     @Test
     public void testGetServiceWithString() {
+        ServiceLocator locator = uniqueCreate();
+        
         ServiceLocator sl = ServiceLocatorUtilities.getService(locator, ServiceLocator.class.getName());
         Assert.assertNotNull(sl);
         Assert.assertSame(sl, locator);
@@ -282,6 +308,8 @@ public class ServiceLocatorUtilitiesTest {
     
     @Test
     public void testGetServiceWithDescriptor() {
+        ServiceLocator locator = uniqueCreate();
+        
         Descriptor desc5 = BuilderHelper.link(SimpleService5.class.getName()).build();
         Descriptor desc6 = BuilderHelper.link(SimpleService6.class.getName()).build();
         
@@ -311,6 +339,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testCreateDynamicConfiguration() {
+        ServiceLocator locator = uniqueCreate();
+        
         DynamicConfiguration dc = ServiceLocatorUtilities.createDynamicConfiguration(locator);
         Assert.assertNotNull(dc);
         
@@ -353,6 +383,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testFindOrCreateWithServiceInLocator() {
+        ServiceLocator locator = uniqueCreate();
+        
         ServiceLocatorUtilities.addOneDescriptor(locator, BuilderHelper.link(SimpleService8.class).
                 in(Singleton.class.getName()).
                 build());
@@ -373,6 +405,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testFindOrCreateWithServiceNotInLocator() {
+        ServiceLocator locator = uniqueCreate();
+        
         SimpleService9 one = ServiceLocatorUtilities.findOrCreateService(locator, SimpleService9.class);
         Assert.assertNotNull(one);
         
@@ -395,6 +429,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testBadServiceToFindOrCreate() {
+        ServiceLocator locator = uniqueCreate();
+        
         ServiceLocatorUtilities.findOrCreateService(locator, null);      
     }
     
@@ -464,6 +500,8 @@ public class ServiceLocatorUtilitiesTest {
      */
     @Test
     public void testGetOneMetadataServiceHandle() {
+        ServiceLocator locator = uniqueCreate();
+        
         Descriptor d = BuilderHelper.link(SimpleService10.class.getName()).
             has(FIELD1, VALUE1).
             has(FIELD2, VALUE2).
