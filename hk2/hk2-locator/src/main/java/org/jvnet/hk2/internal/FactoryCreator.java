@@ -85,13 +85,20 @@ public class FactoryCreator<T> implements Creator<T> {
      * @see org.jvnet.hk2.internal.Creator#create(org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public InstanceLifecycleEventImpl create(ServiceHandle<?> root) throws MultiException {
+    public T create(ServiceHandle<?> root, SystemDescriptor<?> eventThrower) throws MultiException {
         ServiceHandle<Factory<T>> handle = getFactoryHandle();
         
-        Factory<T> retVal = handle.getService();
+        eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(
+                InstanceLifecycleEventType.PRE_PRODUCTION, null, eventThrower));
         
-        return new InstanceLifecycleEventImpl(
-                InstanceLifecycleEventType.POST_PRODUCTION, retVal.provide());
+        Factory<T> retValFactory = handle.getService();
+        
+        T retVal = retValFactory.provide();
+        
+        eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(
+                InstanceLifecycleEventType.POST_PRODUCTION, retVal, eventThrower));
+        
+        return retVal;
     }
 
     /* (non-Javadoc)
