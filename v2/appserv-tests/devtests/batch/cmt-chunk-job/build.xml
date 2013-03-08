@@ -6,7 +6,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="devtest-batch-chunk-job-App" default="usage" basedir=".">
+<project name="devtest-batch-cmt-chunk-job-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
