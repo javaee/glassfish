@@ -36,9 +36,12 @@ public class SlessBean
     }
 
     public String getJobExitStatus(long executionId) {
+	try {
 	JobOperator jobOperator = BatchRuntime.getJobOperator();
 	JobExecution jobExecution = jobOperator.getJobExecution(executionId);
 	return jobExecution.getExitStatus();
+        } catch (Exception ex) {}
+	return "-1";
     }
 
 
