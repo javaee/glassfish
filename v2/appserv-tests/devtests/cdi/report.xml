@@ -7,8 +7,11 @@
 
  
     <xslt style="${stylesheet}"
-            in="${xmlfile}" out="${htmlfile}"
-            basedir="." destdir="." />
+            in="${xmlfile}"
+            out="${htmlfile}"
+            basedir="."
+            destdir="."
+            failOnError="false"/>
     <antcall target="report-sh"/>
     <!--
     <ant dir="${env.APS_HOME}/util/filediff" target="modifyReport"/>
