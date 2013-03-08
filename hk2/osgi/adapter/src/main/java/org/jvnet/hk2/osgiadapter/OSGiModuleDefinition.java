@@ -41,12 +41,7 @@
 
 package org.jvnet.hk2.osgiadapter;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -62,6 +57,11 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.bootstrap.HK2Populator;
+import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
@@ -221,6 +221,8 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
     }
 
     private static class BundleJar extends Jar {
+        private static final String HK2_DESCRIPTOR_LOCATION = "META-INF/hk2-locator";
+
         private static final String SERVICE_LOCATION = "META-INF/services";
         Bundle b;
         Manifest m;
@@ -235,25 +237,8 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
         }
 
         public void loadMetadata(ModuleMetadata result) {
-            parseInhabitantsDescriptors(result);
             parseServiceDescriptors(result);
-        }
-
-        private void parseInhabitantsDescriptors(ModuleMetadata result) {
-
-            final URL url = b.getEntry("META-INF/hk2-locator/default");
-            
-            if (url==null) return;
-//            try {
-//                result.addHabitat("default",
-//                        new ByteArrayInhabitantsDescriptor(
-//                                url, loadFully(url)
-//                        ));
-//            } catch (IOException e) {
-//                LogHelper.getDefaultLogger().log(Level.SEVERE,
-//                        "Error reading inhabitants list in " + b.getLocation(), e);
-//            }
-            
+            parseDescriptors(result);
         }
 
         private void parseServiceDescriptors(ModuleMetadata result) {
@@ -286,26 +271,53 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
             }
         }
 
-        private byte[] loadFully(URL url) throws IOException {
-            InputStream in = url.openStream();
-            byte[] buf = new byte[0];
-            try {
-                int chunkSize = 512;
-                byte[] chunk = new byte[chunkSize];
-                while (true) {
-                    int count = in.read(chunk, 0, chunkSize);
-                    if (count == -1) break; // EOF
-                    final int curLength = buf.length;
-                    byte[] newbuf = new byte[curLength + count];
-                    System.arraycopy(buf, 0, newbuf, 0, curLength);
-                    System.arraycopy(chunk, 0, newbuf, curLength, count);
-                    buf = newbuf;
+        /**
+         * Read in the hk2 descriptors
+         */
+        void parseDescriptors(ModuleMetadata result) {
+            URL u = b.getEntry(HK2_DESCRIPTOR_LOCATION + "/default");
+            InputStream is = null;
+
+            if (u != null) {
+
+                List<Descriptor> descriptors = new ArrayList<Descriptor>();
+
+                try {
+                    is = u.openStream();
+
+                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+                    try {
+                        boolean readOne = false;
+
+                        do {
+                            DescriptorImpl descriptorImpl = new DescriptorImpl();
+
+                            readOne = descriptorImpl.readObject(br);
+
+                            if (readOne) {
+                               descriptors.add(descriptorImpl);
+                            }
+                        } while (readOne);
+
+                    } finally {
+                        br.close();
+                    }
+
+                    result.setDescriptors(descriptors);
+                } catch (IOException e) {
+                    LogHelper.getDefaultLogger().log(Level.SEVERE,
+                            "Error reading descriptor in " + b.getLocation(), e);
+                } finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        } catch (IOException e) {}
+                    }
                 }
-                return buf;
-            } finally {
-                in.close();
             }
         }
+
 
         public String getBaseName() {
             throw new UnsupportedOperationException("Method not implemented");

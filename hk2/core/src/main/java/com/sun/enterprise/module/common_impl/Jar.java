@@ -115,6 +115,7 @@ public abstract class Jar {
         }
 
         public void loadMetadata(ModuleMetadata result) {
+            // HERE
         }
 
         public String getBaseName() {
