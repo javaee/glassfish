@@ -43,18 +43,10 @@ package org.jvnet.hk2.osgiadapter;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 
 import org.osgi.framework.Bundle;
@@ -76,9 +68,7 @@ public class OSGiModulesRegistryImpl
         extends AbstractOSGiModulesRegistryImpl
         implements SynchronousBundleListener {
 
-    // cache related attributes
-    private Map<URI, ModuleDefinition> cachedData = new HashMap<URI, ModuleDefinition>();
-    private boolean cacheInvalidated = false;
+    ModuleDefinitionCacheSingleton cache = ModuleDefinitionCacheSingleton.getInstance();
 
     /*package*/ OSGiModulesRegistryImpl(BundleContext bctx) {
         super(bctx);
@@ -88,13 +78,10 @@ public class OSGiModulesRegistryImpl
         // This must happen before we start iterating the existing bundles.
         bctx.addBundleListener(this);
 
-        // TODO: we need to revisit the caching scheme
-//        try {
-//            loadCachedData();
-//        } catch (Exception e) {
-//            Logger.logger.log(Level.WARNING, "Cannot load cached metadata, will recreate the cache", e);
-//            cachedData.clear();
-//        }
+        String cacheLocation = getProperty(org.jvnet.hk2.osgiadapter.Constants.HK2_CACHE_DIR);
+        if (cacheLocation != null) {
+            System.setProperty(org.jvnet.hk2.osgiadapter.Constants.HK2_CACHE_DIR, cacheLocation);
+        }
 
         // Populate registry with pre-installed bundles
         for (final Bundle b : bctx.getBundles()) {
@@ -110,6 +97,14 @@ public class OSGiModulesRegistryImpl
                                 "to module because of exception: {2}",
                         new Object[]{b, b.getLocation(), e});
                 continue;
+            }
+        }
+
+        if (cache.isCacheInvalidated()) {
+            try {
+                cache.saveCache();
+            } catch (IOException e) {
+                logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "OSGiModulesRegistryImpl", "Could not save module definition cache",e);
             }
         }
     }
@@ -179,90 +174,22 @@ public class OSGiModulesRegistryImpl
         return m;
     }
 
-    /**
-     * Loads the inhabitants metadata from the cache. metadata is saved in a file
-     * called inhabitants
-     *
-     * @throws Exception if the file cannot be read correctly
-     */
-    private void loadCachedData() throws Exception {
-        String cacheLocation = getProperty(Constants.HK2_CACHE_DIR);
-        if (cacheLocation == null) {
-            return;
-        }
-        File io = new File(cacheLocation, Constants.INHABITANTS_CACHE);
-        if (!io.exists()) return;
-        if(logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.INFO, "OSGiModulesRegistryImpl", "loadCachedData", "HK2 cache file = {0}", new Object[]{io});
-        }
-        ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(io),
-                getBufferSize()));
-        cachedData = (Map<URI, ModuleDefinition>) stream.readObject();
-        stream.close();
-    }
-
-    /**
-     * Saves the inhabitants metadata to the cache in a file called inhabitants
-     * @throws IOException if the file cannot be saved successfully
-     */
-    private void saveCache() throws IOException {
-        String cacheLocation = getProperty(Constants.HK2_CACHE_DIR);
-        if (cacheLocation == null) {
-            return;
-        }
-        File io = new File(cacheLocation, Constants.INHABITANTS_CACHE);
-        if(logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.INFO, "OSGiModulesRegistryImpl", "saveCache", "HK2 cache file = {0}", new Object[]{io});
-        }
-        if (io.exists()) io.delete();
-        io.createNewFile();
-        Map<URI, ModuleDefinition> data = new HashMap<URI, ModuleDefinition>();
-        for (Module m : modules.values()) {
-            data.put(m.getModuleDefinition().getLocations()[0], m.getModuleDefinition());
-        }
-        ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(io), getBufferSize()));
-        os.writeObject(data);
-        os.close();
-    }
-
-    private void deleteCache() {
-        String cacheLocation = getProperty(Constants.HK2_CACHE_DIR);
-        if (cacheLocation == null) {
-            return;
-        }
-        File io = new File(cacheLocation, Constants.INHABITANTS_CACHE);
-        if (io.exists()) {
-            if (io.delete()) {
-                logger.logp(Level.FINE, "OSGiModulesRegistryImpl",
-                        "deleteCache", "deleted = {0}", new Object[]{io});
-            } else {
-                logger.logp(Level.WARNING, "OSGiModulesRegistryImpl",
-                        "deleteCache", "failed to delete = {0}", new Object[]{io});
-            }
-        }
-    }
-
-    private int getBufferSize() {
-        int bufsize = Constants.DEFAULT_BUFFER_SIZE;
-        try {
-            bufsize = Integer.valueOf(bctx.getProperty(Constants.HK2_CACHE_IO_BUFFER_SIZE));
-        } catch (Exception e) {
-        }
-        if(logger.isLoggable(Level.FINE)) {
-            logger.logp(Level.FINE, "OSGiModulesRegistryImpl", "getBufferSize", "bufsize = {0}", new Object[]{bufsize});
-        }
-        return bufsize;
-    }
-
     // Factory method
     private OSGiModuleDefinition makeModuleDef(Bundle bundle)
             throws IOException, URISyntaxException {
         URI key = OSGiModuleDefinition.toURI(bundle);
-        if (cachedData.containsKey(key)) {
-        	return OSGiModuleDefinition.class.cast(cachedData.get(key));
+
+        ModuleDefinition md = cache.get(key);
+
+        if (md != null) {
+        	return OSGiModuleDefinition.class.cast(md);
         } else {
-            this.cacheInvalidated = true;
-            return new OSGiModuleDefinition(bundle);
+            cache.invalidate();
+            md = new OSGiModuleDefinition(bundle);
+
+            cache.cacheModuleDefinition(key, md);
+
+            return (OSGiModuleDefinition) md;
         }
     }
 
@@ -284,8 +211,8 @@ public class OSGiModulesRegistryImpl
 
         // Update cache. 
         final URI location = module.getModuleDefinition().getLocations()[0];
-        cachedData.remove(location);
-        cacheInvalidated = true;
+
+        cache.remove(location);
     }
 
     // factory method
@@ -322,13 +249,11 @@ public class OSGiModulesRegistryImpl
         }
         
         // Save the cache before clearing modules
-//        try {
-//            if (cacheInvalidated) {
-//                saveCache();
-//            }
-//        } catch (IOException e) {
-//            Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
-//        }
+        try {
+            cache.saveCache();
+        } catch (IOException e) {
+            Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
+        }
 
         bctx.removeBundleListener(this);
 

@@ -39,12 +39,10 @@
  */
 package com.sun.enterprise.module;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.jvnet.hk2.component.MultiMap;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,9 +69,17 @@ import java.util.StringTokenizer;
 public final class ModuleMetadata implements Serializable {
 
     /**
-     * META-INF/inhabitants/* files.
+     * META-INF/hk2-locator/* cache
      */
-    private final MultiMap<String, InhabitantsDescriptor> inhabitants = new MultiMap<String, InhabitantsDescriptor>();
+    private List<Descriptor> descriptors;
+
+    public List<Descriptor> getDescriptors() {
+        return descriptors;
+    }
+
+    public void setDescriptors(List<Descriptor> descriptors) {
+        this.descriptors = descriptors;
+    }
 
     public static final class Entry implements Serializable {
         public final List<String> providerNames = new ArrayList<String>();
@@ -154,16 +160,6 @@ public final class ModuleMetadata implements Serializable {
           is.close();
         }
     }
-    
-    public void addHabitat(String name, InhabitantsDescriptor descriptor) {
-        inhabitants.add(name,descriptor);
-    }
-
-    public List<InhabitantsDescriptor> getHabitats(String name) {
-        return inhabitants.get(name);
-    }
-
-
 
     /**
      * Empty Entry used to indicate that there's no service.
