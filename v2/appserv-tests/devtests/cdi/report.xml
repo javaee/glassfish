@@ -10,8 +10,7 @@
             in="${xmlfile}"
             out="${htmlfile}"
             basedir="."
-            destdir="."
-            failOnError="false"/>
+            destdir="."/>
     <antcall target="report-sh"/>
     <!--
     <ant dir="${env.APS_HOME}/util/filediff" target="modifyReport"/>
