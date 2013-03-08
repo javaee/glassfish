@@ -78,11 +78,6 @@ public class OSGiModulesRegistryImpl
         // This must happen before we start iterating the existing bundles.
         bctx.addBundleListener(this);
 
-        String cacheLocation = getProperty(org.jvnet.hk2.osgiadapter.Constants.HK2_CACHE_DIR);
-        if (cacheLocation != null) {
-            System.setProperty(org.jvnet.hk2.osgiadapter.Constants.HK2_CACHE_DIR, cacheLocation);
-        }
-
         // Populate registry with pre-installed bundles
         for (final Bundle b : bctx.getBundles()) {
             if (b.getLocation().equals (org.osgi.framework.Constants.SYSTEM_BUNDLE_LOCATION)) {
@@ -253,7 +248,7 @@ public class OSGiModulesRegistryImpl
             cache.saveCache();
         } catch (IOException e) {
             Logger.logger.log(Level.WARNING, "Cannot save metadata to cache", e);
-        }
+            }
 
         bctx.removeBundleListener(this);
 
