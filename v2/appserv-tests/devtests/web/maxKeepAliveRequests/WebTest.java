@@ -116,13 +116,13 @@ public class WebTest {
         }
 
         try{
+            found = true;
+
             System.out.println(get);
             os.write(get.getBytes());
             os.write("Host: localhost\n".getBytes());
             os.write("\n".getBytes());
             os.flush();
-
-	    found = true;
 
             try{
                 while ((line = bis.readLine()) != null) {
@@ -133,7 +133,6 @@ public class WebTest {
                 ;
             }
         }catch(SocketException ex){
-            found = true;
         }
 
         if (found) {
