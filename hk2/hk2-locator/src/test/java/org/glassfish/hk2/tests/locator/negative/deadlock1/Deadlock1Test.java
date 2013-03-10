@@ -68,7 +68,8 @@ public class Deadlock1Test {
     private final static String TEST_NAME = "Deadlock1Test";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new Deadlock1Module());
     
-    private final static long ITERATIONS = 10000;
+    private final static long HEAVY_ITERATIONS = 1000;
+    private final static long LIGHT_ITERATIONS = 100000;
     private final static int RUNNER1_THREADS = 1;
     private final static int RUNNER2_THREADS = 1;
     private final static int ALL_THREADS = RUNNER1_THREADS + RUNNER2_THREADS;
@@ -79,7 +80,7 @@ public class Deadlock1Test {
     private final Object threadCountLock = new Object();
     private int threadCount = 0;
     
-    @Test @Ignore
+    @Test
     public void testDeadlock1() throws InterruptedException {
         for (int lcv = 0; lcv < RUNNER1_THREADS; lcv++) {
             Thread thread = new Thread(new Runnable1());
@@ -150,7 +151,7 @@ public class Deadlock1Test {
                 
             }
             
-            for (long lcv = 0; lcv < ITERATIONS; lcv++) {
+            for (long lcv = 0; lcv < HEAVY_ITERATIONS; lcv++) {
                 // Adding and removing the complex1Descriptor foils caching
                 DynamicConfiguration config = dcs.createDynamicConfiguration();
                 ActiveDescriptor<?> complex1Descriptor = config.addActiveDescriptor(ComplexService1.class);
@@ -202,7 +203,7 @@ public class Deadlock1Test {
                 
             }
             
-            for (long lcv = 0; lcv < ITERATIONS; lcv++) {
+            for (long lcv = 0; lcv < LIGHT_ITERATIONS; lcv++) {
                 locator.getAllServices(SimpleContract.class);
             }
             

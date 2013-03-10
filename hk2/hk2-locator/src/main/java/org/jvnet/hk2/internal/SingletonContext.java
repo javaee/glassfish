@@ -41,6 +41,7 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -61,6 +62,8 @@ public class SingletonContext implements Context<Singleton> {
     private int generationNumber = Integer.MIN_VALUE;
     private final ServiceLocatorImpl locator;
     
+    private final HashSet<ActiveDescriptor<?>> creatingDescriptors = new HashSet<ActiveDescriptor<?>>();
+    
     /* package */ SingletonContext(ServiceLocatorImpl impl) {
         locator = impl;
     }
@@ -79,20 +82,46 @@ public class SingletonContext implements Context<Singleton> {
     @Override
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) {
-        if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
-        
-        synchronized (activeDescriptor) {
-            if (activeDescriptor.isCacheSet()) return activeDescriptor.getCache();
+        T retVal;
+        synchronized (this) {
+            retVal = activeDescriptor.getCache();
+            if (retVal != null) return retVal;
             
-            T t = activeDescriptor.create(root);
-            activeDescriptor.setCache(t);
-        
-            if (activeDescriptor instanceof SystemDescriptor) {
-                ((SystemDescriptor<T>) activeDescriptor).setSingletonGeneration(generationNumber++);
+            while (creatingDescriptors.contains(activeDescriptor)) {
+                try {
+                    this.wait();
+                }
+                catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
             
-            return t;
+            retVal = activeDescriptor.getCache();
+            if (retVal != null) return retVal;
+            
+            creatingDescriptors.add(activeDescriptor);
         }
+        
+        try {
+            retVal = activeDescriptor.create(root);
+        }
+        finally {
+            synchronized (this) {
+                if (retVal != null) {
+                    activeDescriptor.setCache(retVal);
+                    
+                    if (activeDescriptor instanceof SystemDescriptor) {
+                        ((SystemDescriptor<T>) activeDescriptor).setSingletonGeneration(generationNumber++);
+                    }
+                }
+                
+                creatingDescriptors.remove(activeDescriptor);
+                this.notifyAll();
+            }
+        }
+        
+        return retVal;
     }
 
     /* (non-Javadoc)
@@ -100,7 +129,9 @@ public class SingletonContext implements Context<Singleton> {
      */
     @Override
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        return descriptor.isCacheSet();
+        synchronized (this) {
+            return (descriptor.getCache() != null);
+        }
     }
 
     /* (non-Javadoc)
@@ -134,7 +165,9 @@ public class SingletonContext implements Context<Singleton> {
         for (ActiveDescriptor<?> one : all) {
             if (one.getScope() == null || !one.getScope().equals(Singleton.class.getName())) continue;
             
-            if (!one.isCacheSet()) continue;
+            synchronized (this) {
+                if (one.getCache() == null) continue;
+            }
             
             if (one.getLocatorId() == null || one.getLocatorId().longValue() != myLocatorId) continue;
             
@@ -155,10 +188,13 @@ public class SingletonContext implements Context<Singleton> {
      */
     @SuppressWarnings("unchecked")
     public void destroyOne(ActiveDescriptor<?> one) {
-        if (!one.isCacheSet()) return;
+        Object value;
+        synchronized (this) {
+            value = one.getCache();
+            one.releaseCache();
         
-        Object value = one.getCache();
-        one.releaseCache();
+            if (value == null) return;
+        }
         
         try {
             ((ActiveDescriptor<Object>) one).dispose(value);
