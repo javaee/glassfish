@@ -84,6 +84,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     
     private final ServiceLocatorImpl sdLocator;
     private boolean reified;
+    private boolean reifying = false;  // Am I currently reifying
     private boolean preAnalyzed = false;
     
     private final Object cacheLock = new Object();
@@ -314,8 +315,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
      * @see org.glassfish.hk2.api.ActiveDescriptor#isReified()
      */
     @Override
-    public synchronized boolean isReified() {
-        return reified;
+    public boolean isReified() {
+        // This is safe because once a descriptor is
+        // reified it is never un-reified
+        if (reified) return true;
+        
+        synchronized (this) {
+            return reified;
+        }
     }
 
     /* (non-Javadoc)
@@ -561,15 +568,56 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return retVal;
     }
     
+    /* package */ void reify(Class<?> implClass, Collector collector) {
+        if (reified) return;
+        
+        synchronized(this) {
+            if (reified) return;
+            
+            while (reifying) {
+                try {
+                    this.wait();
+                }
+                catch (InterruptedException e) {
+                    collector.addThrowable(e);
+                    return;
+                }
+            }
+            
+            if (reified) return;
+            reifying = true;
+        }
+        
+        try {
+            // This call can NOT hold the SystemDescriptor lock
+            // because this method could be called with the ServiceLocatorImpl
+            // lock held, and if the other thread was also trying to
+            // reify this descriptor that could lead to a deadlock
+            internalReify(implClass, collector);
+        }
+        finally {
+            synchronized (this) {
+                if (!collector.hasErrors()) {
+                    reified = true;
+                }
+                else {
+                    collector.addThrowable(new IllegalArgumentException("Errors were discovered while reifying " + this));
+                }
+                
+                reifying = false;
+                this.notifyAll();
+            }
+        }
+        
+    }
+    
     /**
      * The service locator must hold its lock for this cal
      * 
      * @param implClass The impl class to reify
      * @param collector An error collector for errors
      */
-    /* package */ synchronized void reify(Class<?> implClass, Collector collector) {
-        if (reified) return;
-        
+    private void internalReify(Class<?> implClass, Collector collector) {
         if (!preAnalyzed) {
             this.implClass = implClass;
         }
@@ -667,7 +715,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                 " isProxiable set to true"));
         }
         
-        if (!collector.hasErrors()) reified = true;
+        
     }
     
     @Override
