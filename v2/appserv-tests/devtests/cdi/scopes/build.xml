@@ -102,9 +102,9 @@
         https://issues.jboss.org/browse/WELD-1345 is fixed.
         In 1.1.10.Final the test passes.
         In 2.0 Beta it fails.
-        <ant dir="request-and-application-scope-ejb-mdb" target="${scopes-target}"/>
         -->
-            <ant dir="singleton-scope" target="${scopes-target}"/>
+        <ant dir="request-and-application-scope-ejb-mdb" target="${scopes-target}"/>
+        <ant dir="singleton-scope" target="${scopes-target}"/>
         <record name="scopes.output" action="stop" />
     </target>
 

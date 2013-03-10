@@ -110,14 +110,7 @@
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib-ordering-reversed" target="${javaee-int-target}"/>
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib-extension-alternative" target="${javaee-int-target}"/>
             <ant dir="cdi-servlet-3.0-annotation-with-web-inf-lib" target="${javaee-int-target}"/>
-
-        <!--
-        Not running until
-        https://issues.jboss.org/browse/WELD-1345 is fixed.
-        In 1.1.10.Final the test passes.
-        In 2.0 Beta it fails.
-        <ant dir="embedded-resource-adapter-as-bean-archive" target="${javaee-int-target}"/>
-        -->
+            <ant dir="embedded-resource-adapter-as-bean-archive" target="${javaee-int-target}"/>
 
         <record name="javaee-int.output" action="stop" />
     </target>
