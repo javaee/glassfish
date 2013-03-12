@@ -101,7 +101,11 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoFailureException {
         List<String> projectTypes = Arrays.asList(supportedProjectTypes.split(","));
-        if(!projectTypes.contains(project.getPackaging())){
+        if(!projectTypes.contains(project.getPackaging())) {
+            if (verbose) {
+                getLog().info("hk2-inhabitant-generator skipping unknown packaging type " + project.getPackaging() +
+                        " from known packaging types " + supportedProjectTypes);
+            }
             return;
         }
         
