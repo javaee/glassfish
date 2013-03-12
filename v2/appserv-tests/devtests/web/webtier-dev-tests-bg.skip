@@ -1,3 +1,2 @@
 instanceHttpPortDynamicReconfig #investigate random failures
-testFormAuthenticator #failing since 60350. Need to decide either to fix the test packaging or change deployment failure to warning so it provides backward compatibility.
 
