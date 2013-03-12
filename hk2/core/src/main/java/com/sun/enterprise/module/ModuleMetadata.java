@@ -40,16 +40,12 @@
 package com.sun.enterprise.module;
 
 import org.glassfish.hk2.api.Descriptor;
-import org.jvnet.hk2.component.MultiMap;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Holds information about /META-INF/services and /META-INF/inhabitants for a {@link Module}.
@@ -71,14 +67,22 @@ public final class ModuleMetadata implements Serializable {
     /**
      * META-INF/hk2-locator/* cache
      */
-    private List<Descriptor> descriptors;
+    private Map<String, List<Descriptor>> descriptors = new HashMap<String, List<Descriptor>>();
 
-    public List<Descriptor> getDescriptors() {
+    public Map<String, List<Descriptor>> getDescriptors() {
         return descriptors;
     }
 
-    public void setDescriptors(List<Descriptor> descriptors) {
-        this.descriptors = descriptors;
+    public synchronized void addDescriptors(String serviceLocatorName, Collection<Descriptor> descriptorsToAdd) {
+        List<Descriptor> descriptorList = descriptors.get(serviceLocatorName);
+
+        if (descriptorList == null) {
+            descriptorList = new ArrayList<Descriptor>();
+
+            descriptors.put(serviceLocatorName, descriptorList);
+        }
+
+        descriptorList.addAll(descriptorsToAdd);
     }
 
     public static final class Entry implements Serializable {

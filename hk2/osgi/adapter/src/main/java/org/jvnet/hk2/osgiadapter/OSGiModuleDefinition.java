@@ -275,46 +275,62 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
          * Read in the hk2 descriptors
          */
         void parseDescriptors(ModuleMetadata result) {
-            URL u = b.getEntry(HK2_DESCRIPTOR_LOCATION + "/default");
-            InputStream is = null;
 
-            if (u != null) {
+            if (b.getEntry(HK2_DESCRIPTOR_LOCATION) == null) return;
 
-                List<Descriptor> descriptors = new ArrayList<Descriptor>();
+            Enumeration<String> entries;
+            entries = b.getEntryPaths(HK2_DESCRIPTOR_LOCATION);
 
-                try {
-                    is = u.openStream();
+            if (entries != null) {
+                while (entries.hasMoreElements()) {
+                    String entry = entries.nextElement();
+                    String serviceLocatorName = entry.substring(HK2_DESCRIPTOR_LOCATION.length()+1);
 
-                    BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                    final URL url = b.getEntry(entry);
 
-                    try {
-                        boolean readOne = false;
+                    InputStream is = null;
 
-                        do {
-                            DescriptorImpl descriptorImpl = new DescriptorImpl();
+                    if (url != null) {
 
-                            readOne = descriptorImpl.readObject(br);
+                        List<Descriptor> descriptors = new ArrayList<Descriptor>();
 
-                            if (readOne) {
-                               descriptors.add(descriptorImpl);
-                            }
-                        } while (readOne);
-
-                    } finally {
-                        br.close();
-                    }
-
-                    result.setDescriptors(descriptors);
-                } catch (IOException e) {
-                    LogHelper.getDefaultLogger().log(Level.SEVERE,
-                            "Error reading descriptor in " + b.getLocation(), e);
-                } finally {
-                    if (is != null) {
                         try {
-                            is.close();
-                        } catch (IOException e) {}
-                    }
+                            is = url.openStream();
+
+                            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+                            try {
+                                boolean readOne = false;
+
+                                do {
+                                    DescriptorImpl descriptorImpl = new DescriptorImpl();
+
+                                    readOne = descriptorImpl.readObject(br);
+
+                                    if (readOne) {
+                                        descriptors.add(descriptorImpl);
+                                    }
+                                } while (readOne);
+
+                            } finally {
+                                br.close();
+                            }
+
+                            result.addDescriptors(serviceLocatorName, descriptors);
+
+                        } catch (IOException e) {
+                            LogHelper.getDefaultLogger().log(Level.SEVERE,
+                                    "Error reading descriptor in " + b.getLocation(), e);
+                        } finally {
+                            if (is != null) {
+                                try {
+                                    is.close();
+                                } catch (IOException e) {}
+                            }
+                        }
                 }
+
+            }
             }
         }
 
