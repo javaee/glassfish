@@ -461,6 +461,7 @@
         <ant dir="cacheHang" target="all"/>
         <ant dir="jsessionIdParameter" target="all"/>
         <ant dir="setWebContextParam" target="all"/>
+        <ant dir="contextRootDuplicate" target="all"/>
     </target>
 
     <target name="security" depends="init-report">
