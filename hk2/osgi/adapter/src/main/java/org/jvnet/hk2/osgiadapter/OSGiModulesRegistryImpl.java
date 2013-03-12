@@ -155,8 +155,7 @@ public class OSGiModulesRegistryImpl
                     break;
             }
         } catch (Exception e) {
-            logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "bundleChanged",
-                    "e = {0}", new Object[]{e});
+            logger.logp(Level.WARNING, "OSGiModulesRegistryImpl", "bundleChanged", e.getMessage(), e);
         }
     }
 

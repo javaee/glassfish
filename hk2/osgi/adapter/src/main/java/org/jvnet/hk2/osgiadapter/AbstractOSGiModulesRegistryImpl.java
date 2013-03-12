@@ -109,7 +109,9 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
 
         List<ActiveDescriptor> activeDescriptors;
 
-        List<Descriptor> descriptors = module.getModuleDefinition().getMetadata().getDescriptors();
+        Map<String, List<Descriptor>> descriptorMap = module.getModuleDefinition().getMetadata().getDescriptors();
+
+        List<Descriptor> descriptors = descriptorMap.get(name);
 
         if (descriptors == null) {
             activeDescriptors = osgiModuleImpl.parseInhabitants(name, serviceLocator, postProcessors);
@@ -122,7 +124,7 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
                     descriptors.add(new DescriptorImpl(d));
                 }
 
-                module.getModuleDefinition().getMetadata().setDescriptors(descriptors);
+                module.getModuleDefinition().getMetadata().addDescriptors(name, descriptors);
 
             }
         } else {

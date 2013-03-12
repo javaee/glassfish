@@ -374,14 +374,12 @@ public class OSGiModuleImpl implements Module {
 
         DescriptorFileFinder dff = null;
 
-        if (dff == null) {
 
-            final String path = "META-INF/hk2-locator/" + name;
-            URL entry = bundle.getEntry(path);
+        final String path = "META-INF/hk2-locator/" + name;
+        URL entry = bundle.getEntry(path);
 
-            if (entry != null) {
-               dff = new URLDescriptorFileFinder(entry);
-            }
+        if (entry != null) {
+            dff = new URLDescriptorFileFinder(entry);
         }
 
         
