@@ -54,117 +54,104 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * Generates a consolidated OSGI bundle with a consolidated 
- * HK2 header
+ * Generates a consolidated OSGI bundle with a consolidated HK2 header
  *
  * @goal hk2-generate
  * @phase prepare-package
- * 
+ *
  * @requiresProject true
  * @requiresDependencyResolution compile
  * @author Sivakumar Thyagarajan
  */
 /* We use prepare-package as the phase as we need to perform this consolidation before the maven-bundle-plugin's bundle goal gets executed in the package phase.*/
-
 public class HK2GenerateMojo extends AbstractMojo {
+
     private final static String META_INF = "META-INF";
     private final static String HK2_LOCATOR = "hk2-locator";
     private final static String DEFAULT = "default";
-    
     private final static String JAR_ENTRY = "META-INF/hk2-locator/default";
     private final static int BUFFER_SIZE = 4096;
+    /**
+     * Directory where the manifest will be written
+     *
+     * @parameter expression="${manifestLocation}"
+     * default-value="${project.build.outputDirectory}"
+     */
+    protected File manifestLocation;
+    /**
+     * The maven project.
+     *
+     * @parameter expression="${project}"
+     * @required
+     * @readonly
+     */
+    protected MavenProject project;
 
-	/**
-	 * Directory where the manifest will be written
-	 * 
-	 * @parameter expression="${manifestLocation}"
-	 *            default-value="${project.build.outputDirectory}"
-	 */
-	protected File manifestLocation;
-
-	/**
-	 * The maven project.
-	 * 
-	 * @parameter expression="${project}"
-	 * @required
-	 * @readonly
-	 */
-	protected MavenProject project;
-
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public void execute() throws MojoExecutionException {
-	    Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
-	    if (dependencyArtifacts == null) return;
-	    
-	    try {
-	        OutputStream catStream = getCatOutputStream();
-	    
-	        // Create the consolidated inhabitant file contents by
-	        // catting all the dependency artifacts together
+        Set<Artifact> dependencyArtifacts = project.getDependencyArtifacts();
+        if (dependencyArtifacts == null) {
+            return;
+        }
+
+        try {
+            OutputStream catStream = getCatOutputStream();
+
+            // Create the consolidated inhabitant file contents by
+            // catting all the dependency artifacts together
             for (Artifact a : (Set<Artifact>) project.getDependencyArtifacts()) {
                 if (a.getScope() != null && a.getScope().equals("test")) {
                     continue;
                 }
                 getLog().info("Dependency Artifact: " + a.getFile().toString());
-            
+
                 JarFile jf = new JarFile(a.getFile());
                 JarEntry je = jf.getJarEntry(JAR_ENTRY);
                 if (je == null) {
                     continue;
                 }
-                
+
                 getLog().debug("Dependency Artifact " + a + " has Inhabitants File: " + je);
-                
+
                 catJarEntry(jf, je, catStream);
-			} 
-		}
-	    catch (IOException ioe) {
+            }
+        } catch (IOException ioe) {
             throw new MojoExecutionException(ioe.getMessage(), ioe);
         }
-	}
+    }
 
     private void catJarEntry(JarFile jf, JarEntry e, OutputStream catStream)
-        throws IOException {
+            throws IOException {
         byte buf[] = new byte[BUFFER_SIZE];
-        
+
         InputStream is = jf.getInputStream(e);
         int readLength;
         while ((readLength = is.read(buf)) > 0) {
             catStream.write(buf, 0, readLength);
         }
     }
-	
-	private OutputStream getCatOutputStream() throws MojoExecutionException, IOException {
-	    String inhabitantsDir = "" + manifestLocation + File.separatorChar
-	            + META_INF + File.separatorChar + HK2_LOCATOR;
-	    
-	    File inhabitantsDirFile = new File(inhabitantsDir);
-	    
-	    if (inhabitantsDirFile.exists()) {
-	        if (!inhabitantsDirFile.isDirectory()) {
-	            throw new MojoExecutionException("File " +
-	                inhabitantsDirFile.getAbsolutePath() + " is not a directory");
-	        }
-	    }
-	    else {
-	        boolean success = inhabitantsDirFile.mkdirs();
-	        if (!success) {
-	            throw new MojoExecutionException("Unable to created directory " +
-	                inhabitantsDirFile.getAbsolutePath());
-	        }
-	    }
-	    
-	    File defaultFile = new File(inhabitantsDirFile, DEFAULT);
-	    
-	    if (defaultFile.exists()) {
-	        if (!defaultFile.delete()) {
-	            throw new MojoExecutionException("The file " +
-	                defaultFile.getAbsolutePath() +
-	                " already exists and cannot be removed");
-	        }
-	    }
-	    
-	    FileOutputStream fos = new FileOutputStream(defaultFile);
-	    return fos;
-	}
+
+    private OutputStream getCatOutputStream() throws MojoExecutionException, IOException {
+        String inhabitantsDir = "" + manifestLocation + File.separatorChar
+                + META_INF + File.separatorChar + HK2_LOCATOR;
+
+        File inhabitantsDirFile = new File(inhabitantsDir);
+
+        if (inhabitantsDirFile.exists()) {
+            if (!inhabitantsDirFile.isDirectory()) {
+                throw new MojoExecutionException("File "
+                        + inhabitantsDirFile.getAbsolutePath() + " is not a directory");
+            }
+        } else {
+            boolean success = inhabitantsDirFile.mkdirs();
+            if (!success) {
+                throw new MojoExecutionException("Unable to created directory "
+                        + inhabitantsDirFile.getAbsolutePath());
+            }
+        }
+
+        File defaultFile = new File(inhabitantsDirFile, DEFAULT);
+        FileOutputStream fos = new FileOutputStream(defaultFile,true);
+        return fos;
+    }
 }
