@@ -54,7 +54,6 @@
     <packaging>jar</packaging>
     <properties>
        <hibernate-validator.version>5.0.0.CR2</hibernate-validator.version>
-       <javax.validation.version>1.1.0.CR1</javax.validation.version>
        <slf4j.version>1.6</slf4j.version>
        <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
       <jtype.version>0.1.0</jtype.version>
