@@ -20,9 +20,6 @@ Bundle-Name: Test module for : OSGi Resources bundle test module
 Bundle-Vendor: GlassFish Community
 Bundle-Version: 3.1.0.SNAPSHOT
 Bundle-Activator: org.glassfish.osgi_resources_test.ResourcesTestActivator
-Bundle-License: https://glassfish.dev.java.net/nonav/public/CDDL+GPL.h
- tml
-Import-Package: javax.sql,org.osgi.framework;version="1.5",org.osgi.se
- rvice.jdbc;version="1.0",org.glassfish.api,org.glassfish.internal.api,org.glassfish.api.admin,org.jvnet.hk2.component,org.glassfish.hk2.api,javax.jms
+Bundle-License: https://glassfish.dev.java.net/nonav/public/CDDL+GPL.html
+Import-Package: javax.sql,org.osgi.framework;version="1.5",org.osgi.service.jdbc;version="1.0",org.glassfish.api,org.glassfish.internal.api,org.glassfish.hk2.api,javax.security.auth,org.glassfish.api.admin,org.jvnet.hk2.component,javax.jms
 Bundle-DocURL: https://glassfish.dev.java.net
-

@@ -50,7 +50,24 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
+import java.security.Principal;
+import javax.security.auth.Subject;
+
+
 public class ResourcesTestActivator implements BundleActivator {
+
+    private static class PrincipalImpl implements Principal {
+        private final String name;
+
+        private PrincipalImpl(final String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+    }
 
     private static final Logger logger =
             Logger.getLogger(org.glassfish.osgi_resources_test.ResourcesTestActivator.class.getPackage().getName());
@@ -59,12 +76,18 @@ public class ResourcesTestActivator implements BundleActivator {
     private BundleContext bundleContext;
     ServiceReference ref;
     DataSource ds;
+    Subject s;
 
     public void start(BundleContext bundleContext) throws Exception {
         this.bundleContext = bundleContext;
+        s = new Subject();
+        s.getPrincipals().add(new PrincipalImpl("asadmin"));
+        s.getPrincipals().add(new PrincipalImpl("_InternalSystemAdministrator_"));
+
         acquireTestJdbcResource();
         test();
         debug("Bundle activated");
+
     }
 
 
@@ -161,13 +184,13 @@ public class ResourcesTestActivator implements BundleActivator {
         testJmsResources("(jndi-name=jms/osgi.Admin.Object)", javax.jms.Queue.class, true, "-trial-4");
     }
 
-    private void setAttribute(String nameValue){
+    private void setAttribute(String nameValue) {
         ServiceLocator habitat = Globals.getDefaultHabitat();
         CommandRunner cr = habitat.getService(CommandRunner.class);
         ActionReport ar = habitat.getService(ActionReport.class);
         ParameterMap params = new ParameterMap();
         params.add("DEFAULT", nameValue);
-        cr.getCommandInvocation("set", ar, null).parameters(params).execute();
+        cr.getCommandInvocation("set", ar, s).parameters(params).execute();
     }
 
 
@@ -177,7 +200,7 @@ public class ResourcesTestActivator implements BundleActivator {
         ActionReport ar = habitat.getService(ActionReport.class);
         ParameterMap params = new ParameterMap();
         params.add("DEFAULT", resourceName);
-        cr.getCommandInvocation("delete-jms-resource", ar, null).parameters(params).execute();
+        cr.getCommandInvocation("delete-jms-resource", ar, s).parameters(params).execute();
     }
 
     private void createJmsResource(String resourceName, String resourceType) {
@@ -187,7 +210,7 @@ public class ResourcesTestActivator implements BundleActivator {
         ParameterMap params = new ParameterMap();
         params.add("resType", resourceType);
         params.add("DEFAULT", resourceName);
-        cr.getCommandInvocation("create-jms-resource", ar, null).parameters(params).execute();
+        cr.getCommandInvocation("create-jms-resource", ar, s).parameters(params).execute();
     }
 
     private void deleteJdbcResource(String resourceName) {
@@ -196,7 +219,7 @@ public class ResourcesTestActivator implements BundleActivator {
         ActionReport ar = habitat.getService(ActionReport.class);
         ParameterMap params = new ParameterMap();
         params.add("DEFAULT", resourceName);
-        cr.getCommandInvocation("delete-jdbc-resource", ar, null).parameters(params).execute();
+        cr.getCommandInvocation("delete-jdbc-resource", ar, s).parameters(params).execute();
     }
 
     private void createJdbcResource(String resourceName) {
@@ -206,7 +229,7 @@ public class ResourcesTestActivator implements BundleActivator {
         ParameterMap params = new ParameterMap();
         params.add("poolName", "DerbyPool");
         params.add("DEFAULT", resourceName);
-        cr.getCommandInvocation("create-jdbc-resource", ar, null).parameters(params).execute();
+        cr.getCommandInvocation("create-jdbc-resource", ar, s).parameters(params).execute();
     }
 
 
@@ -300,7 +323,7 @@ public class ResourcesTestActivator implements BundleActivator {
         try {
             con = ds.getConnection();
             stmt = con.createStatement();
-            stmt.executeUpdate("insert into OSGI_RESOURCES_TEST_RESULTS values ('" + URLEncoder.encode(filter,"UTF-8") + "','" + result + "')");
+            stmt.executeUpdate("insert into OSGI_RESOURCES_TEST_RESULTS values ('" + URLEncoder.encode(filter, "UTF-8") + "','" + result + "')");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
