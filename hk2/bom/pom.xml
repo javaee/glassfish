@@ -302,6 +302,12 @@
                 <version>${project.version}</version>
                 <type>pom</type>
             </dependency>            
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.version}</version>
+                <type>pom</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>
