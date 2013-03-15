@@ -43,5 +43,3 @@ virtualServerStateDynamicReconfig
 virtualServerWithCustomErrorReportValve
 weldJsfLoginPage
 weldJsfFormLoginHttpSessionListener
-responseExceptionMessageEncoding
-jspScriptletSyntaxErrorCorrectErrorMessage
