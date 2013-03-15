@@ -63,26 +63,6 @@ import org.jvnet.hk2.annotations.Contract;
 public interface RunLevelController {
 
     // ----- Methods --------------------------------------------------------
-
-    /**
-     * Causes this RunLevelController to move to the specified run level for
-     * all {@link RunLevel} instances (identified by
-     * {@link RunLevelControllerIndicator}), orchestrating the appropriate
-     * lifecycle events.
-     * <p>
-     * If the run level specified is the same as the current run level then
-     * the RunLevelController may return immediately.
-     * <p>
-     * Note that the underlying implementation may perform this operation
-     * asynchronously. Implementors who choose the asynchronous approach
-     * are expected to treat a subsequent proceedTo(newRunLevel) call as
-     * an implicit cancellation of any currently running proceedTo() that
-     * is running on one or more managed threads.
-     *
-     * @param runLevel  the run level to move to
-     * @param activator The activator to use for this procession
-     */
-    void proceedTo(int runLevel, Activator activator);
     
     /**
      * Causes this RunLevelController to move to the specified run level for
@@ -138,14 +118,4 @@ public interface RunLevelController {
      * @param descriptor  the descriptor
      */
     public void recordActivation(ActiveDescriptor<?> descriptor);
-    
-    /**
-     * Returns the default activator which can be used to properly activate
-     * and deactivate run-level services
-     * 
-     * @return The default activator for this run-level controller, which
-     * can be used by user activators to customize the behavior of activation
-     * or deactivation.  May not return null
-     */
-    public Activator getDefaultActivator();
 }

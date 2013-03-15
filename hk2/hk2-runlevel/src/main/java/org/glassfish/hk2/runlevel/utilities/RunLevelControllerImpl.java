@@ -43,19 +43,15 @@ package org.glassfish.hk2.runlevel.utilities;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.RunLevel;
-import org.glassfish.hk2.runlevel.Activator;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelException;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.Sorter;
-import org.glassfish.hk2.runlevel.internal.RunLevelContext;
 import org.jvnet.hk2.annotations.Service;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,13 +60,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -261,11 +254,6 @@ public class RunLevelControllerImpl implements RunLevelController {
     @Inject
     private ServiceLocator serviceLocator;
 
-    @Inject
-    private Provider<RunLevelContext> contextProvider;
-    
-    private final Activator defaultActivator = new DefaultActivator();
-
     // used for eventing an {@link RunLevelListener}s
     private enum ListenerEvent {
         PROGRESS,
@@ -328,52 +316,15 @@ public class RunLevelControllerImpl implements RunLevelController {
         }
         activeRecorder.push(descriptor);
     }
-
-    @Override
-    public void proceedTo(int runLevel, Activator activator) {
-        proceedTo(runLevel, false, activator);
-    }
     
     @Override
     public void proceedTo(int runLevel) {
-        proceedTo(runLevel, false, defaultActivator);
+        proceedTo(runLevel, false);
     }
 
     @Override
     public void interrupt() {
-        proceedTo(null, true, defaultActivator);
-    }
-    
-    @Override
-    public Activator getDefaultActivator() {
-        return defaultActivator;
-    }
-
-    private class DefaultActivator implements Activator {
-
-        @Override
-        public void activate(ActiveDescriptor<?> descriptor) {
-            ServiceHandle<?> serviceHandle = serviceLocator.getServiceHandle(descriptor);
-            serviceLocator.reifyDescriptor( descriptor );
-            if ( ! serviceHandle.isActive() ) {
-                serviceHandle.getService();
-            }
-        }
-
-        @Override
-        public void deactivate(ActiveDescriptor<?> descriptor) {
-            contextProvider.get().deactivate(descriptor);
-        }
-
-        @Override
-        public void awaitCompletion()
-            throws InterruptedException, ExecutionException, TimeoutException {
-        }
-
-        @Override
-        public void awaitCompletion(long timeout, TimeUnit unit)
-            throws InterruptedException, TimeoutException, ExecutionException {
-        }
+        proceedTo(null, true);
     }
 
 
@@ -534,7 +485,7 @@ public class RunLevelControllerImpl implements RunLevelController {
      * @param runLevel         the run level
      * @param isHardInterrupt  indicates a hard interrupt
      */
-    protected void proceedTo(Integer runLevel, boolean isHardInterrupt, Activator activator) {
+    private void proceedTo(Integer runLevel, boolean isHardInterrupt) {
         if (null != runLevel && runLevel < RunLevel.RUNLEVEL_VAL_IMMEDIATE) {
             throw new IllegalArgumentException();
         }
@@ -552,8 +503,8 @@ public class RunLevelControllerImpl implements RunLevelController {
             // a new worker
             synchronized (lock) {
                 this.worker = worker = asyncMode ?
-                        new AsyncProceedToWorker(runLevel, activator) :
-                        new SyncProceedToWorker(runLevel, activator);
+                        new AsyncProceedToWorker(runLevel) :
+                        new SyncProceedToWorker(runLevel);
             }
 
             worker.proceedTo(runLevel);
@@ -595,15 +546,12 @@ public class RunLevelControllerImpl implements RunLevelController {
          * Records whether a cancel was actually an hard interrupt.
          */
         protected Boolean isHardInterrupt;
-        
-        private final Activator activator;
 
 
         // ----- Constructors -----------------------------------------------
 
-        protected Worker(int runLevel, Activator activator) {
+        protected Worker(int runLevel) {
             this.planned = runLevel;
-            this.activator = activator;
         }
 
 
@@ -775,18 +723,14 @@ public class RunLevelControllerImpl implements RunLevelController {
                     }
 
                     try {
-                        activator.activate(descriptor);
+                        serviceLocator.getServiceHandle(descriptor).getService();
+                        
                         // an escape hatch if we've been interrupted in some way
                         checkInterrupt(null, descriptor, null);
                     } catch (Exception e) {
                         checkInterrupt(e, descriptor, null);
                     }
                 }
-            }
-            try {
-                activator.awaitCompletion(DEFAULT_ASYNC_WAIT, TimeUnit.MILLISECONDS);
-            } catch (Exception e) {
-                checkInterrupt(e, null, null);
             }
         }
 
@@ -809,18 +753,13 @@ public class RunLevelControllerImpl implements RunLevelController {
                         }
 
                         try {
-                            activator.deactivate(descriptor);
+                            serviceLocator.getServiceHandle(descriptor).destroy();
+                            
                             // asynchronously
                             checkInterrupt(null, descriptor, null);
                         } catch (Exception e) {
                             checkInterrupt(e, descriptor, null);
                         }
-                    }
-
-                    try {
-                        activator.awaitCompletion();
-                    } catch (Exception e) {
-                        checkInterrupt(e, null, null);
                     }
                 }
             }
@@ -843,8 +782,8 @@ public class RunLevelControllerImpl implements RunLevelController {
         // records whether a cancel event was issued
         private boolean cancelIssued;
 
-        private SyncProceedToWorker(int runLevel, Activator activator) {
-            super(runLevel, activator);
+        private SyncProceedToWorker(int runLevel) {
+            super(runLevel);
         }
 
         /**
@@ -980,8 +919,8 @@ public class RunLevelControllerImpl implements RunLevelController {
         // record the future for the operation
         private Future<?> activeFuture;
 
-        private AsyncProceedToWorker(int runLevel, Activator activator) {
-            super(runLevel, activator);
+        private AsyncProceedToWorker(int runLevel) {
+            super(runLevel);
         }
 
         /**

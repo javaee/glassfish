@@ -90,6 +90,10 @@ public class ReflectionHelper {
         REPLACE_CHARACTERS.put('\r', 'r');
     }
     
+    private final static String EQUALS_STRING = "=";
+    private final static String COMMA_STRING = ",";
+    private final static String QUOTE_STRING = "\"";
+    
     /**
      * Given the type parameter gets the raw type represented
      * by the type, or null if this has no associated raw class
@@ -1094,6 +1098,70 @@ public class ReflectionHelper {
             throw th;
         } finally {
             setContextClassLoader(Thread.currentThread(), currentCCL);
+        }
+    }
+    
+    /**
+     * This method parses the string that is found in the &#86;Service metadata field.
+     * 
+     * @param metadataField A non-null metadata field that normally comes from the Service
+     * metadata field
+     * @param metadata The metadata field to add to
+     * @throws IllegalStateException if a string with an invalid format is found
+     */
+    public static void parseServiceMetadataString(String metadataField, Map<String, List<String>> metadata) {
+        StringBuffer sb = new StringBuffer(metadataField);
+        
+        int dot = 0;
+        int nextEquals = sb.indexOf(EQUALS_STRING, dot);
+        while (nextEquals > 0) {
+            String key = sb.substring(dot, nextEquals);
+            
+            dot = nextEquals + 1;
+            
+            int commaPlace;
+            String value = null;
+            if (sb.charAt(dot) == '\"') {
+                dot++;  // Get past the quote
+                
+                int nextQuote = sb.indexOf(QUOTE_STRING, dot);
+                if (nextQuote < 0) {
+                    // What to do?
+                    throw new IllegalStateException("Badly formed metadata \"" + metadataField + "\" for key " + key +
+                            " has a leading quote but no trailing quote");
+                }
+                
+                value = sb.substring(dot, nextQuote);
+                dot = nextQuote + 1;
+                
+                commaPlace = sb.indexOf(COMMA_STRING, dot);  // Should be right at dot
+            }
+            else {
+                commaPlace = sb.indexOf(COMMA_STRING, dot);
+                
+                
+                if (commaPlace < 0) {
+                    value = sb.substring(dot);
+                }
+                else {
+                    value = sb.substring(dot, commaPlace);
+                }
+            }
+            
+            List<String> addToMe = metadata.get(key);
+            if (addToMe == null) {
+                addToMe = new LinkedList<String>();
+                metadata.put(key, addToMe);
+            }
+            addToMe.add(value);
+            
+            if (commaPlace >= 0) {
+                dot = commaPlace + 1;
+                nextEquals = sb.indexOf(EQUALS_STRING, dot);
+            }
+            else {
+                nextEquals = -1;
+            }
         }
     }
 
