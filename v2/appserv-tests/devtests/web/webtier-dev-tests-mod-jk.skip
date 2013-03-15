@@ -23,6 +23,7 @@ multibyteValue
 requestDispatcherForwardCommitResponse
 requestDispatcherForwardSendErrorCommitResponse
 requestDispatcherForwardSetStatusCommitResponse
+responseErrorMessageEncoding
 servlet-3.1/nonBlockingOutput
 servlet-3.1/nonBlockingInput
 servlet-3.1/nonBlockingInputWithAsyncDispatch
