@@ -13,6 +13,8 @@ public class InterceptorA {
         System.out.println("In InterceptorA.AroundConstruct");
 
         try {
+            java.lang.reflect.Constructor c = ctx.getConstructor();
+            System.out.println("Using Constructor: " + c);
             ctx.proceed();
             BaseBean b = (BaseBean)ctx.getTarget();
             System.out.println("Created instance: " + b);
