@@ -335,9 +335,21 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	}
 	
 	/**
+	 * Adds all of the entries from this map to the existing descriptor's
+	 * metadata.  None of the keys in the map may have the '=' character
+	 * 
+	 * @param metadata The non-null but possibly empty list of fields
+	 * to add to the metadata map
+	 */
+	public synchronized void addMetadata(Map<String, List<String>> metadata) {
+        metadatas.putAll(ReflectionHelper.deepCopyMetadata(metadata));
+    }
+	
+	/**
 	 * Adds a value to the list of values associated with this key
 	 * 
-	 * @param key The key to which to add the value.  May not be null
+	 * @param key The key to which to add the value.  May not be null.  May
+	 * not contain the character '='
 	 * @param value The value to add.  May not be null
 	 */
 	public synchronized void addMetadata(String key, String value) {
@@ -347,7 +359,8 @@ public class DescriptorImpl implements Descriptor, Serializable {
 	/**
 	 * Removes the given value from the given key
 	 * 
-	 * @param key The key of the value to remove.  May not be null
+	 * @param key The key of the value to remove.  May not be null, and
+	 * may not contain the character '='
 	 * @param value The value to remove.  May not be null
 	 * @return true if the value was removed
 	 */

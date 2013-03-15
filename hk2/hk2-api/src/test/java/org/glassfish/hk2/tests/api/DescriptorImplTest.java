@@ -527,6 +527,7 @@ public class DescriptorImplTest {
     
     private final static String KEY_WITH_ESCAPED_CHARACTERS = "escapedCharacters";
     private final static String ESCAPED_VALUE = "}{,[\\]\r[\n:;=\\";
+    private final static String NON_ESCAPED_VALUE = "Go Eagles!";
     
     /**
      * Tests the read and write external form of DescriptorImpl
@@ -540,6 +541,7 @@ public class DescriptorImplTest {
         writeB.addMetadata(FullDescriptorImpl.FULL_KEY1, FullDescriptorImpl.FULL_VALUE1);
         writeB.addMetadata(FullDescriptorImpl.FULL_KEY2, FullDescriptorImpl.FULL_VALUE1);
         writeB.addMetadata(KEY_WITH_ESCAPED_CHARACTERS, ESCAPED_VALUE);
+        writeB.addMetadata(KEY_WITH_ESCAPED_CHARACTERS, NON_ESCAPED_VALUE);
         writeB.addMetadata(FullDescriptorImpl.FULL_KEY2, FullDescriptorImpl.FULL_VALUE2);
         writeB.setRanking(13);
         DescriptorImpl writeC = new DescriptorImpl();  // Write out a completely empty one
@@ -600,6 +602,13 @@ public class DescriptorImplTest {
                 Assert.assertEquals(writeB, di);
                 Assert.assertEquals(writeB.hashCode(), di.hashCode());
                 Assert.assertEquals(13, di.getRanking());  // Ranking is not considered in equals, but should have been written out
+                
+                // Additional tests for B, make sure the escaped characters are read back in properly
+                String escapedValue = di.getMetadata().get(KEY_WITH_ESCAPED_CHARACTERS).get(0);
+                Assert.assertEquals(ESCAPED_VALUE, escapedValue);
+                
+                String nonEscapedValue = di.getMetadata().get(KEY_WITH_ESCAPED_CHARACTERS).get(1);
+                Assert.assertEquals(NON_ESCAPED_VALUE, nonEscapedValue);
             }
             else if (lcv == 2) {
                 Assert.assertEquals(writeC, di);

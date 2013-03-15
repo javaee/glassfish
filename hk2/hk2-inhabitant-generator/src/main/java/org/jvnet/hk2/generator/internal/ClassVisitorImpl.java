@@ -47,7 +47,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -312,21 +311,11 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
         generatedDescriptor.setClassAnalysisName(classAnalyzer);
         if (metadataString != null) {
-            StringTokenizer commaTokenizer = new StringTokenizer(metadataString, ",");
+            Map<String, List<String>> serviceMetadata = new HashMap<String, List<String>>();
             
-            while (commaTokenizer.hasMoreTokens()) {
-                String keyValueString = commaTokenizer.nextToken();
-                
-                int equalsIndex = keyValueString.indexOf('=');
-                if (equalsIndex < 0) continue;  // unknown format
-                
-                String key = keyValueString.substring(0, equalsIndex);
-                String value = keyValueString.substring(equalsIndex + 1);
-                
-                if (key.length() <= 0 || value.length() <= 0) continue;  // no blanks allowed
-                
-                generatedDescriptor.addMetadata(key, value);
-            }
+            ReflectionHelper.parseServiceMetadataString(metadataString, serviceMetadata);
+            
+            generatedDescriptor.addMetadata(serviceMetadata);
         }
         
         if (rank != null) {

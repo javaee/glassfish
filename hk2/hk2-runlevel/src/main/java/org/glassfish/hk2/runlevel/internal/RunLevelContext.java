@@ -137,20 +137,6 @@ public class RunLevelContext implements Context<RunLevel> {
     // ----- Utility methods ------------------------------------------------
 
     /**
-     * Deactivate the given descriptor.
-     *
-     * @param activeDescriptor  the descriptor
-     * @param <T>               the descriptor type
-     */
-    @SuppressWarnings("unchecked")
-    public <T> void deactivate(ActiveDescriptor<T> activeDescriptor) {
-        if (backingMap.containsKey(activeDescriptor)) {
-            activeDescriptor.dispose((T) backingMap.get(activeDescriptor));
-            backingMap.remove(activeDescriptor);
-        }
-    }
-
-    /**
      * Verifies that the run level value of the {@link RunLevel} annotated
      * service described by the given descriptor is valid for activation.
      * Valid means that the run level value is less than or equal to the
@@ -185,11 +171,14 @@ public class RunLevelContext implements Context<RunLevel> {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void destroyOne(ActiveDescriptor<?> descriptor) {
-        // In this context services are only destroyed when the run-level
-        // goes below a certain number.  Hence we willfully ignore
-        // any other request to destroy a run-level service
+        if (backingMap.containsKey(descriptor)) {
+            Object destroyMe = backingMap.get(descriptor);
+            ((ActiveDescriptor<Object>) descriptor).dispose(destroyMe);
+            backingMap.remove(descriptor);
+        }
         
     }
 }

@@ -110,11 +110,6 @@ public class RunLevelServiceTest {
     private void proceedToAndWait(RunLevelController rlc, ServiceLocator locator, int runLevel) throws TimeoutException{
             rlc.proceedTo(runLevel);
     }
-    
-    private void proceedToAndWait(RunLevelController rlc, ServiceLocator locator, int runLevel,
-            org.glassfish.hk2.runlevel.Activator activator) throws TimeoutException{
-        rlc.proceedTo(runLevel, activator);
-    }
 
 
     // ----- Tests ----------------------------------------------------------
@@ -503,31 +498,6 @@ public class RunLevelServiceTest {
         assertEquals(0, listener.getLastRunLevel());
     }
 
-    @Test
-    public void proceedUpAndDownWithActivator() throws Exception {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("proceedUpAndDownWithActivator");
-
-        configureLocator(locator, new Class[]{
-                Activator.class,
-                RunLevelControllerFive.class});
-
-        RunLevelControllerImpl rlc = (RunLevelControllerImpl) locator.getService(RunLevelController.class);
-
-        Activator activator = locator.getService(Activator.class);
-
-        assertNull(activator.getLastActivated());
-        assertNull(activator.getLastDeactivated());
-
-        proceedToAndWait(rlc, locator, 5, activator);
-
-        assertEquals(RunLevelControllerFive.class, activator.getLastActivated().getImplementationClass());
-        assertNull(activator.getLastDeactivated());
-
-        proceedToAndWait(rlc, locator, 0, activator);
-
-        assertEquals(RunLevelControllerFive.class, activator.getLastDeactivated().getImplementationClass());
-    }
-
     @Test @Ignore
     public void proceedUpAndDownWithSorter() throws Exception {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create("proceedUpAndDownWithSorter");
@@ -841,55 +811,6 @@ public class RunLevelServiceTest {
         @Override
         public void onProgress(RunLevelController controller) {
             lastRunLevel = controller.getCurrentRunLevel();
-        }
-    }
-
-    public static abstract class BaseActivator implements org.glassfish.hk2.runlevel.Activator {
-
-        ActiveDescriptor lastActivated = null;
-        ActiveDescriptor lastDeactivated = null;
-
-        protected abstract RunLevelController getRunLevelController();
-
-        public ActiveDescriptor getLastActivated() {
-            return lastActivated;
-        }
-
-        public ActiveDescriptor getLastDeactivated() {
-            return lastDeactivated;
-        }
-
-        @Override
-        public void activate(ActiveDescriptor<?> activeDescriptor) {
-            getRunLevelController().getDefaultActivator().activate(activeDescriptor);
-            lastActivated = activeDescriptor;
-        }
-
-        @Override
-        public void deactivate(ActiveDescriptor<?> activeDescriptor) {
-            getRunLevelController().getDefaultActivator().deactivate(activeDescriptor);
-            lastDeactivated = activeDescriptor;
-        }
-
-        @Override
-        public void awaitCompletion() throws ExecutionException, InterruptedException, TimeoutException {
-            getRunLevelController().getDefaultActivator().awaitCompletion();
-        }
-
-        @Override
-        public void awaitCompletion(long timeout, TimeUnit unit) throws ExecutionException, InterruptedException, TimeoutException {
-            getRunLevelController().getDefaultActivator().awaitCompletion(timeout, unit);
-        }
-    }
-
-    @Service
-    public static class Activator extends BaseActivator {
-        @Inject
-        private RunLevelControllerImpl rlc;
-
-        @Override
-        protected RunLevelControllerImpl getRunLevelController() {
-            return rlc;
         }
     }
 

@@ -92,8 +92,6 @@ public class OrderingTest {
         Assert.assertEquals(operaData.descriptor.getImplementation(), Opera.class.getName());
         Assert.assertEquals(musicData.descriptor.getImplementation(), Music.class.getName());
         
-        System.out.println("JRW(10) operaElapsed=" + operaData.elapsedTime + " musicElapsed=" + musicData.elapsedTime);
-        
         properRange(operaData.elapsedTime, "Opera");
         properRange(musicData.elapsedTime, "Music");
     }
