@@ -1,4 +1,1 @@
 instanceHttpPortDynamicReconfig #investigate random failures
-jspScriptletSyntaxErrorCorrectErrorMessage # investigate error message encoding GLASSFISH-19880
-responseExceptionMessageEncoding #investigate error message encoding GLASSFISH-19880
-responseErrorMessageEncoding #GLASSFISH-19880
