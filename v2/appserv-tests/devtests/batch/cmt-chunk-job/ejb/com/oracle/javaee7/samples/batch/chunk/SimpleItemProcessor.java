@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 @javax.inject.Named//("com.oracle.javaee7.samples.batch.simple.SimpleItemProcessor")
 public class SimpleItemProcessor
-    implements javax.batch.api.ItemProcessor<String, String> {
+    implements javax.batch.api.chunk.ItemProcessor<String, String> {
 
 //    @Inject
 //    IdGenerator idGen;

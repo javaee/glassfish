@@ -4,14 +4,14 @@
  */
 package com.oracle.javaee7.samples.batch.chunk;
 
-import java.io.Externalizable;
+import java.io.Serializable;
 import java.util.List;
 @javax.inject.Named("SimpleItemWriter")
 public class SimpleItemWriter
-    extends javax.batch.api.AbstractItemWriter<String> {
+    implements javax.batch.api.chunk.ItemWriter<String> {
     
     @Override
-    public void open(Externalizable e) throws Exception {
+    public void open(Serializable e) throws Exception {
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SimpleItemWriter
     }
 
     @Override
-    public Externalizable checkpointInfo() throws Exception {
+    public Serializable checkpointInfo() throws Exception {
         return null;
     }
     

@@ -4,11 +4,11 @@
  */
 package com.oracle.javaee7.samples.batch.chunk;
 
-import java.io.Externalizable;
+import java.io.Serializable;
 
 @javax.inject.Named("SimpleItemReader")
 public class SimpleItemReader
-    extends javax.batch.api.AbstractItemReader<String> {
+    implements javax.batch.api.chunk.ItemReader<String> {
 
     private int index = 0;
     
@@ -25,7 +25,7 @@ public class SimpleItemReader
     };
     
     @Override
-    public void open(Externalizable e) throws Exception {
+    public void open(Serializable e) throws Exception {
     }
 
     @Override
@@ -38,7 +38,7 @@ public class SimpleItemReader
     }
 
     @Override
-    public Externalizable checkpointInfo() throws Exception {
+    public Serializable checkpointInfo() throws Exception {
         return null;
     }
     
