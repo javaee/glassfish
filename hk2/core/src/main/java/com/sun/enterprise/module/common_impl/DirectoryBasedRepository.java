@@ -48,8 +48,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileFilter;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -70,12 +70,19 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
     private final int intervalInMs = Integer.getInteger("hk2.file.directory.changeIntervalTimer", 1000);
     private Timer timer;
     private boolean isTimerThreadDaemon = false;
-    private List<File> subDirectories = new ArrayList<File>();
+    private List<File> subDirectories;
 
     /** Creates a new instance of DirectoryBasedRepository */
     public DirectoryBasedRepository(String name, File repository) {
         super(name,repository.toURI());
         this.repository = repository;
+        
+    }
+    
+    private void initializeSubDirectories() {
+        if (subDirectories != null) return;
+        subDirectories = new LinkedList<File>();
+        
         for (File file : repository.listFiles(new FileFilter() {
             public boolean accept(File pathname) {
                 return pathname.isDirectory();
@@ -96,6 +103,8 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
 
         final boolean returnValue = super.addListener(listener);
         if (returnValue && timer==null) {
+            initializeSubDirectories();
+            
             timer = new Timer("hk2-repo-listener-"+ this.getName(), isTimerThreadDaemon);
             timer.schedule(new TimerTask() {
                 long lastModified = repository.lastModified();
@@ -165,7 +174,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
         // not the most efficient implementation, could be revisited later
         HashMap<ModuleId, ModuleDefinition> newModuleDefs =
                 new HashMap<ModuleId, ModuleDefinition>();
-        List<URI> libraries = new ArrayList<URI>();
+        List<URI> libraries = new LinkedList<URI>();
 
         try {
             loadModuleDefs(newModuleDefs, libraries);
@@ -199,7 +208,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
             }
         }
         if (originalLibraries.size()>0) {
-            List<URI> copy = new ArrayList<URI>(originalLibraries.size());
+            List<URI> copy = new LinkedList<URI>();
             copy.addAll(originalLibraries);
             for (URI originalLocation : copy) {
                 if (!libraries.contains(originalLocation)) {
@@ -212,7 +221,7 @@ public class DirectoryBasedRepository extends AbstractRepositoryImpl {
         }
 
         // added or removed subdirectories ?
-        List<File> previous = new ArrayList<File>();
+        List<File> previous = new LinkedList<File>();
         previous.addAll(subDirectories);
         for (File file : repository.listFiles(new FileFilter() {
             public boolean accept(File pathname) {
