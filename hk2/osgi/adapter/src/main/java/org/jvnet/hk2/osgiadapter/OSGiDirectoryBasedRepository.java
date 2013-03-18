@@ -43,10 +43,14 @@ package org.jvnet.hk2.osgiadapter;
 
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.common_impl.DirectoryBasedRepository;
+import com.sun.enterprise.module.common_impl.ModuleId;
 import org.osgi.framework.Constants;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -116,4 +120,10 @@ public class OSGiDirectoryBasedRepository extends DirectoryBasedRepository {
         return new OSGiModuleDefinition(jar);
     }
 
+    @Override
+    protected void loadModuleDefs(Map<ModuleId, ModuleDefinition> moduleDefs, List<URI> libraries) throws IOException {
+        if (cache.isCacheInvalidated()) {
+          super.loadModuleDefs(moduleDefs, libraries);
+        }
+    }
 }
