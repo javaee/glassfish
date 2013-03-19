@@ -54,7 +54,7 @@
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>2.1.74</version>
+    <version>2.1.75-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 
@@ -139,9 +139,9 @@
     </mailingLists>
 
     <scm>
-      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/tags/hk2-parent-2.1.74</connection>
-      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/tags/hk2-parent-2.1.74</developerConnection>
-      <url>https://svn.java.net/svn/hk2~svn/tags/hk2-parent-2.1.74</url>
+      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</connection>
+      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
+      <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
     </scm>
 
     <build>
@@ -326,8 +326,8 @@
         <java.net.username>${user.name}</java.net.username>
         <asm.version>3.3</asm.version>
         <cglib.version>2.2</cglib.version>
-        <javax.validation.version>1.1.0.CR2</javax.validation.version>
-        <hibernate-validator.version>5.0.0.CR3</hibernate-validator.version>
+        <javax.validation.version>1.1.0.CR1</javax.validation.version>
+        <hibernate-validator.version>5.0.0.CR2</hibernate-validator.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
         <site.url>file:../www/</site.url>
