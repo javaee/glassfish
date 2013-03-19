@@ -95,6 +95,7 @@
 
     <target name="interceptors">
         <record name="interceptors.output" action="start" />
+            <ant dir="interceptors-bean-validation" target="${interceptors-target}"/>
             <ant dir="interceptors-binding-type-inheritance" target="${interceptors-target}"/>
             <ant dir="interceptors-binding-type-with-members" target="${interceptors-target}"/>
             <ant dir="interceptors-business-method-interception" target="${interceptors-target}"/>

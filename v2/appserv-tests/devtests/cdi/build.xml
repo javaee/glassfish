@@ -204,6 +204,7 @@
         <ant dir="interceptors" target="${cdi-target}"/>
         <ant dir="javaee-component-resources" target="${cdi-target}"/>
         <ant dir="javaee-integration" target="${cdi-target}"/>
+        <ant dir="managed-beans" target="${cdi-target}"/>
         <ant dir="portable-extensions" target="${cdi-target}"/>
         <ant dir="producer-methods" target="${cdi-target}"/>
 

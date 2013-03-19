@@ -98,6 +98,8 @@
 <!--
         <ant dir="managed-bean-via-resource-injection" target="${managedbeans-target}"/>
 -->
+        <ant dir="managed-bean-lifecycle-polymorphism" target="${managedbeans-target}"/>
+
         <record name="managedbeans.output" action="stop" />
     </target>
 
