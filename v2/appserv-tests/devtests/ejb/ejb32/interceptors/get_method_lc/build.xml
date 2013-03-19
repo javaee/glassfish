@@ -6,7 +6,7 @@
 <!ENTITY reporting   SYSTEM "../../../report.xml">
 ]>
 
-<project name="aroundconstruct" default="usage" basedir=".">
+<project name="get_method_lc" default="usage" basedir=".">
     &commonSetup;
     &commonBuild;
     &reporting;
@@ -31,7 +31,7 @@
     <target name="usage">
 	<echo>
 		Usage:
-			ant all (Executes set of ejb-ejb32-aroundconstruct tests)
+			ant all (Executes set of ejb-ejb32-get_method_lc tests)
 	</echo>
     </target>
 </project>
