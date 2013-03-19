@@ -13,12 +13,19 @@
 
     <target name="all">
         <antcall target="aroundconstruct"/>
+        <antcall target="get_method_lc"/>
     </target>
 
     <target name="aroundconstruct">
         <record name="aroundconstruct.output" action="start" />
             <ant dir="aroundconstruct" target="all"/>
         <record name="aroundconstruct.output" action="stop" />
+    </target>
+
+    <target name="get_method_lc">
+        <record name="get_method_lc.output" action="start" />
+            <ant dir="get_method_lc" target="all"/>
+        <record name="get_method_lc.output" action="stop" />
     </target>
 
     <target name="usage">
