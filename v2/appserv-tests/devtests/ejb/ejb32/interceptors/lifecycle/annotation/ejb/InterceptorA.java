@@ -30,10 +30,12 @@ public class InterceptorA {
 
         try {
             BaseBean b = (BaseBean)ctx.getTarget();
+            b.method = ctx.getMethod();
             System.out.println("PostConstruct on : " + b);
             if (b.pc) throw new Exception("PostConstruct already called for " + b);
             ctx.proceed();
             b.pc = true;
+            b.method = null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -43,7 +45,10 @@ public class InterceptorA {
     private void preDestroy(InvocationContext ctx) {
         System.out.println("In InterceptorA.PreDestroy");
         try {
+            BaseBean b = (BaseBean)ctx.getTarget();
+            b.method = ctx.getMethod();
             ctx.proceed();
+            b.method = null;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
