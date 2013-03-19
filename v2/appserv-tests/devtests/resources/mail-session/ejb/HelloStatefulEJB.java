@@ -1,8 +1,8 @@
 package com.sun.s1asdev.ejb.ejb30.hello.session3;
 
 import javax.annotation.PostConstruct;
-import org.glassfish.resources.javamail.annotation.MailSessionDefinition;
-import org.glassfish.resources.javamail.annotation.MailSessionDefinitions;
+import javax.mail.MailSessionDefinition;
+import javax.mail.MailSessionDefinitions;
 import javax.ejb.Stateful;
 import javax.naming.InitialContext;
 
@@ -11,9 +11,7 @@ import javax.naming.InitialContext;
                 @MailSessionDefinition(description = "Mail Session Description 1",
                         name = "java:global/mail/HelloStatefulEJB_MailSession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",
@@ -24,9 +22,7 @@ import javax.naming.InitialContext;
                 @MailSessionDefinition(description = "Mail Session Description 3",
                         name = "java:app/mail/HelloStatefulEJB_MailSession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",
@@ -36,9 +32,7 @@ import javax.naming.InitialContext;
                 @MailSessionDefinition(description = "Mail Session Description 4",
                         name = "java:module/mail/HelloStatefulEJB_MailSession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",

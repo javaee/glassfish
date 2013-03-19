@@ -20,9 +20,7 @@
 		<description>Sample Mail Session definition web1</description>
 		<name>java:global/mail/Servlet_MS_MailSession</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>
@@ -40,9 +38,7 @@
 		<description>Sample Mail Session definition web2</description>
 		<name>java:comp/mail/Servlet_MS_MailSession</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>
@@ -60,9 +56,7 @@
 		<description>Sample Mail Session definition web2</description>
 		<name>java:global/env/Servlet_MS_MailSession</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>

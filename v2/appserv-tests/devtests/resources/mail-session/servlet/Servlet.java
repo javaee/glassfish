@@ -5,8 +5,8 @@
 package com.sun.s1asdev.ejb.ejb30.hello.session3;
 
 import javax.annotation.Resource;
-import org.glassfish.resources.javamail.annotation.MailSessionDefinition;
-import org.glassfish.resources.javamail.annotation.MailSessionDefinitions;
+import javax.mail.MailSessionDefinition;
+import javax.mail.MailSessionDefinitions;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.EJBs;
@@ -33,9 +33,7 @@ import java.io.PrintWriter;
                 @MailSessionDefinition(description = "Mail Session Description 1",
                         name = "java:global/mail/MySession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",
@@ -46,9 +44,7 @@ import java.io.PrintWriter;
                 @MailSessionDefinition(description = "Mail Session Description 3",
                         name = "java:app/mail/MySession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",
@@ -58,9 +54,7 @@ import java.io.PrintWriter;
                 @MailSessionDefinition(description = "Mail Session Description 4",
                         name = "java:module/mail/MySession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",
@@ -70,9 +64,7 @@ import java.io.PrintWriter;
                 @MailSessionDefinition(description = "Mail Session Description 5",
                         name = "java:global/env/Servlet_MailSession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",
@@ -82,9 +74,7 @@ import java.io.PrintWriter;
                 @MailSessionDefinition(description = "Mail Session Description 5",
                         name = "java:app/env/Servlet_MailSession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",

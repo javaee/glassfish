@@ -6,8 +6,8 @@ package com.sun.s1asdev.ejb.ejb30.hello.session3;
 
 import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
 
-import org.glassfish.resources.javamail.annotation.MailSessionDefinition;
-import org.glassfish.resources.javamail.annotation.MailSessionDefinitions;
+import javax.mail.MailSessionDefinition;
+import javax.mail.MailSessionDefinitions;
 import javax.naming.InitialContext;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -21,9 +21,7 @@ import java.net.URL;
                 @MailSessionDefinition(description = "Mail Session Description 1",
                         name = "java:global/mail/Appclient_MailSession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",
@@ -33,9 +31,7 @@ import java.net.URL;
                 @MailSessionDefinition(description = "Mail Session Description 1",
                         name = "java:comp/env/Appclient_MailSession",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",
@@ -45,18 +41,14 @@ import java.net.URL;
                 @MailSessionDefinition(
                         name = "java:app/mail/Application_Level_MailSession_Partial",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         properties = {"property2=20"}
                 ),
                 @MailSessionDefinition(description = "Mail Session Description 1",
                         name = "java:app/mail/Application_Level_MailSession_Override",
                         storeProtocol = "IMAP",
-                        storeProtocolClass = "com.example.mail.imap.IMAPStore",
                         transportProtocol = "SMTP",
-                        transportProtocolClass = "com.sun.mail.smtp.SMTPTransport",
                         host = "localhost",
                         user = "naman",
                         password = "naman",

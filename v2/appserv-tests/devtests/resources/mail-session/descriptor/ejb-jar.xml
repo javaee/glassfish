@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="false" version="3.2" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_2.xsd">
+      <ejb-jar xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+      	  http://xmlns.jcp.org/xml/ns/javaee/ejb-jar_3_2.xsd"
+      version="3.2">
   <module-name>mail-session-ejb</module-name>
   <enterprise-beans>
     <session>
@@ -15,9 +19,7 @@
 		<description>Sample Mail Session definition ejb1</description>
 		<name>java:global/mail/HelloStatefulEJB_MS_MailSession</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>
@@ -44,9 +46,7 @@
 		<description>Sample Mail Session definition ejb3</description>
 		<name>java:module/env/HelloEJB_MailSession_driver</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>
@@ -64,9 +64,7 @@
 		<description>Sample Mail Session definition ejb3</description>
 		<name>java:global/env/HelloEJB_MS_MailSession</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>
@@ -84,9 +82,7 @@
 		<description>Sample Mail Session definition ejb3</description>
 		<name>java:global/env/HelloStatefulEJB_MS_MailSession</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>
@@ -104,9 +100,7 @@
 		<description>Sample Mail Session definition ejb3</description>
 		<name>java:global/mail/HelloEJB_MS_MailSession</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>
@@ -124,9 +118,7 @@
 		<description>Sample Mail Session definition ejb3</description>
 		<name>java:comp/env/HelloEJB_MS_MailSession</name>
 		<store-protocol>IMAP</store-protocol>
-		<store-protocol-class>com.example.mail.imap.IMAPStore</store-protocol-class>
 		<transport-protocol>SMTP</transport-protocol>
-		<transport-protocol-class>com.sun.mail.smtp.SMTPTransport</transport-protocol-class>
 		<host>somewhere.myco.com</host>
 		<user>linda</user>
 		<password>secret</password>
