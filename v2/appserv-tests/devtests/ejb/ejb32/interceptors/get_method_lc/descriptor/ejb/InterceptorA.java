@@ -1,9 +1,6 @@
 package com.acme;
 
 import javax.interceptor.InvocationContext;
-import javax.interceptor.AroundInvoke;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 public class InterceptorA {
 
@@ -11,6 +8,8 @@ public class InterceptorA {
         System.out.println("In InterceptorA.AroundConstruct");
 
         try {
+            java.lang.reflect.Constructor<?> c = ctx.getConstructor();
+            System.out.println("Using Constructor: " + c);
             ctx.proceed();
             BaseBean b = (BaseBean)ctx.getTarget();
             System.out.println("Created instance: " + b);
@@ -36,11 +35,11 @@ public class InterceptorA {
         }
     }
 
-    @PreDestroy
     private void preDestroy(InvocationContext ctx) {
         System.out.println("In InterceptorA.PreDestroy");
         try {
             BaseBean b = (BaseBean)ctx.getTarget();
+            System.out.println("PreDestroy on : " + b);
             b.method = ctx.getMethod();
             ctx.proceed();
             b.method = null;

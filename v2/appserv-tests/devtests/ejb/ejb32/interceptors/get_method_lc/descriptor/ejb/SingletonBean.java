@@ -5,11 +5,12 @@ import javax.annotation.*;
 import javax.interceptor.*;
 
 @Singleton
-//@Startup
 public class SingletonBean extends BaseBean implements Snglt {
 
 
-    @EJB Sful sful;
+    @EJB SfulEJB sful;
+
+    public SingletonBean() {}
 
     @PostConstruct
     public void init() {
@@ -19,7 +20,9 @@ public class SingletonBean extends BaseBean implements Snglt {
     }
     
     public String hello() {
-        verify("SingletonBean");
+        verifyA_AC("SingletonBean");
+        //verifyAB_AC("SingletonBean");
+        verifyAC_PC("SingletonBean");
 	System.out.println("In SingletonBean::hello()");
         sful.remove();
 	return "hello, world!\n";

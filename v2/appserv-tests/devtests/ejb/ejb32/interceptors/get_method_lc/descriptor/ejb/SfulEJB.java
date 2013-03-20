@@ -10,13 +10,17 @@ import javax.annotation.*;
 
 
 @Stateful
-public class SfulEJB extends BaseBean implements Sful {
+public class SfulEJB extends BaseBean {
 
-    @EJB private Sless sless;
+    @EJB private SlessEJB sless;
+
+    public SfulEJB() {}
 
     public String hello() {
         System.out.println("In SfulEJB:hello()");
-        verify("SfulEJB");
+        //verify("SfulEJB");
+        verifyB_AC("SfulEJB");
+        verifyAB_PC("SfulEJB");
 	return sless.sayHello();
     }
 
