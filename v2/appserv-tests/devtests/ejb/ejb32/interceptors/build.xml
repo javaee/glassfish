@@ -14,6 +14,7 @@
     <target name="all">
         <antcall target="aroundconstruct"/>
         <antcall target="get_method_lc"/>
+        <antcall target="method-constructor-level"/>
     </target>
 
     <target name="aroundconstruct">
@@ -28,10 +29,16 @@
         <record name="get_method_lc.output" action="stop" />
     </target>
 
+    <target name="method-constructor-level">
+        <record name="method-constructor-level.output" action="start" />
+            <ant dir="method-constructor-level" target="all"/>
+        <record name="method-constructor-level.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:
-			ant all (Executes set of ejb-ejb32-aroundconstruct tests)
+			ant all (Executes set of ejb-ejb32-interceptors tests)
 	</echo>
     </target>
 </project>
