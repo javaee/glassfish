@@ -489,6 +489,7 @@
         <ant dir="servlet-3.0/authAnnotationInheritance" target="all"/>
         <ant dir="servlet-3.0/authAnnotations" target="all"/>
         <ant dir="servlet-3.0/loginLogout" target="all"/>
+        <ant dir="servlet-3.0/loginChangeSessionId" target="all"/>
         <ant dir="servlet-3.0/transportProtectedAnnotation" target="all"/>
         <ant dir="servlet-3.0/xmlOverrideAuthAnnotations" target="all"/>
         <ant dir="sessionDestroyedDuringUndeploy" target="all"/>
