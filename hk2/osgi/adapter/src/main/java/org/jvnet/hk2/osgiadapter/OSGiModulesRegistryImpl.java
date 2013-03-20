@@ -178,6 +178,8 @@ public class OSGiModulesRegistryImpl
         if (md != null) {
         	return OSGiModuleDefinition.class.cast(md);
         } else {
+
+            new Exception().printStackTrace();
             cache.invalidate();
             md = new OSGiModuleDefinition(bundle);
 
