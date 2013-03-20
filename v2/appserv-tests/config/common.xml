@@ -1353,7 +1353,7 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <exec executable="${APPCLIENT}" failonerror="false">
     <!-- set APPCPATH to include reporter.jar so that all app clients
          don't have to package the test framework in their apps -->
-    <env key="APPCPATH" file="${env.APS_HOME}/lib/reporter.jar"/>
+    <env key="APPCPATH" file="${env.APPCPATH}:${env.APS_HOME}/lib/reporter.jar"/>
     <arg line="-client ${assemble.dir}/${appname}AppClient.jar"/>
     <arg line="-name ${appname}Client"/>
     <arg line="-textauth"/>
