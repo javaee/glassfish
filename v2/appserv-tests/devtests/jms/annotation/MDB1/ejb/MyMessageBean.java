@@ -46,11 +46,8 @@ public class MyMessageBean implements MessageListener {
     @Override
     public void onMessage(Message message) {
         try {
-System.out.println("simon-debug in MyMessageBean - 10");
             if (message instanceof TextMessage) {
-System.out.println("simon-debug in MyMessageBean - 20");
                 sendMessage(true, ((TextMessage) message).getText());
-System.out.println("simon-debug in MyMessageBean - 30");
             } else {
                 sendMessage(false, "The received message is not a expected TextMessage.");
             }

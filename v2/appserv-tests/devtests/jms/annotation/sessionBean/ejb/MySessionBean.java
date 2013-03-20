@@ -24,7 +24,7 @@ import javax.naming.InitialContext;
         @JMSConnectionFactoryDefinition(
             description = "global-scope CF defined by @JMSConnectionFactoryDefinition",
             name = "java:global/env/annotation_CF",
-            className = "javax.jms.ConnectionFactory",
+            interfaceName = "javax.jms.ConnectionFactory",
             resourceAdapter = "jmsra",
             user = "admin",
             password = "admin",
@@ -35,7 +35,7 @@ import javax.naming.InitialContext;
         @JMSConnectionFactoryDefinition(
             description = "application-scope resource defined by @JMSConnectionFactoryDefinition",
             name = "java:app/env/annotation_CF",
-            className = "javax.jms.ConnectionFactory",
+            interfaceName = "javax.jms.ConnectionFactory",
             resourceAdapter = "jmsra",
             user = "admin",
             password = "admin",
@@ -46,7 +46,7 @@ import javax.naming.InitialContext;
         @JMSConnectionFactoryDefinition(
             description = "module-scope resource defined by @JMSConnectionFactoryDefinition",
             name = "java:module/env/annotation_CF",
-            className = "javax.jms.ConnectionFactory",
+            interfaceName = "javax.jms.ConnectionFactory",
             resourceAdapter = "jmsra",
             user = "admin",
             password = "admin",
@@ -57,7 +57,7 @@ import javax.naming.InitialContext;
         @JMSConnectionFactoryDefinition(
             description = "component-scope resource defined by @JMSConnectionFactoryDefinition",
             name = "java:comp/env/annotation_CF",
-            className = "javax.jms.ConnectionFactory",
+            interfaceName = "javax.jms.ConnectionFactory",
             resourceAdapter = "jmsra",
             user = "admin",
             password = "admin",
@@ -72,7 +72,7 @@ import javax.naming.InitialContext;
         @JMSDestinationDefinition(
             description = "global-scope queue defined by @JMSDestinationDefinition",
             name = "java:global/env/annotation_queue",
-            className = "javax.jms.Queue",
+            interfaceName = "javax.jms.Queue",
             resourceAdapter = "jmsra",
             destinationName = "myPhysicalQueue"
         ),
@@ -80,14 +80,14 @@ import javax.naming.InitialContext;
         @JMSDestinationDefinition(
             description = "application-scope topic defined by @JMSDestinationDefinition",
             name = "java:app/env/annotation_topic",
-            className = "javax.jms.Topic",
+            interfaceName = "javax.jms.Topic",
             resourceAdapter = "jmsra",
             destinationName = "myPhysicalTopic"
         ),
         @JMSDestinationDefinition(
             description = "module-scope topic defined by @JMSDestinationDefinition",
             name = "java:module/env/annotation_topic",
-            className = "javax.jms.Topic",
+            interfaceName = "javax.jms.Topic",
             resourceAdapter = "jmsra",
             destinationName = "myPhysicalTopic"
         ),
@@ -95,7 +95,7 @@ import javax.naming.InitialContext;
         @JMSDestinationDefinition(
             description = "component-scope queue defined by @JMSDestinationDefinition",
             name = "java:comp/env/annotation_queue",
-            className = "javax.jms.Queue",
+            interfaceName = "javax.jms.Queue",
             resourceAdapter = "jmsra",
             destinationName = "myPhysicalQueue"
         )

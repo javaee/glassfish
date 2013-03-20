@@ -26,7 +26,7 @@ import javax.jms.TextMessage;
 @JMSConnectionFactoryDefinition(
     description = "global-scope CF defined by @JMSConnectionFactoryDefinition",
     name = "java:global/env/annotation_CF",
-    className = "javax.jms.ConnectionFactory",
+    interfaceName = "javax.jms.ConnectionFactory",
     resourceAdapter = "jmsra",
     user = "admin",
     password = "admin",
@@ -37,7 +37,7 @@ import javax.jms.TextMessage;
 @JMSDestinationDefinition(
     description = "global-scope test queue defined by @JMSDestinationDefinition",
     name = "java:global/env/annotation_testQueue",
-    className = "javax.jms.Queue",
+    interfaceName = "javax.jms.Queue",
     resourceAdapter = "jmsra",
     destinationName = "myPhysicalTestQueue"
 )

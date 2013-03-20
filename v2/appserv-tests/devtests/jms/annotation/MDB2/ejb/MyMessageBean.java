@@ -27,7 +27,7 @@ import javax.jms.TextMessage;
 @JMSConnectionFactoryDefinition(
     description = "application-scope CF defined by @JMSConnectionFactoryDefinition",
     name = "java:app/env/annotation_CF",
-    className = "javax.jms.ConnectionFactory",
+    interfaceName = "javax.jms.ConnectionFactory",
     resourceAdapter = "jmsra",
     user = "admin",
     password = "admin",
@@ -40,7 +40,7 @@ import javax.jms.TextMessage;
         @JMSDestinationDefinition(
             description = "application-scope test queue defined by @JMSDestinationDefinition",
             name = "java:app/env/annotation_testQueue",
-            className = "javax.jms.Queue",
+            interfaceName = "javax.jms.Queue",
             resourceAdapter = "jmsra",
             destinationName = "myPhysicalTestQueue"
         ),
@@ -48,7 +48,7 @@ import javax.jms.TextMessage;
         @JMSDestinationDefinition(
             description = "application-scope result queue defined by @JMSDestinationDefinition",
             name = "java:app/env/annotation_resultQueue",
-            className = "javax.jms.Queue",
+            interfaceName = "javax.jms.Queue",
             resourceAdapter = "jmsra",
             destinationName = "myPhysicalResultQueue"
         )

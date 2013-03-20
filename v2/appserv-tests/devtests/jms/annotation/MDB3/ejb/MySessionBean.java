@@ -22,7 +22,7 @@ import javax.jms.TextMessage;
 @JMSDestinationDefinition(
     description = "global-scope result queue defined by @JMSDestinationDefinition",
     name = "java:global/env/annotation_resultQueue",
-    className = "javax.jms.Queue",
+    interfaceName = "javax.jms.Queue",
     resourceAdapter = "jmsra",
     destinationName = "myPhysicalResultQueue"
 )

@@ -24,7 +24,7 @@ import javax.jms.TextMessage;
 @JMSConnectionFactoryDefinition(
     description = "module-scope CF defined by @JMSConnectionFactoryDefinition",
     name = "java:module/env/annotation_CF",
-    className = "javax.jms.ConnectionFactory",
+    interfaceName = "javax.jms.ConnectionFactory",
     resourceAdapter = "jmsra",
     user = "admin",
     password = "admin",
@@ -37,7 +37,7 @@ import javax.jms.TextMessage;
         @JMSDestinationDefinition(
             description = "module-scope test queue defined by @JMSDestinationDefinition",
             name = "java:module/env/annotation_testQueue",
-            className = "javax.jms.Queue",
+            interfaceName = "javax.jms.Queue",
             resourceAdapter = "jmsra",
             destinationName = "myPhysicalTestQueue"
         ),
@@ -45,7 +45,7 @@ import javax.jms.TextMessage;
         @JMSDestinationDefinition(
             description = "module-scope result queue defined by @JMSDestinationDefinition",
             name = "java:module/env/annotation_resultQueue",
-            className = "javax.jms.Queue",
+            interfaceName = "javax.jms.Queue",
             resourceAdapter = "jmsra",
             destinationName = "myPhysicalResultQueue"
         )
@@ -71,11 +71,9 @@ public class MySessionBean implements MySessionBeanRemote {
     @Override
     public void sendMessage(String text) {
         try {
-System.out.println("MySessionBean.sendMessage - 10");
             JMSProducer producer = jmsContext.createProducer();
             TextMessage message = jmsContext.createTextMessage(text);
             producer.send(testQueue, message);
-System.out.println("MySessionBean.sendMessage - 20");
         } catch (Exception e) {
             throw new EJBException(e);
         }
@@ -86,21 +84,18 @@ System.out.println("MySessionBean.sendMessage - 20");
         Connection conn = null;
         Session session = null;
         try {
-System.out.println("MySessionBean.sendMessage - 30");
             conn = myConnectionFactory.createConnection();
             conn.start();
             session = conn.createSession();
 
             MessageConsumer consumer = session.createConsumer(resultQueue);
             TextMessage msg = (TextMessage) consumer.receive(10000);
-System.out.println("MySessionBean.sendMessage - 40");
             if (msg == null) {
                 Logger.getLogger("MySessionBean").severe("No result message received.");
                 return false;
             } else {
                 String result = msg.getText();
                 if (result.equals("true:" + text)) {
-System.out.println("MySessionBean.sendMessage - 50");
                     return true;
                 } else {
                     String errMsg = result.substring(result.indexOf(":") + 1);
