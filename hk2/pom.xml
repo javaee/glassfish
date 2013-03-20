@@ -255,6 +255,9 @@
                      <groupId>org.apache.maven.plugins</groupId>
                      <artifactId>maven-javadoc-plugin</artifactId>
                      <version>2.9</version>                     
+                     <configuration>
+                       <detectOfflineLinks>false</detectOfflineLinks>
+                     </configuration>
                  </plugin>
                  <plugin>
                      <groupId>org.apache.maven.plugins</groupId>
@@ -326,8 +329,8 @@
         <java.net.username>${user.name}</java.net.username>
         <asm.version>3.3</asm.version>
         <cglib.version>2.2</cglib.version>
-        <javax.validation.version>1.1.0.CR2</javax.validation.version>
-        <hibernate-validator.version>5.0.0.CR3</hibernate-validator.version>
+        <javax.validation.version>1.1.0.CR1</javax.validation.version>
+        <hibernate-validator.version>5.0.0.CR2</hibernate-validator.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
         <site.url>file:../www/</site.url>
