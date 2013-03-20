@@ -29,7 +29,7 @@ import javax.transaction.UserTransaction;
                 @JMSDestinationDefinition(
                         description = "global-scope resource defined by @JMSDestinationDefinition",
                         name = "java:global/env/Servlet_ModByDD_JMSDestination",
-                        className = "javax.jms.Queue",
+                        interfaceName = "javax.jms.Queue",
                         resourceAdapter = "jmsra",
                         destinationName = "myPhysicalQueue"
                 ),
@@ -37,7 +37,7 @@ import javax.transaction.UserTransaction;
                 @JMSDestinationDefinition(
                         description = "global-scope resource defined by @JMSDestinationDefinition",
                         name = "java:global/env/Servlet_JMSDestination",
-                        className = "javax.jms.Queue",
+                        interfaceName = "javax.jms.Queue",
                         resourceAdapter = "jmsra",
                         destinationName = "myPhysicalQueue"
                 ),
@@ -45,7 +45,7 @@ import javax.transaction.UserTransaction;
                 @JMSDestinationDefinition(
                         description = "application-scope resource defined by @JMSDestinationDefinition",
                         name = "java:app/env/Servlet_JMSDestination",
-                        className = "javax.jms.Topic",
+                        interfaceName = "javax.jms.Topic",
                         resourceAdapter = "jmsra",
                         destinationName = "myPhysicalTopic"
                 ),
@@ -53,16 +53,16 @@ import javax.transaction.UserTransaction;
                 @JMSDestinationDefinition(
                         description = "module-scope resource defined by @JMSDestinationDefinition",
                         name = "java:module/env/Servlet_JMSDestination",
-                        className = "javax.jms.Topic",
-                        resourceAdapter = "jmsra",
+                        interfaceName = "javax.jms.Topic",
+//                        resourceAdapter = "jmsra",
                         destinationName = "myPhysicalTopic"
                 ),
 
                 @JMSDestinationDefinition(
                         description = "component-scope resource defined by @JMSDestinationDefinition",
                         name = "java:comp/env/Servlet_JMSDestination",
-                        className = "javax.jms.Queue",
-                        resourceAdapter = "jmsra",
+                        interfaceName = "javax.jms.Queue",
+//                        resourceAdapter = "jmsra",
                         destinationName = "myPhysicalQueue"
                 )
 

@@ -16,7 +16,7 @@
             <jms-destination>
                 <description>global-scope resource to be modified by EJB DD</description>
                 <name>java:global/env/HelloStatefulEJB_ModByDD_JMSDestination</name>
-                <class-name>javax.jms.Topic</class-name>
+                <interface-name>javax.jms.Topic</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalTopic</destination-name>
             </jms-destination>
@@ -24,7 +24,7 @@
             <jms-destination>
                 <description>global-scope resource defined in EJB DD</description>
                 <name>java:global/env/HelloStatefulEJB_DD_JMSDestination</name>
-                <class-name>javax.jms.Queue</class-name>
+                <interface-name>javax.jms.Queue</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalQueue</destination-name>
             </jms-destination>
@@ -32,7 +32,7 @@
             <jms-destination>
                 <description>application-scope resource defined in EJB DD</description>
                 <name>java:app/env/HelloStatefulEJB_DD_JMSDestination</name>
-                <class-name>javax.jms.Topic</class-name>
+                <interface-name>javax.jms.Topic</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalTopic</destination-name>
             </jms-destination>
@@ -40,7 +40,7 @@
             <jms-destination>
                 <description>module-scope resource defined in EJB DD</description>
                 <name>java:module/env/HelloStatefulEJB_DD_JMSDestination</name>
-                <class-name>javax.jms.Topic</class-name>
+                <interface-name>javax.jms.Topic</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalTopic</destination-name>
             </jms-destination>
@@ -48,7 +48,7 @@
             <jms-destination>
                 <description>component-scope resource defined in EJB DD</description>
                 <name>java:comp/env/HelloStatefulEJB_DD_JMSDestination</name>
-                <class-name>javax.jms.Queue</class-name>
+                <interface-name>javax.jms.Queue</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalQueue</destination-name>
             </jms-destination>
@@ -64,7 +64,7 @@
             <jms-destination>
                 <description>global-scope resource to be modified by EJB DD</description>
                 <name>java:global/env/HelloEJB_ModByDD_JMSDestination</name>
-                <class-name>javax.jms.Topic</class-name>
+                <interface-name>javax.jms.Topic</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalTopic</destination-name>
             </jms-destination>
@@ -72,7 +72,7 @@
             <jms-destination>
                 <description>global-scope resource defined in EJB DD</description>
                 <name>java:global/env/HelloEJB_DD_JMSDestination</name>
-                <class-name>javax.jms.Queue</class-name>
+                <interface-name>javax.jms.Queue</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalQueue</destination-name>
             </jms-destination>
@@ -80,7 +80,7 @@
             <jms-destination>
                 <description>application-scope resource defined in EJB DD</description>
                 <name>java:app/env/HelloEJB_DD_JMSDestination</name>
-                <class-name>javax.jms.Topic</class-name>
+                <interface-name>javax.jms.Topic</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalTopic</destination-name>
             </jms-destination>
@@ -88,7 +88,7 @@
             <jms-destination>
                 <description>module-scope resource defined in EJB DD</description>
                 <name>java:module/env/HelloEJB_DD_JMSDestination</name>
-                <class-name>javax.jms.Topic</class-name>
+                <interface-name>javax.jms.Topic</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalTopic</destination-name>
             </jms-destination>
@@ -96,7 +96,7 @@
             <jms-destination>
                 <description>component-scope resource defined in EJB DD</description>
                 <name>java:comp/env/HelloEJB_DD_JMSDestination</name>
-                <class-name>javax.jms.Queue</class-name>
+                <interface-name>javax.jms.Queue</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <destination-name>myPhysicalQueue</destination-name>
             </jms-destination>

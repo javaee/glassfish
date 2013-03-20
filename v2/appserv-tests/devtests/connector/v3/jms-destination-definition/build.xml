@@ -115,7 +115,7 @@
     </target>
 
     <target name="run" depends="init-common">
-        <antcall target="run-ut"/>
+<!--        <antcall target="run-ut"/> -->
         <antcall target="run-it"/>
     </target>
 

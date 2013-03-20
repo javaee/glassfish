@@ -19,7 +19,7 @@
     <jms-destination>
         <description>global-scope resource to be modified by Web DD</description>
         <name>java:global/env/Servlet_ModByDD_JMSDestination</name>
-        <class-name>javax.jms.Topic</class-name>
+        <interface-name>javax.jms.Topic</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <destination-name>myPhysicalTopic</destination-name>
     </jms-destination>
@@ -27,7 +27,7 @@
     <jms-destination>
         <description>global-scope resource defined in Web DD</description>
         <name>java:global/env/Web_DD_JMSDestination</name>
-        <class-name>javax.jms.Queue</class-name>
+        <interface-name>javax.jms.Queue</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <destination-name>myPhysicalQueue</destination-name>
     </jms-destination>
@@ -35,15 +35,15 @@
     <jms-destination>
         <description>application-scope resource defined in Web DD</description>
         <name>java:app/env/Web_DD_JMSDestination</name>
-        <class-name>javax.jms.Topic</class-name>
-        <resource-adapter>jmsra</resource-adapter>
+        <interface-name>javax.jms.Topic</interface-name>
+<!--        <resource-adapter>jmsra</resource-adapter> -->
         <destination-name>myPhysicalTopic</destination-name>
     </jms-destination>
 
     <jms-destination>
         <description>module-scope resource defined in Web DD</description>
         <name>java:module/env/Web_DD_JMSDestination</name>
-        <class-name>javax.jms.Topic</class-name>
+        <interface-name>javax.jms.Topic</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <destination-name>myPhysicalTopic</destination-name>
     </jms-destination>
@@ -51,7 +51,7 @@
     <jms-destination>
         <description>component-scope resource defined in Web DD</description>
         <name>java:comp/env/Web_DD_JMSDestination</name>
-        <class-name>javax.jms.Queue</class-name>
+        <interface-name>javax.jms.Queue</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <destination-name>myPhysicalQueue</destination-name>
     </jms-destination>
