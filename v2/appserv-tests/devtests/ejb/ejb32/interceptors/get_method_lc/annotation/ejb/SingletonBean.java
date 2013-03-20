@@ -5,13 +5,16 @@ import javax.annotation.*;
 import javax.interceptor.*;
 
 @Singleton
-//@Startup
-@Interceptors({InterceptorA.class,InterceptorB.class})
+@Interceptors(InterceptorA.class)
 public class SingletonBean extends BaseBean implements Snglt {
 
 
-    @EJB Sful sful;
+    @EJB SfulEJB sful;
 
+    //@Interceptors(InterceptorB.class)
+    //public SingletonBean() {}
+
+    @Interceptors(InterceptorC.class)
     @PostConstruct
     public void init() {
         System.out.println("In SingletonBean::init()");
@@ -19,13 +22,17 @@ public class SingletonBean extends BaseBean implements Snglt {
         sful.hello();
     }
     
+    @Interceptors(InterceptorC.class)
     public String hello() {
-        verify("SingletonBean");
+        verifyA_AC("SingletonBean");
+        //verifyAB_AC("SingletonBean");
+        verifyAC_PC("SingletonBean");
 	System.out.println("In SingletonBean::hello()");
         sful.remove();
 	return "hello, world!\n";
     }
 
+    @Interceptors(InterceptorB.class)
     @PreDestroy
     public void destroy() {
         System.out.println("In SingletonBean::destroy()");

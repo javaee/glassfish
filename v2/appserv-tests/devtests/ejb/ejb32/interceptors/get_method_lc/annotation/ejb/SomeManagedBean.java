@@ -10,11 +10,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.EntityManager;
 
 @ManagedBean("somemanagedbean")
-@Interceptors(InterceptorA.class)
 public class SomeManagedBean extends BaseBean {
 
     @Resource ORB orb;
 
+    //@Interceptors(InterceptorA.class)
+    public SomeManagedBean() {}
+
+    @Interceptors(InterceptorA.class)
     @PostConstruct
     private void init() {
 	System.out.println("In SomeManagedBean::init() " + this);
@@ -22,12 +25,15 @@ public class SomeManagedBean extends BaseBean {
     }
     
 
+    @Interceptors(InterceptorA.class)
     public void foo() {
 	System.out.println("In SomeManagedBean::foo() ");
-	verifyA("SomeManagedBean");
+	verifyA_PC("SomeManagedBean");
+//	verifyA("SomeManagedBean");
         if (orb == null) throw new RuntimeException("SomeManagedBean: ORB is null");
     }
 
+    @Interceptors(InterceptorA.class)
     @PreDestroy
     private void destroy() {
 	System.out.println("In SomeManagedBean::destroy() ");

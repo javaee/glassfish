@@ -10,22 +10,32 @@ import javax.annotation.*;
 
 
 @Stateful
-@Interceptors({InterceptorB.class,InterceptorA.class})
-public class SfulEJB extends BaseBean implements Sful {
+@Interceptors(InterceptorB.class)
+public class SfulEJB extends BaseBean {
 
-    @EJB private Sless sless;
+    @EJB private SlessEJB sless;
 
+/**
+    @Interceptors(InterceptorA.class)
+    public SfulEJB() {}
+**/
+
+    @Interceptors(InterceptorA.class)
     public String hello() {
         System.out.println("In SfulEJB:hello()");
-        verify("SfulEJB");
+        //verify("SfulEJB");
+        verifyB_AC("SfulEJB");
+        verifyAB_PC("SfulEJB");
 	return sless.sayHello();
     }
 
+    @Interceptors(InterceptorA.class)
     @Remove
     public void remove() {
         System.out.println("In SfulEJB:remove()");
     }
 
+    @Interceptors(InterceptorA.class)
     @PostConstruct
     private void init0() {
 	System.out.println("**SfulEJB PostConstruct");
