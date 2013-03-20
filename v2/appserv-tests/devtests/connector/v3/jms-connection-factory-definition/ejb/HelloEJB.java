@@ -17,7 +17,7 @@ import javax.naming.InitialContext;
                 @JMSConnectionFactoryDefinition(
                         description = "global-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:global/env/HelloEJB_ModByDD_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
+                        interfaceName = "javax.jms.ConnectionFactory",
                         resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
@@ -28,7 +28,7 @@ import javax.naming.InitialContext;
                 @JMSConnectionFactoryDefinition(
                         description = "global-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:global/env/HelloEJB_Annotation_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
+                        interfaceName = "javax.jms.ConnectionFactory",
                         resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
@@ -39,7 +39,7 @@ import javax.naming.InitialContext;
                 @JMSConnectionFactoryDefinition(
                         description = "application-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:app/env/HelloEJB_Annotation_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
+                        interfaceName = "javax.jms.ConnectionFactory",
                         resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
@@ -50,7 +50,7 @@ import javax.naming.InitialContext;
                 @JMSConnectionFactoryDefinition(
                         description = "module-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:module/env/HelloEJB_Annotation_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
+                        interfaceName = "javax.jms.ConnectionFactory",
                         resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
@@ -61,7 +61,7 @@ import javax.naming.InitialContext;
                 @JMSConnectionFactoryDefinition(
                         description = "component-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:comp/env/HelloEJB_Annotation_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
+                        interfaceName = "javax.jms.ConnectionFactory",
                         resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
@@ -78,7 +78,7 @@ public class HelloEJB implements Hello {
 
     @PostConstruct
     public void postConstruction() {
-    	  connections = new ArrayList<Connection>();
+        connections = new ArrayList<Connection>();
         System.out.println("In HelloEJB::postConstruction()");
     }
 

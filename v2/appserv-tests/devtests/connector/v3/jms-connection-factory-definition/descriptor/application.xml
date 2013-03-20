@@ -20,7 +20,7 @@
     <jms-connection-factory>
         <description>global-scope resource defined in Application DD</description>
         <name>java:global/env/Application_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
@@ -34,7 +34,7 @@
     <jms-connection-factory>
         <description>application-scope resource defined in Application DD</description>
         <name>java:app/env/Application_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>

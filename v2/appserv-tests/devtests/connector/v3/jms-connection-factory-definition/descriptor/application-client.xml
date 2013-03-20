@@ -8,7 +8,7 @@
     <jms-connection-factory>
         <description>global-scope resource to be modified by Appclient DD</description>
         <name>java:global/env/Appclient_ModByDD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
@@ -22,7 +22,7 @@
     <jms-connection-factory>
         <description>global-scope resource defined in Appclient DD</description>
         <name>java:global/env/Appclient_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
@@ -36,7 +36,7 @@
     <jms-connection-factory>
         <description>application-scope resource defined in Appclient DD</description>
         <name>java:app/env/Appclient_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
@@ -50,7 +50,7 @@
     <jms-connection-factory>
         <description>module-scope resource defined in Appclient DD</description>
         <name>java:module/env/Appclient_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
@@ -64,7 +64,7 @@
     <jms-connection-factory>
         <description>component-scope resource defined in Appclient DD</description>
         <name>java:comp/env/Appclient_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>

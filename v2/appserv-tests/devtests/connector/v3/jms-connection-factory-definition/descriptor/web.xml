@@ -19,7 +19,7 @@
     <jms-connection-factory>
         <description>global-scope resource to be modified by Web DD</description>
         <name>java:global/env/Servlet_ModByDD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+<!--        <interface-name>javax.jms.ConnectionFactory</interface-name>-->
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
@@ -33,8 +33,8 @@
     <jms-connection-factory>
         <description>global-scope resource defined in Web DD</description>
         <name>java:global/env/Web_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter>jmsra</resource-adapter>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
+<!--        <resource-adapter>jmsra</resource-adapter>-->
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -47,8 +47,8 @@
     <jms-connection-factory>
         <description>application-scope resource defined in Web DD</description>
         <name>java:app/env/Web_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
-        <resource-adapter>jmsra</resource-adapter>
+<!--        <interface-name>javax.jms.ConnectionFactory</interface-name>
+        <resource-adapter>jmsra</resource-adapter>-->
         <user>admin</user>
         <password>admin</password>
         <property>
@@ -61,7 +61,7 @@
     <jms-connection-factory>
         <description>module-scope resource defined in Web DD</description>
         <name>java:module/env/Web_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>
@@ -75,7 +75,7 @@
     <jms-connection-factory>
         <description>component-scope resource defined in Web DD</description>
         <name>java:comp/env/Web_DD_JMSConnectionFactory</name>
-        <class-name>javax.jms.ConnectionFactory</class-name>
+        <interface-name>javax.jms.ConnectionFactory</interface-name>
         <resource-adapter>jmsra</resource-adapter>
         <user>admin</user>
         <password>admin</password>

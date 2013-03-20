@@ -32,7 +32,7 @@ import javax.transaction.UserTransaction;
                 @JMSConnectionFactoryDefinition(
                         description = "global-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:global/env/Servlet_ModByDD_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
+                        interfaceName = "javax.jms.ConnectionFactory",
                         resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
@@ -43,7 +43,7 @@ import javax.transaction.UserTransaction;
                 @JMSConnectionFactoryDefinition(
                         description = "global-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:global/env/Servlet_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
+                        interfaceName = "javax.jms.ConnectionFactory",
                         resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
@@ -54,8 +54,8 @@ import javax.transaction.UserTransaction;
                 @JMSConnectionFactoryDefinition(
                         description = "application-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:app/env/Servlet_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
-                        resourceAdapter = "jmsra",
+                        interfaceName = "javax.jms.ConnectionFactory",
+//                        resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},
@@ -65,7 +65,7 @@ import javax.transaction.UserTransaction;
                 @JMSConnectionFactoryDefinition(
                         description = "module-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:module/env/Servlet_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
+//                        interfaceName = "javax.jms.ConnectionFactory",
                         resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
@@ -76,8 +76,8 @@ import javax.transaction.UserTransaction;
                 @JMSConnectionFactoryDefinition(
                         description = "component-scope resource defined by @JMSConnectionFactoryDefinition",
                         name = "java:comp/env/Servlet_JMSConnectionFactory",
-                        className = "javax.jms.ConnectionFactory",
-                        resourceAdapter = "jmsra",
+//                        interfaceName = "javax.jms.ConnectionFactory",
+//                        resourceAdapter = "jmsra",
                         user = "admin",
                         password = "admin",
                         properties = {"org.glassfish.connector-connection-pool.transaction-support=XATransaction"},

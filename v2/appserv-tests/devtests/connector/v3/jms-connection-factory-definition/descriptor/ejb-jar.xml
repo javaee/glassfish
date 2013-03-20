@@ -16,7 +16,7 @@
             <jms-connection-factory>
                 <description>global-scope resource to be modified by EJB DD</description>
                 <name>java:global/env/HelloStatefulEJB_ModByDD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -30,7 +30,7 @@
             <jms-connection-factory>
                 <description>global-scope resource defined in EJB DD</description>
                 <name>java:global/env/HelloStatefulEJB_DD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -44,7 +44,7 @@
             <jms-connection-factory>
                 <description>application-scope resource defined in EJB DD</description>
                 <name>java:app/env/HelloStatefulEJB_DD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -58,7 +58,7 @@
             <jms-connection-factory>
                 <description>module-scope resource defined in EJB DD</description>
                 <name>java:module/env/HelloStatefulEJB_DD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -72,7 +72,7 @@
             <jms-connection-factory>
                 <description>component-scope resource defined in EJB DD</description>
                 <name>java:comp/env/HelloStatefulEJB_DD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -94,7 +94,7 @@
             <jms-connection-factory>
                 <description>global-scope resource to be modified by EJB DD</description>
                 <name>java:global/env/HelloEJB_ModByDD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -108,7 +108,7 @@
             <jms-connection-factory>
                 <description>global-scope resource defined in EJB DD</description>
                 <name>java:global/env/HelloEJB_DD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -122,7 +122,7 @@
             <jms-connection-factory>
                 <description>application-scope resource defined in EJB DD</description>
                 <name>java:app/env/HelloEJB_DD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -136,7 +136,7 @@
             <jms-connection-factory>
                 <description>module-scope resource defined in EJB DD</description>
                 <name>java:module/env/HelloEJB_DD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
@@ -150,7 +150,7 @@
             <jms-connection-factory>
                 <description>component-scope resource defined in EJB DD</description>
                 <name>java:comp/env/HelloEJB_DD_JMSConnectionFactory</name>
-                <class-name>javax.jms.ConnectionFactory</class-name>
+                <interface-name>javax.jms.ConnectionFactory</interface-name>
                 <resource-adapter>jmsra</resource-adapter>
                 <user>admin</user>
                 <password>admin</password>
