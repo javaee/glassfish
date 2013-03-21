@@ -80,6 +80,12 @@
         <record name="interceptors.output" action="stop" />
     </target>
 
+    <target name="mdb">
+        <record name="mdb.output" action="start" />
+            <ant dir="mdb" target="all"/>
+        <record name="mdb.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:
