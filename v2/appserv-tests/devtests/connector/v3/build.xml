@@ -376,8 +376,8 @@
         <echo message="@@## multiple-resources.xml ##@@"/>
         <ant dir="multiple-resources.xml" target="all-with-mappings"/>
 
-<!--        <echo message="@@## multiple-resources.xml-1 ##@@"/>
-        <ant dir="multiple-resources-app-module-scoped" target="all-with-mappings"/>-->
+        <echo message="@@## multiple-resources.xml-1 ##@@"/>
+        <ant dir="multiple-resources-app-module-scoped" target="all-with-mappings"/>
 
         <echo message="@@## connector1.5-resourcesxml-module-scope ##@@"/>
         <ant dir="../connector1.5-resourcesxml-module-scope" target="all"/>
