@@ -10,8 +10,7 @@ public class SlessEJB3 extends BaseBean {
     public SlessEJB3() {}
 
     public String sayHello() {
-        verifyA_AC("SlessEJB");
-        //verifyAC_AC("SlessEJB");
+        verifyAC_AC("SlessEJB");
         verifyB_PC("SlessEJB");
         return "SlessEJB3.hello";
     }

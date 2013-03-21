@@ -18,9 +18,7 @@ public class SfulEJB extends BaseBean {
 
     public String hello() {
         System.out.println("In SfulEJB:hello()");
-        //verify("SfulEJB");
-        verifyB_AC("SfulEJB");
-        verifyAB_PC("SfulEJB");
+        verify("SfulEJB");
 	return sless.sayHello();
     }
 

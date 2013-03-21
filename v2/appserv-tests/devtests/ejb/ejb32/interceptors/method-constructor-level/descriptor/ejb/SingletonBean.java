@@ -22,8 +22,7 @@ public class SingletonBean extends BaseBean implements Snglt {
     }
     
     public String hello() {
-        verifyA_AC("SingletonBean");
-        //verifyAB_AC("SingletonBean");
+        verifyAB_AC("SingletonBean");
         verifyAC_PC("SingletonBean");
 	System.out.println("In SingletonBean::hello()");
         sful.remove();
