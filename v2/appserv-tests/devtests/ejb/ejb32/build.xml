@@ -13,6 +13,7 @@
 
     <target name="all">
         <antcall target="sfsb"/>
+        <antcall target="mdb"/>
         <antcall target="methodintf"/>
         <antcall target="timer"/>
         <antcall target="intfces"/>
