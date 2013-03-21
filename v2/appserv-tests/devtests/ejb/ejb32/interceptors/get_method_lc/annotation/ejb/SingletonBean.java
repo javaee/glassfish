@@ -11,8 +11,10 @@ public class SingletonBean extends BaseBean implements Snglt {
 
     @EJB SfulEJB sful;
 
-    //@Interceptors(InterceptorB.class)
-    //public SingletonBean() {}
+    @Interceptors(InterceptorB.class)
+    public SingletonBean() {}
+
+    private SingletonBean(String s) {}
 
     @Interceptors(InterceptorC.class)
     @PostConstruct
@@ -24,8 +26,7 @@ public class SingletonBean extends BaseBean implements Snglt {
     
     @Interceptors(InterceptorC.class)
     public String hello() {
-        verifyA_AC("SingletonBean");
-        //verifyAB_AC("SingletonBean");
+        verifyAB_AC("SingletonBean");
         verifyAC_PC("SingletonBean");
 	System.out.println("In SingletonBean::hello()");
         sful.remove();

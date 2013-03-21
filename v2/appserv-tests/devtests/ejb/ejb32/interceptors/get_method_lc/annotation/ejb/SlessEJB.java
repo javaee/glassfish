@@ -11,14 +11,13 @@ public class SlessEJB extends BaseBean {
     @EJB SlessEJB2 s2;
     @EJB SlessEJB3 s3;
 
-    //@ExcludeClassInterceptors
-    //@Interceptors(InterceptorB.class)
+    @ExcludeClassInterceptors
+    @Interceptors(InterceptorB.class)
     public SlessEJB() {}
 
     @Interceptors(InterceptorB.class)
     public String sayHello() {
-        verifyA_AC("SlessEJB");
-        //verifyB_AC("SlessEJB");
+        verifyB_AC("SlessEJB");
         verifyA_PC("SlessEJB");
         return (s2.sayHello() + s3.sayHello());
     }

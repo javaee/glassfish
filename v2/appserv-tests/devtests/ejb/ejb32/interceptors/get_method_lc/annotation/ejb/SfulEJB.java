@@ -15,17 +15,13 @@ public class SfulEJB extends BaseBean {
 
     @EJB private SlessEJB sless;
 
-/**
     @Interceptors(InterceptorA.class)
     public SfulEJB() {}
-**/
 
     @Interceptors(InterceptorA.class)
     public String hello() {
         System.out.println("In SfulEJB:hello()");
-        //verify("SfulEJB");
-        verifyB_AC("SfulEJB");
-        verifyAB_PC("SfulEJB");
+        verify("SfulEJB");
 	return sless.sayHello();
     }
 

@@ -8,13 +8,12 @@ import javax.annotation.*;
 @Interceptors(InterceptorA.class)
 public class SlessEJB3 extends BaseBean {
 
-    //@Interceptors(InterceptorC.class)
-    //public SlessEJB3() {}
+    @Interceptors(InterceptorC.class)
+    public SlessEJB3() {}
 
     @Interceptors(InterceptorB.class)
     public String sayHello() {
-        verifyA_AC("SlessEJB");
-        //verifyAC_AC("SlessEJB");
+        verifyAC_AC("SlessEJB");
         verifyB_PC("SlessEJB");
         return "SlessEJB3.hello";
     }
