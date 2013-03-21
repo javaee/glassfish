@@ -16,7 +16,7 @@
       <connection-factory>
         <description>global-scope resource to be modified by DD</description>
         <name>java:global/env/HelloStatefulEJB_ModByDD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <property>
           <name>testName</name>
@@ -27,7 +27,7 @@
       <connection-factory>
         <description>global-scope resource defined in EJB DD</description>
         <name>java:global/env/HelloStatefulEJB_DD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <max-pool-size>16</max-pool-size>
         <min-pool-size>4</min-pool-size>
@@ -41,7 +41,7 @@
       <connection-factory>
         <description>module-scope resource defined in EJB DD</description>
         <name>java:module/env/HelloStatefulEJB_DD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <property>
           <name>testName</name>
@@ -52,7 +52,7 @@
       <connection-factory>
         <description>application-scope resource defined in EJB DD</description>
         <name>java:app/env/HelloStatefulEJB_DD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <max-pool-size>16</max-pool-size>
         <min-pool-size>4</min-pool-size>
@@ -66,7 +66,7 @@
       <connection-factory>
         <description>component-scope resource defined in EJB DD</description>
         <name>java:comp/env/HelloStatefulEJB_DD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <property>
           <name>testName</name>
@@ -84,7 +84,7 @@
       <connection-factory>
         <description>global-scope resource to be modified by DD</description>
         <name>java:global/env/HelloEJB_ModByDD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <property>
           <name>testName</name>
@@ -95,7 +95,7 @@
       <connection-factory>
         <description>global-scope resource defined in EJB DD</description>
         <name>java:global/env/HelloEJB_DD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <max-pool-size>16</max-pool-size>
         <min-pool-size>4</min-pool-size>
@@ -109,7 +109,7 @@
       <connection-factory>
         <description>application-scope resource defined in EJB DD</description>
         <name>java:app/env/HelloEJB_DD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <max-pool-size>16</max-pool-size>
         <min-pool-size>4</min-pool-size>
@@ -123,7 +123,7 @@
       <connection-factory>
         <description>module-scope resource defined in EJB DD</description>
         <name>java:module/env/HelloEJB_DD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <property>
           <name>testName</name>
@@ -134,7 +134,7 @@
       <connection-factory>
         <description>component-scope resource defined in EJB DD</description>
         <name>java:comp/env/HelloEJB_DD_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>cfd-ra</resource-adapter>
         <property>
           <name>testName</name>

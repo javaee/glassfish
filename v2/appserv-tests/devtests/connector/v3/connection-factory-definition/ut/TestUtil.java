@@ -28,7 +28,7 @@ public class TestUtil {
             assertNotNull("The CFD of the name ["+actualDesc.getName()+"] is not expected.", expectedDesc);
             
             assertEquals("Fail to verify class-name of the CFDD:"+actualDesc.getName(),
-                    expectedDesc.getClassName(), actualDesc.getClassName());
+                    expectedDesc.getInterfaceName(), actualDesc.getInterfaceName());
             
             assertEquals("Fail to verify resource-adapter of the CFDD:"+actualDesc.getName(),
                     expectedDesc.getResourceAdapter(), actualDesc.getResourceAdapter());

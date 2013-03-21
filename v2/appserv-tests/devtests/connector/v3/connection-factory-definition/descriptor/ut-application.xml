@@ -10,7 +10,7 @@
     <connection-factory>
        <description>global-scope resource defined in application DD</description>
        <name>java:global/env/ConnectionFactory</name>
-       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
        <resource-adapter>RaApplicationName</resource-adapter>
        <max-pool-size>16</max-pool-size>
        <min-pool-size>4</min-pool-size>
@@ -24,7 +24,7 @@
     <connection-factory>
        <description>application-scope resource defined in application DD</description>
        <name>java:app/env/ConnectionFactory</name>
-       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
        <resource-adapter>RaApplicationName</resource-adapter>
        <property>
          <name>testName</name>

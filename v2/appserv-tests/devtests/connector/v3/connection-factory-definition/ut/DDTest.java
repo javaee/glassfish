@@ -58,7 +58,7 @@ public class DDTest extends TestCase {
             desc = new ConnectionFactoryDefinitionDescriptor();
             desc.setDescription("global-scope resource defined in application DD");
             desc.setName("java:global/env/ConnectionFactory");
-            desc.setClassName("javax.resource.cci.ConnectionFactory");
+            desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
             desc.setResourceAdapter("RaApplicationName");
             desc.setTransactionSupport("LocalTransaction");
             desc.setMaxPoolSize(16);
@@ -68,7 +68,7 @@ public class DDTest extends TestCase {
             
             desc = new ConnectionFactoryDefinitionDescriptor();
             desc.setName("java:app/env/ConnectionFactory");
-            desc.setClassName("javax.resource.cci.ConnectionFactory");
+            desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
             desc.setResourceAdapter("RaApplicationName");
             desc.setDescription("application-scope resource defined in application DD");
             desc.setTransactionSupport("NoTransaction");
@@ -135,7 +135,7 @@ public class DDTest extends TestCase {
         desc = new ConnectionFactoryDefinitionDescriptor();
         desc.setDescription("global-scope resource defined in EJB DD");
         desc.setName("java:global/env/StatefulEJB_ConnectionFactory");
-        desc.setClassName("javax.resource.cci.ConnectionFactory");
+        desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
         desc.setResourceAdapter("RaApplicationName");
         desc.setTransactionSupport("LocalTransaction");
         desc.setMaxPoolSize(16);
@@ -146,7 +146,7 @@ public class DDTest extends TestCase {
         desc = new ConnectionFactoryDefinitionDescriptor();
         desc.setDescription("module-scope resource defined in EJB DD");
         desc.setName("java:module/env/StatefulEJB_ConnectionFactory");
-        desc.setClassName("javax.resource.cci.ConnectionFactory");
+        desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
         desc.setResourceAdapter("RaApplicationName");
         desc.setTransactionSupport("XATransaction");
         desc.setMaxPoolSize(16);
@@ -157,7 +157,7 @@ public class DDTest extends TestCase {
         desc = new ConnectionFactoryDefinitionDescriptor();
         desc.setDescription("component-scope resource defined in EJB DD");
         desc.setName("java:comp/env/StatefulEJB_ConnectionFactory");
-        desc.setClassName("javax.resource.cci.ConnectionFactory");
+        desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
         desc.setResourceAdapter("RaApplicationName");
         desc.addProperty("testName", "foo");
         expectedCFDDs.put(desc.getName(), desc);
@@ -173,7 +173,7 @@ public class DDTest extends TestCase {
         desc = new ConnectionFactoryDefinitionDescriptor();
         desc.setDescription("global-scope resource defined in EJB DD");
         desc.setName("java:global/env/HelloEJB_ConnectionFactory");
-        desc.setClassName("javax.resource.cci.ConnectionFactory");
+        desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
         desc.setResourceAdapter("RaApplicationName");
         desc.setTransactionSupport("LocalTransaction");
         desc.setMaxPoolSize(16);
@@ -184,7 +184,7 @@ public class DDTest extends TestCase {
         desc = new ConnectionFactoryDefinitionDescriptor();
         desc.setDescription("module-scope resource defined in EJB DD");
         desc.setName("java:module/env/HelloEJB_ConnectionFactory");
-        desc.setClassName("javax.resource.cci.ConnectionFactory");
+        desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
         desc.setResourceAdapter("RaApplicationName");
         desc.setTransactionSupport("XATransaction");
         desc.setMaxPoolSize(16);
@@ -195,7 +195,7 @@ public class DDTest extends TestCase {
         desc = new ConnectionFactoryDefinitionDescriptor();
         desc.setDescription("component-scope resource defined in EJB DD");
         desc.setName("java:comp/env/HelloEJB_ConnectionFactory");
-        desc.setClassName("javax.resource.cci.ConnectionFactory");
+        desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
         desc.setResourceAdapter("RaApplicationName");
         desc.addProperty("testName", "foo");
         expectedCFDDs.put(desc.getName(), desc);
@@ -224,7 +224,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("global-scope resource defined in EJB DD");
                 desc.setName("java:global/env/Entity_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.setTransactionSupport("LocalTransaction");
                 desc.setMaxPoolSize(16);
@@ -235,7 +235,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("module-scope resource defined in EJB DD");
                 desc.setName("java:module/env/Entity_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.setTransactionSupport("XATransaction");
                 desc.setMaxPoolSize(16);
@@ -246,7 +246,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("component-scope resource defined in EJB DD");
                 desc.setName("java:comp/env/Entity_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.addProperty("testName", "foo");
                 expectedCFDDs.put(desc.getName(), desc);
@@ -288,7 +288,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("global-scope resource defined in EJB DD");
                 desc.setName("java:global/env/MDB_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.setTransactionSupport("LocalTransaction");
                 desc.setMaxPoolSize(16);
@@ -299,7 +299,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("module-scope resource defined in EJB DD");
                 desc.setName("java:module/env/MDB_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.setTransactionSupport("XATransaction");
                 desc.setMaxPoolSize(16);
@@ -310,7 +310,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("component-scope resource defined in EJB DD");
                 desc.setName("java:comp/env/MDB_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.addProperty("testName", "foo");
                 expectedCFDDs.put(desc.getName(), desc);
@@ -352,7 +352,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("global-scope resource defined in EJB DD");
                 desc.setName("java:global/env/Interceptor_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.setTransactionSupport("LocalTransaction");
                 desc.setMaxPoolSize(16);
@@ -363,7 +363,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("module-scope resource defined in EJB DD");
                 desc.setName("java:module/env/Interceptor_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.setTransactionSupport("XATransaction");
                 desc.setMaxPoolSize(16);
@@ -374,7 +374,7 @@ public class DDTest extends TestCase {
                 desc = new ConnectionFactoryDefinitionDescriptor();
                 desc.setDescription("component-scope resource defined in EJB DD");
                 desc.setName("java:comp/env/Interceptor_ConnectionFactory");
-                desc.setClassName("javax.resource.cci.ConnectionFactory");
+                desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
                 desc.setResourceAdapter("RaApplicationName");
                 desc.addProperty("testName", "foo");
                 expectedCFDDs.put(desc.getName(), desc);
@@ -415,7 +415,7 @@ public class DDTest extends TestCase {
             desc = new ConnectionFactoryDefinitionDescriptor();
             desc.setDescription("global-scope resource defined in Web DD");
             desc.setName("java:global/env/ConnectionFactory");
-            desc.setClassName("javax.resource.cci.ConnectionFactory");
+            desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
             desc.setResourceAdapter("RaApplicationName");
             desc.setTransactionSupport("LocalTransaction");
             desc.setMaxPoolSize(16);
@@ -426,7 +426,7 @@ public class DDTest extends TestCase {
             desc = new ConnectionFactoryDefinitionDescriptor();
             desc.setDescription("application-scope resource defined in Web DD");
             desc.setName("java:app/env/ConnectionFactory");
-            desc.setClassName("javax.resource.cci.ConnectionFactory");
+            desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
             desc.setResourceAdapter("RaApplicationName");
             desc.setTransactionSupport("XATransaction");
             desc.setMaxPoolSize(16);
@@ -437,7 +437,7 @@ public class DDTest extends TestCase {
             desc = new ConnectionFactoryDefinitionDescriptor();
             desc.setDescription("module-scope resource defined in Web DD");
             desc.setName("java:module/env/ConnectionFactory");
-            desc.setClassName("javax.resource.cci.ConnectionFactory");
+            desc.setInterfaceName("javax.resource.cci.ConnectionFactory");
             desc.setResourceAdapter("RaApplicationName");
             desc.addProperty("testName", "foo");
             expectedCFDDs.put(desc.getName(), desc);

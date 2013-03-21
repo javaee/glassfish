@@ -16,7 +16,7 @@
       <connection-factory>
         <description>global-scope resource defined in EJB DD</description>
         <name>java:global/env/Entity_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>RaApplicationName</resource-adapter>
         <max-pool-size>16</max-pool-size>
         <min-pool-size>4</min-pool-size>
@@ -30,7 +30,7 @@
       <connection-factory>
         <description>module-scope resource defined in EJB DD</description>
         <name>java:module/env/Entity_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>RaApplicationName</resource-adapter>
         <max-pool-size>16</max-pool-size>
         <min-pool-size>4</min-pool-size>
@@ -44,7 +44,7 @@
       <connection-factory>
         <description>component-scope resource defined in EJB DD</description>
         <name>java:comp/env/Entity_ConnectionFactory</name>
-        <class-name>javax.resource.cci.ConnectionFactory</class-name>
+        <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
         <resource-adapter>RaApplicationName</resource-adapter>
         <property>
           <name>testName</name>

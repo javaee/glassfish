@@ -18,7 +18,7 @@
     <connection-factory>
        <description>global-scope resource defined in application DD</description>
        <name>java:global/env/EAR_ConnectionFactory</name>
-       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
        <resource-adapter>cfd-ra</resource-adapter>
        <max-pool-size>16</max-pool-size>
        <min-pool-size>4</min-pool-size>
@@ -32,7 +32,7 @@
     <connection-factory>
        <description>application-scope resource defined in application DD</description>
        <name>java:app/env/EAR_ConnectionFactory</name>
-       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
        <resource-adapter>cfd-ra</resource-adapter>
        <max-pool-size>16</max-pool-size>
        <min-pool-size>4</min-pool-size>
