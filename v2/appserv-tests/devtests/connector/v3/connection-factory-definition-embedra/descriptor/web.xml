@@ -21,7 +21,7 @@
     <connection-factory>
        <description>global-scope resource to be modified by DD</description>
        <name>java:global/env/Servlet_ModByDD_ConnectionFactory</name>
-       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
        <resource-adapter>#cfd-ra</resource-adapter>
        <property>
          <name>testName</name>
@@ -32,7 +32,7 @@
     <connection-factory>
        <description>global-scope resource defined in Web DD</description>
        <name>java:global/env/Web_DD_ConnectionFactory</name>
-       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
        <resource-adapter>#cfd-ra</resource-adapter>
        <max-pool-size>16</max-pool-size>
        <min-pool-size>4</min-pool-size>
@@ -46,7 +46,7 @@
     <connection-factory>
        <description>application-scope resource defined in Web DD</description>
        <name>java:app/env/Web_DD_ConnectionFactory</name>
-       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
        <resource-adapter>#cfd-ra</resource-adapter>
        <max-pool-size>16</max-pool-size>
        <min-pool-size>4</min-pool-size>
@@ -60,7 +60,7 @@
      <connection-factory>
        <description>module-scope resource defined in Web DD</description>
        <name>java:module/env/Web_DD_ConnectionFactory</name>
-       <class-name>javax.resource.cci.ConnectionFactory</class-name>
+       <interface-name>javax.resource.cci.ConnectionFactory</interface-name>
        <resource-adapter>#cfd-ra</resource-adapter>
        <property>
          <name>testName</name>

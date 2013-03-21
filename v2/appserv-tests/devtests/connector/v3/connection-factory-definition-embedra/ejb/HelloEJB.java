@@ -15,14 +15,14 @@ import javax.annotation.Resource;
           @ConnectionFactoryDefinition(
                 description="global-scope resource defined by @ConnectionFactoryDefinition",
                 name = "java:global/env/HelloEJB_ModByDD_ConnectionFactory",
-                className = "javax.resource.cci.ConnectionFactory",
+                interfaceName = "javax.resource.cci.ConnectionFactory",
                 resourceAdapter = "#cfd-ra",
                 properties = {"testName=foo"}
           ),
           @ConnectionFactoryDefinition(
                description = "global-scope resource defined by @ConnectionFactoryDefinition", 
                name = "java:global/env/HelloEJB_Annotation_ConnectionFactory", 
-               className = "javax.resource.cci.ConnectionFactory", 
+               interfaceName = "javax.resource.cci.ConnectionFactory", 
                resourceAdapter = "#cfd-ra",
                transactionSupport = TransactionSupportLevel.LocalTransaction,
                maxPoolSize = 16,
@@ -33,7 +33,7 @@ import javax.annotation.Resource;
           @ConnectionFactoryDefinition(
                description = "application-scope resource defined by @ConnectionFactoryDefinition", 
                name = "java:app/env/HelloEJB_Annotation_ConnectionFactory", 
-               className = "javax.resource.cci.ConnectionFactory", 
+               interfaceName = "javax.resource.cci.ConnectionFactory", 
                transactionSupport = TransactionSupportLevel.XATransaction,
                maxPoolSize = 16,
                minPoolSize = 4,
@@ -44,7 +44,7 @@ import javax.annotation.Resource;
           @ConnectionFactoryDefinition(
                description = "module-scope resource defined by @ConnectionFactoryDefinition", 
                name = "java:module/env/HelloEJB_Annotation_ConnectionFactory", 
-               className = "javax.resource.cci.ConnectionFactory", 
+               interfaceName = "javax.resource.cci.ConnectionFactory", 
                resourceAdapter = "#cfd-ra",
                properties = {"testName=foo"}
           ),
@@ -52,7 +52,7 @@ import javax.annotation.Resource;
           @ConnectionFactoryDefinition(
                description = "component-scope resource defined by @ConnectionFactoryDefinition", 
                name = "java:comp/env/HelloEJB_Annotation_ConnectionFactory", 
-               className = "javax.resource.cci.ConnectionFactory", 
+               interfaceName = "javax.resource.cci.ConnectionFactory", 
                resourceAdapter = "#cfd-ra",
                properties = {"testName=foo"}
           )

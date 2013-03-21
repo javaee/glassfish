@@ -32,7 +32,7 @@ import javax.transaction.UserTransaction;
                 @ConnectionFactoryDefinition(
                         description="global-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:global/env/Servlet_ModByDD_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         properties = {"testName=foo"}
                 ),
@@ -40,7 +40,7 @@ import javax.transaction.UserTransaction;
                 @ConnectionFactoryDefinition(
                         description="global-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:global/env/Servlet_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         transactionSupport = TransactionSupportLevel.LocalTransaction,
                         maxPoolSize = 16,
@@ -51,7 +51,7 @@ import javax.transaction.UserTransaction;
                 @ConnectionFactoryDefinition(
                         description="application-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:app/env/Servlet_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         transactionSupport = TransactionSupportLevel.XATransaction,
                         maxPoolSize = 16,
@@ -62,7 +62,7 @@ import javax.transaction.UserTransaction;
                 @ConnectionFactoryDefinition(
                         description="module-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:module/env/Servlet_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         properties = {"testName=foo"}
                 ),
@@ -70,7 +70,7 @@ import javax.transaction.UserTransaction;
                 @ConnectionFactoryDefinition(
                         description="component-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:comp/env/Servlet_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         properties = {"testName=foo"}
                 )

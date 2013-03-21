@@ -15,7 +15,7 @@ import javax.naming.*;
                 @ConnectionFactoryDefinition(
                         description="global-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:global/env/HelloStatefulEJB_ModByDD_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         properties = {"testName=foo"}
                 ),
@@ -23,7 +23,7 @@ import javax.naming.*;
                 @ConnectionFactoryDefinition(
                         description="global-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:global/env/HelloStatefulEJB_Annotation_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         transactionSupport = TransactionSupportLevel.LocalTransaction,
                         maxPoolSize = 16,
@@ -34,7 +34,7 @@ import javax.naming.*;
                 @ConnectionFactoryDefinition(
                         description="application-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:app/env/HelloStatefulEJB_Annotation_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         transactionSupport = TransactionSupportLevel.XATransaction,
                         maxPoolSize = 16,
@@ -45,7 +45,7 @@ import javax.naming.*;
                 @ConnectionFactoryDefinition(
                         description="module-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:module/env/HelloStatefulEJB_Annotation_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         properties = {"testName=foo"}
                 ),
@@ -53,7 +53,7 @@ import javax.naming.*;
                 @ConnectionFactoryDefinition(
                         description="component-scope resource defined by @ConnectionFactoryDefinition",
                         name = "java:comp/env/HelloStatefulEJB_Annotation_ConnectionFactory",
-                        className = "javax.resource.cci.ConnectionFactory",
+                        interfaceName = "javax.resource.cci.ConnectionFactory",
                         resourceAdapter = "#cfd-ra",
                         properties = {"testName=foo"}
                 )
