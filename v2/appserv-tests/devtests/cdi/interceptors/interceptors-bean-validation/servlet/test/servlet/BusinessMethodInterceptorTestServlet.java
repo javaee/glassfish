@@ -57,8 +57,6 @@ public class BusinessMethodInterceptorTestServlet extends HttpServlet {
     @Inject
     TestBean tb;
 
-//    @Inject
-//    AnotherTestBean atb;
 
     @Inject @Preferred
     String echoMessage;
@@ -75,6 +73,27 @@ public class BusinessMethodInterceptorTestServlet extends HttpServlet {
             msg += "Injection of request scoped bean failed";
         }
 
+        // Violate the constraint on the echo method
+        try {
+            tb.echo(null);
+            msg += "; Expected ConstraintViolationException not thrown";
+        } catch (Exception e) {
+            // Expected exception
+            if (!"javax.validation.ConstraintViolationException".equals(e.getClass().getName())) {
+                msg += "; Unexpected exception: " + e.getClass().getName();
+            }
+        }
+
+        // Since validation failed, the aroundConstruct interceptor method should still have been called
+        if (!TestInterceptor.aroundConstructCalled) {
+            msg += "; Business method interceptor aroundConstruct was not called";
+        }
+
+        // Since validation failed, the interceptor should not have been called
+        if (TestInterceptor.aroundInvokeCalled || TestInterceptor.aroundInvokeInvocationCount != 0) {
+            msg += "; Business method interceptor aroundInvoke should not have been called";
+        }
+
         tb.echo("Test Echo Request Message");
 
         if (!TestInterceptor.aroundConstructCalled) {
@@ -82,7 +101,7 @@ public class BusinessMethodInterceptorTestServlet extends HttpServlet {
         }
 
         if (!TestInterceptor.aroundInvokeCalled || TestInterceptor.aroundInvokeInvocationCount != 1) {
-            msg += "Business method interceptor aroundConstruct not called";
+            msg += "Business method interceptor aroundInvoke not called";
         }
 
         tb.hello("Client");

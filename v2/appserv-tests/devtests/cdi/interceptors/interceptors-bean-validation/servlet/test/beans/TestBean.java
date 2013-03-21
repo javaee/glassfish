@@ -60,8 +60,7 @@ public class TestBean {
 
 
     @Inject
-//    public TestBean(@NotNull Bar bar) {
-    public TestBean(Bar bar) {
+    public TestBean(@NotNull Bar bar) {
         ctorLog = "annotated ctor";
         this.myBar = bar;
     }
@@ -71,8 +70,7 @@ public class TestBean {
         System.out.println(toString() + ": ctor=" + getConstructorLog() + " ; myFoo=" + myFoo.toString() + " ; myBar=" + myBar.toString());
     }
 
-//    public String echo(@NotNull String message) {
-    public String echo(String message) {
+    public String echo(@NotNull String message) {
         System.out.println("TestBean::echo called with String argument: " + message);
         return message + " : " + myFoo.value() + " : " + myBar.toString();
     }

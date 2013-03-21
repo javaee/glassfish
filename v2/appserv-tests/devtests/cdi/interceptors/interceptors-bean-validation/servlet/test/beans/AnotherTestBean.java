@@ -15,7 +15,6 @@ public class AnotherTestBean {
 
 
     @Inject
-//    public AnotherTestBean(@NotNull @Preferred TestProduct testProduct) {
     public AnotherTestBean(@Preferred TestProduct testProduct) {
         this.tp = testProduct;
     }
