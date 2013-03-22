@@ -54,13 +54,13 @@ public class BaseBean {
     void verifyA_AC(String name) {
         if (!ac) throw new RuntimeException("[" + name + "] InterceptorA.AroundConstruct was not called");
         if (ac1) throw new RuntimeException("[" + name + "] InterceptorB.AroundConstruct was called");
-        if (ac2) throw new RuntimeException("[" + name + "] InterceptorB.AroundConstruct was called");
+        if (ac2) throw new RuntimeException("[" + name + "] InterceptorC.AroundConstruct was called");
     }
 
     void verifyB_AC(String name) {
         if (ac) throw new RuntimeException("[" + name + "] InterceptorA.AroundConstruct was called");
         if (!ac1) throw new RuntimeException("[" + name + "] InterceptorB.AroundConstruct was not called");
-        if (ac2) throw new RuntimeException("[" + name + "] InterceptorB.AroundConstruct was called");
+        if (ac2) throw new RuntimeException("[" + name + "] InterceptorC.AroundConstruct was called");
     }
 
     void verifyAB_AC(String name) {

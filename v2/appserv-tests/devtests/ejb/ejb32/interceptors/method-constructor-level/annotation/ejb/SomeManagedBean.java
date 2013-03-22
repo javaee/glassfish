@@ -14,7 +14,7 @@ public class SomeManagedBean extends BaseBean {
 
     @Resource ORB orb;
 
-    //@Interceptors(InterceptorA.class)
+    @Interceptors(InterceptorA.class)
     public SomeManagedBean() {}
 
     @Interceptors(InterceptorA.class)
@@ -28,8 +28,7 @@ public class SomeManagedBean extends BaseBean {
     @Interceptors(InterceptorA.class)
     public void foo() {
 	System.out.println("In SomeManagedBean::foo() ");
-	verifyA_PC("SomeManagedBean");
-//	verifyA("SomeManagedBean");
+	verifyA("SomeManagedBean");
         if (orb == null) throw new RuntimeException("SomeManagedBean: ORB is null");
     }
 
