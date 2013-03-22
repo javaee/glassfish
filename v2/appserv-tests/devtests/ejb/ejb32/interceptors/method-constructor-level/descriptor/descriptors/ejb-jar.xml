@@ -206,7 +206,6 @@
       <exclude-class-interceptors>true</exclude-class-interceptors>
       <method>
         <method-name>SlessEJB</method-name>
-        <method-params/>
       </method>
     </interceptor-binding>
   </assembly-descriptor>
