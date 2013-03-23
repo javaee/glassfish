@@ -9,13 +9,14 @@ import javax.inject.Inject;
 
 @javax.inject.Named//("com.oracle.javaee7.samples.batch.simple.SimpleItemProcessor")
 public class SimpleItemProcessor
-    implements javax.batch.api.chunk.ItemProcessor<String, String> {
+    implements javax.batch.api.chunk.ItemProcessor {
 
 //    @Inject
 //    IdGenerator idGen;
     
     @Override
-    public String processItem(String t) throws Exception {
+    public String processItem(Object obj) throws Exception {
+	String t = (String) obj;
         String[] record = t.split(", ");
         
     //EMP-ID, MONTH-YEAR, SALARY, TAX%, MEDICARE%, OTHER
