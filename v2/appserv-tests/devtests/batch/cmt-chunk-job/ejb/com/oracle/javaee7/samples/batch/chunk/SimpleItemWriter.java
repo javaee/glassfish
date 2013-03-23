@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 @javax.inject.Named("SimpleItemWriter")
 public class SimpleItemWriter
-    implements javax.batch.api.chunk.ItemWriter<String> {
+    implements javax.batch.api.chunk.ItemWriter {
     
     @Override
     public void open(Serializable e) throws Exception {
@@ -19,8 +19,9 @@ public class SimpleItemWriter
     }
 
     @Override
-    public void writeItems(List<String> list) throws Exception {
+    public void writeItems(List lst) throws Exception {
         StringBuilder sb = new StringBuilder("SimpleItemWriter:");
+	List<String> list = (List<String>) lst;
         for (String s : list) {
             sb.append(" ").append(s);
         }

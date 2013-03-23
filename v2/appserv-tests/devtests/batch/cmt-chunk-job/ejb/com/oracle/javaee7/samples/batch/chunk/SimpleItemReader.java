@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 @javax.inject.Named("SimpleItemReader")
 public class SimpleItemReader
-    implements javax.batch.api.chunk.ItemReader<String> {
+    implements javax.batch.api.chunk.ItemReader {
 
     private int index = 0;
     
@@ -33,7 +33,7 @@ public class SimpleItemReader
     }
 
     @Override
-    public String readItem() throws Exception {
+    public Object readItem() throws Exception {
         return index < items.length ? items[index++] : null;
     }
 
