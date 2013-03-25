@@ -359,7 +359,7 @@ public class Parser implements Closeable {
                             }
                             try {
                                 ClassReader cr = new ClassReader(is);
-                                cr.accept(context.getClassVisitor(uri, entry.name), ClassReader.SKIP_DEBUG);
+                                cr.accept(context.getClassVisitor(uri, entry.name, true), ClassReader.SKIP_DEBUG);
                             } catch (Throwable e) {
                                 logger.log(Level.SEVERE, "Exception while visiting " + entry.name
                                         + " of size " + entry.size, e);

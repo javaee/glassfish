@@ -54,6 +54,8 @@ public class AnnotatedElementImpl implements AnnotatedElement {
 
     private final List<AnnotationModel> annotations = new ArrayList<AnnotationModel>();
 
+    private boolean isApplicationClass;
+
     public AnnotatedElementImpl(String name) {
         this.name = name;
     }
@@ -80,6 +82,14 @@ public class AnnotatedElementImpl implements AnnotatedElement {
             }
         }
         return null;
+    }
+
+    public boolean isApplicationClass() {
+        return isApplicationClass;
+    }
+
+    public void setApplicationClass(boolean applicationClass) {
+        isApplicationClass = applicationClass;
     }
 
     @Override
