@@ -73,9 +73,11 @@ public class ModelClassVisitor implements ClassVisitor {
     private final ModelAnnotationVisitor annotationVisitor;
     private final ModelDefaultAnnotationVisitor defaultAnnotationVisitor;
     private static int discarded=0;
+    private boolean isApplicationClass;
 
 
-    public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName) {
+    public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName,
+                             boolean isApplicationClass) {
         this.ctx = ctx;
         this.definingURI = definingURI;
         this.entryName = entryName;
@@ -86,6 +88,7 @@ public class ModelClassVisitor implements ClassVisitor {
         methodVisitor = new ModelMethodVisitor(visitingContext);
         annotationVisitor = new ModelAnnotationVisitor();
         defaultAnnotationVisitor = new ModelDefaultAnnotationVisitor(methodVisitor.getContext());
+        this.isApplicationClass = isApplicationClass;
     }
 
     @Override
@@ -124,6 +127,7 @@ public class ModelClassVisitor implements ClassVisitor {
 //        }
         
         type = ctx.getTypeBuilder(classDefURI).getType(access, className, parent);
+        type.setApplicationClass(isApplicationClass);
         type.getProxy().visited();
         type.addDefiningURI(classDefURI);
         deepVisit = ctx.getConfig().getAnnotationsOfInterest().isEmpty();

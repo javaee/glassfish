@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,15 +37,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-Bundle-Activator: org.glassfish.hk2.classmodel.reflect.util.ClassModelActivator
+package org.glassfish.hk2.classmodel.reflect.util;
 
--exportcontents: \
-                            org.glassfish.hk2.classmodel.reflect; \
-                            org.glassfish.hk2.classmodel.reflect.util; version=${project.osgi.version}
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.packageadmin.PackageAdmin;
 
+/**
+ * Created with IntelliJ IDEA.
+ * User: makannan
+ * Date: 3/4/13
+ * Time: 8:15 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class ClassModelActivator
+    implements BundleActivator {
 
-Import-Package: \
-                        org.objectweb.asm;password=GlassFish;resolution:=optional, \
-                        org.objectweb.asm.signature;password=GlassFish;resolution:=optional, \
-                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional, \
-                        *
+    public void start(BundleContext context) throws Exception {
+        ServiceReference ref = context.getServiceReference(PackageAdmin.class.getName());
+        CommonModelRegistry.getInstance().initialize(context,
+                PackageAdmin.class.cast(context.getService(ref)));
+    }
+
+    public void stop(BundleContext context)
+            throws Exception {
+    }
+}

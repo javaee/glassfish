@@ -43,6 +43,7 @@ import org.glassfish.hk2.classmodel.reflect.impl.ModelClassVisitor;
 import org.glassfish.hk2.classmodel.reflect.impl.TypeBuilder;
 import org.glassfish.hk2.classmodel.reflect.impl.TypesCtr;
 import org.glassfish.hk2.classmodel.reflect.impl.TypesImpl;
+import org.glassfish.hk2.classmodel.reflect.util.CommonModelRegistry;
 import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
 import org.objectweb.asm.ClassVisitor;
@@ -220,11 +221,16 @@ public class ParsingContext {
     }
 
     public ResourceLocator getLocator() {
-        return locator;
+        return locator != null ? locator :
+                CommonModelRegistry.getInstance().canLoadResources() ? CommonModelRegistry.getInstance() : null;
     }
 
     public ClassVisitor getClassVisitor(URI uri, String entryName) {
-        return new ModelClassVisitor(this, uri, entryName);
+        return new ModelClassVisitor(this, uri, entryName, false);
+    }
+
+    public ClassVisitor getClassVisitor(URI uri, String entryName, boolean isApplicationClass) {
+        return new ModelClassVisitor(this, uri, entryName, isApplicationClass);
     }
 
     public ParsingConfig getConfig() {

@@ -114,7 +114,20 @@
            <version>1.0</version>
            <scope>test</scope>            
         </dependency>
-
+        <dependency>
+            <!-- Needed to have a bundle activator to set up a different serialization policy-->
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <!-- Needed to have a bundle activator to set up a different serialization policy-->
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.enterprise</artifactId>
+            <version>4.2.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     
 </project>
