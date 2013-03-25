@@ -58,6 +58,7 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
 
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -855,6 +856,22 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return retVal;
     }
     
+    private static String getName(String name, Annotation... qualifiers) {
+        if (name != null) return name;
+        
+        for (Annotation qualifier : qualifiers) {
+            if (qualifier instanceof Named) {
+                Named named = (Named) qualifier;
+                if (named.value() != null && !named.value().isEmpty()) {
+                    return named.value();
+                }
+                
+            }
+        }
+        
+        return null;
+    }
+    
     @SuppressWarnings("unchecked")
     private <T> ActiveDescriptor<T> internalGetDescriptor(Injectee onBehalfOf, Type contractOrImpl,
             String name,
@@ -867,6 +884,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Utilities.checkLookupType(rawClass);
         
         rawClass = Utilities.translatePrimitiveType(rawClass);
+        
+        name = getName(name, qualifiers);
         
         boolean useCache = false;
         Filter filter;
