@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import java.util.Map;
 import java.util.Set;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Date;
@@ -20,10 +21,10 @@ public class StlesEJB implements Stles {
     @Resource
     private TimerService timerSvc;
 
-    private static Map<String, ScheduleExpression> hm = new HashMap<String, ScheduleExpression>();
-    private static Set<String> callers = new HashSet<String>();
-    private static Set<String> expected_callers = new HashSet<String>();
-    private static Set<String> errors = new HashSet<String>();
+    private static Map<String, ScheduleExpression> hm = Collections.synchronizedMap(new HashMap<String, ScheduleExpression>());
+    private static Set<String> callers = Collections.synchronizedSet(new HashSet<String>());
+    private static Set<String> expected_callers = Collections.synchronizedSet(new HashSet<String>());
+    private static Set<String> errors = Collections.synchronizedSet(new HashSet<String>());
 
     private static AtomicBoolean verifying = new AtomicBoolean(false);
 
