@@ -1,15 +1,14 @@
 list-managed-thread-factorasadmin Utility Subclist-managed-thread-factories(1)
 
 NAME
-       list-managed-thread-factories - lists the managed thread factory
-       resources
+       list-managed-thread-factories - lists managed thread factory resources
 
 SYNOPSIS
            list-managed-thread-factories [--help]
            [target]
 
 DESCRIPTION
-       The list-managed-thread-factories subcommand lists the managed thread
+       The list-managed-thread-factories subcommand lists managed thread
        factory resources.
 
        This subcommand is supported in remote mode only.
@@ -20,15 +19,32 @@ OPTIONS
 
 OPERANDS
        target
-           The target for which the managed thread factory resources are being
-           listed.
+           Specifies the target for which managed thread factory resources are
+           to be listed. Valid targets are:
+
+           server
+               Lists the resources on the default server instance. This is the
+               default value.
+
+           domain
+               Lists the resources for the domain.
+
+           cluster-name
+               Lists the resources on all server instances in the specified
+               cluster.
+
+           instance-name
+               Lists the resources on a specified server instance.
 
 EXAMPLES
-       Example 1, Listing the Managed Thread Factory Resources
-           The following example lists the managed thread factory resources.
+       Example 1, Listing Managed Thread Factory Resources
+           This example lists managed thread factory resources on the default
+           server instance.
 
                asadmin> list-managed-thread-factories
-
+               concurrent/__defaultManagedThreadFactory
+               concurrent/myThreadFactory1
+               concurrent/myThreadFactory2
                Command list-managed-thread-factories executed successfully.
 
 EXIT STATUS

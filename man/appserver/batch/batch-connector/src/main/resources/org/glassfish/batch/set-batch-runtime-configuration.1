@@ -1,0 +1,67 @@
+set-batch-runtime-configurasadmin)Utility Suset-batch-runtime-configuration(1)
+
+NAME
+       set-batch-runtime-configuration - configures the batch runtime
+
+SYNOPSIS
+           set-batch-runtime-configuration [--help]
+           [--target target]
+           [--datasourcelookupname datasource-lookup-name]
+           [--executorservicelookupname executor-service-lookup-name]
+
+DESCRIPTION
+       The set-batch-runtime-configuration subcommand configures the batch
+       runtime.
+
+OPTIONS
+       --help, -?
+           Displays the help text for the subcommand.
+
+       --target
+           Specifies the target for which to configure the batch runtime.
+           Valid values are as follows:
+
+           server
+               Configures the batch runtime for the default server instance
+               server and is the default value.
+
+           cluster-name
+               Configures the batch runtime for every server instance in the
+               cluster.
+
+           instance-name
+               Configures the batch runtime for a particular server instance.
+
+       --config
+           TBD
+
+       --datasourcelookupname, -d
+           The JNDI lookup name of the data source to be used to store job
+           information.
+
+       --executorservicelookupname , -x
+           The JNDI lookup name of the managed executor service to be used to
+           execute jobs.
+
+EXAMPLES
+       Example 1, Configuring the Batch Runtime
+           The following example configures the batch runtime.
+
+               asadmin> configure-batch-runtime
+
+               Command configure-batch-runtime executed successfully.
+
+EXIT STATUS
+       0
+           subcommand executed successfully
+
+       1
+           error in executing the subcommand
+
+SEE ALSO
+       list-batch-runtime-configuration(1), list-batch-jobs(1),
+       list-batch-job-executions(1), list-batch-job-steps(1)
+
+       asadmin(1M)
+
+Java EE 7                         18 Mar 201set-batch-runtime-configuration(1)

@@ -45,12 +45,15 @@ OPERANDS
            The value to apply to the specified attribute.
 
            The attribute values that can be specified include the following.
-           Refer to the online help and "Administering the Logging Service" in
-           Oracle GlassFish Server Administration Guide for complete
-           explanations of each of these values.
+           Refer to "Administering the Logging Service" in Oracle GlassFish
+           Server Administration Guide for complete explanations of each of
+           these values.
 
            com.sun.enterprise.server.logging.GFFileHandler.alarms
                Default is false.
+
+           com.sun.enterprise.server.logging.GFFileHandler.excludeFields
+               Default is an empty string.
 
            com.sun.enterprise.server.logging.GFFileHandler.file
                Default is ${com.sun.aas.instanceRoot}/logs/server.log.
@@ -67,6 +70,9 @@ OPERANDS
 
            com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles
                Default is 0.
+
+           com.sun.enterprise.server.logging.GFFileHandler.multiLineMode
+               Default is true.
 
            com.sun.enterprise.server.logging.GFFileHandler.retainErrorsStasticsForHours
                Default is 0.
@@ -103,7 +109,7 @@ OPERANDS
                Default is warn.
 
 EXAMPLES
-       Example 1, Setting a the Maximum of Log History Files to Maintain
+       Example 1, Setting the Maximum Number of Log History Files to Maintain
            This example sets to 8 the maximum number of log history files for
            the server as a whole.
 

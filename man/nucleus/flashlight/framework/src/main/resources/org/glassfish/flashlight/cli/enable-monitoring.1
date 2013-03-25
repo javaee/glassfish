@@ -6,11 +6,12 @@ NAME
 
 SYNOPSIS
            enable-monitoring [--help]
+           [--target target]
            [--mbean={false|true}]
-           [--dtrace={true|false]
+           [--dtrace={true|false}]
            [--modules modules[=level][:module[=level]]*
            [--pid pid]
-           [--options options={true|false]]
+           [--options options]]
 
 DESCRIPTION
        The enable-monitoring subcommand is used to turn on monitoring for
@@ -38,6 +39,23 @@ DESCRIPTION
 OPTIONS
        --help, -?
            Displays the help text for the subcommand.
+
+       --target
+           Specifies the target on which to enabling monitoring. Valid values
+           are as follows:
+
+           server
+               Enables monitoring for the default server instance server and
+               is the default value.
+
+           configuration-name
+               Enables monitoring for the named configuration.
+
+           cluster-name
+               Enables monitoring for every server instance in the cluster.
+
+           instance-name
+               Enables monitoring for a particular server instance.
 
        --mbean
            Enables Mbean monitoring. Default value is false.

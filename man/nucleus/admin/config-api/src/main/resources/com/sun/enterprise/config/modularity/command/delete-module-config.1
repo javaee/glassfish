@@ -1,17 +1,17 @@
 delete-module-config(1)   asadmin Utility Subcommands  delete-module-config(1)
 
 NAME
-       delete-module-config - deletes the default configuration of a module
-       from domain.xml
+       delete-module-config - removes the configuration of a module from
+       domain.xml
 
 SYNOPSIS
            delete-module-config [--help]
            [--target target]
-           servicename
+           service_name
 
 DESCRIPTION
-       The delete-module-config subcommand deletes the default configuration
-       of a module from domain.xml and causes the module to use the default
+       The delete-module-config subcommand removes the configuration of a
+       module from domain.xml and causes the module to use the default
        configuration included in the module.
 
        This subcommand is supported in remote mode only.
@@ -21,38 +21,31 @@ OPTIONS
            Displays the help text for the subcommand.
 
        --target
-           Specifies the target from which the default configuration of the
-           module will be deleted.
+           Specifies the target from which the configuration is to be deleted.
 
            Possible values are as follows:
 
            server
-               Deletes the default configuration of a module from the
-               domain.xml for the default server instance. This is the default
-               value.
+               Deletes the configuration from the default server instance.
+               This is the default value.
 
            domain
-               Deletes the default configuration of a module from the
-               domain.xml for the default domain.
+               Deletes the configuration from the default domain.
 
            cluster-name
-               Deletes the default configuration of a module to the domain.xml
-               from the specified cluster.
+               Deletes the configuration from the specified cluster.
 
            instance-name
-               Deletes the default configuration of a module from the
-               domain.xml for the specified instance.
+               Deletes the configuration from the specified instance.
 
 OPERANDS
-       servicename
-           The name of the module. The default configuration of the module
-           will be deleted from the domain.xml of the target.
+       service_name
+           The name of the module for which configuration is to be removed.
 
 EXAMPLES
        Example 1, Deleting a Default Configuration From domain.xml
-           This example deletes the default configuration of the web container
-           module from the domain.xml file of domain1 in server-config (the
-           default configuration).
+           This example deletes the configuration of the web container module
+           from domain1 in server-config (the default configuration).
 
                asadmin> delete-module-config web-container
                Command delete-module-config executed successfully.

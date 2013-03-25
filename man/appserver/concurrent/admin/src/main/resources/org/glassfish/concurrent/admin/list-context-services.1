@@ -1,15 +1,14 @@
 list-context-services(1)  asadmin Utility Subcommands list-context-services(1)
 
 NAME
-       list-context-services - lists the context service resources
+       list-context-services - lists context service resources
 
 SYNOPSIS
            list-context-services [--help]
            [target]
 
 DESCRIPTION
-       The list-context-services subcommand lists the context service
-       resources.
+       The list-context-services subcommand lists context service resources.
 
        This subcommand is supported in remote mode only.
 
@@ -19,15 +18,32 @@ OPTIONS
 
 OPERANDS
        target
-           The target for which the context service resources are being
-           listed.
+           Specifies the target for which context service resources are to be
+           listed. Valid targets are:
+
+           server
+               Lists the resources on the default server instance. This is the
+               default value.
+
+           domain
+               Lists the resources for the domain.
+
+           cluster-name
+               Lists the resources on all server instances in the specified
+               cluster.
+
+           instance-name
+               Lists the resources on a specified server instance.
 
 EXAMPLES
-       Example 1, Listing the Context Service Resources
-           This example lists the context service resources.
+       Example 1, Listing Context Service Resources
+           This example lists context service resources on the default server
+           instance.
 
                asadmin> list-context-services
-
+               concurrent/__defaultContextService
+               concurrent/myContextService1
+               concurrent/myContextService2
                Command list-context-services executed successfully.
 
 EXIT STATUS

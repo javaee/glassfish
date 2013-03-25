@@ -5,29 +5,17 @@ NAME
 
 SYNOPSIS
            list-batch-jobs [--help]
-           [--job-name job-name]
-           [--instance-id instance-id]
-           [--execution-id execution-id]
-           [--long[={false|true}]]
+           [--long={false|true}]
            [--output output]
-           [--header[={false|true}]]
+           [--header={false|true}]
+           [job_name]
 
 DESCRIPTION
-       The list-batch-jobs subcommand lists batch jobs and job details. A job
-       represents the entire batch process.
+       The list-batch-jobs subcommand lists batch jobs and job details.
 
 OPTIONS
        --help, -?
            Displays the help text for the subcommand.
-
-       --job-name, -j
-           Specifies the name of a job.
-
-       --instance-id, -i
-           Specifies the instance ID of a job.
-
-       --execution-id, -e
-           Specifies the execution ID of a job.
 
        --long, -l
            Displays detailed information about the jobs. The default value is
@@ -36,46 +24,60 @@ OPTIONS
        --output, -o
            Displays specific details about each job. Use a comma-separated
            list to specify the details you want to display and their order.
-           The values are case-insensitive. The job-name and instance-count
+           The values are case-insensitive. The jobname and instancecount
            column headings are displayed by default.
 
            Possible values are as follows:
 
-           job-name
+           jobname
                Displays the name of the job.
 
-           instance-count
-               Displays the number of job instances that are running.
+           appname
+               Displays the name of the application.
 
-           execution-id
-               Displays the execution ID of a particular job instance.
+           instancecount
+               Displays the number of times a job instance has been started
+               and restarted (executed).
 
-           status
-               Displays the status of the job.
+           instanceid
+               Displays the instance ID of the job. The instance ID stays the
+               same throughout the life of the job.
 
-           exit-status
-               Displays the exit status of the job.
+           executionid
+               Displays the execution ID of a specific job instance. The
+               execution ID changes throughout the life of the job. An
+               execution ID is assigned each time a job with a specific
+               instance ID is started or restarted (executed).
 
-           start-time
+           batchstatus
+               Displays whether steps in the application completed or failed.
+
+           starttime
                Displays the start time of the job.
 
-           end-time
+           endtime
                Displays the finish time of the job.
 
-           job-parameters
-               Displays the job parameters.
+           exitstatus
+               Displays whether the job completed or failed.
 
        --header, -h
            Specifies whether column headings are displayed when the --long
            option is used. The default value is true. To suppress the
            headings, set the --header option to false.
 
+OPERANDS
+       job_name
+           The name of the job for which you want to list details.
+
 EXAMPLES
-       Example 1, List Batch Jobs
-           The following example lists the batch jobs.
+       Example 1, Listing Batch Jobs
+           This example lists batch jobs.
 
                asadmin> list-batch-jobs
-
+               JOBNAME  INSTANCECOUNT
+               payroll  9
+               bonus    6
                Command list-batch-jobs executed successfully.
 
 EXIT STATUS
@@ -86,7 +88,8 @@ EXIT STATUS
            error in executing the subcommand
 
 SEE ALSO
-       list-batch-runtime-configuration(1)
+       list-batch-job-executions(1), list-batch-job-steps(1),
+       set-batch-runtime-configuration(1), list-batch-runtime-configuration(1)
 
        asadmin(1M)
 

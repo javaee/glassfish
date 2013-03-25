@@ -7,8 +7,8 @@ NAME
 SYNOPSIS
            start-local-instance [--help]
            [--nodedir node-dir] [--node node]
-           [--debug={false|true}] [--dry-run={false|true}] [--sync={normal|full|none}]
-           [--verbose={false|true}] [--watchdog={false|true}]
+           [--debug={false|true}] [--sync={normal|full|none}]
+           [--verbose={false|true}] [--watchdog={true|false}]
            [instance-name]
 
 DESCRIPTION
@@ -47,7 +47,7 @@ OPTIONS
            specifies contains only one node directory. Otherwise, this option
            is required.
 
-       --debug
+       --debug, -d
            Specifies whether the instance is started with Java Platform
            Debugger Architecture (JPDA)
 
@@ -63,15 +63,6 @@ OPTIONS
 
            false
                The instance is started with JPDA debugging disabled (default).
-
-       --dry-run, -n
-           Suppresses actual starting of the instance. Instead,
-           start-local-instance displays the full java command that would be
-           used to start the instance, including all options. Reviewing this
-           command can be useful to confirm JVM options and when
-           troubleshooting startup issues.
-
-           The default value is false.
 
        --sync
            The type of synchronization between the DAS and the instance's

@@ -6,8 +6,9 @@ NAME
 
 SYNOPSIS
            create-managed-thread-factory [--help]
-           [--enabled[={false|true}]]
-           [--contextinfo contextinfo]
+           [--enabled={false|true}]
+           [--contextinfoenabled={false|true}]
+           [--contextinfo={Classloader|JNDI|Security|WorkArea}]
            [--threadpriority threadpriority]
            [--description description]
            [--property property]
@@ -25,43 +26,64 @@ OPTIONS
            Displays the help text for the subcommand.
 
        --enabled
-           Specifies whether the managed thread factory is enabled at runtime.
+           Determines whether the managed thread factory is enabled at
+           runtime. The default value is true.
 
-           The default value is true.
+       --contextinfoenabled
+           Determines whether container contexts are propagated to threads. If
+           set to true, the contexts specified in the --contextinfo option are
+           propagated. If set to false, no contexts are propagated and the
+           --contextinfo option is ignored. The default value is true.
 
        --contextinfo
-           A comma separated text string specifying the context types to be
-           propagated. Context types are Security, Classloader, JNDI, and
-           WorkArea. If omitted, all context types are propagated.
+           Specifies individual container contexts to propagate to threads.
+           Valid values are Classloader, JNDI, Security, and WorkArea. Values
+           are specified in a comma-separated list and are case-insensitive.
+           All contexts are propagated by default.
 
        --threadpriority
-           Specifies the priority of threads to be created for the managed
-           thread factory instance.
-
-           The default value is 5.
+           Specifies the priority to assign to created threads. The default
+           value is 5.
 
        --description
-           Text providing descriptive details about the managed thread
-           factory.
+           Descriptive details about the resource.
 
        --property
-           Optional attribute name/value pairs for configuring the managed
-           thread factory instance.
+           Optional attribute name/value pairs for configuring the resource.
+
+           GlassFish Server does not define any additional properties for this
+           resource. Moreover, this resource does not currently use any
+           additional properties.
 
        --target
-           The target for which the managed thread factory resource is being
-           created.
+           Specifies the target for which you are creating the resource. Valid
+           targets are:
+
+           server
+               Creates the resource for the default server instance. This is
+               the default value.
+
+           domain
+               Creates the resource for the domain.
+
+           cluster_name
+               Creates the resource for every server instance in the specified
+               cluster.
+
+           instance_name
+               Creates the resource for the specified server instance.
 
 OPERANDS
        jndi_name
-           The JNDI name to look up the managed thread factory instance.
+           The JNDI name of this resource.
 
 EXAMPLES
        Example 1, Creating a Managed Thread Factory Resource
-           This example creates a managed thread factory resource.
+           This example creates a managed thread factory resource named
+           concurrent/myThreadFactory.
 
-               asadmin> create-managed-thread-factory concurrent/SampleThreadFactory
-               Managed thread factory concurrent/SampleThreadFactory created successfully.
+               asadmin> create-managed-thread-factory concurrent/myThreadFactory
+               Managed thread factory concurrent/myThreadFactory created successfully.
                Command create-managed-thread-factory executed successfully.
 
 EXIT STATUS

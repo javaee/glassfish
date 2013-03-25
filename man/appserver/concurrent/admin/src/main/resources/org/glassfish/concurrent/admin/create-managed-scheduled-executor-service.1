@@ -6,16 +6,15 @@ NAME
 
 SYNOPSIS
            create-managed-scheduled-executor-service [--help]
-           [--enabled[={false|true}]]
-           [--contextinfo contextinfo]
+           [--enabled={false|true}]
+           [--contextinfoenabled={false|true}]
+           [--contextinfo={Classloader|JNDI|Security|WorkArea}]
            [--threadpriority threadpriority]
-           [--longrunningtasks[={false|true}]]
+           [--longrunningtasks={false|true}]
            [--hungafterseconds hungafterseconds]
            [--corepoolsize corepoolsize]
-           [--maximumpoolsize maximumpoolsize]
            [--keepaliveseconds keepaliveseconds]
            [--threadlifetimeseconds threadlifetimeseconds]
-           [--taskqueuecapacity taskqueuecapacity]
            [--description description]
            [--property property]
            [--target target]
@@ -32,88 +31,91 @@ OPTIONS
            Displays the help text for the subcommand.
 
        --enabled
-           Specifies whether the managed scheduled executor service resource
-           is enabled at runtime.
+           Determines whether the resource is enabled at runtime. The default
+           value is true.
 
-           The default value is true.
+       --contextinfoenabled
+           Determines whether container contexts are propagated to threads. If
+           set to true, the contexts specified in the --contextinfo option are
+           propagated. If set to false, no contexts are propagated and the
+           --contextinfo option is ignored. The default value is true.
 
        --contextinfo
-           A comma separated string specifying a list of context types to be
-           propagated. Context types are Security, Classloader, JNDI, and
-           WorkArea. If omitted, all context types are propagated.
+           Specifies individual container contexts to propagate to threads.
+           Valid values are Classloader, JNDI, Security, and WorkArea. Values
+           are specified in a comma-separated list and are case-insensitive.
+           All contexts are propagated by default.
 
        --threadpriority
-           Specifies the priority of threads to be created for the managed
-           scheduled executor service instance.
-
-           The default value is 5.
+           Specifies the priority to assign to created threads. The default
+           value is 5.
 
        --longrunningtasks
-           Specifies how a container should handle threads.If set to true,
-           stuck threads will not be reported and shutdown of the managed
-           scheduled executor service will not be blocked waiting for
-           long-running tasks. The default value is false.
+           Specifies whether the resource should be used for long-running
+           tasks. The default value is false. If set to true, long-running
+           tasks are not reported as stuck.
 
        --hungafterseconds
-           Specifies the amount of time in seconds that a task can execute
-           before it is considered hung. If omitted, tasks will never be
-           considered hung.
+           Specifies the number of seconds that a task can execute before it
+           is considered unresponsive. The default value is 0, which means
+           that tasks are never considered unresponsive.
 
        --corepoolsize
-           Specifies the number of threads to keep in a thread pool.
-
-           The default value is 0.
-
-       ---maximumpoolsize
-           Specifies the maximum number of threads a thread pool can contain.
-
-           The default value is 2147483647.
+           Specifies the number of threads to keep in a thread pool, even if
+           they are idle. The default value is 0, which means that a thread is
+           created when the first task is scheduled.
 
        --keepaliveseconds
-           Specifies the time in seconds threads can remain idle when the
-           number of threads is greater than core size.
-
-           The default value is 60.
+           Specifies the number of seconds that threads can remain idle when
+           the number of threads is greater than corepoolsize. The default
+           value is 60.
 
        --threadlifetimeseconds
-           Specifies the time in seconds each thread remains in a thread pool
-           before it is purged, regardless of whether the number of threads is
-           greater than core size or whether the thread is idle. Threads are
-           not interrupted while executing requests. Threads exceeding the
-           thread-lifetime-seconds value are not returned to the thread pool
-           after the current request completes.
-
-           The default value is 0.
-
-       --taskqueuecapacity
-           Specifies the size of the queue holding submitted tasks waiting to
-           be executed.
-
-           The default value is 2147483647.
+           Specifies the number of seconds that threads can remain in a thread
+           pool before being purged, regardless of whether the number of
+           threads is greater than corepoolsize or whether the threads are
+           idle. The default value is 0, which means that threads are never
+           purged.
 
        --description
-           Text providing descriptive details about the managed scheduled
-           executor service.
+           Descriptive details about the resource.
 
        --property
-           Optional attribute name/value pairs for configuring the managed
-           executor service instance.
+           Optional attribute name/value pairs for configuring the resource.
+
+           GlassFish Server does not define any additional properties for this
+           resource. Moreover, this resource does not currently use any
+           additional properties.
 
        --target
-           The target for which the managed scheduled executor service
-           resource is being created.
+           Specifies the target for which you are creating the resource. Valid
+           targets are:
+
+           server
+               Creates the resource for the default server instance. This is
+               the default value.
+
+           domain
+               Creates the resource for the domain.
+
+           cluster_name
+               Creates the resource for every server instance in the specified
+               cluster.
+
+           instance_name
+               Creates the resource for the specified server instance.
 
 OPERANDS
        jndi_name
-           The JNDI name to look up the managed scheduled executor service
-           instance.
+           The JNDI name of this resource.
 
 EXAMPLES
        Example 1, Creating a Managed Scheduled Executor Service Resource
-           This example creates a managed scheduled executor service resource.
+           This example creates a managed scheduled executor service resource
+           named concurrent/myScheduledExecutor.
 
-               asadmin> create-managed-scheduled-executor-service concurrent/SampleScheduledExecutor
-               Managed scheduled executor service concurrent/SampleScheduledExecutor created successfully.
+               asadmin> create-managed-scheduled-executor-service concurrent/myScheduledExecutor
+               Managed scheduled executor service concurrent/myScheduledExecutor created successfully.
                Command create-managed-scheduled-executor-service executed successfully.
 
 EXIT STATUS

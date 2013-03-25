@@ -8,7 +8,7 @@ SYNOPSIS
            --desttype dest_type
            [--property (name=value)[:name=value]*]
            [--target target]
-           [--force[={false|true}]]
+           [--force={false|true}]
            dest_name
 
 DESCRIPTION
@@ -36,7 +36,7 @@ OPTIONS
            destination. You can specify the following properties for a
            physical destination.
 
-           maxNumMsgs
+           MaxNumMsgs
                The maximum number of unconsumed messages permitted for the
                destination. A value of -1 denotes an unlimited number of
                messages. The default value is -1. For the dead message queue,
@@ -49,7 +49,7 @@ OPTIONS
                maxNumMsgs serves as merely a hint for the broker rather than a
                strictly enforced limit.
 
-           maxBytesPerMsg
+           MaxBytesPerMsg
                The maximum size, in bytes, of any single message. Rejection of
                a persistent message is reported to the producing client with
                an exception; no notification is sent for non-persistent
@@ -70,13 +70,13 @@ OPTIONS
                A value with no suffix is expressed in bytes; a value of -1
                denotes an unlimited message size. The default value is -1.
 
-           maxTotalMsgBytes
+           MaxTotalMsgBytes
                The maximum total memory, in bytes, for unconsumed messages.
                The default value is -1. The syntax is the same as for
                maxBytesPerMsg. For the dead message queue, the default value
                is 10m.
 
-           limitBehavior
+           LimitBehavior
                The behavior of the message queue broker when the memory-limit
                threshold is reached. Valid values are as follows.
 
@@ -101,14 +101,14 @@ OPTIONS
                default limit behavior is REMOVE_OLDEST, and the value cannot
                be set to FLOW_CONTROL.
 
-           maxNumProducers
+           MaxNumProducers
                The maximum number of message producers for the destination.
                When this limit is reached, no new producers can be created. A
                value of -1 denotes an unlimited number of producers. The
                default value is 100. This property does not apply to the dead
                message queue.
 
-           consumerFlowLimit
+           ConsumerFlowLimit
                The maximum number of messages that can be delivered to a
                consumer in a single batch. A value of -1 denotes an unlimited
                number of messages. The default value is 1000. The client
@@ -119,12 +119,12 @@ OPTIONS
                queued messages routed to active consumers before load
                balancing begins.
 
-           useDMQ
+           UseDMQ
                If set to true, dead messages go to the dead message queue. If
                set to false, dead messages are discarded. The default value is
                true.
 
-           validateXMLSchemaEnabled
+           ValidateXMLSchemaEnabled
                If set to true, XML schema validation is enabled for the
                destination. The default value is false.
 

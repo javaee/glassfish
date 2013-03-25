@@ -5,8 +5,9 @@ NAME
 
 SYNOPSIS
            create-context-service [--help]
-           [--enabled[={false|true}]]
-           [--contextinfo contextinfo]
+           [--enabled={false|true}]
+           [--contextinfoenabled={false|true}]
+           [--contextinfo={Classloader|JNDI|Security|WorkArea}]]
            [--description description]
            [--property property]
            [--target target]
@@ -22,36 +23,61 @@ OPTIONS
        --help, -?
            Displays the help text for the subcommand.
 
-       ----enabled
-           Specifies whether the context service is enabled at runtime.
+       --enabled
+           Determines whether the resource is enabled at runtime. The default
+           value is true.
 
-           The default value is true.
+       --contextinfoenabled
+           Determines whether container contexts are propagated to threads. If
+           set to true, the contexts specified in the --contextinfo option are
+           propagated. If set to false, no contexts are propagated and the
+           --contextinfo option is ignored. The default value is true.
 
        --contextinfo
-           A comma separated string specifying a list of context types to be
-           propagated. The context types are Security, Classloader, JNDI, and
-           WorkArea. If omitted, all context types are propagated.
+           Specifies individual container contexts to propagate to threads.
+           Valid values are Classloader, JNDI, Security, and WorkArea. Values
+           are specified in a comma-separated list and are case-insensitive.
+           All contexts are propagated by default.
 
        --description
-           Descriptive details about the context service instance.
+           Descriptive details about the resource.
 
        --property
-           Optional attribute name/value pairs for configuring the context
-           service instance.
+           Optional attribute name/value pairs for configuring the resource.
+
+           GlassFish Server does not define any additional properties for this
+           resource. Moreover, this resource does not currently use any
+           additional properties.
 
        --target
-           The target for which the context service resource is being created.
+           Specifies the target for which you are creating the resource. Valid
+           targets are:
+
+           server
+               Creates the resource for the default server instance. This is
+               the default value.
+
+           domain
+               Creates the resource for the domain.
+
+           cluster_name
+               Creates the resource for every server instance in the specified
+               cluster.
+
+           instance_name
+               Creates the resource for the specified server instance.
 
 OPERANDS
        jndi_name
-           The JNDI name to look up the context service instance.
+           The JNDI name of this resource.
 
 EXAMPLES
        Example 1, Creating a Context Service Resource
-           This example creates a context service resource.
+           This example creates a context service resource named
+           concurrent/myContextService.
 
-               asadmin> create-context-service concurrent/SampleContextService
-               Context service concurrent/SampleContextService created successfully.
+               asadmin> create-context-service concurrent/myContextService
+               Context service concurrent/myContextService created successfully.
                Command create-context-service executed successfully.
 
 EXIT STATUS

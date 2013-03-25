@@ -15,8 +15,8 @@ DESCRIPTION
 
        GlassFish Server provides the ULF (UniformLogFormatter) and ODL (Oracle
        Diagnostics Logging) formatters. A custom formatter can also be used by
-       specifying the fully qualified name of a class that extends
-       java.util.logging.
+       specifying the fully qualified name of a class that extends the
+       java.util.logging.Formatter class.
 
        The custom formatter class can be packaged in a JAR file and placed in
        domain/lib/ext, or implemented as an HK2 service and the JAR containing
@@ -58,5 +58,8 @@ SEE ALSO
        list-loggers(1)
 
        asadmin(1M)
+
+       "Administering the Logging Service" in Oracle GlassFish Server
+       Administration Guide
 
 Java EE 7                         06 Feb 2013           set-log-file-format(1)

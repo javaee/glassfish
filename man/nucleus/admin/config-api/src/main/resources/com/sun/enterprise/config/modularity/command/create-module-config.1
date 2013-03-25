@@ -6,10 +6,10 @@ NAME
 
 SYNOPSIS
            create-module-config [--help]
-           [--dryrun[={false|true}]]
-           [--all[={false|true}]]
+           [--dryrun={false|true}]
+           [--all={false|true}]
            [--target target]
-           servicename
+           service_name
 
 DESCRIPTION
        The create-module-config subcommand adds the default configuration of a
@@ -23,49 +23,42 @@ OPTIONS
 
        --dryrun
            Displays the default configuration of a module but does not add it
-           to domain.xml.
-
-           The default value is false.
+           to domain.xml. The default value is false.
 
        --all
            Adds all default configurations of modules to domain.xml if they
-           are not already in it.
-
-           The default value is false.
+           are not already in it. The default value is false.
 
        --target
-           Specifies the target for which the default configuration of the
-           module will be added.
+           Specifies the target to which the default configuration is to be
+           added.
 
            Possible values are as follows:
 
            server
-               Adds the default configuration of a module to the domain.xml
-               for the default server instance. This is the default value.
+               Adds the default configuration to the default server instance.
+               This is the default value.
 
            domain
-               Adds the default configuration of a module to the domain.xml
-               for the default domain.
+               Adds the default configuration to the default domain.
 
            cluster-name
-               Adds the default configuration of a module to the domain.xml
-               for the specified cluster.
+               Adds the default configuration to the specified cluster.
 
            instance-name
-               Adds the default configuration of a module to the domain.xml
-               for the specified instance.
+               Adds the default configuration to the specified instance.
 
 OPERANDS
-       servicename
-           The name of the module. The default configuration of the module
-           will be added to the domain.xml of the target.
+       service_name
+           The name of the module for which the default configuration is to be
+           added.
 
 EXAMPLES
        Example 1, Adding a Default Configuration to domain.xml
            This example adds the default configuration of the web container
-           module to the domain.xml file of domain1 in server-config (the
-           default configuration). To preview the configuration before it is
-           added to domain.xml, use the --dryrun option.
+           module to domain1 in server-config (the default configuration). Use
+           the --dryrun option to preview the configuration before it is
+           added.
 
                asadmin> create-module-config web-container
                Command create-module-config executed successfully.

@@ -2,7 +2,8 @@ configure-managed-jobs(1) asadmin Utility Subcommandsconfigure-managed-jobs(1)
 
 NAME
        configure-managed-jobs - configures how long information about
-       subcommands (jobs) started using asadmin --detach is kept
+       subcommands that were started using asadmin --detach or that contain
+       progress information is kept
 
 SYNOPSIS
            configure-managed-jobs [--help]
@@ -13,9 +14,13 @@ SYNOPSIS
 
 DESCRIPTION
        The configure-managed-jobs subcommand configures how long information
-       about subcommands (jobs) that are started using the asadmin utility
-       option --detach is kept. Job information includes subcommand progress
-       and status.
+       about subcommands (jobs) that were started using the asadmin utility
+       option --detach or that contain progress information is kept. The
+       --detach option detaches long-running subcommands and executes them in
+       the background in detach mode. Job information includes subcommand
+       progress and status.
+
+       This subcommand is supported in remote mode only.
 
 OPTIONS
        --help, -?
@@ -23,18 +28,19 @@ OPTIONS
 
        in-memory-retention-period
            Specifies how long a completed job is kept in memory after the job
-           is finished. The default is 1 hour.
+           is finished. The default value is 1 hour.
 
        --job-retention-period
-           Specifies how long a job is stored. The default is 24 hours.
+           Specifies how long a job is stored. The default value is 24 hours.
 
        --cleanup-initial-delay
            After server startup, specifies the initial delay after which the
-           cleanup service starts purging jobs. The default is 5 minutes.
+           cleanup service starts purging jobs. The default value is 5
+           minutes.
 
        --cleanup-poll-interval
            Specifies the time interval after which the cleanup service polls
-           for expired jobs. The default is 20 minutes.
+           for expired jobs. The default value is 20 minutes.
 
 EXAMPLES
        Example 1, Configuring the Job Retention Period

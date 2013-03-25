@@ -162,8 +162,8 @@ OPTIONS
            an absolute path or a relative path to the alternate deployment
            descriptor file. The alternate deployment descriptor overrides the
            top-level deployment descriptor packaged in the archive. For
-           example, for an EAR, the use of --altdd overrides application.xml.
-           For a standalone module, the use of --altdd overrides the top-level
+           example, for an EAR, the --altdd option overrides application.xml.
+           For a standalone module, the --altdd option overrides the top-level
            module descriptor such as web.xml.
 
        --runtimealtdd
@@ -172,10 +172,10 @@ OPTIONS
            an absolute path or a relative path to the alternate deployment
            descriptor file. The alternate deployment descriptor overrides the
            top-level deployment descriptor packaged in the archive. For
-           example, for an EAR, the use of --runtimealtdd overrides
-           glassfish-application.xml. For a standalone module, the use of
-           --runtimealtdd overrides the top-level module descriptor such as
-           glassfish-web.xml. Applies to GlassFish Server deployment
+           example, for an EAR, the --runtimealtdd option overrides
+           glassfish-application.xml. For a standalone module, the
+           --runtimealtdd option overrides the top-level module descriptor
+           such as glassfish-web.xml. Applies to GlassFish Server deployment
            descriptors only (glassfish-*.xml); the name of the alternate
            deployment descriptor file must begin with glassfish-. Does not
            apply to sun-*.xml deployment descriptors, which are deprecated.
@@ -184,9 +184,9 @@ OPTIONS
            Specifies the deployment order of the application. This is useful
            if the application has dependencies and must be loaded in a certain
            order at server startup. The deployment order is specified as an
-           integer. The default value is 100. Applications with a lower number
-           are loaded before applications with a higher number. For example,
-           an application with a deployment order of 102 is loaded before an
+           integer. The default value is 100. Applications with lower numbers
+           are loaded before applications with higher numbers. For example, an
+           application with a deployment order of 102 is loaded before an
            application with a deployment order of 110. If a deployment order
            is not specified, the default value of 100 is assigned. If two
            applications have the same deployment order, the first application
@@ -403,6 +403,16 @@ OPTIONS
            Other available properties are determined by the implementation of
            the component that is being redeployed.
 
+           For components packaged as OSGi bundles (--type=osgi), the deploy
+           subcommand accepts properties arguments that can be used to wrap a
+           WAR file as a WAB (Web Application Bundle). The subcommand looks
+           for a key named UriScheme and, if present, uses the key as a URL
+           stream handler to decorate the input stream. Other properties are
+           used in the decoration process. The GlassFish Server OSGi web
+           container registers a URL stream handler named webbundle, which is
+           used to wrap a plain WAR file as a WAB. For more information about
+           usage, see the related example in the deploy(1) help page.
+
 OPERANDS
        dirpath
            Path to the directory containing the exploded format of the
@@ -429,7 +439,7 @@ EXIT STATUS
            error in executing the subcommand
 
 SEE ALSO
-       deploy(1), , redeploy(1), undeploy(1), get(1), set(1)
+       deploy(1), redeploy(1), undeploy(1), get(1), set(1)
 
        asadmin(1M)
 

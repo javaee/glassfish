@@ -6,9 +6,9 @@ NAME
 
 SYNOPSIS
            list-secure-admin-principals [--help]
-           [--long[={false|true}]]
+           [--long={false|true}]
            [--output output]
-           [--header[={false|true}]]
+           [--header={false|true}]
            [name]
 
 DESCRIPTION
@@ -48,9 +48,9 @@ OPERANDS
            Corporation,L=Santa Clara,ST=California,C=US".
 
 EXAMPLES
-       Example 1, List the certificates
-           The following example shows how to list the certificates for which
-           GlassFish Server accepts admin requests from clients.
+       Example 1, Listing the Certificates
+           This example lists the certificates for which GlassFish Server
+           accepts admin requests from clients.
 
                asadmin> list-secure-admin-principals
                CN=localhost,OU=GlassFish,O=Oracle Corporation,L=Santa Clara,ST=California,C=US

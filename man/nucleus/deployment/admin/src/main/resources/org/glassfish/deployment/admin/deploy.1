@@ -176,9 +176,9 @@ OPTIONS
            an absolute path or a relative path to the alternate deployment
            descriptor file. The alternate deployment descriptor overrides the
            top-level deployment descriptor packaged in the archive. For
-           example, for an EAR, the use of --altdd overrides application.xml.
-           For a standalone module, the use of --altdd overrides the top-level
-           module descriptor such as web.xml.
+           example, for an EAR, using the --altdd option overrides
+           application.xml. For a standalone module, using the --altdd option
+           overrides the top-level module descriptor such as web.xml.
 
        --runtimealtdd
            Deploys the application using a GlassFish Server runtime deployment
@@ -186,10 +186,10 @@ OPTIONS
            an absolute path or a relative path to the alternate deployment
            descriptor file. The alternate deployment descriptor overrides the
            top-level deployment descriptor packaged in the archive. For
-           example, for an EAR, the use of --runtimealtdd overrides
-           glassfish-application.xml. For a standalone module, the use of
-           --runtimealtdd overrides the top-level module descriptor such as
-           glassfish-web.xml. Applies to GlassFish Server deployment
+           example, for an EAR, using the --runtimealtdd option overrides
+           glassfish-application.xml. For a standalone module, using the
+           --runtimealtdd option overrides the top-level module descriptor
+           such as glassfish-web.xml. Applies to GlassFish Server deployment
            descriptors only (glassfish-*.xml); the name of the alternate
            deployment descriptor file must begin with glassfish-. Does not
            apply to sun-*.xml deployment descriptors, which are deprecated.
@@ -198,9 +198,9 @@ OPTIONS
            Specifies the deployment order of the application. This is useful
            if the application has dependencies and must be loaded in a certain
            order at server startup. The deployment order is specified as an
-           integer. The default value is 100. Applications with a lower number
-           are loaded before applications with a higher number. For example,
-           an application with a deployment order of 102 is loaded before an
+           integer. The default value is 100. Applications with lower numbers
+           are loaded before applications with higher numbers. For example, an
+           application with a deployment order of 102 is loaded before an
            application with a deployment order of 110. If a deployment order
            is not specified, the default value of 100 is assigned. If two
            applications have the same deployment order, the first application
@@ -417,6 +417,16 @@ OPTIONS
            Other available properties are determined by the implementation of
            the component that is being redeployed.
 
+           For components packaged as OSGi bundles (--type=osgi), the deploy
+           subcommand accepts properties arguments to wrap a WAR file as a WAB
+           (Web Application Bundle) at the time of deployment. The subcommand
+           looks for a key named UriScheme and, if present, uses the key as a
+           URL stream handler to decorate the input stream. Other properties
+           are used in the decoration process. For example, the GlassFish
+           Server OSGi web container registers a URL stream handler named
+           webbundle, which is used to wrap a plain WAR file as a WAB. For
+           more information about usage, see the example in this help page.
+
 OPERANDS
        file_archive|filepath
            The path to the archive that contains the application that is being
@@ -497,8 +507,12 @@ EXAMPLES
            The cart application is loaded before the horse application at
            server startup.
 
+           Some lines of output are omitted from this example for readability.
+
                asadmin> deploy --deploymentorder 102 --name cart cart.war
+               ...
                asadmin> deploy --deploymentorder 110 --name horse horse.war
+               ...
 
        Example 7, Deploying an Application Using an Alternate Java EE 7
        Deployment Descriptor File
@@ -507,6 +521,8 @@ EXAMPLES
            archive.
 
                asadmin> deploy --altdd path_to_alternate_descriptor cart.ear
+               Application deployed successfully with name cart.
+               Command deploy executed successfully
 
        Example 8, Deploying an Application Using an Alternate GlassFish Server
        Deployment Descriptor File
@@ -515,6 +531,25 @@ EXAMPLES
            application archive.
 
                asadmin> deploy --runtimealtdd path_to_alternate_runtime_descriptor horse.ear
+               Application deployed successfully with name horse.
+               Command deploy executed successfully
+
+       Example 9, Wrapping a WAR File as a WAB
+           This example wraps a plain WAR file as a WAB when an OSGi bundle is
+           deployed, and is specific to components packaged as OSGi bundles.
+
+           The backslash (\) character is used to escape characters in the
+           command. For more information about escape characters in options
+           for the asadmin utility, see the asadmin(1M) help page.
+
+               asadmin deploy --type osgi \
+               --properties "UriScheme=webbundle:Bundle-SymbolicName=bar:\
+               Import-Package=javax.servlet;javax.servlet.http;
+               %20version\\=3.0;resolution\\:
+               =mandatory:Web-ContextPath=/foo" \
+               /tmp/test_sample1.war
+               Application deployed successfully with name sample1.
+               Command deploy executed successfully
 
 EXIT STATUS
        0

@@ -281,6 +281,12 @@ OPTIONS
            Specifies the name, including the full path, of a file that
            contains password entries in a specific format.
 
+           Note that any password file created to pass as an argument by using
+           the --passwordfile option should be protected with file system
+           permissions. Additionally, any password file being used for a
+           transient purpose, such as setting up SSH among nodes, should be
+           deleted after it has served its purpose.
+
            The entry for a password must have the AS_ADMIN_ prefix followed by
            the password name in uppercase letters, an equals sign, and the
            password.

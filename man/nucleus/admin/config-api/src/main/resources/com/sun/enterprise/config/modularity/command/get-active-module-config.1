@@ -7,8 +7,8 @@ NAME
 SYNOPSIS
            get-active-module-config [--help]
            [--target target]
-           [--all[={false|true}]]
-           [servicename]
+           [--all={false|true}]
+           [service_name]
 
 DESCRIPTION
        The get-active-module-config subcommand displays the current active
@@ -21,25 +21,26 @@ OPTIONS
            Displays the help text for the subcommand.
 
        --target
-           Specifies the target for the subcommand.
+           Specifies the target for which you want to view the current active
+           configuration of a specific service or an entire instance.
 
            Possible values are as follows:
 
            server
-               Displays the current active configuration of a service for the
-               default server instance. This is the default value.
+               Displays the current active configuration for the default
+               server instance. This is the default value.
 
            domain
-               Displays the current active configuration of a service for the
-               default domain.
+               Displays the current active configuration for the default
+               domain.
 
            cluster-name
-               Displays the current active configuration of a service for the
-               specified cluster.
+               Displays the current active configuration for the specified
+               cluster.
 
            instance-name
-               Displays the current active configuration of a service for the
-               specified instance.
+               Displays the current active configuration for the specified
+               instance.
 
        --all
            Displays all current active configurations.
@@ -47,15 +48,16 @@ OPTIONS
            The default value is false.
 
 OPERANDS
-       servicename
-           The name of the module.
+       service_name
+           The name of the module for which you want to display the current
+           active configuration.
 
 EXAMPLES
        Example 1, Displaying the Current Active Configuration
            This example displays the current active configuration for the JMS
            service in server-config (the default configuration).
 
-               asadmin> get-active-module-config
+               asadmin> get-active-module-config jms-service
                At location: domain/configs/config[server-config]
                <jms-service default-jms-host="default_JMS_host" type="EMBEDDED"
                  <jms-host port="7676" host="localhost" name="default_JMS_host"/>
