@@ -34,13 +34,17 @@ public class Client {
 
 	try {
 
-	    Hello bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB");
+	    Hello bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB!com.acme.Hello");
 	    System.out.println("SFSB test : " + bean.test("BAR", 1));
             bean.testRemove();
 
-	    bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB");
+	    bean = (Hello) new InitialContext().lookup("java:global/" + appName + "/SFSB!com.acme.Hello");
 	    System.out.println("SFSB test destroyed: " + bean.test("FOO", 1));
 	    System.out.println("SFSB test again: " + bean.test("BAR", 2));
+
+	    Hello2 bean2 = (Hello2) new InitialContext().lookup("java:global/" + appName + "/SLSB");
+            bean2.testRemove();
+
 
 	     stat.addStatus("local main", stat.PASS);
 
