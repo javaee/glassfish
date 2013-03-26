@@ -183,8 +183,6 @@ public class InstallNodeTest extends SshBaseDevTest {
     }
 
     private void testUnInstallLocalNode() {
-        //should fail since there is an installation
-        report("uninstall-node", !asadmin("uninstall-node", INSTALL_DIR, "/tmp/a", LOCALHOST));
 
         //delete the sample instances, nodedir will remain
         //this is to test JIRA-16889
