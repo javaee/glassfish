@@ -26,7 +26,10 @@ import java.net.URL;
                         user = "naman",
                         password = "naman",
                         from = "naman.mehta@oracle.com",
-                        properties = {"property1=10;property2=20"}
+                        properties = {
+				"mail.imap.class=com.sun.mail.imap.IMAPStore",
+				"mail.smtp.class=com.sun.mail.smtp.SMTPTransport"
+			}
                 ),
                 @MailSessionDefinition(description = "Mail Session Description 1",
                         name = "java:comp/env/Appclient_MailSession",
@@ -36,14 +39,21 @@ import java.net.URL;
                         user = "naman",
                         password = "naman",
                         from = "naman.mehta@oracle.com",
-                        properties = {"property1=10;property2=20"}
+                        properties = {
+				"mail.imap.class=com.sun.mail.imap.IMAPStore",
+				"mail.smtp.class=com.sun.mail.smtp.SMTPTransport"
+			}
+
                 ),
                 @MailSessionDefinition(
                         name = "java:app/mail/Application_Level_MailSession_Partial",
                         storeProtocol = "IMAP",
                         transportProtocol = "SMTP",
                         host = "localhost",
-                        properties = {"property2=20"}
+                        properties = {
+				"mail.imap.class=com.sun.mail.imap.IMAPStore",
+				"mail.smtp.class=com.sun.mail.smtp.SMTPTransport"
+			}
                 ),
                 @MailSessionDefinition(description = "Mail Session Description 1",
                         name = "java:app/mail/Application_Level_MailSession_Override",
@@ -53,7 +63,10 @@ import java.net.URL;
                         user = "naman",
                         password = "naman",
                         from = "naman.mehta@oracle.com",
-                        properties = {"property1=10;property2=20"}
+                        properties = {
+				"mail.imap.class=com.sun.mail.imap.IMAPStore",
+				"mail.smtp.class=com.sun.mail.smtp.SMTPTransport"
+			}
                 )
         }
 )
