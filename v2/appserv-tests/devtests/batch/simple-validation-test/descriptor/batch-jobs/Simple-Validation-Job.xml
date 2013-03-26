@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job id="Simple-Validation-Job" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
+    <step id="step1" next="step2">
+        <chunk item-count="3">
+            <reader ref="SimpleItemReader"></reader> 
+            <processor ref="SimpleItemProcessor"></processor>
+            <writer ref="SimpleItemWriter"></writer> 
+        </chunk>
+    </step>
+    <step id="step2">
+        <chunk item-count="2">
+            <reader ref="SimpleItemReader"></reader> 
+            <processor ref="SimpleItemProcessor"></processor>
+            <writer ref="SimpleItemWriter"></writer> 
+        </chunk>
+    </step>
+</job>

@@ -43,7 +43,7 @@ public class Client {
     public void submitJobs() {
         try {
 	    for (int i = 0; i< MAX_JOB_SIZE; i++) {
-	        executionIds[i] = jobSubmitter.submitJob("CMT-ChunkJob");
+	        executionIds[i] = jobSubmitter.submitJob("Simple-Validation-Job");
 	        checkBatchJobStatus(executionIds[i], 10);
 	    }
 	    boolean result = true;
@@ -142,7 +142,7 @@ public class Client {
 	        Map<String, String> map = jobSubmitter.toMap(exeId);
 		String jobName = map.get("jobName");
 		String appName = map.get("appName");
-	        if (!jobName.startsWith("cmt-chunk-job") || !appName.startsWith("server-config:batch-validationApp")) {
+	        if (!jobName.startsWith("Simple-Validation-Job") || !appName.startsWith("server-config:Simple-ValidationApp")) {
 		    System.out.println("***********************************************");
 		    System.out.println("*** Job From another app? " + jobName + "; " + appName + " ***");
 		    System.out.println("***********************************************");

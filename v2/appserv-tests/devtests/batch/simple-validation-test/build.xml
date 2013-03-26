@@ -6,7 +6,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="batch-validationApp" default="usage" basedir=".">
+<project name="Simple-ValidationApp" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
