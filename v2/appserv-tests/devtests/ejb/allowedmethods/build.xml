@@ -14,6 +14,7 @@
 
     <target name="all">
         <antcall target="ctxcheck"/>
+        <antcall target="remove"/>
     </target>
 
     <target name="ctxcheck">
@@ -22,10 +23,17 @@
         <record name="ctxcheck.output" action="stop" />
     </target>
 
+    <target name="remove">
+        <record name="remove.output" action="start" />
+            <ant dir="remove" target="all"/>
+        <record name="remove.output" action="stop" />
+    </target>
+
     <target name="usage">
 	<echo>
 		Usage:
 			ant ctxcheck (Executes the ejb-allowedmethods ctxcheck test)
+			ant remove (Executes the ejb-allowedmethods remove test)
 			ant all (Executes all the ejb allowedmethods tests)
 	</echo>
     </target>
