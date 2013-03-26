@@ -32,8 +32,11 @@ public class Client {
 	for (int i=0; i<MAX_JOB_SIZE; i++)
 	    executionIds[i] = -1;
         submitJobs();
+        listBatchJobs();
+        listBatchJobsInLongFormat();
         checkJobExecution(executionIds[0]);
     	isJobExecutionOK(executionIds[0]);
+    	checkAllJobExecutions();
     	checkIfOnlyJobsFromThisAppAreVisible();
     }
 
@@ -50,6 +53,32 @@ public class Client {
             stat.addStatus("batch-cmt-chunk-test1", (result ? stat.PASS : stat.FAIL));
 	} catch (Exception ex) {
             stat.addStatus("batch-cmt-chunk-test1", stat.FAIL);
+        }
+    }
+
+    public void listBatchJobs() {
+        try {
+	    boolean status = true;
+	    Collection<String> jobs = jobSubmitter.listJobs(false);
+	    for (String job : jobs) {
+	        System.out.println("** JOB ==> " + job);
+	    }
+            stat.addStatus("batch-cmt-chunk-test2", (status ? stat.PASS : stat.FAIL));
+	} catch (Exception ex) {
+            stat.addStatus("batch-cmt-chunk-test2", stat.FAIL);
+        }
+    }
+
+    public void listBatchJobsInLongFormat() {
+        try {
+	    boolean status = true;
+	    Collection<String> jobs = jobSubmitter.listJobs(true);
+	    for (String job : jobs) {
+	        System.out.println("** JOB ==> " + job);
+	    }
+            stat.addStatus("batch-cmt-chunk-test3", (status ? stat.PASS : stat.FAIL));
+	} catch (Exception ex) {
+            stat.addStatus("batch-cmt-chunk-test3", stat.FAIL);
         }
     }
 
@@ -95,6 +124,17 @@ public class Client {
         return false;
     }
 
+    public void checkAllJobExecutions() {
+       boolean result = true;
+       for (long exeId : jobSubmitter.getAllExecutionIds(null)) {
+           if (!checkOneJobExecution(exeId)) {
+              result = false;
+	      break;
+	   }
+       }
+        stat.addStatus("batch-cmt-status-checkExe-checkAllJobExecutions", result ? stat.PASS : stat.FAIL);
+    }
+
     public void checkIfOnlyJobsFromThisAppAreVisible() {
         try {
 	    boolean status = true;
@@ -102,7 +142,7 @@ public class Client {
 	        Map<String, String> map = jobSubmitter.toMap(exeId);
 		String jobName = map.get("jobName");
 		String appName = map.get("appName");
-	        if (!jobName.startsWith("cmt-chunk-job") || !appName.startsWith("server-config:batch-cmt-chunkApp")) {
+	        if (!jobName.startsWith("cmt-chunk-job") || !appName.startsWith("server-config:batch-validationApp")) {
 		    System.out.println("***********************************************");
 		    System.out.println("*** Job From another app? " + jobName + "; " + appName + " ***");
 		    System.out.println("***********************************************");

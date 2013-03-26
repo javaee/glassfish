@@ -6,7 +6,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="batch-cmt-chunkApp" default="usage" basedir=".">
+<project name="batch-validationApp" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
