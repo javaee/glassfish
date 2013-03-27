@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.docs.man</groupId>
         <artifactId>manpages-appserver</artifactId>
-        <version>4.0-b26</version>
+        <version>4.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>    
     <artifactId>concurrent-admin-manpage</artifactId>
