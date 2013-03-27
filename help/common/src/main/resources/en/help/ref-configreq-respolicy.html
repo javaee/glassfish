@@ -5,13 +5,13 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-configreq-respolicy" name="ref-configreq-respolicy"></a><a id="GHCOM00125" name="GHCOM00125"></a></p>
 
-<h4><a id="sthref426" name="sthref426"></a>Request and Response Policy Configurations</h4>
+<h4><a id="sthref235" name="sthref235"></a>Request and Response Policy Configurations</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>If Authenticate Source is <code>sender</code>, then the message contains a <code>wsse:Security</code> header with a <code>wsse:UsernameToken</code> (with password). If Authenticate Source is content, then the content of the SOAP message body is signed, and the message contains a <code>wsse:Security</code> header with the message body signature represented as a <code>ds</code>:<code>Signature</code>.</p>
 <p>If Authenticate Recipient is either <code>before-content</code> or <code>after-content</code>, the content of the SOAP message body is encrypted and replaced with the resulting <code>xend:EncryptedData</code>. The message contains <code>a wsse:Security</code> header that contains an <code>xenc:EncryptedKey</code>. The <code>xenc:EncryptedKey</code> contains the key used to encrypt the SOAP message body. The key is encrypted in the public key of the recipient.</p>
 <p>If the Authenticate Source and Authenticate Recipient settings are left blank, then no security policy is specified, and the modules perform no security operations.</p>
 <p>The following table shows message protection policy configurations and the resulting message security operations performed by the WS-Security SOAP message security providers for that configuration.</p>
-<a id="sthref427" name="sthref427"></a><a id="gbutq" name="gbutq"></a>
+<a id="GHCOM469" name="GHCOM469"></a><a id="sthref236" name="sthref236"></a><a id="gbutq" name="gbutq"></a>
 <p><b>Message Protection Policy Based on WS-Security Soap Message Security Operation</b></p>
 <table  title="Message Protection Policy Based on WS-Security Soap Message Security Operation" summary="Add Summary attribute value here." dir="ltr" border="1" width="100%" frame="hsides" rules="rows" cellpadding="3" cellspacing="0">
 <col width="20%" />

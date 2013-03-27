@@ -16,6 +16,14 @@
     </tocitem>
   </tocitem>
   <tocitem target="ref-topic-group" text="GlassFish Server Administration Console Reference" expand="false">
+    <tocitem target="ref-group-appservsettings" text="server (Admin Server)" expand="false">
+      <tocitem target="ref-group-batchjobs" text="Batch" expand="false">
+        <tocitem target="ref-batchjobslisting" text="Batch Job Executions" expand="false"></tocitem>
+        <tocitem target="ref-batchjobsexecution" text="Batch Job Execution Details" expand="false"></tocitem>
+        <tocitem target="ref-batchjobssteps" text="Batch Job Execution Steps" expand="false"></tocitem>
+        <tocitem target="ref-batchjobsconfiguration" text="Batch Runtime Configuration" expand="false"></tocitem>
+      </tocitem>
+    </tocitem>
     <tocitem target="ref-group-resources" text="Resources" expand="false">
       <tocitem target="ref-group-javamailresources" text="JavaMail Sessions" expand="false">
         <tocitem target="ref-javamailsessions" text="JavaMail Sessions" expand="false"></tocitem>

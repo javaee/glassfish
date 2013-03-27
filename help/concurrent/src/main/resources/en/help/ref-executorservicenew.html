@@ -16,7 +16,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Context Information</dt>
 <dd>
-<p>The context to be propagated to threads: Classloader, JNDI, Security, or WorkArea. If no context is specified (the default), all context types are propagated.</p>
+<p>The contexts to propagate to threads: Classloader, JNDI, Security, or WorkArea. Context propagation can be enabled or disabled. If enabled, the selected contexts are propagated. If disabled, none of the contexts are propagated, even if they are selected. The default value is Enabled, with all four contexts selected.</p>
 </dd>
 <dt>Status</dt>
 <dd>
@@ -24,43 +24,43 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Thread Priority</dt>
 <dd>
-<p>The priority to assign to threads that are created. The default is 5.</p>
+<p>The priority to assign to created threads. The default value is 5.</p>
 </dd>
-<dt>Long Running Tasks</dt>
+<dt>Long-Running Tasks</dt>
 <dd>
-<p>XXX.</p>
+<p>Whether the resource should be used for long-running tasks. If enabled, long-running tasks are not reported as stuck. This option is disabled by default.</p>
 </dd>
 <dt>Hung After</dt>
 <dd>
-<p>The time in seconds that a task can execute before it is considered hung.</p>
-</dd>
-<dt>Core Size</dt>
-<dd>
-<p>The number of threads to keep in a thread pool. The default is 0.</p>
-</dd>
-<dt>Maximum Pool Size</dt>
-<dd>
-<p>The maximum number of threads a pool can contain. The default value is 2147483647.</p>
-</dd>
-<dt>Keep Alive</dt>
-<dd>
-<p>The time in seconds threads can remain idle when the number of threads is greater than core size. The default is 60.</p>
-</dd>
-<dt>Thread Lifetime</dt>
-<dd>
-<p>The time in seconds each thread remains in a thread pool before it is purged, regardless of whether the number of threads is greater than core size or whether the thread is idle.</p>
-</dd>
-<dt>Task Queue Capacity</dt>
-<dd>
-<p>The number of submitted tasks that can be stored in the task queue, awaiting execution. The default is 2147483647.</p>
+<p>The number of seconds tasks can execute before they are considered unresponsive. The default value is 0.</p>
 </dd>
 <dt>Description</dt>
 <dd>
 <p>A description of this resource.</p>
 </dd>
+<dt>Core Size</dt>
+<dd>
+<p>The number of threads to keep in a thread pool. The default value is 0.</p>
+</dd>
+<dt>Maximum Pool Size</dt>
+<dd>
+<p>The maximum number of threads a thread pool can contain. The default value is 2147483647.</p>
+</dd>
+<dt>Keep Alive</dt>
+<dd>
+<p>The number of seconds threads can remain idle when the number of threads is greater than the core size. The default value is 60.</p>
+</dd>
+<dt>Thread Lifetime</dt>
+<dd>
+<p>The number of seconds threads can remain in a thread pool before being purged, regardless of whether the number of threads is greater than the core size or whether the threads are idle. The default value is 0.</p>
+</dd>
+<dt>Task Queue Capacity</dt>
+<dd>
+<p>The number of submitted tasks that can be stored in the task queue awaiting execution. The default value is 2147483647.</p>
+</dd>
 <dt>Additional Properties</dt>
 <dd>
-<p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type.</p>
+<p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type. Moreover, this resource type does not currently use any additional properties.</p>
 </dd>
 </dl>
 <a id="GHCON142" name="GHCON142"></a>

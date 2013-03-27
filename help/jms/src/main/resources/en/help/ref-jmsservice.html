@@ -29,7 +29,7 @@ Use is subject to License Terms  -->
 <dl>
 <dt>EMBEDDED</dt>
 <dd>
-<p>Access the JMS service on the local host. The JMS service is started in the same JVM machine as the GlassFish Server. Lazy initialization starts the default embedded broker on the first access of JMS services rather than at GlassFish Server startup. This is the default type of JMS Service.</p>
+<p>Access the JMS service on the local host. The JMS service is started in the same JVM machine as GlassFish Server. Lazy initialization starts the default embedded broker on the first access of JMS services rather than at GlassFish Server startup. This is the default type of JMS Service.</p>
 </dd>
 <dt>LOCAL</dt>
 <dd>
@@ -37,13 +37,13 @@ Use is subject to License Terms  -->
 </dd>
 <dt>REMOTE</dt>
 <dd>
-<p>Access the JMS service on another system. If you choose REMOTE, the JMS service is not started by the GlassFish Server the next time the server starts. Instead, the JMS service is started and managed by Message Queue, so you must start the Message Queue broker separately. For information about starting the broker, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GMADG00227"><i>Starting Brokers</i> in <i>Oracle GlassFish Server Message Queue Administration Guide</i></a>. If you choose this value and are using a remote host, follow the instructions in <a href="task-jmshostedit.html">To Edit a JMS Host</a> to specify the name of the remote host.</p>
+<p>Access the JMS service on another system. If you choose REMOTE, the JMS service is not started by GlassFish Server the next time the server starts. Instead, the JMS service is started and managed by Message Queue, so you must start the Message Queue broker separately. For information about starting the broker, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GMADG00227"><i>Starting Brokers</i> in <i>Oracle GlassFish Server Message Queue Administration Guide</i></a>. If you choose this value and are using a remote host, follow the instructions in <a href="task-jmshostedit.html">To Edit a JMS Host</a> to specify the name of the remote host.</p>
 </dd>
 </dl>
 </dd>
 <dt>Startup Timeout</dt>
 <dd>
-<p>The number of seconds the GlassFish Server waits for the JMS service to start before aborting the startup. On a slow or overloaded system, increase the value from the default. The default value is 60.</p>
+<p>The number of seconds GlassFish Server waits for the JMS service to start before aborting the startup. On a slow or overloaded system, increase the value from the default. The default value is 60.</p>
 </dd>
 <dt>Start Arguments</dt>
 <dd>
@@ -86,7 +86,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Address List Iterations</dt>
 <dd>
-<p>The number of times the JMS service iterates through the AddressList in an effort to establish (or reestablish) a connection. A value of -1 indicates that the number of attempts is unlimited. The default value is 3.</p>
+<p>The number of times the JMS service iterates through the AddressList in an effort to establish (or reestablish) a connection. A value of -1 indicates that the number of attempts is unlimited. The default value is 3. The maximum value is 2147483647.</p>
 </dd>
 <dt>MQ Scheme and MQ Service</dt>
 <dd>

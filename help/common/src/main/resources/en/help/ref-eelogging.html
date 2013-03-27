@@ -5,11 +5,15 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-eelogging" name="ref-eelogging"></a><a id="GHCOM00094" name="GHCOM00094"></a></p>
 
-<h4><a id="sthref341" name="sthref341"></a>Logger Settings</h4>
+<h4><a id="sthref193" name="sthref193"></a>Logger Settings</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the Logger Settings page to configure logging for the selected GlassFish Server instance or cluster.</p>
 <p>The Logger Settings page contains the following options.</p>
 <dl>
+<dt>Load Defaults</dt>
+<dd>
+<p>Button to restore settings that have default values to their default values. Settings that do not have default values are not changed.</p>
+</dd>
 <dt>Configuration Name</dt>
 <dd>
 <p>The name of the configuration to which the settings on this page apply. This field is read only.</p>
@@ -20,27 +24,31 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Log to Console</dt>
 <dd>
-<p>When enabled, logging output is sent to the system console.</p>
+<p>When enabled, logging output is sent to the system console. This option is disabled by default.</p>
 </dd>
 <dt>Rotation on Date Change</dt>
 <dd>
-<p>When enabled, GlassFish Server rotates log files every day at midnight.</p>
+<p>When enabled, GlassFish Server rotates log files every day at midnight. This option is disabled by default.</p>
 </dd>
-<dt>Multi Line Mode</dt>
+<dt>Multiline Mode</dt>
 <dd>
-<p>When enabled, log messages are formatted in a way that makes them easier to read. The log message body is indented and starts on a new line.</p>
+<p>When enabled, the body of a log message starts on a new line after the message header. This option is enabled by default.</p>
 </dd>
 <dt>Console Logging Format</dt>
 <dd>
-<p>The logging format for logging to the console. Available choices are ULF (UniformLogFormatter) and ODL (Oracle Diagnostics Logging). The default is ODL.</p>
+<p>The format used for logging to the console. Available choices are ULF (UniformLogFormatter) or ODL (Oracle Diagnostics Logging). The default format is ULF.</p>
 </dd>
-<dt>LogFile Logging Format</dt>
+<dt>Log File Logging Format</dt>
 <dd>
-<p>The logging format for logging to the server log file. Available choices are ULF and ODL. The default is ODL.</p>
+<p>The format used for logging to the server log file. Available choices are ULF or ODL. The default format is ODL.</p>
+</dd>
+<dt>Format Exclude Fields</dt>
+<dd>
+<p>The fields to exclude in log records. All fields are included by default.</p>
 </dd>
 <dt>File Rotation Limit</dt>
 <dd>
-<p>The size in bytes that the server log file must reach before it is rotated. When the server log reaches the specified size, the GlassFish Server creates a new, empty file named <code>server.log</code> and renames the old file <code>server.log_</code><i>date</i>, where <i>date</i> is the date and time when the file was rotated. The default value is 2 megabytes. The minimum value for the limit is 500 kilobytes; if you specify a lower value, the file rotates when it reaches 500 KB. To turn off log file rotation, set the value to 0.</p>
+<p>The size in bytes that the server log file must reach before it is rotated. When the server log reaches the specified size, GlassFish Server creates a new, empty file named <code>server.log</code> and renames the old file <code>server.log_</code><i>date</i>, where <i>date</i> is the date and time when the file was rotated. The default value is 2 megabytes. The minimum value for the limit is 500 kilobytes; if you specify a lower value, the file rotates when it reaches 500 KB. To turn off log file rotation, set the value to 0.</p>
 </dd>
 <dt>File Rotation Time Limit</dt>
 <dd>
@@ -63,7 +71,7 @@ Use is subject to License Terms  -->
 <p>The absolute class name of a custom log handler. A custom log handler enables you to send logs to a destination other than <code>server.log</code> or <code>syslog</code>. The custom handler must extend the class <code>java.util.logging.Handler</code> (a JSR 047 compliant API). Put the handler class in the GlassFish Server classpath so that the handler is installed during server startup.</p>
 </dd>
 </dl>
-<a id="sthref342" name="sthref342"></a>
+<a id="GHCOM421" name="GHCOM421"></a>
 <h5>Related Tasks</h5>
 <ul>
 <li>
@@ -76,7 +84,7 @@ Use is subject to License Terms  -->
 <p><a href="task-logviewer.html">To View Log Files for the DAS</a></p>
 </li>
 </ul>
-<a id="sthref343" name="sthref343"></a>
+<a id="GHCOM422" name="GHCOM422"></a>
 <h5>Related asadmin Commands</h5>
 <ul>
 <li>
@@ -90,6 +98,9 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00228"><code>set-log-levels</code>(1)</a></p>
+</li>
+<li>
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM879"><code>set-log-file-format</code>(1)</a></p>
 </li>
 </ul>
 

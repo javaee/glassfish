@@ -34,9 +34,13 @@ Use is subject to License Terms  -->
 <p>The absolute or relative path to the directory in which the session state is preserved between application restarts, if preserving the state is possible. If this path is not set, the session state is not preserved. By default, this path is not set.</p>
 <p>A relative path is relative to the temporary directory for this web application.</p>
 </dd>
+<dt>Session ID Generator Class Name</dt>
+<dd>
+<p>The custom class for generating unique session IDs. Only one session ID generator class per server instance is permitted, and all instances in a cluster must use the same session ID generator to prevent session key collision. The class must be in the Application Server classpath. By default, a custom class is not set.</p>
+</dd>
 <dt>Additional Properties</dt>
 <dd>
-<p>Additional properties for the session manager. The GlassFish Server does not define any additional properties for the session manager.</p>
+<p>Additional properties for the session manager. GlassFish Server does not define any additional properties for the session manager.</p>
 </dd>
 </dl>
 <a id="sthref97" name="sthref97"></a>

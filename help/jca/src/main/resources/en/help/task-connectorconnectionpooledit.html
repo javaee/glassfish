@@ -34,6 +34,10 @@ Use is subject to License Terms  -->
 <p>This option is disabled by default.</p>
 </li>
 <li>
+<p>In the Deployment Order field, type a number to specify the deployment order of the connector connection pool.</p>
+<p>Resources with a lower number are loaded first at server startup. The default value is 100.</p>
+</li>
+<li>
 <p>In the Description field, type a description of the connector connection pool.</p>
 </li>
 <li>
@@ -61,7 +65,7 @@ Use is subject to License Terms  -->
 <p>If the Required checkbox is selected, connections are validated before being given to the application. If a resource's validation fails, it is destroyed, and a new resource is created and returned. This option is disabled by default.</p>
 </li>
 <li>
-<p>Select the On Any Failure checkbox so the GlassFish Server will close all connections in the pool and reestablish them if a single connection fails.</p>
+<p>Select the On Any Failure checkbox so GlassFish Server will close all connections in the pool and reestablish them if a single connection fails.</p>
 <p>If you do not select the checkbox, individual connections will be reestablished only when they are used.</p>
 </li>
 <li>

@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="task-eelogging" name="task-eelogging"></a><a id="GHCOM00177" name="GHCOM00177"></a></p>
 
-<h4><a id="sthref117" name="sthref117"></a>To Configure General Logging Settings</h4>
+<h4><a id="sthref72" name="sthref72"></a>To Configure General Logging Settings</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <ol>
 <li>
@@ -25,22 +25,31 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p>Select the Log to Console Enabled checkbox to send logging output to the system console.</p>
+<p>This option is disabled by default.</p>
 </li>
 <li>
 <p>Select the Rotation on Date Change Enabled checkbox to rotate server log files every day at midnight.</p>
+<p>This option is disabled by default.</p>
 </li>
 <li>
-<p>Select the Multi Line Mode Enabled checkbox to format log messages so that they are easier to read. The log message body is indented and starts on a new line.</p>
+<p>Select the Multiline Mode Enabled checkbox to start the body of a log message on a new line after the log message header.</p>
+<p>This option is enabled by default.</p>
 </li>
 <li>
-<p>From the Console Logging Format drop-down list, select the format for logging to the console. The defaut option is ODL (Oracle Diagnostics Logging). The other option is ULF (UniformLogFormatter).</p>
+<p>From the Console Logging Format drop-down list, select the format to use to log to the console.</p>
+<p>Available formats are ULF (UniformLogFormatter) or ODL (Oracle Diagnostics Logging). The default format is ULF.</p>
 </li>
 <li>
-<p>From the LogFile Logging Format drop-down list, select the format for logging to the server log file. The defaut option is ODL.</p>
+<p>From the Log File Logging Format drop-down list, select the format to use to log to the server log file.</p>
+<p>Available formats are ULF or ODL. The default format is ODL.</p>
+</li>
+<li>
+<p>In the Format Exclude Fields field, specify the fields to exclude in the log record.</p>
+<p>All fields are included by default.</p>
 </li>
 <li>
 <p>In the File Rotation Limit field, type the size in bytes that the server log file must reach before it is rotated.</p>
-<p>When the server log reaches the specified size, the GlassFish Server creates a new, empty file named <code>server.log</code> and renames the old file <code>server.log_</code><i>date</i>, where <i>date</i> is the date and time when the file was rotated. The default value is 2 megabytes. The minimum value for the limit is 500 kilobytes; if you specify a lower value, the file rotates when it reaches 500 KB. To turn off log file rotation, set the value to 0.</p>
+<p>When the server log reaches the specified size, GlassFish Server creates a new, empty file named <code>server.log</code> and renames the old file <code>server.log_</code><i>date</i>, where <i>date</i> is the date and time when the file was rotated. The default value is 2 megabytes. The minimum value for the limit is 500 kilobytes; if you specify a lower value, the file rotates when it reaches 500 KB. To turn off log file rotation, set the value to 0.</p>
 </li>
 <li>
 <p>In the File Rotation Time Limit field, type the number of minutes after which the server log must be rotated.</p>
@@ -80,7 +89,7 @@ Use is subject to License Terms  -->
 
 </li>
 </ol>
-<a id="sthref118" name="sthref118"></a>
+<a id="GHCOM276" name="GHCOM276"></a>
 <h5>See Also</h5>
 <ul>
 <li>

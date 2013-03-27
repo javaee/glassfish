@@ -16,7 +16,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Context Information</dt>
 <dd>
-<p>The context to be propagated to threads: Classloader, JNDI, Security, or WorkArea. If no context is specified (the default), all context types are propagated.</p>
+<p>The contexts to propagate to threads: Classloader, JNDI, Security, or WorkArea. Context propagation can be enabled or disabled. If enabled, the selected contexts are propagated. If disabled, none of the contexts are propagated, even if they are selected. The default value is Enabled, with all four contexts selected.</p>
 </dd>
 <dt>Status</dt>
 <dd>
@@ -24,7 +24,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Thread Priority</dt>
 <dd>
-<p>The priority to assign to threads that are created. The default is 5.</p>
+<p>The priority to assign to created threads. The default value is 5.</p>
 </dd>
 <dt>Description</dt>
 <dd>
@@ -32,7 +32,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Additional Properties</dt>
 <dd>
-<p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type.</p>
+<p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type. Moreover, this resource type does not currently use any additional properties.</p>
 </dd>
 </dl>
 <a id="GHCON156" name="GHCON156"></a>

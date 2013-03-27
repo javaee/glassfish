@@ -98,11 +98,11 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Validation Method</dt>
 <dd>
-<p>The GlassFish Server can validate database connections in the following ways.</p>
+<p>GlassFish Server can validate database connections in the following ways.</p>
 <dl>
 <dt><code>auto-commit</code> and <code>metadata</code></dt>
 <dd>
-<p>The GlassFish Server validates a connection by calling the <code>con.getAutoCommit</code> or <code>con.getMetaData</code> method.</p>
+<p>GlassFish Server validates a connection by calling the <code>con.getAutoCommit</code> or <code>con.getMetaData</code> method.</p>
 
 <hr>
 <p><b>Note:</b></p>
@@ -113,7 +113,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt><code>custom-validation</code></dt>
 <dd>
-<p>The GlassFish Server uses a user-defined validation mechanism specified by the custom implementation class in the Validation Classname field.</p>
+<p>GlassFish Server uses a user-defined validation mechanism specified by the custom implementation class in the Validation Classname field.</p>
 </dd>
 <dt><code>table</code></dt>
 <dd>
@@ -127,7 +127,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Validation Class Name</dt>
 <dd>
-<p>The custom validation implementation class name. This field is applicable only if the Validation Method was set to <code>custom-validation</code>. The class name provided must be accessible to the GlassFish Server. The specified class must implement the <code>org.glassfish.api.jdbc.ConnectionValidation</code> interface. You can either select the name from the drop-down list or type it.</p>
+<p>The custom validation implementation class name. This field is applicable only if the Validation Method was set to <code>custom-validation</code>. The class name provided must be accessible to GlassFish Server. The specified class must implement the <code>org.glassfish.api.jdbc.ConnectionValidation</code> interface. You can either select the name from the drop-down list or type it.</p>
 </dd>
 <dt>On Any Failure</dt>
 <dd>

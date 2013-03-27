@@ -34,14 +34,29 @@ Use is subject to License Terms  -->
 <p>After the limit is reached, an attempt to create a new session causes an <code>IllegalStateException</code> to be thrown.</p>
 </li>
 <li>
-<p>In the Session Filename field, type the absolute or relative path to the directory in which the session state is preserved between application restarts, if preserving the state is possible.</p>
+<p>In the Session File Name field, type the absolute or relative path to the directory in which the session state is preserved between application restarts, if preserving the state is possible.</p>
 <p>If this path is not set, the session state is not preserved. By default, this path is not set.</p>
 <p>A relative path is relative to the temporary directory for this web application.</p>
 <p>This setting is applicable only if the Persistence Type is <code>memory</code>. To set the Persistence Type, see <a href="task-webcontaineravailability.html">To Configure Availability Settings for the Web Container</a>.</p>
 </li>
 <li>
+<p>In the Session ID Generator Class Name field, type the value of a custom class for generating unique session IDs.</p>
+<p>Only one session ID generator class per server instance is permitted, and all instances in a cluster must use the same session ID generator to prevent session key collision.</p>
+<p>Custom session ID generator classes must implement the <code>com.sun.enterprise.util.uuid.UuidGenerator</code> interface:</p>
+<pre>
+package com.sun.enterprise.util.uuid;
+
+public interface UuidGenerator {
+
+    public String generateUuid();
+    public String generateUuid(Object obj);  //obj is the session object
+}
+</pre>
+<p>The class must be in the Application Server classpath.</p>
+</li>
+<li>
 <p>In the Additional Properties section, specify additional properties.</p>
-<p>The GlassFish Server does not define any additional properties for the session manager.</p>
+<p>GlassFish Server does not define any additional properties for the session manager.</p>
 <ul>
 <li>
 <p>To add a property, click the Add Property button. In the blank row that appears, type the property name in the Name field, and type the property value in the Value field.</p>

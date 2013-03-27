@@ -9,7 +9,7 @@ Use is subject to License Terms  -->
 <a name="BEGIN" id="BEGIN"></a>
 <ol>
 <li>
-<p>In the navigation tree, expand the Resources node .</p>
+<p>In the navigation tree, expand the Resources node.</p>
 </li>
 <li>
 <p>Under the Resources node, expand the JNDI node.</p>
@@ -42,6 +42,10 @@ Use is subject to License Terms  -->
 <p>For example, when creating an external resource to connect to an external repository, to test a bean class, the JNDI Lookup can look like this: <code>cn=</code><i>testmybean</i>.</p>
 </li>
 <li>
+<p>In the Deployment Order field, type a number to specify the deployment order of the external resource.</p>
+<p>Resources with a lower number are loaded first at server startup. The default value is 100.</p>
+</li>
+<li>
 <p>In the Description field, Type a short description of the resource.</p>
 <p>This description is a string value and can include a maximum of 250 characters.</p>
 </li>
@@ -51,7 +55,7 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p>In the Additional Properties section, specify additional properties for the external resource.</p>
-<p>The GlassFish Server does not define any additional properties for external resources.</p>
+<p>GlassFish Server does not define any additional properties for external resources.</p>
 <ul>
 <li>
 <p>To add a property, click the Add Property button. In the blank row that appears, type the property name in the Name field, and type the property value in the Value field.</p>

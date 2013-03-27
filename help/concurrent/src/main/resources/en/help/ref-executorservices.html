@@ -7,8 +7,8 @@ Use is subject to License Terms  -->
 
 <h4>Managed Executor Services<a id="sthref18" name="sthref18"></a><a id="sthref19" name="sthref19"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
-<p>Managed executor services are managed objects used by applications to execute submitted tasks asynchronously. Tasks are executed on threads created and managed by the container. The context of the container is propagated to the thread executing the task.</p>
-<p>Use the Managed Executor Services page to configure managed executor service resources that are used by applications.</p>
+<p>Managed executor services are used by applications to execute submitted tasks asynchronously. Tasks are executed on threads that are started and managed by the container. The context of the container is propagated to the thread executing the task.</p>
+<p>Use the Managed Executor Services page to configure managed executor service resources.</p>
 <p>For each managed executor service resource, the following information is provided.</p>
 <dl>
 <dt>JNDI Name</dt>
@@ -17,15 +17,15 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Enabled</dt>
 <dd>
-<p>True if the resource is enabled, or false if the resource is disabled.</p>
+<p>A check mark if the resource is enabled, or an X if the resource is disabled.</p>
 </dd>
 <dt>Context Information</dt>
 <dd>
-<p>The context propagated to threads: Classloader, JNDI, Security, or WorkArea.</p>
+<p>The container contexts propagated to threads.</p>
 </dd>
 <dt>Thread Priority</dt>
 <dd>
-<p>The priority of created threads. The default is 5.</p>
+<p>The priority assigned to threads.</p>
 </dd>
 <dt>Description</dt>
 <dd>

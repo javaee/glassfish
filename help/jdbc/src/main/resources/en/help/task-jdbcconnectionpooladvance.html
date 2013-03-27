@@ -106,11 +106,11 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p>From the Validation Method drop-down list, select a validation method.</p>
-<p>The GlassFish Server can validate database connections in the following ways.</p>
+<p>GlassFish Server can validate database connections in the following ways.</p>
 <dl>
 <dt><code>auto-commit</code> and <code>metadata</code></dt>
 <dd>
-<p>The GlassFish Servervalidates a connection by calling the <code>con.getAutoCommit</code> and <code>con.getMetaData</code> methods.</p>
+<p>GlassFish Server validates a connection by calling the <code>con.getAutoCommit</code> and <code>con.getMetaData</code> methods.</p>
 
 <hr>
 <p><b>Note:</b></p>
@@ -121,7 +121,7 @@ Use is subject to License Terms  -->
 </dd>
 <dt><code>custom-validation</code></dt>
 <dd>
-<p>The GlassFish Server uses a user-defined validation mechanism specified by the custom implementation class in the Validation Classname field.</p>
+<p>GlassFish Server uses a user-defined validation mechanism specified by the custom implementation class in the Validation Classname field.</p>
 </dd>
 <dt><code>table</code></dt>
 <dd>
@@ -134,7 +134,7 @@ Use is subject to License Terms  -->
 </li>
 <li>
 <p>If you selected <code>custom-validation</code> from the Validation Method drop-down list, type the custom validation implementation class name or select it from the Validation Class Name drop-down list.</p>
-<p>The class name provided must be accessible to the GlassFish Server. The specified class must implement the <code>org.glassfish.api.jdbc.ConnectionValidation</code> interface.</p>
+<p>The class name provided must be accessible to GlassFish Server. The specified class must implement the <code>org.glassfish.api.jdbc.ConnectionValidation</code> interface.</p>
 </li>
 <li>
 <p>Select the On Any Failure Close All Connections checkbox to have the server close and reestablish all connections in the pool in the event of a single connection failure.</p>

@@ -23,6 +23,10 @@ Use is subject to License Terms  -->
 <p>From the Thread Pool ID drop-down list, select the thread pool to be used for the resource adapter configuration.</p>
 </li>
 <li>
+<p>In the Deployment Order field, type a number to specify the deployment order of the resource adapter.</p>
+<p>Resources with a lower number are loaded first at server startup. The default value is 100.</p>
+</li>
+<li>
 <p>In the Additional Properties section, specify additional properties for the resource adapter.</p>
 <p>Available properties are the names of setter methods of the class referenced by the <code>resourceadapter-class</code> element in the <code>ra.xml</code> file, which defines the class name of the resource adapter JavaBeans component. Any modifications to properties defined here override the default values present in <code>ra.xml</code>.</p>
 <ul>
