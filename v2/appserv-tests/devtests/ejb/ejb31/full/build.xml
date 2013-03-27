@@ -22,9 +22,7 @@
         <antcall target="sfsbscnc"/>
         <antcall target="ear"/>
         <antcall target="passact"/>
-<!--
         <antcall target="jcdifull"/>
--->
     </target>
 
     <target name="disable_nonportable_jndi">
