@@ -34,71 +34,91 @@ Use is subject to License Terms
 <tr><td align="right" valign="top"><a href="http://www.oracle.com">oracle.com</a></td></tr>
 <tr><td align="left" valign="top" bgcolor="#587993"><font color="#ffffff"><b>GlassFish Server 4.0</b></font>&nbsp;</td></tr>
 </tbody>
-</table>  <h1>Features and Resources </h1><p>GlassFish Server 4.0 provides a server for the development and deployment of Java&trade; Platform Enterprise
-Edition (Java EE) applications and Java Web Services. Key features include modularity and extensibility, Java EE support, rapid iterative development, Web
-Services Interoperability Technologies (WSIT) support, high performance web  services, clustering, high availability, security, and integration capabilities.</p><p>
-This page contains the following topics:</p> <ul>
-<li><a href="#key-features">Key Features</a>   </li>
-<li><a href="#resources">Resources</a></li>
-</ul>
-<a name="key-features"></a><h2>Key Features</h2><h3>Modularity and Extensibility</h3><p>The modular architecture of the GlassFish Server is based
-on OSGi Alliance standards and ensures that GlassFish Server starts only the modules that are required for the applications that you are deploying. As a result,
-start-up times and memory consumption, are minimized. </p><p>The modular architecture of GlassFish Server also enables the extension of the GlassFish Server's
-basic functionality through addition of components through the <a href="http://wikis.sun.com/display/IpsBestPractices/">Update Tool</a>. The Update Tool is
-developed through the <a href="http://wikis.sun.com/display/updatecenter">Update Center</a> project.</p> <h3>Java EE Support</h3>  <p>GlassFish Server complies
-fully with the latest Java EE specification to deliver one of the best application runtimes for next-generation enterprise applications and web services.
-The 4.0 release of GlassFish Server implements the following Java EE standards:</p><ul>
-<li>Enterprise Java Beans 3.1</li>
-<li>Contexts and Dependency Injection for Java EE 1.0</li>
-<li>Java Architecture for XML Binding (JAXB) 2.2</li>
-<li>Java Persistence API 2.0</li>
-<li>Java Server Faces 2.0</li>
-<li>Java Server Pages 2.1 (JSP 2.1)</li>
-<li>Java Server Pages Standard Tag Library (JSTL) 2.2</li>
-<li>Java Servlet 3.0</li>
+</table>  <h1>Features and Resources </h1>
+<p>GlassFish Server 4.0 provides a server for the development and 
+deployment of Java&trade; Platform Enterprise Edition (Java EE) 
+and dynamic, scalable HTML5 applications. Key features include 
+Java EE 7 compatibility, modularity, and rapid iterative development.</p>
+<p>This page contains the following topics:</p>
+<ul><li><a href="#key-features">Key Features</a></li>
+<li><a href="#resources">Resources</a></li></ul>
+<h2><a name="key-features"></a>Key Features</h2>
+<h3>Java EE Support</h3>
+<p>GlassFish Server supports Java EE 7, which provides the foundation 
+for delivering dynamic, scalable HTML applications. For example, 
+the Java API for WebSocket enables low-latency bi-directional 
+communication. The Java API for JSON processing simplifies data 
+parsing for portable applications.  The Java API for RESTful Web 
+Services 2.0, Concurrency Utilities for Java EE, and Servlet 3.1 
+add concurrency features to enable highly scalable applications to 
+handle more HTML5 clients simultaneously.</p>
+<p>Java EE 7 and GlassFish Server 4.0 include the following new and updated Java EE standards:</p>
+<dl><dt><b>New or Significant Updates</b></dt><dd><ul>
+<li>Java API for JSON Processing (JSON-P)</li>
+<li>Java API for WebSocket</li>
+<li>Batch Application for the Java Platform</li>
+<li>Concurrency Utilities for Java EE</li>
+<li>Java Message Service (JMS) 2.0</li>
 <li>Java API for RESTful Web Services (JAX-RS)</li>
-<li>Java EE Connector Architecture 1.6</li>
-<li>Bean Validation</li>
-<li>Streaming API for XML (StAX)</li>
-<!--Web Services Metadata-->
-<li>Java API for XML based Web Services 2.1 (JAX-WS 2.1)</li>
-<li>Common Annotations for the Java Platform 1.0 (CAJ 1.0)</li>
-</ul><p>For a complete list of the Java EE technologies included, see the <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRLN"><cite>Release Notes</cite></a>.
-</p>   <h3>Rapid Iterative Development</h3><p>Using popular IDEs such as NetBeans and Eclipse, the web application development cycle is simplified to edit-save-refresh
-browser. GlassFish Server enables such a simple development cycle by preserving HTTP session information when an existing application is redeployed.</p><h3>Web
-Services Interoperability Technologies (WSIT) Support</h3><p>WSIT is a product of a joint effort with Microsoft to ensure interoperability of web services
-enterprise technologies such as message optimization, reliable  messaging, and security. WSIT is an implementation of a number of open web services  specifications
-to support enterprise features. In addition to message  optimization, reliable messaging, and security, WSIT includes a bootstrapping  and configuration technology.
-Starting with the core XML support currently  built into the Java platform, WSIT uses or extends existing features and  adds new support for interoperable
-web services, including:</p> <ul>
-<li>Bootstrapping and Configuration</li>
-<li>Message Optimization Technology</li>
-<li>Reliable Messaging Technology</li>
-<li>Security Technology</li>
-</ul><p>WSIT is delivered as part of the <a href="http://metro.java.net/">Metro</a> web service stack.</p>   <h3>High Availability Clusters</h3><p>GlassFish
-Server enables multiple GlassFish Server instances to be clustered to provide high availability through failover and load balancing. The clustering framework
-of GlassFish Server is developed through the <a href="http://shoal.java.net/">GlassFish Shoal</a> project.</p><h3>In-Memory Replication Support</h3> <p>GlassFish
-Server uses in-memory replication on other servers for high availability storage  of HTTP session and stateful session bean data. Each backup instance stores
-the replicated data  in memory. Replication of session state data in memory on other servers enables sessions to be distributed. The use of in-memory replication
-requires the Group Management  Service (GMS) to be enabled.</p> <h3>Open Source and GlassFish Community</h3><p> In June 2005, Sun launched the <a
-href="http://glassfish.org">GlassFish</a>  community with the goal of developing an open source, commercial-grade application server that implements the newest
-features of the Java EE platform and related enterprise technologies. GlassFish Server is based on the source code that is developed within the GlassFish
-community.</p><p>Discussion within the GlassFish community is conducted through the following channels:</p><ul>
-<li><a href="http://www.java.net/forums/glassfish/">Forums for the GlassFish community</a></li>
-<li><a href="http://java.net/projects/glassfish/lists">Mailing lists for GlassFish community</a></li>
-</ul>  <h2><a name="resources"></a>Resources</h2> <h3>GlassFish Community</h3><p class="resources">GlassFish Server is based on the source code that is developed
-through the <a href="http://glassfish.org">GlassFish</a> open source project and community. The GlassFish community is building an open source application
-server which implements the newest features in the Java EE platform.</p> <h3>Java Enterprise Community</h3><p class="resources">Part of <a
-href="http://beta.java.net/">java.net</a>, the <a href="http://community.java.net/java-enterprise/">Java Enterprise Community</a> is centered around Java
-EE applications, components, and tools.</p>   <h3>Oracle Support</h3><p class="resources"><a href="
-	http://www.oracle.com/us/support/index.htm">Oracle Support</a> contracts for Oracle GlassFish Server, the commercially available counterpart of GlassFish
-Server Open Source Edition, are available for purchase. </p>  <h3>Sun Developer Network</h3><p class="resources">For further help and to keep on top of the
-latest developments, join the <a href="http://developers.sun.com/user_registration/whyregister.html">Sun Developer Network</a>.</p>
-<!--
+</ul></dd>
+<dt><b>Updated</b></dt><dd><ul>
+<li>Enterprise Java Beans (EJB) 3.2</li>
+<li>Contexts and Dependency Injection for Java EE (CDI) 1.1</li>
+<li>Java Persistence API (JPA) 2.1</li>
+<li>Java Server Faces (JSF) 2.2</li>
+<li>Java Servlet 3.1</li>
+<li>Bean Validation (BV) 1.1</li>
+<li>Expression Language (EL) 3.0</li>
+<li>Interceptors 1.0</li>
+<li>Java Transaction (JTA) 1.2</li>
+<li>Java Server Pages (JSP) 2.3</li>
+<li>JavaMail 1.5</li>
+</ul></dd></dl>
+<p>For a complete list of the Java EE technologies included, see 
+the <a href="http://glassfish.java.net/docs/4.0/release-notes.pdf"><cite>Release Notes</cite></a>.</p>
+<h3>Modularity</h3>
+<p>The modular architecture of the GlassFish Server is based on 
+OSGi Alliance standards and ensures that GlassFish Server starts 
+only the modules that are required for the applications that you 
+are deploying. As a result, start-up times and memory consumption 
+are minimized.</p>
+<h3>Rapid Iterative Development</h3>
+<p>Using popular IDEs such as NetBeans and Eclipse, the web 
+application development cycle is simplified to edit-save-refresh 
+browser. GlassFish Server enables such a simple development cycle 
+by preserving HTTP session information when an existing application 
+is redeployed.</p>
+<h3>Open Source and GlassFish Community</h3>
+<p> In June 2005, Oracle launched the <a href="http://glassfish.org">GlassFish</a> 
+community with the goal of developing an open source, production 
+ready application server that implements the newest features of 
+the Java EE platform and related enterprise technologies. GlassFish 
+Server Open Source Edition is based on the source code that is 
+developed within the GlassFish community.</p>
+<p>Discussion within the GlassFish community is conducted through the following channels:</p>
+<ul>
+<li><a href="http://www.java.net/forums/glassfish/">Forums</a> for the GlassFish community</li>
+<li><a href="http://java.net/projects/glassfish/lists">Mailing lists</a> for GlassFish community</li>
+</ul>
+<h2><a name="resources"></a>Resources</h2>
+<h3>GlassFish Community</h3>
+<p>GlassFish Server is based on the source code that is developed 
+through the <a href="http://glassfish.org">GlassFish</a> open source 
+project and community. The GlassFish community is building an open 
+source application server which implements the newest features in 
+the Java EE platform.</p>
+<h3>Oracle Support</h3>
+<p><a href="http://www.oracle.com/us/support/index.htm">Oracle Support</a> contracts for Oracle GlassFish Server, the commercially available counterpart of GlassFish Server Open Source Edition, are available for purchase. </p>
+<h3>Oracle Technology Network</h3>
+<p>For further help and to keep on top of the latest developments, 
+join the <a href="http://www.oracle.com/technetwork/index.html">Oracle Technology Network</a>.</p>
 <h3>Release Notes, Product Documentation, and Other Information</h3>
-<p class="resources">The <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRLN"><cite>Release Notes</cite></a>, <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSING"><cite>Installation Guide</cite></a>, and other product documentation are available in the <a href="http://docs.oracle.com/cd/E26576_01/index.htm">Oracle GlassFish Server 3.1.2</a> documentation library.</p>
-<p>Data sheets, news, white papers, and other information are available at the <a href="http://www.oracle.com/us/products/middleware/application-server/oracle-glassfish-server/index.html">Oracle GlassFish Server</a> product page.</p>
--->
+<p>The <a href="http://glassfish.java.net/docs/4.0/release-notes.pdf"><cite>Release Notes</cite></a>, 
+<a href="http://glassfish.java.net/docs/4.0/installation-guide.pdf"><cite>Installation Guide</cite></a>, 
+and other product documentation are available on the 
+<a href="http://glassfish.java.net/docs/index.html">GlassFish Product Documentation</a> page.</p>
+<p>Data sheets, news, white papers, and other information are available at the 
+<a href="http://www.oracle.com/us/products/middleware/cloud-app-foundation/glassfish-server/overview/index.html">Oracle GlassFish Server</a> product page.</p>
 <hr style="width: 80%; height: 2px;">
 <p class="copy"><a href="http://www.oracle.com/corporate/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="http://www.oracle.com/corporate/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp; Copyright &copy; 2010, 2013 Oracle Corporation &nbsp;&nbsp;|&nbsp;&nbsp; <a href="./copyright.html">Legal Notices</a></p>
 </body>
