@@ -5,6 +5,7 @@ NAME
 
 SYNOPSIS
            list-batch-jobs [--help]
+           [--target target]
            [--long={false|true}]
            [--output output]
            [--header={false|true}]
@@ -17,15 +18,28 @@ OPTIONS
        --help, -?
            Displays the help text for the subcommand.
 
+       --target
+           Specifies the target for which to list batch jobs and job details.
+           Valid values are as follows:
+
+           server
+               Lists batch jobs for the default server instance server and is
+               the default value.
+
+           cluster-name
+               Lists batch jobs for every server instance in the cluster.
+
+           instance-name
+               Lists batch jobs for a particular server instance.
+
        --long, -l
-           Displays detailed information about the jobs. The default value is
-           false.
+           Displays all details. The default value is false.
 
        --output, -o
-           Displays specific details about each job. Use a comma-separated
-           list to specify the details you want to display and their order.
-           The values are case-insensitive. The jobname and instancecount
-           column headings are displayed by default.
+           Displays specific details. Use a comma-separated list to specify
+           the details to display and their order. The values are
+           case-insensitive. The jobname and instancecount column headings are
+           displayed by default.
 
            Possible values are as follows:
 
@@ -50,7 +64,7 @@ OPTIONS
                instance ID is started or restarted (executed).
 
            batchstatus
-               Displays whether steps in the application completed or failed.
+               Displays whether the job completed or failed.
 
            starttime
                Displays the start time of the job.
@@ -59,7 +73,7 @@ OPTIONS
                Displays the finish time of the job.
 
            exitstatus
-               Displays whether the job completed or failed.
+               Displays whether steps in the application completed or failed.
 
        --header, -h
            Specifies whether column headings are displayed when the --long
@@ -68,11 +82,11 @@ OPTIONS
 
 OPERANDS
        job_name
-           The name of the job for which you want to list details.
+           The name of the job for which to list details.
 
 EXAMPLES
        Example 1, Listing Batch Jobs
-           This example lists batch jobs.
+           This example lists batch jobs for the default server instance.
 
                asadmin> list-batch-jobs
                JOBNAME  INSTANCECOUNT

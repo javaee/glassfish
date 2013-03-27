@@ -6,7 +6,7 @@ NAME
 
 SYNOPSIS
            list-batch-runtime-configuration [--help]
-           [--config configuration]
+           [--target target]
            [--long={false|true}]
            [--output output]
            [--header={false|true}]
@@ -20,29 +20,43 @@ OPTIONS
        --help, -?
            Displays the help text for the subcommand.
 
-       --config
-           TBD
+       --target
+           Specifies the target for which to list the batch runtime
+           configuration. Valid values are as follows:
+
+           server
+               Lists the batch runtime configuration for the default server
+               instance server and is the default value.
+
+           cluster-name
+               Lists the batch runtime configuration for every server instance
+               in the cluster.
+
+           instance-name
+               Lists the batch runtime configuration for a particular server
+               instance.
 
        --long, -l
-           Displays detailed information about the batch runtime
-           configuration. The default value is false.
+           Displays all details. The default value is false.
 
        --output, -o
-           Displays specific details about the batch runtime configuration.
-           Use a comma-separated list to specify the details you want to
-           display and their order. The values are case-insensitive. The
-           datasourcelookupname and executorservicelookupname column headings
-           are displayed by default.
+           Displays specific details. Use a comma-separated list to specify
+           the details to display and their order. The values are
+           case-insensitive. The datasourcelookupname and
+           executorservicelookupname column headings are displayed by default.
 
            Possible values are as follows:
 
            datasourcelookupname
                The JNDI lookup name of the data source used to store job
-               information.
+               information. By default, the batch runtime uses the default
+               data source jdbc/__TimerPool.
 
            executorservicelookupname
                The JNDI lookup name of the managed executor service used to
-               execute jobs.
+               execute jobs. By default, the batch runtime uses the default
+               managed executor service
+               concurrent/__defaultManagedExecutorService.
 
        --header, -h
            Specifies whether column headings are displayed when the --long
@@ -51,7 +65,8 @@ OPTIONS
 
 EXAMPLES
        Example 1, Listing Batch Runtime Configuration
-           The following example lists the configuration of the batch runtime.
+           The following example lists the configuration of the batch runtime
+           for the default server instance.
 
                asadmin> list-batch-runtime-configuration
                DATASOURCELOOKUPNAME     EXECUTORSERVICELOOKUPNAME

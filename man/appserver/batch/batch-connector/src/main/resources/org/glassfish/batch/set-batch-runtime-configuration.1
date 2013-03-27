@@ -11,7 +11,8 @@ SYNOPSIS
 
 DESCRIPTION
        The set-batch-runtime-configuration subcommand configures the batch
-       runtime.
+       runtime. The runtime uses a data source and a managed executor service
+       to execute batch jobs.
 
 OPTIONS
        --help, -?
@@ -32,24 +33,23 @@ OPTIONS
            instance-name
                Configures the batch runtime for a particular server instance.
 
-       --config
-           TBD
-
        --datasourcelookupname, -d
            The JNDI lookup name of the data source to be used to store job
-           information.
+           information. The default data source is jdbc/__TimerPool.
 
        --executorservicelookupname , -x
            The JNDI lookup name of the managed executor service to be used to
-           execute jobs.
+           execute jobs. The default managed executor service is
+           concurrent/__defaultManagedExecutorService.
 
 EXAMPLES
        Example 1, Configuring the Batch Runtime
-           The following example configures the batch runtime.
+           The following example configures the batch runtime for the default
+           server instance to use an existing managed executor service named
+           concurrent/myExecutor.
 
-               asadmin> configure-batch-runtime
-
-               Command configure-batch-runtime executed successfully.
+               asadmin> configure-batch-runtime --executorservicelookupname concurrent/myExecutor
+               Command set-batch-runtime-configuration executed successfully.
 
 EXIT STATUS
        0

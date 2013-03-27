@@ -6,11 +6,12 @@ NAME
 
 SYNOPSIS
            list-batch-job-executions [--help]
-           [--instanceid instance-id]
+           [--target target]
            [--executionid execution-id]
            [--long={false|true}]
            [--output output]
            [--header={false|true}]
+           [instance_ID]
 
 DESCRIPTION
        The list-batch-job-executions subcommand lists batch job executions and
@@ -20,30 +21,36 @@ OPTIONS
        --help, -?
            Displays the help text for the subcommand.
 
-       --instanceid, -i
-           Specifies the instance ID of a job.
+       --target
+           Specifies the target for which to list batch job executions and
+           execution details. Valid values are as follows:
 
-       --executionid, -e
+           server
+               Lists executions for the default server instance server and is
+               the default value.
+
+           cluster-name
+               Lists executions for every server instance in the cluster.
+
+           instance-name
+               Lists executions for a particular server instance.
+
+       --executionid, -x
            Specifies the execution ID of a job.
 
        --long, -l
-           Displays detailed information about jobs. The default value is
-           false.
+           Displays all details. The default value is false.
 
        --output, -o
-           Displays specific details about jobs. Use a comma-separated list to
-           specify the details you want to display and their order. The values
-           are case-insensitive. A subset of all possible headings is
-           displayed by default.
+           Displays specific details. Use a comma-separated list to specify
+           the details to display and their order. The values are
+           case-insensitive. A subset of all possible headings is displayed by
+           default.
 
            Possible values are as follows:
 
            jobname
                Displays the name of the job.
-
-           instanceid
-               Displays the instance ID of the job. The instance ID stays the
-               same throughout the life of the job.
 
            executionid
                Displays the execution ID of a specific job instance. The
@@ -58,10 +65,10 @@ OPTIONS
                Displays the finish time of the job.
 
            batchstatus
-               Displays whether steps in the application completed or failed.
+               Displays whether the job completed or failed.
 
            exitstatus
-               Displays whether the job completed or failed.
+               Displays whether steps in the application completed or failed.
 
            jobparameters
                Displays the parameters for the job.
@@ -74,10 +81,14 @@ OPTIONS
            option is used. The default value is true. To suppress the
            headings, set the --header option to false.
 
+OPERANDS
+       instance_id
+           The instance ID of the job for which to list execution details.
+
 EXAMPLES
        Example 1, Listing Batch Job Executions
-           This example lists batch job executions and displays specific
-           details.
+           This example lists batch job executions for the default server
+           instance and displays specific details.
 
                asadmin> list-batch-job-executions -o=jobname,executionid,batchstatus,exitstatus
                JOBNAME  EXECUTIONID  BATCHSTATUS  EXITSTATUS

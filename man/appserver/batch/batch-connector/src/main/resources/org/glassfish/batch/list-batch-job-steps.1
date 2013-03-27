@@ -7,6 +7,7 @@ NAME
 SYNOPSIS
            list-batch-job-steps [--help]
            [--long={false|true}]
+           [--target target]
            [--output output]
            [--header={false|true}]
            execution_id
@@ -19,15 +20,28 @@ OPTIONS
        --help, -?
            Displays the help text for the subcommand.
 
+       --target
+           Specifies the target for which to list batch job steps. Valid
+           values are as follows:
+
+           server
+               Lists steps for the default server instance server and is the
+               default value.
+
+           cluster-name
+               Lists steps for every server instance in the cluster.
+
+           instance-name
+               Lists steps for a particular server instance.
+
        --long, -l
-           Displays detailed information about the jobs. The default value is
-           false.
+           Displays all details. The default value is false.
 
        --output, -o
-           Displays specific details about each job. Use a comma-separated
-           list to specify the details you want to display and their order.
-           The values are case-insensitive. A subset of all possible headings
-           is displayed by default.
+           Displays specific details. Use a comma-separated list to specify
+           the details to display and their order. The values are
+           case-insensitive. A subset of all possible headings is displayed by
+           default.
 
            Possible values are as follows:
 
@@ -37,17 +51,17 @@ OPTIONS
            stepid
                Displays the step ID.
 
-           start-time
+           starttime
                Displays the start time of the step.
 
-           end-time
+           endtime
                Displays the finish time of the step.
 
            batchstatus
-               Displays whether steps in the application completed or failed.
+               Displays whether the job completed or failed.
 
            exitstatus
-               Displays whether the job completed or failed.
+               Displays whether steps in the application completed or failed.
 
            stepmetrics
                Displays metrics for each step.
@@ -63,12 +77,13 @@ OPTIONS
 
 OPERANDS
        execution_id
-           The execution ID for which you want to list steps and details.
+           The execution ID for which to list batch job steps and details.
 
 EXAMPLES
        Example 1, Listing Batch Job Steps
            This example lists batch job steps and specific step details for a
-           job execution with the execution ID of 7.
+           job execution with the execution ID of 7. The target is the default
+           server instance.
 
            Some lines of output are omitted from this example for readability.
 
