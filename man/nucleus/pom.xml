@@ -67,6 +67,7 @@
       <module>core/logging</module>
       <module>deployment/admin</module>
       <module>flashlight/framework</module>
+      <module>osgi-platforms/osgi-cli-interactive</module>
       <module>osgi-platforms/osgi-cli-remote</module>
       <module>security/core</module>
     </modules>
