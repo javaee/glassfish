@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,6 +81,11 @@ public final class ConfigModel {
 
     final Map<Method,Method> duckMethods = new HashMap<Method, Method>();
 
+    /**
+     * Cache to map methods to properties
+     */
+    final Map<Method,Property> methodCache = new HashMap<Method,Property>();
+    
     /**
      * Contracts under which the inhabitant should be registered.
      */
@@ -251,20 +256,31 @@ public final class ConfigModel {
      * The conversion rule uses the model to find a good match.
      */
     public ConfigModel.Property toProperty(Method method) {
+        Property prop = methodCache.get(method);
+        if (prop != null) {
+            return prop;
+        }
+        
         String name = method.getName();
 
         // check annotations first
         Element e = method.getAnnotation(Element.class);
         if(e!=null) {
             String en = e.value();
-            if(en.length()>0)
-                return elements.get(en);
+            if(en.length()>0) {
+                prop = elements.get(en);
+                methodCache.put(method, prop);
+                return prop;
+            }
         }
         Attribute a = method.getAnnotation(Attribute.class);
         if(a!=null) {
             String an = a.value();
-            if(an.length()>0)
-                return attributes.get(an);
+            if(an.length()>0) {
+                prop = attributes.get(an);
+                methodCache.put(method, prop);
+                return prop;
+            }
         }
         // TODO: check annotations on the getter/setter
 
@@ -279,7 +295,9 @@ public final class ConfigModel {
         name = camelCaseToXML(name);
 
         // at this point name should match XML names in the model, modulo case.
-        return findIgnoreCase(name);
+        prop = findIgnoreCase(name);
+        methodCache.put(method, prop);
+        return prop;
     }
 
     public String trimPrefix(String name) {
