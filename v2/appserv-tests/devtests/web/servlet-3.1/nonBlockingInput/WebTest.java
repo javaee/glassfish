@@ -62,8 +62,9 @@ public class WebTest {
         stat.addDescription("Unit test for non blocking read");
 
         try {
-            URL url = new URL("http://" + host + ":" + port + "/" + contextRoot + "/test");
+            URL url = new URL("http://" + host + ":" + port + "/" + contextRoot + "/test?testname=abc&data=1");
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            conn.setRequestProperty("Content-type", "text/plain; charset=utf-8");
             conn.setChunkedStreamingMode(5);
             conn.setDoOutput(true);
             conn.connect();

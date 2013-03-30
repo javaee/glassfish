@@ -61,6 +61,7 @@ public class TestServlet extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
+        String test = req.getParameter("testname");
         AsyncContext ac = req.startAsync();
         ac.addListener(new AsyncListener() {
             public void onComplete(AsyncEvent event) {
