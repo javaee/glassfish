@@ -45,14 +45,14 @@
     <parent>
         <groupId>org.glassfish.docs.man</groupId>
         <artifactId>manpages</artifactId>
-        <version>4.0-b27</version>
+        <version>4.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>    
 
    <artifactId>manpages-nucleus</artifactId>
    <name>Man Pages for nucleus</name>
    <packaging>pom</packaging>
-   <version>4.0-b27</version>
+   <version>4.0-SNAPSHOT</version>
    <modules>
       <module>admin/cli</module>
       <module>admin/config-api</module>
