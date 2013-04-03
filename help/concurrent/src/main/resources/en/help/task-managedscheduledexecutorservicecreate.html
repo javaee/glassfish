@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="task-managedscheduledexecutorservicecreate" name="task-managedscheduledexecutorservicecreate"></a><a id="GHCON115" name="GHCON115"></a></p>
 
-<h4>To Create a Managed Scheduled Executor Service<a id="sthref8" name="sthref8"></a></h4>
+<h4>To Create a Managed Scheduled Executor Service<a id="sthref11" name="sthref11"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>A managed scheduled executor service is used by applications to execute submitted tasks asynchronously at specific times. Tasks are executed on threads that are started and managed by the container. The context of the container is propagated to the thread executing the task.</p>
 <p>In GlassFish Server, you configure a managed scheduled executor service resource and make it available for use by application components such as servlets and EJBs. The actual scheduling of tasks is implemented programmatically by the applications.</p>
@@ -67,6 +67,10 @@ Use is subject to License Terms  -->
 <li>
 <p>In the Additional Properties section, do not add any additional properties.</p>
 <p>GlassFish Server does not define any additional properties for this resource type. Moreover, this resource type does not currently use any additional properties.</p>
+</li>
+<li>
+<p>In the Targets section, specify the selected targets for the resource.</p>
+<p>Targets are displayed only if clusters and standalone instances have been created in the domain, in addition to the default server instance, <code>server</code>.</p>
 </li>
 <li>
 <p>Click OK.</p>

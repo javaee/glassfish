@@ -24,7 +24,7 @@ Use is subject to License Terms  -->
 
 <hr>
 <p><b>Note:</b></p>
-<p>The JNDI name is a read-only field. You can only specify the JNDI name when you create a new resource.</p>
+<p>The JNDI name is a read-only field. You can only specify the JNDI name when you create a new resource. The logical JNDI name is also a read-only field and is displayed for the default resource. See <a href="../../../common/en/help/ref-logicaljndinames.html">Logical JNDI Names</a> for more information.</p>
 
 <hr>
 
@@ -42,11 +42,26 @@ Use is subject to License Terms  -->
 <p>This description is a string value and can include a maximum of 250 characters.</p>
 </li>
 <li>
-<p>Select the Status Enabled checkbox to enable the resource.</p>
-</li>
-<li>
 <p>In the Additional Properties section, do not add any additional properties.</p>
 <p>GlassFish Server does not define any additional properties for this resource type. Moreover, this resource type does not currently use any additional properties.</p>
+</li>
+<li>
+<p>Click the Target tab to manage resource targets.</p>
+<p>The Resource Targets page opens. The Target tab is displayed only if clusters and standalone instances have been created in the domain, in addition to the default server instance, <code>server</code>.</p>
+</li>
+<li>
+<p>On the Resource Targets page, do the following, as desired:</p>
+<ol type="a">
+<li>
+<p>Enable or disable defined targets for the resource.</p>
+</li>
+<li>
+<p>Click the Manage Targets button to add or remove targets for the resource.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Click the General tab to return to the Edit Context Service page.</p>
 </li>
 <li>
 <p>Click Save.</p>

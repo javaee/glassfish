@@ -2,7 +2,6 @@
   <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
     <tocitem target="task-group-registration" text="Viewing the GlassFish Server Registration Page, Subscription Page, and Blog" expand="false">
       <tocitem target="task-register" text="To View the Registration Page for GlassFish Server" expand="false"></tocitem>
-      <tocitem target="task-subscriptions" text="To View the Subscriptions Page for GlassFish Server" expand="false"></tocitem>
       <tocitem target="task-support" text="To View the GlassFish Server Blog" expand="false"></tocitem>
     </tocitem>
     <tocitem target="task-group-domain" text="Configuring and Managing the Domain" expand="false">
@@ -178,6 +177,7 @@
       <tocitem target="ref-addresources" text="Add Resources" expand="false"></tocitem>
       <tocitem target="ref-resourcetargets" text="Resource Targets" expand="false"></tocitem>
       <tocitem target="ref-resourcemanagetargets" text="Manage Resource Targets" expand="false"></tocitem>
+      <tocitem target="ref-logicaljndinames" text="Logical JNDI Names" expand="false"></tocitem>
     </tocitem>
     <tocitem target="ref-group-configuration" text="Configurations" expand="false">
       <tocitem target="ref-configurations" text="Configurations" expand="false"></tocitem>

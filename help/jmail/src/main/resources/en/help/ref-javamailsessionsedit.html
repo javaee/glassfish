@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-javamailsessionsedit" name="ref-javamailsessionsedit"></a><a id="GHJML00003" name="GHJML00003"></a></p>
 
-<h4><a id="sthref22" name="sthref22"></a>Edit JavaMail Session</h4>
+<h4><a id="sthref24" name="sthref24"></a>Edit JavaMail Session</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the Edit JavaMail Session page to edit a JavaMail session.</p>
 <p>The Edit JavaMail Session page contains the following options.</p>
@@ -40,7 +40,9 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Status</dt>
 <dd>
-<p>The status of the mail session. The mail session can be enabled or disabled. The default value is Enabled.</p>
+<p>Whether the resource is available at runtime.</p>
+<p>If only the default server instance, <code>server</code>, exists in the domain, the resource's runtime availability can be enabled or disabled. Runtime availability is enabled by default.</p>
+<p>If any clusters or standalone instances have been created in the domain, use the Target tab to control runtime availability of the resource on its targets.</p>
 </dd>
 <dt>Store Protocol</dt>
 <dd>

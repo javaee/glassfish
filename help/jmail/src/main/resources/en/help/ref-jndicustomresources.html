@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-jndicustomresources" name="ref-jndicustomresources"></a><a id="GHJML00005" name="GHJML00005"></a></p>
 
-<h4><a id="sthref23" name="sthref23"></a><a id="sthref24" name="sthref24"></a><a id="sthref25" name="sthref25"></a>Custom Resources</h4>
+<h4><a id="sthref25" name="sthref25"></a><a id="sthref26" name="sthref26"></a><a id="sthref27" name="sthref27"></a>Custom Resources</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>A custom resource specifies a custom server-wide resource object factory.</p>
 <p>Use the Custom Resources page to configure custom JNDI resources.</p>
@@ -17,7 +17,13 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Enabled</dt>
 <dd>
-<p>True if the custom resource is enabled, or false if the custom resource is disabled.</p>
+<p>(This column is displayed if only the default server instance, <code>server</code>, exists in the domain.)</p>
+<p>A check mark if the resource is enabled, or an X if the resource is disabled.</p>
+</dd>
+<dt>Status</dt>
+<dd>
+<p>(This column is displayed if any clusters or standalone instances have been created in the domain.)</p>
+<p>The number of clusters and standalone instances to which the resource is targeted and how many of these targets the resource is enabled on. For example, "Enabled on 2 of 4 Target(s)" means that the resource is targeted to four clusters and standalone instances and that it is enabled on two of these four targets.</p>
 </dd>
 <dt>Resource Type</dt>
 <dd>

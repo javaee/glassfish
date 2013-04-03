@@ -1,4 +1,10 @@
 <index version="2.0">
+  <indexitem text="batch job executions">
+    <indexitem text="viewing (task)" target="task-viewbatchjobexecutions"></indexitem>
+  </indexitem>
+  <indexitem text="batch runtime">
+    <indexitem text="configuring (task)" target="task-configurebatchruntime"></indexitem>
+  </indexitem>
   <indexitem text="custom resources">
     <indexitem text="creating (reference)" target="ref-jndicustomresourcenew"></indexitem>
     <indexitem text="creating (task)" target="task-jndicustomresourcenew"></indexitem>

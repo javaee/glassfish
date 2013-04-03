@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-jndiexternalresources" name="ref-jndiexternalresources"></a><a id="GHJML00008" name="GHJML00008"></a></p>
 
-<h4><a id="sthref32" name="sthref32"></a><a id="sthref33" name="sthref33"></a>External Resources</h4>
+<h4><a id="sthref34" name="sthref34"></a><a id="sthref35" name="sthref35"></a>External Resources</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>An external JNDI resource accesses an external JNDI repository, such as an LDAP server.</p>
 <p>Use the External Resources page to configure external JNDI resources.</p>
@@ -17,7 +17,13 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Enabled</dt>
 <dd>
-<p>True if the external resource is enabled, or false if the external resource is disabled.</p>
+<p>(This column is displayed if only the default server instance, <code>server</code>, exists in the domain.)</p>
+<p>A check mark if the resource is enabled, or an X if the resource is disabled.</p>
+</dd>
+<dt>Status</dt>
+<dd>
+<p>(This column is displayed if any clusters or standalone instances have been created in the domain.)</p>
+<p>The number of clusters and standalone instances to which the resource is targeted and how many of these targets the resource is enabled on. For example, "Enabled on 2 of 4 Target(s)" means that the resource is targeted to four clusters and standalone instances and that it is enabled on two of these four targets.</p>
 </dd>
 <dt>Resource Type</dt>
 <dd>

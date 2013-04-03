@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-executorservices" name="ref-executorservices"></a><a id="GHCON139" name="GHCON139"></a></p>
 
-<h4>Managed Executor Services<a id="sthref18" name="sthref18"></a><a id="sthref19" name="sthref19"></a></h4>
+<h4>Managed Executor Services<a id="sthref28" name="sthref28"></a><a id="sthref29" name="sthref29"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Managed executor services are used by applications to execute submitted tasks asynchronously. Tasks are executed on threads that are started and managed by the container. The context of the container is propagated to the thread executing the task.</p>
 <p>Use the Managed Executor Services page to configure managed executor service resources.</p>
@@ -15,9 +15,19 @@ Use is subject to License Terms  -->
 <dd>
 <p>A unique name that identifies the resource.</p>
 </dd>
+<dt>Logical JNDI Name</dt>
+<dd>
+<p>The logical JNDI name for the resource. See <a href="../../../common/en/help/ref-logicaljndinames.html">Logical JNDI Names</a> for more information.</p>
+</dd>
 <dt>Enabled</dt>
 <dd>
+<p>(This column is displayed if only the default server instance, <code>server</code>, exists in the domain.)</p>
 <p>A check mark if the resource is enabled, or an X if the resource is disabled.</p>
+</dd>
+<dt>Status</dt>
+<dd>
+<p>(This column is displayed if any clusters or standalone instances have been created in the domain.)</p>
+<p>The number of clusters and standalone instances to which the resource is targeted and how many of these targets the resource is enabled on. For example, "Enabled on 2 of 4 Target(s)" means that the resource is targeted to four clusters and standalone instances and that it is enabled on two of these four targets.</p>
 </dd>
 <dt>Context Information</dt>
 <dd>
@@ -51,6 +61,19 @@ Use is subject to License Terms  -->
 <p>Button to disable one or more selected resources.</p>
 </dd>
 </dl>
+<a id="sthref30" name="sthref30"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-managedexecutorservicecreate.html">To Create a Managed Executor Service</a></p>
+</li>
+<li>
+<p><a href="task-managedexecutorserviceedit.html">To Edit a Managed Executor Service</a></p>
+</li>
+<li>
+<p><a href="task-managedexecutorservicedelete.html">To Delete a Managed Executor Service</a></p>
+</li>
+</ul>
 <a id="GHCON140" name="GHCON140"></a>
 <h5>Related asadmin Commands</h5>
 <ul>

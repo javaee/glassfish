@@ -5,14 +5,14 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-executorservicenew" name="ref-executorservicenew"></a><a id="GHCON141" name="GHCON141"></a></p>
 
-<h4>New Managed Executor Service<a id="sthref20" name="sthref20"></a></h4>
+<h4>New Managed Executor Service<a id="sthref31" name="sthref31"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the New Managed Executor Service page to create a managed executor service resource.</p>
 <p>The New Managed Executor Service page contains the following options.</p>
 <dl>
 <dt>JNDI Name</dt>
 <dd>
-<p>A unique name that identifies the resource.</p>
+<p>A unique JNDI name that identifies the resource. By convention, the name begins with a resource-type indicator and a slash, such as concurrent/, jdbc/, or jms/.</p>
 </dd>
 <dt>Context Information</dt>
 <dd>
@@ -48,11 +48,11 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Keep Alive</dt>
 <dd>
-<p>The number of seconds threads can remain idle when the number of threads is greater than the core size. The default value is 60.</p>
+<p>The number of seconds threads can remain idle when the number of threads is greater than core size. The default value is 60.</p>
 </dd>
 <dt>Thread Lifetime</dt>
 <dd>
-<p>The number of seconds threads can remain in a thread pool before being purged, regardless of whether the number of threads is greater than the core size or whether the threads are idle. The default value is 0.</p>
+<p>The number of seconds threads can remain in a thread pool before being purged, regardless of whether the number of threads is greater than core size or whether the threads are idle. The default value is 0.</p>
 </dd>
 <dt>Task Queue Capacity</dt>
 <dd>
@@ -62,7 +62,25 @@ Use is subject to License Terms  -->
 <dd>
 <p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type. Moreover, this resource type does not currently use any additional properties.</p>
 </dd>
+<dt>Targets</dt>
+<dd>
+<p>(This option is displayed if any clusters or standalone instances have been created in the domain.)</p>
+<p>Clusters and standalone instances for the resource. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
+</dd>
 </dl>
+<a id="sthref32" name="sthref32"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-managedexecutorservicecreate.html">To Create a Managed Executor Service</a></p>
+</li>
+<li>
+<p><a href="task-managedexecutorserviceedit.html">To Edit a Managed Executor Service</a></p>
+</li>
+<li>
+<p><a href="task-managedexecutorservicedelete.html">To Delete a Managed Executor Service</a></p>
+</li>
+</ul>
 <a id="GHCON142" name="GHCON142"></a>
 <h5>Related asadmin Commands</h5>
 <ul>

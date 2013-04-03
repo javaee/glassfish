@@ -1,5 +1,11 @@
 <toc version="2.0">
   <tocitem target="tasks-topic-group" text="GlassFish Server Administration Console Tasks" expand="false">
+    <tocitem target="task-group-batchjobexecutions" text="Viewing Batch Job Executions" expand="false">
+      <tocitem target="task-viewbatchjobexecutions" text="To View Batch Job Executions" expand="false"></tocitem>
+    </tocitem>
+    <tocitem target="task-group-batchruntime" text="Configuring the Batch Runtime" expand="false">
+      <tocitem target="task-configurebatchruntime" text="To Configure the Batch Runtime" expand="false"></tocitem>
+    </tocitem>
     <tocitem target="task-group-javamailresources" text="Configuring JavaMail Sessions" expand="false">
       <tocitem target="task-javamailsessioncreate" text="To Create a JavaMail Session" expand="false"></tocitem>
       <tocitem target="task-javamailsessionsedit" text="To Edit a JavaMail Session" expand="false"></tocitem>

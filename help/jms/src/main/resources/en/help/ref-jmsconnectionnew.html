@@ -10,9 +10,9 @@ Use is subject to License Terms  -->
 <p>Use the New JMS Connection Factory page to create a new JMS connection factory.</p>
 <p>The New JMS Connection Factory page contains the following options.</p>
 <dl>
-<dt>Pool Name</dt>
+<dt>JNDI Name</dt>
 <dd>
-<p>A unique name that identifies the connection factory. GlassFish Server sets the JNDI name of the connection factory to this value.</p>
+<p>A unique JNDI name that identifies the resource. By convention, the name begins with a resource-type indicator and a slash, such as concurrent/, jdbc/, or jms/.</p>
 </dd>
 <dt>Resource Type</dt>
 <dd>
@@ -82,8 +82,8 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Targets</dt>
 <dd>
-<p>Clusters and standalone instances for the connection factory. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
-<p>This option is displayed only if clusters or standalone instances have been created in the domain.</p>
+<p>(This option is displayed if any clusters or standalone instances have been created in the domain.)</p>
+<p>Clusters and standalone instances for resource. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
 </dd>
 </dl>
 <a id="sthref51" name="sthref51"></a>

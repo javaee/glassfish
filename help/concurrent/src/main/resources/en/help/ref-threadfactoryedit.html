@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-threadfactoryedit" name="ref-threadfactoryedit"></a><a id="GHCON157" name="GHCON157"></a></p>
 
-<h4>Edit Managed Thread Factory<a id="sthref29" name="sthref29"></a></h4>
+<h4>Edit Managed Thread Factory<a id="sthref26" name="sthref26"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the Edit Managed Thread Factory page to edit a managed thread factory resource.</p>
 <p>The Edit Managed Thread Factory page contains the following options.</p>
@@ -18,13 +18,19 @@ Use is subject to License Terms  -->
 <dd>
 <p>A unique name that identifies the resource. The JNDI name is a read-only field. You can only specify the JNDI name when you create a new resource.</p>
 </dd>
+<dt>Logical JNDI Name</dt>
+<dd>
+<p>The logical JNDI name for the resource. It is a Java EE standard name by which the resource can be accessed. The logical JNDI name is a read-only field. See <a href="../../../common/en/help/ref-logicaljndinames.html">Logical JNDI Names</a> for more information.</p>
+</dd>
 <dt>Context Information</dt>
 <dd>
 <p>The contexts to propagate to threads: Classloader, JNDI, Security, or WorkArea. Context propagation can be enabled or disabled. If enabled, the selected contexts are propagated. If disabled, none of the contexts are propagated, even if they are selected. The default value is Enabled, with all four contexts selected.</p>
 </dd>
 <dt>Status</dt>
 <dd>
-<p>The status of the resource. The resource can be enabled or disabled. The default value is Enabled.</p>
+<p>Whether the resource is available at runtime.</p>
+<p>If only the default server instance, <code>server</code>, exists in the domain, the resource's runtime availability can be enabled or disabled. Runtime availability is enabled by default.</p>
+<p>If any clusters or standalone instances have been created in the domain, use the Target tab to control runtime availability of the resource on its targets.</p>
 </dd>
 <dt>Thread Priority</dt>
 <dd>
@@ -43,6 +49,19 @@ Use is subject to License Terms  -->
 <p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type. Moreover, this resource type does not currently use any additional properties.</p>
 </dd>
 </dl>
+<a id="sthref27" name="sthref27"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-managedthreadfactorynew.html">To Create a Managed Thread Factory</a></p>
+</li>
+<li>
+<p><a href="task-managedthreadfactoryedit.html">To Edit a Managed Thread Factory</a></p>
+</li>
+<li>
+<p><a href="task-managedthreadfactorydelete.html">To Delete a Managed Thread Factory</a></p>
+</li>
+</ul>
 <a id="GHCON158" name="GHCON158"></a>
 <h5>Related asadmin Commands</h5>
 <ul>
@@ -56,8 +75,6 @@ Use is subject to License Terms  -->
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM852"><code>delete-managed-thread-factory</code>(1)</a></p>
 </li>
 </ul>
-
-
 
 
 

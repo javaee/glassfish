@@ -12,7 +12,7 @@ Use is subject to License Terms  -->
 <dl>
 <dt>JNDI Name</dt>
 <dd>
-<p>A unique name that identifies the JDBC resource. The JNDI name organizes and locates components within a distributed computing environment similarly to the way that card catalogs organize and represent locations of books in a library. Consequently, the JNDI name becomes an important method of accessing the JDBC resource. By convention, the name begins with the <code>jdbc/</code> string, for example, <code>jdbc/payrolldb</code>. Don't forget the forward slash. The name must contain only alphanumeric, underscore, dash, or dot characters.</p>
+<p>A unique JNDI name that identifies the resource. By convention, the name begins with a resource-type indicator and a slash, such as concurrent/, jdbc/, or jms/.</p>
 </dd>
 <dt>Pool Name</dt>
 <dd>
@@ -32,8 +32,8 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Targets</dt>
 <dd>
-<p>Clusters and standalone instances for the JDBC resource. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
-<p>This option is displayed only if clusters or standalone instances have been created in the domain.</p>
+<p>(This option is displayed if any clusters or standalone instances have been created in the domain.)</p>
+<p>Clusters and standalone instances for resource. Move desired targets to the Selected Targets column using the Add and Add All buttons. Move any unneeded targets to the Available Targets column using the Remove and Remove All buttons.</p>
 </dd>
 </dl>
 <a id="sthref33" name="sthref33"></a>

@@ -355,9 +355,6 @@
   <indexitem text="standalone instances">
     <indexitem text="system properties (reference)" target="ref-sysinstancevalues"></indexitem>
   </indexitem>
-  <indexitem text="Subscriptions page">
-    <indexitem text="viewing" target="task-subscriptions"></indexitem>
-  </indexitem>
   <indexitem text="system properties">
     <indexitem text="clustered instances (reference)" target="ref-sysinstancevalues"></indexitem>
     <indexitem text="configurations (reference)" target="ref-configurationsystemproperties"></indexitem>

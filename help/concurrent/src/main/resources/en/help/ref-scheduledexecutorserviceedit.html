@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-scheduledexecutorserviceedit" name="ref-scheduledexecutorserviceedit"></a><a id="GHCON150" name="GHCON150"></a></p>
 
-<h4>Edit Managed Scheduled Executor Service<a id="sthref25" name="sthref25"></a></h4>
+<h4>Edit Managed Scheduled Executor Service<a id="sthref40" name="sthref40"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the Edit Managed Scheduled Executor Service page to edit a managed scheduled executor service resource.</p>
 <p>The Edit Managed Scheduled Executor Service page contains the following options.</p>
@@ -16,7 +16,11 @@ Use is subject to License Terms  -->
 </dd>
 <dt>JNDI Name</dt>
 <dd>
-<p>A unique name that identifies the resource. The JNDI name is a read-only field. You can only specify the JNDI name when you create a new resource.</p>
+<p>A unique JNDI name that identifies the resource. By convention, the name begins with a resource-type indicator and a slash, such as concurrent/, jdbc/, or jms/. The JNDI name is a read-only field. You can only specify the JNDI name when you create a new resource</p>
+</dd>
+<dt>Logical JNDI Name</dt>
+<dd>
+<p>The logical JNDI name for the resource. It is a Java EE standard name by which the resource can be accessed. The logical JNDI name is a read-only field. See <a href="../../../common/en/help/ref-logicaljndinames.html">Logical JNDI Names</a> for more information.</p>
 </dd>
 <dt>Context Information</dt>
 <dd>
@@ -24,7 +28,9 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Status</dt>
 <dd>
-<p>The status of the resource. The resource can be enabled or disabled. The default value is Enabled.</p>
+<p>Whether the resource is available at runtime.</p>
+<p>If only the default server instance, <code>server</code>, exists in the domain, the resource's runtime availability can be enabled or disabled. Runtime availability is enabled by default.</p>
+<p>If any clusters or standalone instances have been created in the domain, use the Target tab to control runtime availability of the resource on its targets.</p>
 </dd>
 <dt>Thread Priority</dt>
 <dd>
@@ -52,17 +58,30 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Keep Alive</dt>
 <dd>
-<p>The number of seconds threads can remain idle when the number of threads is greater than the core size. The default value is 60.</p>
+<p>The number of seconds threads can remain idle when the number of threads is greater than core size. The default value is 60.</p>
 </dd>
 <dt>Thread Lifetime</dt>
 <dd>
-<p>The number of seconds threads can remain in a thread pool before being purged, regardless of whether the number of threads is greater than the core size or whether the threads are idle. The default value is 0.</p>
+<p>The number of seconds threads can remain in a thread pool before being purged, regardless of whether the number of threads is greater than core size or whether the threads are idle. The default value is 0.</p>
 </dd>
 <dt>Additional Properties</dt>
 <dd>
 <p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type. Moreover, this resource type does not currently use any additional properties.</p>
 </dd>
 </dl>
+<a id="sthref41" name="sthref41"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-managedscheduledexecutorservicecreate.html">To Create a Managed Scheduled Executor Service</a></p>
+</li>
+<li>
+<p><a href="task-managedscheduledexecutorserviceedit.html">To Edit a Managed Scheduled Executor Service</a></p>
+</li>
+<li>
+<p><a href="task-managedscheduledexecutorservicedelete.html">To Delete a Managed Scheduled Executor Service</a></p>
+</li>
+</ul>
 <a id="GHCON151" name="GHCON151"></a>
 <h5>Related asadmin Commands</h5>
 <ul>
@@ -76,6 +95,8 @@ Use is subject to License Terms  -->
 <p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM850"><code>delete-managed-scheduled-executor-service</code>(1)</a></p>
 </li>
 </ul>
+
+
 
 
 

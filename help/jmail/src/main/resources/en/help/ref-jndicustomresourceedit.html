@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-jndicustomresourceedit" name="ref-jndicustomresourceedit"></a><a id="GHJML00007" name="GHJML00007"></a></p>
 
-<h4><a id="sthref29" name="sthref29"></a><a id="sthref30" name="sthref30"></a><a id="sthref31" name="sthref31"></a>Edit Custom Resource</h4>
+<h4><a id="sthref31" name="sthref31"></a><a id="sthref32" name="sthref32"></a><a id="sthref33" name="sthref33"></a>Edit Custom Resource</h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the Edit Custom Resource page to edit a custom JNDI resource.</p>
 <p>The Edit Custom Resource page contains the following options.</p>
@@ -32,7 +32,9 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Status</dt>
 <dd>
-<p>The status of the custom resource. The custom resource can be enabled or disabled. The default value is Enabled.</p>
+<p>Whether the resource is available at runtime.</p>
+<p>If only the default server instance, <code>server</code>, exists in the domain, the resource's runtime availability can be enabled or disabled. Runtime availability is enabled by default.</p>
+<p>If any clusters or standalone instances have been created in the domain, use the Target tab to control runtime availability of the resource on its targets.</p>
 </dd>
 <dt>Additional Properties</dt>
 <dd>

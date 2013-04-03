@@ -5,7 +5,7 @@ Copyright 2005, 2013 Oracle and/or its affiliates. All rights reserved.
 Use is subject to License Terms  -->
 <p><a id="ref-contextserviceedit" name="ref-contextserviceedit"></a><a id="GHCON136" name="GHCON136"></a></p>
 
-<h4>Edit Context Service<a id="sthref17" name="sthref17"></a></h4>
+<h4>Edit Context Service<a id="sthref19" name="sthref19"></a></h4>
 <a name="BEGIN" id="BEGIN"></a>
 <p>Use the Edit Context Service page to edit a context service resource.</p>
 <p>The Edit Context Service page contains the following options.</p>
@@ -16,7 +16,11 @@ Use is subject to License Terms  -->
 </dd>
 <dt>JNDI Name</dt>
 <dd>
-<p>A unique name that identifies the resource. The JNDI name is a read-only field. You can only specify the JNDI name when you create a new resource.</p>
+<p>A unique JNDI name that identifies the resource. By convention, the name begins with a resource-type indicator and a slash, such as concurrent/, jdbc/, or jms/. The JNDI name is a read-only field. You can only specify the JNDI name when you create a new resource</p>
+</dd>
+<dt>Logical JNDI Name</dt>
+<dd>
+<p>The logical JNDI name for the resource. It is a Java EE standard name by which the resource can be accessed. The logical JNDI name is a read-only field. See <a href="../../../common/en/help/ref-logicaljndinames.html">Logical JNDI Names</a> for more information.</p>
 </dd>
 <dt>Context Information</dt>
 <dd>
@@ -32,13 +36,28 @@ Use is subject to License Terms  -->
 </dd>
 <dt>Status</dt>
 <dd>
-<p>The status of the resource. The resource can be enabled or disabled. The default value is Enabled.</p>
+<p>Whether the resource is available at runtime.</p>
+<p>If only the default server instance, <code>server</code>, exists in the domain, the resource's runtime availability can be enabled or disabled. Runtime availability is enabled by default.</p>
+<p>If any clusters or standalone instances have been created in the domain, use the Target tab to control runtime availability of the resource on its targets.</p>
 </dd>
 <dt>Additional Properties</dt>
 <dd>
 <p>Additional properties for the resource. GlassFish Server does not define any additional properties for this resource type. Moreover, this resource type does not currently use any additional properties.</p>
 </dd>
 </dl>
+<a id="sthref20" name="sthref20"></a>
+<h5>Related Tasks</h5>
+<ul>
+<li>
+<p><a href="task-contextservicecreate.html">To Create a Context Service</a></p>
+</li>
+<li>
+<p><a href="task-contextserviceedit.html">To Edit a Context Service</a></p>
+</li>
+<li>
+<p><a href="task-contextservicedelete.html">To Delete a Context Service</a></p>
+</li>
+</ul>
 <a id="GHCON137" name="GHCON137"></a>
 <h5>Related asadmin Commands</h5>
 <ul>
