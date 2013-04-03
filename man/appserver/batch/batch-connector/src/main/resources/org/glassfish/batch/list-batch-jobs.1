@@ -33,13 +33,14 @@ OPTIONS
                Lists batch jobs for a particular server instance.
 
        --long, -l
-           Displays all details. The default value is false.
+           Displays detailed information about batch jobs. The default value
+           is false.
 
        --output, -o
-           Displays specific details. Use a comma-separated list to specify
-           the details to display and their order. The values are
-           case-insensitive. The jobname and instancecount column headings are
-           displayed by default.
+           Displays specific details about batch jobs. Use a comma-separated
+           list to specify the details to display and their order. The values
+           are case-insensitive. The jobname and instancecount column headings
+           are displayed by default.
 
            Possible values are as follows:
 
@@ -50,21 +51,18 @@ OPTIONS
                Displays the name of the application.
 
            instancecount
-               Displays the number of times a job instance has been started
-               and restarted (executed).
+               Displays the number of job instances.
 
            instanceid
-               Displays the instance ID of the job. The instance ID stays the
-               same throughout the life of the job.
+               Displays the ID assigned to the job instance.
 
            executionid
-               Displays the execution ID of a specific job instance. The
-               execution ID changes throughout the life of the job. An
-               execution ID is assigned each time a job with a specific
-               instance ID is started or restarted (executed).
+               Displays the ID assigned to the execution of the batch job. A
+               new execution is created the first time a job is started and
+               every time the existing execution is restarted.
 
            batchstatus
-               Displays whether the job completed or failed.
+               Displays the status of the job as set by the batch runtime.
 
            starttime
                Displays the start time of the job.
@@ -73,7 +71,10 @@ OPTIONS
                Displays the finish time of the job.
 
            exitstatus
-               Displays whether steps in the application completed or failed.
+               Displays the status of the job as set by the Job XML for the
+               job or by the batch application. By default, the exit status
+               and the batch status are the same unless the exit status is
+               explicitly overridden.
 
        --header, -h
            Specifies whether column headings are displayed when the --long

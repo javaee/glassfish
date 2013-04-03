@@ -36,16 +36,17 @@ OPTIONS
                Lists executions for a particular server instance.
 
        --executionid, -x
-           Specifies the execution ID of a job.
+           Specifies the execution ID of a specific batch job execution.
 
        --long, -l
-           Displays all details. The default value is false.
+           Displays detailed information about batch job executions. The
+           default value is false.
 
        --output, -o
-           Displays specific details. Use a comma-separated list to specify
-           the details to display and their order. The values are
-           case-insensitive. A subset of all possible headings is displayed by
-           default.
+           Displays specific details about batch job executions. Use a
+           comma-separated list to specify the details to display and their
+           order. The values are case-insensitive. A subset of all possible
+           headings is displayed by default.
 
            Possible values are as follows:
 
@@ -53,28 +54,32 @@ OPTIONS
                Displays the name of the job.
 
            executionid
-               Displays the execution ID of a specific job instance. The
-               execution ID changes throughout the life of the job. An
-               execution ID is assigned each time a job with a specific
-               instance ID is started or restarted (executed).
+               Displays the ID assigned to the execution of the batch job. A
+               new execution is created the first time a job is started and
+               every time the existing execution is restarted.
 
            starttime
-               Displays the start time of the job.
+               Displays the start time of the execution.
 
            endtime
-               Displays the finish time of the job.
+               Displays the finish time of the execution.
 
            batchstatus
-               Displays whether the job completed or failed.
+               Displays the status of the execution as set by the batch
+               runtime.
 
            exitstatus
-               Displays whether steps in the application completed or failed.
+               Displays the status of the execution as set by the Job XML for
+               the job or by the batch application. By default, the exit
+               status and the batch status are the same unless the exit status
+               is explicitly overridden.
 
            jobparameters
-               Displays the parameters for the job.
+               Displays the properties passed to the batch runtime for the
+               batch job execution, listed as name/value pairs.
 
            stepcount
-               Displays the step count for the job.
+               Displays the number of steps in the batch job execution.
 
        --header, -h
            Specifies whether column headings are displayed when the --long
@@ -83,7 +88,7 @@ OPTIONS
 
 OPERANDS
        instance_id
-           The instance ID of the job for which to list execution details.
+           The ID of the job instance for which to list execution details.
 
 EXAMPLES
        Example 1, Listing Batch Job Executions

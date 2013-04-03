@@ -1,8 +1,7 @@
 list-batch-job-steps(1)   asadmin Utility Subcommands  list-batch-job-steps(1)
 
 NAME
-       list-batch-job-steps - lists batch job steps for a specific job
-       execution
+       list-batch-job-steps - lists steps for a specific batch job execution
 
 SYNOPSIS
            list-batch-job-steps [--help]
@@ -13,8 +12,8 @@ SYNOPSIS
            execution_id
 
 DESCRIPTION
-       The list-batch-job-steps subcommand lists batch job steps for a
-       specific job execution.
+       The list-batch-job-steps subcommand lists steps for a specific batch
+       job execution.
 
 OPTIONS
        --help, -?
@@ -35,13 +34,14 @@ OPTIONS
                Lists steps for a particular server instance.
 
        --long, -l
-           Displays all details. The default value is false.
+           Displays detailed information about batch job steps. The default
+           value is false.
 
        --output, -o
-           Displays specific details. Use a comma-separated list to specify
-           the details to display and their order. The values are
-           case-insensitive. A subset of all possible headings is displayed by
-           default.
+           Displays specific details about batch job steps. Use a
+           comma-separated list to specify the details to display and their
+           order. The values are case-insensitive. A subset of all possible
+           headings is displayed by default.
 
            Possible values are as follows:
 
@@ -58,17 +58,20 @@ OPTIONS
                Displays the finish time of the step.
 
            batchstatus
-               Displays whether the job completed or failed.
+               Displays the status of the step as set by the batch runtime.
 
            exitstatus
-               Displays whether steps in the application completed or failed.
+               Displays the status of the step as set by the Job XML for the
+               job or by the batch application. By default, the exit status
+               and the batch status are the same unless the exit status is
+               explicitly overridden.
 
            stepmetrics
-               Displays metrics for each step.
+               Displays metrics for the step.
 
            value
-               Displays a value for each step metric. The value indicates how
-               many times items were read, written, and so on.
+               Displays a value for each step metric. The value represents the
+               number of items read, written, committed, and so on.
 
        --header, -h
            Specifies whether column headings are displayed when the --long
@@ -77,7 +80,8 @@ OPTIONS
 
 OPERANDS
        execution_id
-           The execution ID for which to list batch job steps and details.
+           The ID of the execution for which to list batch job steps and
+           details.
 
 EXAMPLES
        Example 1, Listing Batch Job Steps
@@ -93,7 +97,7 @@ EXAMPLES
                                                  READ_COUNT          8
                                                  WRITE_COUNT         8
                                                  PROCESS_SKIP_COUNT  0
-               process    7        COMPLETED     METRICNAME          VALUE
+               process    8        COMPLETED     METRICNAME          VALUE
                                                  READ_COUNT          8
                                                  WRITE_COUNT         8
                                                  PROCESS_SKIP_COUNT  0

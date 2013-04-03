@@ -7,7 +7,6 @@ NAME
 SYNOPSIS
            list-batch-runtime-configuration [--help]
            [--target target]
-           [--long={false|true}]
            [--output output]
            [--header={false|true}]
 
@@ -36,14 +35,12 @@ OPTIONS
                Lists the batch runtime configuration for a particular server
                instance.
 
-       --long, -l
-           Displays all details. The default value is false.
-
        --output, -o
-           Displays specific details. Use a comma-separated list to specify
-           the details to display and their order. The values are
-           case-insensitive. The datasourcelookupname and
-           executorservicelookupname column headings are displayed by default.
+           Displays specific details about the batch runtime configuration.
+           Use a comma-separated list to specify the details to display and
+           their order. The values are case-insensitive. The
+           datasourcelookupname and executorservicelookupname column headings
+           are displayed by default.
 
            Possible values are as follows:
 
@@ -54,8 +51,8 @@ OPTIONS
 
            executorservicelookupname
                The JNDI lookup name of the managed executor service used to
-               execute jobs. By default, the batch runtime uses the default
-               managed executor service
+               provide threads to jobs. By default, the batch runtime uses the
+               default managed executor service
                concurrent/__defaultManagedExecutorService.
 
        --header, -h

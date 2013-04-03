@@ -4,8 +4,9 @@ NAME
        set-log-levels - sets the log level for one or more loggers
 
 SYNOPSIS
-           set-log-levels [--help] logger-name=logger-level[:logger-name=logger-level]*
+           set-log-levels [--help]
            [--target=target]
+           logger-name=logger-level[:logger-name=logger-level]*
 
 DESCRIPTION
        The set-log-levels subcommand sets the log level for one or more
@@ -20,19 +21,16 @@ OPTIONS
 
        --target
            The server instance or cluster for which log levels will be set.
-
-OPERANDS
-       target
-           The server instance or cluster for which log levels will be set.
            Valid values are:
 
-           *   server_name - Default target is server. If no target is
-               specified then log levels are set for the server.
+           *   server - The default server instance. If no target is specified
+               then log levels are set for the default server instance.
 
-           *   cluster_name - The name of a target cluster.
+           *   cluster-name - The name of a cluster.
 
-           *   instance_name - The name of a target server instance.
+           *   instance-name - The name of a standalone server instance.
 
+OPERANDS
        logger-name
            The name of the logger. The list-log-levels subcommand can be used
            to list the names of the current loggers.

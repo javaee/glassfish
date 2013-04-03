@@ -7,7 +7,8 @@ NAME
 SYNOPSIS
            start-local-instance [--help]
            [--nodedir node-dir] [--node node]
-           [--debug={false|true}] [--sync={normal|full|none}]
+           [--debug={false|true}] [--dry-run={true|false}]
+           [--sync={normal|full|none}]
            [--verbose={false|true}] [--watchdog={true|false}]
            [instance-name]
 
@@ -63,6 +64,14 @@ OPTIONS
 
            false
                The instance is started with JPDA debugging disabled (default).
+
+       --dry-run, -n
+           Suppresses actual starting of the instance. Instead,
+           start-local-instance displays the full command that would be used
+           to start the instance, including all options. Reviewing this
+           command can be useful when troubleshooting startup issues.
+
+           The default value is false.
 
        --sync
            The type of synchronization between the DAS and the instance's
