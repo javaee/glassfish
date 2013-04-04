@@ -21,7 +21,8 @@ public class SfulEJB extends BaseBean {
     @Interceptors(InterceptorA.class)
     public String hello() {
         System.out.println("In SfulEJB:hello()");
-        verify("SfulEJB");
+        verifyAB_AC("SfulEJB");
+        verifyB_PC("SfulEJB");
 	return sless.sayHello();
     }
 
@@ -31,11 +32,10 @@ public class SfulEJB extends BaseBean {
         System.out.println("In SfulEJB:remove()");
     }
 
-    @Interceptors(InterceptorA.class)
     @PostConstruct
     private void init0() {
 	System.out.println("**SfulEJB PostConstruct");
-        verifyMethod("init0");
+        verifyMethod(null);
     }
 
 }

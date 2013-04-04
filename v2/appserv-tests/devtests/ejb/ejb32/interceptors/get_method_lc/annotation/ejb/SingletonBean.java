@@ -16,7 +16,6 @@ public class SingletonBean extends BaseBean implements Snglt {
 
     private SingletonBean(String s) {}
 
-    @Interceptors(InterceptorC.class)
     @PostConstruct
     public void init() {
         System.out.println("In SingletonBean::init()");
@@ -27,13 +26,12 @@ public class SingletonBean extends BaseBean implements Snglt {
     @Interceptors(InterceptorC.class)
     public String hello() {
         verifyAB_AC("SingletonBean");
-        verifyAC_PC("SingletonBean");
+        verifyA_PC("SingletonBean");
 	System.out.println("In SingletonBean::hello()");
         sful.remove();
 	return "hello, world!\n";
     }
 
-    @Interceptors(InterceptorB.class)
     @PreDestroy
     public void destroy() {
         System.out.println("In SingletonBean::destroy()");
