@@ -7,12 +7,12 @@ package com.oracle.javaee7.samples.batch.cmt.chunk;
 import javax.inject.Inject;
 
 
-@javax.inject.Named//("com.oracle.javaee7.samples.batch.simple.SimpleItemProcessor")
+@javax.inject.Named("SimpleItemProcessor")
 public class SimpleItemProcessor
     implements javax.batch.api.chunk.ItemProcessor {
 
-//    @Inject
-//    IdGenerator idGen;
+    @Inject
+    IdGenerator idGen;
     
     @Override
     public String processItem(Object obj) throws Exception {
@@ -27,6 +27,8 @@ public class SimpleItemProcessor
         sb.append(", ").append(salary * tax / 100);
         sb.append(", ").append(salary * mediCare / 100);
         sb.append(", ").append(salary - (salary * tax / 100) - (salary * mediCare / 100));
+
+System.out.println("IdGen ==> " + idGen);
         return  sb.toString();
     }
     
