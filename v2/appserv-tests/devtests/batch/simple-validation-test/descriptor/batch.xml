@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<batch-artifacts xmlns="http://xmlns.jcp.org/xml/ns/javaee">
-<ref id="SimpleItemReader" class="com.oracle.javaee7.samples.batch.cmt.chunk.SimpleItemReader"/>
-<ref id="SimpleItemProcessor" class="com.oracle.javaee7.samples.batch.cmt.chunk.SimpleItemProcessor"/>
-<ref id="SimpleItemWriter" class="com.oracle.javaee7.samples.batch.cmt.chunk.SimpleItemWriter"/>
-</batch-artifacts>
