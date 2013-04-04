@@ -6,7 +6,7 @@
 <!ENTITY testproperties SYSTEM "build.properties">
 ]>
 
-<project name="ejb-method-constructor-level-ann-App" default="usage" basedir=".">
+<project name="ejb-constructor-level-ann-App" default="usage" basedir=".">
 
     &commonSetup;
     &commonBuild;
