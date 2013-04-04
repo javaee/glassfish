@@ -26,6 +26,7 @@ public class SimpleItemWriter
             sb.append(" ").append(s);
         }
         System.out.println(sb.toString());
+	try { Thread.currentThread().sleep(1000); } catch (Exception ex) {}
     }
 
     @Override

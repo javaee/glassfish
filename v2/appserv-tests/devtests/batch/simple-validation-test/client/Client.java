@@ -44,7 +44,7 @@ public class Client {
         try {
 	    for (int i = 0; i< MAX_JOB_SIZE; i++) {
 	        executionIds[i] = jobSubmitter.submitJob("Simple-Validation-Job");
-	        checkBatchJobStatus(executionIds[i], 10);
+	        checkBatchJobStatus(executionIds[i], 20);
 	    }
 	    boolean result = true;
 	    for (int i=0; i<MAX_JOB_SIZE; i++) {
