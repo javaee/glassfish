@@ -11,15 +11,14 @@ public class SlessEJB3 extends BaseBean {
 
     public String sayHello() {
         verifyA_AC("SlessEJB");
-        //verifyAC_AC("SlessEJB");
-        verifyB_PC("SlessEJB");
+        verifyA_PC("SlessEJB");
         return "SlessEJB3.hello";
     }
 
     @PostConstruct
     private void init() {
         System.out.println("**SlessEJB PostConstruct");
-        verifyMethod(null);
+        verifyMethod("init");
     }
 
 }

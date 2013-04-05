@@ -84,17 +84,6 @@
         <interceptor-class>com.acme.InterceptorA</interceptor-class>
       </interceptor-order>
       <method>
-        <method-name>init0</method-name>
-        <method-params/>
-      </method>
-    </interceptor-binding>
-    <interceptor-binding>
-      <ejb-name>SfulEJB</ejb-name>
-      <interceptor-order>
-        <interceptor-class>com.acme.InterceptorB</interceptor-class>
-        <interceptor-class>com.acme.InterceptorA</interceptor-class>
-      </interceptor-order>
-      <method>
         <method-name>remove</method-name>
         <method-params/>
       </method>
@@ -115,41 +104,10 @@
       </method>
     </interceptor-binding>
     <interceptor-binding>
-      <ejb-name>SlessEJB3</ejb-name>
-      <interceptor-class>com.acme.InterceptorB</interceptor-class>
-      <exclude-class-interceptors>true</exclude-class-interceptors>
-      <method>
-        <method-name>init</method-name>
-        <method-params/>
-      </method>
-    </interceptor-binding>
-    <interceptor-binding>
       <ejb-name>SingletonBean</ejb-name>
       <interceptor-order>
         <interceptor-class>com.acme.InterceptorA</interceptor-class>
       </interceptor-order>
-    </interceptor-binding>
-    <interceptor-binding>
-      <ejb-name>SingletonBean</ejb-name>
-      <interceptor-order>
-        <interceptor-class>com.acme.InterceptorA</interceptor-class>
-        <interceptor-class>com.acme.InterceptorB</interceptor-class>
-      </interceptor-order>
-      <method>
-        <method-name>destroy</method-name>
-        <method-params/>
-      </method>
-    </interceptor-binding>
-    <interceptor-binding>
-      <ejb-name>SingletonBean</ejb-name>
-      <interceptor-order>
-        <interceptor-class>com.acme.InterceptorA</interceptor-class>
-        <interceptor-class>com.acme.InterceptorC</interceptor-class>
-      </interceptor-order>
-      <method>
-        <method-name>init</method-name>
-        <method-params/>
-      </method>
     </interceptor-binding>
     <interceptor-binding>
       <ejb-name>SingletonBean</ejb-name>

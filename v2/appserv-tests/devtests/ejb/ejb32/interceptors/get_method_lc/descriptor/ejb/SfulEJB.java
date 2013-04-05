@@ -18,9 +18,8 @@ public class SfulEJB extends BaseBean {
 
     public String hello() {
         System.out.println("In SfulEJB:hello()");
-        //verify("SfulEJB");
         verifyB_AC("SfulEJB");
-        verifyAB_PC("SfulEJB");
+        verifyB_PC("SfulEJB");
 	return sless.sayHello();
     }
 
@@ -32,7 +31,7 @@ public class SfulEJB extends BaseBean {
     @PostConstruct
     private void init0() {
 	System.out.println("**SfulEJB PostConstruct");
-        verifyMethod("init0");
+        verifyMethod(null);
     }
 
 }
