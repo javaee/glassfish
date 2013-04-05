@@ -114,7 +114,11 @@ public class FactoryCreator<T> implements Creator<T> {
             factory.dispose(instance);
         }
         catch (Throwable th) {
-            // ignore
+            if (th instanceof MultiException) {
+                throw (MultiException) th;
+            }
+            
+            throw new MultiException(th);
         }
     }
 }
