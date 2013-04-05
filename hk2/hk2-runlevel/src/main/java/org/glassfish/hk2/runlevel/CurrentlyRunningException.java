@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,43 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
-
-import java.util.List;
-
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceHandle;
+package org.glassfish.hk2.runlevel;
 
 /**
- * An internal interface that allows us to have the
- * factory and class implementations
+ * This exception is thrown by proceedTo if there is currently a
+ * job being run when proceedTo is called
  * 
  * @author jwells
  *
  */
-public interface Creator<T> {
+public class CurrentlyRunningException extends RuntimeException {
     /**
-     * Returns all the injectees needed prior
-     * to creating this object
-     * 
-     * @return
+     * For serialization
      */
-    public List<Injectee> getInjectees();
+    private static final long serialVersionUID = -1712057070339111837L;
     
-    /**
-     * Creates an instance of the given type
-     * 
-     * @return an instance of the given type
-     * @throws MultiException if the creator threw an exception during construction
-     */
-    public T create(ServiceHandle<?> root, SystemDescriptor<?> eventThrower) throws MultiException;
+    private RunLevelFuture currentJob;
     
-    /**
-     * Disposes the given instance
-     * 
-     * @param instance removes the given instance
-     * @throws MultiException if the underlying creator threw an exception during destruction
-     */
-    public void dispose(T instance) throws MultiException;
+    public CurrentlyRunningException() {
+    }
+    
+    public CurrentlyRunningException(RunLevelFuture runLevelFuture) {
+        currentJob = runLevelFuture;
+    }
+    
+    public RunLevelFuture getCurrentJob() {
+        return currentJob;
+    }
+
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,43 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.runlevel.tests.validation;
 
-import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.runlevel.RunLevel;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * An internal interface that allows us to have the
- * factory and class implementations
- * 
  * @author jwells
  *
  */
-public interface Creator<T> {
-    /**
-     * Returns all the injectees needed prior
-     * to creating this object
-     * 
-     * @return
-     */
-    public List<Injectee> getInjectees();
+@Service @RunLevel(ValidationTest.THREE)
+public class LevelThreeDependsOnLevelFiveNonValidating {
+    private boolean up = false;
     
-    /**
-     * Creates an instance of the given type
-     * 
-     * @return an instance of the given type
-     * @throws MultiException if the creator threw an exception during construction
-     */
-    public T create(ServiceHandle<?> root, SystemDescriptor<?> eventThrower) throws MultiException;
+    @SuppressWarnings("unused")
+    @Inject
+    private NonValidatingLevelFiveService nonValidatingIsFun;
     
-    /**
-     * Disposes the given instance
-     * 
-     * @param instance removes the given instance
-     * @throws MultiException if the underlying creator threw an exception during destruction
-     */
-    public void dispose(T instance) throws MultiException;
+    @SuppressWarnings("unused")
+    @PostConstruct
+    private void postConstruct() {
+        up = true;
+    }
+    
+    @SuppressWarnings("unused")
+    @PreDestroy
+    private void preDestroy() {
+        up = false;
+    }
+    
+    public boolean isUp() {
+        return up;
+    }
+
 }

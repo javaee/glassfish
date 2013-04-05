@@ -40,10 +40,7 @@
 
 package org.glassfish.hk2.runlevel;
 
-
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.jvnet.hk2.annotations.Contract;
-
 
 /**
  * Implementations of this contract are responsible for orchestration
@@ -61,38 +58,46 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface RunLevelController {
-
-    // ----- Methods --------------------------------------------------------
     
     /**
      * Causes this RunLevelController to move to the specified run level for
-     * all {@link RunLevel} instances (identified by
-     * {@link RunLevelControllerIndicator}), orchestrating the appropriate
+     * all {@link RunLevel} instances, orchestrating the appropriate
      * lifecycle events.
      * <p>
      * If the run level specified is the same as the current run level then
-     * the RunLevelController may return immediately.
-     * <p>
-     * Note that the underlying implementation may perform this operation
-     * asynchronously. Implementors who choose the asynchronous approach
-     * are expected to treat a subsequent proceedTo(newRunLevel) call as
-     * an implicit cancellation of any currently running proceedTo() that
-     * is running on one or more managed threads.
-     * <p>
-     * This method will use the default activator which either starts or
-     * stops the services depending on whether or not the runLevel is
-     * coming up or going down
+     * the RunLevelController may return immediately
      *
      * @param runLevel  the run level to move to
+     * @return The future that can be used to wait for this object
+     * @throws CurrentlyRunningException if there is currently a job running
+     * this exception will be thrown with the currently running job
      */
-    void proceedTo(int runLevel);
+    public RunLevelFuture proceedToAsync(int runLevel) throws CurrentlyRunningException;
+    
+    /**
+     * This method will move to the given run level synchronously as per
+     * {@link RunLevelController#proceedToAsync(int)}.
+     * 
+     * @param runLevel The level that should be proceeded to
+     * @throws CurrentlyRunningException
+     */
+    public void proceedTo(int runLevel) throws CurrentlyRunningException;
+    
+    /**
+     * This method will return the current proceedTo that the RunLevelController
+     * is working on, or it will return null if the controller is not currently
+     * moving up or down
+     * 
+     * @return the current job the run level controller is working on or null if
+     * the system is not currently in flight
+     */
+    public RunLevelFuture getCurrentProceeding();
 
     /**
-     * Causes this RunLevelController to attempt to stop any in-flight
-     * proceedTo() operation.  This call will not have any effect if
-     * there is no current proceedTo() operation in progress.
+     * If there is a current procedure in process this method will get it
+     * and cancel it
      */
-    void interrupt();
+    public void cancel();
 
     /**
      * The current run level state.  This represents the last run level
@@ -102,20 +107,16 @@ public interface RunLevelController {
      * @return the current run level, or null if no run level has been
      *         been achieved
      */
-    Integer getCurrentRunLevel();
-
+    public int getCurrentRunLevel();
+    
     /**
-     * The planned run level state.
-     *
-     * @return the planned run level, or null if there is no planned level
+     * This sets the maximum number of threads that the system
+     * can create for creation and/or destruction of threads.
+     * This number must be one or greater
+     * 
+     * @param maximumThreads The maximum number of threads that
+     * can be used by the system for creation or destruction of
+     * services
      */
-    Integer getPlannedRunLevel();
-
-    /**
-     * Record the activation the run level service associated with the given
-     * descriptor.
-     *
-     * @param descriptor  the descriptor
-     */
-    public void recordActivation(ActiveDescriptor<?> descriptor);
+    public void setMaximumUseableThreads(int maximumThreads);
 }

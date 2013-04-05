@@ -63,6 +63,7 @@ import org.glassfish.hk2.api.ServiceLocator;
  * @author Jerome Dochez
  */
 public class ConfigBean extends Dom implements ConfigView {
+    private static final int WAIT_ITERATIONS = Integer.getInteger("org.glassfish.hk2.config.locktimeout.iterations", 100);
 
 
     private volatile boolean writeLock = false;
@@ -330,7 +331,7 @@ public class ConfigBean extends Dom implements ConfigView {
 
         public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
             long nanosTimeout = TimeUnit.NANOSECONDS.convert(time, unit);
-            long increment = nanosTimeout/20;
+            long increment = nanosTimeout / WAIT_ITERATIONS;
             long lastTime = System.nanoTime();
             for (; ;) {
                 if (tryLock()) {
