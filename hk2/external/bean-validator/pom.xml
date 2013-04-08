@@ -69,7 +69,7 @@
                         <Embed-Dependency>
                             <!-- Only specify root artifacts that need to be embedded, everything else
                                  will be pulled in automatically based on Private-Package settings. -->
-                            *; artifactId=hibernate-validator; inline=true
+                            *; artifactId=hibernate-validator; inline=true,*; artifactId=hibernate-validator-cdi; inline=true
                         </Embed-Dependency>
                         <Export-Package>
                             javax.validation.*; version=${javax.validation.version},
@@ -200,6 +200,13 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.hibernate</groupId>
+                                    <artifactId>hibernate-validator-cdi</artifactId>
+                                    <version>${hibernate-validator.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -216,6 +223,13 @@
                                 <artifactItem>
                                     <groupId>org.hibernate</groupId>
                                     <artifactId>hibernate-validator</artifactId>
+                                    <version>${hibernate-validator.version}</version>
+                                    <classifier>javadoc</classifier>
+                                    <overWrite>false</overWrite>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.hibernate</groupId>
+                                    <artifactId>hibernate-validator-cdi</artifactId>
                                     <version>${hibernate-validator.version}</version>
                                     <classifier>javadoc</classifier>
                                     <overWrite>false</overWrite>
@@ -248,6 +262,13 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator-cdi</artifactId>
             <version>${hibernate-validator.version}</version>
             <optional>true</optional>
         </dependency>

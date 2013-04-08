@@ -327,7 +327,7 @@
         <asm.version>3.3</asm.version>
         <cglib.version>2.2</cglib.version>
         <javax.validation.version>1.1.0.CR3</javax.validation.version>
-        <hibernate-validator.version>5.0.0.CR4</hibernate-validator.version>
+        <hibernate-validator.version>5.0.0.CR5</hibernate-validator.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
         <site.url>file:../www/</site.url>
