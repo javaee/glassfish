@@ -1300,7 +1300,7 @@ AS_ADMIN_MASTERPASSWORD=changeit
 <target name="start-process-windows">
       <taskdef name="spawn"
         classname="SpawnTask"
-        classpath="${env.APS_HOME}/modules"/>
+        classpath="${env.APS_HOME}/lib"/>
       <echo>Executing asadmin command: ${line}</echo>
       <spawn executable="${ASADMIN}" failifexecutionfails="false">
         <arg line="${line}"/>
