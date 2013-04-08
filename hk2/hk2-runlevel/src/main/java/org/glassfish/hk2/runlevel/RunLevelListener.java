@@ -63,17 +63,16 @@ public interface RunLevelListener {
 
     /**
      * Called when an RunLevelController implementation's proceedTo() operation
-     * has been canceled for some reason
+     * has been canceled for some reason.  This could be as a result of a
+     * new proceedTo() call or an interrupt() for example.
      *
-     * @param currentJob the job currently running
-     * @param levelAchieved the level just achieved by the currentJob.  Note
-     * that if the currentJob is currently going up then the levelAchieved will
-     * be the level for which all the services in that level were just started
-     * while when going down the levelAchieved will be the level for which
-     * all the services ABOVE that level have been shutdown.  In both cases
-     * the levelAchieved represents the current level of the system
+     * @param controller         the run level controller
+     * @param previousProceedTo  the previousProceedTo service that is being
+     *                           canceled
+     * @param isInterrupt        set to true if the onCancelled even was as
+     *                           a result of an explicit interrupt() call
      */
-    void onCancelled(RunLevelFuture controller, int levelAchieved);
+    void onCancelled(RunLevelController controller, int previousProceedTo, boolean isInterrupt);
 
     /**
      * Called when a service throws an exception during lifecycle
@@ -81,19 +80,15 @@ public interface RunLevelListener {
      *
      * @param controller    the run level controller
      * @param error         the error that was caught
+     * @param willContinue  the flag indicating whether or not the RunLevelController
+     *                      plans to proceed thru to the planned RunLevel service
      */
-    void onError(RunLevelFuture currentJob, Throwable error);
+    void onError(RunLevelController controller, Throwable error, boolean willContinue);
 
     /**
-     * Called when the RunLevelController advances to the next level
+     * Called when the RunLevelController advances in some tangible way.
      *
-     * @param currentJob the job currently running
-     * @param levelAchieved the level just achieved by the currentJob.  Note
-     * that if the currentJob is currently going up then the levelAchieved will
-     * be the level for which all the services in that level were just started
-     * while when going down the levelAchieved will be the level for which
-     * all the services ABOVE that level have been shutdown.  In both cases
-     * the levelAchieved represents the current level of the system
+     * @param controller  the run level controller
      */
-    void onProgress(RunLevelFuture currentJob, int levelAchieved);
+    void onProgress(RunLevelController controller);
 }

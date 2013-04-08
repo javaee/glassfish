@@ -65,7 +65,6 @@ public interface Creator<T> {
      * Creates an instance of the given type
      * 
      * @return an instance of the given type
-     * @throws MultiException if the creator threw an exception during construction
      */
     public T create(ServiceHandle<?> root, SystemDescriptor<?> eventThrower) throws MultiException;
     
@@ -73,7 +72,6 @@ public interface Creator<T> {
      * Disposes the given instance
      * 
      * @param instance removes the given instance
-     * @throws MultiException if the underlying creator threw an exception during destruction
      */
-    public void dispose(T instance) throws MultiException;
+    public void dispose(T instance);
 }

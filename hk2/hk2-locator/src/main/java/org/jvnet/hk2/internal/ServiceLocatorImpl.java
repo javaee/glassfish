@@ -147,6 +147,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new HashMap<String, IndexedListData>();
     private final HashMap<String, IndexedListData> descriptorsByName =
             new HashMap<String, IndexedListData>();
+    private final HashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
+            new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
     private final Context<Singleton> singletonContext = new SingletonContext(this);
     private final Context<PerLookup> perLookupContext = new PerLookupContext();
     private final LinkedHashSet<ValidationService> allValidators =
@@ -161,15 +163,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final HashMap<String, List<CacheEntry>> cacheEntries = new HashMap<String, List<CacheEntry>>();
     private final Map<ServiceLocatorImpl, ServiceLocatorImpl> children =
             new WeakHashMap<ServiceLocatorImpl, ServiceLocatorImpl>(); // Must be Weak for throw away children
-    
-    private final Object classAnalyzerLock = new Object();
     private final HashMap<String, ClassAnalyzer> classAnalyzers =
             new HashMap<String, ClassAnalyzer>();
     private String defaultClassAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
-    
-    private final Object resolversLock = new Object();
-    private HashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
-            new HashMap<Class<? extends Annotation>, InjectionResolver<?>>();
     
     private ServiceLocatorState state = ServiceLocatorState.RUNNING;
     
@@ -737,9 +733,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             allDescriptors.clear();
             descriptorsByAdvertisedContract.clear();
             descriptorsByName.clear();
-            synchronized (resolversLock) {
-                allResolvers.clear();
-            }
+            allResolvers.clear();
             allValidators.clear();
             errorHandlers.clear();
             cache.releaseCache();
@@ -1501,9 +1495,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
         }
         
-        synchronized (resolversLock) {
-            allResolvers = newResolvers;
-        }
+        allResolvers.clear();
+        allResolvers.putAll(newResolvers);
     }
     
     private void reupErrorHandlers() {
@@ -1518,26 +1511,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         for (SystemDescriptor<?> descriptor : checkList) {
             descriptor.reupInstanceListeners(allLifecycleListeners);
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void reupClassAnalyzers() {
-        List<ServiceHandle<?>> allAnalyzers = protectedGetAllServiceHandles(ClassAnalyzer.class);
-        
-        synchronized (classAnalyzerLock) {
-            classAnalyzers.clear();
-            
-            for (ServiceHandle<?> handle : allAnalyzers) {
-                ActiveDescriptor<?> descriptor = handle.getActiveDescriptor();
-                String name = descriptor.getName();
-                if (name == null) continue;
-                
-                ClassAnalyzer created = ((ServiceHandle<ClassAnalyzer>) handle).getService();
-                if (created == null) continue;
-                
-                classAnalyzers.put(name, created);
-            }
         }
     }
     
@@ -1586,7 +1559,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         if (classAnalyzersModified) {
-            reupClassAnalyzers();
+            classAnalyzers.clear();
         }
         
         contextCache.clear();
@@ -1611,28 +1584,26 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     /* package */ boolean isInjectAnnotation(Annotation annotation) {
-        synchronized (resolversLock) {
+        synchronized (lock) {
             return allResolvers.containsKey(annotation.annotationType());
         }
     }
     
     /* package */ boolean isInjectAnnotation(Annotation annotation, boolean isConstructor) {
-        InjectionResolver<?> resolver;
-        synchronized (resolversLock) {
-            resolver = allResolvers.get(annotation.annotationType());
-        }
-        
-        if (resolver == null) return false;
+        synchronized (lock) {
+            InjectionResolver<?> resolver = allResolvers.get(annotation.annotationType());
+            if (resolver == null) return false;
             
-        if (isConstructor) {
-            return resolver.isConstructorParameterIndicator();
-        }
+            if (isConstructor) {
+                return resolver.isConstructorParameterIndicator();
+            }
             
-        return resolver.isMethodParameterIndicator();
+            return resolver.isMethodParameterIndicator();
+        }
     }
     
     /* package */ InjectionResolver<?> getInjectionResolver(Class<? extends Annotation> annoType) {
-        synchronized (resolversLock) {
+        synchronized (lock) {
             return allResolvers.get(annoType);
         }
     }
@@ -1844,14 +1815,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     @Override
     public String getDefaultClassAnalyzerName() {
-        synchronized (classAnalyzerLock) {
+        synchronized (lock) {
             return defaultClassAnalyzer;
         }
     }
 
     @Override
     public void setDefaultClassAnalyzerName(String defaultClassAnalyzer) {
-        synchronized (classAnalyzerLock) {
+        synchronized (lock) {
             if (defaultClassAnalyzer == null) {
                 this.defaultClassAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
             }
@@ -1861,24 +1832,50 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
     
-    /* package */ ClassAnalyzer getAnalyzer(String name, Collector collector) {
-        ClassAnalyzer retVal;
-        synchronized (classAnalyzerLock) {
+    /* package */ @SuppressWarnings("unchecked")
+    ClassAnalyzer getAnalyzer(String name, Collector collector) {
+        synchronized (lock) {
             if (name == null) {
                 name = defaultClassAnalyzer ;
             }
             
-            retVal = classAnalyzers.get(name);
+            ClassAnalyzer retVal = classAnalyzers.get(name);
+            if (retVal != null) return retVal;
+            
+            ActiveDescriptor<?> descriptor =
+                    getBestDescriptor(BuilderHelper.createNameAndContractFilter(
+                            ClassAnalyzer.class.getName(), name));
+            if (descriptor == null) {
+                collector.addThrowable(new IllegalStateException(
+                        "Could not find an implementation of ClassAnalyzer with name " +
+                        name));
+                return null;
+            }
+            
+            try {
+                descriptor = reifyDescriptor(descriptor);
+            }
+            catch (Throwable th) {
+                collector.addThrowable(th);
+                return null;
+            }
+            
+            ServiceHandle<ClassAnalyzer> handle = (ServiceHandle<ClassAnalyzer>)
+                    getServiceHandle(descriptor);
+            retVal = handle.getService();
+            
+            if (retVal == null) {
+                collector.addThrowable(new IllegalStateException(
+                        "Context returned a null ClassAnalyzer of name " +
+                        name));
+                return null;
+            }
+            
+            classAnalyzers.put(name, retVal);
+            
+            return retVal;
         }
         
-        if (retVal == null) {
-            collector.addThrowable(new IllegalStateException(
-                    "Could not find an implementation of ClassAnalyzer with name " +
-                    name));
-            return null;
-        }
-         
-        return retVal;
     }
     
     private static class CheckConfigurationData {
