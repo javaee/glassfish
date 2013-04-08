@@ -43,8 +43,8 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.runlevel.internal.AsyncRunLevelContext;
-import org.glassfish.hk2.runlevel.internal.RunLevelControllerImpl;
+import org.glassfish.hk2.runlevel.internal.RunLevelContext;
+import org.glassfish.hk2.runlevel.utilities.RunLevelControllerImpl;
 
 /**
  * @author jwells
@@ -65,7 +65,7 @@ public class Utilities {
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         
         config.addActiveDescriptor(RunLevelControllerImpl.class);
-        config.addActiveDescriptor(AsyncRunLevelContext.class);
+        config.addActiveDescriptor(RunLevelContext.class);
         
         for (Class<?> clazz : classes) {
             config.addActiveDescriptor(clazz);

@@ -60,6 +60,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
@@ -357,11 +358,7 @@ public class ClazzCreator<T> implements Creator<T> {
         try {
             preDestroyMe(instance);
         } catch (Throwable th) {
-            if (th instanceof MultiException) {
-                throw (MultiException) th;
-            }
-            
-            throw new MultiException(th);
+            Logger.getLogger().debug("ClazzCreator", "dispose", th);
         }
 
     }
