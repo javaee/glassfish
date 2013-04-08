@@ -65,6 +65,7 @@ public class CurrentTaskFuture implements RunLevelFuture {
     private final Executor executor;
     private final ServiceLocator locator;
     private final int proposedLevel;
+    private final boolean useThreads;
     
     private final UpAllTheWay upAllTheWay;
     private final DownAllTheWay downAllTheWay;
@@ -76,11 +77,13 @@ public class CurrentTaskFuture implements RunLevelFuture {
             Executor executor,
             ServiceLocator locator,
             int proposedLevel,
-            int maxThreads) {
+            int maxThreads,
+            boolean useThreads) {
         this.parent = parent;
-        this.executor = executor;
+        this.executor = (useThreads) ? executor : null;
         this.locator = locator;
         this.proposedLevel = proposedLevel;
+        this.useThreads = useThreads;
         
         int currentLevel = parent.getCurrentLevel();
         
@@ -96,22 +99,36 @@ public class CurrentTaskFuture implements RunLevelFuture {
             parent.jobDone();
         }
         else if (currentLevel < proposedLevel) {
-            upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, maxThreads);
-            
-            upAllTheWay.go();
+            upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, maxThreads, useThreads);
             downAllTheWay = null;
         }
         else {
             downAllTheWay = new DownAllTheWay(proposedLevel, this, allListenerHandles);
-            
-            executor.execute(downAllTheWay);
-            
             upAllTheWay = null;
         }
     }
     
-    /* package */ boolean isUp() {
+    /* package */ void go() {
+        if (upAllTheWay != null) {
+            upAllTheWay.go();
+        }
+        else if (downAllTheWay != null) {
+            if (useThreads) {
+                executor.execute(downAllTheWay);
+            }
+            else {
+                downAllTheWay.run();
+            }
+        }
+    }
+    
+    public boolean isUp() {
         if (upAllTheWay != null) return true;
+        return false;
+    }
+    
+    public boolean isDown() {
+        if (downAllTheWay != null) return true;
         return false;
     }
 
@@ -261,13 +278,14 @@ public class CurrentTaskFuture implements RunLevelFuture {
     
     private class UpAllTheWay {
         private final Object lock = new Object();
-        private int workingOn;
+        
         private final int goingTo;
         private final int maxThreads;
-        
+        private final boolean useThreads;
         private final RunLevelFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
         
+        private int workingOn;
         private UpOneJob currentJob;
         private boolean cancelled = false;
         private boolean done = false;
@@ -275,11 +293,13 @@ public class CurrentTaskFuture implements RunLevelFuture {
         
         private UpAllTheWay(int goingTo, RunLevelFuture future,
                 List<ServiceHandle<RunLevelListener>> listeners,
-                int maxThreads) {
+                int maxThreads,
+                boolean useThreads) {
             this.goingTo = goingTo;
             this.future = future;
             this.listeners = listeners;
             this.maxThreads = maxThreads;
+            this.useThreads = useThreads;
             
             workingOn = parent.getCurrentLevel();
         }
@@ -313,19 +333,44 @@ public class CurrentTaskFuture implements RunLevelFuture {
         }
         
         private void go() {
-            synchronized (lock) {
-                workingOn++;
-                if (workingOn > goingTo) {
-                    parent.jobDone();
+            if (useThreads) {
+                synchronized (lock) {
+                    workingOn++;
+                    if (workingOn > goingTo) {
+                        parent.jobDone();
                     
-                    done = true;
-                    lock.notifyAll();
+                        done = true;
+                        lock.notifyAll();
+                        return;
+                    }
+            
+                    currentJob = new UpOneJob(workingOn, this, maxThreads);
+            
+                    executor.execute(currentJob);
                     return;
                 }
-            
-                currentJob = new UpOneJob(workingOn, this, maxThreads);
-            
-                executor.execute(currentJob);
+            }
+                
+            workingOn++;
+            while (workingOn <= goingTo) {
+                synchronized (lock) {
+                    if (done) break;
+                    
+                    currentJob = new UpOneJob(workingOn, this, maxThreads);
+                }
+                
+                currentJob.run();
+                
+                workingOn++;
+            }
+             
+            synchronized (lock) {
+                if (done) return;
+                
+                parent.jobDone();
+                
+                done = true;
+                lock.notifyAll();
             }
         }
         
@@ -374,7 +419,9 @@ public class CurrentTaskFuture implements RunLevelFuture {
                 parent.setCurrentLevel(workingOn);
                 invokeOnProgress(future, workingOn, listeners);
                 
-                go();
+                if (useThreads) {
+                    go();
+                }
             }
         }
         
@@ -431,6 +478,8 @@ public class CurrentTaskFuture implements RunLevelFuture {
             }
             
             int runnersToCreate = ((numJobs < maxThreads) ? numJobs : maxThreads) - 1;
+            if (!useThreads) runnersToCreate = 0;
+            
             for (int lcv = 0; lcv < runnersToCreate; lcv++) {
                 QueueRunner runner = new QueueRunner(jobsLock, jobs, this, lock);
                 
@@ -486,7 +535,7 @@ public class CurrentTaskFuture implements RunLevelFuture {
             this.listeners = listeners;
             
             if (future == null) {
-                // This  is an error or cancelled case, so we are pretending
+                // This is an error or cancelled case, so we are pretending
                 // we have gotten higher than we have
                 workingOn = parent.getCurrentLevel() + 1;
             }

@@ -71,8 +71,11 @@ public interface RunLevelController {
      * @return The future that can be used to wait for this object
      * @throws CurrentlyRunningException if there is currently a job running
      * this exception will be thrown with the currently running job
+     * @throws IllegalStateException if this method is called when the
+     *   USE_NO_THREADS policy is in effect
      */
-    public RunLevelFuture proceedToAsync(int runLevel) throws CurrentlyRunningException;
+    public RunLevelFuture proceedToAsync(int runLevel)
+            throws CurrentlyRunningException, IllegalStateException;
     
     /**
      * This method will move to the given run level synchronously as per
@@ -119,4 +122,52 @@ public interface RunLevelController {
      * services
      */
     public void setMaximumUseableThreads(int maximumThreads);
+    
+    /**
+     * Returns the current number of maximum useable threads
+     * 
+     * @return the current number of maximum useable threads
+     */
+    public int getMaximumUseableThreads();
+    
+    /**
+     * Sets the threading policy that will be used by
+     * this controller.  The values can be:<OL>
+     * <LI>FULLY_THREADED: Use maximumUseableThreads to complete any task</LI>
+     * <LI>USE_NO_THREADS: Never create a thread, use the callers thread always</LI>
+     * </OL>
+     * 
+     * @param policy The policy that should be used by this controller
+     */
+    public void setThreadingPolicy(ThreadingPolicy policy);
+    
+    /**
+     * Returns the threading policy currently being used by
+     * this controller
+     * 
+     * @return The threading policy currently in use with this controller
+     */
+    public ThreadingPolicy getThreadingPolicy();
+    
+    /**
+     * These are the policies for how the RunLevelController
+     * will use threads
+     * 
+     * @author jwells
+     *
+     */
+    public enum ThreadingPolicy {
+        /**
+         * The RunLevelController will use as many threads
+         * as it needs (but controlled by the MaximumUseableThreads
+         * value)
+         */
+        FULLY_THREADED,
+        
+        /**
+         * The RunLevelController will use no threads at all.
+         * The MaximumUsealbeThreads value will be ignored
+         */
+        USE_NO_THREADS
+    }
 }

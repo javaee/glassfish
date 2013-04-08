@@ -60,6 +60,28 @@ public interface RunLevelFuture extends Future<Object> {
     public int getProposedLevel();
     
     /**
+     * Returns true if this job represents the system going from
+     * a lower level to a higher level.  This method and isDown
+     * can both be false (for the case that proceedTo asked to go
+     * to the level it is already at) but they cannot both be true
+     * 
+     * @return true if this job was proceeding from a lower level
+     * to a higher level
+     */
+    public boolean isUp();
+    
+    /**
+     * Returns true if this job represents the system going from
+     * a higher level to a lower level.  This method and isUp
+     * can both be false (for the case that proceedTo asked to go
+     * to the level it is already at) but they cannot both be true
+     * 
+     * @return true if this job was proceeding from a higher level
+     * to a lower level
+     */
+    public boolean isDown();
+    
+    /**
      * The cancel method attempts to cancel the current running
      * job (if the job is not already completed or already cancelled).
      * The meaning of cancel is different depending on whether or

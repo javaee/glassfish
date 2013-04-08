@@ -63,7 +63,9 @@ public class RunLevelControllerImpl implements RunLevelController {
     
     @Override
     public void proceedTo(int runLevel) {
-        RunLevelFuture future = proceedToAsync(runLevel);
+        RunLevelFuture future = context.proceedTo(runLevel);
+        if (future == null) return;  // Happens if USE_NO_THREADS is true
+        
         try {
             future.get();
         }
@@ -85,7 +87,11 @@ public class RunLevelControllerImpl implements RunLevelController {
      */
     @Override
     public RunLevelFuture proceedToAsync(int runLevel)
-            throws CurrentlyRunningException {
+            throws CurrentlyRunningException, IllegalStateException {
+        if (context.getPolicy().equals(ThreadingPolicy.USE_NO_THREADS)) {
+            throw new IllegalStateException("Cannot use proceedToAsync if the threading policy is USE_NO_THREADS");
+        }
+        
         return context.proceedTo(runLevel);
     }
 
@@ -124,6 +130,23 @@ public class RunLevelControllerImpl implements RunLevelController {
         }
         
         context.setMaximumThreads(maximumThreads);
+    }
+
+    @Override
+    public int getMaximumUseableThreads() {
+        return context.getMaximumThreads();
+    }
+
+    @Override
+    public void setThreadingPolicy(ThreadingPolicy policy) {
+        if (policy == null) throw new IllegalArgumentException();
+        context.setPolicy(policy);
+        
+    }
+
+    @Override
+    public ThreadingPolicy getThreadingPolicy() {
+        return context.getPolicy();
     }
 
 }
