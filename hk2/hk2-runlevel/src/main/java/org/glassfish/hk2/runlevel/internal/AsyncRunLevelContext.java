@@ -62,6 +62,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.CurrentlyRunningException;
 import org.glassfish.hk2.runlevel.RunLevel;
+import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.utilities.Utilities;
 import org.jvnet.hk2.annotations.Service;
@@ -95,6 +96,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     private final Executor executor;
     private final ServiceLocator locator;
     private int maxThreads = Integer.MAX_VALUE;
+    private RunLevelController.ThreadingPolicy policy = RunLevelController.ThreadingPolicy.FULLY_THREADED;
     
     @Inject
     private AsyncRunLevelContext(ServiceLocator locator) {
@@ -238,6 +240,14 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
         this.currentLevel = currentLevel;
     }
     
+    /* package */ synchronized void setPolicy(RunLevelController.ThreadingPolicy policy) {
+        this.policy = policy;
+    }
+    
+    /* package */ synchronized RunLevelController.ThreadingPolicy getPolicy() {
+        return policy;
+    }
+    
     /* package */ List<ActiveDescriptor<?>> getOrderedListOfServicesAtLevel(int level) {
         synchronized (this) {
             LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
@@ -267,7 +277,10 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
                     executor,
                     locator,
                     level,
-                    maxThreads);
+                    maxThreads,
+                    (policy.equals(RunLevelController.ThreadingPolicy.FULLY_THREADED)));
+            
+            currentTask.go();
             
             return currentTask;
         }
@@ -289,6 +302,10 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
         else {
             maxThreads = maximum;
         }
+    }
+    
+    /* package */ synchronized int getMaximumThreads() {
+        return maxThreads;
     }
     
     private static class RunLevelControllerThread extends Thread {
