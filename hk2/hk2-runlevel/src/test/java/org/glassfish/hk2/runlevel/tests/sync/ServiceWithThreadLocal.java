@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,43 +37,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.runlevel.tests.sync;
 
-import java.util.List;
-
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceHandle;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * An internal interface that allows us to have the
- * factory and class implementations
- * 
  * @author jwells
  *
  */
-public interface Creator<T> {
-    /**
-     * Returns all the injectees needed prior
-     * to creating this object
-     * 
-     * @return
-     */
-    public List<Injectee> getInjectees();
+@Service
+public class ServiceWithThreadLocal {
+    private static final ThreadLocal < Boolean > upBoolean = 
+        new ThreadLocal < Boolean > () {
+            @Override protected Boolean initialValue() {
+                return new Boolean(false);
+        }
+    };
     
-    /**
-     * Creates an instance of the given type
-     * 
-     * @return an instance of the given type
-     * @throws MultiException if the creator threw an exception during construction
-     */
-    public T create(ServiceHandle<?> root, SystemDescriptor<?> eventThrower) throws MultiException;
+    private static final ThreadLocal < Boolean > downBoolean = 
+        new ThreadLocal < Boolean > () {
+            @Override protected Boolean initialValue() {
+                return new Boolean(false);
+        }
+    };
+
+    public boolean wasUpToggled() {
+        return upBoolean.get();
+    }
     
-    /**
-     * Disposes the given instance
-     * 
-     * @param instance removes the given instance
-     * @throws MultiException if the underlying creator threw an exception during destruction
-     */
-    public void dispose(T instance) throws MultiException;
+    public void toggleUp() {
+        upBoolean.set(true);
+    }
+    
+    public boolean wasDownToggled() {
+        return downBoolean.get();
+    }
+    
+    public void toggleDown() {
+        downBoolean.set(true);
+    }
+    
+    
 }

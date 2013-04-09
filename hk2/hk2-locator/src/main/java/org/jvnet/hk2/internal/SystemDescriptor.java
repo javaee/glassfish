@@ -597,15 +597,15 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         }
         finally {
             synchronized (this) {
+                reifying = false;
+                this.notifyAll();
+                
                 if (!collector.hasErrors()) {
                     reified = true;
                 }
                 else {
                     collector.addThrowable(new IllegalArgumentException("Errors were discovered while reifying " + this));
                 }
-                
-                reifying = false;
-                this.notifyAll();
             }
         }
         
