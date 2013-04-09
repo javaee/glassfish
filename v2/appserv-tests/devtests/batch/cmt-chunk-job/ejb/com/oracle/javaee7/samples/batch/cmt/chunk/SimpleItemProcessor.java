@@ -7,7 +7,7 @@ package com.oracle.javaee7.samples.batch.cmt.chunk;
 import javax.inject.Inject;
 
 
-@javax.inject.Named//("com.oracle.javaee7.samples.batch.simple.SimpleItemProcessor")
+@javax.inject.Named("SimpleItemProcessor")
 public class SimpleItemProcessor
     implements javax.batch.api.chunk.ItemProcessor {
 
