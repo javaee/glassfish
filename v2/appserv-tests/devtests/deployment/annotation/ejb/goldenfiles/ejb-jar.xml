@@ -2,7 +2,7 @@
 <ejb-jar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="true" version="3.2" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/ejb-jar_3_2.xsd" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
   <enterprise-beans>
     <session>
-      <display-name xml:lang="en">myStatefulTest1</display-name>
+      <display-name>myStatefulTest1</display-name>
       <ejb-name>myStatefulTest1</ejb-name>
       <business-remote>test.ejb.stateful.SFHello</business-remote>
       <ejb-class>test.ejb.stateful.StatefulTest1</ejb-class>
@@ -35,7 +35,7 @@
       <passivation-capable>true</passivation-capable>
     </session>
     <session>
-      <display-name xml:lang="en">StatefulTest2</display-name>
+      <display-name>StatefulTest2</display-name>
       <ejb-name>StatefulTest2</ejb-name>
       <business-remote>test.ejb.stateful.SFHello</business-remote>
       <ejb-class>StatefulTest2</ejb-class>
@@ -48,7 +48,7 @@
       <passivation-capable>true</passivation-capable>
     </session>
     <session>
-      <display-name xml:lang="en">myStatelessTest1</display-name>
+      <display-name>myStatelessTest1</display-name>
       <ejb-name>myStatelessTest1</ejb-name>
       <business-local>test.ejb.stateless.SLHello</business-local>
       <ejb-class>test.ejb.stateless.StatelessTest1</ejb-class>
@@ -86,7 +86,7 @@
       </security-identity>
     </session>
     <session>
-      <display-name xml:lang="en">StatelessTest2</display-name>
+      <display-name>StatelessTest2</display-name>
       <ejb-name>StatelessTest2</ejb-name>
       <business-local>test.ejb.stateless.SLHello</business-local>
       <ejb-class>test.ejb.stateless.StatelessTest2</ejb-class>

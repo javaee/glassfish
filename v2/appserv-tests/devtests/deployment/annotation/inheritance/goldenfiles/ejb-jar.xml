@@ -2,7 +2,7 @@
 <ejb-jar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="true" version="3.2" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/ejb-jar_3_2.xsd" xmlns="http://xmlns.jcp.org/xml/ns/javaee">
   <enterprise-beans>
     <session>
-      <display-name xml:lang="en">StatefulTest2</display-name>
+      <display-name>StatefulTest2</display-name>
       <ejb-name>StatefulTest2</ejb-name>
       <business-remote>test.ejb.SFHello1</business-remote>
       <ejb-class>StatefulTest2</ejb-class>
@@ -27,7 +27,7 @@
         <lookup-name>java:comp/DefaultDataSource</lookup-name>
       </resource-ref>
       <resource-env-ref>
-        <description xml:lang="en">testing</description>
+        <description>testing</description>
         <resource-env-ref-name>test.ejb.StatefulTest/ejbContext</resource-env-ref-name>
         <resource-env-ref-type>javax.ejb.EJBContext</resource-env-ref-type>
         <injection-target>
@@ -75,7 +75,7 @@
       <passivation-capable>true</passivation-capable>
     </session>
     <session>
-      <display-name xml:lang="en">myStatefulTest</display-name>
+      <display-name>myStatefulTest</display-name>
       <ejb-name>myStatefulTest</ejb-name>
       <business-remote>test.ejb.SFHello1</business-remote>
       <ejb-class>test.ejb.StatefulTest1</ejb-class>
@@ -117,7 +117,7 @@
         <lookup-name>java:comp/DefaultDataSource</lookup-name>
       </resource-ref>
       <resource-env-ref>
-        <description xml:lang="en">testing</description>
+        <description>testing</description>
         <resource-env-ref-name>test.ejb.StatefulTest/ejbContext</resource-env-ref-name>
         <resource-env-ref-type>javax.ejb.EJBContext</resource-env-ref-type>
         <injection-target>
@@ -155,7 +155,7 @@
       <passivation-capable>true</passivation-capable>
     </session>
     <session>
-      <display-name xml:lang="en">StatefulTest</display-name>
+      <display-name>StatefulTest</display-name>
       <ejb-name>StatefulTest</ejb-name>
       <business-local>test.ejb.SFHello</business-local>
       <ejb-class>test.ejb.StatefulTest</ejb-class>
@@ -180,7 +180,7 @@
         <lookup-name>java:comp/DefaultDataSource</lookup-name>
       </resource-ref>
       <resource-env-ref>
-        <description xml:lang="en">testing</description>
+        <description>testing</description>
         <resource-env-ref-name>test.ejb.StatefulTest/ejbContext</resource-env-ref-name>
         <resource-env-ref-type>javax.ejb.EJBContext</resource-env-ref-type>
         <injection-target>
