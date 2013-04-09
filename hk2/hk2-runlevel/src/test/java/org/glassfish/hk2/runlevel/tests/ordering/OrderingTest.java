@@ -41,6 +41,8 @@ package org.glassfish.hk2.runlevel.tests.ordering;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Singleton;
 
@@ -73,9 +75,12 @@ public class OrderingTest {
      * it has a higher ranking.  This test ensures that even though the
      * Opera service is a subordinate of the Music service that its timing
      * would still be accounted for properly
+     * @throws TimeoutException 
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
     @Test
-    public void testCanGetCorrectTiming() {
+    public void testCanGetCorrectTiming() throws InterruptedException, ExecutionException, TimeoutException {
         RunLevelController controller = locator.getService(RunLevelController.class);
         Assert.assertNotNull(controller);
         
