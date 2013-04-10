@@ -54,7 +54,7 @@
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>2.1.81</version>
+    <version>2.1.82-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 
@@ -139,9 +139,9 @@
     </mailingLists>
 
     <scm>
-      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/tags/hk2-parent-2.1.81</connection>
-      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/tags/hk2-parent-2.1.81</developerConnection>
-      <url>https://svn.java.net/svn/hk2~svn/tags/hk2-parent-2.1.81</url>
+      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</connection>
+      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
+      <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
     </scm>
 
     <build>
