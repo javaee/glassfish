@@ -104,12 +104,10 @@ public class Client {
 		// The stateless EJB uses the deployment descriptor to protect the EJB
 		// Only repeat tests that actually can invoke the servlet
 		ejbmode = "stateless";
-		// The stateless bean is not working due to GLASSFISH-20036 and security-role-ref handling
-		//testAnyAuthUser();
-		//testAnyAuthUserOther();
-		//testStar();
-		//testAuthUser();
-		// These three pass because the EJB traps the exception and returns false
+		testAnyAuthUser();
+		testAnyAuthUserOther();
+		testStar();
+		testAuthUser();
 		testServlet();
 		testServletOther();
 		testServletNone();

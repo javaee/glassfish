@@ -66,16 +66,16 @@ public class HelloEJB implements Hello {
 
 	public boolean inRole(String roleName) {
 		System.out.println("In HelloEJB::inRole('"+roleName+"')");
-		try {
+		//try {
 			boolean result = ctx.isCallerInRole(roleName); 
 			System.out.println("In HelloEJB::inRole('"+roleName+"') - " + result);
 			return result;
-		}
-		catch (Exception exc) {
-			System.out.println("In HelloEJB - Exception: " + exc.toString());
-            exc.printStackTrace();
-            return false;
-		}
+		//}
+		//catch (Exception exc) {
+		//	System.out.println("In HelloEJB - Exception: " + exc.toString());
+		//	exc.printStackTrace();
+		//	return false;
+		//}
 	}
 
     public void methodAuthUser() {

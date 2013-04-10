@@ -58,15 +58,11 @@
 			<ejb-name>HelloEJB</ejb-name>
 			<business-local>org.glassfish.jacc.test.mr8.Hello</business-local>
 			<ejb-class>org.glassfish.jacc.test.mr8.HelloEJB</ejb-class>
-			<!-- Without these role-refs declared isCallerInRole() throws IllegalStateException
-			     The @DeclareRoles annotation does this linkage automatically
+			<!-- GLASSFISH-20036 fixes IllegalStateException when role-refs are not declared.
+			     The @DeclareRoles annotation provides the linkage between roles silently.
 			<security-role-ref>
 				<role-name>javaUsers</role-name>
 				<role-link>javaUsers</role-link>
-			</security-role-ref>
-			<security-role-ref>
-				<role-name>**</role-name>
-				<role-link>**</role-link>
 			</security-role-ref>
 			-->
 		</session>
@@ -74,9 +70,6 @@
 	<assembly-descriptor>
 		<security-role>
 			<role-name>javaUsers</role-name>
-		</security-role>
-		<security-role>
-			<role-name>**</role-name>
 		</security-role>
 		<method-permission>
 			<role-name>javaUsers</role-name>

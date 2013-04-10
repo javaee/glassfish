@@ -49,7 +49,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 
-@DeclareRoles({"javaUsers","**"})
+@DeclareRoles({"javaUsers"})
 
 @Stateful
 public class HelloStatefulEJB implements HelloStateful {
@@ -77,16 +77,16 @@ public class HelloStatefulEJB implements HelloStateful {
 
 	public boolean inRole(String roleName) {
 		System.out.println("In HelloStatefulEJB::inRole('"+roleName+"')");
-		try {
+		//try {
 			boolean result = ctx.isCallerInRole(roleName); 
 			System.out.println("In HelloStatefulEJB::inRole('"+roleName+"') - " + result);
 			return result;
-		}
-		catch (Exception exc) {
-			System.out.println("In HelloStatefulEJB - Exception: " + exc.toString());
-            exc.printStackTrace();
-            return false;
-		}
+		//}
+		//catch (Exception exc) {
+		//	System.out.println("In HelloStatefulEJB - Exception: " + exc.toString());
+		//	exc.printStackTrace();
+		//	return false;
+		//}
 	}
 
 	@RolesAllowed({"javaUsers"})
