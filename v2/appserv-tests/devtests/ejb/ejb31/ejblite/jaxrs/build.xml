@@ -17,7 +17,7 @@
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
     </target>
- 
+
     <target name="compile" depends="clean">
         <antcall target="compile-common">
             <param name="src" value="war"/>
@@ -27,13 +27,14 @@
     <target name="build" depends="compile">
       <antcall target="webclient-war-common">
           <param name="hasWebclient" value="false"/>
+          <param name="beans.xml"    value="docroot/WEB-INF/beans.xml"/>
         </antcall>
         <antcall target="compile-common">
             <param name="src" value="client"/>
         </antcall>
-    </target> 
-    
-    <target name="deploy" 
+    </target>
+
+    <target name="deploy"
             depends="init-common">
         <antcall target="deploy-war-common"/>
     </target>
@@ -41,9 +42,9 @@
     <target name="run" depends="init-common">
         <antcall target="run_se"/>
     </target>
- 
+
     <target name="run_se" depends="init-common">
-       <java  fork="on" 
+       <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
               classname="${se.client}">
@@ -55,7 +56,7 @@
 
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-war-common"/>
-    </target>   
+    </target>
 
     <target name="usage">
         <antcall target="usage-common"/>
