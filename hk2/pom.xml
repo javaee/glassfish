@@ -45,16 +45,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.java</groupId>
-        <artifactId>jvnet-parent</artifactId>
-        <version>3</version>
+        <groupId>org.glassfish.hk2</groupId>
+        <artifactId>hk2-bom</artifactId>
+        <version>2.1.81-SNAPSHOT</version>
+        <relativePath>bom/pom.xml</relativePath>
     </parent>
-
-    <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>2.1.81-SNAPSHOT</version>
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
 
@@ -326,8 +324,6 @@
         <java.net.username>${user.name}</java.net.username>
         <asm.version>3.3</asm.version>
         <cglib.version>2.2</cglib.version>
-        <javax.validation.version>1.1.0.CR3</javax.validation.version>
-        <hibernate-validator.version>5.0.0.CR5</hibernate-validator.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
         <site.url>file:../www/</site.url>
