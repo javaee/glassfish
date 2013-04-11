@@ -47,11 +47,11 @@
         <groupId>net.java</groupId>
         <artifactId>jvnet-parent</artifactId>
         <version>3</version>
-        <relativePath />
+        <relativePath/>
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-bom</artifactId>
-    <version>2.1.82-SNAPSHOT</version>
+    <version>2.1.81-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <properties>
