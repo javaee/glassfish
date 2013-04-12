@@ -33,7 +33,6 @@
               value="**/Stles*.class" />
             <param name="appclientjar.classes" 
               value="**/Client.class,**/Stles.class" />
-            <param name="beans.xml" value="descriptor/beans.xml"/>
         </antcall>
     </target> 
     
