@@ -30,7 +30,6 @@
     <target name="build" depends="compile">
       <antcall target="webclient-war-common">
           <param name="hasWebclient" value="false"/>
-          <param name="beans.xml"    value="beans.xml"/>
         </antcall>
     </target>
 
