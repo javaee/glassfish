@@ -13,7 +13,6 @@ import javax.ejb.EJBException;
 import javax.interceptor.Interceptors;
 import javax.interceptor.ExcludeDefaultInterceptors;
 import javax.interceptor.ExcludeClassInterceptors;
-import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
 import javax.naming.InitialContext;
 import javax.annotation.Resource;

@@ -269,8 +269,8 @@ public class StlesEJB implements Stles {
     }
 
     @AroundTimeout
-    private void xxx(InvocationContext ctx) throws Exception {
+    private Object xxx(InvocationContext ctx) throws Exception {
         System.out.println("in StlesEJB:xxx "  + ((Timer)ctx.getTimer()).getInfo() );
-        ctx.proceed();
+        return ctx.proceed();
     }
 }

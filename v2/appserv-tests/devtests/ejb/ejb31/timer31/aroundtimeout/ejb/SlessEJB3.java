@@ -73,7 +73,7 @@ public class SlessEJB3 implements Sless3
     public void noaroundtimeout() {}
 
     @AroundTimeout
-    private Object aroundTimeout(InvocationContext ctx)
+    private Object aroundTimeout(InvocationContext ctx) throws Exception
     {
         // Common will verify that noaroundtimeout() is not called.
         Common.checkResults(ctx);

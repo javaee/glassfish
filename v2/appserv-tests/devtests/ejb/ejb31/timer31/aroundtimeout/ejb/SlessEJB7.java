@@ -30,7 +30,7 @@ public class SlessEJB7
     public void dc() {}
 
     @AroundTimeout
-    private Object aroundTimeout(InvocationContext ctx)
+    private Object aroundTimeout(InvocationContext ctx) throws Exception
     {
         String methodName = ctx.getMethod().getName();
         if (methodName.equals("verify")) {
