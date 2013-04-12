@@ -141,7 +141,7 @@
     </dependency>
 
      <dependency>
-      <groupId>org.glassfish</groupId>
+      <groupId>org.glassfish.main.common</groupId>
       <artifactId>simple-glassfish-api</artifactId>
       <version>4.0-SNAPSHOT</version>
       <scope>compile</scope>

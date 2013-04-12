@@ -90,15 +90,10 @@ public abstract class AbstractServerMojo extends AbstractMojo {
     private static final String EMBEDDED_ALL = "glassfish-embedded-all";
     private static final String EMBEDDED_ARTIFACT_PREFIX = "glassfish-embedded-";
 
-    private static final String GF_API_GROUP_ID = "org.glassfish";
+    private static final String GF_API_GROUP_ID = "org.glassfish.main.common";
     private static final String GF_API_ARTIFACT_ID = "simple-glassfish-api";
-    private static final String DEFAULT_GF_VERSION = "3.1";
+    private static final String DEFAULT_GF_VERSION = "4.0";
     private static String gfVersion;
-
-//    private static final String UBER_JAR_URI = "org.glassfish.embedded.osgimain.jarURI";
-
-//    public static final String AUTO_START_BUNDLES =
-//            "org.glassfish.embedded.osgimain.autostartBundles";
 
     /**
      * The remote repositories where artifacts are located.
