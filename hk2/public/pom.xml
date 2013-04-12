@@ -47,14 +47,14 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>2.1.82</version>
+        <version>2.1.83-SNAPSHOT</version>
     </parent>
 
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-public</artifactId>
     <packaging>pom</packaging>
 
-    <version>2.1.82</version>
+    <version>2.1.83-SNAPSHOT</version>
     <name>public-api</name>
 
     <build>
