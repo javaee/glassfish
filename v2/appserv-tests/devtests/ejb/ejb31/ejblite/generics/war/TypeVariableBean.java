@@ -15,9 +15,8 @@ public class TypeVariableBean<T> {
 
 //    public String hello(Object o) {  not allowed, conflict with hello(T)
 
-    //should be able to override toString as final method
     @Override
-    public final String toString() {
+    public String toString() {
         return "TypeVariableBean<T>: " + super.toString();
     }
 

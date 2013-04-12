@@ -10,7 +10,7 @@ import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
  * See issue 15595 (java.lang.ClassFormatError: Duplicate method name thrown in deployment).
  * verified in TestBean
  * issue 17235 Dependency Injection doesn't work for overloaded methods accepting generic-type parameter
- * issue 16372 Not able to make toString() a final method in EJB with no-interface view
+ * DO NOT TEST: issue 16372 Not able to make toString() a final method in EJB with no-interface view
  * verified in TypeVariableBean
  * 
  */
