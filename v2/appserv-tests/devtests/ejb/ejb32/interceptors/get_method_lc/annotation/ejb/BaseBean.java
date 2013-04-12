@@ -11,14 +11,17 @@ public class BaseBean {
     // InterceptorA
     boolean ac = false;
     boolean pc = false;
+    boolean ai = false;
 
     // InterceptorB
     boolean ac1 = false;
     boolean pc1 = false;
+    boolean ai1 = false;
 
     // InterceptorC
     boolean ac2 = false;
     boolean pc2 = false;
+    boolean ai2 = false;
 
     Method method = null;
 
@@ -91,6 +94,12 @@ public class BaseBean {
         if (!pc) throw new RuntimeException("[" + name + "] InterceptorA.PostConstruct was not called");
         if (pc1) throw new RuntimeException("[" + name + "] InterceptorB.PostConstruct was called");
         if (pc2) throw new RuntimeException("[" + name + "] InterceptorC.PostConstruct was called");
+    }
+
+    void verifyA_AI(String name) {
+        if (!ai) throw new RuntimeException("[" + name + "] InterceptorA.AroundInvoke was not called");
+        if (ai1) throw new RuntimeException("[" + name + "] InterceptorB.AroundInvoke was called");
+        if (ai2) throw new RuntimeException("[" + name + "] InterceptorC.AroundInvoke was called");
     }
 
     void verifyB_PC(String name) {

@@ -7,7 +7,7 @@ import javax.annotation.*;
 @Stateless
 public class SlessEJB2 extends BaseBean {
 
-    //@Resource private SomeManagedBean mb;
+    @Resource private SomeManagedBean mb;
 
     public String sayHello() {
         try {
@@ -16,7 +16,7 @@ public class SlessEJB2 extends BaseBean {
         } catch (Exception e) {
             // ok
         }
-        //mb.foo();
+        mb.foo();
         return "Hello";
     }
 

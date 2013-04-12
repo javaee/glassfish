@@ -60,6 +60,7 @@ public class InterceptorA {
     public Object interceptCall(InvocationContext ctx) throws Exception {
         System.out.println("In InterceptorA.AroundInvoke");
         BaseBean b = (BaseBean)ctx.getTarget();
+        b.ai = true;
         System.out.println("AroundInvoke on : " + b);
         return ctx.proceed();
     }
