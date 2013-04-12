@@ -55,6 +55,7 @@
     <properties>
        <slf4j.version>1.6</slf4j.version>
        <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
+       <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
       <jtype.version>0.1.0</jtype.version>
     </properties>
     <name>Validation API (JSR 303) version ${javax.validation.version}, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
@@ -72,7 +73,7 @@
                             *; artifactId=hibernate-validator; inline=true,*; artifactId=hibernate-validator-cdi; inline=true
                         </Embed-Dependency>
                         <Export-Package>
-                            javax.validation.*; version=${javax.validation.version},
+                            javax.validation.*; version=${javax.validation.osgi.version},
                             org.hibernate.validator.*; version=${hibernate-validator.version},
                             org.hibernate.validator.internal.cdi; version=${hibernate-validator.version},
 			    org.hibernate.validator.internal.cdi.interceptor; version=${hibernate-validator.version},
