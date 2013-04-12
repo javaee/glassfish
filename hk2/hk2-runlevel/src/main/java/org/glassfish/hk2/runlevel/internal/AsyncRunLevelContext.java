@@ -268,7 +268,10 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     }
     
     public RunLevelFuture proceedTo(int level) throws CurrentlyRunningException {
+        CurrentTaskFuture localTask;
         synchronized (this) {
+            boolean fullyThreaded = policy.equals(RunLevelController.ThreadingPolicy.FULLY_THREADED);
+            
             if (currentTask != null) {
                 throw new CurrentlyRunningException(currentTask);
             }
@@ -278,13 +281,16 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
                     locator,
                     level,
                     maxThreads,
-                    (policy.equals(RunLevelController.ThreadingPolicy.FULLY_THREADED)));
+                    fullyThreaded);
             
-            currentTask.go();
-            
-            return currentTask;
+            localTask = currentTask;
         }
         
+        // Do outside the lock so that when not fully threaded we do not hold the
+        // AsyncRunLevelContext lock.  Otherwise this can lead to deadlock
+        localTask.go();
+            
+        return localTask;
     }
     
     /* package */ synchronized void jobDone() {
