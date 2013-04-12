@@ -12,12 +12,12 @@ public class BaseInterceptor {
     }
 
     @AroundInvoke
-    public void intercept(InvocationContext inv)
+    public Object intercept(InvocationContext inv)
 	throws Exception
     {
 	System.out.println("[mdb] Interceptor invoked...");
 	interceptorCount++;
-	inv.proceed();
+	return inv.proceed();
     }
 }
 

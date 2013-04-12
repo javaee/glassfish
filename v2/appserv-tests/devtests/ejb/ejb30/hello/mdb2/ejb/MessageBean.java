@@ -272,7 +272,7 @@ public class MessageBean implements javax.ejb.MessageDrivenBean {
     }
 
     @AroundInvoke
-    public void intercept(InvocationContext inv)
+    public Object intercept(InvocationContext inv)
 	throws Exception
     {
 	System.out.println("[mdb] Interceptor invoked...");
@@ -293,8 +293,10 @@ public class MessageBean implements javax.ejb.MessageDrivenBean {
         }
 
 
-	inv.proceed();
+	Object o = inv.proceed();
 	System.out.println("[mdb] Interceptor after proceed()...");
+
+        return o;
     }
 
 }

@@ -68,11 +68,11 @@ public class MessageBean implements MessageListener {
     }
 
     @AroundTimeout
-    private void around_timeout(InvocationContext ctx) throws Exception {
+    private Object around_timeout(InvocationContext ctx) throws Exception {
         String info = (String)((Timer)ctx.getTimer()).getInfo();
         System.out.println("In MessageBean::AroundTimeout() for info " + info);
         singleton.setAroundTimeoutCalled(info);
-        ctx.proceed();
+        return ctx.proceed();
     }
 
 }
