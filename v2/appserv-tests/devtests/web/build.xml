@@ -231,6 +231,7 @@
         <ant dir="servlet-3.0/asyncSupportedTrueDeclarative" target="all"/>
         <ant dir="servlet-3.0/asyncSupportedTrueProgrammatic" target="all"/>
         <ant dir="servlet-3.0/asyncTimeoutNoListener" target="all"/>
+        <ant dir="servlet-3.0/asyncDelayDispatchAndComplete" target="all"/>
         <ant dir="servlet-3.0/dispatchForwardAsyncDispatch" target="all"/>
         <ant dir="servlet-3.0/cookieHttpOnly" target="all"/>  
         <ant dir="servlet-3.0/defaultErrorPage" target="all"/>
