@@ -37,36 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.internal;
+package org.jvnet.hk2.guice.bridge.api;
 
-import javax.inject.Inject;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import com.google.inject.Injector;
+import javax.inject.Scope;
+
+import org.glassfish.hk2.api.Unproxiable;
 
 /**
  * @author jwells
  *
  */
-@Service
-public class GuiceBridgeImpl implements GuiceIntoHK2Bridge {
-    @Inject
-    private ServiceLocator locator;
-
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.guice.bridge.api.GuiceBridge#bridgeGuiceInjector(com.google.inject.Injector)
-     */
-    @Override
-    public void bridgeGuiceInjector(Injector injector) {
-        GuiceToHk2JITResolver resolver = new GuiceToHk2JITResolver(locator, injector);
-        
-        ServiceLocatorUtilities.addOneConstant(locator, resolver);
-    }
+@Retention(RUNTIME)
+@Scope @Unproxiable
+@Target( { TYPE })
+public @interface GuiceScope {
 
 }

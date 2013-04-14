@@ -37,67 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.test;
+package org.jvnet.hk2.guice.bridge.api;
 
-import java.util.LinkedList;
+import org.glassfish.hk2.api.ServiceLocator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
-import org.jvnet.hk2.testing.junit.HK2Runner;
+import com.google.inject.TypeLiteral;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
-public class GuiceBridgeTest extends HK2Runner {
-    @Before
-    public void before() {
-        LinkedList<String> packs = new LinkedList<String>();
-        packs.add("org.jvnet.hk2.guice.bridge.internal");
-        packs.add("org.jvnet.hk2.guice.bridge.test");
-        
-        initialize(this.getClass().getName(), packs, null);
-    }
+/**
+ * @author jwells
+ *
+ */
+public class HK2IntoGuiceBridge implements TypeListener {
+    private final ServiceLocator locator;
     
     /**
-     * Tests a service from Guice being injected into an HK2 service
+     * Creates the {@link HK2IntoGuiceBridge} TypeLocator that must
+     * be bound into the Module with a call to bindListener.  The
+     * ServiceLocator will be consulted at this time for any types
+     * Guice cannot find.  If this type is found in the ServiceLocator
+     * then that service will be instantiated by hk2
+     * 
+     * @param locator The non-null locator that should be used to discover
+     * services
      */
-    @Test
-    public void testGuiceServiceInHk2Service() {
-        Injector injector = Guice.createInjector(new GuiceBridgeModule());
-        Assert.assertNotNull(injector);
-        
-        GuiceIntoHK2Bridge guiceBridge = testLocator.getService(GuiceIntoHK2Bridge.class);
-        Assert.assertNotNull(guiceBridge);
-        
-        guiceBridge.bridgeGuiceInjector(injector);
-        
-        HK2Service1 hk2Service = testLocator.getService(HK2Service1.class);
-        Assert.assertNotNull(hk2Service);
-        
-        hk2Service.verifyGuiceService();
+    public HK2IntoGuiceBridge(ServiceLocator locator) {
+        this.locator = locator;
     }
-    
-    /**
-     * Tests a service from hk2 being injected into a Guice service
+
+    /* (non-Javadoc)
+     * @see com.google.inject.spi.TypeListener#hear(com.google.inject.TypeLiteral, com.google.inject.spi.TypeEncounter)
      */
-    @Test @Ignore
-    public void testHk2ServiceInGuiceService() {
-        HK2BridgeModule hk2IntoGuiceModule = new HK2BridgeModule(testLocator);
-        
-        Injector injector = Guice.createInjector(hk2IntoGuiceModule);
-        Assert.assertNotNull(injector);
-        
-        GuiceIntoHK2Bridge guiceBridge = testLocator.getService(GuiceIntoHK2Bridge.class);
-        Assert.assertNotNull(guiceBridge);
-        
-        guiceBridge.bridgeGuiceInjector(injector);
-        
-        HK2Service1 hk2Service = testLocator.getService(HK2Service1.class);
-        Assert.assertNotNull(hk2Service);
-        
-        hk2Service.verifyGuiceService();
+    @Override
+    public <I> void hear(TypeLiteral<I> arg0, TypeEncounter<I> arg1) {
+        // TODO Auto-generated method stub
+
     }
+
 }

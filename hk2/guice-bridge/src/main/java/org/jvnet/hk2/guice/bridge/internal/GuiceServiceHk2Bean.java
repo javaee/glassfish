@@ -39,34 +39,68 @@
  */
 package org.jvnet.hk2.guice.bridge.internal;
 
-import javax.inject.Inject;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
+import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.jvnet.hk2.guice.bridge.api.GuiceScope;
 
-import com.google.inject.Injector;
+import com.google.inject.Binding;
 
 /**
  * @author jwells
  *
  */
-@Service
-public class GuiceBridgeImpl implements GuiceIntoHK2Bridge {
-    @Inject
-    private ServiceLocator locator;
-
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.guice.bridge.api.GuiceBridge#bridgeGuiceInjector(com.google.inject.Injector)
+public class GuiceServiceHk2Bean<T> extends AbstractActiveDescriptor<T> {
+    /**
+     * For serialization
      */
-    @Override
-    public void bridgeGuiceInjector(Injector injector) {
-        GuiceToHk2JITResolver resolver = new GuiceToHk2JITResolver(locator, injector);
+    private static final long serialVersionUID = 4339256124914729858L;
+    
+    private Class<?> implClass = null;
+    private Binding<T> binding = null;
+    
+    public GuiceServiceHk2Bean() {
+    }
+    
+    /* package */ GuiceServiceHk2Bean(
+            Set<Type> contracts,
+            Set<Annotation> qualifiers,
+            Class<?> implClass,
+            Binding<T> binding) {
+        super(contracts,
+                GuiceScope.class,
+                (String) null,
+                qualifiers,
+                DescriptorType.CLASS,
+                DescriptorVisibility.NORMAL,
+                0,
+                new Boolean(false),
+                (String) null,
+                new HashMap<String, List<String>>()
+               );
         
-        ServiceLocatorUtilities.addOneConstant(locator, resolver);
+        this.implClass = implClass;
+        super.setImplementation(implClass.getName());
+        
+        this.binding = binding;
+    }
+
+    @Override
+    public Class<?> getImplementationClass() {
+        return implClass;
+    }
+
+    @Override
+    public T create(ServiceHandle<?> root) {
+        return binding.getProvider().get();
     }
 
 }
