@@ -39,34 +39,78 @@
  */
 package org.jvnet.hk2.guice.bridge.internal;
 
-import javax.inject.Inject;
+import java.lang.annotation.Annotation;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
-
-import com.google.inject.Injector;
+import org.jvnet.hk2.guice.bridge.api.GuiceScope;
 
 /**
  * @author jwells
  *
  */
 @Service
-public class GuiceBridgeImpl implements GuiceIntoHK2Bridge {
-    @Inject
-    private ServiceLocator locator;
+public class GuiceScopeContext implements Context<GuiceScope> {
 
     /* (non-Javadoc)
-     * @see org.jvnet.hk2.guice.bridge.api.GuiceBridge#bridgeGuiceInjector(com.google.inject.Injector)
+     * @see org.glassfish.hk2.api.Context#getScope()
      */
     @Override
-    public void bridgeGuiceInjector(Injector injector) {
-        GuiceToHk2JITResolver resolver = new GuiceToHk2JITResolver(locator, injector);
-        
-        ServiceLocatorUtilities.addOneConstant(locator, resolver);
+    public Class<? extends Annotation> getScope() {
+        return GuiceScope.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        return activeDescriptor.create(root);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        // TODO Need to figure out if guice destroys objects
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        // Do nothing
+
     }
 
 }

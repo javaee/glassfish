@@ -37,24 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.api;
+package org.jvnet.hk2.guice.bridge.test;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.guice.bridge.api.HK2IntoGuiceBridge;
 
-import com.google.inject.Injector;
+import com.google.inject.AbstractModule;
+import com.google.inject.matcher.Matchers;
 
 /**
- * Guice Bridge
- * 
  * @author jwells
  *
  */
-@Contract
-public interface GuiceBridge {
-    /**
-     * Creates a link between hk2 services and a Guice injector
-     * 
-     * @param injector The non-null Guice injector to create a bridge to
-     */
-    public void bridgeGuiceInjector(Injector injector);
+public class HK2BridgeModule extends AbstractModule {
+    private ServiceLocator locator;
+    
+    /* package */ HK2BridgeModule(ServiceLocator locator) {
+        this.locator = locator;
+    }
+
+    @Override
+    protected void configure() {
+        bindListener(Matchers.any(), new HK2IntoGuiceBridge(locator));
+        
+        bind(GuiceService2.class);
+        
+    }
+
 }
