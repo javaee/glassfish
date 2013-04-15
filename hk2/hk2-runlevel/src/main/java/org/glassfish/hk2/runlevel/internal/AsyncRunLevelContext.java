@@ -182,13 +182,13 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     @SuppressWarnings("unchecked")
     @Override
     public void destroyOne(ActiveDescriptor<?> descriptor) {
+        Object retVal = null;
         synchronized (this) {
-            Object retVal = backingMap.remove(descriptor);
+            retVal = backingMap.remove(descriptor);
             if (retVal == null) return;
-            
-            ((ActiveDescriptor<Object>) descriptor).dispose(retVal);
         }
-        
+            
+        ((ActiveDescriptor<Object>) descriptor).dispose(retVal);
     }
 
     @Override
