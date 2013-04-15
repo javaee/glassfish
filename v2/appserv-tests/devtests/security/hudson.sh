@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
@@ -38,44 +38,36 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 #
+date
 
+rm -rf glassfish-v4-image
+mkdir glassfish-v4-image
+pushd glassfish-v4-image
 
-FILES="$APS_HOME/test_resultsValid.xml $APS_HOME/security-gtest-results.xml"
+wget --no-proxy http://hudson-sca.us.oracle.com/job/gf-trunk-build-listener/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+unzip -q glassfish.zip
 
-TOTAL=672
-PASSED=0
-FAILED=0
-for i in $FILES
-do
-	echo "input file=$i"
-	P=`grep "\"pass\"" $i |  wc -l`
-	F=`grep "\"fail\"" $i |  wc -l`
-	PASSED=`expr $PASSED + $P`
-	FAILED=`expr $FAILED + $F`
-done
-TOTAL_RUN=`expr $PASSED + $FAILED `
-DNR=`expr $TOTAL - $TOTAL_RUN `
+export S1AS_HOME=$PWD/glassfish4/glassfish
+popd
 
-echo ""
-echo "************************"
-echo "PASSED=   $PASSED"
-echo "------------  ========="
-echo "FAILED=   $FAILED"
-echo "------------  ========="
-echo "DID NOT RUN=   $DNR"
-echo "------------  ========="
-echo "Total Expected=$TOTAL"
-echo "************************"
-echo ""
+date
+java -version
+ant -version
 
-echo "************************">$APS_HOME/devtests/security/count.txt;
-date>>$APS_HOME/devtests/security/count.txt;
-echo "-----------------------">>$APS_HOME/devtests/security/count.txt;
-echo "PASSED=   $PASSED">>$APS_HOME/devtests/security/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/security/count.txt;
-echo "FAILED=   $FAILED">>$APS_HOME/devtests/security/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/security/count.txt;
-echo "DID NOT RUN=   $DNR">>$APS_HOME/devtests/security/count.txt;
-echo "------------  =========">>$APS_HOME/devtests/security/count.txt;
-echo "Total Expected=$TOTAL">>$APS_HOME/devtests/security/count.txt;
-echo "************************">>$APS_HOME/devtests/security/count.txt;
+export APS_HOME=$PWD/appserv-tests
+
+(jps |grep ASMain |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+
+$S1AS_HOME/bin/asadmin start-domain
+pushd $APS_HOME/devtests/security
+
+rm count.txt || true
+ant all |tee log.txt
+egrep 'FAILED= *0' count.txt
+egrep 'DID NOT RUN= *0' count.txt
+
+popd
+$S1AS_HOME/bin/asadmin stop-domain
+
+date
+#(jps |grep ASMain |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
