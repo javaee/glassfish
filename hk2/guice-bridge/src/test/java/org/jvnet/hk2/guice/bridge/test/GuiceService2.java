@@ -42,6 +42,7 @@ package org.jvnet.hk2.guice.bridge.test;
 import javax.inject.Inject;
 
 import org.junit.Assert;
+import org.jvnet.hk2.guice.bridge.api.HK2Inject;
 
 /**
  * This guy is injected with an HK2 service
@@ -50,7 +51,7 @@ import org.junit.Assert;
  *
  */
 public class GuiceService2 {
-    @Inject
+    @HK2Inject
     private HK2Service2 hk2Service;
     
     public void verifyHK2Service() {

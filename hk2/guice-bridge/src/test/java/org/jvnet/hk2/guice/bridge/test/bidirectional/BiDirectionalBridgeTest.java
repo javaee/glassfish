@@ -37,33 +37,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.test;
+package org.jvnet.hk2.guice.bridge.test.bidirectional;
 
-import org.jvnet.hk2.annotations.Service;
+import java.util.LinkedList;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
+import org.jvnet.hk2.guice.bridge.api.HK2IntoGuiceBridge;
+import org.jvnet.hk2.testing.junit.HK2Runner;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * @author jwells
  *
  */
-@Service
-public class HK2ServiceImpl implements HK2Service2 {
-    private boolean called = false;
+public class BiDirectionalBridgeTest extends HK2Runner {
+    private Injector injector;
+    @Before
+    public void before() {
+        LinkedList<String> packs = new LinkedList<String>();
+        packs.add("org.jvnet.hk2.guice.bridge.internal");
+        packs.add("org.jvnet.hk2.guice.bridge.test.bidirectional");
+        
+        initialize(this.getClass().getName(), packs, null);
+        
+        System.out.println("JRW(10) h1_0=" + testLocator.getService(HK2Service1_0.class));
+        
+        // Setup the bidirection bridge
+        injector = Guice.createInjector(new HK2IntoGuiceBridge(testLocator),
+                new AbstractModule() {
 
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.guice.bridge.test.HK2Service2#callMe()
-     */
-    @Override
-    public void callMe() {
-        called = true;
-
+                    @Override
+                    protected void configure() {
+                        bind(GuiceService1_1.class);
+                        bind(GuiceService1_3.class);
+                    }
+            
+        });
+        
+        GuiceIntoHK2Bridge g2h = testLocator.getService(GuiceIntoHK2Bridge.class);
+        g2h.bridgeGuiceInjector(injector);
     }
-
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.guice.bridge.test.HK2Service2#wasCalled()
+    
+    /**
+     * In this test we get a guice service
+     * that injects an hk2 service that
+     * injects a guice service that injects
+     * an hk2 service
      */
-    @Override
-    public boolean wasCalled() {
-        return called;
+    @Test @Ignore
+    public void testGuiceHK2GuiceHK2() {
+        GuiceService1_3 guice3 = injector.getInstance(GuiceService1_3.class);
+        Assert.assertNotNull(guice3);
+        
+        guice3.check();
     }
 
 }

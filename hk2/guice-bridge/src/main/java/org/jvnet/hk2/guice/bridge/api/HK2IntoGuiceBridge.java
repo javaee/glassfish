@@ -40,8 +40,11 @@
 package org.jvnet.hk2.guice.bridge.api;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.jvnet.hk2.guice.bridge.internal.HK2ToGuiceTypeListenerImpl;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.Matchers;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 
@@ -49,7 +52,7 @@ import com.google.inject.spi.TypeListener;
  * @author jwells
  *
  */
-public class HK2IntoGuiceBridge implements TypeListener {
+public class HK2IntoGuiceBridge extends AbstractModule {
     private final ServiceLocator locator;
     
     /**
@@ -66,13 +69,8 @@ public class HK2IntoGuiceBridge implements TypeListener {
         this.locator = locator;
     }
 
-    /* (non-Javadoc)
-     * @see com.google.inject.spi.TypeListener#hear(com.google.inject.TypeLiteral, com.google.inject.spi.TypeEncounter)
-     */
     @Override
-    public <I> void hear(TypeLiteral<I> arg0, TypeEncounter<I> arg1) {
-        // TODO Auto-generated method stub
-
+    protected void configure() {
+        bindListener(Matchers.any(), new HK2ToGuiceTypeListenerImpl(locator));
     }
-
 }

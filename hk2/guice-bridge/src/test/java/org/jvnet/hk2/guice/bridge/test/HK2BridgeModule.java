@@ -39,29 +39,16 @@
  */
 package org.jvnet.hk2.guice.bridge.test;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.jvnet.hk2.guice.bridge.api.HK2IntoGuiceBridge;
-
 import com.google.inject.AbstractModule;
-import com.google.inject.matcher.Matchers;
 
 /**
  * @author jwells
  *
  */
 public class HK2BridgeModule extends AbstractModule {
-    private ServiceLocator locator;
-    
-    /* package */ HK2BridgeModule(ServiceLocator locator) {
-        this.locator = locator;
-    }
-
     @Override
     protected void configure() {
-        bindListener(Matchers.any(), new HK2IntoGuiceBridge(locator));
-        
         bind(GuiceService2.class);
-        
     }
 
 }
