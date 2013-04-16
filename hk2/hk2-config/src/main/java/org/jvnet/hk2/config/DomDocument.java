@@ -44,6 +44,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.component.MultiMap;
 
 import javax.xml.stream.XMLStreamReader;
@@ -152,10 +153,12 @@ public class DomDocument<T extends Dom> {
      * @return
      *      Null if no configurable component is registered under the given global element name.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public ConfigModel getModelByElementName(String elementName) {
-        ServiceHandle<? extends ConfigInjector> i = habitat.getServiceHandle(ConfigInjector.class, elementName);
+        ActiveDescriptor<?> i = habitat.getBestDescriptor(
+                BuilderHelper.createNameAndContractFilter(ConfigInjector.class.getName(), elementName));
         if(i==null) return null;
-        return buildModel(i.getActiveDescriptor());
+        return buildModel((ActiveDescriptor<? extends ConfigInjector>) i);
     }
 
     private class InjectionTargetFilter
