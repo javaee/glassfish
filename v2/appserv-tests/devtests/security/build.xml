@@ -79,17 +79,17 @@
         <ant dir="ejb-mutual-ssl" target="all"/>
 <!--    <ant dir="web-mutual-ssl" target="all"/>-->             <!-- DISABLED -->
 <!--    <ant dir="cplogin" target="all"/>-->                    <!-- DISABLED -->
-<!--    <ant dir="plogin" target="all"/>-->                     <!-- DISABLED-->
+<!--    <ant dir="plogin" target="all"/>-->                     <!-- DISABLED -->
         <ant dir="jsp2sful" target="all"/>
         <ant dir="httpMethod" target="all"/>
         <ant dir="defaultp2r" target="all"/>
         <ant dir="sameEjbName" target="all"/>
 <!--    <ant dir="mdb" target="all"/>-->                        <!-- DISABLED: Does not run -->
-<!--    <ant dir="timerStandalone" target="all"/>-->            <!-- DISABLED: Failures -->
+<!--    <ant dir="timerStandalone" target="all"/>-->            <!-- DISABLED: Failure -->
         <ant dir="container-auth" target="all"/>
-<!--    <ant dir="jmac" target="all"/>-->                       <!-- DISABLED: Failure  --> 
-<!--    <ant dir="wss" target="all"/>-->                        <!-- DISABLED: Failures -->
-<!--    <ant dir="ciphertest" target="all"/>-->                 <!-- DISABLED: Failures -->
+        <ant dir="jmac" target="all"/>
+        <ant dir="wss" target="all"/>
+        <ant dir="ciphertest" target="all"/>
         <ant dir="standalone" target="all"/>
         <ant dir="simpleMultiRoleMapping" target="all"/>
         <ant dir="multiRoleMapping" target="all"/>
