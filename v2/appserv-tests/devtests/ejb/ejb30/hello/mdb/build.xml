@@ -30,7 +30,7 @@
     <target name="build" depends="compile">
         <antcall target="build-ear-common">
             <param name="ejbjar.classes" 
-              value="**/*Bean*.class,**/*Hello*" />
+              value="**/I*.class,**/*Bean*.class,**/*Hello*" />
             <param name="appclientjar.classes" 
               value="**/*Client*.class" />
         </antcall>

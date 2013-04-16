@@ -20,6 +20,7 @@ import javax.jms.Session;
 
 import javax.annotation.Resource;
 
+@javax.interceptor.Interceptors(InterceptorA.class)
 @TransactionManagement(TransactionManagementType.BEAN)
 @MessageDriven(mappedName="jms/ejb_ejb30_hello_mdb_InQueue", description="mymessagedriven bean description")
  public class MessageBean implements MessageListener {
@@ -31,10 +32,19 @@ import javax.annotation.Resource;
               mappedName="jms/ejb_ejb30_hello_mdb_QCF") 
     QueueConnectionFactory qcFactory;
 
+    String mname = null;
+
     @Resource(mappedName="jms/ejb_ejb30_hello_mdb_OutQueue") Queue clientQueue;
 
     public void onMessage(Message message) {
         System.out.println("Got message!!!");
+        try {
+            if (mname == null || !mname.equals("onMessage"))
+                throw new EJBException("Expecting method named onMessage got " + mname);
+        } finally {
+            mname = null;
+        }
+
 
         QueueConnection connection = null;
         try {
