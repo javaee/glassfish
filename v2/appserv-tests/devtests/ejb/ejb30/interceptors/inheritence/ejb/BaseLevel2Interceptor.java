@@ -39,4 +39,8 @@ public class BaseLevel2Interceptor
         return ctx.proceed();
     }
 
+    String getName() {
+       return BaseLevel2Interceptor.class.getName();
+    }
+
 }

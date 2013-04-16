@@ -73,4 +73,7 @@ public class OverridingMethodsInterceptor
     }
 
 
+    String getName() {
+       return OverridingMethodsInterceptor.class.getName();
+    }
 }

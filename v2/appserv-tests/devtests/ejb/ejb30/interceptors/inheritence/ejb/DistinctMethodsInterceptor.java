@@ -67,4 +67,7 @@ public class DistinctMethodsInterceptor extends BaseLevel2Interceptor {
 	return result;
     }
 
+    String getName() {
+       return DistinctMethodsInterceptor.class.getName();
+    }
 }

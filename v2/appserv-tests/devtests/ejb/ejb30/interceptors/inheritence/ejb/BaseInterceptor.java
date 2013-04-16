@@ -32,7 +32,7 @@ public class BaseInterceptor
     	throws RuntimeException {
 	    postConstructList = new ArrayList<String>();
 	    postConstructList.add(BASE_INTERCEPTOR_NAME);
-        ctx.getContextData().put(this.getClass().getName(), this);
+        ctx.getContextData().put(getName(), this);
         basePCCount++;
         System.out.println("GGGG: @PostConstruct for: " + this.getClass().getName());
         try {
@@ -51,7 +51,7 @@ public class BaseInterceptor
     {
 	    aroundInvokeList = new ArrayList<String>();
 	    aroundInvokeList.add(BASE_INTERCEPTOR_NAME);
-		ctx.getContextData().put(this.getClass().getName(), this);
+		ctx.getContextData().put(getName(), this);
 		baseAICount++;
     	return ctx.proceed();
     }
@@ -66,4 +66,8 @@ public class BaseInterceptor
 	postActivateCount++;
 	}
 
+
+    String getName() {
+       return BaseInterceptor.class.getName();
+    }
 }
