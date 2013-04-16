@@ -6,6 +6,7 @@ import javax.ejb.Schedule;
 import javax.ejb.Timer;
 import javax.interceptor.AroundTimeout;
 import javax.interceptor.InvocationContext;
+import javax.interceptor.Interceptors;
 
 import javax.annotation.Resource;
 import javax.ejb.MessageDrivenContext;
@@ -16,9 +17,12 @@ import javax.annotation.PreDestroy;
 import javax.annotation.security.*;
 import javax.ejb.EJBException;
 
+@Interceptors(InterceptorA.class)
 @MessageDriven(mappedName="jms/ejb_ejb31_timer31_mdb_InQueue", description="mymessagedriven bean description")
  @RolesAllowed("foo")
 public class MessageBean implements MessageListener {
+
+    String mname;
 
     @EJB 
     private SingletonBean singleton;
@@ -34,6 +38,7 @@ public class MessageBean implements MessageListener {
     public void onMessage(Message message) {
 	System.out.println("In MessageBean::onMessage()");
 	System.out.println("getCallerPrincipal = " + mdc.getCallerPrincipal());
+        verifyMethodName("onMessage");
     }
 
     @Schedule(second="*/1", minute="*", hour="*")
@@ -41,6 +46,7 @@ public class MessageBean implements MessageListener {
 	System.out.println("In MessageBean::onTimeout()");
 	System.out.println("getCallerPrincipal = " + mdc.getCallerPrincipal());
 
+        verifyMethodName("onTimeout");
 	try {
 	    System.out.println("IsCallerInRole('foo')= " + 
 			       mdc.isCallerInRole("foo"));
@@ -73,6 +79,15 @@ public class MessageBean implements MessageListener {
         System.out.println("In MessageBean::AroundTimeout() for info " + info);
         singleton.setAroundTimeoutCalled(info);
         return ctx.proceed();
+    }
+
+    private void verifyMethodName(String name) {
+        try {
+            if (mname == null || !mname.equals(name))
+                throw new EJBException("Expecting method named " + name + " got " + mname);
+        } finally {
+            mname = null;
+        }
     }
 
 }
