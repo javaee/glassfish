@@ -220,6 +220,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             boolean getLocals) {
         if (filter == null) throw new IllegalArgumentException("filter is null");
         
+        LinkedList<SystemDescriptor<?>> retVal;
         synchronized (lock) {
             Collection<SystemDescriptor<?>> sortMeOut;
             if (filter instanceof IndexedFilter) {
@@ -267,7 +268,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 sortMeOut = allDescriptors.getSortedList();
             }
             
-            LinkedList<SystemDescriptor<?>> retVal = new LinkedList<SystemDescriptor<?>>();
+            retVal = new LinkedList<SystemDescriptor<?>>();
             
             for (SystemDescriptor<?> candidate : sortMeOut) {
                 if (!getLocals && DescriptorVisibility.LOCAL.equals(candidate.getDescriptorVisibility())) {
@@ -280,21 +281,21 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     retVal.add(candidate);
                 }
             }
-            
-            if (getParents && parent != null) {
-                TreeSet<SystemDescriptor<?>> sorter = new TreeSet<SystemDescriptor<?>>(DESCRIPTOR_COMPARATOR);
-                
-                sorter.addAll(retVal);
-                sorter.addAll(parent.getDescriptors(filter, onBehalfOf, getParents, doValidation, false));
-                
-                retVal.clear();
-                
-                retVal.addAll(sorter);
-            }
-            
-            return retVal;
         }
         
+        // Must be done outside of lock, or there can be a deadlock between child and parent
+        if (getParents && parent != null) {
+            TreeSet<SystemDescriptor<?>> sorter = new TreeSet<SystemDescriptor<?>>(DESCRIPTOR_COMPARATOR);
+                
+            sorter.addAll(retVal);
+            sorter.addAll(parent.getDescriptors(filter, onBehalfOf, getParents, doValidation, false));
+                
+            retVal.clear();
+                
+            retVal.addAll(sorter);
+        }
+            
+        return retVal;
     }
     
     private List<ActiveDescriptor<?>> protectedGetDescriptors(final Filter filter) {
@@ -744,7 +745,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
             errorHandlers.clear();
             cache.releaseCache();
             cacheEntries.clear();
-            children.clear();
+            synchronized (children) {
+                children.clear();
+            }
             
             Logger.getLogger().debug("Shutdown ServiceLocator " + this);
         }
@@ -1542,12 +1545,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     private void reupCache(HashSet<String> affectedContracts) {
-        // This lock must be acquired in the child case
+        // This lock must be acquired as reupCache is called on children
         synchronized (lock) {
-            for (ServiceLocatorImpl child : children.keySet()) {
-                child.reupCache(affectedContracts);
-            }
-        
             for (String affectedContract : affectedContracts) {
                 List<CacheEntry> entries = cacheEntries.remove(affectedContract);
                 if (entries == null) continue;
@@ -1592,10 +1591,24 @@ public class ServiceLocatorImpl implements ServiceLocator {
         contextCache.clear();
     }
     
+    private void getAllChildren(LinkedList<ServiceLocatorImpl> allMyChildren) {
+        LinkedList<ServiceLocatorImpl> addMe;
+        synchronized (children) {
+            addMe = new LinkedList<ServiceLocatorImpl>(children.keySet());
+        }
+        
+        allMyChildren.addAll(addMe);
+        
+        for (ServiceLocatorImpl sli : addMe) {
+            sli.getAllChildren(allMyChildren);
+        }
+    }
+    
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
+        CheckConfigurationData checkData;
+        
         synchronized (lock) {
-            CheckConfigurationData checkData =
-                    checkConfiguration(dci);  // Does as much preliminary checking as possible
+            checkData = checkConfiguration(dci);  // Does as much preliminary checking as possible
             
             removeConfigurationInternal(checkData.getUnbinds());
             
@@ -1607,6 +1620,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     checkData.getErrorHandlerModificationMade(),
                     checkData.getClassAnalyzerModificationMade(),
                     checkData.getAffectedContracts());
+        }
+        
+        LinkedList<ServiceLocatorImpl> allMyChildren = new LinkedList<ServiceLocatorImpl>();
+        getAllChildren(allMyChildren);
+        
+        for (ServiceLocatorImpl sli : allMyChildren) {
+            sli.reupCache(checkData.getAffectedContracts());
         }
     }
     
@@ -1814,13 +1834,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     private void addChild(ServiceLocatorImpl child) {
-        synchronized (lock) {
+        synchronized (children) {
             children.put(child, null);
         }
     }
     
     private void removeChild(ServiceLocatorImpl child) {
-        synchronized (lock) {
+        synchronized (children) {
             children.remove(child);
         }
     }
