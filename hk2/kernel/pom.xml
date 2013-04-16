@@ -47,14 +47,14 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>2.1.86</version>
+        <version>2.1.87-SNAPSHOT</version>
     </parent>
 
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-kernel-parent</artifactId>
     <packaging>pom</packaging>
 
-    <version>2.1.86</version>
+    <version>2.1.87-SNAPSHOT</version>
     <name>Kernel Subsystem</name>
     <description>generic kernel subsystem</description>
 
