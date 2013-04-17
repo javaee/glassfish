@@ -105,7 +105,13 @@ class ModuleDefinitionCacheSingleton {
 
     private int getBufferSize() {
         int bufsize = Constants.DEFAULT_BUFFER_SIZE;
-
+        try {
+            bufsize = Integer.valueOf(getProperty(Constants.HK2_CACHE_IO_BUFFER_SIZE));
+        } catch (Exception e) {
+        }
+        if(logger.isLoggable(Level.FINE)) {
+            logger.logp(Level.FINE, "OSGiModulesRegistryImpl", "getBufferSize", "bufsize = {0}", new Object[]{bufsize});
+        }
         return bufsize;
     }
 
