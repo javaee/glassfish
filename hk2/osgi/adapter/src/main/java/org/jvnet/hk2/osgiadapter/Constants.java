@@ -100,5 +100,5 @@ public final class Constants {
     static final String HK2_CACHE_DIR = "com.sun.enterprise.hk2.cacheDir";
     static final String INHABITANTS_CACHE = "inhabitants";
     static final String HK2_CACHE_IO_BUFFER_SIZE = "com.sun.enterprise.hk2.cacheIoBufferSize";
-    static final int DEFAULT_BUFFER_SIZE = 1024;
+    static final int DEFAULT_BUFFER_SIZE = 8192;
 }
