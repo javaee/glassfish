@@ -247,6 +247,9 @@
         <echo message="@@## connector1.6 ##@@"/>
         <ant dir="connector1.6" target="${connector-target}"/>
 
+        <echo message="@@## ejb 3.2 connector 1.7 mdb test##@@"/>
+        <ant dir="ejb32-mdb" target="${connector-target}"/>
+
         <echo message="@@## SunRaXml ##@@"/>
         <ant dir="SunRaXml" target="${connector-target}"/>
 
