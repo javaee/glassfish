@@ -63,6 +63,7 @@ import org.glassfish.hk2.bootstrap.HK2Populator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.Constants;
 
@@ -380,7 +381,25 @@ public class OSGiModuleDefinition implements ModuleDefinition, Serializable {
                     cl = getClass().getClassLoader();
                 }
 
-                init(BundleReference.class.cast(cl).getBundle().getBundleContext().getBundle(bundleId));
+                Bundle clBundle = ((BundleReference)cl).getBundle();
+
+                if (clBundle == null) {
+                    throw new RuntimeException(("Cannot resolve classLoader " + cl) + " bundle");
+
+                }
+                BundleContext bctx = clBundle.getBundleContext();
+
+                if (bctx == null) {
+                    throw new RuntimeException("Cannot obtain BundleContext");
+                }
+
+                Bundle bundle = bctx.getBundle(bundleId);
+
+                if (bundle == null) {
+                   throw new RuntimeException("Cannot obtain bundle " + bundleId);
+                }
+
+                init(bundle);
             }
 
         }

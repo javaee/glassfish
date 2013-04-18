@@ -39,10 +39,7 @@
  */
 package org.glassfish.hk2.utilities;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Serializable;
+import java.io.*;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -67,7 +64,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  * 
  * @author jwells
  */
-public class DescriptorImpl implements Descriptor, Serializable {
+public class DescriptorImpl implements Descriptor, Externalizable {
     /**
      * 
      */
@@ -842,5 +839,18 @@ public class DescriptorImpl implements Descriptor, Serializable {
         return sectionStarted;
     }
 
-    
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        StringWriter sw = new StringWriter();
+        writeObject(new PrintWriter(sw));
+        out.writeObject(sw.toString());
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        String descriptorString = (String) in.readObject();
+
+        readObject(new BufferedReader( new StringReader(descriptorString)));
+    }
 }

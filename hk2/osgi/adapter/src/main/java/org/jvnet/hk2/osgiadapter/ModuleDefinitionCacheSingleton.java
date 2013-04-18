@@ -9,6 +9,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import static org.jvnet.hk2.osgiadapter.Logger.logger;
 
@@ -66,10 +68,11 @@ class ModuleDefinitionCacheSingleton {
         if(logger.isLoggable(Level.FINE)) {
             logger.logp(Level.INFO, getClass().getSimpleName(), "loadCachedData", "HK2 cache file = {0}", new Object[]{io});
         }
-        ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new FileInputStream(io),
-                getBufferSize()));
-        cachedData = (Map<URI, ModuleDefinition>) stream.readObject();
-        stream.close();
+
+       ObjectInputStream stream = new ObjectInputStream(new BufferedInputStream(new GZIPInputStream(new FileInputStream(io), getBufferSize())));
+
+       cachedData = (Map<URI, ModuleDefinition>) stream.readObject();
+       stream.close();
     }
 
     /**
@@ -96,7 +99,8 @@ class ModuleDefinitionCacheSingleton {
         for (ModuleDefinition m : cachedData.values()) {
             data.put(m.getLocations()[0], m);
         }
-        ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(io), getBufferSize()));
+        ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new GZIPOutputStream(new FileOutputStream(io)), getBufferSize()));
+
         os.writeObject(data);
         os.close();
 
