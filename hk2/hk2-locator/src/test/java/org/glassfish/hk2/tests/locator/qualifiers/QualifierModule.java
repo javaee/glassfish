@@ -97,7 +97,7 @@ public class QualifierModule implements TestModule {
 
         AbstractActiveDescriptor<Color> descriptor = BuilderHelper.createConstantDescriptor(unqualifiedColor);
         descriptor.addContractType(Color.class);
-        descriptor.addQualifierAnnotation(new BlackAnnotationImpl(){});
+        descriptor.addQualifierAnnotation(new BlackAnnotationImpl());
 
         configurator.bind(descriptor);
 

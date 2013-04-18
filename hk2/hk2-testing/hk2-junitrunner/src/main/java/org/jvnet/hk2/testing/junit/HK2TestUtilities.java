@@ -37,34 +37,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.test;
+package org.jvnet.hk2.testing.junit;
+
+import junit.framework.Assert;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.junit.Assert;
 
 /**
+ * These are other useful test utilities that can be used
  * @author jwells
  *
  */
-public class Utilities {
-    public static ServiceLocator createLocator(String name, Class<?>... services) {
+public class HK2TestUtilities {
+    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+    
+    public static ServiceLocator create(String name, HK2TestModule... modules) {
+        return create(name, null, modules);
+    }
+    
+    /**
+     * Will create a ServiceLocator after doing test-specific bindings from the TestModule
+     * 
+     * @param name The name of the service locator to create.  Should be unique per test, otherwise
+     * this method will fail.
+     * @param parent The parent locator this one should have.  May be null
+     * @param modules The test modules, that will do test specific bindings.  May be null
+     * @return A service locator with all the test specific bindings bound
+     */
+    public static ServiceLocator create(String name, ServiceLocator parent, HK2TestModule... modules) {
+        ServiceLocator retVal = factory.find(name);
+        Assert.assertNull("There is already a service locator of this name, change names to ensure a clean test: " + name, retVal);
         
-        ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+        retVal = factory.create(name, parent);
         
-        if (factory.find(name) != null) {
-            Assert.fail("There is alreayd a service locator with name " + name);
-        }
-        
-        ServiceLocator retVal = factory.create(name);
+        if (modules == null || modules.length <= 0) return retVal;
         
         DynamicConfigurationService dcs = retVal.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        Assert.assertNotNull("Their is no DynamicConfigurationService.  Epic fail", dcs);
+        
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        Assert.assertNotNull("DynamicConfiguration creation failure", dc);
+        
+        for (HK2TestModule module : modules) {
+            module.configure(dc);
+        }
+        
+        dc.commit();
         
         return retVal;
-        
     }
 
 }

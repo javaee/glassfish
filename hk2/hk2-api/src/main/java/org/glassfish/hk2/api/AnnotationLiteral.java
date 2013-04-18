@@ -85,7 +85,22 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
     private transient Class<T> annotationType;
     private transient Method[] members;
 
-    protected AnnotationLiteral() {}
+    protected AnnotationLiteral() {
+        Class<?> thisClass = this.getClass();
+        
+        boolean foundAnnotation = false;
+        for (Class<?> iClass : thisClass.getInterfaces()) {
+            if (iClass.isAnnotation()) {
+                foundAnnotation = true;
+                break;
+            }
+            
+        }
+        
+        if (!foundAnnotation) {
+            throw new IllegalStateException("The subclass " + thisClass.getName() + " of AnnotationLiteral must implement an Annotation");
+        }
+    }
     
     private Method[] getMembers() 
     {

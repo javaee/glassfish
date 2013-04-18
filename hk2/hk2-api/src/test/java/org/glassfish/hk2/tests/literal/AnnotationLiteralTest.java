@@ -44,7 +44,6 @@ import java.lang.reflect.Field;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.AnnotationLiteral;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -126,6 +125,18 @@ public class AnnotationLiteralTest {
         Assert.assertTrue(new QImpl().equals(qJdk));
         
         Assert.assertTrue(qJdk.equals(new QImpl()));
+    }
+    
+    /**
+     * An AnnotationLiteral MUST implement an AnnotationType
+     */
+    @Test(expected=IllegalStateException.class)
+    public void testInvalidAnnotationLiteral() {
+        new AnnotationLiteral<Q>() {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 8047528061664493726L;};
     }
     
     public class QImpl extends AnnotationLiteral<Q> implements Q {

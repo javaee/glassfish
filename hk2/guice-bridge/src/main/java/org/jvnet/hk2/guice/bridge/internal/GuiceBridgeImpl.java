@@ -39,34 +39,54 @@
  */
 package org.jvnet.hk2.guice.bridge.internal;
 
-import javax.inject.Inject;
-
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
-
-import com.google.inject.Injector;
 
 /**
  * @author jwells
  *
  */
-@Service
-public class GuiceBridgeImpl implements GuiceIntoHK2Bridge {
-    @Inject
-    private ServiceLocator locator;
+public class GuiceBridgeImpl extends GuiceBridge {
 
     /* (non-Javadoc)
-     * @see org.jvnet.hk2.guice.bridge.api.GuiceBridge#bridgeGuiceInjector(com.google.inject.Injector)
+     * @see org.jvnet.hk2.guice.bridge.api.GuiceBridge#initializeGuiceBridge(org.glassfish.hk2.api.ServiceLocator)
      */
     @Override
-    public void bridgeGuiceInjector(Injector injector) {
-        GuiceToHk2JITResolver resolver = new GuiceToHk2JITResolver(locator, injector);
+    public void initializeGuiceBridge(ServiceLocator locator) {
+        boolean addService = true;
+        if (locator.getBestDescriptor(BuilderHelper.createContractFilter(GuiceIntoHK2Bridge.class.getName())) != null) {
+            addService = false;
+        }
         
-        ServiceLocatorUtilities.addOneConstant(locator, resolver);
+        boolean addContext = true;
+        if (locator.getBestDescriptor(BuilderHelper.createContractFilter(GuiceScopeContext.class.getName())) != null) {
+            addContext = false;
+        }
+        
+        if (!addService && !addContext) return;
+        
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        if (dcs == null) {
+            throw new IllegalStateException("This service locator has no DynamicConfiugurationService: " + locator);
+        }
+        
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        if (addContext) {
+            config.addActiveDescriptor(GuiceScopeContext.class);
+        }
+        
+        if (addService) {
+            config.addActiveDescriptor(GuiceIntoHK2BridgeImpl.class);
+        }
+        
+        config.commit();
+
     }
 
 }
