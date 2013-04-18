@@ -122,6 +122,7 @@
                <module>../config-types</module>
                <module>../examples</module>
                <module>../hk2-testing</module>
+               <module>../guice-bridge</module>
                <module>../hk2</module>
           </modules>
        </profile>

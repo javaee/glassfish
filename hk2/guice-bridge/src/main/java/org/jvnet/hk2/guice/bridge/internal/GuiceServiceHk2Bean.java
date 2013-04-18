@@ -41,7 +41,6 @@ package org.jvnet.hk2.guice.bridge.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -100,7 +99,12 @@ public class GuiceServiceHk2Bean<T> extends AbstractActiveDescriptor<T> {
 
     @Override
     public T create(ServiceHandle<?> root) {
-        return binding.getProvider().get();
+        T retVal = binding.getProvider().get();
+        return retVal;
+    }
+    
+    public String toString() {
+        return "GuiceServiceHk2Bean( " + super.toString() + ")";
     }
 
 }

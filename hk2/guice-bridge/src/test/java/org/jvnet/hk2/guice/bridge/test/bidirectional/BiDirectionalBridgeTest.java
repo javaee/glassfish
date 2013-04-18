@@ -39,15 +39,13 @@
  */
 package org.jvnet.hk2.guice.bridge.test.bidirectional;
 
-import java.util.LinkedList;
-
+import org.glassfish.hk2.api.ServiceLocator;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.jvnet.hk2.guice.bridge.api.HK2IntoGuiceBridge;
-import org.jvnet.hk2.testing.junit.HK2Runner;
+import org.jvnet.hk2.guice.bridge.test.utilities.Utilities;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
@@ -57,18 +55,13 @@ import com.google.inject.Injector;
  * @author jwells
  *
  */
-public class BiDirectionalBridgeTest extends HK2Runner {
+public class BiDirectionalBridgeTest {
+    private final static ServiceLocator testLocator = Utilities.createLocator("BiDirectionalBridgeTest", new BiDirectionalBridgeModule());
+    
     private Injector injector;
+    
     @Before
     public void before() {
-        LinkedList<String> packs = new LinkedList<String>();
-        packs.add("org.jvnet.hk2.guice.bridge.internal");
-        packs.add("org.jvnet.hk2.guice.bridge.test.bidirectional");
-        
-        initialize(this.getClass().getName(), packs, null);
-        
-        System.out.println("JRW(10) h1_0=" + testLocator.getService(HK2Service1_0.class));
-        
         // Setup the bidirection bridge
         injector = Guice.createInjector(new HK2IntoGuiceBridge(testLocator),
                 new AbstractModule() {
@@ -91,7 +84,7 @@ public class BiDirectionalBridgeTest extends HK2Runner {
      * injects a guice service that injects
      * an hk2 service
      */
-    @Test @Ignore
+    @Test
     public void testGuiceHK2GuiceHK2() {
         GuiceService1_3 guice3 = injector.getInstance(GuiceService1_3.class);
         Assert.assertNotNull(guice3);
