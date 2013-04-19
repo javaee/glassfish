@@ -41,6 +41,7 @@ package org.jvnet.hk2.internal;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.TreeSet;
 
 /**
@@ -53,11 +54,15 @@ import java.util.TreeSet;
  *
  */
 public class IndexedListData {
+    private final static DescriptorComparator UNSORTED_COMPARATOR = new DescriptorComparator();
+    
     private LinkedList<SystemDescriptor<?>> unsortedList = new LinkedList<SystemDescriptor<?>>();
     private TreeSet<SystemDescriptor<?>> sortedList = null;
     
     public Collection<SystemDescriptor<?>> getSortedList() {
         if (sortedList != null) return sortedList;
+        
+        if (unsortedList.size() <= 1) return unsortedList;
         
         sortedList = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
         sortedList.addAll(unsortedList);
@@ -84,7 +89,14 @@ public class IndexedListData {
             sortedList.remove(descriptor);
         }
         else {
-            unsortedList.remove(descriptor);
+            ListIterator<SystemDescriptor<?>> iterator = unsortedList.listIterator();
+            while (iterator.hasNext()) {
+                SystemDescriptor<?> candidate = iterator.next();
+                if (UNSORTED_COMPARATOR.compare(descriptor, candidate) == 0) {
+                    iterator.remove();
+                    break;
+                }
+            }
         }
         
         descriptor.removeList(this);
