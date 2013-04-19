@@ -59,8 +59,7 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
         System.out.println("EchoProtocolHandler.init");
         try {
             ServletInputStream input = wc.getInputStream();
-            ServletOutputStream output = wc.getOutputStream();
-            ReadListenerImpl readListener = new ReadListenerImpl(delimiter, input, output);
+            ReadListenerImpl readListener = new ReadListenerImpl(delimiter, input, wc);
             input.setReadListener(readListener);
         } catch(Exception ex) {
             throw new RuntimeException(ex);
@@ -82,12 +81,15 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
     static class ReadListenerImpl implements ReadListener {
         ServletInputStream input = null;
         ServletOutputStream output = null;
+        WebConnection wc = null;
         String delimiter = null;
 
-        ReadListenerImpl(String d, ServletInputStream in, ServletOutputStream out) {
+        ReadListenerImpl(String d, ServletInputStream in, WebConnection c)
+                throws IOException {
             delimiter = d;
             input = in;
-            output = out;
+            wc = c;
+            output = wc.getOutputStream();
         }
 
         public void onDataAvailable() throws IOException {
@@ -119,7 +121,6 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
 
         public void onAllDataRead() throws IOException {
             System.out.println("--> onAllDataRead");
-            output.println("-onAllDataRead");
         }
 
         public void onError(final Throwable t) {
