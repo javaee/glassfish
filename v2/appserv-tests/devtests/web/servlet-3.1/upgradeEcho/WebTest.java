@@ -78,7 +78,7 @@ public class WebTest {
                     reqStr += "Host: " + host + ":" + port + CRLF;
                     reqStr += "Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2" + CRLF;
                     reqStr += "Upgrade: echo" + CRLF;
-                    reqStr += "Connection: Upgrade\r\n";
+                    reqStr += "Connection: Upgrade" + CRLF;
                     reqStr += "Content-type: application/x-www-form-urlencoded" + CRLF;
                     reqStr += CRLF;
                     output.write(reqStr.getBytes());
