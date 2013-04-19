@@ -1,6 +1,0 @@
-This is a unit test for https://glassfish.dev.java.net/issues/show_bug.cgi?id=2475.
-The goal is to make sure that lower-level mapping files are read, not
-to test for role conflicts in the files.
-
-The ejb module is only used indirectly. Mostly it's there to provide
-a second module so that more than one mapping file is tested. 

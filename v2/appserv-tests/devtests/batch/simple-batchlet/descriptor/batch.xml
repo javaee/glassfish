@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<batch-artifacts xmlns="http://xmlns.jcp.org/xml/ns/javaee">
-<ref id="SimpleBatchlet" class="com.oracle.javaee7.samples.batch.simple.batchlet.SimpleBatchlet"/>
-</batch-artifacts>

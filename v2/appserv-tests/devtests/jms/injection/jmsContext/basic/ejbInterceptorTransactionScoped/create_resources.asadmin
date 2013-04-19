@@ -1,6 +1,0 @@
-create-jmsdest --desttype queue jms_unit_test_Queue
-create-jms-resource --restype javax.jms.Queue --property imqDestinationName=jms_unit_test_Queue jms/jms_unit_test_Queue
-
-create-jms-resource --restype javax.jms.QueueConnectionFactory jms/jms_unit_test_QCF
-
-quit

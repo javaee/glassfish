@@ -1,8 +1,0 @@
-This test does the following:
-
-1. Client calls ejb1.method1() <tx attrib RequiresNew>
-    ->method1() { do getConnection }
-2. ejb1 calls ejb2.method2() <tx attrib RequiresNew>
-    -> method2() { do getConnection }
-3. ejb2 calls ejb3.method3() <tx attrib Supports>
-    -> method3() { do getConnection }

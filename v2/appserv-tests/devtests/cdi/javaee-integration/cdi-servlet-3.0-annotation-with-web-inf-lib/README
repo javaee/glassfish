@@ -1,4 +1,0 @@
-A simple WAR with a bean archive in WEB-INF/lib. The visibility of the Bean bundled in WAR(WEB-INF/classes) and WEB-INF/lib 
-is tested in the WAR's BeanManager
-
-GLASSFISH-15721

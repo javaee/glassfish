@@ -1,7 +1,0 @@
-- A test to check if ManagedBean, CDI Dependent Bean and a common POJO in a library jar is available for EJBs of an EAR.
-[issue GLASSFISH-11888]
-- Structure
-EAR:
- - EJB.jar (EJB impl)
- - WAR (uses EJB api to access EJB)
- - lib-dir (set as library-directory through application.xml and has EJB API and lib Beans)

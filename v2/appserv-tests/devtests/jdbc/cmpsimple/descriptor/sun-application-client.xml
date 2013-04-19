@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE sun-application-client PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 Application Client 1.4//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-application-client_1_4-0.dtd">
-
-<sun-application-client>
-  <ejb-ref>
-    <ejb-ref-name>ejb/BlobTestBean</ejb-ref-name>
-    <jndi-name>BlobTestBean</jndi-name>
-  </ejb-ref>
-</sun-application-client>

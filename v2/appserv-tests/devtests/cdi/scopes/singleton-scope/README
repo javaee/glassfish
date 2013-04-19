@@ -1,4 +1,0 @@
-Test that Singleton scoped
-- bean is instantiated once
-- don't have a proxy
-- allow injection of non-serializable singleton scoped beans into serializable beans like SessionScoped beans through Instance<T>

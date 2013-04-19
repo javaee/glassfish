@@ -1,9 +1,0 @@
-This workspace contains new cli tests for admin infrastructure.
-This works with v3.1.
-To run the tests execute
-export APS_HOME=<yourdir>/appserv-tests
-ant all
-
-The results will be printed in $APS_HOME/test_results.html
-
-For more information refer to http://wiki.glassfish.java.net/Wiki.jsp?page=AdminTests

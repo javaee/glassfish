@@ -1,3 +1,0 @@
-<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
-    <persistence-unit name="PU1"/>
-</persistence>

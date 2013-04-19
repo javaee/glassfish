@@ -1,5 +1,0 @@
-Configurable test case, refer the build.properties for the available options.
-Test will print the duration, number of threads, number of iterations in the console.
-
-
-
