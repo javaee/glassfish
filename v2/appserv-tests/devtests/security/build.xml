@@ -96,8 +96,8 @@
 <!--    <ant dir="jdbcrealm" target="all"/>-->                     <!-- DISABLED: Build failure -->
 <!--    <ant dir="pamrealm" target="all"/>-->                      <!-- DISABLED -->
 <!--    <ant dir="cert-realm-custom-loginmodule" target="all"/>--> <!-- DISABLED: Failure  -->
-<!--    <ant dir="ldap/simpleweb" target="all" />-->               <!-- DISABLED: LDAP Server -->
-<!--    <ant dir="ldapRealmPerApp" target="all"/>-->               <!-- DISABLED: LDAP Server -->
+        <ant dir="ldap/simpleweb" target="all" />
+        <ant dir="ldapRealmPerApp" target="all"/>
 <!--    <ant dir="solarisRealm" target="all"/>-->                  <!-- DISABLED -->
         <ant dir="jaccApi" target="all"/>
         <record name="security.output" action="stop" />

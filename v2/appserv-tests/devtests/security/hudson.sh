@@ -40,6 +40,8 @@
 #
 date
 
+export http_proxy=http://www-proxy.us.oracle.com:80
+
 rm -rf glassfish-v4-image
 mkdir glassfish-v4-image
 pushd glassfish-v4-image
@@ -50,6 +52,16 @@ unzip -q glassfish.zip
 export S1AS_HOME=$PWD/glassfish4/glassfish
 popd
 
+rm -rf opends-image
+mkdir opends-image
+pushd opends-image
+
+wget http://java.net/downloads/opends/promoted-builds/2.2.1/OpenDS-2.2.1.zip
+unzip -q OpenDS-2.2.1.zip
+
+export OPENDS_HOME=$PWD/OpenDS-2.2.1
+popd
+
 date
 java -version
 ant -version
@@ -57,17 +69,30 @@ ant -version
 export APS_HOME=$PWD/appserv-tests
 
 (jps |grep ASMain |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+(jps |grep DirectoryServer |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+
+# Workaround for JDK7 and OpenDS
+cp $APS_HOME/devtests/security/ldap/opends/X500Signer.jar $OPENDS_HOME/lib
+
+# Configure and start OpenDS using the default ports
+$OPENDS_HOME/setup -i -v -n -p 1389 --adminConnectorPort 4444 -x 1689 -w dmanager -b "dc=sfbay,dc=sun,dc=com" -Z 1636 --useJavaKeystore $S1AS_HOME/domains/domain1/config/keystore.jks -W changeit -N s1as
+
+# Workaround for LDAPLoginModule class name
+cp -f $APS_HOME/devtests/security/ldap/opends/login.conf $S1AS_HOME/domains/domain1/config
 
 $S1AS_HOME/bin/asadmin start-domain
 pushd $APS_HOME/devtests/security
 
 rm count.txt || true
 ant all |tee log.txt
+
+$S1AS_HOME/bin/asadmin stop-domain
+$OPENDS_HOME/bin/stop-ds -p 4444 -D "cn=Directory Manager" -w dmanager -P $OPENDS_HOME/config/admin-truststore -U $OPENDS_HOME/config/admin-keystore.pin
+
 egrep 'FAILED= *0' count.txt
 egrep 'DID NOT RUN= *0' count.txt
-
 popd
-$S1AS_HOME/bin/asadmin stop-domain
 
 date
 #(jps |grep ASMain |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
+#(jps |grep DirectoryServer |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
