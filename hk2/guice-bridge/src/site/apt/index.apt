@@ -1,0 +1,65 @@
+                -----
+                The Guice/HK2 Brdige
+                -----
+
+The Guice/HK2 Bridge
+
+ The Guice/HK2 Bridge can be used to inject Guice services into HK2 service
+ or inject HK2 services into Guice services.  It can be used bi-directionally
+ as well.
+
+Table of Contents
+
+ * {{Definitions}}
+ 
+ * {{Injecting Guice services in HK2}}
+ 
+ * {{Injecting HK2 services in Guice}}
+
+ []
+
+{Definitions}
+
+ * A Guice service is a service that is instantiated by Guice
+
+ * An HK2 service is a service that is instantiated by HK2
+
+ []
+ 
+{Injecting Guice services in HK2}
+
+ Guice services can be injected into any injection point in HK2.  In order to do this
+ you must tell HK2 about the Guice Injector which has the Guice service definitions.
+ You do this by first initializing your ServiceLocator:
+ 
++-----------------------
+  GuiceBridge.getGuiceBridge().initializeGuiceBridge(aServiceLocator);
++-----------------------
+
+ Doing the above add some services to any ServiceLocator, making it ready to accept services
+ from a Guice injector.  The only thing left to do is tell the ServiceLocator about the
+ specific Guice Injector that you want it to look for services in:
+ 
++-----------------------
+  GuiceIntoHK2Bridge guiceBridge = aServiceLocator.getService(GuiceIntoHK2Bridge.class);
+  guiceBridge.bridgeGuiceInjector(guiceInjector);
++-----------------------
+
+ The GuiceIntoHK2Bridge is a service that is added to the ServiceLocator with the
+ GuiceBridge.initializeGuiceBridge method.  Any Guice Injector added with the
+ GuiceIntoHK2Bridge.bridgeGuiceInjector method will be searched for services that
+ HK2 cannot find amongst its own beans.
+ 
+ For example, if you have a service called GuiceService that is created by Guice, you
+ can inject it into an HK2 service (called HK2Service) like this:
+ 
++---------------------------
+  @Service
+  public class HK2Service {
+      @Inject
+      private GuiceService guiceService;
+  }
++---------------------------
+
+{Injecting HK2 services in Guice}
+
