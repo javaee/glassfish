@@ -177,5 +177,22 @@ public class ValidationTest {
         Assert.assertFalse(l3.isUp());
         Assert.assertFalse(l5.isUp());
     }
+    
+    @Test
+    public void testDirectlyGettingInvalidService() {
+        ServiceLocator locator = Utilities.getServiceLocator("ValidationTest.testDirectlyGettingInvalidService",
+                LevelFiveService.class);
+        
+        try {
+            locator.getService(LevelFiveService.class);
+        }
+        catch (MultiException me) {
+            Throwable th1 = me.getErrors().get(0);
+            
+            Assert.assertTrue(th1 instanceof IllegalStateException);
+            Assert.assertTrue(th1.getMessage().contains(" but it has a run level of "));
+        }
+        
+    }
 
 }

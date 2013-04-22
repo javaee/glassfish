@@ -73,8 +73,20 @@ public class MethodInterceptorImpl implements MethodInterceptor {
     @Override
     public Object intercept(Object target, Method method, Object[] params,
             MethodProxy proxy) throws Throwable {
-        Context<?> context = locator.resolveContext(descriptor.getScopeAnnotation());
-        Object service = context.findOrCreate(descriptor, root);
+        Context<?> context;
+        Object service;
+        
+        try {
+            context = locator.resolveContext(descriptor.getScopeAnnotation());
+            service = context.findOrCreate(descriptor, root);
+        }
+        catch (MultiException me) {
+            throw me;
+        }
+        catch (Throwable th) {
+            throw new MultiException(th);
+        }
+        
         if (service == null) {
             throw new MultiException(new IllegalStateException("Proxiable context " +
                     context + " findOrCreate returned a null for descriptor " + descriptor +

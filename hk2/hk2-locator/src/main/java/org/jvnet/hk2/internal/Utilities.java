@@ -2200,7 +2200,16 @@ public class Utilities {
             throw me;
         }
 
-        service = context.findOrCreate(root, handle);
+        try {
+            service = context.findOrCreate(root, handle);
+        }
+        catch (MultiException me) {
+            throw me;
+        }
+        catch (Throwable th) {
+            throw new MultiException(th);
+        }
+        
         if (service == null && !context.supportsNullCreation()) {
             throw new MultiException(new IllegalStateException("Context " +
                 context + " findOrCreate returned a null for descriptor " + root +
