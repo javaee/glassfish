@@ -3,7 +3,7 @@
 FILE=$APS_HOME/test_resultsValid.xml
 echo "input file=$FILE"
 
-TOTAL=289
+TOTAL=299
 TOTAL_LITE=30
 
 if [ $# -eq 1 ] && [ $1 = "lite" ]

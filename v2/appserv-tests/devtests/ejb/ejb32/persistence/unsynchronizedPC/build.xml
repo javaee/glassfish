@@ -14,9 +14,8 @@
     <target name="all">
         <antcall target="txscope_synctype_mismatch"/>
         <antcall target="extendedscope_cross_sfsb"/>
-    	<!--Wait for next drop of EclipeLink-->
-        <!--antcall target="unsynchpc_flush"/-->
-        <!--antcall target="disallowed_methods"/-->
+        <antcall target="unsynchpc_flush"/>
+        <antcall target="disallowed_methods"/>
         <antcall target="use_nonjtadatasource"/>
         <antcall target="rollback_notclear_unsynchPC"/>
     </target>
