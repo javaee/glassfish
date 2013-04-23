@@ -10,5 +10,13 @@
          <cache-idle-timeout-in-seconds>4</cache-idle-timeout-in-seconds>
       </bean-cache>
     </ejb>
+    <ejb>
+      <ejb-name>StatefulNoIntf</ejb-name>
+      <bean-cache>
+         <max-cache-size>4</max-cache-size>
+	 <resize-quantity>1</resize-quantity>
+         <cache-idle-timeout-in-seconds>3</cache-idle-timeout-in-seconds>
+      </bean-cache>
+    </ejb>
   </enterprise-beans>
 </sun-ejb-jar>

@@ -34,7 +34,6 @@
         <antcall target="ejb-jar-common">
             <param name="ejbjar.classes" 
               value="**/*.class"/>
-            <param name="beans.xml" value="descriptor/beans.xml"/>
         </antcall>
     </target> 
     

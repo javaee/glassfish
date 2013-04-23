@@ -39,6 +39,7 @@ public class HelloBean implements Hello {
 
     public String hello() {
 	System.out.println("In HelloBean::hello()");
+System.out.println("+++ sessionCtx type: " + sessionCtx.getClass());
 
 	StatefulExpiration se = (StatefulExpiration) sessionCtx.lookup("java:module/StatefulExpiration");
 	se.hello();
@@ -68,6 +69,7 @@ public class HelloBean implements Hello {
     @PostActivate
     public void postAct() {
 	System.out.println("In HelloBean::postAct()");
+        hello();
 	activated = true;
     }
     
