@@ -33,7 +33,6 @@
               value="**/*Exception.class,**/*Interceptor*.class,**/Dummy*.class,**/Sless*.class,**/Sful*.class,**/*Foo.class, **/Bar*.class,**/ArgumentsVerifier.class"/>
             <param name="appclientjar.classes" 
               value="**/Client.class,**/Sful.class,**/*Exception.class,**/AssertionFailedException.class"/>
-            <param name="beans.xml" value="descriptor/beans.xml"/>
         </antcall>
     </target> 
     
