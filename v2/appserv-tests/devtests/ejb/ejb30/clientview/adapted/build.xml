@@ -33,7 +33,6 @@
               value="**/Common*.class,**/Dummy*.class,**/Hello*.class,**/Sful*.class,**/Sless*.class"/>
             <param name="appclientjar.classes" 
               value="**/Client.class,**/DummySless*.class,**/DummyRemote*.class,**/Hello.class,**/SfulRemoteHome.class,**/SlessRemoteHome.class"/>
-            <param name="beans.xml" value="descriptor/beans.xml"/>
         </antcall>
     </target> 
     
