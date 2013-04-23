@@ -5,7 +5,6 @@
 
 package connector;
 
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
@@ -25,6 +24,7 @@ import javax.resource.spi.work.Work;
 import javax.resource.spi.work.WorkManager;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
+import javax.naming.InitialContext;
 
 /**
  * This is a sample resource adapter
@@ -73,6 +73,11 @@ public class SimpleResourceAdapterImpl
             spec.validate();
             work = new WorkDispatcher("DISPATCHER", ctx, factory, spec);
             wm.scheduleWork(work, 30 * 1000, null, null);
+            
+            //Test if a resource defined in the comp's namespace is available
+            Object o = (new InitialContext()).lookup("java:comp/env/MyDB");
+            System.out.println("**** lookedup in RA endpointActivation:" + o);
+            
             debug("B.001. Scheduled Dispatcher");
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -80,12 +85,20 @@ public class SimpleResourceAdapterImpl
         }
     }
 
-    public void
-    endpointDeactivation(
+    public void endpointDeactivation(
             MessageEndpointFactory endpointFactory,
             ActivationSpec spec) {
         debug("endpointDeactivation called...");
-
+        //Test if a resource defined in the comp's namespace is available
+//        try{
+//            Object o = (new InitialContext()).lookup("java:comp/env/MyDB");
+//            System.out.println("lookedup in RA endpointDeactivation:" + o);
+//        } catch (Exception ex){
+//            System.out.println("**** Error while looking up in component context " +
+//            		"in endpointDeactivation");
+//            ex.printStackTrace();
+//            throw new RuntimeException(ex);
+//        }
         ((WorkDispatcher) work).stop();
     }
 
