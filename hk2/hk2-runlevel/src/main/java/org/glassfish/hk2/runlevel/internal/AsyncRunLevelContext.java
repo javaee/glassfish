@@ -41,7 +41,6 @@ package org.glassfish.hk2.runlevel.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +88,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     /**
      * The set of services currently being created
      */
-    private final HashSet<ActiveDescriptor<?>> creatingDescriptors = new HashSet<ActiveDescriptor<?>>();
+    private final HashMap<ActiveDescriptor<?>, Long> creatingDescriptors = new HashMap<ActiveDescriptor<?>, Long>();
     
     private final LinkedList<ActiveDescriptor<?>> orderedCreationList = new LinkedList<ActiveDescriptor<?>>();
     
@@ -119,12 +118,19 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             ServiceHandle<?> root) {
         U retVal = null;
         
+        long currentThreadId = Thread.currentThread().getId();
         int localCurrentLevel;
         synchronized (this) {
             retVal = (U) backingMap.get(activeDescriptor);
             if (retVal != null) return retVal;
             
-            while (creatingDescriptors.contains(activeDescriptor)) {
+            while (creatingDescriptors.containsKey(activeDescriptor)) {
+                long holdingLock = creatingDescriptors.get(activeDescriptor);
+                if (holdingLock == currentThreadId) {
+                    throw new MultiException(new IllegalStateException(
+                            "Circular dependency involving " + activeDescriptor.getImplementation() +
+                            " was found.  Full descriptor is " + activeDescriptor));
+                }
                 try {
                     this.wait();
                 }
@@ -136,7 +142,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             retVal = (U) backingMap.get(activeDescriptor);
             if (retVal != null) return retVal;
             
-            creatingDescriptors.add(activeDescriptor);
+            creatingDescriptors.put(activeDescriptor, currentThreadId);
             
             localCurrentLevel = currentLevel;
             if (currentTask != null && currentTask.isUp()) {
