@@ -89,13 +89,16 @@ public class DescriptorImpl implements Descriptor, Externalizable {
     private final static String NOT_IN_CONTRACTS_DIRECTIVE = "-";
     private final static char SINGLETON_DIRECTIVE_CHAR = 'S';
     private final static char NOT_IN_CONTRACTS_DIRECTIVE_CHAR = '-';
+    
+    private final static Set<String> EMPTY_QUALIFIER_SET = Collections.emptySet();
+    private final static Map<String, List<String>> EMPTY_METADATAS_MAP = Collections.emptyMap();
 	
 	private Set<String> contracts = new LinkedHashSet<String>();
 	private String implementation;
 	private String name;
 	private String scope = PerLookup.class.getName();
-	private Map<String, List<String>> metadatas = new LinkedHashMap<String, List<String>>();
-	private Set<String> qualifiers = new LinkedHashSet<String>();
+	private Map<String, List<String>> metadatas;
+	private Set<String> qualifiers;
 	private DescriptorType descriptorType = DescriptorType.CLASS;
 	private DescriptorVisibility descriptorVisibility = DescriptorVisibility.NORMAL;
 	private transient HK2Loader loader;
@@ -133,11 +136,13 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	        contracts.addAll(copyMe.getAdvertisedContracts());
 	    }
 		
-	    if (copyMe.getQualifiers() != null) {
+	    if (copyMe.getQualifiers() != null && !copyMe.getQualifiers().isEmpty()) {
+	        qualifiers = new LinkedHashSet<String>();
 		    qualifiers.addAll(copyMe.getQualifiers());
 	    }
 		
-	    if (copyMe.getMetadata() != null) {
+	    if (copyMe.getMetadata() != null && !copyMe.getMetadata().isEmpty()) {
+	        metadatas = new LinkedHashMap<String, List<String>>();
 		    metadatas.putAll(ReflectionHelper.deepCopyMetadata(copyMe.getMetadata()));
 	    }
 	}
@@ -182,8 +187,15 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 		
 		this.name = name;
 		this.scope = scope;
-		this.metadatas.putAll(ReflectionHelper.deepCopyMetadata(metadatas));
-		this.qualifiers.addAll(qualifiers);
+		if (metadatas != null && !metadatas.isEmpty()) {
+		    this.metadatas = new LinkedHashMap<String, List<String>>();
+		    this.metadatas.putAll(ReflectionHelper.deepCopyMetadata(metadatas));
+		}
+		if (qualifiers != null && !qualifiers.isEmpty()) {
+		    this.qualifiers = new LinkedHashSet<String>();
+		    this.qualifiers.addAll(qualifiers);
+		    
+		}
 		this.descriptorType = descriptorType;
 		this.descriptorVisibility = descriptorVisibility;
 		this.id = id;
@@ -259,6 +271,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 
 	@Override
 	public synchronized Set<String> getQualifiers() {
+	    if (qualifiers == null) return EMPTY_QUALIFIER_SET;
 		return Collections.unmodifiableSet(qualifiers);
 	}
 	
@@ -269,6 +282,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 */
 	public synchronized void addQualifier(String addMe) {
 	    if (addMe == null) return;
+	    if (qualifiers == null) qualifiers = new LinkedHashSet<String>();
 	    qualifiers.add(addMe);
 	}
 	
@@ -280,6 +294,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 */
 	public synchronized boolean removeQualifier(String removeMe) {
 	    if (removeMe == null) return false;
+	    if (qualifiers == null) return false;
 	    return qualifiers.remove(removeMe);
 	}
 
@@ -313,6 +328,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 
 	@Override
 	public synchronized Map<String, List<String>> getMetadata() {
+	    if (metadatas == null) return EMPTY_METADATAS_MAP;
 		return Collections.unmodifiableMap(metadatas);
 	}
 	
@@ -326,7 +342,12 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 * should have
 	 */
 	public synchronized void setMetadata(Map<String, List<String>> metadata) {
-	    metadatas.clear();
+	    if (metadatas == null) {
+	        metadatas = new LinkedHashMap<String, List<String>>();
+	    }
+	    else {
+	        metadatas.clear();
+	    }
 	    
 	    metadatas.putAll(ReflectionHelper.deepCopyMetadata(metadata));
 	}
@@ -339,6 +360,8 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 * to add to the metadata map
 	 */
 	public synchronized void addMetadata(Map<String, List<String>> metadata) {
+	    if (metadatas == null) metadatas = new LinkedHashMap<String, List<String>>();
+	    
         metadatas.putAll(ReflectionHelper.deepCopyMetadata(metadata));
     }
 	
@@ -350,6 +373,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 * @param value The value to add.  May not be null
 	 */
 	public synchronized void addMetadata(String key, String value) {
+	    if (metadatas == null) metadatas = new LinkedHashMap<String, List<String>>();
 	    ReflectionHelper.addMetadata(metadatas, key, value);
 	}
 	
@@ -362,6 +386,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 * @return true if the value was removed
 	 */
 	public synchronized boolean removeMetadata(String key, String value) {
+	    if (metadatas == null) return false;
 	    return ReflectionHelper.removeMetadata(metadatas, key, value);
 	}
 	
@@ -372,6 +397,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 * @return true if any value was removed
 	 */
 	public synchronized boolean removeAllMetadata(String key) {
+	    if (metadatas == null) return false;
 	    return ReflectionHelper.removeAllMetadata(metadatas, key);
 	}
 	
@@ -382,7 +408,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
      * @return true if any value was removed
      */
     public synchronized void clearMetadata() {
-        metadatas.clear();
+        metadatas = null;
     }
 	
 	/* (non-Javadoc)
@@ -565,10 +591,10 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    if (!equalOrderedCollection(contracts, d.getAdvertisedContracts())) return false;
 	    if (!safeEquals(name, d.getName())) return false;
 	    if (!safeEquals(scope, d.getScope())) return false;
-	    if (!equalOrderedCollection(qualifiers, d.getQualifiers())) return false;
+	    if (!equalOrderedCollection((qualifiers == null) ? EMPTY_QUALIFIER_SET : qualifiers, d.getQualifiers())) return false;
 	    if (!safeEquals(descriptorType, d.getDescriptorType())) return false;
 	    if (!safeEquals(descriptorVisibility, d.getDescriptorVisibility())) return false;
-	    if (!equalMetadata(metadatas, d.getMetadata())) return false;
+	    if (!equalMetadata((metadatas == null) ? EMPTY_METADATAS_MAP : metadatas, d.getMetadata())) return false;
 	    if (!safeEquals(proxiable, d.isProxiable())) return false;
 	    if (!safeEquals(analysisName, d.getClassAnalysisName())) return false;
 	    
@@ -716,8 +742,8 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    implementation = null;
 	    name = null;
 	    scope = PerLookup.class.getName();
-	    metadatas = new LinkedHashMap<String, List<String>>();
-	    qualifiers = new LinkedHashSet<String>();
+	    metadatas = null;
+	    qualifiers = null;
 	    descriptorType = DescriptorType.CLASS;
 	    descriptorVisibility = DescriptorVisibility.NORMAL;
 	    loader = null;
@@ -798,7 +824,9 @@ public class DescriptorImpl implements Descriptor, Externalizable {
                         ReflectionHelper.readSet(rightHandSide, contracts);
                     }
                     else if (leftHandSide.equals(QUALIFIER_KEY)) {
-                        ReflectionHelper.readSet(rightHandSide, qualifiers);
+                        LinkedHashSet<String> localQualifiers = new LinkedHashSet<String>();
+                        ReflectionHelper.readSet(rightHandSide, localQualifiers);
+                        if (!localQualifiers.isEmpty()) qualifiers = localQualifiers;
                     }
                     else if (leftHandSide.equals(NAME_KEY)) {
                         name = rightHandSide;
@@ -817,7 +845,9 @@ public class DescriptorImpl implements Descriptor, Externalizable {
                         }
                     }
                     else if (leftHandSide.equals(METADATA_KEY)) {
-                        ReflectionHelper.readMetadataMap(rightHandSide, metadatas);
+                        LinkedHashMap<String, List<String>> localMetadatas = new LinkedHashMap<String, List<String>>();
+                        ReflectionHelper.readMetadataMap(rightHandSide, localMetadatas);
+                        if (!localMetadatas.isEmpty()) metadatas = localMetadatas;
                     }
                     else if (leftHandSide.equals(RANKING_KEY)) {
                         rank = Integer.parseInt(rightHandSide);

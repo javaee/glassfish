@@ -72,9 +72,11 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      */
     private static final long serialVersionUID = 7080312303893604939L;
     
+    private final static Set<Annotation> EMPTY_QUALIFIER_SET = Collections.emptySet();
+    
     private Set<Type> advertisedContracts = new LinkedHashSet<Type>();
     private Class<? extends Annotation> scope;
-    private Set<Annotation> qualifiers = new LinkedHashSet<Annotation>();
+    private Set<Annotation> qualifiers;
     private Long factoryServiceId;
     private Long factoryLocatorId;
     private boolean isReified = true;
@@ -130,7 +132,10 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         
         this.scope = scope;
         this.advertisedContracts.addAll(advertisedContracts);
-        this.qualifiers.addAll(qualifiers);
+        if (qualifiers != null && !qualifiers.isEmpty()) {
+            this.qualifiers = new LinkedHashSet<Annotation>();
+            this.qualifiers.addAll(qualifiers);
+        }
         
         setRanking(ranking);
         setDescriptorType(descriptorType);
@@ -149,8 +154,10 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
             addAdvertisedContract(raw.getName());
         }
         
-        for (Annotation q : qualifiers) {
-            addQualifier(q.annotationType().getName());
+        if (qualifiers != null) {
+            for (Annotation q : qualifiers) {
+                addQualifier(q.annotationType().getName());
+            }
         }
         
         setClassAnalysisName(analyzerName);
@@ -168,6 +175,8 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
     }
     
     private void removeNamedQualifier() {
+        if (qualifiers == null) return;
+        
         for (Annotation qualifier : qualifiers) {
             if (qualifier.annotationType().equals(Named.class)) {
                 removeQualifierAnnotation(qualifier);
@@ -290,6 +299,8 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      */
     @Override
     public synchronized Set<Annotation> getQualifierAnnotations() {
+        if (qualifiers == null) return EMPTY_QUALIFIER_SET;
+        
         return Collections.unmodifiableSet(qualifiers);
     }
     
@@ -300,6 +311,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      */
     public synchronized void addQualifierAnnotation(Annotation addMe) {
         if (addMe == null) return;
+        if (qualifiers == null) qualifiers = new LinkedHashSet<Annotation>();
         qualifiers.add(addMe);
         addQualifier(addMe.annotationType().getName());
     }
@@ -312,6 +324,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      */
     public synchronized boolean removeQualifierAnnotation(Annotation removeMe) {
         if (removeMe == null) return false;
+        if (qualifiers == null) return false;
         
         boolean retVal = qualifiers.remove(removeMe);
         removeQualifier(removeMe.annotationType().getName());
