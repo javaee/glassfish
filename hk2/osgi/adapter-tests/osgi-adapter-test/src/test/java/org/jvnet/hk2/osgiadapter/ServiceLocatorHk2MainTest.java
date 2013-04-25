@@ -10,6 +10,7 @@ import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.cleanCaches;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.repositories;
 
 import java.io.File;
 import java.util.List;
@@ -88,7 +89,7 @@ public class ServiceLocatorHk2MainTest {
 		                        "sdp-management-bundle").version(projectVersion).startLevel(4)),
 
 				systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level")
-						.value("DEBUG"), logProfile(), cleanCaches()
+						.value("DEBUG"), cleanCaches()
 		// systemProperty("com.sun.enterprise.hk2.repositories").value(cacheDir.toURI().toString()),
 		// vmOption(
 		// "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005" )
@@ -145,10 +146,6 @@ public class ServiceLocatorHk2MainTest {
 					moduleStartup);
 
 			Assert.assertTrue("TestModuleStartup not called", TestModuleStartup.wasCalled);
-
-			List<?> configAdmin = serviceLocator.getAllServices(BuilderHelper.createContractFilter("org.osgi.service.cm.ConfigurationAdmin"));
-	
-			Assert.assertEquals(1, configAdmin.size());
 					
 		} catch (Exception ex) {
 			if (ex.getCause() != null)
