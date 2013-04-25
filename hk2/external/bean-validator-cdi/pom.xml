@@ -128,7 +128,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/hibernate-validator-javadoc.jar</file>
+                                    <file>${project.build.directory}/hibernate-validator-cdi-javadoc.jar</file>
                                     <classifier>javadoc</classifier>
                                 </artifact>
                             </artifacts>
