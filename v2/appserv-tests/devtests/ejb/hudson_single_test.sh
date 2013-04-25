@@ -91,7 +91,11 @@ cat derby.properties
 pushd $APS_HOME/devtests/ejb
 rm count.txt || true
 
+if [ $# -eq 3 ]; then
 ant setup
+else
+ant clean-result
+fi
 
 cd $1
 
@@ -112,5 +116,8 @@ do
 done
 
 pushd $APS_HOME/devtests/ejb
+if [ $# -eq 3 ]; then
 ant unsetup
-ant report 
+fi
+
+ant dev-report 
