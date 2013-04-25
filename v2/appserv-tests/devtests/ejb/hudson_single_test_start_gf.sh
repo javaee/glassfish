@@ -90,8 +90,8 @@ cat derby.properties
 
 pushd $APS_HOME/devtests/ejb
 rm count.txt || true
+ant setup
 
-ant clean-result
 cd $1
 
 COUNT=1
@@ -111,4 +111,5 @@ do
 done
 
 pushd $APS_HOME/devtests/ejb
+ant unsetup
 ant dev-report 
