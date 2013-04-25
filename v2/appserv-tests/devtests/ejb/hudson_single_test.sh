@@ -91,14 +91,14 @@ cat derby.properties
 pushd $APS_HOME/devtests/ejb
 rm count.txt || true
 
+ant setup
+
 cd $1
 
 COUNT=1
 if [ $# -eq 2 ]; then
     COUNT=$2
 fi
-
-ant clean-result 
 
 echo Running test $COUNT times
 
@@ -111,4 +111,6 @@ do
 
 done
 
-ant dev-report 
+pushd $APS_HOME/devtests/ejb
+ant unsetup
+ant report 
