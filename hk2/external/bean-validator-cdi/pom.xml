@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -48,7 +48,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.hk2.external</groupId>
-    <artifactId>bean-validator</artifactId>
+    <artifactId>bean-validator-cdi</artifactId>
     <!-- Don't use bundle packaging. There are issues in using
          maven-bundle-plugin and hk2-maven-plugin together -->
     <packaging>jar</packaging>
@@ -58,7 +58,7 @@
        <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
       <jtype.version>0.1.0</jtype.version>
     </properties>
-    <name>Validation API (JSR 349) version ${javax.validation.version}, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
+    <name>Validation API (JSR 349) version ${javax.validation.version}, Hibernate Validator CDI portable extension version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
 
     <build>
         <plugins>
@@ -70,60 +70,16 @@
                         <Embed-Dependency>
                             <!-- Only specify root artifacts that need to be embedded, everything else
                                  will be pulled in automatically based on Private-Package settings. -->
-                            *; artifactId=hibernate-validator; inline=true
+                            *; artifactId=hibernate-validator-cdi; inline=true
                         </Embed-Dependency>
                         <Export-Package>
-                            javax.validation.*; version=${javax.validation.osgi.version},
-                            org.hibernate.validator.*; version=${hibernate-validator.version},
                             org.hibernate.validator.internal.cdi; version=${hibernate-validator.version},
 			    org.hibernate.validator.internal.cdi.interceptor; version=${hibernate-validator.version},
-			    org.glassfish.validation; version=${hibernate-validator.version}
                         </Export-Package>
 
-                        <Private-Package>
-                            <!-- JBoss logging is used by Hibernate Validator as of version 4.3.0.Final.
-                                 We must repackage it privately in this bundle.
-                            -->
-                            org.jboss.logging.*,com.fasterxml.*
-                        </Private-Package>
-
                         <Import-Package>
-                            <!--
-                                - bean validator has optional dependency on JPA API. More over, it relies on
-                                JPA 2.0, as it tries to dynamically load javax.persistence.PersistenceUtil.class,
-                                which is a JPA 2 class.
-                                - jboss.logging has the following optional dependencies (see manifest in
-                                jboss-logging-*.jar):
-                                org.apache.log4j, org.jboss.logmanager, org.slf4j, org.slf4j.spi
-                                - Hibernate Validator has optional dependencies on (see manifest in
-                                hibernate-validator-*.jar): javax.persistence, org.joda.time, org.jsoup, org.jsoup.safety
-                            -->
-                            org.slf4j; org.slf4j.spi; org.slf4j.helpers; version=${slf4j.version}; resolution:=optional,
-                            javax.persistence.*; version="2.0"; resolution:=optional,
-                            org.joda.time; resolution:=optional; version="[1.6.0,2.0.0)",
-                            org.jsoup.*; resolution:=optional; version="[1.5.2,2.0.0)",
-                            org.apache.log4j; resolution:=optional,
-                            org.jboss.logmanager; resolution:=optional,
-                            javax.enterprise.context.*; resolution:=optional,
-                            javax.enterprise.event.*; resolution:=optional,
-                            javax.enterprise.inject.*; resolution:=optional,
-                            javax.enterprise.util.*; resolution:=optional,
-			    javax.interceptor.*; resolution:=optional,
-			    org.hibernate.validator.*; version=${hibernate-validator.version},
                             *
                         </Import-Package>
-                        <!--
-                        See https://hibernate.onjira.com/browse/HV-562 which I have filed against hibernate validator.
-                        It's a bug in hibernate validator the way it detects JPA. It uses thread's context classloader to
-                        see if JPA classes are available and then goes onto instantiate its JPATraversableResolver which
-                        has staic dependency on JPA classes. It should have used its own class loader to detect existence
-                        of JPA classes. If we don't add this DynamicImport-Package, what could happen is that at the time
-                        of resolution of hibernate-validator, it's optional dependency on javax.persistence may not be
-                        satisfied, so this bundle won't be able to load jpa classes, yet when it uses TCL to detect JPA,
-                        that might return true. Based on this outcome, it could go onto use JPATraversableResolver and
-                        eventually fail with NCDFE. Adding a DynamicImport-Package helps rewiring this bundle to JPA late.
-                        -->
-                        <DynamicImport-Package>javax.persistence; javax.persistence.*;  version="2.0"</DynamicImport-Package>
                         <Implementation-Version>
                             ${hibernate-validator.version}
                         </Implementation-Version>
@@ -216,7 +172,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.hibernate</groupId>
-                                    <artifactId>hibernate-validator</artifactId>
+                                    <artifactId>hibernate-validator-cdi</artifactId>
                                     <version>${hibernate-validator.version}</version>
                                     <classifier>javadoc</classifier>
                                     <overWrite>false</overWrite>
@@ -248,41 +204,10 @@
         -->
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
+            <artifactId>hibernate-validator-cdi</artifactId>
             <version>${hibernate-validator.version}</version>
             <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <!-- 
-                Although hibernate validator uses maven-shade-plugin to repackage com.googlecode.jtype classes
-                bu org.hibernate.validator.jtype classes, the shade plugin seems to leave behind some 
-                constant pool entries referring to google classes, so we need to package google jtype classes as well.
-                I have asked Emmanuel Bernard about this. It appears to be a bug in shade plugin or HV.
-                Because of shade-plugin, the dependency is remove from hibernate-validator pom, so we need to add it
-                here so that we can package these classes.
-            -->
-            <groupId>com.googlecode.jtype</groupId>
-            <artifactId>jtype</artifactId>
-            <version>${jtype.version}</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <version>${org.jboss.logging.version}</version>
-            <optional>true</optional>
-        </dependency>
-
     </dependencies>
-    <developers>
-        <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 </project>
