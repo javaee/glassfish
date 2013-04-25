@@ -41,7 +41,7 @@ package org.jvnet.hk2.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -49,6 +49,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
@@ -62,7 +63,7 @@ public class SingletonContext implements Context<Singleton> {
     private int generationNumber = Integer.MIN_VALUE;
     private final ServiceLocatorImpl locator;
     
-    private final HashSet<ActiveDescriptor<?>> creatingDescriptors = new HashSet<ActiveDescriptor<?>>();
+    private final HashMap<ActiveDescriptor<?>, Long> creatingDescriptors = new HashMap<ActiveDescriptor<?>, Long>();
     
     /* package */ SingletonContext(ServiceLocatorImpl impl) {
         locator = impl;
@@ -83,11 +84,20 @@ public class SingletonContext implements Context<Singleton> {
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) {
         T retVal;
+        
+        long currentThreadId = Thread.currentThread().getId();
         synchronized (this) {
             retVal = activeDescriptor.getCache();
             if (retVal != null) return retVal;
             
-            while (creatingDescriptors.contains(activeDescriptor)) {
+            while (creatingDescriptors.containsKey(activeDescriptor)) {
+                long creatingThreadId = creatingDescriptors.get(activeDescriptor);
+                if (creatingThreadId == currentThreadId) {
+                    throw new MultiException(new IllegalStateException(
+                            "A circular dependency involving Singleton service " + activeDescriptor.getImplementation() +
+                            " was found.  Full descriptor is " + activeDescriptor));
+                    
+                }
                 try {
                     this.wait();
                 }
@@ -100,7 +110,7 @@ public class SingletonContext implements Context<Singleton> {
             retVal = activeDescriptor.getCache();
             if (retVal != null) return retVal;
             
-            creatingDescriptors.add(activeDescriptor);
+            creatingDescriptors.put(activeDescriptor, currentThreadId);
         }
         
         try {
