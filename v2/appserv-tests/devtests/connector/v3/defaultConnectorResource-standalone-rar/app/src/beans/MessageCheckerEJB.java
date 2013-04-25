@@ -31,7 +31,7 @@ public class MessageCheckerEJB implements SessionBean {
 
     public void ejbCreate()
             throws CreateException {
-        System.out.println("bean removed");
+        System.out.println("bean created");
         heldCon = null;
         /*
           if (holdConnection) {
