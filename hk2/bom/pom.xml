@@ -51,7 +51,7 @@
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-bom</artifactId>
-    <version>2.1.91-SNAPSHOT</version>
+    <version>2.1.91</version>
     <packaging>pom</packaging>
     
     <properties>
@@ -329,4 +329,10 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+  <scm>
+    <connection>scm:git:git@github.com:sonatype/jvnet-parent.git/hk2-bom/tags/hk2-parent-2.1.91/hk2-bom</connection>
+    <developerConnection>scm:git:git@github.com:sonatype/jvnet-parent.git/hk2-bom/tags/hk2-parent-2.1.91/hk2-bom</developerConnection>
+    <url>https://github.com/sonatype/jvnet-parent/hk2-bom/tags/hk2-parent-2.1.91/hk2-bom</url>
+  </scm>
 </project>
