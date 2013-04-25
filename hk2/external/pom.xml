@@ -57,6 +57,7 @@
             <module>cglib</module>
 	    <module>asm-all</module>
 	    <module>bean-validator</module>
+            <module>bean-validator-cdi</module>
 	    <module>jsr330</module>
             <module>tiger-types</module>
     </modules>
