@@ -223,10 +223,17 @@ public class AsyncRLSTest {
         Assert.assertNotNull(recordsDown);
         Assert.assertEquals(3, recordsDown.size());
         
-        // Down is ORDERED (unlike up) and must happen in the opposite of the up order
+        // Down is ORDERED for related services, but can be unordered for services not related at all
         Assert.assertEquals(records.get(5), recordsDown.get(0));
-        Assert.assertEquals(records.get(4), recordsDown.get(1));
-        Assert.assertEquals(records.get(3), recordsDown.get(2));
+        if (records.get(4).equals(recordsDown.get(1))) {
+            Assert.assertEquals(records.get(3),recordsDown.get(2));
+        }
+        else if (records.get(4).equals(recordsDown.get(2))) {
+            Assert.assertEquals(records.get(3), recordsDown.get(1));
+        }
+        else {
+            Assert.fail("records(4) must be match either " + recordsDown.get(1) + " or " + recordsDown.get(2));
+        }
         
         future = controller.proceedToAsync(FIFTEEN);
         future.get(20, TimeUnit.SECONDS);
