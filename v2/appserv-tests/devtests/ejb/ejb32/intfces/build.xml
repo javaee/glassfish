@@ -90,6 +90,7 @@
               <arg line="${client.type}"/>
               <arg line="${ejb.jar}"/>
               <arg line="${index}"/>
+           <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
         </java>
     </target>
  
