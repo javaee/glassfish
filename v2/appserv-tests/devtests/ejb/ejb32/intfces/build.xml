@@ -12,19 +12,28 @@
     &commonBuild;
     &testproperties;
 
-    <target name="all" depends="clean,build,deploy,run,undeploy"/>
+    <target name="all" depends="clean,build,deploy,run,undeploy,deploy-neg"/>
 
     <target name="clean" depends="init-common">
       <antcall  target="clean-common"/>
     </target>
  
-    <target name="compile" depends="clean">
+    <target name="compile" depends="clean,precompile">
         <antcall target="compile-common">
             <param name="src" value="ejb"/>
         </antcall>
-        <antcall target="compile-common">
-            <param name="src" value="client"/>
-        </antcall>
+        <javac fork="true" includeAntRuntime="false" 
+               classpath="${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar:${s1as.classpath}"
+               destdir="${build.classes.dir}" debug="true" srcdir="client" includes="**/*.java">
+            <classpath path="${classpath}"/>
+        </javac>
+    </target>
+
+    <target name="precompile" depends="init-common">
+        <ant dir="${env.APS_HOME}/devtests/admin/cli" target="build"/>
+        <copy todir="${build.classes.dir}">
+          <fileset dir="${env.APS_HOME}/devtests/admin/cli/build"/>
+        </copy>
     </target>
 
     <target name="build" depends="compile">
@@ -32,25 +41,60 @@
             <param name="ejbjar.classes"
               value="**/S*.class" />
         </antcall>
+        <move file="${assemble.dir}/${appname}-ejb.jar" tofile="${assemble.dir}/${appname}-ejb2.jar"/>
+        <antcall target="ejb-jar-common">
+            <param name="ejbjar.classes"
+              value="**/S*.class" />
+        </antcall>
+        <antcall target="ear-common"/>
+    </target>
+
+    <target name="build-neg">
+        <antcall target="ejb-jar-common">
+            <param name="ejbjar.excludes.classes"
+              value="**/S*EJB*.class,**/S*Bean*.class" />
+        </antcall>
     </target>
 
     <target name="deploy" 
             depends="init-common">
-        <antcall target="deploy-jar-common"/>
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="deploy-neg" depends="init-common">
+        <antcall target="build-neg">
+            <param name="ejbjar.classes"
+              value="**/S*.class,**/Neg*1.class" />
+        </antcall>
+        <antcall target="run">
+            <param name="client.type" value="deploy-fail" />
+						<param name="ejb.jar" value="${assemble.dir}/${appname}-ejb.jar"/>
+            <param name="index" value="1" />
+        </antcall>
+        <antcall target="build-neg">
+            <param name="ejbjar.classes"
+              value="**/S*.class,**/Neg*2.class" />
+        </antcall>
+        <antcall target="run">
+            <param name="client.type" value="deploy-fail" />
+						<param name="ejb.jar" value="${assemble.dir}/${appname}-ejb.jar"/>
+            <param name="index" value="2" />
+        </antcall>
     </target>
 
     <target name="run" depends="init-common">
        <java  fork="on"
               failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar:${env.APS_HOME}/lib/reportbuilder.jar"
               classname="${se.client}">
-           <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
-           <arg line="${jndiroot}"/>
+              <arg line="${client.type}"/>
+              <arg line="${ejb.jar}"/>
+              <arg line="${index}"/>
         </java>
     </target>
  
     <target name="undeploy" depends="init-common">
-        <antcall target="undeploy-jar-common"/>
+        <antcall target="undeploy-common"/>
     </target>   
 
     <target name="usage">
