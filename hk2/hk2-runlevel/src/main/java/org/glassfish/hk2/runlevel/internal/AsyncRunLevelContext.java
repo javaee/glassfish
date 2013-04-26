@@ -118,7 +118,6 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             ServiceHandle<?> root) {
         U retVal = null;
         
-        long currentThreadId = Thread.currentThread().getId();
         int localCurrentLevel;
         synchronized (this) {
             retVal = (U) backingMap.get(activeDescriptor);
@@ -126,7 +125,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             
             while (creatingDescriptors.containsKey(activeDescriptor)) {
                 long holdingLock = creatingDescriptors.get(activeDescriptor);
-                if (holdingLock == currentThreadId) {
+                if (holdingLock == Thread.currentThread().getId()) {
                     throw new MultiException(new IllegalStateException(
                             "Circular dependency involving " + activeDescriptor.getImplementation() +
                             " was found.  Full descriptor is " + activeDescriptor));
@@ -142,7 +141,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             retVal = (U) backingMap.get(activeDescriptor);
             if (retVal != null) return retVal;
             
-            creatingDescriptors.put(activeDescriptor, currentThreadId);
+            creatingDescriptors.put(activeDescriptor, Thread.currentThread().getId());
             
             localCurrentLevel = currentLevel;
             if (currentTask != null && currentTask.isUp()) {
