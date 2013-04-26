@@ -93,6 +93,7 @@ public class Client extends AdminBaseDevTest {
 
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
+
             if (Boolean.getBoolean("enableShoalLogger")) {
                  asadmin("set-log-levels", "ShoalLogger=FINER");
                  asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
@@ -111,18 +112,18 @@ public class Client extends AdminBaseDevTest {
         }
     }
 
-    public void insert_xa_data(String appname, String port) {
-        execute(appname, port, "TestServlet?2", "true");
+    public void insert_xa_data(String appname, String instance) {
+        execute(appname, instance, "TestServlet?2", "true");
     }
 
-    public void verify_xa(String appname, String port, String operation) {
-        verify(appname, port, operation, "VerifyServlet?xa");
+    public void verify_xa(String appname, String instance, String operation) {
+        verify(appname, instance, operation, "VerifyServlet?xa");
     }
 
-    public void verify(String appname, String port, String operation, String servlet) {
+    public void verify(String appname, String instance, String operation, String servlet) {
         stat.addDescription("transaction-ee-" + operation);
 
-        boolean res = execute(appname, port, servlet, "RESULT:3");
+        boolean res = execute(appname, instance, servlet, "RESULT:3");
 
         stat.addStatus("transaction-ee-dblogs-base" + operation, ((res)? stat.PASS : stat.FAIL));
         stat.printSummary("transaction-ee-dblogs-base" + operation);
@@ -143,8 +144,8 @@ public class Client extends AdminBaseDevTest {
         }
     }
 
-   private boolean execute(String appname, String port, String servlet, String expectedResult) {
-        String connection = "http://localhost:" + port + "/" + appname + "/" + servlet;
+   private boolean execute(String appname, String instance, String servlet, String expectedResult) {
+        String connection = "http://localhost:" + getPort(instance) + "/" + appname + "/" + servlet;
 
         System.out.println("invoking webclient servlet at " + connection);
         boolean result=false;
@@ -195,4 +196,25 @@ public class Client extends AdminBaseDevTest {
         System.out.println("Finished recover CLI");
     }
 
+    private String getPort(String instance) {
+        String arg = ((instance.equals("in1"))? ("configs.config." + CLUSTER_NAME + "-config") : 
+            ("servers.server." + instance));
+        AsadminReturn result = asadminWithOutput("get", arg + ".system-property.HTTP_LISTENER_PORT.value");
+        System.out.println("Executed command: " + result.out);
+        if (!result.returnValue) {
+            System.out.println("CLI FAILED: " + result.err);
+        } else {
+            String[] parts = result.out.split("\n");
+            for (String part : parts) {
+                if (part.startsWith(arg)) {
+                    String[] res = part.split("=");
+                    System.out.println("Returning port: " + res[1]);
+
+                    return res[1];
+                }
+            }
+        }
+
+        return null;
+    }
 }

@@ -278,7 +278,7 @@
               classname="${se.client}">
            <arg line="verify_xa"/>
            <arg line="${appname}-web"/>
-           <arg line="28081"/>
+           <arg line="in2"/>
            <arg line="recover"/>
         </java>
     </target>
@@ -326,14 +326,14 @@
     </target>
 
     <target name="insert-data">
-        <echo message="Executing test on port 28080"/>
+        <echo message="Executing test on instance in1"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="insert_xa_data"/>
            <arg line="${appname}-web"/>
-           <arg line="28080"/>
+           <arg line="in1"/>
         </java>
     </target>
 
