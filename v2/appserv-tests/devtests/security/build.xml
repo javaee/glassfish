@@ -93,7 +93,7 @@
         <ant dir="standalone" target="all"/>
         <ant dir="simpleMultiRoleMapping" target="all"/>
         <ant dir="multiRoleMapping" target="all"/>
-<!--    <ant dir="jdbcrealm" target="all"/>-->                     <!-- DISABLED: Build failure -->
+        <ant dir="jdbcrealm" target="all"/>
 <!--    <ant dir="pamrealm" target="all"/>-->                      <!-- DISABLED -->
 <!--    <ant dir="cert-realm-custom-loginmodule" target="all"/>--> <!-- DISABLED: Failure  -->
         <ant dir="ldap/simpleweb" target="all" />
