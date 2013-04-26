@@ -104,6 +104,7 @@
                             org.jsoup.*; resolution:=optional; version="[1.5.2,2.0.0)",
                             org.apache.log4j; resolution:=optional,
                             org.jboss.logmanager; resolution:=optional,
+			    javax.el;version="[2.2,3]",
                             javax.enterprise.context.*; resolution:=optional,
                             javax.enterprise.event.*; resolution:=optional,
                             javax.enterprise.inject.*; resolution:=optional,
