@@ -85,14 +85,15 @@ public class SingletonContext implements Context<Singleton> {
             ServiceHandle<?> root) {
         T retVal;
         
-        long currentThreadId = Thread.currentThread().getId();
+        
         synchronized (this) {
             retVal = activeDescriptor.getCache();
             if (retVal != null) return retVal;
             
             while (creatingDescriptors.containsKey(activeDescriptor)) {
                 long creatingThreadId = creatingDescriptors.get(activeDescriptor);
-                if (creatingThreadId == currentThreadId) {
+                
+                if (creatingThreadId == Thread.currentThread().getId()) {
                     throw new MultiException(new IllegalStateException(
                             "A circular dependency involving Singleton service " + activeDescriptor.getImplementation() +
                             " was found.  Full descriptor is " + activeDescriptor));
@@ -110,7 +111,7 @@ public class SingletonContext implements Context<Singleton> {
             retVal = activeDescriptor.getCache();
             if (retVal != null) return retVal;
             
-            creatingDescriptors.put(activeDescriptor, currentThreadId);
+            creatingDescriptors.put(activeDescriptor, Thread.currentThread().getId());
         }
         
         try {
