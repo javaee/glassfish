@@ -263,6 +263,7 @@ public class RestartDomainTest extends AdminBaseDevTest {
             restartDomainAsLocal();
             restartDomainAsRemote("garbage.no.exists.com", false);
             restartDomainAsRemote("localhost", true);
+            restartDomainAsRemote(InetAddress.getLocalHost().getHostName(), true);
 
             String host = InetAddress.getLocalHost().getHostName();
             System.out.println("HOSTNAME == " + host);
@@ -283,11 +284,11 @@ public class RestartDomainTest extends AdminBaseDevTest {
         report("uptime", asadmin("uptime"));
     }
 
-    /** 
+    /**
      * This specifically tests the fix for JIRA #20110
-     * restart-domain behaves differently when you give the hostname as localhost versus ANY OTHER name.  
+     * restart-domain behaves differently when you give the hostname as localhost versus ANY OTHER name.
      * Also the local mode is different from the remote mode.  We have to fool with as.props because the \
-     * base class ALWAYS sticks in host/port parameters.  
+     * base class ALWAYS sticks in host/port parameters.
      */
     private void restartDomainAsRemote(String hostname, boolean expected) {
         report("uptime", asadmin("uptime"));
