@@ -37,22 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package admin;
 
 import java.io.*;
 import admin.util.FileUtils;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Test restarting a domain.
- * XXX - for now just a few regression tests
+ * Test restarting a domain. XXX - for now just a few regression tests
  *
  * @author Bill Shannon
  * @author Byron Nevins
  */
 public class RestartDomainTest extends AdminBaseDevTest {
+
+    private boolean useAsPropsArgs = true;
+
+    @Override
+    public String antProp(final String key) {
+        // this is what normally goes in (from the base class):
+        // --user %s --passwordfile %s --host %s --port %s --echo=true --terse=true
+
+        if (useAsPropsArgs)
+            return super.antProp(key);
+        else
+            return "--echo=true";
+    }
+
     @Override
     public String getTestName() {
         return "restart-domain";
@@ -69,6 +83,9 @@ public class RestartDomainTest extends AdminBaseDevTest {
 
     private void runTests() {
         stopDomain();   // make sure local domain is not running before we start
+        startDomain();
+        mainRestartDomainTests();
+        stopDomain();
         testRestartFakeDomain();
         testRestartForce();
         stopDomain();   // and just in case, make sure it's still not running
@@ -100,15 +117,16 @@ public class RestartDomainTest extends AdminBaseDevTest {
     }
 
     /**
-     *  The case where user fouled-up his passwordfile after starting.
-     * restart should detect and emit a useful message.  Before the fix it just
-     * would fail to start with a 10minute timeout
-     * 
-     * We need 2 password files with the same passwords inside.  Because we will use 
-     * one of them for the start-domain command (which is stored inside DAS).  Then 
-     * we delete that file and call restart-domain with the second file.  That's
-     * because asadmin needs the passwords to authenticate to DAS...
-     * Complicated test?  YES!!  This test took longer to develop than the bugfix!!
+     * The case where user fouled-up his passwordfile after starting. restart
+     * should detect and emit a useful message. Before the fix it just would
+     * fail to start with a 10minute timeout
+     *
+     * We need 2 password files with the same passwords inside. Because we will
+     * use one of them for the start-domain command (which is stored inside
+     * DAS). Then we delete that file and call restart-domain with the second
+     * file. That's because asadmin needs the passwords to authenticate to
+     * DAS... Complicated test? YES!! This test took longer to develop than the
+     * bugfix!!
      */
     private void jira16197() {
         report("Regression Test of issue 16197", true);
@@ -178,7 +196,7 @@ public class RestartDomainTest extends AdminBaseDevTest {
 
     /**
      * Start the domain that requires the username/pw via a password file
-     * IMPORTANT!!!  Use pwfile #2 !!!!
+     * IMPORTANT!!! Use pwfile #2 !!!!
      */
     private void startAndRestartAndStopPasswordDomain() {
         setCannedFrameworkArgs("--passwordfile " + pwFile2Name + " --user admin");
@@ -221,7 +239,6 @@ public class RestartDomainTest extends AdminBaseDevTest {
         else
             System.setProperty("as.props", oldCannedArgs);
     }
-
     private String oldCannedArgs = System.getProperty("as.props");
     private File pwFile1;
     private String pwFile1Name;
@@ -239,6 +256,46 @@ public class RestartDomainTest extends AdminBaseDevTest {
     private static final File GF_HOME = TestEnv.getGlassFishHome();
     private static final File PW_DOMAIN_LOGFILE_FROM = TestEnv.getDomainLog(PW_DOMAIN_NAME);
     private static final File PW_DOMAIN_LOGFILE_TO = new File(GF_HOME, PW_DOMAIN_NAME + ".log");
+
+    private void mainRestartDomainTests() {
+        try {
+            useAsPropsArgs = false;
+            restartDomainAsLocal();
+            restartDomainAsRemote("garbage.no.exists.com", false);
+            restartDomainAsRemote("localhost", true);
+
+            String host = InetAddress.getLocalHost().getHostName();
+            System.out.println("HOSTNAME == " + host);
+            restartDomainAsRemote(host, true);
+        }
+        catch (UnknownHostException ex) {
+            report("unknown-host-exception", false);
+        }
+        finally {
+            useAsPropsArgs = true;
+        }
+    }
+
+    private void restartDomainAsLocal() {
+        report("uptime", asadmin("uptime"));
+        report("restart-domain", asadmin("restart-domain"));
+        // check that the local domain is running
+        report("uptime", asadmin("uptime"));
+    }
+
+    /** 
+     * This specifically tests the fix for JIRA #20110
+     * restart-domain behaves differently when you give the hostname as localhost versus ANY OTHER name.  
+     * Also the local mode is different from the remote mode.  We have to fool with as.props because the \
+     * base class ALWAYS sticks in host/port parameters.  
+     */
+    private void restartDomainAsRemote(String hostname, boolean expected) {
+        report("uptime", asadmin("uptime"));
+        report("restart-domain", expected == asadmin("--port", "4848",
+                "--host", hostname, "restart-domain"));
+        // check that the local domain is running
+        report("uptime", asadmin("uptime"));
+    }
 }
 
 /*
