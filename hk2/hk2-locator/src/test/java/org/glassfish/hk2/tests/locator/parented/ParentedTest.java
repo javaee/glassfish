@@ -84,6 +84,9 @@ public class ParentedTest {
     private final static String PARENT6 = "Parent6";
     private final static String CHILD6 = "Child6";
     
+    private final static String PARENT7 = "Parent7";
+    private final static String CHILD7 = "Child7";
+    
     /**
      * Tests three generations of locators
      */
@@ -254,5 +257,21 @@ public class ParentedTest {
         
         Assert.assertEquals(parent6.getService(DynamicConfigurationService.class), parentLocators.get(0));
         Assert.assertEquals(child6.getService(DynamicConfigurationService.class), childLocators.get(0));
+    }
+    
+    /**
+     * Tests that DynamicConfigurationService is a LOCAL service
+     */
+    @Test
+    public void testGetParent() {
+        ServiceLocator parent7 = factory.create(PARENT7);
+        ServiceLocator child7 = factory.create(CHILD7, parent7);
+        
+        ServiceLocator gottenParent7 = child7.getParent();
+        Assert.assertNotNull(gottenParent7);
+        
+        Assert.assertEquals(PARENT7, gottenParent7.getName());
+        
+        Assert.assertNull(gottenParent7.getParent());
     }
 }
