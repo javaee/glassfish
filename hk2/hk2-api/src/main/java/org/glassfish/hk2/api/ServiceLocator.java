@@ -463,6 +463,14 @@ public interface ServiceLocator {
      * @return The identifier for this service locator
      */
     public long getLocatorId();
+    
+    /**
+     * Gets the parent service locator for this locator
+     * 
+     * @return The parent service locator for this locator, or null if this
+     * service locator does not have a parent
+     */
+    public ServiceLocator getParent();
   
     /**
      * This method will shutdown every service associated with this ServiceLocator.

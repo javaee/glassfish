@@ -413,4 +413,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public ServiceLocator getParent() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

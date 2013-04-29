@@ -1991,6 +1991,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
     }
     
+    @Override
+    public ServiceLocator getParent() {
+        return parent;
+    }
+    
     public String toString() {
         return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";
     }
