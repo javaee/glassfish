@@ -66,6 +66,7 @@ public class WebTest {
         "serve-jsp-and-static-resource-from-local-jar";
     private static final String EXPECTED_RESPONSE = "Hello World!";
     private static final String EXPECTED_RESPONSE_2 = "Hello World folder!";
+    private static final String EXPECTED_RESPONSE_3 = "2: /folder/def.txt, /folder/ghi.txt, ";
 
     private String host;
     private String port;
@@ -91,6 +92,7 @@ public class WebTest {
             invokeDefaultServlet("/folder", 302, contextRoot + "/folder/");
             invokeDefaultServlet("/folder/", 404, null);
             invokeDefaultServlet("/folder/def.txt", 200, EXPECTED_RESPONSE_2);
+            invokeTestServlet();
             stat.addStatus(TEST_NAME, stat.PASS);
         } catch (Exception ex) {
             stat.addStatus(TEST_NAME, stat.FAIL);
@@ -147,6 +149,25 @@ public class WebTest {
                 throw new Exception("Wrong location: " + location +
                     " does not end with " + expectedResponse);
             }
+        }
+    }
+
+    private void invokeTestServlet() throws Exception {
+        URL url = new URL("http://" + host  + ":" +
+                          port + contextRoot + "/test");
+        System.out.println("Invoking URL: " + url.toString());
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+        int responseCode = conn.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            throw new Exception("Unexpected response code: " + responseCode);
+        }
+        InputStream is = conn.getInputStream();
+        BufferedReader input = new BufferedReader(new InputStreamReader(is));
+        String response = input.readLine();
+        if (!EXPECTED_RESPONSE_3.equals(response)) {
+            throw new Exception("Wrong response, expected: " +
+                EXPECTED_RESPONSE_3 + ", received: " + response);
         }
     }
 }

@@ -75,6 +75,7 @@
         <copy file="resources/abc.jsp" todir="${build.classes.dir}/META-INF/resources"/>
         <copy file="resources/abc.txt" todir="${build.classes.dir}/META-INF/resources"/>
         <copy file="resources/def.txt" todir="${build.classes.dir}/META-INF/resources/folder"/>
+        <copy file="resources/ghi.txt" todir="${build.classes.dir}/META-INF/resources/folder"/>
         <jar destfile="lib/nest.jar" basedir="${build.classes.dir}"
             includes="META-INF/**"/>
         <delete dir="${build.classes.dir}/META-INF/resources"/>
