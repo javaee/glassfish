@@ -20,7 +20,7 @@
 
     <target name="all" depends="init-common, build, setup, runtest, unset"/>
     <target name="all-with-mappings" depends="init-common, build, setup, setup-map, runtest, unset-map, unset"/>
-    <target name="run-dp-test" depends="init-common, build, setup-dp, deploy-dp, runtest, unset-dp, undeploy-dp"/>
+    <target name="run-dp-test" depends="init-common, build, setup-dp, deploy-dp, runtest, undeploy-dp, unset-dp"/>
     <target name="build" depends="init-common">
         <ant dir="ra" target="all"/>
         <ant dir="app" target="all"/>
@@ -100,8 +100,8 @@
     </target>
 
     <target name="unset">
-        <ant dir="app" inheritAll="false" target="unsetJdbc"/>
         <ant dir="." inheritAll="false" target="undeploy"/>
+        <ant dir="app" inheritAll="false" target="unsetJdbc"/>
         <antcall target="delete-user-common">
             <param name="user" value="jagadish"/>
         </antcall>

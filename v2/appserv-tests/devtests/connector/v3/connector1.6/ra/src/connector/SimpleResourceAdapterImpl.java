@@ -90,15 +90,15 @@ public class SimpleResourceAdapterImpl
             ActivationSpec spec) {
         debug("endpointDeactivation called...");
         //Test if a resource defined in the comp's namespace is available
-//        try{
-//            Object o = (new InitialContext()).lookup("java:comp/env/MyDB");
-//            System.out.println("lookedup in RA endpointDeactivation:" + o);
-//        } catch (Exception ex){
-//            System.out.println("**** Error while looking up in component context " +
-//            		"in endpointDeactivation");
-//            ex.printStackTrace();
-//            throw new RuntimeException(ex);
-//        }
+        try{
+            Object o = (new InitialContext()).lookup("java:comp/env/MyDB");
+            System.out.println("lookedup in RA endpointDeactivation:" + o);
+        } catch (Exception ex){
+            System.out.println("**** Error while looking up in component context " +
+            		"in endpointDeactivation");
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
+        }
         ((WorkDispatcher) work).stop();
     }
 
