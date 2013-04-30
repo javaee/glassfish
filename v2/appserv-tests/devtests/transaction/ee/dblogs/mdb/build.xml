@@ -93,13 +93,17 @@
     <target name="test-local" depends="init-common">
       <antcall target="setup-test"/>
       <antcall target="setup-local"/>
+<!-- NEED TO CHANGE THE SETUP
       <antcall target="test-autorecovery"/>
+-->
+      <antcall target="test-delegated"/>
+
       <antcall target="save-logs"/>
-      <copy file="${module}-logs.zip" tofile="${module}-local-auto-logs.zip"/>
+      <copy file="${module}-logs.zip" tofile="${module}-local-local1-logs.zip"/>
       <antcall target="restart-cluster"/>
       <antcall target="test-recover-with-restart"/>
       <antcall target="save-logs"/>
-      <copy file="${module}-logs.zip" tofile="${module}-local-restart-logs.zip"/>
+      <copy file="${module}-logs.zip" tofile="${module}-local-local2-logs.zip"/>
       <antcall target="restart-cluster"/>
       <antcall target="test-delegated"/>
       <antcall target="unsetup-test"/>
