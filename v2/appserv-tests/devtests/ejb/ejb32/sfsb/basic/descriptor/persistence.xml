@@ -5,7 +5,7 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <properties>
       <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
-      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.level" value="INFO"/>
     </properties>
   </persistence-unit>
 </persistence>
