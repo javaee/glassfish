@@ -55,6 +55,7 @@ public class Client extends AdminBaseDevTest {
     public static final String DEF_RESOURCE = "jdbc/__default";
     public static final String XA_RESOURCE = "jdbc/xa";
     public static final String NONTX_RESOURCE = "jdbc/nontx";
+    public static final String HTTP_LISTENER_PORT_SUFF = ".system-property.HTTP_LISTENER_PORT.value";
 
     private static SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
@@ -91,7 +92,12 @@ public class Client extends AdminBaseDevTest {
                 asadmin("set", "configs.config." + CLUSTER_NAME + "-config.transaction-service.property.delegated-recovery=true");
             }
 
-            asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
+            //asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
+            AsadminReturn result = asadminWithOutput("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE1_NAME);
+            System.out.println("Executed command: " + result.out);
+            if (!result.returnValue) {
+                System.out.println("CLI FAILED: " + result.err);
+            }
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
 
             if (Boolean.getBoolean("enableShoalLogger")) {
@@ -197,10 +203,15 @@ public class Client extends AdminBaseDevTest {
     }
 
     private String getPort(String instance) {
-        String arg = ((instance.equals("in1"))? ("configs.config." + CLUSTER_NAME + "-config") : 
-            ("servers.server." + instance));
-        AsadminReturn result = asadminWithOutput("get", arg + ".system-property.HTTP_LISTENER_PORT.value");
+        String arg = "servers.server." + instance + HTTP_LISTENER_PORT_SUFF;
+        AsadminReturn result = asadminWithOutput("get", arg);
         System.out.println("Executed command: " + result.out);
+        if (!result.returnValue && instance.equals("in1")) {
+            arg = "configs.config." + CLUSTER_NAME + "-config" + HTTP_LISTENER_PORT_SUFF;
+            result = asadminWithOutput("get", arg);
+            System.out.println("Executed replacement command: " + result.out);
+        }
+
         if (!result.returnValue) {
             System.out.println("CLI FAILED: " + result.err);
         } else {
