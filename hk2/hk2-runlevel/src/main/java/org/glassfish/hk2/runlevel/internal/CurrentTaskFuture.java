@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.runlevel.internal;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -356,7 +357,7 @@ public class CurrentTaskFuture implements RunLevelFuture {
                 synchronized (lock) {
                     if (done) break;
                     
-                    currentJob = new UpOneJob(workingOn, this, maxThreads);
+                    currentJob = new UpOneJob(workingOn, this, 0);
                 }
                 
                 currentJob.run();
@@ -436,6 +437,7 @@ public class CurrentTaskFuture implements RunLevelFuture {
         private int completedJobs;
         private MultiException exception = null;
         private boolean cancelled = false;
+        private int numJobsRunning = 0;
         
         private UpOneJob(int paramUpToThisLevel, UpAllTheWay master, int maxThreads) {
             this.upToThisLevel = paramUpToThisLevel;
@@ -447,6 +449,18 @@ public class CurrentTaskFuture implements RunLevelFuture {
             synchronized (lock) {
                 cancelled = true;
             }
+        }
+        
+        private void jobRunning() {
+            numJobsRunning++;
+        }
+        
+        private void jobFinished() {
+            numJobsRunning--;
+        }
+        
+        private int getJobsRunning() {
+            return numJobsRunning;
         }
 
         @Override
@@ -481,12 +495,12 @@ public class CurrentTaskFuture implements RunLevelFuture {
             if (!useThreads) runnersToCreate = 0;
             
             for (int lcv = 0; lcv < runnersToCreate; lcv++) {
-                QueueRunner runner = new QueueRunner(jobsLock, jobs, this, lock);
+                QueueRunner runner = new QueueRunner(jobsLock, jobs, this, lock, maxThreads);
                 
                 executor.execute(runner);
             }
             
-            QueueRunner myRunner = new QueueRunner(jobsLock, jobs, this, lock);
+            QueueRunner myRunner = new QueueRunner(jobsLock, jobs, this, lock, maxThreads);
             myRunner.run();
         }
         
@@ -636,33 +650,80 @@ public class CurrentTaskFuture implements RunLevelFuture {
         private final List<ServiceHandle<?>> queue;
         private final UpOneJob parent;
         private final Object parentLock;
+        private final int maxThreads;
+        private ServiceHandle<?> wouldHaveBlocked;
+        private HashSet<ActiveDescriptor<?>> alreadyTried = new HashSet<ActiveDescriptor<?>>();
         
         private QueueRunner(Object queueLock,
                 List<ServiceHandle<?>> queue,
                 UpOneJob parent,
-                Object parentLock) {
+                Object parentLock,
+                int maxThreads) {
             this.queueLock = queueLock;
             this.queue = queue;
             this.parent = parent;
             this.parentLock = parentLock;
+            this.maxThreads = maxThreads;
         }
 
         @Override
         public void run() {
+            boolean didUp = false;
             for (;;) {
                 ServiceHandle<?> job;
+                boolean block;
                 synchronized(queueLock) {
+                    if (didUp) parent.jobFinished();
+                    
+                    if (wouldHaveBlocked != null) {
+                        alreadyTried.add(wouldHaveBlocked.getActiveDescriptor());
+                        
+                        queue.add(queue.size(), wouldHaveBlocked);
+                        wouldHaveBlocked = null;
+                    }
+                    
                     if (queue.isEmpty()) return;
                     
-                    job = queue.remove(0);
+                    if (maxThreads <= 0) {
+                        block = true;
+                    }
+                    else {
+                        int currentlyEmptyThreads = maxThreads - parent.getJobsRunning();
+                        block = queue.size() <= currentlyEmptyThreads;
+                    }
+                    
+                    if (block) {
+                        job = queue.remove(0);
+                    }
+                    else {
+                        job = null;
+                        for (int lcv = 0; lcv < queue.size(); lcv++) {
+                            ActiveDescriptor<?> candidate = queue.get(lcv).getActiveDescriptor();
+                            if (!alreadyTried.contains(candidate)) {
+                                job = queue.remove(lcv);
+                                break;
+                            }
+                        }
+                        if (job == null) {
+                            // Every job in the queue is one I've tried already
+                            job = queue.remove(0);
+                            
+                            block = true;
+                        }
+                    }
+                    
+                    parent.jobRunning();
+                    didUp = true;
                 }
                 
-                oneJob(job);
+                oneJob(job, block);
             }
             
         }
         
-        private void oneJob(ServiceHandle<?> fService) {
+        private void oneJob(ServiceHandle<?> fService, boolean block) {
+            AsyncRunLevelContext.setBlocking(block);
+            boolean completed = true;
             try {
                 boolean ok;
                 synchronized (parentLock) {
@@ -673,13 +734,34 @@ public class CurrentTaskFuture implements RunLevelFuture {
                     fService.getService();
                 }
             }
+            catch (MultiException me) {
+                if (!block && isWouldBlock(me)) {
+                    // In this case completed is FALSE, as the job has NOT completed
+                    wouldHaveBlocked = fService;
+                    completed = false;
+                }
+                else {
+                    parent.fail(me);
+                }
+            }
             catch (Throwable th) {
                 parent.fail(th);
             }
             finally {
-                parent.jobComplete();
+                AsyncRunLevelContext.setBlocking(true);
+                if (completed) {
+                    parent.jobComplete();
+                }
             }
         }
+    }
+    
+    private final static boolean isWouldBlock(MultiException me) {
+        for (Throwable th : me.getErrors()) {
+            if (th instanceof WouldBlockException) return true;
+        }
+        
+        return false;
     }
 
     @Override

@@ -79,6 +79,14 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     private int currentLevel = RunLevel.RUNLEVEL_VAL_INITIAL;
     private CurrentTaskFuture currentTask = null;
     
+    private static final ThreadLocal<Boolean> blockThread = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return new Boolean(Boolean.TRUE);
+        }
+        
+    };
+    
     /**
      * The backing maps for this context.
      */
@@ -106,6 +114,10 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
                 new SynchronousQueue<Runnable>(true),
                 THREAD_FACTORY);
     }
+    
+    /* package */ static void setBlocking(boolean blocking) {
+        blockThread.set(blocking);
+    }
 
     @Override
     public Class<? extends Annotation> getScope() {
@@ -130,6 +142,11 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
                             "Circular dependency involving " + activeDescriptor.getImplementation() +
                             " was found.  Full descriptor is " + activeDescriptor));
                 }
+                
+                if (!blockThread.get()) {
+                    throw new MultiException(new WouldBlockException());
+                }
+                
                 try {
                     this.wait();
                 }
