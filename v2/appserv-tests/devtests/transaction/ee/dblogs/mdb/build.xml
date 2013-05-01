@@ -440,15 +440,15 @@
     </target>
 
     <target name="restart-cluster" depends="init-common">
-      <exec executable="${ASADMIN}" failonerror="false">
-          <arg line="stop-cluster"/>
-          <arg line="c1"/>
-      </exec>
+      <antcall target="asadmin-common">
+          <param name="admin.command" value="stop-cluster"/>
+          <param name="operand.props" value="c1"/>
+      </antcall>
       <sleep seconds="10"/>
-      <exec executable="${ASADMIN}" failonerror="false">
-          <arg line="start-cluster"/>
-          <arg line="c1"/>
-      </exec>
+      <antcall target="asadmin-common">
+          <param name="admin.command" value="start-cluster"/>
+          <param name="operand.props" value="c1"/>
+      </antcall>
     </target>
 
 </project>
