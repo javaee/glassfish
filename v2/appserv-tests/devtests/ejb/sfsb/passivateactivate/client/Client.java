@@ -193,7 +193,13 @@ public class Client {
 	    String retrievedName = sfsb.getName();
 	    boolean nameOK = myName.equalsIgnoreCase(retrievedName);
 	    boolean gotException = false;
+
+            // Test BMT SFSB remove called in a transaction
+            javax.transaction.UserTransaction ut = (javax.transaction.UserTransaction) 
+                     (new InitialContext()).lookup("java:comp/UserTransaction");
+            ut.begin();
 	    sfsb.remove();
+            ut.commit();
 	    try {
 		sfsb.getName();
 		gotException = false;	    //Expecting an exception
@@ -205,10 +211,12 @@ public class Client {
             if (nameOK && gotException) {
                 stat.addStatus("ejbclient removeTest " + resultStr, stat.PASS);
             } else {
+                System.err.println("======> FAIL because: nameOK: " + nameOK + " gotException: " + gotException);
 		stat.addStatus("ejbclient removeTest " + resultStr, stat.FAIL);
             }
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             stat.addStatus("ejbclient removeTest", stat.FAIL);
         }
     }

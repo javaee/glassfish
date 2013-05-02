@@ -198,11 +198,13 @@ public class Client {
             if (nameOK && gotException) {
                 stat.addStatus("ejbclient removeTest " + resultStr, stat.PASS);
             } else {
+                System.err.println("======> FAIL 2 because: nameOK: " + nameOK + " gotException: " + gotException);
 		stat.addStatus("ejbclient removeTest " + resultStr, stat.FAIL);
             }
 
         } catch (Exception ex) {
-            stat.addStatus("ejbclient removeTest", stat.FAIL);
+            ex.printStackTrace();
+            stat.addStatus("ejbclient removeTest_2", stat.FAIL);
         }
     }
 
