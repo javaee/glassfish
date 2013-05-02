@@ -7,6 +7,9 @@ ant -Dteststorun=monitoring | tee out
 or  
 ant -Dteststorun=cluster | tee out
 
+or  
+ant -Dteststorun=restart-domain | tee out
+
 etc.
 
 Windows -->  start d:\bg\all\v2\appserv-tests\test_results.html
