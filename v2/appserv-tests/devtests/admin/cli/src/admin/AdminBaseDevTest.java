@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,6 +66,21 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
         SSH_PASS, KEY_PASS, DCOM_PASS, ALIAS_PASS
     };
 
+    @Override
+       protected final void writeFailure() {
+        // writes to stdout
+        super.writeFailure();
+        AsadminReturn ret = getLastAsadminReturn();
+
+        // put the information right into the CLI log.  Makes it much easier
+        // to figure out failures.
+
+        if (ret != null) {
+           TestUtils.writeErrorToDebugLog(ret);
+        }
+
+    }
+
     protected AdminBaseDevTest() {
         boolean verbose = false;
         try {
@@ -112,7 +127,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
 
         if (!f.exists())
             report(false, "Domain Directory does not exist: " + f);
-        
+
         return f;
     }
 

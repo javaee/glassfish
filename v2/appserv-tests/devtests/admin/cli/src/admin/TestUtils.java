@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,16 +37,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package admin;
 
+import admin.util.ProcessUtils;
+import com.sun.appserv.test.BaseDevTest;
+import com.sun.appserv.test.BaseDevTest.AsadminReturn;
 import java.io.*;
+import java.util.Date;
 
 /**
  *
  * @author Byron Nevins
  */
 final class TestUtils {
+
     private TestUtils() {
         // all-static class!
     }
@@ -60,6 +64,7 @@ final class TestUtils {
         pwfile.close();
         return f;
     }
+
     public static String unecho(String s) {
         // remove the huge echo'd command from some output
         // it will be [enormous ugly command]EOL[output from command]
@@ -67,18 +72,20 @@ final class TestUtils {
         // note that this will work for "\r\n" as well
         int index = s.indexOf('\n');
 
-        if(index > 0)
+        if (index > 0)
             return s.substring(index);
 
         return s;
     }
+
     /**
      * If a system property has a value of the form "${propname}", then expand
-     * it. If "propname" is not an existing Java system property then return null.
+     * it. If "propname" is not an existing Java system property then return
+     * null.
      *
      * We use this mainly because in ant the test may be invoked with something
      * like this:
-     *             <jvmarg value="-Dssh.installdir=${ssh.installdir}"/>
+     * <jvmarg value="-Dssh.installdir=${ssh.installdir}"/>
      * If if ssh.installdir is not a defined property then ant will just pass
      * "${ssh.installdir}" as the value for ssh.installdir. In this case we
      * rather have the value be null to know the property was not set.
@@ -94,48 +101,85 @@ final class TestUtils {
         if (value.startsWith("${")) {
             int index1 = value.indexOf("{");
             int index2 = value.indexOf("}");
-            String substring = value.substring(index1+1, index2);
+            String substring = value.substring(index1 + 1, index2);
             if (propName.equals(substring)) {
                 // Have something like foo=${foo}. Can't expand, return null;
                 return null;
             }
             return getExpandedSystemProperty(substring);
-        } else {
+        }
+        else {
             return value;
         }
     }
-// temp temp temp
-    public final static String logfile = System.getenv("AS_LOGFILE");
-  public static void writeCommandToDebugLog(String message) {
-        if(logfile == null)
+
+    public static void writeCommandToDebugLog(String message) {
+        if (LOGFILE == null)
             return;
 
-        File log = new File(logfile);
-
-        if (log == null)
-            return;
+        File log = new File(LOGFILE);
 
         BufferedWriter out = null;
         try {
             out = new BufferedWriter(new FileWriter(log, true));
-            out.write("\n");
+            //out.write("\n");
             out.write(message);
-            out.write("\n");
-        } catch (IOException e) {
+            //out.write("\n");
+        }
+        catch (IOException e) {
             // It is just a debug file.
-        } finally {
+        }
+        finally {
             if (out != null) {
                 try {
                     out.write("\n");
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     // ignore
                 }
                 try {
                     out.close();
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     // ignore
                 }
             }
         }
     }
+
+    public static void writeErrorToDebugLog(AsadminReturn ret) {
+        StringBuilder msg = new StringBuilder(STARS).append('\n');
+        msg.append(new Date().toString());
+        msg.append("   TEST Failure.  Expected asadmin to return ").append(!ret.returnValue).append('\n');
+        msg.append("OUTPUT: \n").append(ret.outAndErr);
+        msg.append('\n');
+        msg.append(STARS);
+        writeCommandToDebugLog(msg.toString());
+
+        if (getEnvOrPropBoolean("AS_TESTS_FAIL_FAST"))
+            SystemExit();
+    }
+
+    public static boolean getEnvOrPropBoolean(String name) {
+        // System properties override env. variables
+        String envVal = System.getenv(name);
+        String sysPropVal = System.getProperty(name);
+
+        if (sysPropVal != null)
+            return Boolean.parseBoolean(sysPropVal);
+        else
+            return Boolean.parseBoolean(envVal);
+    }
+
+    public static void SystemExit() {
+        ProcessUtils.killJvm("ASMain");
+        ProcessUtils.killJvm("AsadminMain");
+        ProcessUtils.killJvm("DerbyControl");
+        ProcessUtils.killJvm("admin-cli.jar");
+        ProcessUtils.killJvm("derbyrun.jar");
+        ProcessUtils.killJvm("glassfish.jar");
+        System.exit(1);
+    }
+    private final static String LOGFILE = System.getenv("AS_LOGFILE");
+    private static final String STARS = "****************************************";
 }
