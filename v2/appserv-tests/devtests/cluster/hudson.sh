@@ -7,6 +7,11 @@ then
   echo "Windows ROOT: $ROOT"
   export CYGWIN=nontsec
 fi
+if [ -z "$GLASSFISH_URL" ]
+then
+  GLASSFISH_URL=http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+fi
+echo GLASSFISH_URL=$GLASSFISH_URL
 DEVTEST=appserv-tests/devtests/cluster
 . $DEVTEST/test-bigcluster.sh .
 cp $DEVTEST/hosted-nodes .
@@ -18,9 +23,8 @@ ln -s appserv-tests/devtests/cluster/apps apps
 #echo "Revision under test: " `cat $GFBUILDDIR/revision.txt`
 echo "Installing GlassFish..."
 #unzip -q $GFBUILDDIR/archive/bundles/glassfish.zip || exit 1
-wget -q --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+wget -q --no-proxy $GLASSFISH_URL
 unzip -q glassfish.zip || exit 1
-
 export S1AS_HOME="$ROOT/glassfish4/glassfish"
 export AS_LOGFILE="$S1AS_HOME/cli.log"
 asadmin start-domain || exit 1
