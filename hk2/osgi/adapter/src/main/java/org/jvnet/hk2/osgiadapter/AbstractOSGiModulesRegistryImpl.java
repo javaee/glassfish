@@ -132,12 +132,14 @@ public abstract class AbstractOSGiModulesRegistryImpl extends AbstractModulesReg
 
             DynamicConfiguration dcs = createDynamicConfiguration(serviceLocator);
             for (Descriptor descriptor : descriptors) {
+                
+                DescriptorImpl di = (descriptor instanceof DescriptorImpl) ? (DescriptorImpl) descriptor : new DescriptorImpl(descriptor) ;
 
                 // set the hk2loader
-                DescriptorImpl descriptorImpl = new OsgiPopulatorPostProcessor(osgiModuleImpl).process(serviceLocator, new DescriptorImpl(descriptor));
+                DescriptorImpl descriptorImpl = new OsgiPopulatorPostProcessor(osgiModuleImpl).process(serviceLocator, di);
 
                 if (descriptorImpl != null) {
-                    activeDescriptors.add(dcs.bind(descriptorImpl));
+                    activeDescriptors.add(dcs.bind(descriptorImpl, false));
                 }
             }
 

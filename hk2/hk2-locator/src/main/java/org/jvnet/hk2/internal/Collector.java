@@ -51,10 +51,12 @@ import org.glassfish.hk2.api.MultiException;
  * @author jwells
  */
 public class Collector {
-    private final LinkedHashSet<Throwable> throwables = new LinkedHashSet<Throwable>();
+    private LinkedHashSet<Throwable> throwables;
     
     public void addMultiException(MultiException me) {
         if (me == null) return;
+        if (throwables == null) throwables = new LinkedHashSet<Throwable>();
+        
         throwables.addAll(me.getErrors());
     }
     
@@ -64,6 +66,8 @@ public class Collector {
      */
     public void addThrowable(Throwable th) {
         if (th == null) return;
+        if (throwables == null) throwables = new LinkedHashSet<Throwable>();
+        
         if (th instanceof MultiException) {
             throwables.addAll(((MultiException) th).getErrors());
         }
@@ -79,7 +83,7 @@ public class Collector {
      * @throws MultiException An exception with all the throwables found in this collector
      */
     public void throwIfErrors() throws MultiException {
-        if (throwables.isEmpty()) return;
+        if (throwables == null || throwables.isEmpty()) return;
         
         throw new MultiException(new LinkedList<Throwable>(throwables));
     }
@@ -90,6 +94,6 @@ public class Collector {
      * @return true if the collector has errors
      */
     public boolean hasErrors() {
-        return !throwables.isEmpty();
+        return ((throwables != null) && (!throwables.isEmpty()));
     }
 }

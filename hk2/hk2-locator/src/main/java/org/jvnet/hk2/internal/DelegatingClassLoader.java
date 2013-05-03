@@ -46,7 +46,7 @@ import java.net.URL;
  */
 class DelegatingClassLoader<T> extends ClassLoader {
 	
-	private ClassLoader delegate;
+	private final ClassLoader delegate;
 
 	DelegatingClassLoader(ClassLoader classLoaderDelegate, ClassLoader parent) {
 		super(parent);

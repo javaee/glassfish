@@ -53,7 +53,7 @@ public class BindingTest {
         expectedDescriptor.addAdvertisedContract("org.glassfish.hk2.utilities.binding.BindingTest$MyContract");
         expectedDescriptor.setClassAnalysisName(MY_CUSTOM_ANALYZER);
 
-        EasyMock.expect(dc.bind(expectedDescriptor)).andReturn(null);
+        EasyMock.expect(dc.bind(expectedDescriptor, false)).andReturn(null);
 
         EasyMock.replay(dc);
         BindingBuilderFactory.addBinding(bindingBuilder, dc);
@@ -83,7 +83,7 @@ public class BindingTest {
       // expect a descriptor to be bound, capture it so the fields can be checked later
       Capture<Descriptor> capturedDescriptor = new Capture<Descriptor>();
 
-      expect(dc.bind(capture(capturedDescriptor))).andReturn(null);
+      expect(dc.bind(capture(capturedDescriptor), eq(false))).andReturn(null);
 
       dc.commit();
       expectLastCall();

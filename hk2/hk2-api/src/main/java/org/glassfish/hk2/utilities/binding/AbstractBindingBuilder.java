@@ -229,7 +229,7 @@ abstract class AbstractBindingBuilder<T> implements
                 builder.proxy();
             }
 
-            configuration.bind(builder.build());
+            configuration.bind(builder.build(), false);
         }
     }
 
@@ -274,7 +274,7 @@ abstract class AbstractBindingBuilder<T> implements
 
             descriptor.setProxiable(proxiable);
 
-            configuration.bind(descriptor);
+            configuration.bind(descriptor, false);
         }
     }
 

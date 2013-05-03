@@ -90,10 +90,11 @@ public class DescriptorImpl implements Descriptor, Externalizable {
     private final static char SINGLETON_DIRECTIVE_CHAR = 'S';
     private final static char NOT_IN_CONTRACTS_DIRECTIVE_CHAR = '-';
     
+    private final static Set<String> EMPTY_CONTRACTS_SET = Collections.emptySet();
     private final static Set<String> EMPTY_QUALIFIER_SET = Collections.emptySet();
     private final static Map<String, List<String>> EMPTY_METADATAS_MAP = Collections.emptyMap();
 	
-	private Set<String> contracts = new LinkedHashSet<String>();
+	private Set<String> contracts;
 	private String implementation;
 	private String name;
 	private String scope = PerLookup.class.getName();
@@ -132,7 +133,8 @@ public class DescriptorImpl implements Descriptor, Externalizable {
         locatorId = copyMe.getLocatorId();
         analysisName = copyMe.getClassAnalysisName();
         
-	    if (copyMe.getAdvertisedContracts() != null) {
+	    if (copyMe.getAdvertisedContracts() != null && !copyMe.getAdvertisedContracts().isEmpty()) {
+	        contracts = new LinkedHashSet<String>();
 	        contracts.addAll(copyMe.getAdvertisedContracts());
 	    }
 		
@@ -181,7 +183,10 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 			String analysisName,
 			Long id,
 			Long locatorId) {
-		this.contracts.addAll(contracts);
+	    if (contracts != null && !contracts.isEmpty()) {
+	        this.contracts = new LinkedHashSet<String>();
+		    this.contracts.addAll(contracts);
+	    }
 		
 		this.implementation = implementation;
 		
@@ -208,6 +213,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	
 	@Override
 	public synchronized Set<String> getAdvertisedContracts() {
+	    if (contracts == null) return EMPTY_CONTRACTS_SET;
 		return Collections.unmodifiableSet(contracts);
 	}
 	
@@ -217,6 +223,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 */
 	public synchronized void addAdvertisedContract(String addMe) {
 	    if (addMe == null) return;
+	    if (contracts == null) contracts = new LinkedHashSet<String>();
 	    contracts.add(addMe);
 	}
 	
@@ -226,7 +233,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 * @return true if removeMe was removed from the set
 	 */
 	public synchronized boolean removeAdvertisedContract(String removeMe) {
-	    if (removeMe == null) return false;
+	    if (removeMe == null || contracts == null) return false;
 	    return contracts.remove(removeMe);
 	}
 
@@ -588,7 +595,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    Descriptor d = (Descriptor) a;
 	    
 	    if (!safeEquals(implementation, d.getImplementation())) return false;
-	    if (!equalOrderedCollection(contracts, d.getAdvertisedContracts())) return false;
+	    if (!equalOrderedCollection((contracts == null) ? EMPTY_CONTRACTS_SET : contracts, d.getAdvertisedContracts())) return false;
 	    if (!safeEquals(name, d.getName())) return false;
 	    if (!safeEquals(scope, d.getScope())) return false;
 	    if (!equalOrderedCollection((qualifiers == null) ? EMPTY_QUALIFIER_SET : qualifiers, d.getQualifiers())) return false;
@@ -738,7 +745,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
     }
 	
 	private void reinitialize() {
-	    contracts = new LinkedHashSet<String>();
+	    contracts = null;
 	    implementation = null;
 	    name = null;
 	    scope = PerLookup.class.getName();
@@ -803,6 +810,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
                     }
                     
                     if (!doesNotContainImplementation && (implementation != null)) {
+                        if (contracts == null) contracts = new LinkedHashSet<String>();
                         contracts.add(implementation);
                     }
                 }
@@ -821,6 +829,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
                     String rightHandSide = trimmed.substring(equalsIndex + 1);
                     
                     if (leftHandSide.equalsIgnoreCase(CONTRACT_KEY)) {
+                        if (contracts == null) contracts = new LinkedHashSet<String>();
                         ReflectionHelper.readSet(rightHandSide, contracts);
                     }
                     else if (leftHandSide.equals(QUALIFIER_KEY)) {

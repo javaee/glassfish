@@ -210,16 +210,16 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         DomDescriptor<Dom> domDesc = new DomDescriptor<Dom>(this, ctrs, Singleton.class,
                 getImplementation(), new HashSet<Annotation>());
         domDesc.setLoader(loader);
-        ActiveDescriptor<Dom> addedDescriptor = dc.addActiveDescriptor(domDesc);
+        ActiveDescriptor<Dom> addedDescriptor = dc.addActiveDescriptor(domDesc, false);
 
         String key = getKey();
         for (String contract : model.contracts) {
             ActiveDescriptor<Dom> alias = new AliasDescriptor<Dom>(locator, domDesc, contract, key);
-            dc.addActiveDescriptor(alias);
+            dc.addActiveDescriptor(alias, false);
         }
         if (key!=null) {
             ActiveDescriptor<Dom> alias = new AliasDescriptor<Dom>(locator, domDesc, model.targetTypeName, key);
-            dc.addActiveDescriptor(alias);
+            dc.addActiveDescriptor(alias, false);
         }
 
         dc.commit();
