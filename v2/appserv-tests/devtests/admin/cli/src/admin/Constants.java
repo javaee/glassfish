@@ -1,7 +1,7 @@
 /*
  *  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- *  Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ *  Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  *  The contents of this file are subject to the terms of either the GNU
  *  General Public License Version 2 only ("GPL") or the Common Development
@@ -55,4 +55,6 @@ public class Constants {
              File.separator + "config" + File.separator + "adminpassword.txt";
     public static final String tmpFile = System.getenv("APS_HOME") +
             File.separator + "config" + File.separator + "adminpassword.tmp";
+    // if you set this the tests will bail after one failure.  sysprop OR env var
+    public static final String FAIL_FAST = "AS_TESTS_FAIL_FAST";
 }

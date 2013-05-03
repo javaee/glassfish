@@ -156,7 +156,7 @@ final class TestUtils {
         msg.append(STARS);
         writeCommandToDebugLog(msg.toString());
 
-        if (getEnvOrPropBoolean("AS_TESTS_FAIL_FAST"))
+        if (getEnvOrPropBoolean(Constants.FAIL_FAST))
             SystemExit();
     }
 

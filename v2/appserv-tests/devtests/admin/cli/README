@@ -14,3 +14,9 @@ etc.
 
 Windows -->  start d:\bg\all\v2\appserv-tests\test_results.html
 ALl Platforms --> Take a look at ../../../test_results.html in a browser.
+
+set this to true and the tests will stop after the first failure.
+It will cleanup all GF processes too.
+Set as either sys prop or env variable.
+
+AS_TESTS_FAIL_FAST
