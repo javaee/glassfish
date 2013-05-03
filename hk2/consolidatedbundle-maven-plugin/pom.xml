@@ -45,7 +45,7 @@
 	    <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-public</artifactId>
-        <version>2.1.93-SNAPSHOT</version>
+        <version>2.1.93</version>
         <relativePath>../public</relativePath>
     </parent>
 
