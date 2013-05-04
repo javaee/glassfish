@@ -465,12 +465,18 @@ public class BatchCommandsTest {
     @Test
     public void testListJobsWithJustJobNameHeader() {
         CommandUtil cmd = CommandUtil.getInstance().executeCommandAndGetAsList("asadmin",
-                "list-batch-jobs");
+                "list-batch-jobs", "-l");
         int size = cmd.result().size();
-        assertTrue(cmd.ranOK());
 
         CommandUtil cmdWithJustName = CommandUtil.getInstance().executeCommandAndGetAsList("asadmin",
                 "list-batch-jobs", "-o", "jobname");
+	System.out.println("************************************************************************");
+	System.out.println("************************************************************************");
+	System.out.println("** list-batch-jobs -l ==> " + size + ";   list-batch-jobs -o jobname ==> " + cmdWithJustName.result().size());
+	System.out.println("************************************************************************");
+	System.out.println("************************************************************************");
+	System.out.println("************************************************************************");
+        assertTrue(cmd.ranOK());
         assertTrue(cmdWithJustName.ranOK() && cmdWithJustName.result().size() == cmd.result().size());
     }
 
