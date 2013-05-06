@@ -166,42 +166,6 @@
         </antcall>
     </target>
 
-    <target name="unsetup-cluster" depends="init-common">
-        <echo message="Stopping cluster"/>
-        <java  fork="on"
-              failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
-              classname="${se.client}">
-           <arg line="clean"/>
-           <arg line="${appname}-web"/>
-        </java>
-    </target>
-
-    <target name="build" depends="compile-war">
-      <antcall target="webclient-war-common">
-          <param name="hasWebclient" value="false"/>
-      </antcall>
-       <antcall target="compile-client"/>
-    </target>
-
-    <target name="compile-war" depends="clean">
-        <antcall target="compile-common">
-            <param name="src" value="war"/>
-        </antcall>
-    </target>
-
-    <target name="compile-client" >
-        <javac fork="true" includeAntRuntime="false" destdir="${build.classes.dir}" debug="true" 
-               classpath="${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
-               srcdir="${env.APS_HOME}/devtests/admin/cli/src" includes="**/*BaseDevTest.java">
-        </javac>
-        <javac fork="true" includeAntRuntime="false" 
-               classpath="${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
-               destdir="${build.classes.dir}" debug="true" srcdir="client" includes="**/*.java">
-            <classpath path="${classpath}"/>
-        </javac>
-    </target>
-
     <target name="run" depends="init-common">
       <antcall target="run-delegated"/>
       <antcall target="reset-all"/>
@@ -345,44 +309,6 @@
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="recover"/>
-        </java>
-    </target>
-
-    <target name="clean" depends="init-common">
-      <antcall  target="clean-common"/>
-    </target>
-
-    <target name="usage">
-        <antcall target="usage-common"/>
-    </target>
-
-    <target name="reset-tables" depends="init-common">
-        <antcall target="execute-ejb-sql-common">
-          <param name="sql.file" value="sql/delete.sql"/>
-        </antcall>
-        <antcall target="execute-sql-common">
-          <param name="sql.file" value="sql/delete.sql"/>
-          <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
-        </antcall>
-    </target>
-
-    <property name="db.root" value="${env.S1AS_HOME}/../javadb"/>
-    <property name="db.classpath" value="${db.root}/lib/derby.jar:${db.root}/lib/derbyclient.jar:${db.root}/lib/derbynet.jar"/>
-    <property name="db.host" value="localhost"/>
-
-    <target name="startNtwDerby" depends="init-common">
-        <echo message="Starting Derby in the Network Mode on port ${db.port}"/>
-        <java classname="org.apache.derby.drda.NetworkServerControl"
-          classpath="${db.classpath}" fork="true" spawn="true">
-          <arg line="-h ${db.host} -p ${db.port} start"/>
-        </java>
-    </target>
-
-    <target name="stopNtwDerby" depends="init-common">
-        <echo message="Stopping Network Derby DB servers on port ${db.port}"/>
-        <java classname="org.apache.derby.drda.NetworkServerControl"
-          classpath="${db.classpath}" failonerror="false" fork="true">
-          <arg line="-h ${db.host} -p ${db.port} shutdown"/>
         </java>
     </target>
 

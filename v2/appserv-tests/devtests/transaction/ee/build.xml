@@ -52,8 +52,7 @@
 
     <target name="all">
         <antcall target="clean-results"/>
-        <antcall target="start-derby"/>
-        <antcall target="start-domain"/>
+        <antcall target="start"/>
 
         <record name="transaction.ee.output" action="start" />
 
@@ -65,18 +64,21 @@
         <ant dir="timer_with_autorecovery" target="test"/>
         <ant dir="dblogs" target="test"/>
 
-        <antcall target="stop-domain"/>
-        <antcall target="stop-derby"/>
+        <antcall target="stop"/>
 
         <record name="transaction.ee.output" action="stop" />
         <antcall target="dev-report"/>
 
     </target>
 
-    <target name="usage">
-        <echo>
-                Usage:
-                        ant all (Executes all the transaction ee tests)
-        </echo>
+    <target name="start">
+        <antcall target="start-derby"/>
+        <antcall target="start-domain"/>
     </target>
+
+    <target name="stop">
+        <antcall target="stop-domain"/>
+        <antcall target="stop-derby"/>
+    </target>
+
 </project>

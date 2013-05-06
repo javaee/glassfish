@@ -46,40 +46,22 @@ import java.util.*;
  * CLI Dev test 
  * @author mvatkina
  */
-public class Client extends AdminBaseDevTest {
-
-    public static final String CLUSTER_NAME = "c1";
-    public static final String INSTANCE1_NAME = "in1";
-    public static final String INSTANCE2_NAME = "in2";
-    public static final String INSTANCE3_NAME = "in3";
-    public static final String DEF_RESOURCE = "jdbc/__default";
-    public static final String XA_RESOURCE = "jdbc/xa";
-    public static final String NONTX_RESOURCE = "jdbc/nontx";
-    public static final String HTTP_LISTENER_PORT_SUFF = ".system-property.HTTP_LISTENER_PORT.value";
-
-    private static SimpleReporterAdapter stat =
-        new SimpleReporterAdapter("appserv-tests");
+public class Client extends ClientBase {
 
     public static void main(String[] args) {
 
         if ("prepare".equals(args[0])) {
             (new Client()).prepare(args[1], args[2], Boolean.valueOf(args[3]));
-        } else if ("clean".equals(args[0])) {
-            (new Client()).clean(args[1]);
-        } else if ("insert_xa_data".equals(args[0])) {
-            (new Client()).insert_xa_data(args[1], args[2]);
         } else if ("recover".equals(args[0])) {
             (new Client()).recover();
-        } else if ("verify_xa".equals(args[0])) {
-            (new Client()).verify_xa(args[1], args[2], args[3]);
         } else {
-            System.out.println("Wrong target: " + args[0]);
+            (new Client()).process(args);
         }
     }
 
     @Override
     protected String getTestDescription() {
-        return "Unit test for transaction CLIs";
+        return "Unit test for DBLogs/Base";
     }
 
     public void prepare(String path, String tx_log_dir, boolean enable_delegate) {
@@ -118,75 +100,6 @@ public class Client extends AdminBaseDevTest {
         }
     }
 
-    public void insert_xa_data(String appname, String instance) {
-        execute(appname, instance, "TestServlet?2", "true");
-    }
-
-    public void verify_xa(String appname, String instance, String operation) {
-        verify(appname, instance, operation, "VerifyServlet?xa");
-    }
-
-    public void verify(String appname, String instance, String operation, String servlet) {
-        stat.addDescription("transaction-ee-" + operation);
-
-        boolean res = execute(appname, instance, servlet, "RESULT:3");
-
-        stat.addStatus("transaction-ee-dblogs-base" + operation, ((res)? stat.PASS : stat.FAIL));
-        stat.printSummary("transaction-ee-dblogs-base" + operation);
-    }
-
-    public void clean(String name) {
-        try {
-            asadmin("undeploy", "--target", CLUSTER_NAME, name);
-            System.out.println("Undeployed " + name);
-            asadmin("stop-cluster", CLUSTER_NAME);
-            asadmin("delete-local-instance", INSTANCE1_NAME);
-            asadmin("delete-local-instance", INSTANCE2_NAME);
-            asadmin("delete-cluster", CLUSTER_NAME);
-            asadmin("set-log-levels", "ShoalLogger=CONFIG");
-            System.out.println("Removed cluster");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-   private boolean execute(String appname, String instance, String servlet, String expectedResult) {
-        String connection = "http://localhost:" + getPort(instance) + "/" + appname + "/" + servlet;
-
-        System.out.println("invoking webclient servlet at " + connection);
-        boolean result=false;
-
-        try {
-            URL url = new URL(connection);
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            int responseCode = conn.getResponseCode();
-
-            InputStream is = conn.getInputStream();
-            BufferedReader input = new BufferedReader(new InputStreamReader(is));
-  
-            String line = null;
-            while ((line = input.readLine()) != null) {
-                System.out.println("Processing line: " + line);
-                if(line.indexOf(expectedResult)!=-1){
-                    result=true;
-                    break;
-                }
-            }
-          } catch (Exception e) {
-              e.printStackTrace();
-          }
-
-          if (result) {
-              System.out.println("SUCCESS");
-          } else {
-              System.out.println("FAILURE");
-          }
-
-          return result;
-    }
-
     public void recover() {
         System.out.println("Executing recover CLI");
         try {
@@ -202,30 +115,4 @@ public class Client extends AdminBaseDevTest {
         System.out.println("Finished recover CLI");
     }
 
-    private String getPort(String instance) {
-        String arg = "servers.server." + instance + HTTP_LISTENER_PORT_SUFF;
-        AsadminReturn result = asadminWithOutput("get", arg);
-        System.out.println("Executed command: " + result.out);
-        if (!result.returnValue && instance.equals("in1")) {
-            arg = "configs.config." + CLUSTER_NAME + "-config" + HTTP_LISTENER_PORT_SUFF;
-            result = asadminWithOutput("get", arg);
-            System.out.println("Executed replacement command: " + result.out);
-        }
-
-        if (!result.returnValue) {
-            System.out.println("CLI FAILED: " + result.err);
-        } else {
-            String[] parts = result.out.split("\n");
-            for (String part : parts) {
-                if (part.startsWith(arg)) {
-                    String[] res = part.split("=");
-                    System.out.println("Returning port: " + res[1]);
-
-                    return res[1];
-                }
-            }
-        }
-
-        return null;
-    }
 }

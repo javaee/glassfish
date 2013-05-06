@@ -71,11 +71,4 @@
         <ant dir="base" target="test"/>
         <ant dir="mdb" target="test"/>
     </target>
-
-    <target name="usage">
-        <echo>
-                Usage:
-                        ant all (Executes all the transaction ee tests)
-        </echo>
-    </target>
 </project>

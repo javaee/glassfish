@@ -137,55 +137,17 @@
        </antcall>
     </target>
 
-    <target name="unsetup-cluster" depends="init-common">
-        <echo message="Stopping cluster"/>
-        <java  fork="on"
-              failonerror="true"
-              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
-              classname="${se.client}">
-           <arg line="clean"/>
-           <arg line="${appname}-web"/>
-        </java>
-    </target>
-
-    <target name="build" depends="compile-war">
-      <antcall target="webclient-war-common">
-          <param name="hasWebclient" value="false"/>
-      </antcall>
-       <antcall target="compile-client"/>
-    </target>
-
-    <target name="compile-war" depends="clean">
-        <antcall target="compile-common">
-            <param name="src" value="war"/>
-        </antcall>
-    </target>
-
-    <target name="compile-client" >
-        <javac fork="true" includeAntRuntime="false" destdir="${build.classes.dir}" debug="true" 
-               classpath="${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
-               srcdir="${env.APS_HOME}/devtests/admin/cli/src" includes="**/*BaseDevTest.java">
-        </javac>
-        <javac fork="true" includeAntRuntime="false" 
-               classpath="${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
-               destdir="${build.classes.dir}" debug="true" srcdir="client" includes="**/*.java">
-            <classpath path="${classpath}"/>
-        </javac>
-    </target>
-
     <target name="run" depends="init-common">
         <antcall target="run-recover"/>
     </target>
 
     <target name="run-recover" depends="init-common">
        <antcall target="insert-data">
-           <param name="port" value="28080"/>
            <param name="operation" value="create_timer"/>
        </antcall>
 
         <parallel>
            <antcall target="insert-data">
-               <param name="port" value="28080"/>
                <param name="operation" value="insert_xa_data"/>
            </antcall>
 
@@ -202,7 +164,7 @@
               classname="${se.client}">
            <arg line="verify_xa"/>
            <arg line="${appname}-web"/>
-           <arg line="28081"/>
+           <arg line="in2"/>
            <arg line="recover"/>
         </java>
 
@@ -220,33 +182,15 @@
     </target>
 
     <target name="insert-data">
-        <echo message="Executing test on port ${port}"/>
+        <echo message="Executing test on in1"/>
         <java  fork="on"
               failonerror="true"
               classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
               classname="${se.client}">
            <arg line="${operation}"/>
            <arg line="${appname}-web"/>
-           <arg line="${port}"/>
+           <arg line="in1"/>
         </java>
-    </target>
-
-    <target name="clean" depends="init-common">
-      <antcall  target="clean-common"/>
-    </target>
-
-    <target name="usage">
-        <antcall target="usage-common"/>
-    </target>
-
-    <target name="reset-tables" depends="init-common">
-        <antcall target="execute-ejb-sql-common">
-          <param name="sql.file" value="sql/delete.sql"/>
-        </antcall>
-        <antcall target="execute-sql-common">
-          <param name="sql.file" value="sql/delete.sql"/>
-          <param name="db.url" value="jdbc:derby://localhost:${db.port}/${db.name};create=true;"/>
-        </antcall>
     </target>
 
 </project>
