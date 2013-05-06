@@ -8,7 +8,16 @@ import javax.ejb.Stateless;
 @Stateless
 public class SimpleEjb { //implements Simple {
 
-    public String saySomething() {
+    java.util.ArrayList x = null;
+
+    public String saySomething(java.util.ArrayList a) {
+        x = a;
         return "hello";
     }
+
+    @javax.annotation.PreDestroy
+    private void onDestroy() {
+        x.add("=====destroyed=====");
+    }
+    
 }
