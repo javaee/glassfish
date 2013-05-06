@@ -148,10 +148,19 @@ final class TestUtils {
     }
 
     public static void writeErrorToDebugLog(AsadminReturn ret) {
+        writeErrorToDebugLog(ret, null);
+    }
+
+    public static void writeErrorToDebugLog(AsadminReturn ret, String extraMessage) {
         StringBuilder msg = new StringBuilder(STARS).append('\n');
         msg.append(new Date().toString());
         msg.append("   TEST Failure.  Expected asadmin to return ").append(!ret.returnValue).append('\n');
         msg.append("OUTPUT: \n").append(ret.outAndErr);
+
+        if (extraMessage != null && !extraMessage.isEmpty()) {
+            msg.append(extraMessage);
+            msg.append('\n');
+        }
         msg.append('\n');
         msg.append(STARS);
         writeCommandToDebugLog(msg.toString());
