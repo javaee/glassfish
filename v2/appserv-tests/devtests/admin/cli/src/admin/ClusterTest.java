@@ -54,14 +54,20 @@ public class ClusterTest extends AdminBaseDevTest {
         new ClusterTest().runTests();
     }
 
-    private boolean asadmin(int numTries, int timeout, final String... args) {
+    private boolean asadmin(int numTries, int sleepBetweenCalls, final String... args) {
         for (int count = 0; count < numTries; ++count) {
-            AsadminReturn ret = asadminWithOutput(timeout, args);
+            AsadminReturn ret = asadminWithOutput(args);
 
             if (ret.returnValue)
                 return true;
 
             TestUtils.writeErrorToDebugLog(ret, "asadmin multi-try.  Try # " + (count + 1));
+            try {
+                Thread.sleep(sleepBetweenCalls);
+            }
+            catch (Exception e) {
+                // ignore
+            }
         }
         return false;
     }
@@ -784,8 +790,8 @@ public class ClusterTest extends AdminBaseDevTest {
 
         // the following line occasionally fails in Windows.  Do multi-try and gather
         // diagnostic info...
-        report(tn + "start-local-instance1", asadmin(5, 100000, "start-local-instance", i1name));
-        report(tn + "start-local-instance2", asadmin(5, 100000, "start-local-instance", i2name));
+        report(tn + "start-local-instance1", asadmin(5, 10000, "start-local-instance", i1name));
+        report(tn + "start-local-instance2", asadmin(5, 10000, "start-local-instance", i2name));
         // Test instance states
         ret = asadminWithOutput("list-instances");
         success = checkListInstancesOutputIfRunning(ret.outAndErr, i1name);
