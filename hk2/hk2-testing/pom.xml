@@ -56,5 +56,6 @@
     <name>Utilities for testing with HK2</name>
     <modules>
             <module>hk2-junitrunner</module>
+            <module>ant</module>
     </modules>
 </project>
