@@ -17,8 +17,6 @@ HK2 Inhabitants Generator
  
  * {{Using Maven}}
  
- * {{Eclipse Plugin}}
- 
  * {{Ant Task}}
  
 {Command Line Tool}
@@ -119,10 +117,41 @@ java org.jvnet.hk2.generator.HabitatGenerator
  
  * locator The name of the locator file (which is "default" by default)
  
-{Eclipse Plugin}
-
-  Under Construction
+ * noswap (true or false) if set to true the generator will overwrite files in place which is riskier but faster
   
 {Ant Task}
 
-  Under Construction 
+  The inhabitant generator can also be used as an ant task.  The ant task is org.jvnet.hk2.generator.maven.ant.HK2InhabitantGeneratorTask.
+  Below find an example ant file that uses the task:
+  
++----------------------------------
+<project name="HK2 Ant Build File" default="build" basedir=".">
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="target/classes"/>
+
+  <taskdef name="hk2-inhabitant-generator"
+           classname="org.jvnet.hk2.generator.maven.ant.HK2InhabitantGeneratorTask"/>
+
+  <target name="compile" >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}"/>
+    <hk2-inhabitant-generator targetDirectory="${build}"/>
+  </target>
+</project>
++----------------------------------
+
+ The thing to note in the example above is that the hk2-inhabitant-generator must run after the classes are built, as the hk2-inhabitant-generator
+ inspects the class files.
+ 
+ The ant plugin has the following options:
+ 
+ * targetDirectory (the directory to find the classes, defaults to target/classes)
+ 
+ * outputDirectory (the place the output file will go, defaults to target/classes)
+ 
+ * verbose (true or false)
+ 
+ * locator The name of the locator file (which is "default" by default)
+ 
+ * noswap (true or false) if set to true the generator will overwrite files in place which is riskier but faster
