@@ -336,6 +336,7 @@
         <ant dir="servlet-3.1/nonBlockingInputWithAsyncDispatch" target="all"/>
         <ant dir="servlet-3.1/nonBlockingInputOutput" target="all"/>
         <ant dir="servlet-3.1/upgradeEcho" target="all"/>
+        <ant dir="servlet-3.1/upgradeWithCDI" target="all"/>
         <ant dir="servlet-3.1/resetCharacterEncoding" target="all"/>
         <ant dir="servlet-3.1/partSubmittedFileName" target="all"/>
         <ant dir="servlet-3.1/servletContextGetVirtualServerName" target="all"/>
