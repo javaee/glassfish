@@ -37,14 +37,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.examples.ant.services;
+package org.jvnet.hk2.examples.ant.test;
 
-import org.jvnet.hk2.annotations.Service;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Enumeration;
+
+import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.junit.Assert;
+import org.junit.Test;
+import org.jvnet.hk2.examples.ant.services.Service1;
 
 /**
- * 
  * @author jwells
+ *
  */
-@Service
-public class Service1 {
+public class AntTest {
+    @Test
+    public void testWasGenerated() throws IOException {
+        ClassLoader loader = getClass().getClassLoader();
+        
+        Enumeration<URL> defaultFiles = loader.getResources("META-INF/hk2-locator/default");
+        
+        while (defaultFiles.hasMoreElements()) {
+            URL url = defaultFiles.nextElement();
+            
+            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            try {
+                DescriptorImpl di = new DescriptorImpl();
+                
+                while (di.readObject(reader)) {
+                    if (di.getImplementation().equals(Service1.class.getName())) {
+                        // Test passes
+                        return;
+                    }
+                    
+                }
+                
+            }
+            finally {
+                reader.close();
+            }
+        }
+        
+        Assert.fail("Did not find Service1 in the set of descriptors, the default file was not properly generated");
+        
+    }
 }
