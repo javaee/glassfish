@@ -3,7 +3,7 @@
         Build file using HK2 inhabitant generator
     </description>
   <!-- set global properties for this build -->
-  <property name="src" location="src"/>
+  <property name="antsrc" location="antsrc"/>
   <property name="build" location="${project.build.directory}/classes"/>
   <property name="dist"  location="dist"/>
   <property name="mvntarget"  location="target"/>
@@ -25,9 +25,9 @@
 
   <target name="compile" depends="init"
         description="compile the source " >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}" classpathref="project.class.path"/>
-    <hk2-inhabitant-generator targetDirectory="${build}"/>
+    <!-- Compile the java code from ${antsrc} into ${build} -->
+    <javac srcdir="${antsrc}" destdir="${build}" classpathref="project.class.path"/>
+    <hk2-inhabitant-generator targetDirectory="${build}" verbose="true"/>
   </target>
 
   <target name="dist" depends="compile"
