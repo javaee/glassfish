@@ -1,50 +1,60 @@
-Developing a module
+Building with HK2
 
-	HK2 comes with a Maven2 plugin to make module development productive. The following POM fragment illustrates how to add this plugin to your POM:
+* Maven build
 
--------------------------------------------------------------------
+  The best way to use HK2 in your builds is to add the following dependency
+  in your maven build:
+
++-------------------------------------------------------------------
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.acme.foo</groupId>
-    <artifactId>mymodule</artifactId>
-    <packaging>hk2-jar</packaging>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.sun.enterprise</groupId>
-                <artifactId>hk2-maven-plugin</artifactId>
-                <version>...</version>
-                <extensions>true</extensions>
-            </plugin>
-        </plugins>
-    </build>
-    
-    <repositories>
-        <repository>
-            <id>gfv3</id>
-            <url>http://download.java.net/maven/glassfish/</url>
-        </repository>
-    </repositories>
+    <groupId>org.acme</groupId>
+    <artifactId>myModule</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-    ...
+    <dependencies>
+      <dependency>
+        <groupId>org.glassfish.hk2</groupId>
+        <artifactId>hk2</artifactId>
+        <version>2.1.93</version>
+      </dependency>
+    </dependencies>
 </project>
--------------------------------------------------------------------
++-------------------------------------------------------------------
 
-	The plugin is marked as "extension" because this plugin adds a custom packaging "hk2-jar". Once installed, this plugin can be accessible with the "hk2" prefix. This packaging forces relevant build phases to use the right mojo, which performs additional HK2-specific processing, such as:
+	The org.glassfish.hk2:hk2 dependency has a dependency on all of the
+  HK2 jars.  However, this may be more than you want, since it includes as
+  a dependency configuration, run-level services and some osgi support that
+  may be needed.
 
-	* Produce proper manifest entries from POM
+  If instead you wanted the absolute minimum working profile for hk2 you
+  would instead have your project look like this:
 
-	Modules can be built and installed with usual <<<mvn install>>> and <<<mvn deploy>>>.
++-------------------------------------------------------------------
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.acme</groupId>
+    <artifactId>myModule</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
-* Running HK2 application
+    <dependencies>
+      <dependency>
+        <groupId>org.glassfish.hk2</groupId>
+        <artifactId>hk2-locator</artifactId>
+        <version>2.1.93</version>
+      </dependency>
+    </dependencies>
+</project>
++-------------------------------------------------------------------
 
-	You can run the HK2 module you created by using the {{{/hk2-maven-plugin/run-mojo.html}hk2:run}} goal.
+  The hk2-locator project contains the implementation of the hk2 API, with
+  no other bells and whistles.  In particular, the ability to automatically
+  detect services is not available, and so all HK2 objects must be added
+  programmatically and gotten with the HK2 API.  However, the above is perfect
+  for small projects that want to play with the HK2 API to see how it works.
 
+* Automatic Service Creation
 
-
-Developing a multi-module project
-
-* Inter-module dependency
-
-	To depend on another HK2 module, simply refer to the dependency module in your POM as you do normally. The "hk2-jar" packaging will recognize that and produce the right manifest entries, causing the runtime to set up dependency appropriately.
+  HK2 has the ability to inspect class files at build time to determine
+  which classes have been marked @Service and automatically then
+  load those classes into a ServiceLocator at runtime.

@@ -51,14 +51,9 @@ Introduction
  For more information on HK2 extensibilty see
  {{{./hk2-api/extensibility.html}this page}}.
 
-* Configuration
- 
-	Most software need to store some configuration for persisting behaviours accross restarts. Such configuration is usually stored in xml files and can be consumed like any other services in hk2. We provide a powerful abstraction to a configuration file definition, coupled with a 2 phase transactional system to mutate any configuration that ensure isolation and completness of any configuation changes.
+* Building with HK2
 
-    Link to {{{.\/config\/configuration.html}Configuration}}
+	This page gives information on how to build with hk2:
 
-* Testing
+  {{{develop.html}Developing with HK2}}
 
-	An integration with JUnit is provided so users can develop their tests with dependency injection available. For more sophisticated tests, a harness is also provided to start modules and habitat during test execution
-
-    Link to {{{.\/hk2-api/testing.html}Testing}}
