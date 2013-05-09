@@ -36,8 +36,8 @@
 
     <target name="run" depends="init-common">
       <parallel>
-        <exec executable="${APPCLIENT}" failonerror="true">
-          <env key="APPCPATH" value="${env.S1AS_HOME}/pointbase/lib/pbclient.jar:${env.APS_HOME}/lib/reporter.jar"/>
+        <exec executable="${APPCLIENT}" failonerror="false">
+          <env key="APPCPATH" value="${env.APS_HOME}/lib/reporter.jar"/>
           <arg line="-client ${assemble.dir}/${appname}-client.jar"/>
 	  <arg line="-name ${appname}Client"/>
 	  <arg line="-textauth"/>
