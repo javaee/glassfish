@@ -156,7 +156,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.0</version>
+                <version>3.2</version>
             </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -287,12 +287,19 @@
                 </plugin>
              </plugins>
         </pluginManagement>
+        <extensions>
+                <extension>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-webdav-jackrabbit</artifactId>
+                        <version>2.0</version>
+                </extension>
+        </extensions>
     </build>
     <modules>
         <module>build</module>
         <module>public</module>
         <module>kernel</module>
-	<module>bom</module>
+	<!--module>bom</module-->
   </modules>
   
   <profiles>
@@ -326,7 +333,7 @@
         <cglib.version>2.2</cglib.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
-        <site.url>file:../www/</site.url>
+        <site.url>dav:https://website.java.net/website/hk2</site.url>
     </properties>
 
   <reporting>
@@ -401,7 +408,7 @@
 
     <distributionManagement>
         <site>
-            <id>local</id>
+            <id>svn.java.net</id>
             <url>${site.url}</url>
         </site>
      </distributionManagement>
