@@ -41,7 +41,6 @@
 package test;
 
 import java.io.*;
-import java.util.*;
 import javax.servlet.*;
 import javax.servlet.annotation.*;
 import javax.servlet.http.*;
@@ -61,7 +60,7 @@ public class TestServlet2 extends HttpServlet implements AsyncListener {
         new Thread() {
             @Override
             public void run() {
-                    asyncContext.complete();
+                asyncContext.complete();
             }
         }.start();
 
@@ -96,7 +95,7 @@ public class TestServlet2 extends HttpServlet implements AsyncListener {
         if (attr == null) {
             attr = "";
         }
-        System.out.println("XXX --> " + attr + text);
+        System.out.println("--> " + attr + text);
         req.setAttribute(NAME, attr + text);
     }
 }
