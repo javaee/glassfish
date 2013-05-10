@@ -39,7 +39,7 @@ Table of Contents
  is intended to show simple usages of HK2 mainly using the standard JSR-330
  API.
 
- For information about using the HK2 progrommatic API see {{{./api.html}this page}}.
+ For information about using the HK2 programmatic API see {{{./api.html}this page}}.
  
  For information about HK2 extensibility options see {{{./extensibility.html}this page}}.
  
