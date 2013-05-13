@@ -126,13 +126,16 @@ public class WebTest extends BaseDevTest {
         try {
             sock = new Socket(host, new Integer(port1).intValue());
             os = sock.getOutputStream();
-            String get = "GET " + contextRootPrefix + "-a"
-                + "/j_security_check?j_username=" + user
-                + "&j_password=" + password
-                + " HTTP/1.0\n";
-            System.out.println(get);
-            os.write(get.getBytes());
-            os.write("\n".getBytes());
+            String postData = "j_username=" + user
+                + "&j_password=" + password;
+            String post = "POST " + contextRootPrefix + "-a/j_security_check"
+                + " HTTP/1.0\n"
+                + "Content-Type: application/x-www-form-urlencoded\n"
+                + "Content-length: " + postData.length() + "\n\n"
+                + postData;
+            System.out.println(post);
+            os.write(post.getBytes());
+            os.flush();
 
             is = sock.getInputStream();
             br = new BufferedReader(new InputStreamReader(is));
