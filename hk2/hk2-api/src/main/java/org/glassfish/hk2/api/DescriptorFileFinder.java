@@ -43,6 +43,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * Implementations of this interface allow the customization of
  * how hk2 inhabitant files are found
@@ -50,6 +52,7 @@ import java.util.List;
  * @author jwells
  *
  */
+@Contract
 public interface DescriptorFileFinder {
     public static final String RESOURCE_BASE="META-INF/hk2-locator/";
     

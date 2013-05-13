@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -55,17 +56,20 @@ public interface Populator {
      * This method can be used to populate the service locator with files that
      * have been written out using the {@link DescriptorImpl} writeObject method.
      * 
-     * @param fileFinder An object that finds files in the environment.  May not be null.
-     * @param postProcessors A post-processor that allows the environment to modify the set
-     * of descriptors that are added to the system.  May be null, in which case the descriptors
-     * read in are those that are used to populate the serviceLocator
+     * @param fileFinder An object that finds files in the environment.  If this is null
+     * then the system will look in the service locator for an implementation of
+     * DescriptorFileFinder.  If one is still not find this service will return an empty list
+     * @param postProcessors post-processors that allows the environment to modify the set
+     * of descriptors that are added to the system.
      * @return The list of descriptors added to the system.  Will not return null, but may return
      * an empty list
-     * @throws MultiException In case of an error
+     * @throws IOException In case of an error reading the input streams
+     * @throws MultiException if the user code throws an error, in which case none of the descriptors
+     * will be added to the system
      */
     public List<ActiveDescriptor<?>> populate(
             DescriptorFileFinder fileFinder,
-            List <PopulatorPostProcessor> postProcessors) throws MultiException;
+            PopulatorPostProcessor... postProcessors) throws IOException, MultiException;
     
     /**
      * This method will populate the service locator using the system classloader to
@@ -74,8 +78,10 @@ public interface Populator {
      * 
      * @return The list of descriptors added to the system.  Will not return null, but may return
      * an empty list
-     * @throws MultiException if there was an error reading any of the descriptors
+     * @throws IOException if there was an error reading any of the descriptors
+     * @throws MultiException if the user code throws an error, in which case none of the descriptors
+     * will be added to the system
      */
-    public List<ActiveDescriptor<?>> populate() throws MultiException; 
+    public List<ActiveDescriptor<?>> populate() throws IOException, MultiException; 
 
 }
