@@ -51,9 +51,10 @@ Introduction
  For more information on HK2 extensibilty see
  {{{./hk2-api/extensibility.html}this page}}.
 
-* Building with HK2
+* Developing with HK2
 
-	This page gives information on how to build with hk2:
+	This page is a simple guide for how to develop your own
+	applications with HK2:
 
   {{{develop.html}Developing with HK2}}
 

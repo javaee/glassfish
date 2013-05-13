@@ -39,34 +39,11 @@
  */
 package org.glassfish.hk2.bootstrap;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.jvnet.hk2.annotations.Contract;
-
 /**
- * 
+ * @deprecated use {@link org.glassfish.hk2.api.PopulatorPostProcessor} instead
  * @author jwells, mason.taube@oracle.com
  *
  */
-public interface PopulatorPostProcessor {
+public interface PopulatorPostProcessor extends org.glassfish.hk2.api.PopulatorPostProcessor {
 
-    /**
-     * This method can be used to alter the descriptor read in.  It can also
-     * add descriptors, or remove the descriptor (by returning an empty list).
-     * If this method returns null, then the passed in descriptor will be used.
-     * Any alterations made to this descriptor in that case will remain in effect.
-     * If this method returns a list the descriptors from the list will be added
-     * to the service locator, and not the incoming descriptorImpl.  However, the
-     * incoming descriptorImpl may be a member of the list.
-     *
-     * @param serviceLocator the ServiceLocator being populated
-     *
-     * @param descriptorImpl The descriptorImpl read from some external source.  This
-     * processor can modify this descriptor fully.
-     * 
-     * @return A descriptors to be added to the system.  If this returns non-null
-     * the descriptor will be added to the system 
-     * If this returns null then no descriptor will be added to the system.
-     */
-     DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl);
 }

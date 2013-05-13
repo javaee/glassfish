@@ -47,8 +47,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.jvnet.hk2.annotations.Contract;
 
 /**

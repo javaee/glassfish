@@ -39,10 +39,8 @@
  */
 package com.sun.enterprise.module.single;
 
-import com.sun.enterprise.module.bootstrap.BootException;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -50,8 +48,6 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.HK2Populator;
-import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**

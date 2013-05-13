@@ -47,7 +47,6 @@ import com.sun.enterprise.module.common_impl.AbstractModulesRegistryImpl;
 import com.sun.enterprise.module.common_impl.CompositeEnumeration;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.osgi.framework.*;

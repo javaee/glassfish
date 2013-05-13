@@ -39,24 +39,19 @@
  */
 package org.glassfish.hk2.bootstrap;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DescriptorFileFinder;
 import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.Populator;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
-import org.glassfish.hk2.utilities.Binder;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import com.sun.enterprise.module.bootstrap.BootException;
 
@@ -81,62 +76,15 @@ public class HK2Populator {
 	public static List<ActiveDescriptor> populate(final ServiceLocator serviceLocator,
 			DescriptorFileFinder fileFinder,
 			List <? extends PopulatorPostProcessor> postProcessors) throws IOException {
-
-		List<ActiveDescriptor> descriptors = new ArrayList<ActiveDescriptor> ();
-
-		if (fileFinder == null) {
-			fileFinder = serviceLocator.getService(DescriptorFileFinder.class);
-		}
-		List<InputStream> descriptorFileInputStreams = fileFinder
-				.findDescriptorFiles();
-
-		DynamicConfigurationService dcs = serviceLocator
-				.getService(DynamicConfigurationService.class);
-
-		DynamicConfiguration config = dcs.createDynamicConfiguration();
-
-
-		for (InputStream is : descriptorFileInputStreams) {
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-			try {
-				boolean readOne = false;
-
-				do {
-					DescriptorImpl descriptorImpl = new DescriptorImpl();
-
-					readOne = descriptorImpl.readObject(br);
-
-					if (readOne) {
-
-						if (postProcessors != null) {
-							
-							for (PopulatorPostProcessor pp : postProcessors) {
-								descriptorImpl = pp.process(serviceLocator, descriptorImpl);
-
-								if (descriptorImpl == null) {
-									break;
-								}
-							}
-							if (descriptorImpl != null) {
-								descriptors.add(config.bind(descriptorImpl, false));
-							}
-						}  else {
-                            descriptors.add(config.bind(descriptorImpl, false));  // if postProcessors was null, take the descriptor as-is
-                        }
-
-					}
-				} while (readOne);
-
-			} finally {
-				br.close();
-			}
-		}
-
-		config.commit();
-
-		return descriptors;
+	    if (postProcessors == null) postProcessors = new LinkedList<PopulatorPostProcessor>();
+	    
+	    DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+	    Populator populator = dcs.getPopulator();
+	    
+	    List<ActiveDescriptor<?>> retVal = populator.populate(fileFinder,
+	            postProcessors.toArray(new PopulatorPostProcessor[postProcessors.size()]));
+	    
+	    return (List<ActiveDescriptor>) ((List) retVal);
 	}
 
 	/**

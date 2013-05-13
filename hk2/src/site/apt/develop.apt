@@ -1,6 +1,12 @@
 Building with HK2
 
-* Maven build
+Contents
+
+ * {{Maven build}}
+ 
+ * {{Automatic Service Population}}
+
+{Maven build}
 
   The best way to use HK2 in your builds is to add the following dependency
   in your maven build:
@@ -53,19 +59,35 @@ Building with HK2
   programmatically and gotten with the HK2 API.  However, the above is perfect
   for small projects that want to play with the HK2 API to see how it works.
 
-* Automatic Service Creation
+{Automatic Service Population}
 
-  HK2 has the ability to inspect class files at build time to determine
-  which classes have been marked @Service and automatically then
-  load those classes into a ServiceLocator at runtime.
+  In order for HK2 to automatically find services at runtime it can read
+  files called inhabitant files.  These are usually placed in your JAR
+  file at location META-INF/hk2-locator.  Normally the file is named
+  default.  (You can however use a different file name or location(s)
+  by using more specific API).  HK2 has a tool for automatically creating
+  these files based on class files annotated with
+  {{{./nonav/hk2-api/apidocs/org/jvnet/hk2/annotations/Service.html}@Service}}.
+  There is also a simple API for creating and populating a
+  {{{./nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}
+  with services found in these files.
   
   In order to have your Maven build generate the META-INF files that hk2
-  reads in order to populate a Service Locator use the
-  {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}}.  Information
-  about how you add the {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}}
-  to your maven or ant (or other) build is found on the site for the
-  {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}}.
+  reads in order to populate a {{{./nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}
+  use the {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}}.  This
+  tool can be used from the command line, or it can be put into your maven or ant builds.
   
   In order to have your program automatically load the files generated with the
-  {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}} you would
-  use the 
+  {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}} you can
+  use the {{{./nonav/hk2-api/apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html}createAndPopulateServiceLocator}}
+  method near the start of your main method, like this:
+  
++------------------------------------------------------------------------
+  public static void main(String argv[]) {
+      ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+      
+      MyService myService = locator.getService(MyService.class);
+      
+      ...
+  }
++------------------------------------------------------------------------

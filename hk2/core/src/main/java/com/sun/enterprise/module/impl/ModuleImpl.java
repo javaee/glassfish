@@ -49,7 +49,6 @@ import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.ModuleLifecycleListener;
 import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.InhabitantsDescriptor;
 import com.sun.enterprise.module.ModuleState;
 import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.common_impl.LogHelper;
@@ -76,9 +75,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 
 /**
  * A module represents a set of resources accessible to third party modules. 
