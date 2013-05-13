@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,30 +39,43 @@
  */
 package org.glassfish.hk2.api;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.util.List;
+
+import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
- * The dynamic configuration service  is the source of {@link DynamicConfiguration}
- * instances, which can be used to bind and unbind entities into the system
+ * Implementations of this interface are used to populate HK2 
+ * service locators from inhabitants files
  * 
  * @author jwells
+ *
  */
-@Contract
-public interface DynamicConfigurationService {
+public interface Populator {
     /**
-     * Creates a dynamic configuration that can be used to add or remove values
-     * to the system
+     * This method can be used to populate the service locator with files that
+     * have been written out using the {@link DescriptorImpl} writeObject method.
      * 
-     * @return A dynamic configuration to be used to add values to the system
+     * @param fileFinder An object that finds files in the environment.  May not be null.
+     * @param postProcessors A post-processor that allows the environment to modify the set
+     * of descriptors that are added to the system.  May be null, in which case the descriptors
+     * read in are those that are used to populate the serviceLocator
+     * @return The list of descriptors added to the system.  Will not return null, but may return
+     * an empty list
+     * @throws MultiException In case of an error
      */
-    public DynamicConfiguration createDynamicConfiguration();
+    public List<ActiveDescriptor<?>> populate(
+            DescriptorFileFinder fileFinder,
+            List <PopulatorPostProcessor> postProcessors) throws MultiException;
     
     /**
-     * Returns a populator for this service locator that can be used to
-     * automatically read in hk2 inhabitant files (or some other external
-     * source)
-     * @return
+     * This method will populate the service locator using the system classloader to
+     * find the hk2-locator files from the default location of META-INF/hk2-locator/default.
+     * No post processing will be done on the descriptors added to the system
+     * 
+     * @return The list of descriptors added to the system.  Will not return null, but may return
+     * an empty list
+     * @throws MultiException if there was an error reading any of the descriptors
      */
-    public Populator getPopulator();
+    public List<ActiveDescriptor<?>> populate() throws MultiException; 
 
 }

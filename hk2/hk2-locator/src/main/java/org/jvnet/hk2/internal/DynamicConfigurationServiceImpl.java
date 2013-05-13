@@ -44,6 +44,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Populator;
 import org.glassfish.hk2.api.ServiceLocator;
 
 /**
@@ -66,6 +67,11 @@ public class DynamicConfigurationServiceImpl implements
     @Override
     public DynamicConfiguration createDynamicConfiguration() {
         return new DynamicConfigurationImpl(locator);
+    }
+
+    @Override
+    public Populator getPopulator() {
+        throw new AssertionError("DynamicConfigurationServiceImpl.getPopulator not yet implemented");
     }
 
 }

@@ -41,13 +41,22 @@ package org.jvnet.hk2.config.test;
 
 import javax.inject.Singleton;
 
-//import com.sun.enterprise.module.bootstrap.Populator;
-import org.glassfish.hk2.api.*;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.ConfigInjector;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ConfigurationPopulator;
+import org.jvnet.hk2.config.DomDecorator;
+import org.jvnet.hk2.config.InjectionTarget;
+import org.jvnet.hk2.config.Populator;
+import org.jvnet.hk2.config.Transactions;
 
 
 import java.util.*;

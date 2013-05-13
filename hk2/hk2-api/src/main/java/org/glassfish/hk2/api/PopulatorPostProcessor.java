@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,30 +39,31 @@
  */
 package org.glassfish.hk2.api;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
- * The dynamic configuration service  is the source of {@link DynamicConfiguration}
- * instances, which can be used to bind and unbind entities into the system
+ * This interface allows the customization of services read in from
+ * an external source.  For example, specific classloaders can be added,
+ * or duplicate descriptors can be removed.
  * 
  * @author jwells
+ *
  */
-@Contract
-public interface DynamicConfigurationService {
+public interface PopulatorPostProcessor {
     /**
-     * Creates a dynamic configuration that can be used to add or remove values
-     * to the system
+     * This method can be used to alter the descriptor read in.  It can also
+     * add descriptors, or remove the descriptor (by returning null).
+     * Any alterations made to the descriptor passed in will remain in effect.
+     *
+     * @param serviceLocator the ServiceLocator being populated.  Will not be null
+     * @param descriptorImpl The descriptorImpl read from some external source.  This
+     * processor can modify this descriptor fully
      * 
-     * @return A dynamic configuration to be used to add values to the system
+     * @return The descriptors to be added to the system.  If this returns null
+     * then the descriptorImpl passed in will NOT be added to the system.  Implementations
+     * may return the descriptor passed in, but do not have to.  The descriptor added to
+     * the system will be the one returned from this method
      */
-    public DynamicConfiguration createDynamicConfiguration();
-    
-    /**
-     * Returns a populator for this service locator that can be used to
-     * automatically read in hk2 inhabitant files (or some other external
-     * source)
-     * @return
-     */
-    public Populator getPopulator();
+     public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl);
 
 }
