@@ -41,12 +41,31 @@ package org.jvnet.hk2.config.test;
 
 //import com.sun.enterprise.module.bootstrap.Populator;
 
-import org.glassfish.hk2.api.*;
-import org.junit.Before;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.config.*;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigInjector;
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ConfigurationPopulator;
+import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.config.InjectionTarget;
+import org.jvnet.hk2.config.ObservableBean;
+import org.jvnet.hk2.config.Populator;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;

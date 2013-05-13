@@ -299,7 +299,9 @@
         <module>build</module>
         <module>public</module>
         <module>kernel</module>
+<!--
 	<module>bom</module>
+  -->
   </modules>
   
   <profiles>

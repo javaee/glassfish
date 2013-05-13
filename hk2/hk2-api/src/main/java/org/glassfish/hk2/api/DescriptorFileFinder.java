@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,30 +39,20 @@
  */
 package org.glassfish.hk2.api;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
- * The dynamic configuration service  is the source of {@link DynamicConfiguration}
- * instances, which can be used to bind and unbind entities into the system
+ * Implementations of this interface allow the customization of
+ * how hk2 inhabitant files are found
  * 
  * @author jwells
+ *
  */
-@Contract
-public interface DynamicConfigurationService {
-    /**
-     * Creates a dynamic configuration that can be used to add or remove values
-     * to the system
-     * 
-     * @return A dynamic configuration to be used to add values to the system
-     */
-    public DynamicConfiguration createDynamicConfiguration();
+public interface DescriptorFileFinder {
+    public static final String RESOURCE_BASE="META-INF/hk2-locator/";
     
-    /**
-     * Returns a populator for this service locator that can be used to
-     * automatically read in hk2 inhabitant files (or some other external
-     * source)
-     * @return
-     */
-    public Populator getPopulator();
+    List<InputStream> findDescriptorFiles() throws IOException;
 
 }

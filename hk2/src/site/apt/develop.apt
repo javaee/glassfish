@@ -23,9 +23,9 @@ Building with HK2
 +-------------------------------------------------------------------
 
 	The org.glassfish.hk2:hk2 dependency has a dependency on all of the
-  HK2 jars.  However, this may be more than you want, since it includes as
-  a dependency configuration, run-level services and some osgi support that
-  may be needed.
+  HK2 jars.  However, this may be more than you want, since it includes
+  configuration, run-level services and some osgi support that your application
+  may not need.
 
   If instead you wanted the absolute minimum working profile for hk2 you
   would instead have your project look like this:
@@ -58,3 +58,14 @@ Building with HK2
   HK2 has the ability to inspect class files at build time to determine
   which classes have been marked @Service and automatically then
   load those classes into a ServiceLocator at runtime.
+  
+  In order to have your Maven build generate the META-INF files that hk2
+  reads in order to populate a Service Locator use the
+  {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}}.  Information
+  about how you add the {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}}
+  to your maven or ant (or other) build is found on the site for the
+  {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}}.
+  
+  In order to have your program automatically load the files generated with the
+  {{{./hk2-inhabitant-generator/index.html}hk2-inhabitant-generator}} you would
+  use the 
