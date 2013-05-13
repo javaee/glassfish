@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.utilities;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -57,6 +58,7 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerThread;
+import org.glassfish.hk2.api.Populator;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -503,5 +505,49 @@ public abstract class ServiceLocatorUtilities {
      */
     public static String getOneMetadataField(ServiceHandle<?> h, String field) {
         return getOneMetadataField(h.getActiveDescriptor(), field);
+    }
+    
+    /**
+     * This method is often the first line of a stand-alone client that wishes to use HK2.
+     * It creates a ServiceLocator with the given name (or a randomly generated name if
+     * null is passed in) and then populates that service locator with services found in
+     * the META-INF/hk2-locator/default files that can be found with the classloader that
+     * loaded HK2 (usually the system classloader).
+     * 
+     * @param name The name of the service locator to create.  If there is already a service
+     * locator of this name this method will use that one to populate.  If this is null
+     * a randomly assigned name will be given to the service locator, and it will not be
+     * tracked by the system.  If this is NOT null then this service locator can be found
+     * with {@link ServiceLocatorFactory#find(String)}.
+     * @return A service locator that has been populated with services
+     * @throws MultiException If there was a failure when populating or creating the ServiceLocator
+     */
+    public static ServiceLocator createAndPopulateServiceLocator(String name) throws MultiException {
+        ServiceLocator retVal = ServiceLocatorFactory.getInstance().create(name);
+        
+        DynamicConfigurationService dcs = retVal.getService(DynamicConfigurationService.class);
+        Populator populator = dcs.getPopulator();
+        
+        try {
+            populator.populate();
+        }
+        catch (IOException e) {
+            throw new MultiException(e);
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * This method is often the first line of a stand-alone client that wishes to use HK2.
+     * It creates a ServiceLocator with a randomly generated name and then populates that
+     * service locator with services found in the META-INF/hk2-locator/default files that
+     * can be found with the classloader that loaded HK2 (usually the system classloader).
+     * 
+     * @return A service locator that has been populated with services
+     * @throws MultiException If there was a failure when populating or creating the ServiceLocator
+     */
+    public static ServiceLocator createAndPopulateServiceLocator() {
+        return createAndPopulateServiceLocator(null);
     }
 }

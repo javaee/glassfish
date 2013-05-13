@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
+import org.glassfish.hk2.api.DescriptorFileFinder;
 
 public class URLDescriptorFileFinder implements DescriptorFileFinder {
 	private final URL url;

@@ -54,8 +54,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 
 /**
  * Implements a modules registry based on a class-path style of module

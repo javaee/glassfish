@@ -57,10 +57,7 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.bootstrap.HK2Populator;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -71,7 +68,6 @@ import com.sun.enterprise.module.ManifestConstants;
 import com.sun.enterprise.module.ModuleDefinition;
 import com.sun.enterprise.module.ModuleDependency;
 import com.sun.enterprise.module.ModuleMetadata;
-import com.sun.enterprise.module.common_impl.ByteArrayInhabitantsDescriptor;
 import com.sun.enterprise.module.common_impl.Jar;
 import com.sun.enterprise.module.common_impl.LogHelper;
 

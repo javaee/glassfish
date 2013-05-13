@@ -55,8 +55,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.net.URL;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 
 /**
  * @author Jerome Dochez

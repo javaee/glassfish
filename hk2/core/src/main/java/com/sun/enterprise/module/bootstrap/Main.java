@@ -47,13 +47,13 @@ import java.security.PrivilegedAction;
 import java.util.List;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorFileFinder;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;

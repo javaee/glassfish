@@ -40,19 +40,13 @@
 package com.sun.enterprise.module.bootstrap;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**

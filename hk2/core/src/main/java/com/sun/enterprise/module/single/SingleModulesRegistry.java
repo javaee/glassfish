@@ -47,11 +47,12 @@ import java.io.IOException;
 import java.util.*;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Populator;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.HK2Populator;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder;
 import org.glassfish.hk2.bootstrap.impl.Hk2LoaderPopulatorPostProcessor;
+import org.glassfish.hk2.utilities.ClasspathDescriptorFileFinder;
 
 /**
  * Normal modules registry with configuration handling backed up
@@ -114,6 +115,7 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
         return proxyMod[0];
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected List<ActiveDescriptor> parseInhabitants(Module module, String name, ServiceLocator serviceLocator, List<PopulatorPostProcessor> postProcessors)
             throws IOException {
@@ -125,9 +127,14 @@ public class SingleModulesRegistry  extends ModulesRegistryImpl {
           allPostProcessors.addAll(postProcessors);
         }
 
-    	return HK2Populator.populate(serviceLocator,
+        DynamicConfigurationService dcs = serviceLocator.getService(DynamicConfigurationService.class);
+        Populator populator = dcs.getPopulator();
+        
+    	List<ActiveDescriptor<?>> retVal = populator.populate(
                 new ClasspathDescriptorFileFinder(singleClassLoader, name),
-                allPostProcessors);
+                allPostProcessors.toArray(new PopulatorPostProcessor[allPostProcessors.size()]));
+    	
+    	return (List<ActiveDescriptor>) ((List) retVal);
     }
 
 }

@@ -48,8 +48,8 @@ import com.sun.enterprise.module.ResolveError;
 import com.sun.enterprise.module.bootstrap.BootException;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.PopulatorPostProcessor;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
 import org.osgi.framework.Bundle;
 
 import java.io.File;
