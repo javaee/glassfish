@@ -55,10 +55,12 @@ import org.glassfish.hk2.api.ServiceLocator;
 public class DynamicConfigurationServiceImpl implements
         DynamicConfigurationService {
     private final ServiceLocatorImpl locator;
+    private final Populator populator;
     
     @Inject
     private DynamicConfigurationServiceImpl(ServiceLocator locator) {
         this.locator = (ServiceLocatorImpl) locator;
+        populator = new PopulatorImpl(locator, this);
     }
 
     /* (non-Javadoc)
@@ -71,7 +73,7 @@ public class DynamicConfigurationServiceImpl implements
 
     @Override
     public Populator getPopulator() {
-        throw new AssertionError("DynamicConfigurationServiceImpl.getPopulator not yet implemented");
+        return populator;
     }
 
 }
