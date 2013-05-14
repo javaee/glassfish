@@ -137,9 +137,9 @@
     </mailingLists>
 
     <scm>
-      <connection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</connection>
-      <developerConnection>scm:svn:https://svn.java.net/svn/hk2~svn/trunk/hk2</developerConnection>
-      <url>https://svn.java.net/svn/hk2~svn/trunk/hk2</url>
+      <connection>scm:git:ssh://git.java.net/hk2~git/hk2</connection>
+      <developerConnection>scm:git:ssh://git.java.net/hk2~git/hk2</developerConnection>
+      <url>ssh://git.java.net/hk2~git/hk2</url>
     </scm>
 
     <build>
@@ -186,17 +186,7 @@
                 <configuration>
                     <useReleaseProfile>false</useReleaseProfile>
                     <arguments>${release.arguments}</arguments>
-                    <providerImplementations>
-                        <svn>javasvn</svn>
-                    </providerImplementations>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
-                        <artifactId>maven-scm-provider-svnjava</artifactId>
-                        <version>2.0.5</version>
-                    </dependency>
-                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
