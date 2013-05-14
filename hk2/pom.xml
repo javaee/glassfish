@@ -295,12 +295,6 @@
                 </extension>
         </extensions>
     </build>
-    <modules>
-        <module>build</module>
-        <module>public</module>
-        <module>kernel</module>
-	<module>bom</module>
-  </modules>
   
   <profiles>
       <profile>
@@ -309,6 +303,37 @@
             that are not part of the default reactor 
           -->
             <id>release-phase-all</id>
+        </profile>
+
+        <profile>
+            <id>build</id>
+            <activation>
+              <property>
+                <name>!site</name>
+              </property>
+            </activation>
+
+            <modules>
+              <module>build</module>
+              <module>public</module>
+              <module>kernel</module>
+              <module>bom</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>site</id>
+            <activation>
+              <property>
+                <name>site</name>
+              </property>
+            </activation>
+
+            <modules>
+              <module>build</module>
+              <module>public</module>
+              <module>kernel</module>
+            </modules>
         </profile>
     </profiles>
 
