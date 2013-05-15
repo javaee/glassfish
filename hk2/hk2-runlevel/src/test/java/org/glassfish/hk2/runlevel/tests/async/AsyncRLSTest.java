@@ -151,11 +151,30 @@ public class AsyncRLSTest {
         
         // Down is ORDERED (unlike up) and must happen in the opposite of the up order
         Assert.assertEquals(records.get(5), recordsDown.get(0));
-        Assert.assertEquals(records.get(4), recordsDown.get(1));
-        Assert.assertEquals(records.get(3), recordsDown.get(2));
+        if (records.get(4).equals(recordsDown.get(1))) {
+        	Assert.assertEquals(records.get(3), recordsDown.get(2));
+        }
+        else if (records.get(4).equals(recordsDown.get(2))) {
+        	Assert.assertEquals(records.get(3), recordsDown.get(1));
+        }
+        else {
+        	Assert.fail("records.get(4)=" + records.get(4) +
+        			" recordsDown.get(1)=" + recordsDown.get(1) +
+        			" recordsDown.get(2)=" + recordsDown.get(2));
+        }
         Assert.assertEquals(records.get(2), recordsDown.get(3));
-        Assert.assertEquals(records.get(1), recordsDown.get(4));
-        Assert.assertEquals(records.get(0), recordsDown.get(5));
+        
+        if (records.get(1).equals(recordsDown.get(4))) {
+        	Assert.assertEquals(records.get(0), recordsDown.get(5));
+        }
+        else if (records.get(1).equals(recordsDown.get(5))) {
+        	Assert.assertEquals(records.get(0), recordsDown.get(4));
+        }
+        else {
+        	Assert.fail("records.get(1)=" + records.get(1) +
+        			" recordsDown.get(4)=" + recordsDown.get(4) +
+        			" recordsDown.get(5)=" + recordsDown.get(5));
+        }
     }
     
     /**
