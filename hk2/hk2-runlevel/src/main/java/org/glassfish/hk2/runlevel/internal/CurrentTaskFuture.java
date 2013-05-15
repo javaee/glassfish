@@ -541,6 +541,8 @@ public class CurrentTaskFuture implements RunLevelFuture {
         private boolean cancelled = false;
         private boolean done = false;
         
+        private MultiException serviceDownErrors = null;
+        
         public DownAllTheWay(int goingTo,
                 RunLevelFuture future,
                 List<ServiceHandle<RunLevelListener>> listeners) {
@@ -598,10 +600,17 @@ public class CurrentTaskFuture implements RunLevelFuture {
                     }
                     catch (Throwable th) {
                         if (future != null) {
-                            invokeOnError(future, th, listeners);
+                        	if (serviceDownErrors == null) serviceDownErrors = new MultiException();
+                        	
+                        	serviceDownErrors.addError(th);
+                            
                         }
                     }
                     
+                }
+                
+                if (serviceDownErrors != null) {
+                	invokeOnError(future, serviceDownErrors, listeners);
                 }
                 
                 workingOn--;

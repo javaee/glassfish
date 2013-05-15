@@ -254,7 +254,7 @@ public class ErrorTest {
         
         Assert.assertTrue(s22_error instanceof MultiException);
         MultiException s22_me = (MultiException) s22_error;
-        Assert.assertEquals(ERROR_MESSAGE_3, s22_me.getErrors().get(0).getMessage());
+        Assert.assertTrue(s22_me.getErrors().get(0).getMessage().contains(ERROR_MESSAGE_3));
         
         // Make sure we can keep going down
         future = controller.proceedToAsync(ZERO);
@@ -274,7 +274,7 @@ public class ErrorTest {
         
         Assert.assertTrue(s1_error instanceof MultiException);
         MultiException s1_me = (MultiException) s1_error;
-        Assert.assertEquals(ERROR_MESSAGE_2, s1_me.getErrors().get(0).getMessage());
+        Assert.assertTrue(s1_me.getErrors().get(0).getMessage().contains(ERROR_MESSAGE_2));
     }
     
     /**
