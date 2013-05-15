@@ -5,9 +5,9 @@
 
 Compatibility
 
-    This page describes modularity with the HK2 2.0 API, which is based on the
+    This page describes extensibility with the HK2 2.0 API, which is based on the
     JSR-330 standard annotations.  Also, Habitat has been replaced with a new
-    interface called {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}.
+    interface called {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}.
     More information can be found {{{./index.html}here}}.
     
 Extensibility of HK2
@@ -29,32 +29,32 @@ Extensibility of HK2
  
 * {Adding a Scope and Context to the system}
 
- In HK2 a {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is a class that is used to control the lifecycle of service instances.  A
+ In HK2 a {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Context.html}Context}} is a class that is used to control the lifecycle of service instances.  A
  {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} is an annotation that is put onto another
- annotation that is used to associate any service with a particular {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}}.  All services
+ annotation that is used to associate any service with a particular {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Context.html}Context}}.  All services
  in HK2 are associated with a single scope.
  
  There are two system provided scope/context pairs.  The default {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}}
- for services annotated with {{{./apidocs/org/jvnet/hk2/annotations/Service.html}@Serivce}} is the
+ for services annotated with {{{../nonav/hk2-api/apidocs/org/jvnet/hk2/annotations/Service.html}@Serivce}} is the
  {{{http://docs.oracle.com/javaee/6/api/javax/inject/Singleton.html}Singleton}} scope.  Service instances in the
  {{{http://docs.oracle.com/javaee/6/api/javax/inject/Singleton.html}Singleton}} scope are created once and are
  never destroyed.
  
  The default {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} for services bound with
- the {{{./apidocs/org/glassfish/hk2/api/DynamicConfiguration.html}DynamicConfiguration}} bind call is
- {{{./apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}}.  Service
- instances in the {{{./apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}} scope are created every time that
+ the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/DynamicConfiguration.html}DynamicConfiguration}} bind call is
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}}.  Service
+ instances in the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}} scope are created every time that
  the service is injected or looked up via the API.  These instances are destroyed when the
- {{{./apidocs/org/glassfish/hk2/api/ServiceHandle.html}ServiceHandle}} destroy method is called
- on any service that has injected a {{{./apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}} object.
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceHandle.html}ServiceHandle}} destroy method is called
+ on any service that has injected a {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/PerLookup.html}PerLookup}} object.
  
  Any number of other scope/context pairs can be added to the system.  In order to do so, the user must write
- an implementation of {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} where the parameterized type
- of the {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is the annotation annotated with
+ an implementation of {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Context.html}Context}} where the parameterized type
+ of the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Context.html}Context}} is the annotation annotated with
  {{{http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html}Scope}} that the
- {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is handling.  This implementation of
- {{{./apidocs/org/glassfish/hk2/api/Context.html}Context}} is then bound into the
- {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Context.html}Context}} is handling.  This implementation of
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Context.html}Context}} is then bound into the
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
  
  To make this more clear, we have two examples of user scope/context pairs:
  
@@ -66,25 +66,25 @@ Extensibility of HK2
 
  Classloading is an interesting challenge in any Java environment.  HK2 defers classloading as long as possible, but at some
  point, it must get access to the true class in order to create and inject instances.  At that moment, HK2 will attempt
- to reify the descriptor, using the {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} reify method.
+ to reify the descriptor, using the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} reify method.
  
- Every {{{./apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}} bound into the system has an associated
- {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}}.  If the getLoader method of
- {{{./apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}} returns null, then the system defined algorithm
- for loading classes will be used.  Otherwise, the given {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}}
- will be used to load the class described by this {{{./apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}}.
+ Every {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}} bound into the system has an associated
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}}.  If the getLoader method of
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}} returns null, then the system defined algorithm
+ for loading classes will be used.  Otherwise, the given {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}}
+ will be used to load the class described by this {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}}.
  
- The system algorithm used when the getLoader method of {{{./apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}}
+ The system algorithm used when the getLoader method of {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}}
  returns null is to first consult the classloader of the class being injected into, if available.  If not available,
  HK2 will use the classloader that loaded HK2 itself.  Failing this, the class will fail to be loaded and an exception
  will be thrown.
  
- Note that since the user is providing an implementation of {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}}
+ Note that since the user is providing an implementation of {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}}
  rather than a java.lang.ClassLoader that it is possible to delay the instantiation of the underlying ClassLoader until
- the {{{./apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}} is being reified.  It might also be possible to have the
- implementation of {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} consult several underlying ClassLoaders,
+ the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptor}} is being reified.  It might also be possible to have the
+ implementation of {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} consult several underlying ClassLoaders,
  or construct the class dynamically using weaving or some other class building technology.  The mind boggles at all the
- ways {{{./apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} can be implemented.
+ ways {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/HK2Loader.html}HK2Loader}} can be implemented.
  
 * {Custom Injection Resolvers}
 
@@ -94,11 +94,11 @@ Extensibility of HK2
  a user would like to customize the JSR-330 resolution in some manner, or provide their
  own injection points based on a different annotation.
  
- In order to do so, the user implements {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}}.  The
- parameterized type of the {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} must be the injection
+ In order to do so, the user implements {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}}.  The
+ parameterized type of the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} must be the injection
  annotation that they will resolve.  The user implementation of
- {{{./apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} is then bound into a
- {{{./apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/InjectionResolver.html}InjectionResolver}} is then bound into a
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} like any other service.
 
  This {{{../examples/custom-resolver-example/index.html}example}} adds a custom injection resolver that customizes the default
  JSR-330 injection resolver.
@@ -106,20 +106,20 @@ Extensibility of HK2
 * {Validation}
 
  In this example we show how the
- {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} can be used to do a complete
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} can be used to do a complete
  security lockdown of the system.  This example runs with the J2SE security manager turned on and
  grants some privileges to some projects and other privileges to other projects to ensure that the
- {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} can be used to define the
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}} can be used to define the
  security of the system.
  
  The example can be seen {{{../examples/security-lockdown-example/security-lockdown-example-runner/index.html}here}}.
  
 * {Instance Lifecycle}
 
- A user may register an implementation of {{{./apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html}InstanceLifecycleListener}}
+ A user may register an implementation of {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html}InstanceLifecycleListener}}
  to be notified whenver an instance of a service is created.  Unlike the
- {{{./apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}, which deals only with the metadata of a service,
- the {{{./apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html}InstanceLifecycleListener}} is notified whenever an instance
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ValidationService.html}ValidationService}}, which deals only with the metadata of a service,
+ the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html}InstanceLifecycleListener}} is notified whenever an instance
  of a service is created or destroyed.  This is a useful facility for tracing or for scenarios where a service wishes to become
  an automatic listener for anything that it is injected into.
  
@@ -135,18 +135,12 @@ Extensibility of HK2
  or else fail.
  
  The HK2 system allows the user to register named implementation of the
- {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} in order to modify
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} in order to modify
  or completely replace the constructors, fields and methods HK2 would choose.  
- Individual HK2 {{{./apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptors}} can
- set the name of the {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} that
+ Individual HK2 {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Descriptor.html}Descriptors}} can
+ set the name of the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} that
  should be used to analyze the implementation class.
  
- HK2 always adds an implementation of {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}}
- with the name "default" that implements the JSR-299 style of selection.  However, the HK2 system
- also provides an implementation of the
- {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} which picks the constructor
- with the largest number of parameters.  This implementation of
- {{{./apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}} can be added to a
- ServiceLocator by using the addPreferLargestConstructorClassAnalyzer method of
- {{{./apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html}ServiceLocatorUtilities}}.
+ HK2 always adds an implementation of {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ClassAnalyzer.html}ClassAnalyzer}}
+ with the name "default" that implements the JSR-299 style of selection.
  
