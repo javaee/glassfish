@@ -1,9 +1,0 @@
-org.glassfish.hk2.tests
-org.glassfish.hk2.tests.api
-org.glassfish.hk2.tests.contracts
-org.glassfish.hk2.tests.extension
-org.glassfish.hk2.tests.literal
-org.glassfish.hk2.tests.services
-org.glassfish.hk2.tests.utilities.activelink
-org.glassfish.hk2.tests.utilities.hk2loader
-org.glassfish.hk2.utilities.binding
