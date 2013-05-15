@@ -56,5 +56,5 @@ Introduction
 	This page is a simple guide for how to develop your own
 	applications with HK2:
 
-  {{{develop.html}Developing with HK2}}
+  {{{./develop.html}Developing with HK2}}
 
