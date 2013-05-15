@@ -1,7 +1,0 @@
-net.sf.cglib.reflect
-net.sf.cglib.proxy
-net.sf.cglib.transform
-net.sf.cglib.transform.impl
-net.sf.cglib.beans
-net.sf.cglib.core
-net.sf.cglib.util
