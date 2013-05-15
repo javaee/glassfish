@@ -93,7 +93,10 @@ public class ServiceLocatorFactoryTest {
   @Test
   public void testDeleteFromServiceLocatorFactory() {
     ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
-    ServiceLocatorImpl sl = (ServiceLocatorImpl) slf.create(DELETE_FROM_SLF);
+    ServiceLocator locator = slf.create(DELETE_FROM_SLF);
+    if (!(locator instanceof ServiceLocatorImpl)) return;
+    
+    ServiceLocatorImpl sl = (ServiceLocatorImpl) locator;
     Assert.assertNotNull(sl);
     Assert.assertFalse(sl.isShutdown());
     
