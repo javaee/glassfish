@@ -346,7 +346,7 @@ public class InhabitantsGeneratorTest {
             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
             envItself.setScope(PerLookup.class.getName());
             envItself.setName(GENERATE_METHOD_CREATE_NAME1);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.StreetAddress");
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.generator.tests.StreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getStreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
             
@@ -361,7 +361,7 @@ public class InhabitantsGeneratorTest {
             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
             envItself.setScope(PerLookup.class.getName());
             envItself.setName(GENERATE_METHOD_CREATE_NAME2);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.StreetAddress");
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.generator.tests.StreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getSecondaryStreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
             
@@ -374,7 +374,7 @@ public class InhabitantsGeneratorTest {
             envItself.setImplementation(GENERATE_METHOD_DELETE_IMPL);
             envItself.addAdvertisedContract(GENERATE_METHOD_DELETE_CONTRACT);
             envItself.setScope(Singleton.class.getName());
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.StreetAddress");
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.generator.tests.StreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getStreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
             
@@ -389,7 +389,7 @@ public class InhabitantsGeneratorTest {
             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
             envItself.setScope(PerLookup.class.getName());
             envItself.setName(GENERATE_METHOD_CREATE_NAME3);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.DecoratedTown");
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.generator.tests.DecoratedTown");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getTown");
             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
             
@@ -404,7 +404,7 @@ public class InhabitantsGeneratorTest {
             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
             envItself.setScope(PerLookup.class.getName());
             envItself.setName(GENERATE_METHOD_CREATE_NAME4);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.ZipCode");
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.generator.tests.ZipCode");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getZipCodes");
             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, DecoratedTown.class.getName());
             
@@ -419,7 +419,7 @@ public class InhabitantsGeneratorTest {
             envItself.addAdvertisedContract(GENERATE_METHOD_CREATE_CONTRACT);
             envItself.setScope(PerLookup.class.getName());
             envItself.setName(GENERATE_METHOD_CREATE_NAME5);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL_TYPE, "org.jvnet.hk2.generator.tests.StreetAddress");
+            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.generator.tests.StreetAddress");
             envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "setMyAddress");
             envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
             

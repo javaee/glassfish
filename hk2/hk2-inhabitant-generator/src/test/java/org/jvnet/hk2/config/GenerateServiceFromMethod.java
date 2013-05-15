@@ -62,7 +62,7 @@ public @interface GenerateServiceFromMethod {
      * This is the key in the metadata that will contain the actual type of the List return type of the
      * method where the user-supplied annotation has been placed
      */
-    public final static String METHOD_ACTUAL_TYPE = "MethodListActual";
+    public final static String METHOD_ACTUAL = "MethodListActual";
     
     /**
      * This is the key in the metadata that will contain the name of the method where the user-supplied
