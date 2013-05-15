@@ -1,8 +1,0 @@
-com.sun.hk2.component
-org.jvnet.hk2.annotations
-org.jvnet.hk2.component
-org.jvnet.hk2.component.classmodel
-org.jvnet.hk2.component.internal.runlevel
-org.jvnet.hk2.component.matcher
-org.jvnet.hk2.junit
-org.jvnet.hk2.tracing
