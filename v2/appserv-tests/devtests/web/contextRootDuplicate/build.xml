@@ -94,7 +94,6 @@
             <arg line="--force=${force}"/>
             <arg line="--upload=true"/>
             <arg line="--target ${appserver.instance.name}"/>
-            <arg line="--libraries ${libraries}"/>
             <arg line="${assemble.dir}/${appname}-web.war"/>
         </exec>
         <exec executable="${ASADMIN}" failonerror="false">
@@ -106,7 +105,6 @@
             <arg line="--force=${force}"/>
             <arg line="--upload=true"/>
             <arg line="--target ${appserver.instance.name}"/>
-            <arg line="--libraries ${libraries}"/>
             <arg line="${assemble.dir}/${appname}-web.war"/>
         </exec>
     </target>
