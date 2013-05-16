@@ -1072,7 +1072,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="${extra-params}"/>    
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="--retrieve ${assemble.dir}"/>
-    <arg line="--libraries ${libraries}"/>
 <!-- deployed.app defaults to ${assemble.dir}/${appname}App.ear defined in properties.xml-->
     <arg line="${deployed.app}"/>
   </exec>
@@ -1087,7 +1086,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="${as.props}"/>
     <arg line="--target ${appserver.instance.name}"/>
     <arg line="--retrieve ${assemble.dir}"/>
-    <arg line="--libraries ${libraries}"/>
 <!-- deployed.app defaults to ${assemble.dir}/${appname}App.ear defined in properties.xml-->
     <arg line="${deployed.app}"/>
   </exec>
@@ -1147,7 +1145,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="--force=${force}"/>
     <arg line="--upload=true"/>
     <arg line="--target ${appserver.instance.name}"/>
-    <arg line="--libraries ${libraries}"/>
     <arg line="${warname}.war"/>
   </exec>
 </target>
@@ -1171,7 +1168,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="--force=${force}"/>
     <arg line="--upload=true"/>
     <arg line="--target ${appserver.instance.name}"/>	
-    <arg line="--libraries ${libraries}"/>
     <arg line="${assemble.dir}/${appname}-web.war"/>
   </exec>
 </target> 
@@ -1189,7 +1185,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="--force=${force}"/>
     <arg line="--upload=true"/>
     <arg line="--target ${instance.name}"/>
-    <arg line="--libraries ${libraries}"/>
     <arg line="${assemble.dir}/${appname}-web.war"/>
   </exec>
 </target>
@@ -1207,7 +1202,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="--force=${force}"/>
     <arg line="--upload=true"/>
     <arg line="--target ${appserver.instance.name}"/>	
-    <arg line="--libraries ${libraries}"/>
     <arg line="${assemble.dir}/${appname}-web.war"/>
   </exec>
 </target>
@@ -1230,7 +1224,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="--port ${admin.port}"/>
     <arg line="--upload=true"/>
     <arg line="--target ${appserver.instance.name}"/>
-    <arg line="--libraries ${libraries}"/>
     <arg line="${assemble.dir}/${appname}-web.war"/>
     </exec>
 </target>
@@ -1245,7 +1238,6 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
     <arg line="--type web"/>
     <arg line="--upload=true"/>
     <arg line="--target ${appserver.instance.name}"/>
-    <arg line="--libraries ${libraries}"/>
     <arg line="${assemble.dir}/${appname}-web.war"/>
     </exec>
 </target>
