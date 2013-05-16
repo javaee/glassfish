@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,10 +41,13 @@
 package org.glassfish.api.admin;
 
 
+import java.io.Serializable;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.security.auth.Subject;
 import org.glassfish.api.ActionReport;
+import org.glassfish.api.admin.Payload.Inbound;
+import org.glassfish.api.admin.Payload.Outbound;
 import org.glassfish.api.admin.progress.ProgressStatusImpl;
 
 /**
@@ -52,15 +55,15 @@ import org.glassfish.api.admin.progress.ProgressStatusImpl;
  *
  * @author Jerome Dochez
  */
-public class AdminCommandContextImpl implements  AdminCommandContext {
+public class AdminCommandContextImpl implements  AdminCommandContext, Serializable {
     
     private  ActionReport report;
-    private final Logger logger;
-    private final Payload.Inbound inboundPayload;
-    private final Payload.Outbound outboundPayload;
-    private Subject subject;
+    transient private final Logger logger;
+    transient private Payload.Inbound inboundPayload;
+    transient private Payload.Outbound outboundPayload;
+    transient private Subject subject; // Subject is Serializable but we want up to date Subject when deserializing 
     private ProgressStatus progressStatus; //new ErrorProgressStatus();
-    private final AdminCommandEventBroker eventBroker;
+    transient private final AdminCommandEventBroker eventBroker;
 
     public AdminCommandContextImpl(Logger logger, ActionReport report) {
         this(logger, report, null, null, null);
@@ -98,8 +101,18 @@ public class AdminCommandContextImpl implements  AdminCommandContext {
     }
 
     @Override
+    public void setInboundPayload(Payload.Inbound newInboundPayload) {
+        inboundPayload = newInboundPayload;
+    }
+
+    @Override
     public Payload.Outbound getOutboundPayload() {
         return outboundPayload;
+    }
+
+    @Override
+    public void setOutboundPayload(Payload.Outbound newOutboundPayload) {
+        outboundPayload = newOutboundPayload;
     }
 
     @Override

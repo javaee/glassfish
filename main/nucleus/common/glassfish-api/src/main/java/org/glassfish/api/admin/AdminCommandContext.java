@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2008-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -79,12 +79,26 @@ public interface AdminCommandContext extends ExecutionContext {
     public Payload.Inbound getInboundPayload();
 
     /**
+     * Changes the inbound payload for this action.
+     *
+     * @param newInboundPayload inbound payload to set.
+     */
+    public void setInboundPayload(Payload.Inbound newInboundPayload);
+
+    /**
      * Returns a reference to the outbound payload so a command implementation
      * can populate the payload for return to the admin client.
      *
      * @return the outbound payload
      */
     public Payload.Outbound getOutboundPayload();
+
+    /**
+     * Changes the outbound payload for this action.
+     *
+     * @param newOutboundPayload outbound payload to set.
+     */
+    public void setOutboundPayload(Payload.Outbound newOutboundPayload);
 
     /**
      * Returns the Subject associated with this command context.
