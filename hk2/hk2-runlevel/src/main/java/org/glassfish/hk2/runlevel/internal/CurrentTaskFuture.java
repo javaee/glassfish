@@ -382,9 +382,9 @@ public class CurrentTaskFuture implements RunLevelFuture {
                 
                 downer.run();
                 
-                synchronized (lock) {
-                    invokeOnError(future, exception, listeners);
-                    
+                invokeOnError(future, exception, listeners);
+                
+                synchronized (lock) {                    
                     done = true;
                     this.exception = exception;
                     lock.notifyAll();
@@ -403,26 +403,24 @@ public class CurrentTaskFuture implements RunLevelFuture {
             
             if (downer != null) {
                 downer.run();
-            }
-            
-            synchronized (lock) {
-                if (downer != null) {
-                    invokeOnCancelled(future, workingOn - 1, listeners);
                 
+                invokeOnCancelled(future, workingOn - 1, listeners);
+                
+                synchronized (lock) {
                     done = true;
                     lock.notifyAll();
-                    
+                        
                     parent.jobDone();
-                    
+                        
                     return;
                 }
+            }
+            
+            parent.setCurrentLevel(workingOn);
+            invokeOnProgress(future, workingOn, listeners);
                 
-                parent.setCurrentLevel(workingOn);
-                invokeOnProgress(future, workingOn, listeners);
-                
-                if (useThreads) {
-                    go();
-                }
+            if (useThreads) {
+                go();
             }
         }
         
