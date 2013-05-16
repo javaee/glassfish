@@ -58,6 +58,11 @@ import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.utilities.Utilities;
 
 /**
+ * This is the implementation of RunLevelFuture.  There should
+ * only be one of these active in the system at any time.  Of
+ * course users are given a handle to this object, so they can
+ * hold onto references to it for as long as they'd like.
+ * 
  * @author jwells
  *
  */
@@ -567,12 +572,18 @@ public class CurrentTaskFuture implements RunLevelFuture {
         @Override
         public void run() {
             while (workingOn > goingTo) {
+                boolean runOnCancelled;
+                synchronized (this) {
+                    runOnCancelled = cancelled && (future != null);
+                }
+                
+                if (runOnCancelled) {
+                    // Run outside of lock
+                    invokeOnCancelled(future, workingOn, listeners);
+                }
+                
                 synchronized (this) {
                     if (cancelled) {
-                        if (future != null) {
-                            invokeOnCancelled(future, workingOn, listeners);
-                        }
-                        
                         done = true;
                         this.notifyAll();
                         
