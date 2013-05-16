@@ -43,18 +43,34 @@ package org.glassfish.hk2.runlevel;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Implementations of this contract are responsible for orchestration
- * lifecycle events (i.e., start levels) in Hk2.
+ * A RunLevelContoller controls the current state of
+ * services registered in the {@link RunLevel} scope.  All
+ * services annotated with a {@link RunLevel} equal to
+ * or less than the current level of the system will be
+ * started.  All services annotated with a {@link RunLevel}
+ * higher than the current level of the system will not
+ * be started.  This service can be used to change the
+ * current level of the system.
  * <p>
- * Each run level service is responsible for a particular class of
- * {@link RunLevel} that is identified by a {@link RunLevelControllerIndicator}
- * value.
+ * Whether or not separate threads are used by the RunLevelController
+ * is a policy set by the caller.  By default the RunLevelController
+ * will use as many threads as there are services to be started at
+ * a particular level.  So if your system has possibly hundreds of
+ * services at some level, you will probably want to set your maximum
+ * number of threads to some reasonable number.  You can also change
+ * your threading policy to USE_NO_THREADS, in which case the
+ * RunLevelController will not spawn any threads at all, but will
+ * instead use the thread of the caller to perform all work.  In this
+ * mode the Async API will throw an exception.
  * <p>
- * Implementations of this service are responsible for orchestrating
- * lifecycle events for services annotated with {@link RunLevel}.
- * <p>
+ * The RunLevelController starts at level -2.  The reasoning behind this
+ * is to allow two "immediate" levels.  The first thing a system might do
+ * is proceed to level 0 (running all services at level -1 and 0).
+ * Thereafter the system may go up and down in levels, never going below
+ * zero.  Note this is only a convention, and individual systems can choose
+ * other meanings for the levels -1 and 0.
  *
- * @author jtrent, tbeerbower
+ * @author jtrent, tbeerbower, jwells
  */
 @Contract
 public interface RunLevelController {
