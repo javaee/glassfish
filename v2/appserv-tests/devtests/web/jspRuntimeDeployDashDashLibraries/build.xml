@@ -82,7 +82,7 @@
     <target name="build-publish-war" depends="build, publish-war-common" />
     
     <target name="deploy" depends="init-common">
-      <antcall target="deploy-war-common"/>
+      <antcall target="deploy-war-libraries"/>
     </target>
 
     <target name="run" depends="init-common">

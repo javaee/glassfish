@@ -1172,6 +1172,24 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   </exec>
 </target> 
 
+<target name="deploy-war-libraries" depends="init-common" unless="ee">
+  <echo message="Deploying ${assemble.dir}/${appname}-web.war from ${basedir}."
+      level="verbose"/>
+  <property name="precompilejsp" value="true"/>
+  <property name="force" value="false"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="deploy"/>
+    <arg line="${as.props}"/>
+    <arg line="--contextroot ${contextroot}"/>
+    <arg line="--precompilejsp=${precompilejsp}"/>
+    <arg line="--force=${force}"/>
+    <arg line="--upload=true"/>
+    <arg line="--target ${appserver.instance.name}"/>
+    <arg line="--libraries ${libraries}"/>
+    <arg line="${assemble.dir}/${appname}-web.war"/>
+  </exec>
+</target>
+
 <target name="deploy-war-instance" depends="init-common" unless="ee">
   <echo message="Deploying ${assemble.dir}/${appname}-web.war from ${basedir}."
       level="verbose"/>
