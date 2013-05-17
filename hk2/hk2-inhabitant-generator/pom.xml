@@ -95,19 +95,14 @@
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-plugin-api</artifactId>
             <version>2.0.4</version>
+            <scope>provided</scope>
         </dependency>
-        <!--  
-        <dependency>
-            <groupId>org.eclipse.core</groupId>
-            <artifactId>resources</artifactId>
-            <version>3.3.0-v20070604</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
             <version>3.0-alpha-2</version>
             <type>jar</type>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>ant</groupId>
