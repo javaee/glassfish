@@ -230,7 +230,7 @@ public class HK2Main extends Main implements
                 mr1.addObr(URI.create(s));
             }
         }
-        mr.dumpState(System.out);
+        
         mrReg = ctx.registerService(ModulesRegistry.class.getName(), mr, null);
         
         return mr;

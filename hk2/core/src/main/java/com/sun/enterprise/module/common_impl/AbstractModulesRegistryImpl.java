@@ -313,8 +313,7 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
 
     public Module makeModuleFor(String name, String version, boolean resolve) throws ResolveError {
         Module module;
-        Logger.getAnonymousLogger().fine("this.makeModuleFor("+name+ ", " +
-                version + ", " + resolve + ") called.");
+                
         if(parent!=null) {
             module = parent.makeModuleFor(name,version, resolve);
             if(module!=null)        return module;
@@ -341,7 +340,6 @@ public abstract class AbstractModulesRegistryImpl implements ModulesRegistry {
                 throw new ResolveError(e);
             }
         }
-        Logger.getAnonymousLogger().info("this.makeModuleFor("+name+ ", " + version + ") returned " + module);
         return module;
     }
 
