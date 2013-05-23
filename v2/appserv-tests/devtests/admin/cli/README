@@ -12,7 +12,7 @@ ant -Dteststorun=restart-domain | tee out
 
 etc.
 
-Windows -->  start d:\bg\all\v2\appserv-tests\test_results.html
+Windows -->  start %APS_HOME%\test_results.html
 ALl Platforms --> Take a look at ../../../test_results.html in a browser.
 
 set this to true and the tests will stop after the first failure.

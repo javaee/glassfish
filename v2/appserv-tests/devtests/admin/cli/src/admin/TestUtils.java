@@ -170,14 +170,29 @@ final class TestUtils {
     }
 
     public static boolean getEnvOrPropBoolean(String name) {
+        // if the string is null -- it simply returns false
+        return Boolean.parseBoolean(getEnvOrPropString(name));
+    }
+
+    public static int getEnvOrPropInt(String name) {
+        // if the string is null -- it returns -1
+        try {
+            return Integer.parseInt(getEnvOrPropString(name));
+        }
+        catch (Exception e) {
+            return -1;
+        }
+    }
+
+    public static String getEnvOrPropString(String name) {
         // System properties override env. variables
         String envVal = System.getenv(name);
         String sysPropVal = System.getProperty(name);
 
         if (sysPropVal != null)
-            return Boolean.parseBoolean(sysPropVal);
+            return sysPropVal;
         else
-            return Boolean.parseBoolean(envVal);
+            return envVal;
     }
 
     public static void SystemExit() {

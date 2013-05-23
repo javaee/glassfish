@@ -308,6 +308,10 @@
         <runtest classname="admin.UpgradeTest"/>
     </target>
 
+    <target name="testtests" depends="init">
+        <runtest classname="admin.TestTests"/>
+    </target>
+
     <target name="zombie" depends="init">
         <runtest classname="admin.ZombieTests"/>
     </target>
@@ -379,6 +383,10 @@
         <javac srcdir="src" destdir="build" debug="true" fork="true"
                classpath="${test}"
                includes="**/*.java"/>
+    </target>
+
+    <target name="reminder" depends="init">
+        <runtest classname="admin.Reminders"/>
     </target>
 
     <target name="setup" depends="startdb">
