@@ -50,7 +50,7 @@
 
 <project name="web" default="all" basedir=".">
 
-    <property name="TOTAL_EXPECTED" value="490"/>
+    <property name="TOTAL_EXPECTED" value="717"/>
 
     &commonSetup;
     &commonBuild;
@@ -242,6 +242,7 @@
         <ant dir="servlet-3.0/multipart" target="all"/>
         <ant dir="servlet-3.0/relativeOrderingWebFragments" target="all"/>
         <ant dir="servlet-3.0/serveJspAndStaticResourceFromLocalJar" target="all"/>
+        <ant dir="servlet-3.0/resourceURLFromLocalJar" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/jsfManagedBeanAnnotation" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithEAR" target="all"/>
         <ant dir="servlet-3.0/servletContainerInitializer/sharedLibWithInterfaceImplementation" target="all"/>
