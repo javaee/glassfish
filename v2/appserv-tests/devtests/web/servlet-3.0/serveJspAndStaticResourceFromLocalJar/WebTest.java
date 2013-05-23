@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -89,7 +89,7 @@ public class WebTest {
         try { 
             invokeJspServlet();
             invokeDefaultServlet("/abc.txt", 200, EXPECTED_RESPONSE);
-            invokeDefaultServlet("/folder", 302, contextRoot + "/folder/");
+            invokeDefaultServlet("/folder", new int[] { 301, 302 }, contextRoot + "/folder/");
             invokeDefaultServlet("/folder/", 404, null);
             invokeDefaultServlet("/folder/def.txt", 200, EXPECTED_RESPONSE_2);
             invokeTestServlet();
@@ -121,6 +121,11 @@ public class WebTest {
 
     private void invokeDefaultServlet(String path, int expectedStatus,
             String expectedResponse) throws Exception {
+        invokeDefaultServlet(path, new int[] { expectedStatus }, expectedResponse);
+    }
+
+    private void invokeDefaultServlet(String path, int[] expectedStatuses,
+            String expectedResponse) throws Exception {
         URL url = new URL("http://" + host  + ":" +
                           port + contextRoot + path);
         System.out.println("Invoking URL: " + url.toString());
@@ -128,7 +133,13 @@ public class WebTest {
         conn.setInstanceFollowRedirects(false);
         conn.connect();
         int responseCode = conn.getResponseCode();
-        if (responseCode != expectedStatus) {
+        boolean validStatus = false;
+        for (int status : expectedStatuses) {
+            if (status == responseCode) {
+                validStatus = true;
+            }
+        }
+        if (!validStatus) {
             throw new Exception("Unexpected response code: " + responseCode);
         }
 
