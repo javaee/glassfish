@@ -502,7 +502,7 @@ public class ClusterTest extends AdminBaseDevTest {
 
 
 
-        sleep(15);
+        //sleep(15);
 
 
 
@@ -609,10 +609,27 @@ public class ClusterTest extends AdminBaseDevTest {
                 + "JMS_PROVIDER_PORT=38686:ASADMIN_LISTENER_PORT=34848", i3name));
 
         // start the instances
-        report(tn + "start-cluster", asadmin("start-cluster", cname));
+        // 5/22/2013 bnevins
+        // the following start-cluster is failing intermittently.
+        // Added some more diagnostics.
+
+        AsadminReturn ret = asadminWithOutput(600000, "start-cluster", cname);
+
+        if(!ret.returnValue) {
+            report(tn + "start-cluster", false);
+            ret = asadminWithOutput("list-clusters");
+            TestUtils.writeErrorToDebugLog(ret, "Followup diagnostics.  the cluster ought to be running!");
+            ret = asadminWithOutput("list-instances", "--long");
+            TestUtils.writeErrorToDebugLog(ret, "Followup diagnostics.  the instances (gsli1,2,3) ought to all be running!");
+        }
+        else
+            report(tn + "start-cluster", true);
         report(tn + "start-local-instance3", asadmin("start-local-instance", i3name));
 
 
+        // bnevins
+        // fixme
+        // get rid of this !!!!
         sleep(10);
 
 
@@ -624,7 +641,7 @@ public class ClusterTest extends AdminBaseDevTest {
         report(tn + "getindex3", matchString("GlassFish Server", getURL(i3url)));
 
         // check if list lists all configs created
-        AsadminReturn ret = asadminWithOutput("list", "configs.config");
+        ret = asadminWithOutput("list", "configs.config");
         boolean success = ret.outAndErr.indexOf("configs.config." + cname + "-config") >= 0;
         report("list-cluster-config", success);
         success = ret.outAndErr.indexOf("configs.config." + i3name + "-config") >= 0;
@@ -790,8 +807,8 @@ public class ClusterTest extends AdminBaseDevTest {
 
         // the following line occasionally fails in Windows.  Do multi-try and gather
         // diagnostic info...
-        report(tn + "start-local-instance1", asadmin(5, 10000, "start-local-instance", i1name));
-        report(tn + "start-local-instance2", asadmin(5, 10000, "start-local-instance", i2name));
+        report(tn + "start-local-instance1", asadmin(5, 100000, "start-local-instance", i1name));
+        report(tn + "start-local-instance2", asadmin(5, 100000, "start-local-instance", i2name));
         // Test instance states
         ret = asadminWithOutput("list-instances");
         success = checkListInstancesOutputIfRunning(ret.outAndErr, i1name);
