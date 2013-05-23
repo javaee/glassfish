@@ -218,7 +218,7 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
 
         super.report(name2, success);
 
-        if (!success && !isVerbose()) {
+        if (!success) {
             writeFailure();
         }
     }
