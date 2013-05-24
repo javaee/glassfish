@@ -47,7 +47,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-kernel-parent</artifactId>
-        <version>2.2.0-b01-SNAPSHOT</version>
+        <version>2.2.0-b01</version>
         <relativePath>../kernel</relativePath>
     </parent>
 	<artifactId>hk2-dependency-visualizer</artifactId>
