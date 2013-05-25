@@ -40,6 +40,8 @@
 
 package org.glassfish.hk2.runlevel;
 
+import java.util.concurrent.Executor;
+
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -164,6 +166,29 @@ public interface RunLevelController {
      * @return The threading policy currently in use with this controller
      */
     public ThreadingPolicy getThreadingPolicy();
+    
+    /**
+     * Sets the executor to use for the next job.  This
+     * value is ignored if the thread policy is
+     * USE_NO_THREADS
+     * 
+     * @param executor The executor to use for the
+     * next job.  If null a default executor will
+     * be used
+     */
+    public void setExecutor(Executor executor);
+    
+    /**
+     * Gets the executor that will be used by the system
+     * when executing tasks.  This value is not used
+     * by the system if the thread policy is USE_NO_THREADS
+     * 
+     * @return The currently installed executor.  Will
+     * not return null (the default executor implementation
+     * will be returned if the user has not supplied an
+     * executor)
+     */
+    public Executor getExecutor();
     
     /**
      * These are the policies for how the RunLevelController

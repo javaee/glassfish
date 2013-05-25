@@ -48,7 +48,20 @@ import java.util.List;
 /**
  * ServiceLocator is the registry for HK2 services
  * <p>
- * Services can be looked up from this instance
+ * This service is the most fundamental service in an HK2 system.  Every
+ * service locator starts with a ServiceLocator as a service, and hence
+ * ServiceLocators can be injected into every object managed by HK2.
+ * <p>
+ * A service locator can have a single parent.  Services are looked up in
+ * the current service locator and in all the parents of the service locator.
+ * If multiple services exist that match the filter they will all be returned.
+ * Two services with the same priority are sorted first by service locator
+ * id and second by service id.  This implies that services directly installed
+ * in a ServiceLocator have higher natural priority than those in the parents
+ * of the ServiceLocator.  Services can also be marked as having visibility LOCAL,
+ * in which case they will only be available to the ServiceLocator performing
+ * the lookup, and will not leak out to children of that ServiceLocator.
+ *
  */
 @Contract
 public interface ServiceLocator {

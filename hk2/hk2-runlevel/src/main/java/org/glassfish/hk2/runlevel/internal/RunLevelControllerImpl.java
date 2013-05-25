@@ -40,6 +40,7 @@
 package org.glassfish.hk2.runlevel.internal;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
@@ -147,6 +148,17 @@ public class RunLevelControllerImpl implements RunLevelController {
     @Override
     public ThreadingPolicy getThreadingPolicy() {
         return context.getPolicy();
+    }
+
+    @Override
+    public void setExecutor(Executor executor) {
+        throw new AssertionError("not yet implemented");
+        
+    }
+
+    @Override
+    public Executor getExecutor() {
+        throw new AssertionError("not yet implemented");
     }
 
 }
