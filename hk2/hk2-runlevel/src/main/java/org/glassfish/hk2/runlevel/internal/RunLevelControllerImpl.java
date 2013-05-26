@@ -152,13 +152,13 @@ public class RunLevelControllerImpl implements RunLevelController {
 
     @Override
     public void setExecutor(Executor executor) {
-        throw new AssertionError("not yet implemented");
+        context.setExecutor(executor);
         
     }
 
     @Override
     public Executor getExecutor() {
-        throw new AssertionError("not yet implemented");
+        return context.getExecutor();
     }
 
 }
