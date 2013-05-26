@@ -87,6 +87,11 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
         
     };
     
+    private static final Executor DEFAULT_EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+            60L, TimeUnit.SECONDS,
+            new SynchronousQueue<Runnable>(true),
+            THREAD_FACTORY);
+    
     /**
      * The backing maps for this context.
      */
@@ -100,7 +105,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     
     private final LinkedList<ActiveDescriptor<?>> orderedCreationList = new LinkedList<ActiveDescriptor<?>>();
     
-    private final Executor executor;
+    private Executor executor;
     private final ServiceLocator locator;
     private int maxThreads = Integer.MAX_VALUE;
     private RunLevelController.ThreadingPolicy policy = RunLevelController.ThreadingPolicy.FULLY_THREADED;
@@ -108,11 +113,6 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     @Inject
     private AsyncRunLevelContext(ServiceLocator locator) {
         this.locator = locator;
-        
-        executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
-                60L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(true),
-                THREAD_FACTORY);
     }
     
     /* package */ static void setBlocking(boolean blocking) {
@@ -266,6 +266,14 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
         this.policy = policy;
     }
     
+    /* package */ synchronized void setExecutor(Executor executor) {
+        this.executor = executor;
+    }
+    
+    /* package */ synchronized Executor getExecutor() {
+        return (executor != null) ? executor : DEFAULT_EXECUTOR ;
+    }
+    
     /* package */ synchronized RunLevelController.ThreadingPolicy getPolicy() {
         return policy;
     }
@@ -299,7 +307,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             }
             
             currentTask = new CurrentTaskFuture(this,
-                    executor,
+                    (executor != null) ? executor : DEFAULT_EXECUTOR,
                     locator,
                     level,
                     maxThreads,
