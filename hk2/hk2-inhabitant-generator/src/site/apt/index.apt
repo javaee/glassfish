@@ -82,27 +82,20 @@ java org.jvnet.hk2.generator.HabitatGenerator
  be analyzed for classes marked with @Service.
  
 +----------------------------------
-          <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-inhabitant-generator</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generateInhabitants</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>test</id>
-                        <phase>process-test-classes</phase>
-                        <configuration>
-                          <test>true</test>
-                        </configuration>
-                        <goals>
-                            <goal>generateInhabitants</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+    <plugin>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>hk2-inhabitant-generator</artifactId>
+      <version>2.2.0-b02</version>
+      
+      <executions>
+        <execution>
+          <goals>
+            <goal>generate-inhabitants</goal>
+          </goals>
+        </execution>
+      </executions>
+      
+    </plugin>
 +----------------------------------
 
  The plugin has the following configuration options:
