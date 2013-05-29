@@ -43,12 +43,12 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.guice.bridge.internal.HK2ToGuiceTypeListenerImpl;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matchers;
-import com.google.inject.spi.TypeEncounter;
-import com.google.inject.spi.TypeListener;
 
 /**
+ * This is an implementation of com.google.inject.Module that should
+ * be used if one wishes to inject HK2 services into Guice services
+ * 
  * @author jwells
  *
  */

@@ -50,6 +50,7 @@ import org.jvnet.hk2.guice.bridge.test.utilities.Utilities;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 
 /**
  * @author jwells
@@ -60,10 +61,27 @@ public class BiDirectionalBridgeTest {
     
     private Injector injector;
     
+    private static Injector createBiDirectionalGuiceBridge(ServiceLocator serviceLocator,
+            Module... applicationModules) {
+        Module allModules[] = new Module[applicationModules.length + 1];
+        
+        allModules[0] = new HK2IntoGuiceBridge(serviceLocator);
+        for (int lcv = 0; lcv < applicationModules.length; lcv++) {
+            allModules[lcv + 1] = applicationModules[lcv];
+        }
+        
+        Injector injector = Guice.createInjector(allModules);
+        
+        GuiceIntoHK2Bridge g2h = serviceLocator.getService(GuiceIntoHK2Bridge.class);
+        g2h.bridgeGuiceInjector(injector);
+        
+        return injector;
+    }
+    
     @Before
     public void before() {
         // Setup the bidirection bridge
-        injector = Guice.createInjector(new HK2IntoGuiceBridge(testLocator),
+        injector = createBiDirectionalGuiceBridge(testLocator,
                 new AbstractModule() {
 
                     @Override
@@ -73,9 +91,6 @@ public class BiDirectionalBridgeTest {
                     }
             
         });
-        
-        GuiceIntoHK2Bridge g2h = testLocator.getService(GuiceIntoHK2Bridge.class);
-        g2h.bridgeGuiceInjector(injector);
     }
     
     /**
