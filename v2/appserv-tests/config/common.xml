@@ -44,7 +44,8 @@ Variables used:
     classpath="${s1astest.classpath}"
     debug="on"
     includeantruntime="false"
-    failonerror="true"/>
+    failonerror="true"
+    fork="yes"/>
 </target>
 
 <target name="compile-common-with-endorsed-dir" depends="init-common">
