@@ -113,6 +113,11 @@ public class ValidationInformationImpl implements ValidationInformation {
     public Filter getFilter() {
         return filter;
     }
+    
+    @Override
+    public StackTraceElement getCaller() {
+        throw new AssertionError("not yet implemented");
+    }
 
     public String toString() {
         return "ValidationInformation(" + operation + "," +

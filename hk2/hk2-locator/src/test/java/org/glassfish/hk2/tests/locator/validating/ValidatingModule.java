@@ -92,7 +92,6 @@ public class ValidatingModule implements TestModule {
                 in(Singleton.class.getName()).
                 build());
         
-        
     }
 
 }

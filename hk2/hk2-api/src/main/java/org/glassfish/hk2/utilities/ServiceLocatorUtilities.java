@@ -42,6 +42,7 @@ package org.glassfish.hk2.utilities;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -247,6 +248,30 @@ public abstract class ServiceLocatorUtilities {
         }
         else {
             retVal = config.bind(descriptor, requiresDeepCopy);
+        }
+
+        config.commit();
+
+        return retVal;
+    }
+    
+    /**
+     * It is very often the case that one wishes to add a single class that hk2
+     * will automatically analyze for contracts and qualifiers to
+     * a service locator.  This method adds that one class
+     *
+     * @param locator The non-null locator to add this descriptor to
+     * @param addMe The classes to add to the locator
+     * @throws MultiException On a commit failure
+     */
+    public static List<ActiveDescriptor<?>> addClasses(ServiceLocator locator, Class<?>... toAdd) {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
+        for (Class<?> addMe : toAdd) {
+            ActiveDescriptor<?> ad = config.addActiveDescriptor(addMe);
+            retVal.add(ad);
         }
 
         config.commit();
