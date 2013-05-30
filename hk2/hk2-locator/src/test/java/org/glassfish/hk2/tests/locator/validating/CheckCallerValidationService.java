@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,63 +37,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.validating;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ValidationInformation;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
- * This object contains information about the validation
- * point.  The values available may vary depending on
- * the type of operation.
- * 
  * @author jwells
  *
  */
-public interface ValidationInformation {
-    /**
-     * The operation that is to be performed, one of<UL>
-     * <LI>BIND - The candidate descriptor is being added to the system</LI>
-     * <LI>UNBIND - The candidate descriptor is being removed from the system</LI>
-     * <LI>LOOKUP - The candidate descriptor is being looked up</LI>
-     * </UL>
-     * 
-     * @return The operation being performed
+@Singleton
+public class CheckCallerValidationService implements ValidationService {
+    private final MyValidator myValidator = new MyValidator();
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
      */
-    public Operation getOperation();
+    @Override
+    public Filter getLookupFilter() {
+        return BuilderHelper.allFilter();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getValidator()
+     */
+    @Override
+    public Validator getValidator() {
+        return myValidator;
+    }
     
-    /**
-     * The candidate descriptor for this operation
-     * 
-     * @return The candidate descriptor for the operation being performed
-     */
-    public ActiveDescriptor<?> getCandidate();
+    public StackTraceElement getLastCaller() {
+        return myValidator.getLastCaller();
+    }
     
-    /**
-     * On a LOOKUP operation if the lookup is being performed due to an
-     * injection point (as opposed to a lookup via the API) then this
-     * method will return a non-null {@link Injectee} that is the injection
-     * point that would be injected into
-     * 
-     * @return The injection point being injected into on a LOOKUP operation
-     */
-    public Injectee getInjectee();
-    
-    /**
-     * On a LOOKUP operation the {@link Filter} that was used in the
-     * lookup operation.  This may give more information about what
-     * exactly was being looked up by the caller
-     * 
-     * @return The filter used in the lookup operation
-     */
-    public Filter getFilter();
-    
-    /**
-     * This method attempts to return the StackTraceElement
-     * of the code calling the HK2 method that caused
-     * this validation to occur
-     * 
-     * @return The caller of the HK2 API that caused this
-     * validation to occur, or null if the caller could
-     * not be determined
-     */
-    public StackTraceElement getCaller();
+    private static class MyValidator implements Validator {
+        private StackTraceElement lastCaller;
+
+        @Override
+        public boolean validate(ValidationInformation info) {
+            lastCaller = info.getCaller();
+            
+            return true;  // Everybody is kool
+        }
+        
+        public StackTraceElement getLastCaller() {
+            return lastCaller;
+        }
+    }
 
 }

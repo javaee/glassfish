@@ -230,4 +230,28 @@ public class ValidatingTest {
         Assert.assertNotNull(d2);
         Assert.assertEquals(2, d2.getImplNumber());
     }
+    
+    private static ServiceLocator generateGetCallerLocators(String testName) {
+        ServiceLocator retVal = LocatorHelper.create(TEST_NAME + "." + testName, null);
+        
+        ServiceLocatorUtilities.addClasses(retVal, CheckCallerValidationService.class);
+        
+        return retVal;
+    }
+    
+    /**
+     * Tests that the stack frame for a direct lookup call is this one!
+     */
+    @Test @Ignore
+    public void testImmediateCaller() {
+        ServiceLocator testLocator = generateGetCallerLocators("testImmediateCaller");
+        
+        CheckCallerValidationService val = testLocator.getService(CheckCallerValidationService.class);
+        Assert.assertNotNull(val);
+        
+        StackTraceElement callerFrame = val.getLastCaller();
+        Assert.assertNotNull(callerFrame);
+        
+        Assert.assertEquals(getClass().getName(), callerFrame.getClassName());
+    }
 }
