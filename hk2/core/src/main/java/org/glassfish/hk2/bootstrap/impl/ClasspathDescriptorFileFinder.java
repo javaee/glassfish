@@ -39,12 +39,15 @@
  */
 package org.glassfish.hk2.bootstrap.impl;
 
+import org.glassfish.hk2.bootstrap.DescriptorFileFinder;
+
 /**
  * @deprecated Use org.glassfish.hk2.utilities.ClasspathDescriptorFileFinder
  * @author jwells
  */
 public class ClasspathDescriptorFileFinder
-  extends org.glassfish.hk2.utilities.ClasspathDescriptorFileFinder {
+  extends org.glassfish.hk2.utilities.ClasspathDescriptorFileFinder
+  implements DescriptorFileFinder {
     public ClasspathDescriptorFileFinder() {
         super();
     }
