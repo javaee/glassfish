@@ -39,66 +39,14 @@
  */
 package org.glassfish.hk2.tests.locator.validating;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.ValidationInformation;
-import org.glassfish.hk2.api.ValidationService;
-import org.glassfish.hk2.api.Validator;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import javax.inject.Inject;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class CheckCallerValidationService implements ValidationService {
-    private final MyValidator myValidator = new MyValidator();
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
-     */
-    @Override
-    public Filter getLookupFilter() {
-        return BuilderHelper.allFilter();
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getValidator()
-     */
-    @Override
-    public Validator getValidator() {
-        return myValidator;
-    }
-    
-    public List<StackTraceElement> getLastCaller() {
-        return myValidator.getLastCaller();
-    }
-    
-    public void clear() {
-        myValidator.clear();
-    }
-    
-    private static class MyValidator implements Validator {
-        private final LinkedList<StackTraceElement> lastCaller = new LinkedList<StackTraceElement>();
-
-        @Override
-        public boolean validate(ValidationInformation info) {
-            lastCaller.addFirst(info.getCaller());
-            
-            return true;  // Everybody is kool
-        }
-        
-        public List<StackTraceElement> getLastCaller() {
-            return lastCaller;
-        }
-        
-        public void clear() {
-            lastCaller.clear();
-        }
-    }
+public class ServiceB {
+    @Inject
+    public ServiceA a;
 
 }
