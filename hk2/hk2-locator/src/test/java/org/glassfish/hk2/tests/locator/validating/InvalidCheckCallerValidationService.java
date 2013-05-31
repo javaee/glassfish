@@ -39,9 +39,6 @@
  */
 package org.glassfish.hk2.tests.locator.validating;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Filter;
@@ -55,49 +52,84 @@ import org.glassfish.hk2.utilities.BuilderHelper;
  *
  */
 @Singleton
-public class CheckCallerValidationService implements ValidationService {
-    private final MyValidator myValidator = new MyValidator();
+public class InvalidCheckCallerValidationService implements ValidationService {
+    private final MyValidator validator = new MyValidator();
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
-     */
     @Override
     public Filter getLookupFilter() {
         return BuilderHelper.allFilter();
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ValidationService#getValidator()
-     */
     @Override
     public Validator getValidator() {
-        return myValidator;
+        return validator;
     }
     
-    public List<StackTraceElement> getLastCaller() {
-        return myValidator.getLastCaller();
+    public boolean check() {
+        return validator.check();
     }
     
-    public void clear() {
-        myValidator.clear();
-    }
-    
-    private static class MyValidator implements Validator {
-        private final LinkedList<StackTraceElement> lastCaller = new LinkedList<StackTraceElement>();
+    public static class MyValidator implements Validator {
+        private boolean done = false;
+        private boolean check = false;
 
         @Override
         public boolean validate(ValidationInformation info) {
-            lastCaller.addFirst(info.getCaller());
+            MyRunner runner = new MyRunner(this, info);
             
-            return true;  // Everybody is kool
+            Thread t = new Thread(runner);
+            t.start();
+            
+            synchronized (this) {
+                while (!done) {
+                    try {
+                        this.wait();
+                    }
+                    catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+            
+            check = (runner.getElement() == null);
+            
+            return true;
         }
         
-        public List<StackTraceElement> getLastCaller() {
-            return lastCaller;
+        public void done() {
+            done = true;
         }
         
-        public void clear() {
-            lastCaller.clear();
+        public boolean check() {
+            return check;
+        }
+        
+    }
+    
+    public static class MyRunner implements Runnable {
+        private final MyValidator parent;
+        private final ValidationInformation info;
+        private StackTraceElement element;
+        
+        private MyRunner(MyValidator parent, ValidationInformation info) {
+            this.parent = parent;
+            this.info = info;
+        }
+
+        @Override
+        public void run() {
+            synchronized (parent) {
+                element = info.getCaller();
+                parent.done();
+                
+                parent.notify();
+            }
+        }
+        
+        public StackTraceElement getElement() {
+            synchronized (parent) {
+                return element;
+            }
         }
     }
 

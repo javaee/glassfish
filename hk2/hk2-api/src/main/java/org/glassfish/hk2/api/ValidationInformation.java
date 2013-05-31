@@ -89,6 +89,10 @@ public interface ValidationInformation {
      * This method attempts to return the StackTraceElement
      * of the code calling the HK2 method that caused
      * this validation to occur
+     * <p>
+     * This method may not work properly if called outside
+     * of the call frame of the {@link Validator#validate(ValidationInformation)}
+     * method
      * 
      * @return The caller of the HK2 API that caused this
      * validation to occur, or null if the caller could
