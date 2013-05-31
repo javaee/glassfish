@@ -1,19 +1,19 @@
 Introduction
 
- HK2 is an implementation of the JSR-330
- standard.  It also provides an API for fine control over the operation
- of HK2 and the ability to automatically load services into the
- service registry.  It is the foundation for the GlassFish V3 application
- server and consist of several technologies.
+ HK2 is a light-weight and dynamic dependency injection framework that
+ works on J2SE platforms. It provides an API for fine control over its operation
+ and has the ability to automatically load services into the application.  It is the foundation
+ for the GlassFish V3 and V4 application servers as well as other products.
 
 * JSR-330 implementation
 
- HK2 is an implementation of the JSR-330 standard.  It adds in some useful
- utilities for marking classes as services and interfaces as contracts.
- JSR-330 defines services and injection points that can be dynamically
- discovered at runtime and which allow for Inversion of Control.
+ HK2 is {{{http://jcp.org/aboutJava/communityprocess/final/jsr330/}JSR-330}} compliant.  It also
+ has useful utilities for marking classes as services and interfaces as contracts.
+ {{{http://jcp.org/aboutJava/communityprocess/final/jsr330/}JSR-330}} defines services and
+ injection points that can be dynamically discovered at runtime and which allow for
+ Inversion of Control (IoC) and dependency injection (DI).
 
- To see how to use HK2 as a JSR-330 implementation see
+ To see how to use HK2 as a {{{http://jcp.org/aboutJava/communityprocess/final/jsr330/}JSR-330}} implementation see
  {{{./hk2-api/index.html}this page}}.
 
 * HK2 API
