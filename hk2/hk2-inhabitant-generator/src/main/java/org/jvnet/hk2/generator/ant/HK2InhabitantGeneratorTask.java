@@ -45,6 +45,7 @@ import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.Path;
 import org.jvnet.hk2.generator.HabitatGenerator;
 
 /**
@@ -57,6 +58,7 @@ public class HK2InhabitantGeneratorTask extends Task {
     private String locator = null;
     private File outputDirectory = null;
     private boolean noswap = false;
+    private Path classpath = null;
     
     public void setTargetDirectory(File targetDirectory) {
         this.targetDirectory = targetDirectory;
@@ -76,6 +78,10 @@ public class HK2InhabitantGeneratorTask extends Task {
     
     public void setNoSwap(boolean noswap) {
         this.noswap = noswap;
+    }
+    
+    public void addClasspath(Path classpath) {
+        this.classpath = classpath;
     }
     
     public void execute() throws BuildException {
@@ -118,6 +124,11 @@ public class HK2InhabitantGeneratorTask extends Task {
         
         if (noswap) {
             args.add(HabitatGenerator.NOSWAP_ARG);
+        }
+        
+        if (classpath != null) {
+            args.add(HabitatGenerator.SEARCHPATH_ARG);
+            args.add(classpath.toString());
         }
         
         String argv[] = args.toArray(new String[args.size()]);

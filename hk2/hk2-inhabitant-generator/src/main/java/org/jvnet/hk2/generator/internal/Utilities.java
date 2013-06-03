@@ -299,6 +299,19 @@ public class Utilities {
             FOUND_INTERFACES.put(kcd.getClazz(), kcd.getiFaces());
             FOUND_GENERATORS.put(kcd.getClazz(), null);
         }
+        
+        if (verbose && searchPath != null) {
+            System.out.println("The elements of the path that will be searched is:");
+            StringTokenizer st = new StringTokenizer(searchPath, File.pathSeparator);
+            int lcv = 1;
+            while (st.hasMoreTokens()) {
+                String pathElement = st.nextToken();
+                
+                System.out.println(" " + lcv++ + ". " + pathElement);
+            }
+            System.out.println("Finished printing search path elements");
+            
+        }
     }
     
     /**
@@ -322,6 +335,9 @@ public class Utilities {
             File fullFile = new File(searchHere, properPathName);
             
             if (fullFile.exists()) {
+                if (verbose) {
+                    System.out.println("Found " + dotDelimitedName + " in " + searchHere.getAbsolutePath() + " for " + calledFrom);
+                }
                 return new FileInputStream(fullFile);
             }
         }
@@ -331,6 +347,10 @@ public class Utilities {
             String entryName = dotDelimitedName.replace('.', '/') + DOT_CLASS;
             ZipEntry entry = jar.getEntry(entryName);
             if (entry != null) {
+                if (verbose) {
+                    System.out.println("Found " + dotDelimitedName + " in jar " + searchHere.getAbsolutePath() + " for " + calledFrom);
+                }
+                
                 return jar.getInputStream(entry);
             }
         }
@@ -352,6 +372,9 @@ public class Utilities {
             }
         }
         
+        if (verbose) {
+            System.out.println("Did not find " + dotDelimitedName + " in classpath for " + calledFrom);
+        }
         return null;
     }
     
