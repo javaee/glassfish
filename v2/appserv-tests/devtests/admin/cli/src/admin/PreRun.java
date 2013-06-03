@@ -39,9 +39,6 @@
  */
 
 package admin;
-
-import java.io.*;
-import java.net.*;
 /**
  * This class is here just for doing things ONE time before the rest.
  * Remember that ant  creates a new JVM for every test class!
@@ -71,6 +68,10 @@ public class PreRun extends AdminBaseDevTest {
     @Override
     public void subrun() {
         TestUtils.resetErrorFile();
+        String dir = System.getProperty("user.home");
+        System.out.println("The current working directory is " + dir);
+        dir = dir.replace('\\', '_').replace('/', '_');
+        report("HOME IS__" + dir, true);
         report("reset error file", true);
     }
 }
