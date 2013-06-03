@@ -56,7 +56,7 @@
     &commonRun;
 
     <target name="all">
-<!--    <ant dir="httpServlet" target="all"/>--> <!-- Failing: Adjusted count getting 0 - review MyPrintWriter wrapper -->
+        <ant dir="httpServlet" target="all"/>
         <ant dir="https" target="all"/>
         <ant dir="httpServletChallenge" target="all"/>
         <ant dir="httpServletForm" target="all"/>

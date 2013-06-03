@@ -1093,6 +1093,21 @@ AS_ADMIN_MASTERPASSWORD=${master.password}
   <echo message="Deployment on target server ${appserver.instance.name} successful"/>
 </target>
 
+<target name="deploy-common-libraries" depends="init-common">      
+  <echo message="Deploying with libraries..."/>
+  <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="deploy"/>
+    <arg line="${as.props}"/>
+    <arg line="--target ${appserver.instance.name}"/>
+    <arg line="--retrieve ${assemble.dir}"/>
+    <arg line="--libraries ${libraries}"/>
+<!-- deployed.app defaults to ${assemble.dir}/${appname}App.ear defined in properties.xml-->
+    <arg line="${deployed.app}"/>
+  </exec>
+  <echo message="Deployment on target server ${appserver.instance.name} successful"/>
+</target>
+
 <target name="deploy-verify-common-pe" depends="init-common" unless="ee">
   <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>
   <exec executable="${ASADMIN}" failonerror="false">

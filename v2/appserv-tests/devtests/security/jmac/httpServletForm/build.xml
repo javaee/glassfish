@@ -69,7 +69,7 @@
     </target>
 
     <target name="deploy" depends="init-common">
-        <antcall target="deploy-war-common">
+        <antcall target="deploy-war-libraries">
             <param name="as.props" value="${as.props}"/>
             <param name="libraries" value="${env.S1AS_HOME}/lib/test-${appname}-provider.jar"/>
             <param name="contextroot" value="${appname}"/>
