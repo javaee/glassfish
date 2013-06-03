@@ -37,44 +37,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package admin;
 
 import java.io.*;
 import java.net.*;
+
 /**
- * This class is here just for doing testing on the tests.  Normally it doesn't run
+ * This class is here for dumping threads for all running JVMs
  *
  * @author wnevins
  */
-public class TestTests extends AdminBaseDevTest {
+public class Jstacker extends AdminBaseDevTest {
 
-    public TestTests() {
+    public Jstacker() {
     }
 
     public static void main(String[] args) {
         // this calls baseclass which calls our subrun() method
-        new TestTests().run();
+        new Jstacker().run();
     }
 
     @Override
     public String getTestName() {
-        return "Testing of the Development Tests Themselves";
+        return "Dump Stacks of all JVMs -- if there are errors.";
     }
 
     @Override
     protected String getTestDescription() {
-        return "Tests for the Testing Framework";
+        return "Dump Stacks of all JVMs -- if there are errors.";
     }
 
     @Override
     public void subrun() {
-        File f = new File(".");
-        System.out.println("CWD == " + f.getAbsolutePath());
-        report("version", asadmin("version"));
-        report("version", asadmin("version"));
-        report("version", asadmin("version"));
-        report("version", asadmin("version"));
-        //report("fake", false);
+        if (TestUtils.resetErrorFile()) {
+            report("STACK TRACES WERE DUMPED", true);
+            TestUtils.writeCommandToDebugLog(com.sun.enterprise.universal.process.Jstack.getDump());
+        }
+        else
+            report("NO STACK TRACES DUMPED", true);
+
     }
 }

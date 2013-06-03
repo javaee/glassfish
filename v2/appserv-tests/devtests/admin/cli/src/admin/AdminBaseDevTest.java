@@ -79,6 +79,9 @@ public abstract class AdminBaseDevTest extends BaseDevTest implements Runnable {
            TestUtils.writeErrorToDebugLog(ret);
         }
 
+        // byron nevins, June 2013.  We need an easy way to see if there were
+        // ANY errors at all
+        TestUtils.setErrorFile();
     }
 
     protected AdminBaseDevTest() {

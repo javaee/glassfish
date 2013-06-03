@@ -57,4 +57,5 @@ public class Constants {
             File.separator + "config" + File.separator + "adminpassword.tmp";
     // if you set this the tests will bail after one failure.  sysprop OR env var
     public static final String FAIL_FAST = "AS_TESTS_FAIL_FAST";
+    static File ERRORS_WERE_REPORTED_FILE = new File("errors.txt");
 }

@@ -2,7 +2,7 @@
 <!--
  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
 
  The contents of this file are subject to the terms of either the GNU
  General Public License Version 2 only ("GPL") or the Common Development
@@ -98,7 +98,7 @@
         <attribute name="classname"/>
         <element name="args" implicit="yes" optional="true"/>
         <sequential>
-            <java classname="@{classname}" fork="true" classpath="${test}">
+            <java classname="@{classname}" fork="true" classpath="${THE_CLASSPATH}">
                 <jvmarg value="${javaprops}"/>
                 <jvmarg value="-DHADAS=${env.HADAS}"/>
                 <jvmarg value="-DNUM_TESTS=${num_tests}"/>
@@ -115,9 +115,9 @@
         <attribute name="classname"/>
         <element name="args" implicit="yes" optional="true"/>
         <sequential>
-            <java classname="@{classname}" fork="true" classpath="${test}">
+            <java classname="@{classname}" fork="true" classpath="${THE_CLASSPATH}">
                 <jvmarg value="${javaprops}"/>
-                <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1234"/>
+                <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9010"/>
                 <env key="APS_HOME" value="${aps_home}"/>
                 <env key="S1AS_HOME" value="${s1as_home}"/>
                 <env key="AS_LOGFILE" value="${as_logfile}"/>
@@ -131,8 +131,9 @@
             <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
             <pathelement location="build"/>
             <pathelement location="${env.S1AS_HOME}/lib/gf-client.jar"/>
+            <pathelement location="${env.S1AS_HOME}/modules/common-util.jar"/>
         </path>
-        <pathconvert refid="class.path" property="test"/>
+        <pathconvert refid="class.path" property="THE_CLASSPATH"/>
     </target>
 
     <target name="debug-windows" depends="instance, cluster"/>
@@ -154,6 +155,14 @@
 
     <target name="ports" depends="init">
         <runtest classname="admin.PortTests"/>
+    </target>
+
+    <target name="stacker" depends="init">
+        <runtest classname="admin.Jstacker"/>
+    </target>
+
+    <target name="prerun" depends="init">
+        <runtest classname="admin.PreRun"/>
     </target>
 
     <target name="validation" depends="init">
@@ -240,7 +249,7 @@
     </target>
 
     <target name="install-node" depends="init, setup-ssh">
-        <java classname="admin.InstallNodeTest"  fork="true" classpath="${test}">
+        <java classname="admin.InstallNodeTest"  fork="true" classpath="${THE_CLASSPATH}">
             <jvmarg value="-Xdebug"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n"/>
             <jvmarg value="-Dssh.host=${ssh.host}"/>
@@ -309,7 +318,7 @@
     </target>
 
     <target name="testtests" depends="init">
-        <runtest classname="admin.TestTests"/>
+        <runtest   classname="admin.TestTests"/>
     </target>
 
     <target name="zombie" depends="init">
@@ -372,8 +381,10 @@
 
     <target name="all" depends="clean,init">
         <record name="admin.output" action="start" />
+        <antcall target="prerun"/>
         <antcall target="${teststorun}"/>
         <record name="admin.output" action="stop" />
+        <antcall target="stacker"/>
         <antcall target="dev-report"/>
         <echo message="Detailed results available under ${env.APS_HOME}/test_results.html"/>
     </target>
@@ -381,7 +392,7 @@
     <target name="build" depends="init-path">
         <mkdir dir="build"/>
         <javac srcdir="src" destdir="build" debug="true" fork="true"
-               classpath="${test}"
+               classpath="${THE_CLASSPATH}"
                includes="**/*.java"/>
     </target>
 

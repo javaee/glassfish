@@ -43,38 +43,34 @@ package admin;
 import java.io.*;
 import java.net.*;
 /**
- * This class is here just for doing testing on the tests.  Normally it doesn't run
+ * This class is here just for doing things ONE time before the rest.
+ * Remember that ant  creates a new JVM for every test class!
  *
  * @author wnevins
  */
-public class TestTests extends AdminBaseDevTest {
+public class PreRun extends AdminBaseDevTest {
 
-    public TestTests() {
+    public PreRun() {
     }
 
     public static void main(String[] args) {
         // this calls baseclass which calls our subrun() method
-        new TestTests().run();
+        new PreRun().run();
     }
 
     @Override
     public String getTestName() {
-        return "Testing of the Development Tests Themselves";
+        return "Pre Run";
     }
 
     @Override
     protected String getTestDescription() {
-        return "Tests for the Testing Framework";
+        return "Pre Run";
     }
 
     @Override
     public void subrun() {
-        File f = new File(".");
-        System.out.println("CWD == " + f.getAbsolutePath());
-        report("version", asadmin("version"));
-        report("version", asadmin("version"));
-        report("version", asadmin("version"));
-        report("version", asadmin("version"));
-        //report("fake", false);
+        TestUtils.resetErrorFile();
+        report("reset error file", true);
     }
 }

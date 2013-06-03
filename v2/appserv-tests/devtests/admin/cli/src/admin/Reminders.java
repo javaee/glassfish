@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,17 +59,13 @@ public class Reminders extends AdminBaseDevTest {
         System.out.println("###################################################");
         System.out.println("###################################################");
         System.out.println("##############   REMINDERS   ######################");
-        System.out.println("IMPORTANT  set env. variable HADAS=true if this is the branch!!!");
-        System.out.println("Add a --domain arg to ALL the bazillion xxx-local-instance commands");
-        System.out.println("Test the --domain arg to xxx-local-instance commands");
-        System.out.println("Test restart-local-instance");
-        System.out.println("delete-local-instance - should NOT require --domain, JIRA 18707");
         System.out.println("HUGE Speedup ==>  use 'asadmin multimode -f cmds.txt' for the set/get commands");
         System.out.println("WHy does delete-domain print 'null' for non-existent domain?");
         System.out.println("###################################################");
         System.out.println("###################################################");
         System.out.println("###################################################");
         System.out.println("###################################################");
+
         new Reminders().report("Reminded Developer...", true);
     }
 

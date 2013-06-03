@@ -44,12 +44,34 @@ import com.sun.appserv.test.BaseDevTest;
 import com.sun.appserv.test.BaseDevTest.AsadminReturn;
 import java.io.*;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Byron Nevins
  */
 final class TestUtils {
+
+    static boolean resetErrorFile() {
+        boolean hadErrors = false;
+
+        if(Constants.ERRORS_WERE_REPORTED_FILE.isFile())
+            hadErrors = true;
+
+        Constants.ERRORS_WERE_REPORTED_FILE.delete();
+
+        return hadErrors;
+    }
+
+    static void setErrorFile() {
+        try {
+            Constants.ERRORS_WERE_REPORTED_FILE.createNewFile();
+        }
+        catch (IOException ex) {
+            Logger.getLogger(TestUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
     private TestUtils() {
         // all-static class!
@@ -165,8 +187,14 @@ final class TestUtils {
         msg.append(STARS);
         writeCommandToDebugLog(msg.toString());
 
-        if (getEnvOrPropBoolean(Constants.FAIL_FAST))
+        if (getEnvOrPropBoolean(Constants.FAIL_FAST)) {
+            System.out.println("*************************************************************");
+            System.out.println("*************************************************************");
+            System.out.println("***   AS_TESTS_FAIL_FAST is true -- exiting out NOW!!!! *****");
+            System.out.println("*************************************************************");
+            System.out.println("*************************************************************");
             SystemExit();
+        }
     }
 
     public static boolean getEnvOrPropBoolean(String name) {
