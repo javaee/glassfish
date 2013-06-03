@@ -61,5 +61,7 @@ Introduction
 * Integration with other products
 
   HK2 is well integrated with several other products, including {{{https://glassfish.java.net/}GlassFish}}
-  and {{{http://code.google.com/p/google-guice/}Guice}}.  To learn more about how HK2 integrates
-  with these products see {{{./integration.html}this page}}.
+  and {{{http://code.google.com/p/google-guice/}Guice}}.  See the following page for information
+  on HK2 integration with other products:
+  
+  {{{./integration.html}HK2 Integration}}.
