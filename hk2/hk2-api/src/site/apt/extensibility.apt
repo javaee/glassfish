@@ -17,6 +17,8 @@ Extensibility of HK2
  
  * {{Adding a Scope and Context to the system}}
  
+ * {{PerThread Scope}}
+ 
  * {{Dealing with ClassLoading issues}}
  
  * {{Custom Injection Resolvers}}
@@ -61,6 +63,21 @@ Extensibility of HK2
  [[1]] This {{{../examples/ctm-example/index.html}example}} adds a context that is based on the current running tenant.
  
  [[2]] This {{{../examples/custom-resolver-example/index.html}example}} adds a request scoped context.
+ 
+** {PerThread Scope}
+
+ There is also a per-thread scope/context pair optionally supported in HK2.  Services marked with
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/PerThread.html}PerThread}} have their
+ life cycle defined by the thread they are on.  Two different threads injecting a service from the
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/PerThread.html}PerThread}} scope will get different
+ objects.  Two objects on the same thread injecting a
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/PerThread.html}PerThread}} scope service will get
+ the same object.
+ 
+ The {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/PerThread.html}PerThread}} scope can be added
+ to any {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} by
+ using the method
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enablePerThreadScope(org.glassfish.hk2.api.ServiceLocator)}enablePerThreadScope}}
  
 * {Dealing with ClassLoading issues}
 

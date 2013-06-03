@@ -13,7 +13,7 @@
   </path>
 
   <taskdef name="hk2-inhabitant-generator"
-           classname="org.jvnet.hk2.generator.maven.ant.HK2InhabitantGeneratorTask" 
+           classname="org.jvnet.hk2.generator.ant.HK2InhabitantGeneratorTask" 
            classpathref="project.class.path"/>
 
   <target name="init">

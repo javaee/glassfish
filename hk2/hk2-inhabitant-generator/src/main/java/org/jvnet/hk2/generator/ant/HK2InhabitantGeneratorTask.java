@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.generator.maven.ant;
+package org.jvnet.hk2.generator.ant;
 
 import java.io.File;
 import java.util.LinkedList;
