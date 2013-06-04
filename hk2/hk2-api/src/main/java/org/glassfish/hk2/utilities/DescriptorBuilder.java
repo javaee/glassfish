@@ -177,6 +177,28 @@ public interface DescriptorBuilder {
 	public DescriptorBuilder proxy(boolean forceProxy);
 	
 	/**
+     * This will cause the isProxyForSameScope field of the returned
+     * descriptor to return true (it will force this
+     * descriptor to proxy even when injecting into the same scope).
+     * 
+     * @return A DescriptorBuilder with the proxyForSameScope field set to true
+     */
+    public DescriptorBuilder proxyForSameScope();
+    
+    /**
+     * This will cause the isProxyForSameScope field of the returned
+     * descriptor to return the given value.
+     * 
+     * @param proxyForSameScope if true then this descriptor will be proxied
+     * even when being injected into the same scope,
+     * if false then this descriptor will NOT be proxied when injected
+     * into a service of the same scope
+     * @return A DescriptorBuilder with the proxyForSameScope field set to
+     * the given value
+     */
+    public DescriptorBuilder proxyForSameScope(boolean proxyForSameScope);
+	
+	/**
      * This will cause the descriptorVisibility field of the returned
      * descriptor to return LOCAL
      * 

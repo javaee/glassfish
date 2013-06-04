@@ -70,6 +70,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     private HK2Loader loader = null;
     private int rank = 0;
     private Boolean proxy = null;
+    private Boolean proxyForSameScope = null;
     private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
     private String classAnalysisName = null;
     
@@ -168,6 +169,23 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         return this;
     }
     
+    @Override
+    public ActiveDescriptorBuilder proxyForSameScope() {
+        return proxy(true);
+    }
+    
+    @Override
+    public ActiveDescriptorBuilder proxyForSameScope(boolean forceProxyForSameScope) {
+        if (forceProxyForSameScope) {
+            proxyForSameScope = Boolean.TRUE;
+        }
+        else {
+            proxyForSameScope = Boolean.FALSE;
+        }
+        
+        return this;
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.ActiveDescriptorBuilder#andLoadWith(org.glassfish.hk2.api.HK2Loader)
      */
@@ -216,6 +234,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 visibility,
                 rank,
                 proxy,
+                proxyForSameScope,
                 classAnalysisName,
                 metadatas,
                 loader);
@@ -245,6 +264,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 visibility,
                 rank,
                 proxy,
+                proxyForSameScope,
                 classAnalysisName,
                 metadatas,
                 loader);
@@ -267,6 +287,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 DescriptorVisibility descriptorVisibility,
                 int ranking,
                 Boolean proxy,
+                Boolean proxyForSameScope,
                 String classAnalysisName,
                 Map<String, List<String>> metadata,
                 HK2Loader loader) {
@@ -278,6 +299,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                     descriptorVisibility,
                     ranking,
                     proxy,
+                    proxyForSameScope,
                     classAnalysisName,
                     metadata);
             

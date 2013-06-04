@@ -75,7 +75,7 @@ public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             DescriptorVisibility descriptorVisibility,
             int ranking,
             Class<?> implClass) {
-        super(advertisedContracts, scope, name, qualifiers, descriptorType, descriptorVisibility, ranking, null, null, null);
+        super(advertisedContracts, scope, name, qualifiers, descriptorType, descriptorVisibility, ranking, null, null, null, null);
         
         this.implClass = implClass;
     }

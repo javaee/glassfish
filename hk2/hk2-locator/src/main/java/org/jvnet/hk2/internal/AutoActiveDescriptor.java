@@ -84,6 +84,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             DescriptorVisibility descriptorVisibility,
             int ranking,
             Boolean proxy,
+            Boolean proxyForSameScope,
             String classAnalysisName,
             Map<String, List<String>> metadata) {
         super(advertisedContracts,
@@ -94,6 +95,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
                 descriptorVisibility,
                 ranking,
                 proxy,
+                proxyForSameScope,
                 classAnalysisName,
                 metadata);
         

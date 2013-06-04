@@ -236,6 +236,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         return baseDescriptor.isProxiable();
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Descriptor#isProxyForSameScope()
+     */
+    @Override
+    public Boolean isProxyForSameScope() {
+        return baseDescriptor.isProxyForSameScope();
+    }
+    
     @Override
     public String getClassAnalysisName() {
         return baseDescriptor.getClassAnalysisName();

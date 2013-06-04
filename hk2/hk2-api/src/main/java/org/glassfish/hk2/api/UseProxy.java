@@ -57,6 +57,8 @@ import java.lang.annotation.Target;
  * Note that this annotation is NOT inherited, and hence must be on
  * the analyzed class itself, and not superclasses or interfaces
  * of the analyzed class
+ * <p>
+ * @see {@link Proxiable}, {@link Unproxiable}, {@link ProxyForSameScope}
  * 
  * @author jwells
  *
@@ -72,5 +74,4 @@ public @interface UseProxy {
      * @return The value that the isProxiable field of the descriptor should take
      */
     public boolean value() default true;
-
 }

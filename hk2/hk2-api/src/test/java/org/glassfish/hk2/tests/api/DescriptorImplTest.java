@@ -96,6 +96,8 @@ public class DescriptorImplTest {
         
         Assert.assertNull(desc.isProxiable());
         
+        Assert.assertNull(desc.isProxyForSameScope());
+        
         Assert.assertNull(desc.getClassAnalysisName());
         
         Assert.assertNull(desc.getServiceId());
@@ -150,6 +152,8 @@ public class DescriptorImplTest {
         Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_RANK, full.getRanking());
         
         Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_PROXIABLE, full.isProxiable());
+        
+        Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_PROXY_FOR_SAME_SCOPE, full.isProxyForSameScope());
         
         Assert.assertEquals(FullDescriptorImpl.FULL_ANALYSIS_SERVICE, full.getClassAnalysisName());
         
@@ -362,7 +366,7 @@ public class DescriptorImplTest {
     }
     
     /**
-     * Tests setting the ranking
+     * Tests setting the proxiable value
      */
     @Test
     public void testSetProxiable() {
@@ -379,6 +383,30 @@ public class DescriptorImplTest {
         Assert.assertFalse(desc.isProxiable());
         
         desc.setProxiable(null);
+        
+        Assert.assertNull(desc.isProxiable());
+    }
+    
+    /**
+     * Tests setting the proxyForSameScope value
+     */
+    @Test
+    public void testSetProxyForSameScope() {
+        DescriptorImpl desc = new DescriptorImpl();
+        
+        Assert.assertNull(desc.isProxyForSameScope());
+        
+        desc.setProxyForSameScope(Boolean.TRUE);
+        
+        Assert.assertTrue(desc.isProxyForSameScope());
+        
+        desc.setProxyForSameScope(Boolean.FALSE);
+        
+        Assert.assertFalse(desc.isProxyForSameScope());
+        
+        desc.setProxyForSameScope(null);
+        
+        Assert.assertNull(desc.isProxyForSameScope());
     }
     
     private final static String CLASS_ANALYSIS_NAME = "customAnalyzer";
@@ -602,6 +630,8 @@ public class DescriptorImplTest {
                 Assert.assertEquals(writeB, di);
                 Assert.assertEquals(writeB.hashCode(), di.hashCode());
                 Assert.assertEquals(13, di.getRanking());  // Ranking is not considered in equals, but should have been written out
+                Assert.assertEquals(Boolean.TRUE, di.isProxiable());
+                Assert.assertEquals(Boolean.FALSE, di.isProxyForSameScope());
                 
                 // Additional tests for B, make sure the escaped characters are read back in properly
                 String escapedValue = di.getMetadata().get(KEY_WITH_ESCAPED_CHARACTERS).get(0);

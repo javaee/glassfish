@@ -58,6 +58,7 @@ import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ProxyForSameScope;
 import org.glassfish.hk2.api.UseProxy;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.internal.ActiveDescriptorBuilderImpl;
@@ -313,6 +314,17 @@ public class BuilderHelper {
             }
         }
         
+        Boolean proxyForSameScope = null;
+        ProxyForSameScope pfss = constant.getClass().getAnnotation(ProxyForSameScope.class);
+        if (pfss != null) {
+            if (pfss.value()) {
+                proxyForSameScope = Boolean.TRUE;
+            }
+            else {
+                proxyForSameScope = Boolean.FALSE;
+            }
+        }
+        
         DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
         Visibility vi = constant.getClass().getAnnotation(Visibility.class);
         if (vi != null) {
@@ -333,6 +345,7 @@ public class BuilderHelper {
                 qualifiers,
                 visibility,
                 proxy,
+                proxyForSameScope,
                 classAnalysisName,
                 metadata);
     }
@@ -363,6 +376,12 @@ public class BuilderHelper {
             proxy = new Boolean(up.value());
         }
         
+        Boolean proxyForSameScope = null;
+        ProxyForSameScope pfss = clazz.getAnnotation(ProxyForSameScope.class);
+        if (pfss != null) {
+            proxyForSameScope = new Boolean(pfss.value());
+        }
+        
         DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
         Visibility vi = clazz.getAnnotation(Visibility.class);
         if (vi != null) {
@@ -382,6 +401,7 @@ public class BuilderHelper {
                 null,
                 0,
                 proxy,
+                proxyForSameScope,
                 null,
                 null,
                 null);

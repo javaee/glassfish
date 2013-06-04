@@ -45,12 +45,21 @@ import java.util.Set;
 
 /**
  * A Descriptor is a bean-like structure that describes a service
- * declaration in HK2.
- * 
+ * declaration in HK2.  A descriptor is comprised only of basic
+ * objects such as String or boolean (e.g., not Class or Annotation}.
+ * A described service does not need to be classloaded in order to
+ * have a Descriptor.  However, this does imply that a Descriptor will
+ * have some loss of information when compared to a classloaded service,
+ * which is described with an {@link ActiveDescriptor}.  For example, a
+ * Descriptor can know that a service has a qualifier named Foo, but
+ * will not know (without the use of {@link Metadata}) what values
+ * Foo contains.
  * <p>
  * Services have a number of optional attributes such as name and scope.
  * A service is required to minimally have a type name representing the
  * concrete (i.e., byType) definition.
+ * <p>
+ * @see {@link ActiveDescriptor}, {@link Metadata}
  * 
  * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
@@ -218,6 +227,28 @@ public interface Descriptor {
      * marked {@linke Proxiable})
      */
     public Boolean isProxiable();
+    
+    /**
+     * This value determines whether or not this service should be
+     * proxied when being injected into other services of the same
+     * scope.  If a scope is proxiable then it will have a default
+     * setting for whether or not its services should be proxied
+     * when being injected into the same scope.  If this method
+     * returns null then the default setting for the scope will
+     * be used.  Otherwise the value returned will determine
+     * whether or not this service will be proxied when being
+     * injected into a service of the same scope.
+     * 
+     * @return null if this descriptor should use the default
+     * ProxyForSameScope value for the scope.  If it returns
+     * true then this service will be proxied even when
+     * being injected into the same scope.  If it returns
+     * false then this service will NOT be proxied when
+     * being injected into the same scope (i.e., it cannot
+     * be used for lazy initialization of the service when
+     * injected into the same scope)
+     */
+    public Boolean isProxyForSameScope();
     
     /**
      * Returns the name of the {@link ClassAnalysis} service that

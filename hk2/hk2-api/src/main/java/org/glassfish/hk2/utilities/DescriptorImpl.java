@@ -79,6 +79,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
     private final static String METADATA_KEY = "metadata=";
     private final static String RANKING_KEY = "rank=";
     private final static String PROXIABLE_KEY = "proxiable=";
+    private final static String PROXY_FOR_SAME_SCOPE_KEY = "proxyForSameScope=";
     private final static String ANALYSIS_KEY = "analysis=";
     private final static String PROVIDE_METHOD_DT = "PROVIDE";
     private final static String LOCAL_DT = "LOCAL";
@@ -105,6 +106,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	private transient HK2Loader loader;
 	private int rank;
 	private Boolean proxiable;
+	private Boolean proxyForSameScope;
 	private String analysisName;
 	private Long id;
 	private Long locatorId;
@@ -129,6 +131,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
         loader = copyMe.getLoader();
         rank = copyMe.getRanking();
         proxiable = copyMe.isProxiable();
+        proxyForSameScope = copyMe.isProxyForSameScope();
         id = copyMe.getServiceId();
         locatorId = copyMe.getLocatorId();
         analysisName = copyMe.getClassAnalysisName();
@@ -163,6 +166,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 * @param loader The HK2Loader to associated with this descriptor (may be null)
 	 * @param rank The rank to initially associate with this descriptor
 	 * @param proxiable The proxiable value to associate with this descriptor (may be null)
+	 * @param proxyForSameScope The proxyForSameScope value to associate with this descriptor (may be null)
 	 * @param baseDescriptor The base descriptor to associated with this descriptor
 	 * @param analysisName The name of the ClassAnalysis service to use
 	 * @param id The ID this descriptor should take (may be null)
@@ -180,6 +184,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 			HK2Loader loader,
 			int rank,
 			Boolean proxiable,
+			Boolean proxyForSameScope,
 			String analysisName,
 			Long id,
 			Long locatorId) {
@@ -206,6 +211,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 		this.id = id;
 		this.rank = rank;
 		this.proxiable = proxiable;
+		this.proxyForSameScope = proxyForSameScope;
 		this.analysisName = analysisName;
 		this.locatorId = locatorId;
 		this.loader = loader;
@@ -472,6 +478,15 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	}
 	
 	@Override
+    public Boolean isProxyForSameScope() {
+        return proxyForSameScope;
+    }
+	
+	public void setProxyForSameScope(Boolean proxyForSameScope) {
+        this.proxyForSameScope = proxyForSameScope;
+    }
+	
+	@Override
     public String getClassAnalysisName() {
         return analysisName;
     }
@@ -538,6 +553,14 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	            retVal ^= -1;
 	        }
 	    }
+	    if (proxyForSameScope != null) {
+            if (proxyForSameScope.booleanValue()) {
+                retVal ^= 2;
+            }
+            else {
+                retVal ^= -2;
+            }
+        }
 	    if (analysisName != null) {
 	        retVal ^= analysisName.hashCode();
 	    }
@@ -603,6 +626,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    if (!safeEquals(descriptorVisibility, d.getDescriptorVisibility())) return false;
 	    if (!equalMetadata((metadatas == null) ? EMPTY_METADATAS_MAP : metadatas, d.getMetadata())) return false;
 	    if (!safeEquals(proxiable, d.isProxiable())) return false;
+	    if (!safeEquals(proxyForSameScope, d.isProxyForSameScope())) return false;
 	    if (!safeEquals(analysisName, d.getClassAnalysisName())) return false;
 	    
 	    return true;
@@ -643,6 +667,8 @@ public class DescriptorImpl implements Descriptor, Externalizable {
         sb.append("\n\tloader=" + d.getLoader());
         
         sb.append("\n\tproxiable=" + d.isProxiable());
+        
+        sb.append("\n\tproxyForSameScope=" + d.isProxyForSameScope());
         
         sb.append("\n\tanalysisName=" + d.getClassAnalysisName());
         
@@ -732,6 +758,10 @@ public class DescriptorImpl implements Descriptor, Externalizable {
             out.println(PROXIABLE_KEY + proxiable.booleanValue());
         }
         
+        if (proxyForSameScope != null) {
+            out.println(PROXY_FOR_SAME_SCOPE_KEY + proxyForSameScope.booleanValue());
+        }
+        
         if (analysisName != null &&
                 !ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME.equals(analysisName)) {
             out.println(ANALYSIS_KEY + analysisName);
@@ -756,6 +786,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    loader = null;
 	    rank = 0;
 	    proxiable = null;
+	    proxyForSameScope = null;
 	    analysisName = null;
 	    id = null;
 	    locatorId = null;
@@ -863,6 +894,9 @@ public class DescriptorImpl implements Descriptor, Externalizable {
                     }
                     else if (leftHandSide.equals(PROXIABLE_KEY)) {
                         proxiable = Boolean.parseBoolean(rightHandSide);
+                    }
+                    else if (leftHandSide.equals(PROXY_FOR_SAME_SCOPE_KEY)) {
+                        proxyForSameScope = Boolean.parseBoolean(rightHandSide);
                     }
                     else if (leftHandSide.equals(ANALYSIS_KEY)) {
                         analysisName = rightHandSide;
