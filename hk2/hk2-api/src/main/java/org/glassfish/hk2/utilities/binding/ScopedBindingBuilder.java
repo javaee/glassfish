@@ -133,6 +133,15 @@ public interface ScopedBindingBuilder<T> extends BindingBuilder<T> {
     public ScopedBindingBuilder<T> proxy(boolean proxiable);
     
     /**
+     * Set proxyForSameScope flag on the binding
+     * 
+     * @param proxyForSameScope flag to determine if the binding should be proxiable
+     * within the same scope
+     * @return A further refined builder
+     */
+    public ScopedBindingBuilder<T> proxyForSameScope(boolean proxyForSameScope);
+    
+    /**
      * Set the name of the {@link org.glassfish.hk2.api.ClassAnalyzer} on the binding.
      *
      * @param analyzer The name of the analyzer that should be used.  May be null

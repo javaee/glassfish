@@ -141,6 +141,15 @@ public interface ServiceBindingBuilder<T> extends BindingBuilder<T> {
     public ServiceBindingBuilder<T> proxy(boolean proxiable);
     
     /**
+     * Set proxyForSameScope flag on the binding
+     * 
+     * @param proxyForSameScope flag to determine if proxies should be generated
+     * even within the same scope
+     * @return A further refined ServiceBindingBuilder
+     */
+    public ServiceBindingBuilder<T> proxyForSameScope(boolean proxyForSameScope);
+    
+    /**
      * Set the name of the {@link org.glassfish.hk2.api.ClassAnalyzer} on the binding.
      *
      * @param analyzer The name of the analyzer that should be used.  May be null

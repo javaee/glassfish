@@ -99,10 +99,20 @@ abstract class AbstractBindingBuilder<T> implements
      * Injectee is proxiable.
      */
     boolean proxiable = false;
+    /**
+     * Injectee should be proxied even inside the same scope
+     */
+    Boolean proxyForSameScope = null;
 
     @Override
     public AbstractBindingBuilder<T> proxy(boolean proxiable) {
         this.proxiable = proxiable;
+        return this;
+    }
+    
+    @Override
+    public AbstractBindingBuilder<T> proxyForSameScope(boolean proxyForSameScope) {
+        this.proxyForSameScope = proxyForSameScope;
         return this;
     }
     
@@ -227,6 +237,10 @@ abstract class AbstractBindingBuilder<T> implements
 
             if (proxiable) {
                 builder.proxy();
+            }
+            
+            if (proxyForSameScope != null) {
+                builder.proxyForSameScope(proxyForSameScope);
             }
 
             configuration.bind(builder.build(), false);

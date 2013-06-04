@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.api;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.ProxyForSameScope;
 import org.glassfish.hk2.api.UseProxy;
 
 /**
@@ -53,6 +54,7 @@ public class FactoryWithUseProxy implements Factory<Boolean> {
 
     @Override
     @UseProxy
+    @ProxyForSameScope
     public Boolean provide() {
         return null;
     }

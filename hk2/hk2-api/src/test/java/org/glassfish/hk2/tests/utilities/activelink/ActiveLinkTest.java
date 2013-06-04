@@ -103,6 +103,7 @@ public class ActiveLinkTest {
                 has(NAME, NAME).
                 ofRank(1).
                 proxy().
+                proxyForSameScope(false).
                 localOnly().
                 andLoadWith(new HK2Loader() {
 
@@ -125,6 +126,7 @@ public class ActiveLinkTest {
         Assert.assertEquals(Singleton.class.getName(), desc.getScope());
         
         Assert.assertEquals(Boolean.TRUE, desc.isProxiable());
+        Assert.assertEquals(Boolean.FALSE, desc.isProxyForSameScope());
         Assert.assertEquals(DescriptorVisibility.LOCAL, desc.getDescriptorVisibility());
         
         testSetOfOne(desc.getAdvertisedContracts(), SimpleInterface1.class.getName());
