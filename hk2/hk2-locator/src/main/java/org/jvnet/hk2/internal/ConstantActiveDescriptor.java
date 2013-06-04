@@ -81,6 +81,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
                 DescriptorVisibility.NORMAL,
                 0,
                 null,
+                null,
                 Utilities.getAutoAnalyzerName(theOne.getClass()),
                 null);
         
@@ -107,6 +108,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             DescriptorVisibility visibility,
             int ranking,
             Boolean proxy,
+            Boolean proxyForSameScope,
             String analyzerName,
             long locatorId,
             Map<String, List<String>> metadata) {
@@ -118,6 +120,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
                 visibility,
                 ranking,
                 proxy,
+                proxyForSameScope,
                 analyzerName,
                 metadata);
         if (theOne == null) throw new IllegalArgumentException();

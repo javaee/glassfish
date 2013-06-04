@@ -48,7 +48,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * This annotation marks a method of an annotation as providing a value that
- * should be placed into the metadata of the descriptor.
+ * should be placed into the metadata of a {@link Descriptor}.
  * <p>
  * One downside of using Qualifiers (or values in the Scope annotation) is that
  * in order to get these values the underlying classes must be reified.  In order
@@ -72,6 +72,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * from that method will be placed in the metadata of the descriptor that is
  * created (unless the object returned is a Class, in which case the name of
  * the Class is used)
+ * <p>
+ * @see {@link Descriptor}, {@link ActiveDescriptor}
  * 
  * @author jwells
  *

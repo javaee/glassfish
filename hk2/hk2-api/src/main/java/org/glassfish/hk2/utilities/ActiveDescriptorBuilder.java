@@ -172,6 +172,29 @@ public interface ActiveDescriptorBuilder {
     public ActiveDescriptorBuilder proxy(boolean forceProxy);
     
     /**
+     * This will cause the isProxyForSameScope field of the returned
+     * descriptor to return true (it will force this
+     * descriptor to use proxies even when injecting into
+     * the same scope).
+     * 
+     * @return A DescriptorBuilder with the proxyForSameScope field set to true
+     */
+    public ActiveDescriptorBuilder proxyForSameScope();
+    
+    /**
+     * This will cause the isProxyForSameScope field of the returned
+     * descriptor to return the given value.
+     * 
+     * @param forceProxyForSameScope if true then this descriptor will be
+     * proxied even if the scope of the injectee is the same,
+     * if false then this descriptor will NOT be proxied, even if the
+     * scope of the injectee is the same
+     * @return A DescriptorBuilder with the proxyForSameScope field set to
+     * the given value
+     */
+    public ActiveDescriptorBuilder proxyForSameScope(boolean forceProxyForSameScope);
+    
+    /**
      * Call this if this descriptor should be loaded with the given HK2Loader
      * 
      * @param loader The loader to use with this descriptor

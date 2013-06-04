@@ -180,4 +180,9 @@ public class ForeignDescriptor implements Descriptor {
     public String getClassAnalysisName() {
         return null;
     }
+
+    @Override
+    public Boolean isProxyForSameScope() {
+        return null;
+    }
 }

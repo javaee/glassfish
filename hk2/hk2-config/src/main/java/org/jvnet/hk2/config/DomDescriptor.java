@@ -62,6 +62,7 @@ public class DomDescriptor<T>
                 0,
                 null,
                 null,
+                null,
                 null);
         super.addAdvertisedContract(ConfigBeanProxy.class.getName());
         if (theDom == null) throw new IllegalArgumentException();

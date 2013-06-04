@@ -78,6 +78,8 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
     public final static int FULL_INITIAL_RANK = -1;
     /** Given initial proxiable */
     public final static Boolean FULL_INITIAL_PROXIABLE = Boolean.FALSE;
+    /** Given initial proxyForSameScope */
+    public final static Boolean FULL_INITIAL_PROXY_FOR_SAME_SCOPE = Boolean.TRUE;
     /** Given initial service id */
     public final static Long FULL_INITIAL_SID = new Long(-2);
     /** Given initial locator id */
@@ -123,6 +125,7 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
                 new HK2LoaderImpl(),
                 FULL_INITIAL_RANK,
                 FULL_INITIAL_PROXIABLE,
+                FULL_INITIAL_PROXY_FOR_SAME_SCOPE,
                 FULL_ANALYSIS_SERVICE,
                 FULL_INITIAL_SID,
                 FULL_INITIAL_LID);

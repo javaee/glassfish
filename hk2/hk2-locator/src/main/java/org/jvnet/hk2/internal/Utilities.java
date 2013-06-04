@@ -91,6 +91,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ProxyCtl;
+import org.glassfish.hk2.api.ProxyForSameScope;
 import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -630,6 +631,7 @@ public class Utilities {
         Class<? extends Annotation> scope;
         String name;
         Boolean proxy = null;
+        Boolean proxyForSameScope = null;
         String analyzerName;
 
         // Qualifiers naming dance
@@ -659,6 +661,11 @@ public class Utilities {
         if (useProxy != null) {
             proxy = new Boolean(useProxy.value());
         }
+        
+        ProxyForSameScope pfss = clazz.getAnnotation(ProxyForSameScope.class);
+        if (pfss != null) {
+            proxyForSameScope = new Boolean(pfss.value());
+        }
 
         DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
         Visibility vi = clazz.getAnnotation(Visibility.class);
@@ -676,6 +683,7 @@ public class Utilities {
                 visibility,
                 0,
                 proxy,
+                proxyForSameScope,
                 analyzerName,
                 metadata);
     }
@@ -985,6 +993,7 @@ public class Utilities {
                         0,
                         null,
                         null,
+                        null,
                         locator.getLocatorId(),
                         null);
 
@@ -1020,6 +1029,7 @@ public class Utilities {
                         qualifiers,
                         DescriptorVisibility.NORMAL,
                         0,
+                        null,
                         null,
                         null,
                         locator.getLocatorId(),

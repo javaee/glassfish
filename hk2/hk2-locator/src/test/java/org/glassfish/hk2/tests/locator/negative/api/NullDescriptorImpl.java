@@ -205,4 +205,9 @@ public class NullDescriptorImpl implements Descriptor {
         return null;
     }
 
+    @Override
+    public Boolean isProxyForSameScope() {
+        return null;
+    }
+
 }

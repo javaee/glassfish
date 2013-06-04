@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,38 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.api;
+package org.glassfish.hk2.api;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.ProxyForSameScope;
-import org.glassfish.hk2.api.UseProxy;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
+ * This annotation is used when automatically analyzing a class or a 
+ * {link {@link Factory#provide()} method to indicate that the descriptor
+ * either should or should use a proxy when being injected into a service
+ * from the same scope.  This annotation is only used
+ * for automatic class analysis, and the value in a descriptor will not be
+ * checked against this annotation at run time.
+ * <p>
+ * Note that this annotation is NOT inherited, and hence must be on
+ * the analyzed class itself, and not superclasses or interfaces
+ * of the analyzed class
+ * <p>
+ * @see {@link Proxiable}, {@link Unproxiable}, {@link UseProxy}
+ * 
  * @author jwells
- *
  */
-@Named @Blue @Singleton @UseProxy(true) @ProxyForSameScope(false)
-public class WriteServiceB implements Factory<Object> {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
+@Documented
+@Retention(RUNTIME)
+@Target( { METHOD, TYPE })
+public @interface ProxyForSameScope {
+    /**
+     * If this returns true then the isProxyForSameScope will be set to true, but
+     * if this returns false then the isProxyForSameScope will be set to false
+     * 
+     * @return The value that the isProxyForSameScope field of the descriptor should take
      */
-    @Override
-    public Object provide() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(Object instance) {
-        // TODO Auto-generated method stub
-        
-    }
+    public boolean value() default true;
 
 }

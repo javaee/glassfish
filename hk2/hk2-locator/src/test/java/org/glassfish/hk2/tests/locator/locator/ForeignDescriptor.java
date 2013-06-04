@@ -187,4 +187,9 @@ public class ForeignDescriptor implements Descriptor {
         return null;
     }
 
+    @Override
+    public Boolean isProxyForSameScope() {
+        return null;
+    }
+
 }

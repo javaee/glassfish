@@ -86,6 +86,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Set<Annotation> qualifiers,
             DescriptorVisibility descriptorVisibility,
             Boolean proxy,
+            Boolean proxyForSameScope,
             String classAnalysisName,
             Map<String, List<String>> metadata) {
         super(advertisedContracts,
@@ -96,6 +97,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
                 descriptorVisibility,
                 0,
                 proxy,
+                proxyForSameScope,
                 classAnalysisName,
                 metadata);
         if (theOne == null) throw new IllegalArgumentException();

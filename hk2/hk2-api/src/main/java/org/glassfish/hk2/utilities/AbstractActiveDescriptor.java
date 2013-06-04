@@ -126,6 +126,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
             DescriptorVisibility descriptorVisibility,
             int ranking,
             Boolean proxy,
+            Boolean proxyForSameScope,
             String analyzerName,
             Map<String, List<String>> metadata) {
         super();
@@ -142,6 +143,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         setDescriptorVisibility(descriptorVisibility);
         setName(name);  // This MUST be called after the qualifiers have already been set
         setProxiable(proxy);
+        setProxyForSameScope(proxyForSameScope);
         
         if (scope != null) {
             setScope(scope.getName());

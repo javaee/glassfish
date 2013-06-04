@@ -82,6 +82,7 @@ public class GuiceServiceHk2Bean<T> extends AbstractActiveDescriptor<T> {
                 DescriptorVisibility.NORMAL,
                 0,
                 new Boolean(false),
+                null,
                 (String) null,
                 new HashMap<String, List<String>>()
                );
