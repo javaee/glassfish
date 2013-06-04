@@ -399,6 +399,9 @@ public class BuilderHelperTest {
         
         Assert.assertNotNull(d.isProxiable());
         Assert.assertEquals(false, d.isProxiable().booleanValue());
+        
+        Assert.assertNotNull(d.isProxyForSameScope());
+        Assert.assertEquals(true, d.isProxyForSameScope().booleanValue());
     }
     
     /**
@@ -435,6 +438,8 @@ public class BuilderHelperTest {
         
         Assert.assertNotNull(ad.isProxiable());
         Assert.assertEquals(true, ad.isProxiable().booleanValue());
+        
+        Assert.assertNull(ad.isProxyForSameScope());
         
         Assert.assertEquals(DescriptorVisibility.LOCAL, ad.getDescriptorVisibility());
     }
@@ -478,6 +483,7 @@ public class BuilderHelperTest {
         FactoryDescriptors dis = BuilderHelper.link(FactoryWithUseProxy.class.getName()).
                 to(Boolean.class).
                 proxy().
+                proxyForSameScope().
                 buildFactory();
         
         Descriptor serviceDI = dis.getFactoryAsAService();
@@ -485,12 +491,14 @@ public class BuilderHelperTest {
         Assert.assertEquals(FactoryWithUseProxy.class.getName(), serviceDI.getImplementation());
         Assert.assertTrue(serviceDI.getAdvertisedContracts().contains(Factory.class.getName()));
         Assert.assertNull(serviceDI.isProxiable());
+        Assert.assertNull(serviceDI.isProxyForSameScope());
         
         Descriptor providerMethodDI = dis.getFactoryAsAFactory();
         
         Assert.assertEquals(FactoryWithUseProxy.class.getName(), providerMethodDI.getImplementation());
         Assert.assertTrue(providerMethodDI.getAdvertisedContracts().contains(Boolean.class.getName()));
         Assert.assertEquals(Boolean.TRUE, providerMethodDI.isProxiable());
+        Assert.assertEquals(Boolean.TRUE, providerMethodDI.isProxyForSameScope());
     }
     
     /**
@@ -503,6 +511,7 @@ public class BuilderHelperTest {
         Assert.assertEquals(ServiceWithUseProxy.class.getName(), di.getImplementation());
         Assert.assertTrue(di.getAdvertisedContracts().contains(ServiceWithUseProxy.class.getName()));
         Assert.assertEquals(Boolean.FALSE, di.isProxiable());
+        Assert.assertEquals(Boolean.FALSE, di.isProxyForSameScope());
     }
     
     /**

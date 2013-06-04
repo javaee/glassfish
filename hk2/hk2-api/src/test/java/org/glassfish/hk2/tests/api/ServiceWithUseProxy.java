@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.api;
 
+import org.glassfish.hk2.api.ProxyForSameScope;
 import org.glassfish.hk2.api.UseProxy;
 
 /**
@@ -46,6 +47,7 @@ import org.glassfish.hk2.api.UseProxy;
  *
  */
 @UseProxy(false)
+@ProxyForSameScope(false)
 public class ServiceWithUseProxy {
 
 }
