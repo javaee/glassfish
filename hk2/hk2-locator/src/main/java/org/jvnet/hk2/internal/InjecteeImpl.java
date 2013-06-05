@@ -48,6 +48,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -67,6 +68,7 @@ public class InjecteeImpl implements Injectee {
     private final boolean isOptional;
     private final boolean isSelf;
     private final Unqualified unqualified;
+    private ActiveDescriptor<?> injecteeDescriptor;
     
     /* package */ InjecteeImpl(
             Type requiredType,
@@ -75,7 +77,8 @@ public class InjecteeImpl implements Injectee {
             AnnotatedElement parent,
             boolean isOptional,
             boolean isSelf,
-            Unqualified unqualified) {
+            Unqualified unqualified,
+            ActiveDescriptor<?> injecteeDescriptor) {
         this.requiredType = requiredType;
         this.position = position;
         this.parent = parent;
@@ -83,6 +86,7 @@ public class InjecteeImpl implements Injectee {
         this.isOptional = isOptional;
         this.isSelf = isSelf;
         this.unqualified = unqualified;
+        this.injecteeDescriptor = injecteeDescriptor;
         
         if (parent instanceof Field) {
             pClass = ((Field) parent).getDeclaringClass();
@@ -156,6 +160,15 @@ public class InjecteeImpl implements Injectee {
         return unqualified;
     }
     
+    @Override
+    public ActiveDescriptor<?> getInjecteeDescriptor() {
+        return injecteeDescriptor;
+    }
+    
+    /* package */ void resetInjecteeDescriptor(ActiveDescriptor<?> injecteeDescriptor) {
+        this.injecteeDescriptor = injecteeDescriptor;
+    }
+    
     public String toString() {
         return "Injectee(requiredType=" + Pretty.type(requiredType) +
                 ",parent=" + Pretty.clazz(pClass) +
@@ -166,6 +179,8 @@ public class InjecteeImpl implements Injectee {
                 ",unqualified=" + unqualified +
                 "," + System.identityHashCode(this) + ")";
     }
+
+    
 
     
 }

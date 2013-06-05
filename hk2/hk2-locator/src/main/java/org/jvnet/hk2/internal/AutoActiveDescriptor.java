@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Injectee;
@@ -63,7 +64,6 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     private static final long serialVersionUID = -7921574114250721537L;
     private final Class<?> implClass;
     private final Creator<T> creator;
-    private final String implClassString;
     private SystemDescriptor<?> hk2Parent;
     
     /**
@@ -101,7 +101,15 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
         
         implClass = clazz;
         this.creator = creator;
-        implClassString = implClass.getName();
+        
+        setImplementation(implClass.getName());
+    }
+    
+    /* package */ void resetSelfDescriptor(ActiveDescriptor<?> toMe) {
+        if (!(creator instanceof ClazzCreator)) return;
+        ClazzCreator<?> cc = (ClazzCreator<?>) creator;
+        
+        cc.resetSelfDescriptor(toMe);
     }
     
     /* package */ void setHK2Parent(SystemDescriptor<?> hk2Parent) {
@@ -130,14 +138,6 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     @Override
     public void dispose(T instance) {
         creator.dispose(instance);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Descriptor#getImplementation()
-     */
-    @Override
-    public String getImplementation() {
-        return implClassString;
     }
     
     /* (non-Javadoc)

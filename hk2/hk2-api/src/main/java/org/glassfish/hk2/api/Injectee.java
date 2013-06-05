@@ -137,4 +137,13 @@ public interface Injectee {
      * if there is no {@link Unqualified} annotation on the injection point
      */
     public Unqualified getUnqualified();
+    
+    /**
+     * This returns the ActiveDescriptor of the injectee
+     * if it is known
+     * 
+     * @return The ActiveDescriptor of the injectee,
+     * or null if the parent is not known
+     */
+    public ActiveDescriptor<?> getInjecteeDescriptor();
 }
