@@ -44,7 +44,6 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -113,6 +112,31 @@ public class ProxySameScopeTest {
         Assert.assertTrue(g instanceof ProxyCtl);
         
         g.check();
+    }
+    
+    /**
+     * Tests a proxiable singleton that has ProxyForSameScope set
+     * to false injected into another singleton (should not be
+     * proxied)
+     */
+    @Test
+    public void testProxiableSingletonNotLazyIntoSingleton() {
+        SingletonServiceA a = locator.getService(SingletonServiceA.class);
+        Assert.assertNotNull(a);
+        
+        a.check();
+    }
+    
+    /**
+     * Tests a proxiable singleton that has ProxyForSameScope set
+     * to false injected into a PerLookup (should be proxied)
+     */
+    @Test
+    public void testProxiableSingletonNotLazyIntoPerLookup() {
+        PerLookupServiceA a = locator.getService(PerLookupServiceA.class);
+        Assert.assertNotNull(a);
+        
+        a.check();
     }
 
 }
