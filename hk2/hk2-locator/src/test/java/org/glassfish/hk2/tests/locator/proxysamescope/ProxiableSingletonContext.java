@@ -39,33 +39,89 @@
  */
 package org.glassfish.hk2.tests.locator.proxysamescope;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import java.lang.annotation.Annotation;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-public class ProxiableSameScopeModule implements TestModule {
+@Singleton
+public class ProxiableSingletonContext implements Context<ProxiableSingleton> {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+     * @see org.glassfish.hk2.api.Context#getScope()
      */
     @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(ProxiableSingletonNoLazyContext.class);
-        config.addActiveDescriptor(ProxiableSingletonNoLazy2Context.class);
-        config.addActiveDescriptor(ProxiableSingletonContext.class);
+    public Class<? extends Annotation> getScope() {
+        return ProxiableSingleton.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        if (activeDescriptor.isCacheSet()) {
+            return activeDescriptor.getCache();
+        }
         
-        config.addActiveDescriptor(ProxiableServiceA.class);
-        config.addActiveDescriptor(ProxiableServiceB.class);
-        config.addActiveDescriptor(ProxiableServiceC.class);
-        config.addActiveDescriptor(ProxiableServiceD.class);
-        config.addActiveDescriptor(ProxiableServiceDPrime.class);
-        config.addActiveDescriptor(ProxiableServiceE.class);
-        config.addActiveDescriptor(ProxiableServiceF.class);
-        config.addActiveDescriptor(ProxiableServiceFPrime.class);
-        config.addActiveDescriptor(ProxiableServiceG.class);
+        U retVal = activeDescriptor.create(root);
+        activeDescriptor.setCache(retVal);
+        
+        return retVal;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return descriptor.isCacheSet();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        if (!descriptor.isCacheSet()) return;
+        
+        Object value = descriptor.getCache();
+        descriptor.releaseCache();
+        
+        ((ActiveDescriptor<Object>) descriptor).dispose(value);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @Override
+    public void shutdown() {
+
     }
 
 }

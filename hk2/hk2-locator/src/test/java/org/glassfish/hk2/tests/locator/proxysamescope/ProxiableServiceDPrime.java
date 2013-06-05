@@ -39,33 +39,17 @@
  */
 package org.glassfish.hk2.tests.locator.proxysamescope;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import org.glassfish.hk2.api.ProxyForSameScope;
 
 /**
+ * This guy oddly explicity sets the ProxyForSameScope
+ * to the same value as the scope.  Still needs testing
+ * though!
+ * 
  * @author jwells
  *
  */
-public class ProxiableSameScopeModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(ProxiableSingletonNoLazyContext.class);
-        config.addActiveDescriptor(ProxiableSingletonNoLazy2Context.class);
-        config.addActiveDescriptor(ProxiableSingletonContext.class);
-        
-        config.addActiveDescriptor(ProxiableServiceA.class);
-        config.addActiveDescriptor(ProxiableServiceB.class);
-        config.addActiveDescriptor(ProxiableServiceC.class);
-        config.addActiveDescriptor(ProxiableServiceD.class);
-        config.addActiveDescriptor(ProxiableServiceDPrime.class);
-        config.addActiveDescriptor(ProxiableServiceE.class);
-        config.addActiveDescriptor(ProxiableServiceF.class);
-        config.addActiveDescriptor(ProxiableServiceFPrime.class);
-        config.addActiveDescriptor(ProxiableServiceG.class);
-    }
+@ProxiableSingletonNoLazy @ProxyForSameScope(false)
+public class ProxiableServiceDPrime {
 
 }

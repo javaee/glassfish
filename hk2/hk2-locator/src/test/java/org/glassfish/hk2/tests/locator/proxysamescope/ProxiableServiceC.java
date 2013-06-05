@@ -39,33 +39,27 @@
  */
 package org.glassfish.hk2.tests.locator.proxysamescope;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ProxyCtl;
+
+import junit.framework.Assert;
 
 /**
+ * This service is in a proxiable scope with proxyForSameScope set to false
+ * and injects serviceA which is in a different scope but also has
+ * proxyForSameScope set to false.  This class ensures that since they
+ * are in different scopes that serviceA WILL get proxied
  * @author jwells
  *
  */
-public class ProxiableSameScopeModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(ProxiableSingletonNoLazyContext.class);
-        config.addActiveDescriptor(ProxiableSingletonNoLazy2Context.class);
-        config.addActiveDescriptor(ProxiableSingletonContext.class);
-        
-        config.addActiveDescriptor(ProxiableServiceA.class);
-        config.addActiveDescriptor(ProxiableServiceB.class);
-        config.addActiveDescriptor(ProxiableServiceC.class);
-        config.addActiveDescriptor(ProxiableServiceD.class);
-        config.addActiveDescriptor(ProxiableServiceDPrime.class);
-        config.addActiveDescriptor(ProxiableServiceE.class);
-        config.addActiveDescriptor(ProxiableServiceF.class);
-        config.addActiveDescriptor(ProxiableServiceFPrime.class);
-        config.addActiveDescriptor(ProxiableServiceG.class);
+@ProxiableSingletonNoLazy2
+public class ProxiableServiceC {
+    @Inject
+    private ProxiableServiceA serviceA;
+    
+    public void check() {
+        Assert.assertTrue(serviceA instanceof ProxyCtl);
     }
 
 }
