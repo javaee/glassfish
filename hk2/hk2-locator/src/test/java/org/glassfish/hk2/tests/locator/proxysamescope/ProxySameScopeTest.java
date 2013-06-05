@@ -55,7 +55,7 @@ public class ProxySameScopeTest {
     private final static String TEST_NAME = "ProxySameScopeTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new ProxiableSameScopeModule());
     
-    @Test @Ignore
+    @Test
     public void testSameScopeServicesNoProxy() {
         ProxiableServiceB b = locator.getService(ProxiableServiceB.class);
         Assert.assertNotNull(b);

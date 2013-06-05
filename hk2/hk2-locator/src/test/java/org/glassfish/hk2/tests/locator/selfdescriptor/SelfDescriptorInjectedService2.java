@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,39 +39,58 @@
  */
 package org.glassfish.hk2.tests.locator.selfdescriptor;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.Self;
 import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class SelfDescriptorTest {
-    private final static String TEST_NAME = "SelfDescriptorTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new SelfDescriptorModule());
+public class SelfDescriptorInjectedService2 {
+    private final ActiveDescriptor<?> viaConstructor;
     
-    /**
-     * Ensures that all the descriptors were injected properly
-     */
-    @Test
-    public void testEverythingInjectedOk() {
-        SelfDescriptorInjectedService selfInjected = locator.getService(SelfDescriptorInjectedService.class);
-        Assert.assertNotNull(selfInjected);
-        
-        selfInjected.checkAllDescriptorsEqual();
+    @Inject @Self
+    private ActiveDescriptor<SelfDescriptorInjectedService2> viaField;
+    
+    private ActiveDescriptor<SelfDescriptorInjectedService2> viaMethod;
+    
+    @Inject
+    private SelfDescriptorInjectedService2(@Self ActiveDescriptor<?> viaConstructor) {
+        this.viaConstructor = viaConstructor;
     }
     
     /**
-     * Ensures that all the descriptors were injected properly in a system analyzed class
+     * Called by HK2
+     * 
+     * @param viaMethod with its own descriptor
      */
-    @Test
-    public void testEverythingInjectedOkInSystemAnalyzedDescriptor() {
-        SelfDescriptorInjectedService2 selfInjected = locator.getService(SelfDescriptorInjectedService2.class);
-        Assert.assertNotNull(selfInjected);
+    @Inject
+    public void injectMe(@Self ActiveDescriptor<SelfDescriptorInjectedService2> viaMethod) {
+        this.viaMethod = viaMethod;
+    }
+    
+    /**
+     * Used by the test
+     */
+    public void checkAllDescriptorsEqual() {
+        Assert.assertNotNull(viaConstructor);
         
-        selfInjected.checkAllDescriptorsEqual();
+        Assert.assertEquals(viaConstructor, viaField);
+        Assert.assertEquals(viaConstructor, viaMethod);
+        Assert.assertEquals(viaField, viaMethod);
+        
+        List<Injectee> injectees = viaConstructor.getInjectees();
+        Assert.assertTrue(3 == injectees.size());
+        
+        for (Injectee injectee : injectees) {
+            Assert.assertTrue(injectee.isSelf());
+        }
     }
 
 }

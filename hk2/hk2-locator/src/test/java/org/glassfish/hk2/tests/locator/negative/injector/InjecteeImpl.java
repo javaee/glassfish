@@ -44,6 +44,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.Unqualified;
 
@@ -112,6 +113,11 @@ public class InjecteeImpl implements Injectee {
 
     @Override
     public Unqualified getUnqualified() {
+        throw new AssertionError("never called");
+    }
+
+    @Override
+    public ActiveDescriptor<?> getInjecteeDescriptor() {
         throw new AssertionError("never called");
     }
 

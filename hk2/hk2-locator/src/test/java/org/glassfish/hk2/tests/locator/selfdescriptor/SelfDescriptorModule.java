@@ -55,6 +55,8 @@ public class SelfDescriptorModule implements TestModule {
     @Override
     public void configure(DynamicConfiguration config) {
         config.bind(BuilderHelper.link(SelfDescriptorInjectedService.class).build());
+        
+        config.addActiveDescriptor(SelfDescriptorInjectedService2.class);
     }
 
 }

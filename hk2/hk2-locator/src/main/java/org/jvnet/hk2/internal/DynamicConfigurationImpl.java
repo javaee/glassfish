@@ -200,11 +200,15 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     @Override
     public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass)
             throws IllegalArgumentException {
-        ActiveDescriptor<T> ad = Utilities.createAutoDescriptor(rawClass, locator);
+        AutoActiveDescriptor<T> ad = Utilities.createAutoDescriptor(rawClass, locator);
         
         checkReifiedDescriptor(ad);
         
-        return addActiveDescriptor(ad, false);
+        ActiveDescriptor<T> retVal = addActiveDescriptor(ad, false);
+        
+        ad.resetSelfDescriptor(retVal);
+        
+        return retVal;
     }
     
     /* (non-Javadoc)

@@ -645,7 +645,9 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                             collector));
             }
             
-            creator = new ClazzCreator<T>(sdLocator, implClass, this, collector);
+            ClazzCreator<T> myClazzCreator = new ClazzCreator<T>(sdLocator, implClass);
+            myClazzCreator.initialize(this, collector);
+            creator = myClazzCreator;
             
             if (!preAnalyzed) {
                 scope = Utilities.getScopeAnnotationType(implClass, baseDescriptor, collector);

@@ -72,21 +72,24 @@ public class ClazzCreator<T> implements Creator<T> {
     private final Class<?> implClass;
     private final Set<ResolutionInfo> myInitializers = new HashSet<ResolutionInfo>();
     private final Set<ResolutionInfo> myFields = new HashSet<ResolutionInfo>();
-    private final ActiveDescriptor<?> selfDescriptor;
+    private ActiveDescriptor<?> selfDescriptor;
 
-    private final ResolutionInfo myConstructor;
+    private ResolutionInfo myConstructor;
     private List<Injectee> allInjectees;
 
     private Method postConstructMethod;
     private Method preDestroyMethod;
     
     /* package */ ClazzCreator(ServiceLocatorImpl locator,
-            Class<?> implClass,
+            Class<?> implClass) {
+        this.locator = locator;
+        this.implClass = implClass;
+    }
+    
+    /* package */ void initialize(
             ActiveDescriptor<?> selfDescriptor,
             String analyzerName,
             Collector collector) {
-        this.locator = locator;
-        this.implClass = implClass;
         this.selfDescriptor = selfDescriptor;
         
         if ((selfDescriptor != null) &&
@@ -125,7 +128,7 @@ public class ClazzCreator<T> implements Creator<T> {
             return;
         }
 
-        injectees = Utilities.getConstructorInjectees((Constructor<?>) element);
+        injectees = Utilities.getConstructorInjectees((Constructor<?>) element, selfDescriptor);
         if (injectees == null) {
             myConstructor = null;
             return;
@@ -139,7 +142,7 @@ public class ClazzCreator<T> implements Creator<T> {
         for (Method initMethod : initMethods) {
             element = initMethod;
 
-            injectees = Utilities.getMethodInjectees(initMethod);
+            injectees = Utilities.getMethodInjectees(initMethod, selfDescriptor);
             if (injectees == null) return;
 
             baseAllInjectees.addAll(injectees);
@@ -151,7 +154,7 @@ public class ClazzCreator<T> implements Creator<T> {
         for (Field field : fields) {
             element = field;
 
-            injectees = Utilities.getFieldInjectees(field);
+            injectees = Utilities.getFieldInjectees(field, selfDescriptor);
             if (injectees == null) return;
 
             baseAllInjectees.addAll(injectees);
@@ -165,15 +168,29 @@ public class ClazzCreator<T> implements Creator<T> {
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
 
         Utilities.validateSelfInjectees(selfDescriptor, allInjectees, collector);
-        
     }
 
-    /* package */ ClazzCreator(ServiceLocatorImpl locator,
-            Class<?> implClass,
+    /* package */ void initialize(
             ActiveDescriptor<?> selfDescriptor,
             Collector collector) {
-        this(locator, implClass, selfDescriptor, (selfDescriptor == null) ? null : 
+        initialize(selfDescriptor, (selfDescriptor == null) ? null : 
             selfDescriptor.getClassAnalysisName(), collector);
+    }
+    
+    /**
+     * This is done because sometimes when creating the creator we do not know
+     * what the true system descriptor will be
+     * 
+     * @param selfDescriptor The descriptor that should replace our self descriptor
+     */
+    /* package */ void resetSelfDescriptor(ActiveDescriptor<?> selfDescriptor) {
+        this.selfDescriptor = selfDescriptor;
+        
+        for (Injectee injectee : allInjectees) {
+            if (!(injectee instanceof InjecteeImpl)) continue;
+                
+            ((InjecteeImpl) injectee).resetInjecteeDescriptor(selfDescriptor);
+        }
     }
 
     private void resolve(Map<Injectee, Object> addToMe,

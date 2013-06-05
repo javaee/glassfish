@@ -619,13 +619,13 @@ public class Utilities {
      * @throws MultiException if there was an error in the class
      * @throws IllegalArgumentException If the class is null
      */
-    public static <T> ActiveDescriptor<T> createAutoDescriptor(Class<T> clazz, ServiceLocatorImpl locator)
+    public static <T> AutoActiveDescriptor<T> createAutoDescriptor(Class<T> clazz, ServiceLocatorImpl locator)
             throws MultiException, IllegalArgumentException {
         if (clazz == null) throw new IllegalArgumentException();
 
         Collector collector = new Collector();
 
-        Creator<T> creator;
+        ClazzCreator<T> creator;
         Set<Annotation> qualifiers;
         Set<Type> contracts;
         Class<? extends Annotation> scope;
@@ -644,7 +644,7 @@ public class Utilities {
         scope = scopeInfo.getAnnoType();
         analyzerName = getAutoAnalyzerName(clazz);
 
-        creator = new ClazzCreator<T>(locator, clazz, null, analyzerName, collector);
+        creator = new ClazzCreator<T>(locator, clazz);
 
         collector.throwIfErrors();
 
@@ -673,7 +673,7 @@ public class Utilities {
             visibility = vi.value();
         }
 
-        return new AutoActiveDescriptor<T>(
+        AutoActiveDescriptor<T> retVal = new AutoActiveDescriptor<T>(
                 clazz,
                 creator,
                 contracts,
@@ -686,6 +686,12 @@ public class Utilities {
                 proxyForSameScope,
                 analyzerName,
                 metadata);
+        
+        creator.initialize(retVal, analyzerName, collector);
+        
+        collector.throwIfErrors();
+        
+        return retVal;
     }
 
     /**
@@ -769,7 +775,7 @@ public class Utilities {
         for (Field field : fields) {
             InjectionResolver<?> resolver = getInjectionResolver(locator, field);
 
-            List<Injectee> injecteeFields = Utilities.getFieldInjectees(field);
+            List<Injectee> injecteeFields = Utilities.getFieldInjectees(field, null);
 
             validateSelfInjectees(null, injecteeFields, collector);
             collector.throwIfErrors();
@@ -787,7 +793,7 @@ public class Utilities {
         }
 
         for (Method method : methods) {
-            List<Injectee> injectees = Utilities.getMethodInjectees(method);
+            List<Injectee> injectees = Utilities.getMethodInjectees(method, null);
 
             validateSelfInjectees(null, injectees, collector);
             collector.throwIfErrors();
@@ -826,7 +832,7 @@ public class Utilities {
 
         collector.throwIfErrors();
 
-        List<Injectee> injectees = getConstructorInjectees(c);
+        List<Injectee> injectees = getConstructorInjectees(c, null);
 
         validateSelfInjectees(null, injectees, collector);
         collector.throwIfErrors();
@@ -872,8 +878,7 @@ public class Utilities {
      * @return true if this must be proxied
      */
     public static boolean isProxiableScope(Class<? extends Annotation> scope) {
-        if (scope.isAnnotationPresent(Proxiable.class)) return true;
-        return false;
+        return scope.isAnnotationPresent(Proxiable.class);
     }
 
     /**
@@ -892,15 +897,83 @@ public class Utilities {
      * The given descriptor must be reified and valid.
      *
      * @param desc A non-null, reified ActiveDescriptor
+     * @param injectee The injectee where this is being injected if known,
+     * or null if not known
      * @return true if this descriptor must be proxied, false otherwise
      */
-    public static boolean isProxiable(ActiveDescriptor<?> desc) {
+    public static boolean isProxiable(ActiveDescriptor<?> desc, Injectee injectee) {
         Boolean directed = desc.isProxiable();
+        
         if (directed != null) {
-            return directed.booleanValue();
+            if (injectee == null) {
+                // No other scope to compare to
+                return directed;
+            }
+            
+            if (!directed) {
+                // Doesn't matter what the other scope is, not proxied
+                return false;
+            }
+            
+            ActiveDescriptor<?> injecteeDescriptor = injectee.getInjecteeDescriptor();
+            if (injecteeDescriptor == null) {
+                // No other scope to compare to
+                return true;
+            }
+            
+            Boolean sameScope = desc.isProxyForSameScope();
+            if (sameScope == null || sameScope) {
+                // The default case is to be lazy
+                return true;
+            }
+            
+            // OK, same scope is false, forced Proxy is true,
+            // now we need to see if the scopes of the two
+            // things are in fact the same
+            if (desc.getScope().equals(injecteeDescriptor.getScope())) {
+                // The scopes are the same, proxy-for-same-scope is false,
+                // so the answer is no, do not proxy
+                return false;
+            }
+            
+            // The scopes are different, deal with it
+            return true;
         }
 
-        return isProxiableScope(desc.getScopeAnnotation());
+        if (!isProxiableScope(desc.getScopeAnnotation())) return false;
+        
+        if (injectee == null) {
+            // No other scope to compare to
+            
+            return true;
+        }
+        
+        ActiveDescriptor<?> injecteeDescriptor = injectee.getInjecteeDescriptor();
+        if (injecteeDescriptor == null) {
+            // No other scope to compare to
+            
+            return true;
+        }
+        
+        Proxiable proxiable = desc.getScopeAnnotation().getAnnotation(Proxiable.class);
+        if (proxiable == null || proxiable.proxyForSameScope()) {
+            // The default case is to be lazy
+            
+            return true;
+        }
+        
+        // OK, same scope is false, and we are in Proxiable scope,
+        // now we need to see if the scopes of the two
+        // things are in fact the same
+        if (desc.getScope().equals(injecteeDescriptor.getScope())) {
+            // The scopes are the same, proxy-for-same-scope is false,
+            // so the answer is no, do not proxy
+            
+            return false;
+        }
+        
+        // The scopes are different, deal with it
+        return true;
     }
 
     /**
@@ -1811,7 +1884,7 @@ public class Utilities {
      * @param c The constructor to analyze
      * @return the list (in order) of parameters to the constructor
      */
-    public static List<Injectee> getConstructorInjectees(Constructor<?> c) {
+    public static List<Injectee> getConstructorInjectees(Constructor<?> c, ActiveDescriptor<?> injecteeDescriptor) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
         Unqualified unqualified = c.getAnnotation(Unqualified.class);
@@ -1825,7 +1898,8 @@ public class Utilities {
                     c,
                     isOptional(paramAnnotations[lcv]),
                     isSelf(paramAnnotations[lcv]),
-                    unqualified));
+                    unqualified,
+                    injecteeDescriptor));
         }
 
         return retVal;
@@ -1836,7 +1910,7 @@ public class Utilities {
      * @param c The constructor to analyze
      * @return the list (in order) of parameters to the constructor
      */
-    public static List<Injectee> getMethodInjectees(Method c) {
+    public static List<Injectee> getMethodInjectees(Method c, ActiveDescriptor<?> injecteeDescriptor) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
         Unqualified unqualified = c.getAnnotation(Unqualified.class);
@@ -1850,7 +1924,8 @@ public class Utilities {
                     c,
                     isOptional(paramAnnotations[lcv]),
                     isSelf(paramAnnotations[lcv]),
-                    unqualified));
+                    unqualified,
+                    injecteeDescriptor));
         }
 
         return retVal;
@@ -1877,7 +1952,7 @@ public class Utilities {
      * @param f The field to analyze
      * @return the list (in order) of parameters to the constructor
      */
-    public static List<Injectee> getFieldInjectees(Field f) {
+    public static List<Injectee> getFieldInjectees(Field f, ActiveDescriptor<?> injecteeDescriptor) {
         List<Injectee> retVal = new LinkedList<Injectee>();
         Unqualified unqualified = f.getAnnotation(Unqualified.class);
 
@@ -1887,7 +1962,8 @@ public class Utilities {
                 f,
                 isOptional(f.getAnnotations()),
                 isSelf(f.getAnnotations()),
-                unqualified));
+                unqualified,
+                injecteeDescriptor));
 
         return retVal;
     }
@@ -2145,7 +2221,7 @@ public class Utilities {
             root = (ActiveDescriptor<T>) locator.reifyDescriptor(root, injectee);
         }
 
-        if (Utilities.isProxiable(root)) {
+        if (Utilities.isProxiable(root, injectee)) {
             boolean isInterface = (requestedClass == null) ? false : requestedClass.isInterface() ;
 
             final Class<?> proxyClass;

@@ -49,6 +49,7 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -75,6 +76,7 @@ public class InjecteeImpl implements Injectee, Serializable {
     private boolean isOptional = false;
     private boolean isSelf = false;
     private Unqualified unqualified = null;
+    private ActiveDescriptor<?> injecteeDescriptor;
     
     /**
      * None of the fields of the returned object will be set
@@ -102,6 +104,7 @@ public class InjecteeImpl implements Injectee, Serializable {
         qualifiers = Collections.unmodifiableSet(copyMe.getRequiredQualifiers());
         isOptional = copyMe.isOptional();
         isSelf = copyMe.isSelf();
+        injecteeDescriptor = copyMe.getInjecteeDescriptor();
         // unqualified = copyMe.getUnqualified();
         
         if (parent instanceof Field) {
@@ -248,6 +251,15 @@ public class InjecteeImpl implements Injectee, Serializable {
     public void setUnqualified(Unqualified unqualified) {
         this.unqualified = unqualified;
     }
+    
+    @Override
+    public ActiveDescriptor<?> getInjecteeDescriptor() {
+        return injecteeDescriptor;
+    }
+    
+    public void setInjecteeDescriptor(ActiveDescriptor<?> injecteeDescriptor) {
+        this.injecteeDescriptor = injecteeDescriptor;
+    }
 
     public String toString() {
         return "InjecteeImpl(requiredType=" + Pretty.type(requiredType) +
@@ -259,4 +271,6 @@ public class InjecteeImpl implements Injectee, Serializable {
                 ",unqualified=" + unqualified +
                 "," + System.identityHashCode(this) + ")";
     }
+
+    
 }
