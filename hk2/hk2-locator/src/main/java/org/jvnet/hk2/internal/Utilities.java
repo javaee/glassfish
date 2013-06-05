@@ -944,21 +944,25 @@ public class Utilities {
         
         if (injectee == null) {
             // No other scope to compare to
-            
             return true;
         }
         
         ActiveDescriptor<?> injecteeDescriptor = injectee.getInjecteeDescriptor();
         if (injecteeDescriptor == null) {
             // No other scope to compare to
-            
             return true;
         }
         
+        Boolean proxyForSameScope = desc.isProxyForSameScope();
         Proxiable proxiable = desc.getScopeAnnotation().getAnnotation(Proxiable.class);
-        if (proxiable == null || proxiable.proxyForSameScope()) {
+        
+        if (proxyForSameScope != null) {
+            if (proxyForSameScope) {
+              return true;
+            }
+        }
+        else if (proxiable == null || proxiable.proxyForSameScope()) {
             // The default case is to be lazy
-            
             return true;
         }
         

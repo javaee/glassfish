@@ -39,33 +39,26 @@
  */
 package org.glassfish.hk2.tests.locator.proxysamescope;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ProxyCtl;
+import org.junit.Assert;
 
 /**
  * @author jwells
  *
  */
-public class ProxiableSameScopeModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(ProxiableSingletonNoLazyContext.class);
-        config.addActiveDescriptor(ProxiableSingletonNoLazy2Context.class);
-        config.addActiveDescriptor(ProxiableSingletonContext.class);
-        
-        config.addActiveDescriptor(ProxiableServiceA.class);
-        config.addActiveDescriptor(ProxiableServiceB.class);
-        config.addActiveDescriptor(ProxiableServiceC.class);
-        config.addActiveDescriptor(ProxiableServiceD.class);
-        config.addActiveDescriptor(ProxiableServiceDPrime.class);
-        config.addActiveDescriptor(ProxiableServiceE.class);
-        config.addActiveDescriptor(ProxiableServiceF.class);
-        config.addActiveDescriptor(ProxiableServiceFPrime.class);
-        config.addActiveDescriptor(ProxiableServiceG.class);
+@ProxiableSingleton
+public class ProxiableServiceG {
+    @Inject
+    private ProxiableServiceF serviceF;
+    
+    @Inject
+    private ProxiableServiceFPrime fPrime;
+    
+    public void check() {
+        Assert.assertFalse(serviceF instanceof ProxyCtl);
+        Assert.assertTrue(fPrime instanceof ProxyCtl);
     }
 
 }

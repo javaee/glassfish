@@ -39,33 +39,36 @@
  */
 package org.glassfish.hk2.tests.locator.proxysamescope;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ProxyCtl;
+import org.junit.Assert;
 
 /**
+ * Even though ProxiableServiceD is in the same scope, it should
+ * still be proxied because of the explicit choice of
+ * ProxiableServiceD.  ProxiableServiceDPrime has been
+ * explicitly set ProxyForSameScope to false
+ * 
  * @author jwells
  *
  */
-public class ProxiableSameScopeModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(ProxiableSingletonNoLazyContext.class);
-        config.addActiveDescriptor(ProxiableSingletonNoLazy2Context.class);
-        config.addActiveDescriptor(ProxiableSingletonContext.class);
+@ProxiableSingletonNoLazy
+public class ProxiableServiceE {
+    @Inject
+    private ProxiableServiceD serviceD;
+    private ProxiableServiceDPrime dPrime;
+    
+    @SuppressWarnings("unused")
+    @Inject
+    private void setDPrime(ProxiableServiceDPrime dPrime) {
+        this.dPrime = dPrime;
         
-        config.addActiveDescriptor(ProxiableServiceA.class);
-        config.addActiveDescriptor(ProxiableServiceB.class);
-        config.addActiveDescriptor(ProxiableServiceC.class);
-        config.addActiveDescriptor(ProxiableServiceD.class);
-        config.addActiveDescriptor(ProxiableServiceDPrime.class);
-        config.addActiveDescriptor(ProxiableServiceE.class);
-        config.addActiveDescriptor(ProxiableServiceF.class);
-        config.addActiveDescriptor(ProxiableServiceFPrime.class);
-        config.addActiveDescriptor(ProxiableServiceG.class);
+    }
+    
+    public void check() {
+        Assert.assertTrue(serviceD instanceof ProxyCtl);
+        Assert.assertFalse(dPrime instanceof ProxyCtl);
     }
 
 }
