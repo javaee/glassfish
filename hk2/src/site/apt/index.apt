@@ -37,6 +37,8 @@ Introduction
  extended with HK2:
 
  * Custom scopes
+ 
+ * The use of proxies
 
  * Custom injection resolution
 
@@ -48,7 +50,7 @@ Introduction
  
  []
 
- For more information on HK2 extensibilty see
+ For more information on these HK2 features see
  {{{./hk2-api/extensibility.html}this page}}.
 
 * Developing with HK2

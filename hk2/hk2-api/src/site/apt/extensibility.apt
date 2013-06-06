@@ -19,6 +19,8 @@ Extensibility of HK2
  
  * {{PerThread Scope}}
  
+ * {{Proxies}}
+ 
  * {{Dealing with ClassLoading issues}}
  
  * {{Custom Injection Resolvers}}
@@ -78,6 +80,101 @@ Extensibility of HK2
  to any {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} by
  using the method
  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enablePerThreadScope(org.glassfish.hk2.api.ServiceLocator)}enablePerThreadScope}}
+ 
+* {Proxies}
+
+ Rather than injecting an instance of a service itself, HK2 can also inject a Proxy to that service.  There are a few
+ reasons that you might want to use proxies.  One reason is because the lifeycle of two different scopes may be
+ different.  For example, you might have something like a RequestScoped scope, and you would like to inject it
+ into a Singleton scoped object.  But the Singleton scoped object is only injected once, and the RequestScoped service
+ will be changing every time the Request has changed.  This can be solved by injecting a proxy into the
+ Singleton scoped object.  Then every time the Singleton scoped service uses the RequestScoped service the proxy
+ will make sure to use the real RequestScoped service that is appropriate for the current request.
+ 
+ Another reason you might want to use a proxy for a service is if the service is extremely expensive to create, and
+ if possible you want to delay the creation until the service is actually used by the caller.  In fact, if the caller
+ never invokes on the proxy, it is possible the service will never get started!  This can be done by injecting a
+ proxy into a service rather than the real service.  The proxy will not attempt to create the service until some method
+ of that proxy is invoked.
+ 
+ All proxies created by HK2 will also implement {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ProxyCtl.html}ProxyCtl}}.
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ProxyCtl.html}ProxyCtl}} can be used to force the creation of the
+ underlying service without calling any of the methods of that service.  Of course every service that is to be proxied
+ must be proxiable, so the service to be proxied must either be an interface or a class that is not declared final,
+ has no final fields or methods and has a public zero-argument constructor.  In general it is better to proxy interfaces
+ rather than classes.
+ 
+ In order to have HK2 create a proxy for your service rather than the service itself you can create a proxiable scope.
+ A proxiable scope is just like a normal scope, except that the scope annotation is also annotated with
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Proxiable.html}Proxiable}}.  All services injected or looked up
+ from this scope will be given a proxy rather than the real service.  This is an example of a proxiable scope:
+ 
++---------------------------
+@Scope
+@Proxiable
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD })
+public @interface ProxiableSingleton {
+}
++---------------------------
+
+ While normally every service in a proxiable scope is proxiable, you can override the default proxying behavior
+ on a per-service basis.  This is also true for services in non-proxiable scopes.  For example you can make
+ a service that is in Singleton scope (which is not proxiable) be proxied.  You do this
+ by setting the field
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Descriptor.html#isProxiable()}isProxiable}}.  If that
+ method returns null then that service will use the scopes mode when it comes to proxying.  If that method
+ returns non-null then the system will either proxy or not proxy based on the returned value.  Classes that
+ are automatically analyzed can also use the
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/UseProxy.html}UseProxy}} annotation to indicate explicitly
+ whether or not they should be proxied.  This is a service in Singleton scope that will be proxied:
+ 
++---------------------------
+@Singleton @UseProxy
+public class SingletonService {
+}
++---------------------------
+
+ This is a service in the ProxiableSingleton scope that will NOT be proxied (even though ProxiableSingleton is
+ a Proxiable scope):
+
++---------------------------
+@ProxiableSingleton @UseProxy(false)
+public class AnotherService {
+}
++---------------------------
+ 
+** Proxying within the same scope
+
+ By default if a service is proxiable then it will be proxied even when being injected into other services within the same scope.
+ This allows for the lazy use case.  However, it is sometimes the case that it is counter-productive to proxy services when
+ they are injected into other services of the same scope.  HK2 supports Proxiable scopes that do NOT proxy services when they
+ are being injected into the same scope.  The {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Proxiable.html}Proxiable}}
+ annotation has a field called proxyForSameScope that by default is true but which can be set to false.  The following scope
+ is a proxiable scope where services injected into other services in the same scope will not be proxied:
+
++---------------------------
+@Scope
+@Proxiable(proxyForSameScope=false)
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD })
+public @interface RequestScope {
+}
++---------------------------
+
+ Individual descriptors can also explicity set whether or not they should be proxied for other services in the same
+ scope by setting the
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/Descriptor.html#isProxyForSameScope()}isProxyForSameScope}} value.
+ This value can also be set when using automatic class analysis by using the
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ProxyForSameScope.html}ProxyForSameScope}} annotation.  The following
+ service is in the ProxiableSingelton scope which would normally not proxy when being injected into the same scope, but
+ which in this case WILL be proxied even when injected into another service in the same scope:
+
++---------------------------
+@RequestScope @ProxyForSameScope
+public class ExpensiveRequestService {
+}
++---------------------------
  
 * {Dealing with ClassLoading issues}
 
