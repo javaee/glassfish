@@ -44,6 +44,12 @@ grant codeBase "file:${com.sun.aas.installRoot}/lib/-" {
 	permission java.security.AllPermission;
 };
 
+// Core server classes get all permissions by default
+grant codeBase "file:${com.sun.aas.installRoot}/modules/-" {
+    permission java.security.AllPermission;
+};
+
+
 // lockhart classes get all permissions by default
 grant codeBase "file:${com.sun.aas.webconsoleLib}/cc.jar" {
         permission java.security.AllPermission;
