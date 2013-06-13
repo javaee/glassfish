@@ -109,20 +109,6 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
 
           @Override
           public Method[] run() {
-            /*
-             * Putting this checkPermission here makes this class work the same regardless
-             * of the classloader of the caller.  Without this check here if the caller
-             * has the same classloader as this class then the permission will be
-             * granted.  For example, in an OSGi environment the caller of this method
-             * will fail because of the different classloader, whereas in a simple
-             * system classpath environment this would have succeeded, since the
-             * classloader would have been the same.
-             * See java.lang.SecurityManager.checkMemberAccess
-             */
-            if (System.getSecurityManager() != null) {
-              AccessController.checkPermission(new RuntimePermission("accessDeclaredMembers"));
-            }
-            
             return annotationType().getDeclaredMethods();
           }
                
