@@ -222,6 +222,9 @@
         <ant dir="transactions" target="${cdi-target}"/>
         <ant dir="unproxyable-deps" target="${cdi-target}"/>
         <ant dir="unsatisfied-deps" target="${cdi-target}"/>
+
+        <ant dir="implicit" target="${cdi-target}"/>
+
         <if>
             <equals arg1="${test.embedded.mode}" arg2="true"/>
             <then>
