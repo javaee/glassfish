@@ -76,4 +76,30 @@ public interface ServiceHandle<T> {
      * because of this service
      */
     public void destroy();
+    
+    /**
+     * Service data can be set on a service handle.  If the service
+     * data is set prior to the services associated Context has
+     * created an instance then this service data can be used
+     * to influence the context's creation of the service.  The
+     * service data is associated with a handle, not with
+     * the service itself
+     * 
+     * @param serviceData Sets the serviceData for the handle
+     * (may be null)
+     */
+    public void setServiceData(Object serviceData);
+    
+    /**
+     * Service data can be set on a service handle.  If the service
+     * data is set prior to the services associated Context has
+     * created an instance then this service data can be used
+     * to influence the context's creation of the service.  The
+     * service data is associated with a handle, not with
+     * the service itself
+     * 
+     * @return The service data for this service handle
+     * (may return null)
+     */
+    public Object getServiceData();
 }

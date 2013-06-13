@@ -52,6 +52,12 @@ public class BlockingService {
     private static final Object lock = new Object();
     private static boolean go = false;
     
+    public static void stop() {
+        synchronized (lock) {
+            go = false;
+        }
+    }
+    
     @SuppressWarnings("unused")
     @PostConstruct
     private void postConstruct() {

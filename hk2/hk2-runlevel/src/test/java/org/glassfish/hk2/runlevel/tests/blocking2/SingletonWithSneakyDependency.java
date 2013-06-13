@@ -43,6 +43,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.junit.Assert;
 
@@ -62,6 +63,15 @@ public class SingletonWithSneakyDependency {
     private final static Object lock = new Object();
     private static boolean initialized = false;
     
+    private static boolean useServiceHandle = false;
+    
+    public static void setUseServiceHandle(boolean paramUseServiceHandle) {
+        useServiceHandle = paramUseServiceHandle;
+        synchronized (lock) {
+            initialized = false;
+        }
+    }
+    
     @SuppressWarnings("unused")
     @PostConstruct
     private void postConstruct() {
@@ -75,12 +85,25 @@ public class SingletonWithSneakyDependency {
             e.printStackTrace();
         }
         
-        try {
-            locator.getService(BlockingService.class);
+        if (!useServiceHandle) {
+            try {
+                locator.getService(BlockingService.class);
+            }
+            catch (Throwable th) {
+                th.printStackTrace();
+                Assert.fail("Should not have reached here, not rethrowing original exception");
+            }
         }
-        catch (Throwable th) {
-            th.printStackTrace();
-            Assert.fail("Should not have reached here, not rethrowing original exception");
+        else {
+            try {
+                ServiceHandle<BlockingService> handle = locator.getServiceHandle(BlockingService.class);
+                
+                handle.getService();
+            }
+            catch (Throwable th) {
+                th.printStackTrace();
+                Assert.fail("Should not have reached here, not rethrowing original exception (service handle path)");
+            }
         }
         
         synchronized (lock) {

@@ -79,14 +79,6 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     private int currentLevel = RunLevel.RUNLEVEL_VAL_INITIAL;
     private CurrentTaskFuture currentTask = null;
     
-    private static final ThreadLocal<Boolean> blockThread = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return new Boolean(Boolean.TRUE);
-        }
-        
-    };
-    
     private static final Executor DEFAULT_EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
             new SynchronousQueue<Runnable>(true),
@@ -114,10 +106,6 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     private AsyncRunLevelContext(ServiceLocator locator) {
         this.locator = locator;
     }
-    
-    /* package */ static void setBlocking(boolean blocking) {
-        blockThread.set(blocking);
-    }
 
     @Override
     public Class<? extends Annotation> getScope() {
@@ -128,6 +116,20 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
+        boolean throwWouldBlock;
+        if (root == null) {
+            throwWouldBlock = false;
+        }
+        else {
+            Object rootBlockObject = root.getServiceData();
+            if (rootBlockObject == null) {
+                throwWouldBlock = false;
+            }
+            else {
+                throwWouldBlock = ((Boolean) rootBlockObject).booleanValue();
+            }
+        }
+        
         U retVal = null;
         
         int localCurrentLevel;
@@ -143,7 +145,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
                             " was found.  Full descriptor is " + activeDescriptor));
                 }
                 
-                if (!blockThread.get()) {
+                if (throwWouldBlock) {
                     throw new MultiException(new WouldBlockException());
                 }
                 

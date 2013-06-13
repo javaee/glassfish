@@ -740,7 +740,7 @@ public class CurrentTaskFuture implements RunLevelFuture {
         }
         
         private void oneJob(ServiceHandle<?> fService, boolean block) {
-            AsyncRunLevelContext.setBlocking(block);
+            fService.setServiceData(new Boolean(!block));
             boolean completed = true;
             try {
                 boolean ok;
@@ -766,7 +766,7 @@ public class CurrentTaskFuture implements RunLevelFuture {
                 parent.fail(th);
             }
             finally {
-                AsyncRunLevelContext.setBlocking(true);
+                fService.setServiceData(null);
                 if (completed) {
                     parent.jobComplete();
                 }
