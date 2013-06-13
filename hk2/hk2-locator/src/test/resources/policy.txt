@@ -89,12 +89,6 @@ grant codeBase "file:${build.dir}/../../external/cglib/target/-" {
 };
 
 // This is the grant that should contain the minimal grants necessary
-// for hk2-locator test classes.  These should have nothing in order
-// to ensure the underlying code is doing the proper set of doPriv calls.
-grant codeBase "file:${build.dir}/test-classes/-" {
-};
-
-// This is the grant that should contain the minimal grants necessary
 // for hk2-locator to run in Eclipse (assuming Eclipse is putting its
 // classes into the bin directory)
 grant codeBase "file:${user.dir}/bin/-" {
@@ -122,5 +116,5 @@ grant codeBase "file:${build.dir}/classes/-" {
 // This is the grant that should contain the minimal grants necessary
 // for hk2-locator to run under maven.
 grant codeBase "file:${build.dir}/test-classes/-" {
-  permission java.lang.RuntimePermission "createClassLoader";
+//  permission java.lang.RuntimePermission "createClassLoader";
 };

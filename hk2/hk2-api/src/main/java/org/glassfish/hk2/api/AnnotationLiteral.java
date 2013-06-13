@@ -104,14 +104,35 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
     
     private Method[] getMembers() 
     {
-       if (members==null) {
-          members = annotationType().getDeclaredMethods();
-          if ( members.length>0 && !annotationType().isAssignableFrom(this.getClass()) )
-          {
-             throw new RuntimeException(getClass() + " does not implement the annotation type with members " + annotationType().getName());
+      if (members==null) {
+        members = AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
+
+          @Override
+          public Method[] run() {
+            /*
+             * Putting this checkPermission here makes this class work the same regardless
+             * of the classloader of the caller.  Without this check here if the caller
+             * has the same classloader as this class then the permission will be
+             * granted.  For example, in an OSGi environment the caller of this method
+             * will fail because of the different classloader, whereas in a simple
+             * system classpath environment this would have succeeded, since the
+             * classloader would have been the same.
+             * See java.lang.SecurityManager.checkMemberAccess
+             */
+            if (System.getSecurityManager() != null) {
+              AccessController.checkPermission(new RuntimePermission("accessDeclaredMembers"));
+            }
+            
+            return annotationType().getDeclaredMethods();
           }
-       }
-       return members;
+               
+        });
+          
+        if ( members.length>0 && !annotationType().isAssignableFrom(this.getClass()) ) {
+          throw new RuntimeException(getClass() + " does not implement the annotation type with members " + annotationType().getName());
+        }
+      }
+      return members;
     }
         
     private static Class<?> getAnnotationLiteralSubclass(Class<?> clazz)
@@ -227,6 +248,7 @@ public abstract class AnnotationLiteral<T extends Annotation> implements Annotat
     @Override
     public int hashCode()
     {
+        
        int hashCode = 0;
        for (Method member: getMembers())
        {
