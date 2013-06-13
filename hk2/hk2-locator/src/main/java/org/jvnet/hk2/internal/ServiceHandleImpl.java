@@ -69,6 +69,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     private boolean serviceDestroyed = false;
     private boolean serviceSet = false;
     private T service;
+    private Object serviceData;
     
     private final List<ServiceHandleImpl<?>> subHandles = new LinkedList<ServiceHandleImpl<?>>();
     
@@ -83,6 +84,10 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
      */
     @Override
     public T getService() {
+        return getService(this);
+    }
+    
+    /* package */ T getService(ServiceHandle<T> handle) {
         synchronized (lock) {
             if (serviceDestroyed) throw new IllegalStateException("Service has been disposed");
             
@@ -90,12 +95,13 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             
             Class<?> requiredClass = (injectee == null) ? null : ReflectionHelper.getRawClass(injectee.getRequiredType());
             
-            service = Utilities.createService(root, injectee, locator, this, requiredClass);
+            service = Utilities.createService(root, injectee, locator, handle, requiredClass);
             
             serviceSet = true;
         
             return service;
         }
+        
     }
 
     /* (non-Javadoc)
@@ -166,6 +172,21 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
 
     }
     
+    @Override
+    public void setServiceData(Object serviceData) {
+        synchronized (lock) {
+            this.serviceData = serviceData;
+        }
+        
+    }
+
+    @Override
+    public Object getServiceData() {
+        synchronized (lock) {
+            return serviceData;
+        }
+    }
+    
     /**
      * Add a sub handle to this for proper destruction
      * 
@@ -178,6 +199,8 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     public String toString() {
         return "ServiceHandle(" + root + "," + System.identityHashCode(this) + ")"; 
     }
+
+    
 	
 
 }

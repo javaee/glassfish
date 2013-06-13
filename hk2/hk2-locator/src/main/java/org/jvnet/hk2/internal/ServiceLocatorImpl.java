@@ -499,6 +499,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor,
             Injectee injectee) throws MultiException {
+        return getServiceHandleImpl(activeDescriptor, injectee);
+    }
+    
+    private <T> ServiceHandleImpl<T> getServiceHandleImpl(
+            ActiveDescriptor<T> activeDescriptor,
+            Injectee injectee) throws MultiException {
         if (activeDescriptor == null) throw new IllegalArgumentException();
         checkState();
         
@@ -514,17 +520,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return internalGetServiceHandle(activeDescriptor, null);
     }
     
-    private <T> ServiceHandle<T> internalGetServiceHandle(
+    private <T> ServiceHandleImpl<T> internalGetServiceHandle(
             ActiveDescriptor<T> activeDescriptor,
             Type requestedType) {
         if (activeDescriptor == null) throw new IllegalArgumentException();
         checkState();
         
         if (requestedType == null) {
-            return getServiceHandle(activeDescriptor, null);
+            return getServiceHandleImpl(activeDescriptor, null);
         }
         
-        return getServiceHandle(activeDescriptor, new InjecteeImpl(requestedType));
+        return getServiceHandleImpl(activeDescriptor, new InjecteeImpl(requestedType));
     }
 
     /* (non-Javadoc)
@@ -536,6 +542,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return getService(activeDescriptor, root, null);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getService(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root,
@@ -549,13 +556,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
             return Utilities.createService(activeDescriptor, originalRequest, this, null, rawClass);
         }
         
-        ServiceHandle<T> subHandle = internalGetServiceHandle(activeDescriptor, contractOrImpl);
+        ServiceHandleImpl<T> subHandle = internalGetServiceHandle(activeDescriptor, contractOrImpl);
         
         if (PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
             ((ServiceHandleImpl<?>) root).addSubHandle((ServiceHandleImpl<T>) subHandle);
         }
         
-        return subHandle.getService();
+        return subHandle.getService((ServiceHandle<T>) root);
     }
     
     /* (non-Javadoc)
