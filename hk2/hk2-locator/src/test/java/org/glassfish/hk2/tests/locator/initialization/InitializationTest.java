@@ -47,9 +47,12 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
+import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
 
 /**
  * @author jwells
@@ -184,4 +187,18 @@ public class InitializationTest {
         Assert.assertNotNull(ssmi.getSimpleService());
     }
 
+    /**
+     * Tests that we can create with a specific user generator
+     */
+    @Test
+    public void testServiceLocatorFactoryWithSpecificGenerator() {
+        ServiceLocatorGenerator generator = new ServiceLocatorGeneratorImpl();
+        ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+        
+        ServiceLocator sl1 = factory.create(null, null, generator);
+        Assert.assertNotNull(sl1);
+        
+        ServiceLocator sl2 = factory.create(null, sl1, generator);
+        Assert.assertNotNull(sl2);
+    }
 }
