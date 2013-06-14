@@ -99,7 +99,7 @@
 
     <scm>
         <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/maven-plugin</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/maven-plugin</developerConnection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/maven-plugin</developerConnection>
         <url>http://java.net/projects/glassfish/sources/svn/show/trunk/maven-plugin</url>
     </scm>
 
