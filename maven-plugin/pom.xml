@@ -51,7 +51,7 @@
     <groupId>org.glassfish.embedded</groupId>
     <artifactId>maven-embedded-glassfish-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>4.0</version>
+    <version>4.1-SNAPSHOT</version>
 
     <name>Maven Embedded GlassFish Plugin</name>
     <description>Maven Embedded GlassFish Plugin</description>
@@ -98,9 +98,9 @@
     </organization>
 
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/maven-embedded-glassfish-plugin-4.0</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/maven-embedded-glassfish-plugin-4.0</developerConnection>
-        <url>http://java.net/projects/glassfish/sources/svn/show/tags/maven-embedded-glassfish-plugin-4.0</url>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/maven-plugin</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/maven-plugin</developerConnection>
+        <url>http://java.net/projects/glassfish/sources/svn/show/trunk/maven-plugin</url>
     </scm>
 
     <build>
