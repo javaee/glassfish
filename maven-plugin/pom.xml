@@ -51,7 +51,7 @@
     <groupId>org.glassfish.embedded</groupId>
     <artifactId>maven-embedded-glassfish-plugin</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>4.1-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
 
     <name>Maven Embedded GlassFish Plugin</name>
     <description>Maven Embedded GlassFish Plugin</description>
