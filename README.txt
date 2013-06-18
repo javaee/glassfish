@@ -1,6 +1,6 @@
 This file describes the subdirectories of
 https://svn.java.net/svn/glassfish~svn/trunk/
-Last updated: 8/14/2012 by romain.grecourt@oracle.com
+Last updated: 06/18/2013 by romain.grecourt@oracle.com
 
 
 - api
@@ -36,7 +36,7 @@ Last updated: 8/14/2012 by romain.grecourt@oracle.com
 
 - maven-plugins
 
-	A directory containing various maven plugin used during the GlassFish build.
+	A directory containing various maven plugin (embedded-glassfish and plugins used during builds)
 
 
 - hudson-plugin
@@ -62,11 +62,6 @@ Last updated: 8/14/2012 by romain.grecourt@oracle.com
 - main-docs-l10n
 
 	L10n documentation resources (online help, etc.) for the GlassFish project.
-
-
-- maven-plugin
-
-	The maven plugin supporting embedded use of GlassFish in maven.
 
 
 - schemas
