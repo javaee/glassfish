@@ -46,20 +46,13 @@ import java.lang.annotation.Target;
 import java.lang.annotation.Documented;
 
 /**
- * Marker annotation to allow implementations to be discovered from
- * the contract they implement.
- *
- * <p>
- * There are two usages of this annotation.
- *
- * <h2>Contract interface</h2>
- * <p>
- * This annotation can be placed on classes to indicate
- * that when automatically deducing the set of advertised
- * classes that it should be included.
+ * This annotation is used by HK2 during automatic
+ * class analysis to indicate that a class or
+ * interface should be included in the list of
+ * contracts for a service
  *
  * @author Jerome Dochez
- * @see Index
+ * @see ContractsProvided
  */
 @Documented
 @Retention(RUNTIME)

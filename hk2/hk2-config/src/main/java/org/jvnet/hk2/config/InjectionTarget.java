@@ -40,7 +40,6 @@
 package org.jvnet.hk2.config;
 
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Index;
 
 import javax.inject.Qualifier;
 
@@ -61,5 +60,5 @@ import java.lang.annotation.Target;
 @Target(TYPE)
 @Qualifier
 public @interface InjectionTarget {
-    @Index Class<?> value();
+    Class<?> value();
 }
