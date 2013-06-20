@@ -74,7 +74,6 @@ public @interface Service {
      * <p>
      * The default value "" indicates that the inhabitant is anonymous.
      */
-    @Index
     String name() default "";
 
     /**
