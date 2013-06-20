@@ -27,7 +27,7 @@
         description="compile the source " >
     <!-- Compile the java code from ${antsrc} into ${build} -->
     <javac srcdir="${antsrc}" destdir="${build}" classpathref="project.class.path"/>
-    <hk2-inhabitant-generator targetDirectory="${build}" verbose="true"/>
+    <hk2-inhabitant-generator targetDirectory="${build}" verbose="true" includeDate="false"/>
   </target>
 
   <target name="dist" depends="compile"

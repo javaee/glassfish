@@ -59,6 +59,7 @@ public class HK2InhabitantGeneratorTask extends Task {
     private File outputDirectory = null;
     private boolean noswap = false;
     private Path classpath = null;
+    private boolean includeDate = true;
     
     public void setTargetDirectory(File targetDirectory) {
         this.targetDirectory = targetDirectory;
@@ -80,6 +81,10 @@ public class HK2InhabitantGeneratorTask extends Task {
         this.noswap = noswap;
     }
     
+    public void setIncludeDate(boolean includeDate) {
+        this.includeDate = includeDate;
+    }
+    
     public void addClasspath(Path classpath) {
         this.classpath = classpath;
     }
@@ -99,6 +104,10 @@ public class HK2InhabitantGeneratorTask extends Task {
         
         if (verbose) {
             args.add(HabitatGenerator.VERBOSE_ARG);
+        }
+        
+        if (!includeDate) {
+            args.add(HabitatGenerator.NO_DATE_ARG);
         }
         
         if (locator != null) {
