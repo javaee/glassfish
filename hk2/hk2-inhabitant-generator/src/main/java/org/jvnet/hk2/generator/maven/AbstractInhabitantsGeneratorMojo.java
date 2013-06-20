@@ -78,6 +78,11 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
     private boolean verbose;
     
     /**
+     * @parameter default-value=true
+     */
+    private boolean includeDate = true;
+    
+    /**
      * @parameter
      */
     private String locator;
@@ -141,6 +146,10 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
         
         if (getNoSwap()) {
             arguments.add(HabitatGenerator.NOSWAP_ARG);
+        }
+        
+        if (!includeDate) {
+            arguments.add(HabitatGenerator.NO_DATE_ARG);
         }
         
         if (isWar()) {

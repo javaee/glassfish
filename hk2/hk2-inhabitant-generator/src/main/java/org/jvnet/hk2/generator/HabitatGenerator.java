@@ -70,6 +70,8 @@ public class HabitatGenerator {
     public final static String NOSWAP_ARG = "--noswap";
     /** This option gives the name of directory in the target location where the file should be placed */
     public final static String DIRECTORY_ARG = "--directory";
+    /** This option gives the name of directory in the target location where the file should be placed */
+    public final static String NO_DATE_ARG = "--noDate";
     
     private final String directoryOrFileToGenerateFor;
     private final String outjarName;
@@ -78,6 +80,7 @@ public class HabitatGenerator {
     private final String searchPath;
     private final boolean noSwap;
     private final String outputDirectory;
+    private final boolean includeDate;
     
     private HabitatGenerator(String directoryOrFileToGenerateFor,
             String outjarName,
@@ -85,7 +88,8 @@ public class HabitatGenerator {
             boolean verbose,
             String searchPath,
             boolean noSwap,
-            String outputDirectory) {
+            String outputDirectory,
+            boolean includeDate) {
         this.directoryOrFileToGenerateFor = directoryOrFileToGenerateFor;
         this.outjarName = outjarName;
         this.locatorName = locatorName;
@@ -93,6 +97,7 @@ public class HabitatGenerator {
         this.searchPath = searchPath;
         this.noSwap = noSwap;
         this.outputDirectory = outputDirectory;
+        this.includeDate = includeDate;
     }
     
     private void printThrowable(Throwable th) {
@@ -109,7 +114,8 @@ public class HabitatGenerator {
     
     private int go() {
         GeneratorRunner runner = new GeneratorRunner(directoryOrFileToGenerateFor,
-                outjarName, locatorName, verbose, searchPath, noSwap, outputDirectory);
+                outjarName, locatorName, verbose, searchPath, noSwap, outputDirectory,
+                includeDate);
         
         try {
             runner.go();
@@ -179,6 +185,7 @@ public class HabitatGenerator {
         String searchPath = CLASSPATH;
         boolean userNoSwap = false;
         String outputDirectory = null;
+        boolean defaultIncludeDate = true;
         
         for (int lcv = 0; lcv < argv.length; lcv++) {
             if (VERBOSE_ARG.equals(argv[lcv])) {
@@ -223,6 +230,9 @@ public class HabitatGenerator {
             else if (NOSWAP_ARG.equals(argv[lcv])) {
                 userNoSwap = true;
             }
+            else if (NO_DATE_ARG.equals(argv[lcv])) {
+                defaultIncludeDate = false;
+            }
             else if (DIRECTORY_ARG.equals(argv[lcv])) {
                 lcv++;
                 if (lcv >= argv.length) {
@@ -266,7 +276,8 @@ public class HabitatGenerator {
         }    
         
         HabitatGenerator hg = new HabitatGenerator(defaultFileToHandle, outjarFile,
-                defaultLocatorName, defaultVerbose, searchPath, userNoSwap, outputDirectory);
+                defaultLocatorName, defaultVerbose, searchPath, userNoSwap,
+                outputDirectory, defaultIncludeDate);
         
         return hg.go();
     }
