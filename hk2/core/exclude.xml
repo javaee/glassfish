@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,16 @@
         encoding.
     -->
     <Match>
-	<Bug pattern="DM_DEFAULT_ENCODING"/>
+	  <Bug pattern="DM_DEFAULT_ENCODING"/>
+    </Match>
+    
+    <Match>
+      <!-- 
+        ClasspathDescriptorFileFinder has been moved to hk2-api.  However, in order
+        to maintain backward compatibility with Grizzly and others, this class
+        remains, though it has been deprecated
+       -->
+      <Class Name="org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder" />
+      <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />          
     </Match>
 </FindBugsFilter>
