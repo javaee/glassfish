@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,31 +39,45 @@
  */
 package org.glassfish.hk2.tests.locator.context;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * @author jwells
  *
  */
-public class ContextModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.createDescriptorFromClass(CustomContextImpl.class));
+@PerLookup
+public class GetsRootServiceWithProvider {
+    @SuppressWarnings("unused")
+    @Inject
+    private RootService1 r1;
+    
+    @Inject
+    private IterableProvider<RootService2> r2Provider;
+    
+    @Inject
+    private RootContext rootContext;
+    
+    public List<RootContext.Root> checkProvider() {
+        rootContext.clear();
         
-        config.bind(BuilderHelper.createDescriptorFromClass(CustomService1.class));
-        config.bind(BuilderHelper.createDescriptorFromClass(CustomService2.class));
+        r2Provider.get();
         
-        config.addActiveDescriptor(RootContext.class);
-        config.addActiveDescriptor(RootService1.class);
-        config.addActiveDescriptor(RootService2.class);
-        config.addActiveDescriptor(GetsRootServiceWithProvider.class);
-
+        return rootContext.getRoots();
+        
+    }
+    
+    public List<RootContext.Root> checkProviderWithIterator() {
+        rootContext.clear();
+        
+        for (RootService2 r2 : r2Provider) {}
+        
+        return rootContext.getRoots();
+        
     }
 
 }
