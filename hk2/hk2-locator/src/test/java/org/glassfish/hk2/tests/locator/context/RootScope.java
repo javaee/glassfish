@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,31 +39,26 @@
  */
 package org.glassfish.hk2.tests.locator.context;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Scope;
 
 /**
+ * This scope records the ServiceHandle passed
+ * into the creator.  The scope itself is like
+ * PerLookup in that it just always creates the
+ * objects
+ * 
  * @author jwells
  *
  */
-public class ContextModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.createDescriptorFromClass(CustomContextImpl.class));
-        
-        config.bind(BuilderHelper.createDescriptorFromClass(CustomService1.class));
-        config.bind(BuilderHelper.createDescriptorFromClass(CustomService2.class));
-        
-        config.addActiveDescriptor(RootContext.class);
-        config.addActiveDescriptor(RootService1.class);
-        config.addActiveDescriptor(RootService2.class);
-        config.addActiveDescriptor(GetsRootServiceWithProvider.class);
-
-    }
+@Scope
+@Retention(RUNTIME)
+@Target( { TYPE })
+public @interface RootScope {
 
 }
