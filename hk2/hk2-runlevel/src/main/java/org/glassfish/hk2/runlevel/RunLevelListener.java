@@ -76,7 +76,7 @@ public interface RunLevelListener {
      * all the services ABOVE that level have been shutdown.  In both cases
      * the levelAchieved represents the current level of the system
      */
-    void onProgress(RunLevelFuture currentJob, int levelAchieved);
+    void onProgress(ChangeableRunLevelFuture currentJob, int levelAchieved);
     
     /**
      * Called when an RunLevelController implementation's proceedTo() operation
@@ -93,7 +93,7 @@ public interface RunLevelListener {
      * all the services ABOVE that level have been shutdown.  In both cases
      * the levelAchieved represents the current level of the system
      */
-    void onCancelled(RunLevelFuture currentJob, int levelAchieved);
+    void onCancelled(ChangeableRunLevelFuture currentJob, int levelAchieved);
 
     /**
      * Called when a service throws an exception during lifecycle
@@ -105,7 +105,7 @@ public interface RunLevelListener {
      * @param controller    the run level controller
      * @param error         the error that was caught
      */
-    void onError(RunLevelFuture currentJob, Throwable error);
+    void onError(ChangeableRunLevelFuture currentJob, Throwable error);
 
     
 }

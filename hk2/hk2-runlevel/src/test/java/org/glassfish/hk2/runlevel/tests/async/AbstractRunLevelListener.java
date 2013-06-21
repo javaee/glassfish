@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 
@@ -59,7 +60,7 @@ public abstract class AbstractRunLevelListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.RunLevelController, int, boolean)
      */
     @Override
-    public void onCancelled(RunLevelFuture currentJob,
+    public void onCancelled(ChangeableRunLevelFuture currentJob,
             int levelAchieved) {
         synchronized (this) {
             if (cancelledLevels == null) {
@@ -74,7 +75,7 @@ public abstract class AbstractRunLevelListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.RunLevelController, java.lang.Throwable, boolean)
      */
     @Override
-    public void onError(RunLevelFuture currentJob, Throwable error) {
+    public void onError(ChangeableRunLevelFuture currentJob, Throwable error) {
         synchronized (this) {
             if (reportedErrors == null) {
                 reportedErrors = new LinkedList<Throwable>();
@@ -89,7 +90,7 @@ public abstract class AbstractRunLevelListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onProgress(org.glassfish.hk2.runlevel.RunLevelFuture, int)
      */
     @Override
-    public void onProgress(RunLevelFuture currentJob, int levelAchieved) {
+    public void onProgress(ChangeableRunLevelFuture currentJob, int levelAchieved) {
         synchronized (this) {
             if (progressedLevels == null) {
                 progressedLevels = new LinkedList<Integer>(); 
