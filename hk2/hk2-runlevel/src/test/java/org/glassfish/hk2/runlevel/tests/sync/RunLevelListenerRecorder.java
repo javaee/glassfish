@@ -48,6 +48,7 @@ import javax.inject.Inject;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
@@ -68,19 +69,19 @@ public class RunLevelListenerRecorder implements RunLevelListener {
     private RunLevelController controller;
 
     @Override
-    public void onCancelled(RunLevelFuture controller, int levelAchieved) {
+    public void onCancelled(ChangeableRunLevelFuture controller, int levelAchieved) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void onError(RunLevelFuture currentJob, Throwable error) {
+    public void onError(ChangeableRunLevelFuture currentJob, Throwable error) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void onProgress(RunLevelFuture currentJob, int levelAchieved) {
+    public void onProgress(ChangeableRunLevelFuture currentJob, int levelAchieved) {
         currentLevel = levelAchieved;
         up = currentJob.isUp();
     }

@@ -44,11 +44,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,7 +79,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     private static final ThreadFactory THREAD_FACTORY = new RunLevelThreadFactory();
     
     private int currentLevel = RunLevel.RUNLEVEL_VAL_INITIAL;
-    private CurrentTaskFuture currentTask = null;
+    private RunLevelFutureImpl currentTask = null;
     
     private static final Executor DEFAULT_EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
@@ -300,7 +302,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     }
     
     public RunLevelFuture proceedTo(int level) throws CurrentlyRunningException {
-        CurrentTaskFuture localTask;
+        RunLevelFutureImpl localTask;
         synchronized (this) {
             boolean fullyThreaded = policy.equals(RunLevelController.ThreadingPolicy.FULLY_THREADED);
             
@@ -308,19 +310,19 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
                 throw new CurrentlyRunningException(currentTask);
             }
             
-            currentTask = new CurrentTaskFuture(this,
+            currentTask = new RunLevelFutureImpl(new CurrentTaskFuture(this,
                     (executor != null) ? executor : DEFAULT_EXECUTOR,
                     locator,
                     level,
                     maxThreads,
-                    fullyThreaded);
+                    fullyThreaded));
             
             localTask = currentTask;
         }
         
         // Do outside the lock so that when not fully threaded we do not hold the
         // AsyncRunLevelContext lock.  Otherwise this can lead to deadlock
-        localTask.go();
+        localTask.getDelegate().go();
             
         return localTask;
     }
@@ -364,6 +366,70 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
                 
             return activeThread;
         }
+    }
+    
+    /**
+     * This object is used to wrap the internal CurrentTaskFuture which
+     * is a ChangeableRunLevelFuture.  This way the users of the
+     * RunLevelController API will not get something that can be
+     * cast to a ChangeableRunLevelFuture.
+     * 
+     * @author jwells
+     *
+     */
+    private static class RunLevelFutureImpl implements RunLevelFuture {
+        private final CurrentTaskFuture delegate;
+        
+        private RunLevelFutureImpl(CurrentTaskFuture delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            return delegate.isCancelled();
+        }
+
+        @Override
+        public boolean isDone() {
+            return delegate.isDone();
+        }
+
+        @Override
+        public Object get() throws InterruptedException, ExecutionException {
+            return delegate.get();
+        }
+
+        @Override
+        public Object get(long timeout, TimeUnit unit)
+                throws InterruptedException, ExecutionException,
+                TimeoutException {
+            return delegate.get(timeout, unit);
+        }
+
+        @Override
+        public int getProposedLevel() {
+            return delegate.getProposedLevel();
+        }
+
+        @Override
+        public boolean isUp() {
+            return delegate.isUp();
+        }
+
+        @Override
+        public boolean isDown() {
+            return delegate.isDown();
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            return delegate.cancel(mayInterruptIfRunning);
+        }
+        
+        private CurrentTaskFuture getDelegate() {
+            return delegate;
+        }
+        
     }
 
 }

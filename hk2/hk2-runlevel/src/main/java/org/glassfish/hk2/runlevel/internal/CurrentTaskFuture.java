@@ -52,8 +52,8 @@ import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevel;
-import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.utilities.Utilities;
 
@@ -66,18 +66,21 @@ import org.glassfish.hk2.runlevel.utilities.Utilities;
  * @author jwells
  *
  */
-public class CurrentTaskFuture implements RunLevelFuture {
+public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     private final AsyncRunLevelContext parent;
     private final Executor executor;
     private final ServiceLocator locator;
-    private final int proposedLevel;
+    private int proposedLevel;
     private final boolean useThreads;
+    private final List<ServiceHandle<RunLevelListener>> allListenerHandles;
+    private final int maxThreads;
     
-    private final UpAllTheWay upAllTheWay;
-    private final DownAllTheWay downAllTheWay;
+    private UpAllTheWay upAllTheWay;
+    private DownAllTheWay downAllTheWay;
     
     private boolean done = false;
     private boolean cancelled = false;
+    private boolean inCallback = false;
     
     /* package */ CurrentTaskFuture(AsyncRunLevelContext parent,
             Executor executor,
@@ -90,15 +93,14 @@ public class CurrentTaskFuture implements RunLevelFuture {
         this.locator = locator;
         this.proposedLevel = proposedLevel;
         this.useThreads = useThreads;
+        this.maxThreads = maxThreads;
         
         int currentLevel = parent.getCurrentLevel();
         
-        List<ServiceHandle<RunLevelListener>> allListenerHandles =
-                locator.getAllServiceHandles(RunLevelListener.class);
+        allListenerHandles = locator.getAllServiceHandles(RunLevelListener.class);
         
         if (currentLevel == proposedLevel) {
-            upAllTheWay = null;
-            downAllTheWay = null;
+            // TODO:  Is it a bug here that we do not invoke the listeners? yes, it is
             
             done = true;
             
@@ -106,36 +108,46 @@ public class CurrentTaskFuture implements RunLevelFuture {
         }
         else if (currentLevel < proposedLevel) {
             upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, maxThreads, useThreads);
-            downAllTheWay = null;
         }
         else {
             downAllTheWay = new DownAllTheWay(proposedLevel, this, allListenerHandles);
-            upAllTheWay = null;
         }
     }
     
     /* package */ void go() {
-        if (upAllTheWay != null) {
-            upAllTheWay.go();
+        UpAllTheWay localUpAllTheWay;
+        DownAllTheWay localDownAllTheWay;
+        
+        synchronized (this) {
+            localUpAllTheWay = upAllTheWay;
+            localDownAllTheWay = downAllTheWay;
         }
-        else if (downAllTheWay != null) {
+        
+        if (localUpAllTheWay != null) {
+            localUpAllTheWay.go();
+        }
+        else if (localDownAllTheWay != null) {
             if (useThreads) {
-                executor.execute(downAllTheWay);
+                executor.execute(localDownAllTheWay);
             }
             else {
-                downAllTheWay.run();
+                localDownAllTheWay.run();
             }
         }
     }
     
     public boolean isUp() {
-        if (upAllTheWay != null) return true;
-        return false;
+        synchronized (this) {
+            if (upAllTheWay != null) return true;
+            return false;
+        }
     }
     
     public boolean isDown() {
-        if (downAllTheWay != null) return true;
-        return false;
+        synchronized (this) {
+            if (downAllTheWay != null) return true;
+            return false;
+        }
     }
 
     /* (non-Javadoc)
@@ -177,6 +189,77 @@ public class CurrentTaskFuture implements RunLevelFuture {
     public boolean isDone() {
         synchronized (this) {
             return done;
+        }
+    }
+    
+    @Override
+    public int getProposedLevel() {
+        synchronized (this) {
+            return proposedLevel;
+        }
+    }
+    
+    @Override
+    public int changeProposedLevel(int proposedLevel) {
+        int oldProposedVal;
+        boolean needGo = false;
+        synchronized (this) {
+            if (done) throw new IllegalStateException("Cannot change the proposed level of a future that is already complete");
+            if (!inCallback) throw new IllegalStateException(
+                    "changeProposedLevel must only be called from inside a RunLevelListener callback method");
+            
+            oldProposedVal = this.proposedLevel;
+            int currentLevel = parent.getCurrentLevel();
+            this.proposedLevel = proposedLevel;
+            
+            if (upAllTheWay != null) {
+                if (currentLevel <= proposedLevel) {
+                    upAllTheWay.setGoingTo(proposedLevel, false);
+                }
+                else {
+                    // Changing directions to down
+                    upAllTheWay.setGoingTo(currentLevel, true); // This will make upAllTheWay stop
+                    upAllTheWay = null;
+                    
+                    downAllTheWay = new DownAllTheWay(proposedLevel, this, allListenerHandles);
+                    needGo = true;
+                }
+            }
+            else if (downAllTheWay != null) {
+                if (currentLevel >= proposedLevel) {
+                    downAllTheWay.setGoingTo(proposedLevel, false);
+                }
+                else {
+                    // Changing directions to up
+                    downAllTheWay.setGoingTo(currentLevel, true);  // This will make downAllTheWay stop
+                    downAllTheWay = null;
+                    
+                    upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, maxThreads, useThreads);
+                    needGo = true;
+                }
+            }
+            else {
+                if (proposedLevel > currentLevel) {
+                    upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, maxThreads, useThreads);
+                    needGo = true;
+                }
+                else if (proposedLevel < currentLevel) {
+                    downAllTheWay = new DownAllTheWay(proposedLevel, this, allListenerHandles);
+                    needGo = true;
+                }
+            }
+        }
+        
+        if (needGo) {
+            go();
+        }
+        
+        return oldProposedVal;
+    }
+    
+    private void setInCallback(boolean inCallback) {
+        synchronized (this) {
+            this.inCallback = inCallback;
         }
     }
 
@@ -245,39 +328,57 @@ public class CurrentTaskFuture implements RunLevelFuture {
         return null;
     }
     
-    private static void invokeOnProgress(RunLevelFuture job, int level,
+    private void invokeOnProgress(ChangeableRunLevelFuture job, int level,
             List<ServiceHandle<RunLevelListener>> listeners) {
-        for (ServiceHandle<RunLevelListener> listener : listeners) {
-            try {
-                listener.getService().onProgress(job, level);
+        setInCallback(true);
+        try {
+            for (ServiceHandle<RunLevelListener> listener : listeners) {
+                try {
+                    listener.getService().onProgress(job, level);
+                }
+                catch (Throwable th) {
+                    // TODO:  Need a log message here
+               }
             }
-            catch (Throwable th) {
-                // TODO:  Need a log message here
-            }
+        }
+        finally {
+            setInCallback(false);
         }
     }
     
-    private static void invokeOnCancelled(RunLevelFuture job, int levelAchieved,
+    private void invokeOnCancelled(ChangeableRunLevelFuture job, int levelAchieved,
             List<ServiceHandle<RunLevelListener>> listeners) {
-        for (ServiceHandle<RunLevelListener> listener : listeners) {
-            try {
-                listener.getService().onCancelled(job, levelAchieved);
+        setInCallback(true);
+        try {
+            for (ServiceHandle<RunLevelListener> listener : listeners) {
+                try {
+                    listener.getService().onCancelled(job, levelAchieved);
+                }
+                catch (Throwable th) {
+                    // TODO:  Need a log message here
+                }
             }
-            catch (Throwable th) {
-                // TODO:  Need a log message here
-            }
+        }
+        finally {
+            setInCallback(false);
         }
     }
     
-    private static void invokeOnError(RunLevelFuture job, Throwable th,
+    private void invokeOnError(ChangeableRunLevelFuture job, Throwable th,
             List<ServiceHandle<RunLevelListener>> listeners) {
-        for (ServiceHandle<RunLevelListener> listener : listeners) {
-            try {
-                listener.getService().onError(job, th);
+        setInCallback(true);
+        try {
+            for (ServiceHandle<RunLevelListener> listener : listeners) {
+                try {
+                    listener.getService().onError(job, th);
+                }
+                catch (Throwable th2) {
+                    // TODO:  Need a log message here
+                }
             }
-            catch (Throwable th2) {
-                // TODO:  Need a log message here
-            }
+        }
+        finally {
+            setInCallback(false);
         }
     }
             
@@ -285,19 +386,20 @@ public class CurrentTaskFuture implements RunLevelFuture {
     private class UpAllTheWay {
         private final Object lock = new Object();
         
-        private final int goingTo;
+        private int goingTo;
         private final int maxThreads;
         private final boolean useThreads;
-        private final RunLevelFuture future;
+        private final ChangeableRunLevelFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
         
         private int workingOn;
         private UpOneJob currentJob;
         private boolean cancelled = false;
         private boolean done = false;
+        private boolean repurposed = false;
         private MultiException exception = null;
         
-        private UpAllTheWay(int goingTo, RunLevelFuture future,
+        private UpAllTheWay(int goingTo, ChangeableRunLevelFuture future,
                 List<ServiceHandle<RunLevelListener>> listeners,
                 int maxThreads,
                 boolean useThreads) {
@@ -317,7 +419,7 @@ public class CurrentTaskFuture implements RunLevelFuture {
             }
         }
         
-        private boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException {
+        private Boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException {
             long totalWaitTimeMillis = TimeUnit.MILLISECONDS.convert(timeout, unit);
             
             synchronized (lock) {
@@ -338,11 +440,23 @@ public class CurrentTaskFuture implements RunLevelFuture {
             }
         }
         
+        private void setGoingTo(int goingTo, boolean repurposed) {
+            synchronized (lock) {
+                this.goingTo = goingTo;
+                if (repurposed) {
+                    done = true;
+                    repurposed = true;
+                }
+            }
+        }
+        
         private void go() {
             if (useThreads) {
                 synchronized (lock) {
                     workingOn++;
                     if (workingOn > goingTo) {
+                        if (done) return;
+                        
                         parent.jobDone();
                     
                         done = true;
@@ -428,7 +542,6 @@ public class CurrentTaskFuture implements RunLevelFuture {
                 go();
             }
         }
-        
     }
     
     private class UpOneJob implements Runnable {
@@ -535,8 +648,8 @@ public class CurrentTaskFuture implements RunLevelFuture {
     }
     
     public class DownAllTheWay implements Runnable {
-        private final int goingTo;
-        private final RunLevelFuture future;
+        private volatile int goingTo;
+        private ChangeableRunLevelFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
         
         private int workingOn;
@@ -547,7 +660,7 @@ public class CurrentTaskFuture implements RunLevelFuture {
         private MultiException serviceDownErrors = null;
         
         public DownAllTheWay(int goingTo,
-                RunLevelFuture future,
+                ChangeableRunLevelFuture future,
                 List<ServiceHandle<RunLevelListener>> listeners) {
             this.goingTo = goingTo;
             this.future = future;
@@ -566,6 +679,13 @@ public class CurrentTaskFuture implements RunLevelFuture {
         private void cancel() {
             synchronized (this) {
                 cancelled = true;
+            }
+        }
+        
+        private void setGoingTo(int goingTo, boolean repurposed) {
+            synchronized (this) {
+                this.goingTo = goingTo;
+                if (repurposed) future = null;
             }
         }
 
@@ -780,16 +900,6 @@ public class CurrentTaskFuture implements RunLevelFuture {
         }
         
         return false;
-    }
-
-    @Override
-    public int getProposedLevel() {
-        return proposedLevel;
-    }
-    
-    @Override
-    public int changeProposedLevel(int proposedLevel) {
-        throw new AssertionError("changeProposedLevel not yet implemented");
     }
     
     public String toString() {

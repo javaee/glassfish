@@ -37,84 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel.tests.deadlock1;
+package org.glassfish.hk2.runlevel.tests.listener;
+
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
-import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Service
-public class DeadLock1Listener implements RunLevelListener {
-    private boolean go = false;
+@Singleton
+public class OnProgressLevelChangerListener implements RunLevelListener {
+    private int changeAtLevel = -3;
+    private int changeToLevel = -3;
+    
+    /* package */ void setLevels(int changeAtLevel, int changeToLevel) {
+        this.changeAtLevel = changeAtLevel;
+        this.changeToLevel = changeToLevel;
+    }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.RunLevelFuture, int)
+     * @see org.glassfish.hk2.runlevel.RunLevelListener#onProgress(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
      */
     @Override
-    public void onCancelled(ChangeableRunLevelFuture controller, int levelAchieved) {
+    public void onProgress(ChangeableRunLevelFuture currentJob,
+            int levelAchieved) {
+        if (levelAchieved == changeAtLevel) {
+            currentJob.changeProposedLevel(changeToLevel);
+        }
 
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.RunLevelFuture, java.lang.Throwable)
+     * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
+     */
+    @Override
+    public void onCancelled(ChangeableRunLevelFuture currentJob,
+            int levelAchieved) {
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, java.lang.Throwable)
      */
     @Override
     public void onError(ChangeableRunLevelFuture currentJob, Throwable error) {
 
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onProgress(org.glassfish.hk2.runlevel.RunLevelFuture, int)
-     */
-    @Override
-    public void onProgress(ChangeableRunLevelFuture currentJob, int levelAchieved) {
-        if (levelAchieved != 1) return;
-        
-        OtherThreadCanceller otc = new OtherThreadCanceller(currentJob, this);
-        
-        Thread myThread = new Thread(otc);
-        myThread.start();
-        
-        synchronized(this) {
-            while (!go) {
-                try {
-                    this.wait();
-                }
-                catch (InterruptedException e) {
-                    throw new AssertionError(e);
-                }
-            }
-        }
-    }
-    
-    public class OtherThreadCanceller implements Runnable {
-        private final RunLevelFuture job;
-        private final Object lock;
-        
-        private OtherThreadCanceller(RunLevelFuture job, Object lock) {
-            this.job = job;
-            this.lock = lock;
-            
-        }
-
-        @Override
-        public void run() {
-            // If locks are held in onProgress this will block forever
-            job.cancel(false);
-            
-            synchronized (lock) {
-                go = true;
-                lock.notifyAll();
-            }
-            
-            
-        }
-        
     }
 
 }

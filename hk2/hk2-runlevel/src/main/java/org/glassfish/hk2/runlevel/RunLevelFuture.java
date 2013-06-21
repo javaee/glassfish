@@ -116,19 +116,5 @@ public interface RunLevelFuture extends Future<Object> {
      */
     public boolean cancel(boolean mayInterruptIfRunning);
     
-    /**
-     * Changes the proposedLevel of this future.  A proposedLevel
-     * change must not change the direction of the future (i.e.
-     * going from down to up or going from up to down).  A future
-     * cannot have its level changed if it is done or it has
-     * been cancelled.
-     * <p>
-     * This method may be called from the {@link RunLevelListener#onProgress(RunLevelFuture, int)}
-     * callback 
-     * @param proposedLevel
-     * @return The old proposed level of the future
-     * @throws IllegalStateException if the direction of the future would change due to this
-     * change or this method is called on a future that is already complete
-     */
-    public int changeProposedLevel(int proposedLevel) throws IllegalStateException;
+    
 }

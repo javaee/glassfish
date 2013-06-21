@@ -43,7 +43,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.RunLevelController;
-import org.glassfish.hk2.runlevel.RunLevelFuture;
+import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -58,42 +58,20 @@ import org.junit.Test;
  *
  */
 public class ListenerTest {
+    
+    private static void setupChanger(ServiceLocator locator, int changeAt, int changeTo) {
+        locator.getService(OnProgressLevelChangerListener.class).setLevels(changeAt, changeTo);
+    }
     /**
      * Tests that we can change the proceeding from the proposedLevel
      * callback
      */
-    @Test @Ignore
+    @Test
     public void testProceedToFurtherUpFromEndOfRunWillKeepGoingUp() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromEndOfRunWillKeepGoingUp");
+        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromEndOfRunWillKeepGoingUp",
+                OnProgressLevelChangerListener.class);
         
-        ServiceLocatorUtilities.addOneConstant(locator, new RunLevelListener() {
-            @Override
-            public void onCancelled(RunLevelFuture currentJob, int levelAchieved) {
-                
-            }
-
-            @Override
-            public void onError(RunLevelFuture currentJob, Throwable error) {
-                
-            }
-
-            @Override
-            public void onProgress(RunLevelFuture currentJob, int levelAchieved) {
-                System.out.println("JRW(10) levelAchieved=" + levelAchieved);
-                if (levelAchieved == 5) {
-                    try {
-                        currentJob.changeProposedLevel(10);
-                    }
-                    catch (Throwable th) {
-                        System.out.println("JRW(30) th=" + th);
-                        th.printStackTrace();
-                    }
-                    System.out.println("JRW(20) post async");
-                }
-                
-            }
-            
-        });
+        setupChanger(locator, 5, 10);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
         
@@ -108,38 +86,12 @@ public class ListenerTest {
      * Tests that the level can be changed from the middle of
      * the proposedLevel run
      */
-    @Test @Ignore
+    @Test
     public void testProceedToFurtherUpFromMiddleOfRunWillKeepGoingUp() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromMiddleOfRunWillKeepGoingUp");
+        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromMiddleOfRunWillKeepGoingUp",
+                OnProgressLevelChangerListener.class);
         
-        ServiceLocatorUtilities.addOneConstant(locator, new RunLevelListener() {
-            @Override
-            public void onCancelled(RunLevelFuture currentJob, int levelAchieved) {
-                
-            }
-
-            @Override
-            public void onError(RunLevelFuture currentJob, Throwable error) {
-                
-            }
-
-            @Override
-            public void onProgress(RunLevelFuture currentJob, int levelAchieved) {
-                System.out.println("JRW(40) levelAchieved=" + levelAchieved);
-                if (levelAchieved == 2) {
-                    try {
-                        currentJob.changeProposedLevel(10);
-                    }
-                    catch (Throwable th) {
-                        System.out.println("JRW(50) th=" + th);
-                        th.printStackTrace();
-                    }
-                    System.out.println("JRW(60) post async");
-                }
-                
-            }
-            
-        });
+        setupChanger(locator, 2, 10);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
         
@@ -154,41 +106,15 @@ public class ListenerTest {
      * Tests that the level can be changed from the middle of
      * the proposedLevel run
      */
-    @Test @Ignore
+    @Test
     public void testProceedToFurtherUpFromMiddleOfRunWillKeepGoingDown() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromMiddleOfRunWillKeepGoingDown");
+        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromMiddleOfRunWillKeepGoingDown",
+                OnProgressLevelChangerListener.class);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
         controller.proceedTo(10);
         
-        ServiceLocatorUtilities.addOneConstant(locator, new RunLevelListener() {
-            @Override
-            public void onCancelled(RunLevelFuture currentJob, int levelAchieved) {
-                
-            }
-
-            @Override
-            public void onError(RunLevelFuture currentJob, Throwable error) {
-                
-            }
-
-            @Override
-            public void onProgress(RunLevelFuture currentJob, int levelAchieved) {
-                System.out.println("JRW(40) levelAchieved=" + levelAchieved);
-                if (levelAchieved == 7) {
-                    try {
-                        currentJob.changeProposedLevel(1);
-                    }
-                    catch (Throwable th) {
-                        System.out.println("JRW(50) th=" + th);
-                        th.printStackTrace();
-                    }
-                    System.out.println("JRW(60) post async");
-                }
-                
-            }
-            
-        });
+        setupChanger(locator, 7, 1);
         
         controller.proceedTo(5);
         
@@ -201,47 +127,34 @@ public class ListenerTest {
      * Tests that the level can be changed from the end of
      * the proposedLevel run
      */
-    @Test @Ignore
+    @Test
     public void testProceedToFurtherUpFromEndOfRunWillKeepGoingDown() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromEndOfRunWillKeepGoingDown");
+        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromEndOfRunWillKeepGoingDown",
+                OnProgressLevelChangerListener.class);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
         controller.proceedTo(10);
         
-        ServiceLocatorUtilities.addOneConstant(locator, new RunLevelListener() {
-            @Override
-            public void onCancelled(RunLevelFuture currentJob, int levelAchieved) {
-                
-            }
-
-            @Override
-            public void onError(RunLevelFuture currentJob, Throwable error) {
-                
-            }
-
-            @Override
-            public void onProgress(RunLevelFuture currentJob, int levelAchieved) {
-                System.out.println("JRW(40) levelAchieved=" + levelAchieved);
-                if (levelAchieved == 5) {
-                    try {
-                        currentJob.changeProposedLevel(1);
-                    }
-                    catch (Throwable th) {
-                        System.out.println("JRW(50) th=" + th);
-                        th.printStackTrace();
-                    }
-                    System.out.println("JRW(60) post async");
-                }
-                
-            }
-            
-        });
+        setupChanger(locator, 5, 1);
         
         controller.proceedTo(5);
         
         // But really, it should end up being 1
         Assert.assertEquals(1, controller.getCurrentRunLevel());
+    }
+    
+    @Test @Ignore
+    public void testGoingFromUpToDown() {
+        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testGoingFromUpToDown",
+                OnProgressLevelChangerListener.class);
         
+        setupChanger(locator, 7, 3);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.proceedTo(10);
+        
+        // But really, it should end up being 1
+        Assert.assertEquals(3, controller.getCurrentRunLevel());
     }
 
 
