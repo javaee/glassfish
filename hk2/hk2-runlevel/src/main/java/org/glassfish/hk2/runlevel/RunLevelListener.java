@@ -47,10 +47,10 @@ import org.jvnet.hk2.annotations.Contract;
  * Implementations of RunLevelController should use this contract for publishing
  * RunLevel events.
  * <p>
- * Instances of classes implementing this contract can be registered to be
- * informed of events of RunLevelControllers.
+ * Instances of classes implementing this contract can be registered with HK2
+ * to be informed of events of RunLevelControllers.
  * <p>
- * Note that RunLevelController implementations may be asynchronous, so
+ * Note that a RunLevelController implementations may be asynchronous, so
  * RunLevelListeners should be thread safe.  Additionally, you are
  * discouraged from performing lengthy operations in the listener since
  * that may impact the performance of the RunLevelController calling the
@@ -60,32 +60,13 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface RunLevelListener {
-
-    /**
-     * Called when an RunLevelController implementation's proceedTo() operation
-     * has been canceled for some reason
-     *
-     * @param currentJob the job currently running
-     * @param levelAchieved the level just achieved by the currentJob.  Note
-     * that if the currentJob is currently going up then the levelAchieved will
-     * be the level for which all the services in that level were just started
-     * while when going down the levelAchieved will be the level for which
-     * all the services ABOVE that level have been shutdown.  In both cases
-     * the levelAchieved represents the current level of the system
-     */
-    void onCancelled(RunLevelFuture controller, int levelAchieved);
-
-    /**
-     * Called when a service throws an exception during lifecycle
-     * orchestration.
-     *
-     * @param controller    the run level controller
-     * @param error         the error that was caught
-     */
-    void onError(RunLevelFuture currentJob, Throwable error);
-
     /**
      * Called when the RunLevelController advances to the next level
+     * <p>
+     * Neither {@link RunLevelController#proceedTo(int)} nor
+     * {@link RunLevelController#proceedToAsync(int)} may be called from this method.  However,
+     * {@link RunLevelFuture#changeProposedLevel(int)} may be called as long as it does not change
+     * the direction of the {@link RunLevelFuture}
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
@@ -96,4 +77,35 @@ public interface RunLevelListener {
      * the levelAchieved represents the current level of the system
      */
     void onProgress(RunLevelFuture currentJob, int levelAchieved);
+    
+    /**
+     * Called when an RunLevelController implementation's proceedTo() operation
+     * has been canceled for some reason.
+     * <p>
+     * {@link RunLevelController#proceedTo(int)} may not be called from this method,
+     * but {@link RunLevelController#proceedToAsync(int)} may
+     *
+     * @param currentJob the job currently running
+     * @param levelAchieved the level just achieved by the currentJob.  Note
+     * that if the currentJob is currently going up then the levelAchieved will
+     * be the level for which all the services in that level were just started
+     * while when going down the levelAchieved will be the level for which
+     * all the services ABOVE that level have been shutdown.  In both cases
+     * the levelAchieved represents the current level of the system
+     */
+    void onCancelled(RunLevelFuture currentJob, int levelAchieved);
+
+    /**
+     * Called when a service throws an exception during lifecycle
+     * orchestration.
+     * <p>
+     * {@link RunLevelController#proceedTo(int)} may not be called from this method,
+     * but {@link RunLevelController#proceedToAsync(int)} may
+     *
+     * @param controller    the run level controller
+     * @param error         the error that was caught
+     */
+    void onError(RunLevelFuture currentJob, Throwable error);
+
+    
 }
