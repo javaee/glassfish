@@ -787,8 +787,15 @@ public class CurrentTaskFuture implements RunLevelFuture {
         return proposedLevel;
     }
     
+    @Override
+    public int changeProposedLevel(int proposedLevel) {
+        throw new AssertionError("changeProposedLevel not yet implemented");
+    }
+    
     public String toString() {
         return "RunLevelFuture(proposedLevel=" + proposedLevel + "," +
           System.identityHashCode(this) + ")";
     }
+
+    
 }
