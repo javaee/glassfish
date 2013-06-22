@@ -59,7 +59,7 @@ public class Utilities {
      * @return The ServiceLocator to use
      */
     public static ServiceLocator getServiceLocator(String uniqueName, Class<?>... classes) {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(uniqueName);
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
         
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();

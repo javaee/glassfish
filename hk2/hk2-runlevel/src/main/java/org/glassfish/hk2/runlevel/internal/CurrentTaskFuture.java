@@ -100,8 +100,6 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         allListenerHandles = locator.getAllServiceHandles(RunLevelListener.class);
         
         if (currentLevel == proposedLevel) {
-            // TODO:  Is it a bug here that we do not invoke the listeners? yes, it is
-            
             done = true;
             
             parent.jobDone();
@@ -282,30 +280,37 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     @Override
     public Object get(long timeout, TimeUnit unit) throws InterruptedException,
             ExecutionException, TimeoutException {
-        if (upAllTheWay != null) {
-            try {
-                boolean result = upAllTheWay.waitForResult(timeout, unit);
-                if (!result) {
-                    throw new TimeoutException();
-                }
-                
-                synchronized (this) {
-                    done = true;
-                }
-                
-                return null;
+        AllTheWay allTheWay = null;
+        synchronized (this) {
+            if (upAllTheWay != null) {
+                allTheWay = upAllTheWay;
             }
-            catch (MultiException me) {
-                synchronized (this) {
-                    done = true;
-                }
-                
-                throw new ExecutionException(me);
+            else if (downAllTheWay != null) {
+                allTheWay = downAllTheWay;
             }
         }
-        else if (downAllTheWay != null) {
+        
+        if (allTheWay == null) return null;
+        
+        Boolean result = null;
+        while (result == null) {
             try {
-                boolean result = downAllTheWay.waitForResult(timeout, unit);
+                result = allTheWay.waitForResult(timeout, unit);
+                if (result == null) {
+                    synchronized (this) {
+                        if (upAllTheWay != null) {
+                            allTheWay = upAllTheWay;
+                        }
+                        else if (downAllTheWay != null) {
+                            allTheWay = downAllTheWay;
+                        }
+                    }
+                    
+                    if (allTheWay == null) return null;
+                    
+                    continue;
+                }
+                
                 if (!result) {
                     throw new TimeoutException();
                 }
@@ -381,9 +386,14 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             setInCallback(false);
         }
     }
+    
+    private interface AllTheWay {
+        public Boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException;
+        
+    }
             
     
-    private class UpAllTheWay {
+    private class UpAllTheWay implements AllTheWay {
         private final Object lock = new Object();
         
         private int goingTo;
@@ -419,11 +429,12 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             }
         }
         
-        private Boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException {
+        @Override
+        public Boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException {
             long totalWaitTimeMillis = TimeUnit.MILLISECONDS.convert(timeout, unit);
             
             synchronized (lock) {
-                while (totalWaitTimeMillis > 0L && !done) {
+                while (totalWaitTimeMillis > 0L && !done && !repurposed) {
                     long startTime = System.currentTimeMillis();
                     
                     lock.wait(totalWaitTimeMillis);
@@ -431,6 +442,8 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                     long elapsedTime = System.currentTimeMillis() - startTime;
                     totalWaitTimeMillis -= elapsedTime;
                 }
+                
+                if (repurposed) return null;
                 
                 if (done && (exception != null)) {
                     throw exception;
@@ -444,8 +457,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             synchronized (lock) {
                 this.goingTo = goingTo;
                 if (repurposed) {
-                    done = true;
-                    repurposed = true;
+                    this.repurposed = true;
                 }
             }
         }
@@ -455,11 +467,12 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 synchronized (lock) {
                     workingOn++;
                     if (workingOn > goingTo) {
-                        if (done) return;
-                        
-                        parent.jobDone();
+                        if (!repurposed) {
+                            parent.jobDone();
                     
-                        done = true;
+                            done = true;
+                        }
+                        
                         lock.notifyAll();
                         return;
                     }
@@ -487,9 +500,12 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             synchronized (lock) {
                 if (done) return;
                 
-                parent.jobDone();
+                if (!repurposed) {
+                    parent.jobDone();
                 
-                done = true;
+                    done = true;
+                }
+                
                 lock.notifyAll();
             }
         }
@@ -647,7 +663,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
     }
     
-    public class DownAllTheWay implements Runnable {
+    public class DownAllTheWay implements Runnable, AllTheWay {
         private volatile int goingTo;
         private ChangeableRunLevelFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
@@ -656,6 +672,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
         private boolean cancelled = false;
         private boolean done = false;
+        private boolean repurposed = false;
         
         private MultiException serviceDownErrors = null;
         
@@ -685,7 +702,9 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private void setGoingTo(int goingTo, boolean repurposed) {
             synchronized (this) {
                 this.goingTo = goingTo;
-                if (repurposed) future = null;
+                if (repurposed) {
+                    this.repurposed = true;
+                }
             }
         }
 
@@ -756,19 +775,23 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             }
             
             synchronized (this) {
-                parent.jobDone();
+                if (!repurposed) {
+                    parent.jobDone();
                 
-                done = true;
+                    done = true;
+                }
+                
                 this.notifyAll();
             }
             
         }
         
-        private boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException {
+        @Override
+        public Boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException {
             long totalWaitTimeMillis = TimeUnit.MILLISECONDS.convert(timeout, unit);
             
             synchronized (this) {
-                while (totalWaitTimeMillis > 0L && !done) {
+                while (totalWaitTimeMillis > 0L && !done && !repurposed) {
                     long startTime = System.currentTimeMillis();
                     
                     this.wait(totalWaitTimeMillis);
@@ -776,6 +799,8 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                     long elapsedTime = System.currentTimeMillis() - startTime;
                     totalWaitTimeMillis -= elapsedTime;
                 }
+                
+                if (repurposed) return null;
                 
                 return done;
             }
