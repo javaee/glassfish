@@ -52,10 +52,12 @@ import org.glassfish.hk2.runlevel.RunLevelListener;
 public class OnProgressLevelChangerListener implements RunLevelListener {
     private int changeAtLevel = -3;
     private int changeToLevel = -3;
+    private int sleepAtLevel = -3;
     
-    /* package */ void setLevels(int changeAtLevel, int changeToLevel) {
+    /* package */ void setLevels(int changeAtLevel, int changeToLevel, int sleepAtLevel) {
         this.changeAtLevel = changeAtLevel;
         this.changeToLevel = changeToLevel;
+        this.sleepAtLevel = sleepAtLevel;
     }
 
     /* (non-Javadoc)
@@ -64,6 +66,14 @@ public class OnProgressLevelChangerListener implements RunLevelListener {
     @Override
     public void onProgress(ChangeableRunLevelFuture currentJob,
             int levelAchieved) {
+        if (levelAchieved == sleepAtLevel) {
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         if (levelAchieved == changeAtLevel) {
             currentJob.changeProposedLevel(changeToLevel);
         }
