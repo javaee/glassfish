@@ -58,6 +58,8 @@ public class OnProgressLevelChangerListener implements RunLevelListener {
     
     private ErrorInformation.ErrorAction changeToErrorAction = null;
     
+    private int latestOnProgress = ListenerTest.NO_LEVEL;
+    
     /* package */ void setLevels(int changeAtLevel, int changeToLevel, int sleepAtLevel) {
         this.changeAtLevel = changeAtLevel;
         this.changeToLevel = changeToLevel;
@@ -74,6 +76,8 @@ public class OnProgressLevelChangerListener implements RunLevelListener {
     @Override
     public void onProgress(ChangeableRunLevelFuture currentJob,
             int levelAchieved) {
+        latestOnProgress = levelAchieved;
+        
         if (levelAchieved == sleepAtLevel) {
             try {
                 Thread.sleep(100);
@@ -86,6 +90,10 @@ public class OnProgressLevelChangerListener implements RunLevelListener {
             currentJob.changeProposedLevel(changeToLevel);
         }
 
+    }
+    
+    /* package */ int getLatestOnProgress() {
+        return latestOnProgress;
     }
 
     /* (non-Javadoc)

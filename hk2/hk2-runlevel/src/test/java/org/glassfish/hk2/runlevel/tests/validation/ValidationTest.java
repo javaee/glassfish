@@ -66,7 +66,7 @@ public class ValidationTest {
      */
     @Test
     public void testValidatingService() {
-        ServiceLocator locator = Utilities.getServiceLocator("ValidationTest.testValidatingService",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 DependsOnValidatingLevelFiveService.class,
                 LevelFiveService.class);
         
@@ -94,7 +94,7 @@ public class ValidationTest {
      */
     @Test
     public void testNonValidatingService() {
-        ServiceLocator locator = Utilities.getServiceLocator("ValidationTest.testNonValidatingService",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 DependsOnNonValidatingLevelFiveService.class,
                 NonValidatingLevelFiveService.class);
         
@@ -113,7 +113,7 @@ public class ValidationTest {
      */
     @Test
     public void testValidatingServiceInProgress() throws InterruptedException, TimeoutException {
-        ServiceLocator locator = Utilities.getServiceLocator("ValidationTest.testValidatingServiceInProgress",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 LevelThreeService.class,
                 LevelFiveService.class);
         
@@ -150,7 +150,7 @@ public class ValidationTest {
      */
     @Test
     public void testNonValidatingServiceInProgress() throws InterruptedException, TimeoutException {
-        ServiceLocator locator = Utilities.getServiceLocator("ValidationTest.testNonValidatingServiceInProgress",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 LevelThreeDependsOnLevelFiveNonValidating.class,
                 NonValidatingLevelFiveService.class);
         
@@ -180,7 +180,7 @@ public class ValidationTest {
     
     @Test
     public void testDirectlyGettingInvalidService() {
-        ServiceLocator locator = Utilities.getServiceLocator("ValidationTest.testDirectlyGettingInvalidService",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 LevelFiveService.class);
         
         try {

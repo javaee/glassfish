@@ -39,9 +39,11 @@
  */
 package org.glassfish.hk2.runlevel.tests.listener;
 
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.ErrorInformation;
 import org.glassfish.hk2.runlevel.RunLevelController;
+import org.glassfish.hk2.runlevel.RunLevelController.ThreadingPolicy;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -60,8 +62,11 @@ public class ListenerErrorTest {
      */
     @Test
     public void testKeepGoingUpWithIgnoreAction() {
-        ServiceLocator locator = Utilities.getServiceLocator(null, LevelFiveErrorService.class,
+        ServiceLocator locator = Utilities.getServiceLocator(LevelFiveErrorService.class,
+                LevelFiveUpService.class,
                 OnProgressLevelChangerListener.class);
+        
+        LevelFiveUpService.postConstructCalled = false;
         
         setupErrorChanger(locator, ErrorInformation.ErrorAction.IGNORE);
         
@@ -69,8 +74,114 @@ public class ListenerErrorTest {
         
         controller.proceedTo(10);
         
+        Assert.assertTrue(LevelFiveUpService.postConstructCalled);
+        
         // Should go all the way up because we ignored the error
         Assert.assertEquals(10, controller.getCurrentRunLevel());
+    }
+    
+    /**
+     * Ensures we can ignore failures when going up
+     */
+    @Test
+    public void testKeepGoingUpWithIgnoreActionSingleThread() {
+        ServiceLocator locator = Utilities.getServiceLocator(LevelFiveErrorService.class,
+                LevelFiveUpService.class,
+                OnProgressLevelChangerListener.class);
+        
+        LevelFiveUpService.postConstructCalled = false;
+        
+        setupErrorChanger(locator, ErrorInformation.ErrorAction.IGNORE);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setMaximumUseableThreads(1);
+        
+        controller.proceedTo(10);
+        
+        Assert.assertTrue(LevelFiveUpService.postConstructCalled);
+        
+        // Should go all the way up because we ignored the error
+        Assert.assertEquals(10, controller.getCurrentRunLevel());
+    }
+    
+    /**
+     * Ensures we can ignore failures when going up
+     */
+    @Test
+    public void testComingDownDoesNotCallOtherServices() {
+        ServiceLocator locator = Utilities.getServiceLocator(LevelFiveErrorService.class,
+                LevelFiveUpService.class,
+                OnProgressLevelChangerListener.class);
+        
+        LevelFiveUpService.postConstructCalled = false;
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setMaximumUseableThreads(1);
+        
+        try {
+            controller.proceedTo(10);
+            Assert.fail("Should have failed at level 5");
+        }
+        catch (MultiException me) {
+            // Expected exception
+        }
+        
+        Assert.assertFalse(LevelFiveUpService.postConstructCalled);
+        
+        // Should go all the way up because we ignored the error
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
+    }
+    
+    /**
+     * Ensures we can ignore failures when going up
+     */
+    @Test
+    public void testKeepGoingUpWithIgnoreActionNoThreads() {
+        ServiceLocator locator = Utilities.getServiceLocator(LevelFiveErrorService.class,
+                LevelFiveUpService.class,
+                OnProgressLevelChangerListener.class);
+        
+        LevelFiveUpService.postConstructCalled = false;
+        
+        setupErrorChanger(locator, ErrorInformation.ErrorAction.IGNORE);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setThreadingPolicy(ThreadingPolicy.USE_NO_THREADS);
+        
+        controller.proceedTo(10);
+        
+        Assert.assertTrue(LevelFiveUpService.postConstructCalled);
+        
+        // Should go all the way up because we ignored the error
+        Assert.assertEquals(10, controller.getCurrentRunLevel());
+    }
+    
+    /**
+     * Ensures we can ignore failures when going up
+     */
+    @Test
+    public void testComingDownDoesNotCallOtherServicesNoThreads() {
+        ServiceLocator locator = Utilities.getServiceLocator(LevelFiveErrorService.class,
+                LevelFiveUpService.class,
+                OnProgressLevelChangerListener.class);
+        
+        LevelFiveUpService.postConstructCalled = false;
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setThreadingPolicy(ThreadingPolicy.USE_NO_THREADS);
+        
+        try {
+            controller.proceedTo(10);
+            Assert.fail("Should have failed at level 5");
+        }
+        catch (MultiException me) {
+            // Expected exception
+        }
+        
+        Assert.assertFalse(LevelFiveUpService.postConstructCalled);
+        
+        // Should go all the way up because we ignored the error
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
     }
     
     /**
@@ -79,7 +190,8 @@ public class ListenerErrorTest {
      */
     @Test
     public void testHaltLevelRegressionOnError() {
-        ServiceLocator locator = Utilities.getServiceLocator(null, LevelFiveDownErrorService.class,
+        ServiceLocator locator = Utilities.getServiceLocator(LevelFiveDownErrorService.class,
+                LevelFiveService.class,
                 OnProgressLevelChangerListener.class);
         
         setupErrorChanger(locator, ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP);
@@ -91,10 +203,54 @@ public class ListenerErrorTest {
         // Should go all the way up because we ignored the error
         Assert.assertEquals(10, controller.getCurrentRunLevel());
         
+        LevelFiveService levelFiveService = locator.getService(LevelFiveService.class);
+        Assert.assertFalse(levelFiveService.isPreDestroyCalled());
+        
         controller.proceedTo(0);
         
         // Should get halted
         Assert.assertEquals(4, controller.getCurrentRunLevel());
+        
+        OnProgressLevelChangerListener listener = locator.getService(OnProgressLevelChangerListener.class);
+        
+        Assert.assertEquals(4, listener.getLatestOnProgress());
+        
+        Assert.assertTrue(levelFiveService.isPreDestroyCalled());
+    }
+    
+    /**
+     * Ensures the user can halt the downward level progression if a service
+     * failed when going down
+     */
+    @Test
+    public void testHaltLevelRegressionOnErrorNoThreads() {
+        ServiceLocator locator = Utilities.getServiceLocator(LevelFiveDownErrorService.class,
+                LevelFiveService.class,
+                OnProgressLevelChangerListener.class);
+        
+        setupErrorChanger(locator, ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setThreadingPolicy(ThreadingPolicy.USE_NO_THREADS);
+        
+        controller.proceedTo(10);
+        
+        // Should go all the way up because we ignored the error
+        Assert.assertEquals(10, controller.getCurrentRunLevel());
+        
+        LevelFiveService levelFiveService = locator.getService(LevelFiveService.class);
+        Assert.assertFalse(levelFiveService.isPreDestroyCalled());
+        
+        controller.proceedTo(0);
+        
+        // Should get halted
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
+        
+        OnProgressLevelChangerListener listener = locator.getService(OnProgressLevelChangerListener.class);
+        
+        Assert.assertEquals(4, listener.getLatestOnProgress());
+        
+        Assert.assertTrue(levelFiveService.isPreDestroyCalled());
     }
 
 }

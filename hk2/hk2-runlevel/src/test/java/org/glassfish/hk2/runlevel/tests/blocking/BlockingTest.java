@@ -57,7 +57,7 @@ import org.junit.Test;
 public class BlockingTest {
     @Test
     public void testBasicBlocking() throws InterruptedException, ExecutionException, TimeoutException {
-        ServiceLocator locator = Utilities.getServiceLocator("BlockingTest.testBasicBlocking",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 ServiceA.class, ServiceB.class, ServiceC.class);
         
         RunLevelController controller = locator.getService(RunLevelController.class);

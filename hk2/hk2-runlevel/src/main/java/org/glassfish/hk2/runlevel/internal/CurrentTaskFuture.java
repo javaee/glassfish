@@ -354,7 +354,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
     }
     
-    private void invokeOnCancelled(CurrentTaskFuture job, int levelAchieved,
+    private static void invokeOnCancelled(CurrentTaskFuture job, int levelAchieved,
             List<ServiceHandle<RunLevelListener>> listeners) {
         for (ServiceHandle<RunLevelListener> listener : listeners) {
             try {
@@ -366,7 +366,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
     }
     
-    private ErrorInformation invokeOnError(CurrentTaskFuture job, Throwable th,
+    private static ErrorInformation invokeOnError(CurrentTaskFuture job, Throwable th,
             ErrorInformation.ErrorAction action,
             List<ServiceHandle<RunLevelListener>> listeners) {
         ErrorInformationImpl errorInfo = new ErrorInformationImpl(th, action);
@@ -474,7 +474,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                         return;
                     }
             
-                    currentJob = new UpOneJob(workingOn, this, maxThreads);
+                    currentJob = new UpOneJob(workingOn, this, future, listeners, maxThreads);
             
                     executor.execute(currentJob);
                     return;
@@ -486,7 +486,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 synchronized (lock) {
                     if (done) break;
                     
-                    currentJob = new UpOneJob(workingOn, this, 0);
+                    currentJob = new UpOneJob(workingOn, this, future, listeners, 0);
                 }
                 
                 currentJob.run();
@@ -563,18 +563,26 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     private class UpOneJob implements Runnable {
         private final Object lock = new Object();
         private final int upToThisLevel;
+        private final CurrentTaskFuture currentTaskFuture;
+        private final List<ServiceHandle<RunLevelListener>> listeners;
         private final UpAllTheWay master;
         private final int maxThreads;
         private int numJobs;
         private int completedJobs;
-        private MultiException exception = null;
+        private MultiException exception;
         private boolean cancelled = false;
         private int numJobsRunning = 0;
         
-        private UpOneJob(int paramUpToThisLevel, UpAllTheWay master, int maxThreads) {
+        private UpOneJob(int paramUpToThisLevel,
+                UpAllTheWay master,
+                CurrentTaskFuture currentTaskFuture,
+                List<ServiceHandle<RunLevelListener>> listeners,
+                int maxThreads) {
             this.upToThisLevel = paramUpToThisLevel;
             this.master = master;
             this.maxThreads = maxThreads;
+            this.currentTaskFuture = currentTaskFuture;
+            this.listeners = listeners;
         }
         
         private void cancel() {
@@ -638,12 +646,16 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
         private void fail(Throwable th) {
             synchronized (lock) {
+                ErrorInformation info = invokeOnError(currentTaskFuture, th,
+                        ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP, listeners);
+                
+                if (ErrorInformation.ErrorAction.IGNORE.equals(info.getAction())) return;
+                
                 if (exception == null) {
-                    exception = new MultiException(th);
+                    exception = new MultiException();
                 }
-                else {
-                    exception.addError(th);
-                }
+                
+                exception.addError(th);
             }
         }
         

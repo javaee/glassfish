@@ -71,7 +71,7 @@ public class ListenerTest {
      */
     @Test 
     public void testProceedToFurtherUpFromEndOfRunWillKeepGoingUp() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromEndOfRunWillKeepGoingUp",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         
         setupChanger(locator, 5, 10);
@@ -91,7 +91,7 @@ public class ListenerTest {
      */
     @Test 
     public void testProceedToFurtherUpFromMiddleOfRunWillKeepGoingUp() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromMiddleOfRunWillKeepGoingUp",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         
         setupChanger(locator, 2, 10);
@@ -111,7 +111,7 @@ public class ListenerTest {
      */
     @Test 
     public void testProceedToFurtherUpFromMiddleOfRunWillKeepGoingDown() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromMiddleOfRunWillKeepGoingDown",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
@@ -132,7 +132,7 @@ public class ListenerTest {
      */
     @Test 
     public void testProceedToFurtherUpFromEndOfRunWillKeepGoingDown() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromEndOfRunWillKeepGoingDown",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
@@ -151,7 +151,7 @@ public class ListenerTest {
      */
     @Test 
     public void testGoingFromUpToDown() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testGoingFromUpToDown",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         
         setupChanger(locator, 7, 3, 1);
@@ -168,7 +168,7 @@ public class ListenerTest {
      */
     @Test 
     public void testGoingFromDownToUp() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testGoingFromDwonToUp",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
@@ -192,7 +192,7 @@ public class ListenerTest {
      */
     @Test 
     public void testProceedToFurtherUpFromEndOfRunWillKeepGoingUpNoThreads() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromEndOfRunWillKeepGoingUpNoThreads",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         noThreads(locator);
         
@@ -213,7 +213,7 @@ public class ListenerTest {
      */
     @Test 
     public void testProceedToFurtherUpFromMiddleOfRunWillKeepGoingUpNoThreads() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromMiddleOfRunWillKeepGoingUpNoThreads",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         noThreads(locator);
         
@@ -234,7 +234,7 @@ public class ListenerTest {
      */
     @Test 
     public void testProceedToFurtherUpFromMiddleOfRunWillKeepGoingDownNoThreads() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromMiddleOfRunWillKeepGoingDownNoThreads",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         noThreads(locator);
         
@@ -256,7 +256,7 @@ public class ListenerTest {
      */
     @Test 
     public void testProceedToFurtherUpFromEndOfRunWillKeepGoingDownNoThreads() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testProceedToFurtherUpFromEndOfRunWillKeepGoingDownNoThreads",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         noThreads(locator);
         
@@ -276,7 +276,7 @@ public class ListenerTest {
      */
     @Test
     public void testGoingFromUpToDownNoThreads() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testGoingFromUpToDownNoThreads",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         noThreads(locator);
         
@@ -294,7 +294,7 @@ public class ListenerTest {
      */
     @Test
     public void testGoingFromDownToUpNoThreads() {
-        ServiceLocator locator = Utilities.getServiceLocator("ListenerTest.testGoingFromDwonToUpNoThreads",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 OnProgressLevelChangerListener.class);
         noThreads(locator);
         

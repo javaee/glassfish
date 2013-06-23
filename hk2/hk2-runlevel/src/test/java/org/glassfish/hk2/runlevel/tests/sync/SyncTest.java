@@ -61,7 +61,7 @@ public class SyncTest {
      */
     @Test
     public void testUseNoThreadsPolicy() {
-        ServiceLocator locator = Utilities.getServiceLocator("SyncTest.testUseNoThreadsPolicy",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 ServiceWithThreadLocal.class,
                 ThreadSensitiveService.class);
         
@@ -94,7 +94,7 @@ public class SyncTest {
      */
     @Test
     public void testMultipleServicesUpAndDown() {
-        ServiceLocator locator = Utilities.getServiceLocator("SyncTest.testMultipleServicesUpAndDown",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 LevelOneService.class,
                 LevelTenService.class,
                 LevelTwentyService.class,
