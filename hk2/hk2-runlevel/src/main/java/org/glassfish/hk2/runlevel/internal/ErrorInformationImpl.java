@@ -37,74 +37,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel.tests.listener;
+package org.glassfish.hk2.runlevel.internal;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.ErrorInformation;
-import org.glassfish.hk2.runlevel.RunLevelFuture;
-import org.glassfish.hk2.runlevel.RunLevelListener;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class OnProgressLevelChangerListener implements RunLevelListener {
-    private int changeAtLevel = ListenerTest.NO_LEVEL;
-    private int changeToLevel = ListenerTest.NO_LEVEL;
-    private int sleepAtLevel = ListenerTest.NO_LEVEL;
+public class ErrorInformationImpl implements ErrorInformation {
+    private final Throwable error;
+    private ErrorAction action;
     
-    private ErrorInformation.ErrorAction changeToErrorAction = null;
-    
-    /* package */ void setLevels(int changeAtLevel, int changeToLevel, int sleepAtLevel) {
-        this.changeAtLevel = changeAtLevel;
-        this.changeToLevel = changeToLevel;
-        this.sleepAtLevel = sleepAtLevel;
-    }
-    
-    /* package */ void setErrorAction(ErrorInformation.ErrorAction action) {
-        this.changeToErrorAction = action;
+    /* package */ ErrorInformationImpl(Throwable error, ErrorAction action) {
+        this.error = error;
+        this.action = action;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onProgress(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
+     * @see org.glassfish.hk2.runlevel.ErrorInformation#getError()
      */
     @Override
-    public void onProgress(ChangeableRunLevelFuture currentJob,
-            int levelAchieved) {
-        if (levelAchieved == sleepAtLevel) {
-            try {
-                Thread.sleep(100);
-            }
-            catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (levelAchieved == changeAtLevel) {
-            currentJob.changeProposedLevel(changeToLevel);
-        }
-
+    public Throwable getError() {
+        return error;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
+     * @see org.glassfish.hk2.runlevel.ErrorInformation#getAction()
      */
     @Override
-    public void onCancelled(RunLevelFuture currentJob,
-            int levelAchieved) {
-
+    public ErrorAction getAction() {
+        return action;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, java.lang.Throwable)
+     * @see org.glassfish.hk2.runlevel.ErrorInformation#setAction(org.glassfish.hk2.runlevel.ErrorInformation.ErrorAction)
      */
     @Override
-    public void onError(RunLevelFuture currentJob, ErrorInformation info) {
-        if (changeToErrorAction != null) {
-            info.setAction(changeToErrorAction);
-        }
+    public void setAction(ErrorAction action) {
+        this.action = action;
+
     }
 
 }

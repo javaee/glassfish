@@ -44,6 +44,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
+import org.glassfish.hk2.runlevel.ErrorInformation;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 
@@ -75,13 +76,13 @@ public abstract class AbstractRunLevelListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.RunLevelController, java.lang.Throwable, boolean)
      */
     @Override
-    public void onError(ChangeableRunLevelFuture currentJob, Throwable error, int level) {
+    public void onError(RunLevelFuture currentJob, ErrorInformation info) {
         synchronized (this) {
             if (reportedErrors == null) {
                 reportedErrors = new LinkedList<Throwable>();
             }
             
-            reportedErrors.add(error);
+            reportedErrors.add(info.getError());
         }
 
     }

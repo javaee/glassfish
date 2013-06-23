@@ -49,6 +49,7 @@ import javax.inject.Inject;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
+import org.glassfish.hk2.runlevel.ErrorInformation;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
@@ -75,7 +76,7 @@ public class RunLevelListenerRecorder implements RunLevelListener {
     }
 
     @Override
-    public void onError(ChangeableRunLevelFuture currentJob, Throwable error, int level) {
+    public void onError(RunLevelFuture currentJob, ErrorInformation info) {
         // TODO Auto-generated method stub
         
     }
@@ -86,10 +87,17 @@ public class RunLevelListenerRecorder implements RunLevelListener {
         up = currentJob.isUp();
     }
     
+    /**
+     * Tells the recorder it is going down
+     */
     public void goingDown() {
         up = false;
     }
     
+    /**
+     * Records the given event
+     * @param event The event to record
+     */
     public void recordEvent(String event) {
         // no locks
         if (up) {
@@ -116,12 +124,24 @@ public class RunLevelListenerRecorder implements RunLevelListener {
         }
     }
     
+    /**
+     * Gets the up events for the given level
+     * 
+     * @param level The level to get events for
+     * @return The list of events
+     */
     public List<String> getUpEventsForLevel(int level) {
         List<String> retVal = ups.get(level);
         if (retVal == null) return Collections.emptyList();
         return retVal;
     }
     
+    /**
+     * Gets the down events for the given level
+     * 
+     * @param level The level to get events for
+     * @return The list of events
+     */
     public List<String> getDownEventsForLevel(int level) {
         List<String> retVal = downs.get(level);
         if (retVal == null) return Collections.emptyList();

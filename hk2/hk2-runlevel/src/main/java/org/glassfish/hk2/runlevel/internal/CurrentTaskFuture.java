@@ -53,6 +53,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
+import org.glassfish.hk2.runlevel.ErrorInformation;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.utilities.Utilities;
@@ -134,6 +135,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
     }
     
+    @Override
     public boolean isUp() {
         synchronized (this) {
             if (upAllTheWay != null) return true;
@@ -141,6 +143,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
     }
     
+    @Override
     public boolean isDown() {
         synchronized (this) {
             if (downAllTheWay != null) return true;
@@ -363,23 +366,22 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
     }
     
-    private void invokeOnError(ChangeableRunLevelFuture job, Throwable th,
-            int level,
+    private ErrorInformation invokeOnError(CurrentTaskFuture job, Throwable th,
+            ErrorInformation.ErrorAction action,
             List<ServiceHandle<RunLevelListener>> listeners) {
-        setInCallback(true);
-        try {
-            for (ServiceHandle<RunLevelListener> listener : listeners) {
-                try {
-                    listener.getService().onError(job, th, level);
-                }
-                catch (Throwable th2) {
-                    // TODO:  Need a log message here
-                }
+        ErrorInformationImpl errorInfo = new ErrorInformationImpl(th, action);
+        
+        for (ServiceHandle<RunLevelListener> listener : listeners) {
+            try {
+                listener.getService().onError(new CurrentTaskFutureWrapper(job),
+                        errorInfo);
+            }
+            catch (Throwable th2) {
+                 // TODO:  Need a log message here
             }
         }
-        finally {
-            setInCallback(false);
-        }
+        
+        return errorInfo;
     }
     
     private interface AllTheWay {
@@ -512,7 +514,8 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 
                 downer.run();
                 
-                invokeOnError(future, exception, workingOn - 1, listeners);
+                // TODO, will move above the DownAllTheWay
+                invokeOnError(future, exception, ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP, listeners);
                 
                 synchronized (lock) {                    
                     done = true;
@@ -658,7 +661,13 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
     }
     
-    public class DownAllTheWay implements Runnable, AllTheWay {
+    /**
+     * Goes down all the way to the proposed level
+     * 
+     * @author jwells
+     *
+     */
+    private class DownAllTheWay implements Runnable, AllTheWay {
         private volatile int goingTo;
         private CurrentTaskFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
@@ -753,7 +762,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
                 
                 if (serviceDownErrors != null) {
-                	invokeOnError(future, serviceDownErrors, workingOn, listeners);
+                	invokeOnError(future, serviceDownErrors, ErrorInformation.ErrorAction.IGNORE, listeners);
                 }
                 
                 workingOn--;
@@ -922,6 +931,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         return false;
     }
     
+    @Override
     public String toString() {
         return "RunLevelFuture(proposedLevel=" + proposedLevel + "," +
           System.identityHashCode(this) + ")";

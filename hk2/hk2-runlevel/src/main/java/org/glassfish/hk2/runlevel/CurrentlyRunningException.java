@@ -54,13 +54,25 @@ public class CurrentlyRunningException extends RuntimeException {
     
     private RunLevelFuture currentJob;
     
+    /**
+     * Basic no-arg constructor
+     */
     public CurrentlyRunningException() {
     }
     
+    /**
+     * Constructor with job that is in progress
+     * 
+     * @param runLevelFuture The job currently in progress
+     */
     public CurrentlyRunningException(RunLevelFuture runLevelFuture) {
         currentJob = runLevelFuture;
     }
     
+    /**
+     * Gets the job current in progress
+     * @return The job currently in progress
+     */
     public RunLevelFuture getCurrentJob() {
         return currentJob;
     }

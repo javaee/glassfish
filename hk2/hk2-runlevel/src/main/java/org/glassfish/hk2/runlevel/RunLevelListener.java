@@ -65,7 +65,7 @@ public interface RunLevelListener {
      * <p>
      * Neither {@link RunLevelController#proceedTo(int)} nor
      * {@link RunLevelController#proceedToAsync(int)} may be called from this method.  However,
-     * {@link RunLevelFuture#changeProposedLevel(int)} may be called
+     * {@link ChangeableRunLevelFuture#changeProposedLevel(int)} may be called
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
@@ -95,29 +95,16 @@ public interface RunLevelListener {
     void onCancelled(RunLevelFuture currentJob, int levelAchieved);
 
     /**
-     * Called when a service throws an exception during lifecycle
-     * orchestration.
+     * Called when a service throws an exception during a proceedTo
+     * operation
      * <p>
      * Neither {@link RunLevelController#proceedTo(int)} nor
-     * {@link RunLevelController#proceedToAsync(int)} may be called from this method.  However,
-     * {@link RunLevelFuture#changeProposedLevel(int)} may be called.  If
-     * {@link RunLevelFuture#changeProposedLevel(int)} is called from this
-     * method it will clear the exception from the job, and hence the
-     * Future associated with this job will not throw the exception.  Use this
-     * if the handler should be handling the exception and not the code invoking
-     * the {@link RunLevelController#proceedTo(int)} or {@link RunLevelFuture#get()}
-     * methods
+     * {@link RunLevelController#proceedToAsync(int)} may be called from this method.
      *
-     * @param controller    the run level controller
-     * @param error         the error that was caught
-     * @param levelAchieved the level just achieved by the currentJob.  Note
-     * that if the currentJob is currently going up then the levelAchieved will
-     * be the level for which all the services in that level were just started
-     * while when going down the levelAchieved will be the level for which
-     * all the services ABOVE that level have been shutdown.  In both cases
-     * the levelAchieved represents the current level of the system
+     * @param currentJob    the run level controller
+     * @param errorInformation information about the error that had been caught
      */
-    void onError(ChangeableRunLevelFuture currentJob, Throwable error, int levelAchieved);
+    void onError(RunLevelFuture currentJob, ErrorInformation errorInformation);
 
     
 }
