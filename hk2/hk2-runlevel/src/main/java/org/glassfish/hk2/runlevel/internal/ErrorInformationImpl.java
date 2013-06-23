@@ -75,8 +75,9 @@ public class ErrorInformationImpl implements ErrorInformation {
      */
     @Override
     public void setAction(ErrorAction action) {
+        if (action == null) throw new IllegalArgumentException("action may not be null in setAction");
+        
         this.action = action;
-
     }
 
 }

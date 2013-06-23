@@ -508,26 +508,28 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
         
         private void currentJobComplete(MultiException exception) {
-            DownAllTheWay downer = null;
             if (exception != null) {
-                downer = new DownAllTheWay(workingOn - 1, null, null);
+                ErrorInformation info =
+                        invokeOnError(future, exception, ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP, listeners);
                 
-                downer.run();
+                if (!ErrorInformation.ErrorAction.IGNORE.equals(info.getAction())) {
+                    DownAllTheWay downer = new DownAllTheWay(workingOn - 1, null, null);
                 
-                // TODO, will move above the DownAllTheWay
-                invokeOnError(future, exception, ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP, listeners);
+                    downer.run();
                 
-                synchronized (lock) {                    
-                    done = true;
-                    this.exception = exception;
-                    lock.notifyAll();
+                    synchronized (lock) {                    
+                        done = true;
+                        this.exception = exception;
+                        lock.notifyAll();
                     
-                    parent.jobDone();
-                }
+                        parent.jobDone();
+                    }
                 
-                return;
+                    return;
+                }
             }
             
+            DownAllTheWay downer = null;
             synchronized (lock) {
                 if (cancelled) {
                     downer = new DownAllTheWay(workingOn - 1, null, null);
@@ -678,7 +680,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private boolean done = false;
         private boolean repurposed = false;
         
-        private MultiException serviceDownErrors = null;
+        // private MultiException serviceDownErrors = null;
         
         public DownAllTheWay(int goingTo,
                 CurrentTaskFuture future,
@@ -746,23 +748,21 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 // But we don't call the proceedTo until all those services are gone
                 List<ActiveDescriptor<?>> toRemove = parent.getOrderedListOfServicesAtLevel(workingOn);
                 
+                ErrorInformation errorInfo = null;
                 for (ActiveDescriptor<?> removeMe : toRemove) {
                     try {
                         locator.getServiceHandle(removeMe).destroy();
                     }
                     catch (Throwable th) {
                         if (future != null) {
-                        	if (serviceDownErrors == null) serviceDownErrors = new MultiException();
-                        	
-                        	serviceDownErrors.addError(th);
-                            
+                            errorInfo = invokeOnError(future, th, ErrorInformation.ErrorAction.IGNORE, listeners);
                         }
                     }
                     
                 }
                 
-                if (serviceDownErrors != null) {
-                	invokeOnError(future, serviceDownErrors, ErrorInformation.ErrorAction.IGNORE, listeners);
+                if (errorInfo != null && ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP.equals(errorInfo.getAction())) {
+                    goingTo = workingOn;
                 }
                 
                 workingOn--;
