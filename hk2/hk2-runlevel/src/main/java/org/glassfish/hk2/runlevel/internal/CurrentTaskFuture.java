@@ -351,31 +351,26 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
     }
     
-    private void invokeOnCancelled(ChangeableRunLevelFuture job, int levelAchieved,
+    private void invokeOnCancelled(CurrentTaskFuture job, int levelAchieved,
             List<ServiceHandle<RunLevelListener>> listeners) {
-        setInCallback(true);
-        try {
-            for (ServiceHandle<RunLevelListener> listener : listeners) {
-                try {
-                    listener.getService().onCancelled(job, levelAchieved);
-                }
-                catch (Throwable th) {
-                    // TODO:  Need a log message here
-                }
+        for (ServiceHandle<RunLevelListener> listener : listeners) {
+            try {
+                listener.getService().onCancelled(new CurrentTaskFutureWrapper(job), levelAchieved);
             }
-        }
-        finally {
-            setInCallback(false);
+            catch (Throwable th) {
+                // TODO:  Need a log message here
+            }
         }
     }
     
     private void invokeOnError(ChangeableRunLevelFuture job, Throwable th,
+            int level,
             List<ServiceHandle<RunLevelListener>> listeners) {
         setInCallback(true);
         try {
             for (ServiceHandle<RunLevelListener> listener : listeners) {
                 try {
-                    listener.getService().onError(job, th);
+                    listener.getService().onError(job, th, level);
                 }
                 catch (Throwable th2) {
                     // TODO:  Need a log message here
@@ -399,7 +394,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private int goingTo;
         private final int maxThreads;
         private final boolean useThreads;
-        private final ChangeableRunLevelFuture future;
+        private final CurrentTaskFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
         
         private int workingOn;
@@ -409,7 +404,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private boolean repurposed = false;
         private MultiException exception = null;
         
-        private UpAllTheWay(int goingTo, ChangeableRunLevelFuture future,
+        private UpAllTheWay(int goingTo, CurrentTaskFuture future,
                 List<ServiceHandle<RunLevelListener>> listeners,
                 int maxThreads,
                 boolean useThreads) {
@@ -517,7 +512,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 
                 downer.run();
                 
-                invokeOnError(future, exception, listeners);
+                invokeOnError(future, exception, workingOn - 1, listeners);
                 
                 synchronized (lock) {                    
                     done = true;
@@ -665,7 +660,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     
     public class DownAllTheWay implements Runnable, AllTheWay {
         private volatile int goingTo;
-        private ChangeableRunLevelFuture future;
+        private CurrentTaskFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
         
         private int workingOn;
@@ -677,7 +672,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private MultiException serviceDownErrors = null;
         
         public DownAllTheWay(int goingTo,
-                ChangeableRunLevelFuture future,
+                CurrentTaskFuture future,
                 List<ServiceHandle<RunLevelListener>> listeners) {
             this.goingTo = goingTo;
             this.future = future;
@@ -758,7 +753,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
                 
                 if (serviceDownErrors != null) {
-                	invokeOnError(future, serviceDownErrors, listeners);
+                	invokeOnError(future, serviceDownErrors, workingOn, listeners);
                 }
                 
                 workingOn--;

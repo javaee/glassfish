@@ -42,6 +42,7 @@ package org.glassfish.hk2.runlevel.tests.listener;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
+import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 
 /**
@@ -84,7 +85,7 @@ public class OnProgressLevelChangerListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
      */
     @Override
-    public void onCancelled(ChangeableRunLevelFuture currentJob,
+    public void onCancelled(RunLevelFuture currentJob,
             int levelAchieved) {
 
     }
@@ -93,7 +94,7 @@ public class OnProgressLevelChangerListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, java.lang.Throwable)
      */
     @Override
-    public void onError(ChangeableRunLevelFuture currentJob, Throwable error) {
+    public void onError(ChangeableRunLevelFuture currentJob, Throwable error, int level) {
 
     }
 

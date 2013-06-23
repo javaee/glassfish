@@ -60,7 +60,7 @@ public abstract class AbstractRunLevelListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.RunLevelController, int, boolean)
      */
     @Override
-    public void onCancelled(ChangeableRunLevelFuture currentJob,
+    public void onCancelled(RunLevelFuture currentJob,
             int levelAchieved) {
         synchronized (this) {
             if (cancelledLevels == null) {
@@ -75,7 +75,7 @@ public abstract class AbstractRunLevelListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.RunLevelController, java.lang.Throwable, boolean)
      */
     @Override
-    public void onError(ChangeableRunLevelFuture currentJob, Throwable error) {
+    public void onError(ChangeableRunLevelFuture currentJob, Throwable error, int level) {
         synchronized (this) {
             if (reportedErrors == null) {
                 reportedErrors = new LinkedList<Throwable>();
