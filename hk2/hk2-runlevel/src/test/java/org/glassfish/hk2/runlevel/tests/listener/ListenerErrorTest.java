@@ -44,7 +44,6 @@ import org.glassfish.hk2.runlevel.ErrorInformation;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -59,7 +58,7 @@ public class ListenerErrorTest {
     /**
      * Ensures we can ignore failures when going up
      */
-    @Test @Ignore
+    @Test
     public void testKeepGoingUpWithIgnoreAction() {
         ServiceLocator locator = Utilities.getServiceLocator(null, LevelFiveErrorService.class,
                 OnProgressLevelChangerListener.class);
@@ -72,7 +71,30 @@ public class ListenerErrorTest {
         
         // Should go all the way up because we ignored the error
         Assert.assertEquals(10, controller.getCurrentRunLevel());
+    }
+    
+    /**
+     * Ensures the user can halt the downward level progression if a service
+     * failed when going down
+     */
+    @Test
+    public void testHaltLevelRegressionOnError() {
+        ServiceLocator locator = Utilities.getServiceLocator(null, LevelFiveDownErrorService.class,
+                OnProgressLevelChangerListener.class);
         
+        setupErrorChanger(locator, ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        
+        controller.proceedTo(10);
+        
+        // Should go all the way up because we ignored the error
+        Assert.assertEquals(10, controller.getCurrentRunLevel());
+        
+        controller.proceedTo(0);
+        
+        // Should get halted
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
     }
 
 }
