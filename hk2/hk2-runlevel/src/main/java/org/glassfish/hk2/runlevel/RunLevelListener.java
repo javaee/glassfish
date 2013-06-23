@@ -65,8 +65,7 @@ public interface RunLevelListener {
      * <p>
      * Neither {@link RunLevelController#proceedTo(int)} nor
      * {@link RunLevelController#proceedToAsync(int)} may be called from this method.  However,
-     * {@link RunLevelFuture#changeProposedLevel(int)} may be called as long as it does not change
-     * the direction of the {@link RunLevelFuture}
+     * {@link RunLevelFuture#changeProposedLevel(int)} may be called
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
@@ -82,8 +81,8 @@ public interface RunLevelListener {
      * Called when an RunLevelController implementation's proceedTo() operation
      * has been canceled for some reason.
      * <p>
-     * {@link RunLevelController#proceedTo(int)} may not be called from this method,
-     * but {@link RunLevelController#proceedToAsync(int)} may
+     * Neither {@link RunLevelController#proceedTo(int)} nor
+     * {@link RunLevelController#proceedToAsync(int)} may be called from this method
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
@@ -93,19 +92,32 @@ public interface RunLevelListener {
      * all the services ABOVE that level have been shutdown.  In both cases
      * the levelAchieved represents the current level of the system
      */
-    void onCancelled(ChangeableRunLevelFuture currentJob, int levelAchieved);
+    void onCancelled(RunLevelFuture currentJob, int levelAchieved);
 
     /**
      * Called when a service throws an exception during lifecycle
      * orchestration.
      * <p>
-     * {@link RunLevelController#proceedTo(int)} may not be called from this method,
-     * but {@link RunLevelController#proceedToAsync(int)} may
+     * Neither {@link RunLevelController#proceedTo(int)} nor
+     * {@link RunLevelController#proceedToAsync(int)} may be called from this method.  However,
+     * {@link RunLevelFuture#changeProposedLevel(int)} may be called.  If
+     * {@link RunLevelFuture#changeProposedLevel(int)} is called from this
+     * method it will clear the exception from the job, and hence the
+     * Future associated with this job will not throw the exception.  Use this
+     * if the handler should be handling the exception and not the code invoking
+     * the {@link RunLevelController#proceedTo(int)} or {@link RunLevelFuture#get()}
+     * methods
      *
      * @param controller    the run level controller
      * @param error         the error that was caught
+     * @param levelAchieved the level just achieved by the currentJob.  Note
+     * that if the currentJob is currently going up then the levelAchieved will
+     * be the level for which all the services in that level were just started
+     * while when going down the levelAchieved will be the level for which
+     * all the services ABOVE that level have been shutdown.  In both cases
+     * the levelAchieved represents the current level of the system
      */
-    void onError(ChangeableRunLevelFuture currentJob, Throwable error);
+    void onError(ChangeableRunLevelFuture currentJob, Throwable error, int levelAchieved);
 
     
 }

@@ -37,84 +37,73 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel.tests.deadlock1;
+package org.glassfish.hk2.runlevel.internal;
 
-import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.glassfish.hk2.runlevel.RunLevelFuture;
-import org.glassfish.hk2.runlevel.RunLevelListener;
-import org.jvnet.hk2.annotations.Service;
 
 /**
+ * This object is used to wrap the internal CurrentTaskFuture which
+ * is a ChangeableRunLevelFuture.  This way the users of the
+ * RunLevelController API will not get something that can be
+ * cast to a ChangeableRunLevelFuture
+ * 
  * @author jwells
- *
  */
-@Service
-public class DeadLock1Listener implements RunLevelListener {
-    private boolean go = false;
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.RunLevelFuture, int)
-     */
-    @Override
-    public void onCancelled(RunLevelFuture controller, int levelAchieved) {
-
+public class CurrentTaskFutureWrapper implements RunLevelFuture {
+    private final CurrentTaskFuture delegate;
+    
+    /* package */ CurrentTaskFutureWrapper(CurrentTaskFuture delegate) {
+        this.delegate = delegate;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.RunLevelFuture, java.lang.Throwable)
-     */
     @Override
-    public void onError(ChangeableRunLevelFuture currentJob, Throwable error, int level) {
-
+    public boolean isCancelled() {
+        return delegate.isCancelled();
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onProgress(org.glassfish.hk2.runlevel.RunLevelFuture, int)
-     */
     @Override
-    public void onProgress(ChangeableRunLevelFuture currentJob, int levelAchieved) {
-        if (levelAchieved != 1) return;
-        
-        OtherThreadCanceller otc = new OtherThreadCanceller(currentJob, this);
-        
-        Thread myThread = new Thread(otc);
-        myThread.start();
-        
-        synchronized(this) {
-            while (!go) {
-                try {
-                    this.wait();
-                }
-                catch (InterruptedException e) {
-                    throw new AssertionError(e);
-                }
-            }
-        }
+    public boolean isDone() {
+        return delegate.isDone();
+    }
+
+    @Override
+    public Object get() throws InterruptedException, ExecutionException {
+        return delegate.get();
+    }
+
+    @Override
+    public Object get(long timeout, TimeUnit unit)
+            throws InterruptedException, ExecutionException,
+            TimeoutException {
+        return delegate.get(timeout, unit);
+    }
+
+    @Override
+    public int getProposedLevel() {
+        return delegate.getProposedLevel();
+    }
+
+    @Override
+    public boolean isUp() {
+        return delegate.isUp();
+    }
+
+    @Override
+    public boolean isDown() {
+        return delegate.isDown();
+    }
+
+    @Override
+    public boolean cancel(boolean mayInterruptIfRunning) {
+        return delegate.cancel(mayInterruptIfRunning);
     }
     
-    public class OtherThreadCanceller implements Runnable {
-        private final RunLevelFuture job;
-        private final Object lock;
-        
-        private OtherThreadCanceller(RunLevelFuture job, Object lock) {
-            this.job = job;
-            this.lock = lock;
-            
-        }
-
-        @Override
-        public void run() {
-            // If locks are held in onProgress this will block forever
-            job.cancel(false);
-            
-            synchronized (lock) {
-                go = true;
-                lock.notifyAll();
-            }
-            
-            
-        }
-        
+    /* package */ CurrentTaskFuture getDelegate() {
+        return delegate;
     }
 
 }

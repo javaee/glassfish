@@ -45,7 +45,6 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelController.ThreadingPolicy;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**

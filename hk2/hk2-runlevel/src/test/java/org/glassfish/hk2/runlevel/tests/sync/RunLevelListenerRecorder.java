@@ -69,13 +69,13 @@ public class RunLevelListenerRecorder implements RunLevelListener {
     private RunLevelController controller;
 
     @Override
-    public void onCancelled(ChangeableRunLevelFuture controller, int levelAchieved) {
+    public void onCancelled(RunLevelFuture controller, int levelAchieved) {
         // TODO Auto-generated method stub
         
     }
 
     @Override
-    public void onError(ChangeableRunLevelFuture currentJob, Throwable error) {
+    public void onError(ChangeableRunLevelFuture currentJob, Throwable error, int level) {
         // TODO Auto-generated method stub
         
     }
