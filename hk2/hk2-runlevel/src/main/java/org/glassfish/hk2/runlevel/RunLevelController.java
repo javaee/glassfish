@@ -100,7 +100,8 @@ public interface RunLevelController {
      * {@link RunLevelController#proceedToAsync(int)}.
      * 
      * @param runLevel The level that should be proceeded to
-     * @throws CurrentlyRunningException
+     * @throws CurrentlyRunningException if there is an already running
+     * job in progress
      */
     public void proceedTo(int runLevel) throws CurrentlyRunningException;
     

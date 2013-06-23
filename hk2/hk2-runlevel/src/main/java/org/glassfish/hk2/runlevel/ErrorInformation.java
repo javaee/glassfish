@@ -43,18 +43,58 @@ package org.glassfish.hk2.runlevel;
  * @author jwells
  *
  */
-public interface ChangeableRunLevelFuture extends RunLevelFuture {
+public interface ErrorInformation {
     /**
-     * Changes the proposedLevel of this future.  A future
-     * cannot have its level changed if it is done
-     * <p>
-     * This method may be called from the {@link RunLevelListener#onProgress(ChangeableRunLevelFuture, int)}
-     * callback
+     * The set of actions that the system can perform
+     * when an error is detected
      * 
-     * @param proposedLevel The new proposed level
-     * @return The old proposed level
-     * @throws IllegalStateException if this is called on a future that is done
+     * @author jwells
      */
-    public int changeProposedLevel(int proposedLevel) throws IllegalStateException;
+    public enum ErrorAction {
+        /**
+         * Tells the RunLevelController to halt progress
+         * in the level and proceed to the next lowest
+         * level and stop the proceeding at that level.
+         * This is the default action when an error is
+         * encountered while the system is proceeding
+         * upward.  The error (or errors) will be thrown
+         * by the {@link RunLevelFuture}
+         */
+        GO_TO_NEXT_LOWER_LEVEL_AND_STOP,
+        
+        /**
+         * Tells the RunLevelController to disregard
+         * the error and continue its progress as if
+         * the error never happened.  This is the default
+         * action when an error is encountered while
+         * the system is proceeding downward.  The error
+         * (or errors) will NOT be thrown by the
+         * {@link RunLevelFuture}
+         */
+        IGNORE
+    }
+    
+    /**
+     * Returns the throwable that caused the error
+     * @return The non-null throwable that caused
+     * the error to occur
+     */
+    public Throwable getError();
+    
+    /**
+     * Returns the action the system will take
+     * 
+     * @return The action the system will take
+     * once the onError method has returned
+     */
+    public ErrorAction getAction();
+    
+    /**
+     * Sets the action the system should take
+     * 
+     * @param action The action the system will take
+     * once the onError method has returned
+     */
+    public void setAction(ErrorAction action);
 
 }

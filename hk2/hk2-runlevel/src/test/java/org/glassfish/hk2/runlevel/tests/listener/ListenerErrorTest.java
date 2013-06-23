@@ -39,72 +39,40 @@
  */
 package org.glassfish.hk2.runlevel.tests.listener;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.ErrorInformation;
-import org.glassfish.hk2.runlevel.RunLevelFuture;
-import org.glassfish.hk2.runlevel.RunLevelListener;
+import org.glassfish.hk2.runlevel.RunLevelController;
+import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class OnProgressLevelChangerListener implements RunLevelListener {
-    private int changeAtLevel = ListenerTest.NO_LEVEL;
-    private int changeToLevel = ListenerTest.NO_LEVEL;
-    private int sleepAtLevel = ListenerTest.NO_LEVEL;
-    
-    private ErrorInformation.ErrorAction changeToErrorAction = null;
-    
-    /* package */ void setLevels(int changeAtLevel, int changeToLevel, int sleepAtLevel) {
-        this.changeAtLevel = changeAtLevel;
-        this.changeToLevel = changeToLevel;
-        this.sleepAtLevel = sleepAtLevel;
+public class ListenerErrorTest {
+    private static void setupErrorChanger(ServiceLocator locator, ErrorInformation.ErrorAction action) {
+        locator.getService(OnProgressLevelChangerListener.class).setErrorAction(action);
     }
     
-    /* package */ void setErrorAction(ErrorInformation.ErrorAction action) {
-        this.changeToErrorAction = action;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onProgress(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
+    /**
+     * Ensures we can ignore failures when going up
      */
-    @Override
-    public void onProgress(ChangeableRunLevelFuture currentJob,
-            int levelAchieved) {
-        if (levelAchieved == sleepAtLevel) {
-            try {
-                Thread.sleep(100);
-            }
-            catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (levelAchieved == changeAtLevel) {
-            currentJob.changeProposedLevel(changeToLevel);
-        }
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
-     */
-    @Override
-    public void onCancelled(RunLevelFuture currentJob,
-            int levelAchieved) {
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, java.lang.Throwable)
-     */
-    @Override
-    public void onError(RunLevelFuture currentJob, ErrorInformation info) {
-        if (changeToErrorAction != null) {
-            info.setAction(changeToErrorAction);
-        }
+    @Test @Ignore
+    public void testKeepGoingUpWithIgnoreAction() {
+        ServiceLocator locator = Utilities.getServiceLocator(null, LevelFiveErrorService.class,
+                OnProgressLevelChangerListener.class);
+        
+        setupErrorChanger(locator, ErrorInformation.ErrorAction.IGNORE);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        
+        controller.proceedTo(10);
+        
+        // Should go all the way up because we ignored the error
+        Assert.assertEquals(10, controller.getCurrentRunLevel());
+        
     }
 
 }

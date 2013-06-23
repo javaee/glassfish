@@ -40,6 +40,7 @@
 package org.glassfish.hk2.runlevel.tests.deadlock1;
 
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
+import org.glassfish.hk2.runlevel.ErrorInformation;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.jvnet.hk2.annotations.Service;
@@ -64,7 +65,7 @@ public class DeadLock1Listener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.RunLevelFuture, java.lang.Throwable)
      */
     @Override
-    public void onError(ChangeableRunLevelFuture currentJob, Throwable error, int level) {
+    public void onError(RunLevelFuture currentJob, ErrorInformation info) {
 
     }
 

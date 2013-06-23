@@ -37,24 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel;
+package org.glassfish.hk2.runlevel.tests.listener;
+
+import javax.annotation.PostConstruct;
+
+import org.glassfish.hk2.runlevel.RunLevel;
 
 /**
  * @author jwells
  *
  */
-public interface ChangeableRunLevelFuture extends RunLevelFuture {
-    /**
-     * Changes the proposedLevel of this future.  A future
-     * cannot have its level changed if it is done
-     * <p>
-     * This method may be called from the {@link RunLevelListener#onProgress(ChangeableRunLevelFuture, int)}
-     * callback
-     * 
-     * @param proposedLevel The new proposed level
-     * @return The old proposed level
-     * @throws IllegalStateException if this is called on a future that is done
-     */
-    public int changeProposedLevel(int proposedLevel) throws IllegalStateException;
+@RunLevel(5)
+public class LevelFiveErrorService {
+    @SuppressWarnings("unused")
+    @PostConstruct
+    private void postConstruct() {
+        throw new RuntimeException("Expected exception from ErrorService"); 
+    }
 
 }

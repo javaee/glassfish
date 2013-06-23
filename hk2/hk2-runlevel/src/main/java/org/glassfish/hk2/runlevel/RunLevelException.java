@@ -56,14 +56,35 @@ public class RunLevelException extends HK2RuntimeException {
      */
     private static final long serialVersionUID = 1514027985824049713L;
 
+    /**
+     * Basic no-args constructor
+     */
+    public RunLevelException() {
+        super();
+    }
+    
+    /**
+     * Exception with message
+     * @param message The message to be associated with this exception
+     */
     public RunLevelException(String message) {
         super(message);
     }
 
+    /**
+     * Exception with origin
+     * @param origin The exception that caused the exception
+     */
     public RunLevelException(Throwable origin) {
         super(origin);
     }
 
+    /**
+     * Exception with message and origin
+     * 
+     * @param message The message to be associated with this exception
+     * @param origin The exception that caused the exception
+     */
     public RunLevelException(String message, Throwable origin) {
         super(message, origin);
     }
