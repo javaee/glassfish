@@ -74,7 +74,7 @@ public class Blocking1Test {
      */
     @Test
     public void testTooManyBlockers() throws InterruptedException, ExecutionException, TimeoutException {
-        ServiceLocator locator = Utilities.getServiceLocator("Blocking1Test.testTooManyBlockers",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 BlockingService.class,
                 DependingService1.class,
                 DependingService2.class,

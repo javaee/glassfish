@@ -64,7 +64,7 @@ import org.junit.Test;
  *
  */
 public class OrderingTest {
-    private final ServiceLocator locator = Utilities.getServiceLocator("OrderingTest", Music.class, Opera.class, TimerActivator.class);
+    private final ServiceLocator locator = Utilities.getServiceLocator(Music.class, Opera.class, TimerActivator.class);
     
     /**
      * This ensures that we can get the proper timings for services

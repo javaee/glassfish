@@ -63,7 +63,7 @@ public class Blocking2Test {
      */
     @Test
     public void testIndirectBlockingDependency() throws InterruptedException, ExecutionException {
-        ServiceLocator locator = Utilities.getServiceLocator("Blocking2Test.testIndirectBlockingDependency",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 BlockingService.class,
                 SingletonWithSneakyDependency.class,
                 RunLevelServiceWithHiddenDependency.class,
@@ -105,7 +105,7 @@ public class Blocking2Test {
      */
     @Test
     public void testIndirectBlockingDependencyWithServiceHandle() throws InterruptedException, ExecutionException {
-        ServiceLocator locator = Utilities.getServiceLocator("Blocking2Test.testIndirectBlockingDependencyWithServiceHandle",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 BlockingService.class,
                 SingletonWithSneakyDependency.class,
                 RunLevelServiceWithHiddenDependency.class,

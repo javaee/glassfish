@@ -98,7 +98,7 @@ public class CancelTest {
         pleaseCancelNow = false;
         haveCancelled = false;
         
-        ServiceLocator basicLocator = Utilities.getServiceLocator("CancelTest.basicCancel",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 Service1.class,
@@ -169,7 +169,7 @@ public class CancelTest {
         pleaseCancelNow = false;
         haveCancelled = false;
         
-        ServiceLocator basicLocator = Utilities.getServiceLocator("CancelTest.basicCancelDown",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 Service1_Down.class,
@@ -256,7 +256,7 @@ public class CancelTest {
         pleaseCancelNow = false;
         haveCancelled = false;
         
-        ServiceLocator basicLocator = Utilities.getServiceLocator("CancelTest.basicCancelListener",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 Service1.class,

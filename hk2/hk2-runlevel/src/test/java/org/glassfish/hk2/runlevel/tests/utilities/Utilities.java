@@ -58,7 +58,7 @@ public class Utilities {
      * @param classes The set of classes to also add to the descriptor (should probably contain some run level services, right?)
      * @return The ServiceLocator to use
      */
-    public static ServiceLocator getServiceLocator(String uniqueName, Class<?>... classes) {
+    public static ServiceLocator getServiceLocator(Class<?>... classes) {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
         
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);

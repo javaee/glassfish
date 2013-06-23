@@ -55,7 +55,7 @@ public class Deadlock1Test {
      */
 	@Test
 	public void testOnProgressCancelDeadlock() {
-		ServiceLocator locator = Utilities.getServiceLocator("Deadlock1Test.testOnProgressCancelDeadlock",
+		ServiceLocator locator = Utilities.getServiceLocator(
 		        DeadLock1Listener.class);
 		
 		RunLevelController rlc = locator.getService(RunLevelController.class);

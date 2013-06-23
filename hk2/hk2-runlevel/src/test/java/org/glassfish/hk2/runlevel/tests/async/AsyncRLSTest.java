@@ -95,7 +95,7 @@ public class AsyncRLSTest {
     @Test
     public void testUpToTwentyAndDownToZero() throws
         ExecutionException, InterruptedException, TimeoutException {
-        ServiceLocator basicLocator = Utilities.getServiceLocator("AsyncRLSTest.basic1",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 LevelFiveService_1.class,
@@ -188,7 +188,7 @@ public class AsyncRLSTest {
     @Test
     public void testYoYo() throws
         ExecutionException, InterruptedException, TimeoutException {
-        ServiceLocator basicLocator = Utilities.getServiceLocator("AsyncRLSTest.basicYoYo",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 LevelFiveService_1.class,
@@ -292,7 +292,7 @@ public class AsyncRLSTest {
     @Test
     public void testUpToTwentyAndDownToZeroWithListeners() throws
         ExecutionException, InterruptedException, TimeoutException {
-        ServiceLocator basicLocator = Utilities.getServiceLocator("AsyncRLSTest.basic2",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 LevelFiveService_1.class,
@@ -358,7 +358,7 @@ public class AsyncRLSTest {
     @Test
     public void testUpAndDownWithAsyncServices() throws
         ExecutionException, InterruptedException, TimeoutException {
-        ServiceLocator basicLocator = Utilities.getServiceLocator("AsyncRLSTest.basic3",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 AsyncService1_1.class,
@@ -410,7 +410,7 @@ public class AsyncRLSTest {
     @Test
     public void testUpAndDownWithAsyncDependentServices() throws
         ExecutionException, InterruptedException, TimeoutException {
-        ServiceLocator basicLocator = Utilities.getServiceLocator("AsyncRLSTest.basic4",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 DependsOnServiceA.class,

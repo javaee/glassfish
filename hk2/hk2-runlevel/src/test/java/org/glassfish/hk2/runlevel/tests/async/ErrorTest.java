@@ -99,7 +99,7 @@ public class ErrorTest {
     public void testErrorUp() throws InterruptedException, TimeoutException, ExecutionException {
         errorOutOfTwoTwo = true;
         
-        ServiceLocator basicLocator = Utilities.getServiceLocator("ErrorTest.basicErrorUp",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 Service1.class,
@@ -191,7 +191,7 @@ public class ErrorTest {
      */
     @Test
     public void testErrorDown() throws InterruptedException, TimeoutException, ExecutionException {
-        ServiceLocator basicLocator = Utilities.getServiceLocator("ErrorTest.basicErrorDown",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 Service1_Down.class,
@@ -288,7 +288,7 @@ public class ErrorTest {
     public void testErrorUpListener() throws InterruptedException, ExecutionException, TimeoutException {
         errorOutOfTwoTwo = true;
         
-        ServiceLocator basicLocator = Utilities.getServiceLocator("ErrorTest.basicErrorUpListener",
+        ServiceLocator basicLocator = Utilities.getServiceLocator(
                 UpRecorder.class,
                 DownRecorder.class,
                 Service1.class,
@@ -320,19 +320,14 @@ public class ErrorTest {
         
         List<Throwable> errorsReported = cancelledListener.getAndPurgeReportedErrors();
         Assert.assertNotNull(errorsReported);
-        Assert.assertEquals(1, errorsReported.size());
+        Assert.assertTrue(errorsReported.size() <=3 && errorsReported.size() >= 1);
         
-        Throwable s22_error = errorsReported.get(0);
+        for (Throwable s22_error : errorsReported) {
+            Assert.assertTrue(s22_error instanceof MultiException);
+            MultiException s22_me = (MultiException) s22_error;
         
-        Assert.assertTrue(s22_error instanceof MultiException);
-        MultiException s22_me = (MultiException) s22_error;
-        
-        Throwable nestedException = s22_me.getErrors().get(0);
-        Assert.assertTrue(nestedException instanceof MultiException);
-        
-        MultiException nestedMe = (MultiException) nestedException;
-        
-        Assert.assertEquals(ERROR_MESSAGE, nestedMe.getErrors().get(0).getMessage());
+            Assert.assertTrue(s22_me.getErrors().get(0).getMessage().contains(ERROR_MESSAGE));
+        }
     }
     
     @RunLevel(ONE) @Service

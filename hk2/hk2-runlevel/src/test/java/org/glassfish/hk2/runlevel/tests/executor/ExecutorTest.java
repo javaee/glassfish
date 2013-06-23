@@ -54,7 +54,7 @@ import org.junit.Test;
 public class ExecutorTest {
     @Test
     public void testCustomExecutor() {
-        ServiceLocator locator = Utilities.getServiceLocator("ExecutorTest.testCustomExecutor",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 ThreadNameRecorderService.class);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
@@ -85,7 +85,7 @@ public class ExecutorTest {
     
     @Test
     public void testGetExecutor() {
-        ServiceLocator locator = Utilities.getServiceLocator("ExecutorTest.testGetExecutor",
+        ServiceLocator locator = Utilities.getServiceLocator(
                 ThreadNameRecorderService.class);
         
         RunLevelController controller = locator.getService(RunLevelController.class);
