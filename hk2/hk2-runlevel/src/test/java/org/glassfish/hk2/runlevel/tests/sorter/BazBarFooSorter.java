@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,40 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.runlevel.tests.sorter;
 
-package org.glassfish.hk2.runlevel;
-
+import java.util.LinkedList;
 import java.util.List;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceHandle;
-import org.jvnet.hk2.annotations.Contract;
-
+import org.glassfish.hk2.runlevel.Sorter;
 
 /**
- * Contract for sorting descriptors for run level services.
- * It should be noted that sorting the handles in a
- * multi-threaded environment is a heuristic in any case,
- * as the threads are scheduled randomly.  Sorting can
- * only be guaranteed in a single threaded or no-threaded
- * case.
+ * @author jwells
  *
- * @author tbeerbower, jwells
  */
-@Contract
-public interface Sorter {
+public class BazBarFooSorter implements Sorter {
 
-    /**
-     * Sort the given list of run level service handles.  This
-     * method will only be called when the run-level is going
-     * up in value.  When going down in value services are always
-     * stopped in the reverse order from which they were started
-     *
-     * @param descriptors the list descriptors to be sorted
-     * @return The list as sorted.  If this returns null then
-     * the list as passed in will be used.  If any of the
-     * service handles returned are not in the run-level
-     * being processed they will be ignored.  This list
-     * may add or remove handles to the list
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.Sorter#sort(java.util.List)
      */
-    public List<ServiceHandle<?>> sort(List<ServiceHandle<?>> descriptors);
+    @Override
+    public List<ServiceHandle<?>> sort(List<ServiceHandle<?>> descriptors) {
+        if (descriptors.size() != 3) return null;
+        
+        ActiveDescriptor<?> descriptor0 = descriptors.get(0).getActiveDescriptor();
+        if (Foo.class.getName().equals(descriptor0.getImplementation())) {
+            // Instead return Baz, Bar, Foo
+            LinkedList<ServiceHandle<?>> retVal = new LinkedList<ServiceHandle<?>>();
+            
+            retVal.addFirst(descriptors.get(0));
+            retVal.addFirst(descriptors.get(1));
+            retVal.addFirst(descriptors.get(2));
+            
+            return retVal;
+        }
+        
+        return null;
+    }
+
 }

@@ -44,17 +44,12 @@ import org.jvnet.hk2.annotations.Contract;
 
 
 /**
- * Implementations of RunLevelController should use this contract for publishing
- * RunLevel events.
- * <p>
  * Instances of classes implementing this contract can be registered with HK2
  * to be informed of events of RunLevelControllers.
  * <p>
- * Note that a RunLevelController implementations may be asynchronous, so
- * RunLevelListeners should be thread safe.  Additionally, you are
- * discouraged from performing lengthy operations in the listener since
+ * Lengthy operations should not be performed in the listener since
  * that may impact the performance of the RunLevelController calling the
- * listener on the same thread.
+ * listener.
  *
  * @author jtrent, tbeerbower
  */
@@ -69,9 +64,9 @@ public interface RunLevelListener {
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
-     * that if the currentJob is currently going up then the levelAchieved will
-     * be the level for which all the services in that level were just started
-     * while when going down the levelAchieved will be the level for which
+     * that if the currentJob is going up then the levelAchieved will
+     * be the level for which all the services in that level were just started.
+     * When going down the levelAchieved will be the level for which
      * all the services ABOVE that level have been shutdown.  In both cases
      * the levelAchieved represents the current level of the system
      */
