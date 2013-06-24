@@ -102,5 +102,35 @@ public class SorterTest {
         }
         
     }
+    
+    /**
+     * Tests that a sorter changes the order
+     */
+    @Test
+    public void testMultipleSorters() {
+        ServiceLocator locator = Utilities.getServiceLocator(Foo.class,
+                Bar.class,
+                Baz.class,
+                BazBarFooSorter.class,
+                BarFooBazSorter.class,
+                RecorderService.class);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setMaximumUseableThreads(1);
+        
+        // Ensure the order without the sorter is as expected
+        controller.proceedTo(1);
+        
+        RecorderService recorder = locator.getService(RecorderService.class);
+        
+        {
+            List<String> withoutSorter = recorder.getRecord();
+            Assert.assertEquals(3, withoutSorter.size());
+        
+            Assert.assertEquals(BAR, withoutSorter.get(0));
+            Assert.assertEquals(FOO, withoutSorter.get(1));
+            Assert.assertEquals(BAZ, withoutSorter.get(2));
+        }
+    }
 
 }

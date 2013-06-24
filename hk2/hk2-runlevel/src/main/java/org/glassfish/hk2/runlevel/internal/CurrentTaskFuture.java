@@ -56,6 +56,7 @@ import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.ErrorInformation;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelListener;
+import org.glassfish.hk2.runlevel.Sorter;
 import org.glassfish.hk2.runlevel.utilities.Utilities;
 
 /**
@@ -74,6 +75,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     private int proposedLevel;
     private final boolean useThreads;
     private final List<ServiceHandle<RunLevelListener>> allListenerHandles;
+    private final List<ServiceHandle<Sorter>> allSorterHandles;
     private final int maxThreads;
     
     private UpAllTheWay upAllTheWay;
@@ -99,6 +101,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         int currentLevel = parent.getCurrentLevel();
         
         allListenerHandles = locator.getAllServiceHandles(RunLevelListener.class);
+        allSorterHandles = locator.getAllServiceHandles(Sorter.class);
         
         if (currentLevel == proposedLevel) {
             done = true;
@@ -106,7 +109,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             parent.jobDone();
         }
         else if (currentLevel < proposedLevel) {
-            upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, maxThreads, useThreads);
+            upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, allSorterHandles, maxThreads, useThreads);
         }
         else {
             downAllTheWay = new DownAllTheWay(proposedLevel, this, allListenerHandles);
@@ -235,13 +238,13 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                     downAllTheWay.setGoingTo(currentLevel, true);  // This will make downAllTheWay stop
                     downAllTheWay = null;
                     
-                    upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, maxThreads, useThreads);
+                    upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, allSorterHandles, maxThreads, useThreads);
                     needGo = true;
                 }
             }
             else {
                 if (proposedLevel > currentLevel) {
-                    upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, maxThreads, useThreads);
+                    upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, allSorterHandles, maxThreads, useThreads);
                     needGo = true;
                 }
                 else if (proposedLevel < currentLevel) {
@@ -398,6 +401,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private final boolean useThreads;
         private final CurrentTaskFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
+        private final List<ServiceHandle<Sorter>> sorters;
         
         private int workingOn;
         private UpOneJob currentJob;
@@ -408,6 +412,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
         private UpAllTheWay(int goingTo, CurrentTaskFuture future,
                 List<ServiceHandle<RunLevelListener>> listeners,
+                List<ServiceHandle<Sorter>> sorters,
                 int maxThreads,
                 boolean useThreads) {
             this.goingTo = goingTo;
@@ -415,6 +420,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             this.listeners = listeners;
             this.maxThreads = maxThreads;
             this.useThreads = useThreads;
+            this.sorters = sorters;
             
             workingOn = parent.getCurrentLevel();
         }
@@ -474,7 +480,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                         return;
                     }
             
-                    currentJob = new UpOneJob(workingOn, this, future, listeners, maxThreads);
+                    currentJob = new UpOneJob(workingOn, this, future, listeners, sorters, maxThreads);
             
                     executor.execute(currentJob);
                     return;
@@ -486,7 +492,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 synchronized (lock) {
                     if (done) break;
                     
-                    currentJob = new UpOneJob(workingOn, this, future, listeners, 0);
+                    currentJob = new UpOneJob(workingOn, this, future, listeners, sorters, 0);
                 }
                 
                 currentJob.run();
@@ -565,6 +571,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private final int upToThisLevel;
         private final CurrentTaskFuture currentTaskFuture;
         private final List<ServiceHandle<RunLevelListener>> listeners;
+        private final List<ServiceHandle<Sorter>> sorters;
         private final UpAllTheWay master;
         private final int maxThreads;
         private int numJobs;
@@ -577,12 +584,14 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 UpAllTheWay master,
                 CurrentTaskFuture currentTaskFuture,
                 List<ServiceHandle<RunLevelListener>> listeners,
+                List<ServiceHandle<Sorter>> sorters,
                 int maxThreads) {
             this.upToThisLevel = paramUpToThisLevel;
             this.master = master;
             this.maxThreads = maxThreads;
             this.currentTaskFuture = currentTaskFuture;
             this.listeners = listeners;
+            this.sorters = sorters;
         }
         
         private void cancel() {
@@ -601,6 +610,22 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
         private int getJobsRunning() {
             return numJobsRunning;
+        }
+        
+        private List<ServiceHandle<?>> applySorters(List<ServiceHandle<?>> jobs) {
+            List<ServiceHandle<?>> retVal = jobs;
+            
+            for (ServiceHandle<Sorter> sorterHandle : sorters) {
+                Sorter sorter = sorterHandle.getService();
+                if (sorter == null) continue;
+                
+                List<ServiceHandle<?>> sortedList = sorter.sort(retVal);
+                if (sortedList == null) continue;
+                
+                retVal = sortedList;
+            }
+            
+            return retVal;
         }
 
         @Override
@@ -624,6 +649,8 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
                 
             });
+            
+            jobs = applySorters(jobs);
             
             numJobs = jobs.size();
             if (numJobs <= 0) {
