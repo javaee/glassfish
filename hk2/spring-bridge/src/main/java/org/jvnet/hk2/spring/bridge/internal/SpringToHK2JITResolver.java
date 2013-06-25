@@ -37,61 +37,71 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.internal;
+package org.jvnet.hk2.spring.bridge.internal;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.HashSet;
-import java.util.Set;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-
-import com.google.inject.Binding;
-import com.google.inject.Injector;
-import com.google.inject.Key;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 
 /**
  * @author jwells
  *
  */
 @Singleton
-public class GuiceToHk2JITResolver implements JustInTimeInjectionResolver {
+public class SpringToHK2JITResolver implements JustInTimeInjectionResolver {
     private final ServiceLocator locator;
-    private final Injector guiceInjector;
+    private final BeanFactory beanFactory;
     
-    /* package */ GuiceToHk2JITResolver(ServiceLocator locator,
-            Injector guiceInjector) {
+    /* package */ SpringToHK2JITResolver(ServiceLocator locator, BeanFactory beanFactory) {
         this.locator = locator;
-        this.guiceInjector = guiceInjector;
+        this.beanFactory = beanFactory;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public boolean justInTimeResolution(Injectee failedInjectionPoint) {
+        Class<?> lookForMe = getClassFromType(failedInjectionPoint.getRequiredType());
+        String name = getName(failedInjectionPoint);
+        
+        try {
+            if (name != null) {
+                if (beanFactory.containsBean(name) && beanFactory.isTypeMatch(name, lookForMe)) {
+                    
+                }
+            }
+            else {
+                if (beanFactory instanceof ListableBeanFactory) {
+                    ListableBeanFactory listable = (ListableBeanFactory) beanFactory;
+                    
+                }
+            }
+        }
+        catch (Throwable th) {
+            return false;
+        }
+        
+        return false;
     }
     
-    /**
-     * This tries every qualifier in the injectee
-     * @param injectee The injectee to look for a binding for
-     * @return The binding found, or null if none could be found
-     */
-    private Binding<?> findBinding(Injectee injectee) {
-        if (injectee.getRequiredQualifiers().isEmpty()) {
-            Key<?> key = Key.get(injectee.getRequiredType());
+    private static String getName(Injectee injectee) {
+        for (Annotation anno : injectee.getRequiredQualifiers()) {
+            if (Named.class.equals(anno.annotationType())) {
+                Named named = (Named) anno;
+                
+                return named.value();
+            }
             
-            return guiceInjector.getExistingBinding(key);
-        }
-        
-        if (injectee.getRequiredQualifiers().size() > 1) {
-            return null;
-        }
-        
-        for (Annotation annotation : injectee.getRequiredQualifiers()) {
-            Key<?> key = Key.get(injectee.getRequiredType(), annotation);
-            
-            Binding<?> retVal = guiceInjector.getExistingBinding(key);
-            if (retVal != null) return retVal;
         }
         
         return null;
@@ -104,7 +114,7 @@ public class GuiceToHk2JITResolver implements JustInTimeInjectionResolver {
      * @return The class associated with this type, or null
      * if the class cannot be found
      */
-    public static Class<?> getClassFromType(Type type) {
+    private static Class<?> getClassFromType(Type type) {
         if (type instanceof Class) return (Class<?>) type;
         if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
@@ -113,31 +123,6 @@ public class GuiceToHk2JITResolver implements JustInTimeInjectionResolver {
         }
         
         return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Injectee)
-     */
-    @Override
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public boolean justInTimeResolution(Injectee failedInjectionPoint) {
-        
-        Class<?> implClass = getClassFromType(failedInjectionPoint.getRequiredType());
-        if (implClass == null) return false;
-        
-        Binding<?> binding = findBinding(failedInjectionPoint);
-        if (binding == null) return false;
-        
-        HashSet<Type> contracts = new HashSet<Type>();
-        contracts.add(failedInjectionPoint.getRequiredType());
-        
-        Set<Annotation> qualifiers = new HashSet<Annotation>(failedInjectionPoint.getRequiredQualifiers());
-        
-        GuiceServiceHk2Bean guiceBean = new GuiceServiceHk2Bean(contracts, qualifiers, implClass, binding);
-        
-        ServiceLocatorUtilities.addOneDescriptor(locator, guiceBean);
-        
-        return true;
     }
 
 }

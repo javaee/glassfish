@@ -123,6 +123,7 @@
                <module>../examples</module>
                <module>../hk2-testing</module>
                <module>../guice-bridge</module>
+               <module>../spring-bridge</module>
                <module>../hk2</module>
           </modules>
        </profile>
