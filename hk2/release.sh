@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+]#!/bin/bash -ex
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
@@ -96,5 +96,5 @@ ARGS=" $*"
 # everything supplied as argument will be provided to every maven command ran.
 # e.g to supplied -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
 
-mvn -B -e release:prepare -DpreparationGoals='install `echo $ARGS`' $ARGS -Prelease
-mvn -B -e release:perform -Dgoals='deploy `echo $ARGS`' $ARGS -Prelease
+mvn -B -e release:prepare -DpreparationGoals="'install' $ARGS" $ARGS -Prelease
+mvn -B -e release:perform -Dgoals="'deploy' $ARGS" $ARGS -Prelease
