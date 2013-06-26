@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -39,66 +39,42 @@
 # holder.
 #
 
-# Script to perform a new release with automatic version increment.
-# This script is meant to be run from Hudson.
+#------------------------------------------------------   
+#-- BE SURE TO HAVE THE FOLLOWING IN YOUR SETTINGS.XML
+#------------------------------------------------------
 #
-# Because of the tricky dependency inside HK2, where a part of the build (hk2/hk2 in particular)
-# uses another part of the build (hk2-maven-plugin) as a build extension,
-# normal "mvn -B release:prepare release:perform" fails.
-#
-# This script works around this issue, and that's why it's very non-obvious.
+#    <servers>
+#        <server>
+#            <id>jvnet-nexus-staging</id>
+#            <username>jvnet_id</username>
+#            <password>password</password>
+#        </server>
+#    </servers>
+#    <profiles>
+#      <profile>
+#        <id>release</id>
+#        <properties>
+#          <user.name>jvnet_id</user.name>
+#          <release.arguments>-Dhttps.proxyHost=www-proxy.us.oracle.com -Dhttps.proxyPort=80 -Dgpg.passphrase=glassfish</release.arguments>
+#        </properties>
+#        <activation>
+#          <activeByDefault>false</activeByDefault>
+#        </activation>
+#      </profile>
+#    </profiles>
 
-# To protect the release from interference with other builds in this system,
-# use a private copy of the local repository. This avoids a JVM crash and
-# other mysterious zip/jar related errors
+# see the following URL for gpg issues
+# https://docs.sonatype.org/display/Repository/How+To+Generate+PGP+Signatures+With+Maven#HowToGeneratePGPSignaturesWithMaven-GenerateaKeyPair
 
-# The first parameter is settings.xml.  If not set, then it assume that settings.xml is in ~/.m2/
-    RELEASE_OPTIONS=""
-if [ $# -eq 1 ]; then
-    RELEASE_OPTS="$1"
-fi
-export RELEASE_OPTS
+# login to nexus at maven.java.net, using your jvnet crendentials, and release (Close) the artifact
+# https://maven.java.net/index.html#stagingRepositories
 
-MAVEN_OPTS="-Xmx256m -Dmaven.repo.local=$PWD/repo"
-export MAVEN_OPTS
+# More information:
+# https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-8.ReleaseIt
+# http://aseng-wiki.us.oracle.com/asengwiki/display/GlassFish/Migrating+Maven+deployment+to+maven.java.net
 
-uname -a
+# Note: the release process may use ssh key to interact with the SCM. If so, it will use your user.name as define in the release profile of your settings.xml.
+# Be sure to have your ssh public key exported in your java.net account.
 
-# don't let the crash logs fail the release
-rm hs_err*.log || true
-
-# First, get to the base line. This is probably not a requirement.
-mvn -P release-phase1 install
-mvn clean install
-
-# clean previous release attempt
-mvn release:clean
-
-# This starts the release preparation, but it eventually fails because
-# it's unable to resolve the maven-hk2-plugin that the release is going to build.
-mvn -e -B -DuseEditMode=true -P release ${RELEASE_OPTS} release:prepare || true
-
-# At this point local POM has the release version set,
-# so we build it, in particular maven-hk2-plugin.
-mvn -e -P release-phase1 install
-
-# On one occasion I got the next release:prepare to fail, due to missing hk2:<RELEASE VER>:jar
-# so just to be safe, fill the local repository with release versions first.
-mvn -e install
-
-# Now retry release:prepare and this shall run to the completion
-mvn -e -B -DuseEditMode=true -P release ${RELEASE_OPTS} release:prepare
-
-# At this point POM has the next SNAPSHOT version set,
-# and unless I build maven-hk2-plugin again, the POM fails to load
-# when we run "release:perform" later. So do the build again.
-mvn -DskipTests -e -P release-phase1 install
-
-# finally a release
-mvn -e -B -P release-modules,release ${RELEASE_OPTS} release:perform
-
-
-# Once the bits are pushed and made visible, you just need to change v3/pom.xml <hk2.version> property
-# and GFv3 will pick up the new version of HK2.
-
-# Boy, Maven sucks!
+mvn -B -e release:prepare -DpreparationGoals='install' -Prelease
+mvn -B -e release:perform -Dgoals='deploy' -Prelease
