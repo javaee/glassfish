@@ -1,4 +1,4 @@
-#!/bin/sh -ex
+#!/bin/bash -ex
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
@@ -76,5 +76,9 @@
 # Note: the release process may use ssh key to interact with the SCM. If so, it will use your user.name as define in the release profile of your settings.xml.
 # Be sure to have your ssh public key exported in your java.net account.
 
-mvn -B -e release:prepare -DpreparationGoals='install' -Prelease
-mvn -B -e release:perform -Dgoals='deploy' -Prelease
+ARGS="$*"
+# everything supplied as argument will be provided to every maven command ran.
+# e.g to supplied -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
+
+mvn -B -e release:prepare -DpreparationGoals='install $ARGS' $ARGS -Prelease
+mvn -B -e release:perform -Dgoals='deploy $ARGS' $ARGS -Prelease
