@@ -172,7 +172,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <useReleaseProfile>false</useReleaseProfile>
-                    <arguments>${release.arguments} -Prelease-profile</arguments>
+                    <arguments>${release.arguments} -Prelease</arguments>
                 </configuration>
             </plugin>
             <plugin>
@@ -285,20 +285,12 @@
   
     <profiles>
         <profile>
-            <!-- 
-              this profile is used to update versions of modules
-              that are not part of the default reactor 
-            -->
-            <id>release-phase-all</id>
-        </profile>
-        <profile>
             <id>build</id>
             <activation>
                 <property>
                     <name>!site</name>
                 </property>
             </activation>
-
             <modules>
                 <module>build</module>
                 <module>public</module>
@@ -313,7 +305,6 @@
                     <name>site</name>
                 </property>
             </activation>
-
             <modules>
                 <module>build</module>
                 <module>public</module>
@@ -321,7 +312,7 @@
             </modules>
         </profile>
         <profile>
-            <id>release-profile</id>
+            <id>release</id>
             <build>
                 <plugins>
                     <plugin>
