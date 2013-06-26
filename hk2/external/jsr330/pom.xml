@@ -41,88 +41,29 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>    
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>external</artifactId>
         <version>2.2.0-b10-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.hk2.external</groupId>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>javax.inject</artifactId>
-    <!-- Don't use bundle packaging. There are issues in using
-         maven-bundle-plugin and hk2-maven-plugin together -->
-    <packaging>jar</packaging>
-    <properties>
-      <javax.inject.version>1</javax.inject.version>
-    </properties>
+
     <name>Injection API (JSR 330) version ${javax.inject.version} repackaged as OSGi bundle</name>
+
+    <properties>
+        <javax.inject.version>1</javax.inject.version>
+    </properties>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                             <!-- 
-                                 Actually there is no need to any of the implementation stuff, but 
-                                 because of a bug in Hibernate Validator, where in it uses thread's context
-                                 class loader to load implementation classes, we have to export implementation
-                                 packages so that our special context class loader can find them.
-                                 See http://opensource.atlassian.com/projects/hibernate/browse/HV-363
-                             -->
-                             javax.inject.*; version=${javax.inject.version} 
-                        </Export-Package>
-
-                       <Implementation-Version>
-                         ${javax.inject.version}
-                       </Implementation-Version>
-                    </instructions>
-                    <!-- Maven uses the output directory (target/classes)
-                    rather than the final bundle, when compiling against
-                    projects in the same reactor (ie. the same build).
-                    Since this jar comprises of classes that come from
-                    some other jar and other modules depend on this
-                    artifact, we need to unpack.
-                    -->
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/alternateLocation</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>get-sources</id>
+                        <id>step1-unpack-sources</id>
                         <phase>process-sources</phase>
                         <goals>
                             <goal>unpack</goal>
@@ -142,12 +83,64 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>step2-add-sources</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/alternateLocation</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <configuration>
+                    <instructions>
+                        <Export-Package>
+                            <!-- 
+                                Actually there is no need to any of the implementation stuff, but 
+                                because of a bug in Hibernate Validator, where in it uses thread's context
+                                class loader to load implementation classes, we have to export implementation
+                                packages so that our special context class loader can find them.
+                                See http://opensource.atlassian.com/projects/hibernate/browse/HV-363
+                            -->
+                            javax.inject.*; version=${javax.inject.version} 
+                        </Export-Package>
+                        <Implementation-Version>${javax.inject.version}</Implementation-Version>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>osgi-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
+    
     <dependencies>
-        <!-- Mark them as optional so that GF distribution mechanism
-             won't package them. It is sufficient to package the wrapped jar.
-        -->
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -155,14 +148,4 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-    <developers>
-        <developer>
-            <id>dochez</id>
-            <name>Jerome Dochez</name>
-            <organization>Oracle Corp.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 </project>
