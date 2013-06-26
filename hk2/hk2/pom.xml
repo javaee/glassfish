@@ -52,17 +52,7 @@
     <description>This is so that other modules can depend on HK2 as an HK2 module.</description>
 
     <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-            <configuration>
-                <includePom>true</includePom>
-                <includes>
-                    <include>pom.xml</include>
-                </includes>
-            </configuration>
-          </plugin>            
+        <plugins>       
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
