@@ -76,10 +76,6 @@
 # Note: the release process may use ssh key to interact with the SCM. If so, it will use your user.name as define in the release profile of your settings.xml.
 # Be sure to have your ssh public key exported in your java.net account.
 
-ARGS="$*"
-# everything supplied as argument will be provided to every maven command ran.
-# e.g to supplied -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
-
 CURRENT_VERSION=`grep "<version>" hk2/pom.xml | head -1 | sed -Ee 's/.*<version>(.*)<\/version>/\1/'`
 NEXT_RELEASE_VERSION=`echo $CURRENT_VERSION | sed s@"-SNAPSHOT"@@g`
 NEXT_RELEASE_TAG="hk2-parent-$NEXT_RELEASE_VERSION"
@@ -96,5 +92,9 @@ then
    set -e
 fi
 
-mvn -B -e release:prepare -DpreparationGoals='install $ARGS' $ARGS -Prelease
-mvn -B -e release:perform -Dgoals='deploy $ARGS' $ARGS -Prelease
+ARGS=" $*"
+# everything supplied as argument will be provided to every maven command ran.
+# e.g to supplied -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
+
+mvn -B -e release:prepare -DpreparationGoals='install `echo $ARGS`' $ARGS -Prelease
+mvn -B -e release:perform -Dgoals='deploy `echo $ARGS`' $ARGS -Prelease
