@@ -82,6 +82,7 @@ NEXT_RELEASE_TAG="hk2-parent-$NEXT_RELEASE_VERSION"
 
 # remove local commits
 git reset --hard
+
 # remove unversioned files
 git status | grep "\#" | awk '{print $2}' | xargs rm -rf
 
@@ -95,8 +96,8 @@ then
 fi
 
 ARGS=" $*"
-# everything supplied as argument will be provided to every maven command ran.
-# e.g to supplied -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
+# everything supplied as argument will be provided to every maven command.
+# e.g to supply -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
 
 mvn -B -e release:prepare -DpreparationGoals="'install' $ARGS" $ARGS -Prelease
 mvn -B -e release:perform -Dgoals="'deploy' $ARGS" $ARGS -Prelease
