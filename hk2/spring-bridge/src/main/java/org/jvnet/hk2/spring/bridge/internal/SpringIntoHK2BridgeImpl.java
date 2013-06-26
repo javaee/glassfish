@@ -37,80 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.internal;
+package org.jvnet.hk2.spring.bridge.internal;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.DescriptorType;
-import org.glassfish.hk2.api.DescriptorVisibility;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.jvnet.hk2.guice.bridge.api.GuiceScope;
-
-import com.google.inject.Binding;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.jvnet.hk2.spring.bridge.api.SpringIntoHK2Bridge;
+import org.springframework.beans.factory.BeanFactory;
 
 /**
- *
- * @param <T> The cache type
  * @author jwells
+ *
  */
-public class GuiceServiceHk2Bean<T> extends AbstractActiveDescriptor<T> {
-    /**
-     * For serialization
-     */
-    private static final long serialVersionUID = 4339256124914729858L;
-    
-    private Class<?> implClass = null;
-    private Binding<T> binding = null;
-    
-    /**
-     * For serialization
-     */
-    public GuiceServiceHk2Bean() {
-    }
-    
-    /* package */ GuiceServiceHk2Bean(
-            Set<Type> contracts,
-            Set<Annotation> qualifiers,
-            Class<?> implClass,
-            Binding<T> binding) {
-        super(contracts,
-                GuiceScope.class,
-                (String) null,
-                qualifiers,
-                DescriptorType.CLASS,
-                DescriptorVisibility.NORMAL,
-                0,
-                new Boolean(false),
-                null,
-                (String) null,
-                new HashMap<String, List<String>>()
-               );
-        
-        this.implClass = implClass;
-        super.setImplementation(implClass.getName());
-        
-        this.binding = binding;
-    }
+@Singleton
+public class SpringIntoHK2BridgeImpl implements SpringIntoHK2Bridge {
+    @Inject
+    private ServiceLocator serviceLocator;
 
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.spring.bridge.api.SpringIntoHK2Bridge#bridgeSpringBeanFactory(org.springframework.beans.factory.BeanFactory)
+     */
     @Override
-    public Class<?> getImplementationClass() {
-        return implClass;
-    }
-
-    @Override
-    public T create(ServiceHandle<?> root) {
-        T retVal = binding.getProvider().get();
-        return retVal;
-    }
-    
-    @Override
-    public String toString() {
-        return "GuiceServiceHk2Bean( " + super.toString() + ")";
+    public void bridgeSpringBeanFactory(BeanFactory beanFactory) {
+        SpringToHK2JITResolver resolver = new SpringToHK2JITResolver(serviceLocator, beanFactory);
+        
+        ServiceLocatorUtilities.addOneConstant(serviceLocator, resolver);
     }
 
 }

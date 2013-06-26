@@ -42,6 +42,8 @@ package org.jvnet.hk2.spring.bridge.internal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -49,8 +51,8 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.ListableBeanFactory;
 
 /**
  * @author jwells
@@ -65,6 +67,22 @@ public class SpringToHK2JITResolver implements JustInTimeInjectionResolver {
         this.locator = locator;
         this.beanFactory = beanFactory;
     }
+    
+    private void addMe(Class<?> lookForMe, String name, Injectee injectee) {
+        HashSet<Type> contracts = new HashSet<Type>();
+        contracts.add(injectee.getRequiredType());
+        
+        Set<Annotation> qualifiers = new HashSet<Annotation>(injectee.getRequiredQualifiers());
+        
+        SpringServiceHK2Bean<Object> springHK2Bean = new SpringServiceHK2Bean<Object>(
+                name,
+                contracts,
+                qualifiers,
+                lookForMe,
+                beanFactory);
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, springHK2Bean, false);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Injectee)
@@ -77,14 +95,16 @@ public class SpringToHK2JITResolver implements JustInTimeInjectionResolver {
         try {
             if (name != null) {
                 if (beanFactory.containsBean(name) && beanFactory.isTypeMatch(name, lookForMe)) {
-                    
+                    addMe(lookForMe, name, failedInjectionPoint);
+                    return true;
                 }
             }
             else {
-                if (beanFactory instanceof ListableBeanFactory) {
-                    ListableBeanFactory listable = (ListableBeanFactory) beanFactory;
-                    
+                if (beanFactory.getBean(lookForMe) != null) {
+                    addMe(lookForMe, name, failedInjectionPoint);
+                    return true;
                 }
+                
             }
         }
         catch (Throwable th) {

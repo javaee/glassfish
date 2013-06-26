@@ -37,26 +37,75 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.spring.bridge.test;
+package org.jvnet.hk2.spring.bridge.internal;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
+import org.glassfish.hk2.api.DescriptorType;
+import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.jvnet.hk2.spring.bridge.api.SpringScope;
+import org.springframework.beans.factory.BeanFactory;
 
 /**
+ * @param <T> Type of cache
+ *  
  * @author jwells
  *
  */
-@Singleton
-public class HK2ServiceWithSpringServiceInjected {
-    @Inject
-    private SpringService fromSpring;
+public class SpringServiceHK2Bean<T> extends AbstractActiveDescriptor<T> {
+    private Class<?> byType;
+    private BeanFactory factory;
     
     /**
-     * Returns a message from the embedded Spring service
-     * 
-     * @return A message from the embedded Spring service
+     * For serialization
      */
-    public String check() {
-        return fromSpring.helloWorld();
+    public SpringServiceHK2Bean() {
+        
     }
+    
+    /* package */ SpringServiceHK2Bean(
+            String name,
+            Set<Type> contracts,
+            Set<Annotation> qualifiers,
+            Class<?> byType,
+            BeanFactory factory) {
+        super(contracts,
+                SpringScope.class,
+                name,
+                qualifiers,
+                DescriptorType.CLASS,
+                DescriptorVisibility.NORMAL,
+                0,
+                new Boolean(false),
+                null,
+                (String) null,
+                new HashMap<String, List<String>>()
+               );
+        
+        this.byType = byType;
+        super.setImplementation(byType.getName());
+        this.factory = factory;
+    }
+
+    @Override
+    public Class<?> getImplementationClass() {
+        return byType;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T create(ServiceHandle<?> root) {
+        if (getName() != null) {
+            return (T) factory.getBean(getName(), byType);
+        }
+        
+        return (T) factory.getBean(byType);
+    }
+
 }

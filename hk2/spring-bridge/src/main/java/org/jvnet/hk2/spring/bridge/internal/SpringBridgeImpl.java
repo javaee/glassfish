@@ -39,9 +39,13 @@
  */
 package org.jvnet.hk2.spring.bridge.internal;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.spring.bridge.api.SpringBridge;
+import org.jvnet.hk2.spring.bridge.api.SpringIntoHK2Bridge;
 
 /**
  * @author jwells
@@ -55,7 +59,32 @@ public class SpringBridgeImpl extends SpringBridge {
     @Override
     public void initializeSpringBridge(ServiceLocator locator)
             throws MultiException {
-        throw new AssertionError("initializeSpringBridge not yet implemented");
+        boolean addService = true;
+        if (locator.getBestDescriptor(BuilderHelper.createContractFilter(SpringIntoHK2Bridge.class.getName())) != null) {
+            addService = false;
+        }
+        
+        boolean addContext = true;
+        if (locator.getBestDescriptor(BuilderHelper.createContractFilter(SpringScopeContext.class.getName())) != null) {
+            addContext = false;
+        }
+        
+        if (addService == false && addContext == false) return;
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        if (dcs == null) return;
+        
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        if (addService) {
+            config.addActiveDescriptor(SpringIntoHK2BridgeImpl.class);
+        }
+        
+        if (addContext) {
+            config.addActiveDescriptor(SpringScopeContext.class);
+        }
+        
+        config.commit();
     }
 
 }

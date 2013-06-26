@@ -37,80 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.internal;
+package org.jvnet.hk2.spring.bridge.test.spring2hk2;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import junit.framework.Assert;
 
-import org.glassfish.hk2.api.DescriptorType;
-import org.glassfish.hk2.api.DescriptorVisibility;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.jvnet.hk2.guice.bridge.api.GuiceScope;
-
-import com.google.inject.Binding;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.junit.Test;
+import org.jvnet.hk2.spring.bridge.api.SpringIntoHK2Bridge;
+import org.jvnet.hk2.spring.bridge.test.utilities.Utilities;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
- *
- * @param <T> The cache type
+ * Tests for the spring-hk2 bridge
+ * 
  * @author jwells
+ *
  */
-public class GuiceServiceHk2Bean<T> extends AbstractActiveDescriptor<T> {
-    /**
-     * For serialization
-     */
-    private static final long serialVersionUID = 4339256124914729858L;
-    
-    private Class<?> implClass = null;
-    private Binding<T> binding = null;
+public class SpringBridgeTest {
+    /* package */ final static String HELLO_WORLD = "hello world";
     
     /**
-     * For serialization
+     * Tests that a basic (unnamed) Injection point works properly
      */
-    public GuiceServiceHk2Bean() {
-    }
-    
-    /* package */ GuiceServiceHk2Bean(
-            Set<Type> contracts,
-            Set<Annotation> qualifiers,
-            Class<?> implClass,
-            Binding<T> binding) {
-        super(contracts,
-                GuiceScope.class,
-                (String) null,
-                qualifiers,
-                DescriptorType.CLASS,
-                DescriptorVisibility.NORMAL,
-                0,
-                new Boolean(false),
-                null,
-                (String) null,
-                new HashMap<String, List<String>>()
-               );
+    @Test
+    public void testSpringBeanIntoHk2() {
+        ServiceLocator locator = Utilities.createSpringTestLocator(
+                "spring-test-beans.xml",
+                HK2ServiceWithSpringServiceInjected.class);
         
-        this.implClass = implClass;
-        super.setImplementation(implClass.getName());
+        HK2ServiceWithSpringServiceInjected hswssi = locator.getService(
+                HK2ServiceWithSpringServiceInjected.class);
+        Assert.assertNotNull(hswssi);
         
-        this.binding = binding;
+        Assert.assertEquals(HELLO_WORLD, hswssi.check());
+        
     }
-
-    @Override
-    public Class<?> getImplementationClass() {
-        return implClass;
-    }
-
-    @Override
-    public T create(ServiceHandle<?> root) {
-        T retVal = binding.getProvider().get();
-        return retVal;
-    }
-    
-    @Override
-    public String toString() {
-        return "GuiceServiceHk2Bean( " + super.toString() + ")";
-    }
-
 }

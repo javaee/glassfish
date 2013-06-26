@@ -37,24 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.spring.bridge.test;
-
-import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+package org.jvnet.hk2.spring.bridge.test.spring2hk2;
 
 /**
- * Tests for the spring-hk2 bridge
+ * This service is instantiated by spring
  * 
  * @author jwells
  *
  */
-public class SpringBridgeTest {
-    /* package */ final static String HELLO_WORLD = "hello world";
-    
-    @Test
-    public void testSpringBeanIntoHk2() {
-        ApplicationContext context = new ClassPathXmlApplicationContext("spring-test-beans.xml");
+public class SpringService {
+    /**
+     * Returns a nice message for everyone
+     * 
+     * @return a nice message
+     */
+    public String helloWorld() {
+        return SpringBridgeTest.HELLO_WORLD;
         
     }
 }

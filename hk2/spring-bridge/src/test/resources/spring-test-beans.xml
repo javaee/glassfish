@@ -3,6 +3,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
  
-	<bean id="testBean" class="org.jvnet.hk2.spring.bridge.test.SpringService"/>
+	<bean id="testBean" class="org.jvnet.hk2.spring.bridge.test.spring2hk2.SpringService"/>
  
 </beans>
