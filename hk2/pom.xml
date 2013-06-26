@@ -137,23 +137,22 @@
     </mailingLists>
 
     <scm>
-      <connection>scm:git:ssh://${user.name}@git.java.net/hk2~git</connection>
-      <developerConnection>scm:git:ssh://${user.name}@git.java.net/hk2~git</developerConnection>
-      <url>ssh://${user.name}@git.java.net/hk2~git</url>
-      <tag>hk2-parent-2.2.0-b08</tag>
-  </scm>
+        <connection>scm:git:ssh://${user.name}@git.java.net/hk2~git</connection>
+        <developerConnection>scm:git:ssh://${user.name}@git.java.net/hk2~git</developerConnection>
+        <url>ssh://${user.name}@git.java.net/hk2~git</url>
+    </scm>
 
     <build>
         <plugins>
-	   <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-eclipse-plugin</artifactId>
-              <version>2.9</version>
-              <configuration>
-                 <downloadSources>true</downloadSources>
-                 <downloadJavadocs>true</downloadJavadocs>
-              </configuration>
-           </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
@@ -226,46 +225,46 @@
             </plugin>
         </plugins>
         <pluginManagement>
-             <plugins>
-                 <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-source-plugin</artifactId>
-                     <version>2.1.2</version>                     
-                 </plugin>
-                 <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-deploy-plugin</artifactId>
-                     <version>2.7</version>
-                     <configuration>
-                         <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
-                     </configuration>
-                 </plugin>
-                 <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-javadoc-plugin</artifactId>
-                     <version>2.9</version>                     
-                 </plugin>
-                 <plugin>
-                     <groupId>org.apache.maven.plugins</groupId>
-                     <artifactId>maven-jar-plugin</artifactId>
-                     <version>2.4</version>                     
-                 </plugin>
-                 <plugin>
-                     <groupId>org.apache.felix</groupId>
-                     <artifactId>maven-bundle-plugin</artifactId>
-                     <version>2.3.4</version>
-                     <configuration>
-                         <!-- By default, we don't export anything.
-                         -->
-                         <Export-Package />
-                         <instructions>
-                             <!-- Read all the configuration from osgi.bundle file, if it exists.
-                                  See Felix-699 to find out why we use ${basedir}.
-                             -->
-                             <_include>-${basedir}/osgi.bundle</_include>
-                         </instructions>
-                     </configuration>
-                 </plugin>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.2</version>                     
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                    <configuration>
+                        <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>2.9</version>                     
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>                     
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>2.3.4</version>
+                    <configuration>
+                        <!-- By default, we don't export anything.
+                        -->
+                        <Export-Package />
+                        <instructions>
+                            <!-- Read all the configuration from osgi.bundle file, if it exists.
+                                 See Felix-699 to find out why we use ${basedir}.
+                            -->
+                            <_include>-${basedir}/osgi.bundle</_include>
+                        </instructions>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
@@ -276,54 +275,54 @@
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>1.7</version>
                 </plugin>
-             </plugins>
+            </plugins>
         </pluginManagement>
         <extensions>
-                <extension>
-                        <groupId>org.apache.maven.wagon</groupId>
-                        <artifactId>wagon-webdav-jackrabbit</artifactId>
-                        <version>2.0</version>
-                </extension>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav-jackrabbit</artifactId>
+                <version>2.0</version>
+            </extension>
         </extensions>
     </build>
   
-  <profiles>
-      <profile>
-          <!-- 
-            this profile is used to update versions of modules
-            that are not part of the default reactor 
-          -->
+    <profiles>
+        <profile>
+            <!-- 
+              this profile is used to update versions of modules
+              that are not part of the default reactor 
+            -->
             <id>release-phase-all</id>
         </profile>
 
         <profile>
             <id>build</id>
             <activation>
-              <property>
-                <name>!site</name>
-              </property>
+                <property>
+                    <name>!site</name>
+                </property>
             </activation>
 
             <modules>
-              <module>build</module>
-              <module>public</module>
-              <module>kernel</module>
-              <module>bom</module>
+                <module>build</module>
+                <module>public</module>
+                <module>kernel</module>
+                <module>bom</module>
             </modules>
         </profile>
 
         <profile>
             <id>site</id>
             <activation>
-              <property>
-                <name>site</name>
-              </property>
+                <property>
+                    <name>site</name>
+                </property>
             </activation>
 
             <modules>
-              <module>build</module>
-              <module>public</module>
-              <module>kernel</module>
+                <module>build</module>
+                <module>public</module>
+                <module>kernel</module>
             </modules>
         </profile>
     </profiles>
@@ -336,10 +335,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-          <groupId>org.easymock</groupId>
-          <artifactId>easymock</artifactId>
-          <version>3.0</version>
-          <scope>test</scope>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -352,31 +351,31 @@
         <site.url>dav:https://website.java.net/website/hk2</site.url>
     </properties>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.2</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <!--
-                 Maven release process fails with NPE when a dependency report generation
-                 tries to obtain a POM for the system-scope Artifact.
-		 See MPIR-37 for the bug report. Kohsuke to file a bug report on this
-		 with a proposed patch.
-              -->
-              <!--report>dependencies</report-->
-              <report>project-team</report>
-              <report>mailing-list</report>
-              <report>cim</report>
-              <report>issue-tracking</report>
-              <report>license</report>
-              <report>scm</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
+    <reporting>
+        <plugins>
+            <plugin>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.2</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <!--
+                               Maven release process fails with NPE when a dependency report generation
+                               tries to obtain a POM for the system-scope Artifact.
+                               See MPIR-37 for the bug report. Kohsuke to file a bug report on this
+                               with a proposed patch.
+                            -->
+                            <!--report>dependencies</report-->
+                            <report>project-team</report>
+                            <report>mailing-list</report>
+                            <report>cim</report>
+                            <report>issue-tracking</report>
+                            <report>license</report>
+                            <report>scm</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -400,11 +399,11 @@
     </reporting>
 
     <repositories>
-	<repository>
-	    <id>spring-external</id>
-	    <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
-	    <url>http://repository.springsource.com/maven/bundles/external</url>
-	</repository>
+        <repository>
+            <id>spring-external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -414,7 +413,7 @@
             <name>Java.net Nexus Snapshots Repository</name>
             <url>https://maven.java.net/content/repositories/snapshots</url>
             <releases>
-               <enabled>false</enabled>
+                <enabled>false</enabled>
             </releases>
             <snapshots>
                 <enabled>true</enabled>
@@ -427,6 +426,5 @@
             <id>svn.java.net</id>
             <url>${site.url}</url>
         </site>
-     </distributionManagement>
-
+    </distributionManagement>
 </project>
