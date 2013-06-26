@@ -82,6 +82,8 @@ NEXT_RELEASE_TAG="hk2-parent-$NEXT_RELEASE_VERSION"
 
 # remove local commits
 git reset --hard
+# remove unversioned files
+git status | grep "\#" | awk '{print $2}' | xargs rm -rf
 
 # remove tag if exist
 if [ `git tag | grep $NEXT_RELEASE_TAG | wc -l` -eq 1 ]
