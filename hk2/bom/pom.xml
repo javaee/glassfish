@@ -51,11 +51,11 @@
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-bom</artifactId>
-    <version>2.2.0-b08-SNAPSHOT</version>
+    <version>2.2.0-b08</version>
     <packaging>pom</packaging>
     
     <properties>
-        <release.arguments></release.arguments>
+        <release.arguments />
         <javax.validation.version>1.1.0.Final</javax.validation.version>
         <hibernate-validator.version>5.0.0.Final</hibernate-validator.version>
     </properties>
@@ -364,4 +364,8 @@
             </plugins>
         </pluginManagement>
     </build>
+
+  <scm>
+    <tag>hk2-parent-2.2.0-b08</tag>
+  </scm>
 </project>
