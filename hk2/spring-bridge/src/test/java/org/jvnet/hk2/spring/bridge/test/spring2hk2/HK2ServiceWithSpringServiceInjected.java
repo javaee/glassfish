@@ -37,22 +37,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.spring.bridge.test;
+package org.jvnet.hk2.spring.bridge.test.spring2hk2;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
- * This service is instantiated by spring
- * 
  * @author jwells
  *
  */
-public class SpringService {
+@Singleton
+public class HK2ServiceWithSpringServiceInjected {
+    @Inject
+    private SpringService fromSpring;
+    
     /**
-     * Returns a nice message for everyone
+     * Returns a message from the embedded Spring service
      * 
-     * @return a nice message
+     * @return A message from the embedded Spring service
      */
-    public String helloWorld() {
-        return SpringBridgeTest.HELLO_WORLD;
-        
+    public String check() {
+        return fromSpring.helloWorld();
     }
 }

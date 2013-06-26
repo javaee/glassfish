@@ -187,6 +187,11 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         }
     }
     
+    /**
+     * Sets the name of this descriptor.  Will remove any existing Named
+     * qualifier and add a Named qualifier for this name
+     */
+    @Override
     public synchronized void setName(String name) {
         super.setName(name);
         
