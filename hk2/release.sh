@@ -84,11 +84,17 @@ CURRENT_VERSION=`grep "<version>" hk2/pom.xml | head -1 | sed -Ee 's/.*<version>
 NEXT_RELEASE_VERSION=`echo $CURRENT_VERSION | sed s@"-SNAPSHOT"@@g`
 NEXT_RELEASE_TAG="hk2-parent-$NEXT_RELEASE_VERSION"
 
+# remove local commits
 git reset --hard
-set +e
-git tag -d $NEXT_RELEASE_TAG
-git push origin :refs/tags/$NEXT_RELEASE_TAG
-set -e
+
+# remove tag if exist
+if [ `git tag | grep $NEXT_RELEASE_TAG | wc -l` -eq 1 ]
+then
+   set +e
+   git tag -d $NEXT_RELEASE_TAG
+   git push origin :refs/tags/$NEXT_RELEASE_TAG
+   set -e
+fi
 
 mvn -B -e release:prepare -DpreparationGoals='install $ARGS' $ARGS -Prelease
 mvn -B -e release:perform -Dgoals='deploy $ARGS' $ARGS -Prelease
