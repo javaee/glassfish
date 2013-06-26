@@ -80,5 +80,15 @@ ARGS="$*"
 # everything supplied as argument will be provided to every maven command ran.
 # e.g to supplied -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
 
+CURRENT_VERSION=`grep "<version>" hk2/pom.xml | head -1 | sed -Ee 's/.*<version>(.*)<\/version>/\1/'`
+NEXT_RELEASE_VERSION=`echo $CURRENT_VERSION | sed s@"-SNAPSHOT"@@g`
+NEXT_RELEASE_TAG="hk2-parent-$NEXT_RELEASE_VERSION"
+
+git reset --hard
+set +e
+git tag -d $NEXT_RELEASE_TAG
+git push origin :refs/tags/$NEXT_RELEASE_TAG
+set -e
+
 mvn -B -e release:prepare -DpreparationGoals='install $ARGS' $ARGS -Prelease
 mvn -B -e release:perform -Dgoals='deploy $ARGS' $ARGS -Prelease
