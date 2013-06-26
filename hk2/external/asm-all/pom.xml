@@ -41,21 +41,62 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>external</artifactId>
         <version>2.2.0-b10-SNAPSHOT</version>
     </parent>
     <groupId>org.glassfish.hk2.external</groupId>
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>asm-all-repackaged</artifactId>
-    <!-- Don't use bundle packaging. There are issues in using
-         maven-bundle-plugin and hk2-maven-plugin together -->
-    <packaging>jar</packaging>
+
     <name>org.objectweb.asm.all version ${asm.version} repackaged as a module</name>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>step1-unpack-sources</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>asm</groupId>
+                                    <artifactId>asm-debug-all</artifactId>
+                                    <version>${asm.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>step2-add-sources</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/alternateLocation</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -82,75 +123,29 @@
                         <Export-Package>org.objectweb.asm.*;version=${asm.version}; password="GlassFish"; mandatory:=password</Export-Package>
                         <Private-Package>!*</Private-Package>
                     </instructions>
-                    <!-- Maven uses the output directory (target/classes)
-                    rather than the final bundle, when compiling against
-                    projects in the same reactor (ie. the same build).
-                    Since this jar comprises of classes that come from
-                    some other jar and other modules depend on this
-                    artifact, we need to unpack.
-                    -->
-                    <unpackBundle>true</unpackBundle>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>osgi-bundle</id>
-                        <phase>package</phase>
+                        <id>osgi-manifest</id>
+                        <phase>process-classes</phase>
                         <goals>
-                            <goal>bundle</goal>
+                            <goal>manifest</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/alternateLocation</source>
-                            </sources>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>get-sources</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>asm</groupId>
-                                    <artifactId>asm-debug-all</artifactId>
-                                    <version>${asm.version}</version>
-                                    <classifier>sources</classifier>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-         </plugins>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                </configuration>
+            </plugin>            
+        </plugins>
     </build>
+    
     <dependencies>
-        <!-- Mark them as optional so that GF distribution mechanism
-             won't package them. It is sufficient to package the wrapped jar.
-        -->
         <dependency>
             <groupId>asm</groupId>
             <artifactId>asm-debug-all</artifactId>
@@ -158,14 +153,4 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
-    <developers>
-        <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 </project>
