@@ -76,16 +76,8 @@ public class MethodInterceptorImpl implements MethodInterceptor {
         Context<?> context;
         Object service;
         
-        try {
-            context = locator.resolveContext(descriptor.getScopeAnnotation());
-            service = context.findOrCreate(descriptor, root);
-        }
-        catch (MultiException me) {
-            throw me;
-        }
-        catch (Throwable th) {
-            throw new MultiException(th);
-        }
+        context = locator.resolveContext(descriptor.getScopeAnnotation());
+        service = context.findOrCreate(descriptor, root);
         
         if (service == null) {
             throw new MultiException(new IllegalStateException("Proxiable context " +
