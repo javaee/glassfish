@@ -100,6 +100,11 @@ public class Pretty {
         return sb.toString();
     }
     
+    /**
+     * Returns a pretty string for the given type
+     * @param t A possibly null type
+     * @return A pretty string representing the type
+     */
     public static String type(Type t) {
         if (t == null) return NULL_STRING;
         
@@ -142,6 +147,11 @@ public class Pretty {
         return method.getName() + prettyPrintParameters(method.getParameterTypes());
     }
     
+    /**
+     * Returns a pretty string representing a Field
+     * @param field The possibly null field
+     * @return A pretty string representing the field
+     */
     public static String field(Field field) {
         if (field == null) return NULL_STRING;
         
@@ -158,6 +168,11 @@ public class Pretty {
         return "field(" + baseString + " " + field.getName() + " in " + field.getDeclaringClass().getName() + ")";
     }
     
+    /**
+     * Returns a pretty string for the given array
+     * @param array The possibly null array to represent
+     * @return A pretty string representation of the array
+     */
     public static String array(Object[] array) {
         if (array == null) return NULL_STRING;
         StringBuffer sb = new StringBuffer("{");
@@ -183,6 +198,11 @@ public class Pretty {
         return sb.toString();
     }
     
+    /**
+     * Returns a pretty string representing the collection
+     * @param collection A possibly null collection to represent
+     * @return A pretty string representing the collection
+     */
     public static String collection(Collection<?> collection) {
         if (collection == null) return NULL_STRING;
         return array(collection.toArray(new Object[collection.size()]));

@@ -970,6 +970,7 @@ public class ReflectionHelper {
      * @param field The non-null field to set
      * @param instance The non-null instance to set into
      * @param value The value to which the field should be set
+     * @throws Throwable If there was some exception while setting the field
      */
     public static void setField(Field field, Object instance, Object value) throws Throwable {
         setAccessible(field);
@@ -1163,6 +1164,40 @@ public class ReflectionHelper {
                 nextEquals = -1;
             }
         }
+    }
+    
+    /**
+     * Gets the name from the &46;Named qualifier in this set of qualifiers
+     *
+     * @param qualifiers The set of qualifiers that may or may not have Named in it
+     * @param parent The parent element for which we are searching
+     * @return null if no Named was found, or the appropriate name otherwise
+     * @throws IllegalStateException If the parent is annotated with a blank Named but is not
+     * a Class or a Field
+     */
+    public static String getNameFromAllQualifiers(Set<Annotation> qualifiers, AnnotatedElement parent) throws IllegalStateException {
+        for (Annotation qualifier : qualifiers) {
+            if (!Named.class.equals(qualifier.annotationType())) continue;
+
+            Named named = (Named) qualifier;
+            if ((named.value() == null) || named.value().equals("")) {
+                if (parent != null) {
+                    if (parent instanceof Class) {
+                        return Pretty.clazz((Class<?>) parent);
+                    }
+                
+                    if (parent instanceof Field) {
+                        return ((Field) parent).getName();
+                    }
+                }
+
+                throw new IllegalStateException("@Named must have a value for " + parent);
+            }
+
+            return named.value();
+        }
+
+        return null;
     }
 
 }
