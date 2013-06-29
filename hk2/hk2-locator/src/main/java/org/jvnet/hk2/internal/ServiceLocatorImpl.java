@@ -471,7 +471,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         Set<Annotation> qualifiersAsSet = injectee.getRequiredQualifiers();
-        String name = Utilities.getNameFromAllQualifiers(qualifiersAsSet, injectee.getParent());
+        String name = ReflectionHelper.getNameFromAllQualifiers(qualifiersAsSet, injectee.getParent());
         
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
         

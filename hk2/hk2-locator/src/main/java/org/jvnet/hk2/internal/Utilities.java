@@ -133,6 +133,7 @@ public class Utilities {
      * 
      * @param sli The ServiceLocator to search in.  May not be null
      * @param analyzerName The name of the analyzer (may be null for the default analyzer)
+     * @param errorCollector A non-null collector of exceptions
      * @return The ClassAnalyzer corresponding to the name, or null if none was found
      */
     public static ClassAnalyzer getClassAnalyzer(
@@ -618,9 +619,10 @@ public class Utilities {
      *
      * @throws MultiException if there was an error in the class
      * @throws IllegalArgumentException If the class is null
+     * @throws IllegalStateException If the name could not be determined from the Named annotation
      */
     public static <T> AutoActiveDescriptor<T> createAutoDescriptor(Class<T> clazz, ServiceLocatorImpl locator)
-            throws MultiException, IllegalArgumentException {
+            throws MultiException, IllegalArgumentException, IllegalStateException {
         if (clazz == null) throw new IllegalArgumentException();
 
         Collector collector = new Collector();
@@ -636,7 +638,7 @@ public class Utilities {
 
         // Qualifiers naming dance
         qualifiers = ReflectionHelper.getQualifierAnnotations(clazz);
-        name = getNameFromAllQualifiers(qualifiers, clazz);
+        name = ReflectionHelper.getNameFromAllQualifiers(qualifiers, clazz);
         qualifiers = getAllQualifiers(clazz, name, collector);  // Fixes the @Named qualifier if it has no value
 
         contracts = getAutoAdvertisedTypes(clazz);
@@ -698,6 +700,8 @@ public class Utilities {
      * Pre Destroys the given object
      *
      * @param preMe pre destroys the thing
+     * @param locator The non-null service locator associated with the operation (for finding the strategy)
+     * @param strategy The strategy to use for analyzing the class 
      */
     public static void justPreDestroy(Object preMe, ServiceLocatorImpl locator, String strategy) {
         if (preMe == null) throw new IllegalArgumentException();
@@ -728,6 +732,8 @@ public class Utilities {
      * Post constructs the given object
      *
      * @param postMe post constructs the thing
+     * @param locator The non-null service locator associated with the operation (for finding the strategy)
+     * @param strategy The strategy to use for analyzing the class
      */
     public static void justPostConstruct(Object postMe, ServiceLocatorImpl locator, String strategy) {
         if (postMe == null) throw new IllegalArgumentException();
@@ -756,6 +762,7 @@ public class Utilities {
      * Just creates the thing, doesn't try to do anything else
      * @param injectMe The object to inject into
      * @param locator The locator to find the injection points with
+     * @param strategy The strategy to use for analyzing the class
      */
     public static void justInject(Object injectMe, ServiceLocatorImpl locator, String strategy) {
         if (injectMe == null) throw new IllegalArgumentException();
@@ -818,6 +825,7 @@ public class Utilities {
      * Just creates the thing, doesn't try to do anything else
      * @param createMe The thing to create
      * @param locator The locator to find the injection points with
+     * @param strategy The strategy to use for analyzing the class
      * @return The constructed thing, no further injection is performed
      */
     @SuppressWarnings("unchecked")
@@ -1615,6 +1623,7 @@ public class Utilities {
      * Returns the scope of this thing
      *
      * @param fromThis The annotated class or producer method
+     * @param defaultScope The default scope if none other can be found
      * @return The scope of this class or producer method.  If no scope is
      * found will return the dependent scope
      */
@@ -1634,6 +1643,7 @@ public class Utilities {
      * Returns the scope of this thing
      *
      * @param annotatedGuy The annotated class or producer method
+     * @param defaultScope The default scope if none other can be found
      * @param collector The error collector
      * @return The scope of this class or producer method.  If no scope is
      * found will return the dependent scope
@@ -1739,36 +1749,6 @@ public class Utilities {
         } catch (NoSuchMethodException e) {
             return null;
         }
-    }
-
-    /**
-     * Gets the name from the &46;Named qualifier in this set of qualifiers
-     *
-     * @param qualifiers The set of qualifiers that may or may not have Named in it
-     * @param parent The parent element for which we are searching
-     * @return null if no Named was found, or the appropriate name otherwise
-     */
-    public static String getNameFromAllQualifiers(Set<Annotation> qualifiers, AnnotatedElement parent) {
-        for (Annotation qualifier : qualifiers) {
-            if (!Named.class.equals(qualifier.annotationType())) continue;
-
-            Named named = (Named) qualifier;
-            if ((named.value() == null) || named.value().equals("")) {
-                if (parent instanceof Class) {
-                    return Pretty.clazz((Class<?>) parent);
-                }
-                
-                if (parent instanceof Field) {
-                    return ((Field) parent).getName();
-                }
-
-                throw new MultiException(new IllegalStateException("@Named must have a value for " + parent));
-            }
-
-            return named.value();
-        }
-
-        return null;
     }
 
     /**
@@ -1886,6 +1866,7 @@ public class Utilities {
     /**
      * Returns all the injectees for a constructor
      * @param c The constructor to analyze
+     * @param injecteeDescriptor The descriptor of the injectee
      * @return the list (in order) of parameters to the constructor
      */
     public static List<Injectee> getConstructorInjectees(Constructor<?> c, ActiveDescriptor<?> injecteeDescriptor) {
@@ -1912,6 +1893,7 @@ public class Utilities {
     /**
      * Returns all the injectees for a constructor
      * @param c The constructor to analyze
+     * @param injecteeDescriptor The descriptor of the injectee
      * @return the list (in order) of parameters to the constructor
      */
     public static List<Injectee> getMethodInjectees(Method c, ActiveDescriptor<?> injecteeDescriptor) {
@@ -1954,6 +1936,7 @@ public class Utilities {
     /**
      * Returns the injectees for a field
      * @param f The field to analyze
+     * @param injecteeDescriptor The descriptor of the injectee
      * @return the list (in order) of parameters to the constructor
      */
     public static List<Injectee> getFieldInjectees(Field f, ActiveDescriptor<?> injecteeDescriptor) {
@@ -2211,6 +2194,17 @@ public class Utilities {
 
     }
 
+    /**
+     * Creates the service (without the need for an intermediate ServiceHandle
+     * to be created)
+     * 
+     * @param root The ultimate parent of this operation
+     * @param injectee the injectee we are creating this service for
+     * @param locator The locator to use to find services
+     * @param handle The ServiceHandle (or null if there is none)
+     * @param requestedClass The class for the service we are looking for
+     * @return The created service
+     */
     @SuppressWarnings("unchecked")
     public static <T> T createService(ActiveDescriptor<T> root,
             Injectee injectee,
