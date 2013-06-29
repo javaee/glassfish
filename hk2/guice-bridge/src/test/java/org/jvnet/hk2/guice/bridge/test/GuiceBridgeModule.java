@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.guice.bridge.test;
 
+import org.glassfish.hk2.utilities.NamedImpl;
+
 import com.google.inject.AbstractModule;
 
 /**
@@ -53,6 +55,8 @@ public class GuiceBridgeModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(GuiceService1.class).to(GuiceService1Impl.class);
+        bind(GuiceService3.class).annotatedWith(new NamedImpl(GuiceBridgeTest.ALICE)).to(GuiceService3Alice.class);
+        bind(GuiceService3.class).annotatedWith(new NamedImpl(GuiceBridgeTest.HATTER)).to(GuiceService3Hatter.class);
     }
 
 }

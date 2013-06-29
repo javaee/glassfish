@@ -39,23 +39,16 @@
  */
 package org.jvnet.hk2.guice.bridge.test;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.jvnet.hk2.testing.junit.HK2TestModule;
-
 /**
  * @author jwells
  *
  */
-public class GuiceBridgeTestModule implements HK2TestModule {
-
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.testing.junit.HK2TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+public interface GuiceService3 {
+    /**
+     * Gets the name of this service
+     * 
+     * @return The name of this service
      */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(HK2Service1.class);
-        config.addActiveDescriptor(HK2Service2Impl.class);
-        config.addActiveDescriptor(HK2Service3.class);
-    }
+    public String getName();
 
 }
