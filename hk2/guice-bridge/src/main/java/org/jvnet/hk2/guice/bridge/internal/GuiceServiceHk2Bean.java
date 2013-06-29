@@ -49,6 +49,7 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.guice.bridge.api.GuiceScope;
 
 import com.google.inject.Binding;
@@ -80,7 +81,7 @@ public class GuiceServiceHk2Bean<T> extends AbstractActiveDescriptor<T> {
             Binding<T> binding) {
         super(contracts,
                 GuiceScope.class,
-                (String) null,
+                ReflectionHelper.getNameFromAllQualifiers(qualifiers, implClass),
                 qualifiers,
                 DescriptorType.CLASS,
                 DescriptorVisibility.NORMAL,

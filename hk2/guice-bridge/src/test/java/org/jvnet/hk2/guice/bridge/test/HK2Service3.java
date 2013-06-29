@@ -39,23 +39,28 @@
  */
 package org.jvnet.hk2.guice.bridge.test;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.jvnet.hk2.testing.junit.HK2TestModule;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.junit.Assert;
 
 /**
  * @author jwells
  *
  */
-public class GuiceBridgeTestModule implements HK2TestModule {
-
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.testing.junit.HK2TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
+public class HK2Service3 {
+    @Inject @Named(GuiceBridgeTest.ALICE)
+    private GuiceService3 alice;
+    
+    @Inject @Named(GuiceBridgeTest.HATTER)
+    private GuiceService3 hatter;
+    
+    /**
+     * Used by the test to check that everything works properly
      */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(HK2Service1.class);
-        config.addActiveDescriptor(HK2Service2Impl.class);
-        config.addActiveDescriptor(HK2Service3.class);
+    public void check() {
+        Assert.assertEquals(GuiceBridgeTest.ALICE, alice.getName());
+        Assert.assertEquals(GuiceBridgeTest.HATTER, hatter.getName());
     }
 
 }

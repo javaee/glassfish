@@ -50,7 +50,15 @@ import org.jvnet.hk2.guice.bridge.test.utilities.Utilities;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+/**
+ * Tests for Guice bridge
+ * 
+ * @author jwells
+ */
 public class GuiceBridgeTest {
+    /* package */ static final String ALICE = "Alice";
+    /* package */ static final String HATTER = "Hatter";
+    
     private static final ServiceLocator testLocator = Utilities.createLocator("GuiceBridgeTest", new GuiceBridgeTestModule());
     
     /**
@@ -70,6 +78,10 @@ public class GuiceBridgeTest {
         Assert.assertNotNull(hk2Service);
         
         hk2Service.verifyGuiceService();
+        
+        HK2Service3 hk2Service3 = testLocator.getService(HK2Service3.class);
+        
+        hk2Service3.check();
     }
     
     /**
