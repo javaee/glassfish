@@ -40,6 +40,8 @@
 package org.glassfish.hk2.utilities.binding;
 
 import java.lang.annotation.Annotation;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
@@ -323,7 +325,18 @@ public abstract class AbstractBinder implements Binder, DynamicConfiguration {
     private HK2Loader getDefaultBinderLoader() {
         if (defaultLoader == null) {
             ClassLoader loader = this.getClass().getClassLoader();
-            final ClassLoader binderClassLoader = loader == null ? ClassLoader.getSystemClassLoader() : loader;
+            if (loader == null) {
+                loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+
+                    @Override
+                    public ClassLoader run() {
+                        return ClassLoader.getSystemClassLoader();
+                    }
+                    
+                });
+            }
+            final ClassLoader binderClassLoader = loader;
+            
             defaultLoader = new HK2Loader() {
                 @Override
                 public Class<?> loadClass(String className) throws MultiException {

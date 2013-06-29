@@ -1005,7 +1005,7 @@ public class ReflectionHelper {
         }
         
         setAccessible(m);
-        ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader currentCCL = getCurrentContextClassLoader();
         
         try {
             return m.invoke(o, args);
@@ -1086,7 +1086,7 @@ public class ReflectionHelper {
             throws Throwable {
         setAccessible(c);
         
-        ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
+        ClassLoader currentCCL = getCurrentContextClassLoader();
 
         try {
             return c.newInstance(args);
@@ -1199,5 +1199,13 @@ public class ReflectionHelper {
 
         return null;
     }
-
+    
+    private static ClassLoader getCurrentContextClassLoader() {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            @Override
+            public ClassLoader run() {
+                return Thread.currentThread().getContextClassLoader();
+            }
+        });
+    }
 }
