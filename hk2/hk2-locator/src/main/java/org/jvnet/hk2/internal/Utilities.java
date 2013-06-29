@@ -1228,12 +1228,20 @@ public class Utilities {
         return retVal;
     }
 
-    private static void getAllConstructorKeys(Class<?> clazz, Set<MemberKey> currentConstructors) {
+    private static void getAllConstructorKeys(final Class<?> clazz, Set<MemberKey> currentConstructors) {
         if (clazz == null) return;
 
         // Constructors for the superclass do not equal constructors for this class
+        Constructor<?> constructors[] = AccessController.doPrivileged(new PrivilegedAction<Constructor<?>[]>() {
 
-        for (Constructor<?> constructor : clazz.getDeclaredConstructors()) {
+            @Override
+            public Constructor<?>[] run() {
+                return clazz.getDeclaredConstructors();
+            }
+            
+        });
+
+        for (Constructor<?> constructor : constructors) {
             currentConstructors.add(new MemberKey(constructor, false, false));
         }
 

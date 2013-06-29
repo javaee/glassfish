@@ -42,6 +42,8 @@ package org.glassfish.hk2.utilities;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -433,8 +435,15 @@ public class BuilderHelper {
 	        throw new IllegalArgumentException();
 	    }
 	    
-	    Class<? extends Annotation> annotationClass = annotation.annotationType();
-	    Method annotationMethods[] = annotationClass.getDeclaredMethods();
+	    final Class<? extends Annotation> annotationClass = annotation.annotationType();
+	    Method annotationMethods[] = AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
+
+            @Override
+            public Method[] run() {
+                return annotationClass.getDeclaredMethods();
+            }
+            
+	    });
 	    for (Method annotationMethod : annotationMethods) {
 	        Metadata metadataAnno = annotationMethod.getAnnotation(Metadata.class);
 	        if (metadataAnno == null) continue;
