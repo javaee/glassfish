@@ -57,7 +57,7 @@ public class HK2ToSpringTest {
     /**
      * Tests injecting a bean from hk2 into spring
      */
-    @Test @Ignore
+    @Test
     public void testHK2IntoSpring() {
         LocatorAndContext locatorAndContext = Utilities.createSpringTestLocator(
                 "hk2-into-spring.xml",
