@@ -45,7 +45,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.jvnet.hk2.spring.bridge.api.SpringBridge;
 import org.jvnet.hk2.spring.bridge.api.SpringIntoHK2Bridge;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -56,11 +56,12 @@ public class Utilities {
     /**
      * Creates a ServiceLocator with the SpringBridge initialized
      * 
+     * @param xmlFileName The name of the spring configuration file
      * @param classes Classes to add to the locator
      * @return An anonymous service locator with the given classes as services
      */
-    public static ServiceLocator createSpringTestLocator(String xmlFileName, Class<?>...classes) {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+    public static LocatorAndContext createSpringTestLocator(String xmlFileName, String uniqueName, Class<?>...classes) {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(uniqueName);
         
         SpringBridge.getSpringBridge().initializeSpringBridge(locator);
         
@@ -74,11 +75,11 @@ public class Utilities {
         config.commit();
         
         // Now setup the bridge
-        ApplicationContext context = new ClassPathXmlApplicationContext(xmlFileName);
+        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(xmlFileName);
         SpringIntoHK2Bridge bridge = locator.getService(SpringIntoHK2Bridge.class);
         bridge.bridgeSpringBeanFactory(context);
         
-        return locator;
+        return new LocatorAndContext(locator, context);
     }
 
 }

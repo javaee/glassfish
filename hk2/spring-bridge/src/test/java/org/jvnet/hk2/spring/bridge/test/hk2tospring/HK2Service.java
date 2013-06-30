@@ -37,38 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.spring.bridge.test.spring2hk2;
+package org.jvnet.hk2.spring.bridge.test.hk2tospring;
 
-import junit.framework.Assert;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.junit.Test;
-import org.jvnet.hk2.spring.bridge.test.utilities.Utilities;
+import javax.inject.Singleton;
 
 /**
- * Tests for the spring-hk2 bridge
- * 
  * @author jwells
  *
  */
-public class SpringBridgeTest {
-    /* package */ final static String HELLO_WORLD = "hello world";
-    
-    /**
-     * Tests that a basic (unnamed) Injection point works properly
-     */
-    @Test
-    public void testSpringBeanIntoHk2() {
-        ServiceLocator locator = Utilities.createSpringTestLocator(
-                "spring-test-beans.xml",
-                null,
-                HK2ServiceWithSpringServiceInjected.class).getServiceLocator();
-        
-        HK2ServiceWithSpringServiceInjected hswssi = locator.getService(
-                HK2ServiceWithSpringServiceInjected.class);
-        Assert.assertNotNull(hswssi);
-        
-        Assert.assertEquals(HELLO_WORLD, hswssi.check());
-        
-    }
+@Singleton
+public class HK2Service {
+
 }

@@ -37,38 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.spring.bridge.test.spring2hk2;
-
-import junit.framework.Assert;
+package org.jvnet.hk2.spring.bridge.test.utilities;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.junit.Test;
-import org.jvnet.hk2.spring.bridge.test.utilities.Utilities;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * Tests for the spring-hk2 bridge
  * 
  * @author jwells
  *
  */
-public class SpringBridgeTest {
-    /* package */ final static String HELLO_WORLD = "hello world";
+public class LocatorAndContext {
+    private final ServiceLocator locator;
+    private final ConfigurableApplicationContext context;
+    
+    /* package */ LocatorAndContext(ServiceLocator locator, ConfigurableApplicationContext context) {
+        this.locator = locator;
+        this.context = context;
+    }
     
     /**
-     * Tests that a basic (unnamed) Injection point works properly
+     * Gets the ServiceLocator
+     * 
+     * @return The ServiceLocator
      */
-    @Test
-    public void testSpringBeanIntoHk2() {
-        ServiceLocator locator = Utilities.createSpringTestLocator(
-                "spring-test-beans.xml",
-                null,
-                HK2ServiceWithSpringServiceInjected.class).getServiceLocator();
-        
-        HK2ServiceWithSpringServiceInjected hswssi = locator.getService(
-                HK2ServiceWithSpringServiceInjected.class);
-        Assert.assertNotNull(hswssi);
-        
-        Assert.assertEquals(HELLO_WORLD, hswssi.check());
-        
-    }
+    public ServiceLocator getServiceLocator() { return locator; }
+    
+    /**
+     * Gets the ApplicationContext
+     * 
+     * @return The ApplicationContext
+     */
+    public ConfigurableApplicationContext getApplicationContext() { return context; }
 }
