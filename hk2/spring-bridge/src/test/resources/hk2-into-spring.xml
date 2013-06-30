@@ -4,12 +4,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 	
-	<!--
-	<bean id="hk2" class="org.jvnet.hk2.spring.bridge.api.SpringScopeImpl" >
-	  <property name="ServiceLocatorName" value="HK2ToSpringTest" />
-	</bean>
-	-->
-	
 	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
         <property name="scopes">
             <map>
@@ -22,10 +16,12 @@
         </property>
     </bean>
 	
-	<bean id="HK2Service" class="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service" scope="hk2" />
+	<bean id="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service"
+	      class="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service"
+	      scope="hk2" />
  
 	<bean id="SpringService" class="org.jvnet.hk2.spring.bridge.test.hk2tospring.SpringService">
-	  <property name="HK2Service" ref="HK2Service" />
+	  <property name="HK2Service" ref="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service" />
 	</bean>
  
 </beans>
