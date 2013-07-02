@@ -76,13 +76,19 @@ import org.junit.Test;
 public class BuilderHelperTest {
 	private final static String NAME = "hello";
 	
+	/** metadata1 key */
 	public final static String METAKEY1 = "metakey1";
+	/** metadata2 key */
 	public final static String METAKEY2 = "metakey2";
 	
+	/** scope data */
 	public final static String SCOPE_DATA = "scopeData";
+	/** qualifier value */
 	public final static String QUALIFIER_VALUE = "qualValue";
+	/** another qualifier value */
 	public final static int QUALIFIER_ANOTHER_VALUE = -1;
 	
+	/** analyze me */
 	public final static String ANALYZE_SERVICE = "analyzeMe";
 	
 	/**
@@ -476,7 +482,7 @@ public class BuilderHelperTest {
     }
     
     /**
-     * Tests I can create a factory that uses {@link UseProxy}
+     * Tests I can create a factory that uses UseProxy
      */
     @Test
     public void testUseProxyOnMethod() {
@@ -502,7 +508,7 @@ public class BuilderHelperTest {
     }
     
     /**
-     * Tests createDescriptorFromClass honors {@link UseProxy}
+     * Tests createDescriptorFromClass honors UseProxy
      */
     @Test
     public void testUseProxyOnClass() {
@@ -549,7 +555,7 @@ public class BuilderHelperTest {
     }
     
     /**
-     * Tests createDescriptorFromClass honors {@link Visibility}
+     * Tests createDescriptorFromClass honors Visibility
      */
     @Test
     public void testVisibilityOnClass() {
@@ -560,5 +566,75 @@ public class BuilderHelperTest {
         di = BuilderHelper.createDescriptorFromClass(ServiceWithNormalVisibility.class);
         
         Assert.assertEquals(DescriptorVisibility.NORMAL, di.getDescriptorVisibility());
+    }
+    
+    private final static String ACME_IMPL = "com.acme.FooImpl";
+    private final static String ACME_INTF = "com.acme.Foo";
+    private final static String NAME1 = "name1";
+    private final static String QUAL1 = "qual1";
+    private final static String QUAL2 = "qual2";
+    
+    private final static String TOKEN1 = ACME_INTF;
+    private final static String TOKEN2 = ACME_INTF +
+            BuilderHelper.TOKEN_SEPARATOR + BuilderHelper.NAME_KEY + "=" + NAME1;
+    private final static String TOKEN3 = ACME_INTF +
+            BuilderHelper.TOKEN_SEPARATOR + BuilderHelper.QUALIFIER_KEY + "=" + QUAL2;
+    private final static String TOKEN4 = ACME_INTF +
+            BuilderHelper.TOKEN_SEPARATOR + BuilderHelper.QUALIFIER_KEY + "=" + QUAL2 +
+            BuilderHelper.TOKEN_SEPARATOR + BuilderHelper.NAME_KEY + "=" + NAME1 +
+            BuilderHelper.TOKEN_SEPARATOR + BuilderHelper.QUALIFIER_KEY + "=" + QUAL1;
+    private final static String TOKEN5 = 
+            BuilderHelper.TOKEN_SEPARATOR + BuilderHelper.QUALIFIER_KEY + "=" + QUAL1;
+    
+    /**
+     * A bunch of tests for tokenized strings
+     */
+    @Test
+    public void testTokenizedString1() {
+        Descriptor d1 = BuilderHelper.link(ACME_IMPL).to(ACME_INTF).named(NAME1).qualifiedBy(QUAL1).build();
+        
+        {
+            IndexedFilter f1 = BuilderHelper.createTokenizedFilter(TOKEN1);
+            Assert.assertEquals(f1.getAdvertisedContract(),ACME_INTF);
+            Assert.assertNull(f1.getName());
+            Assert.assertTrue(f1.matches(d1));
+        }
+        
+        {
+            IndexedFilter f2 = BuilderHelper.createTokenizedFilter(TOKEN2);
+            Assert.assertEquals(f2.getAdvertisedContract(),ACME_INTF);
+            Assert.assertEquals(NAME1, f2.getName());
+            Assert.assertTrue(f2.matches(d1));
+        }
+        
+        {
+            IndexedFilter f3 = BuilderHelper.createTokenizedFilter(TOKEN3);
+            Assert.assertEquals(f3.getAdvertisedContract(),ACME_INTF);
+            Assert.assertNull(f3.getName());
+            Assert.assertFalse(f3.matches(d1));
+        }
+        
+        {
+            IndexedFilter f4 = BuilderHelper.createTokenizedFilter(TOKEN4);
+            Assert.assertEquals(f4.getAdvertisedContract(),ACME_INTF);
+            Assert.assertEquals(NAME1, f4.getName());
+            Assert.assertFalse(f4.matches(d1));
+        }
+        
+        {
+            IndexedFilter f4 = BuilderHelper.createTokenizedFilter(TOKEN4);
+            Assert.assertEquals(f4.getAdvertisedContract(),ACME_INTF);
+            Assert.assertEquals(NAME1, f4.getName());
+            Assert.assertFalse(f4.matches(d1));
+        }
+        
+        {
+            IndexedFilter f5 = BuilderHelper.createTokenizedFilter(TOKEN5);
+            Assert.assertNull(f5.getAdvertisedContract());
+            Assert.assertNull(f5.getName());
+            Assert.assertTrue(f5.matches(d1));
+        }
+        
+        
     }
 }

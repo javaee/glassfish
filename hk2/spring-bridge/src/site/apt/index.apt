@@ -1,0 +1,171 @@
+                -----
+                The Guice/HK2 Brdige
+                -----
+
+The Guice/HK2 Bridge
+
+ The Guice/HK2 Bridge can be used to inject {{{http://code.google.com/p/google-guice/}Guice}} services
+ into HK2 services or inject HK2 services into {{{http://code.google.com/p/google-guice/}Guice}} services.
+ It can be used bi-directionally as well.
+
+Table of Contents
+
+ * {{Definitions}}
+ 
+ * {{Injecting Guice services into HK2 services}}
+ 
+ * {{Injecting HK2 services into Guice services}}
+ 
+ * {{Bi-Directional HK2 Guice Bridge}}
+
+ []
+
+{Definitions}
+
+ * A {{{http://code.google.com/p/google-guice/}Guice}} service is a service that is instantiated (created) by
+   {{{http://code.google.com/p/google-guice/}Guice}}
+
+ * An HK2 service is a service that is instantiated (created) by HK2
+
+ []
+ 
+{Injecting Guice services into HK2 services}
+
+ {{{http://code.google.com/p/google-guice/}Guice}} services can be injected into any injection point in HK2.  In order to do this
+ you must tell HK2 about the {{{http://code.google.com/p/google-guice/}Guice}}
+ {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
+ which has the {{{http://code.google.com/p/google-guice/}Guice}} service definitions.  This is
+ accomplished in two steps.
+ 
+ In the first step you should have the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}
+ that contains services you wish to be injected with {{{http://code.google.com/p/google-guice/}Guice}}
+ services.  You must initialize this
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} with some required
+ Guice/HK2 bridge services.  You can do this using the utility class
+ {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/GuiceBridge.html}GuiceBridge}}.
+ This is a code snippet that initializes a
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}:
+ 
++-----------------------
+  GuiceBridge.getGuiceBridge().initializeGuiceBridge(aServiceLocator);
++-----------------------
+
+ In the second step you must tell your initialized
+ {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} about the
+ specific {{{http://code.google.com/p/google-guice/}Guice}}
+ {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}(s)
+ that you want it to look for services in.  You do this with the
+ {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/GuiceIntoHK2Bridge.html}GuiceIntoHK2Bridge}}
+ service that was added in the previous step.  The following code snippet adds a
+ {{{http://code.google.com/p/google-guice/}Guice}}
+ {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
+ to be searched for services when injecting into HK2 services:
+ 
++-----------------------
+  public void tieInjectorToLocator(ServiceLocator aServiceLocator, Injector guiceInjector) {
+      GuiceIntoHK2Bridge guiceBridge = aServiceLocator.getService(GuiceIntoHK2Bridge.class);
+      guiceBridge.bridgeGuiceInjector(guiceInjector);
+  }
++-----------------------
+
+ Any {{{http://code.google.com/p/google-guice/}Guice}}
+ {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
+ added with the
+ {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/GuiceIntoHK2Bridge.html#bridgeGuiceInjector(com.google.inject.Injector)}bridgeGuiceInjector}}
+ method will be searched for services that HK2 cannot otherwise find.
+ 
+ For example, if you have a service called GuiceService that is created by
+ {{{http://code.google.com/p/google-guice/}Guice}}, you can inject it into an HK2 service
+ (called HK2Service) like this:
+ 
++---------------------------
+  @Service
+  public class HK2Service {
+      @Inject
+      private GuiceService guiceService;
+  }
++---------------------------
+
+{Injecting HK2 services into Guice services}
+
+  HK2 services can be injected into {{{http://code.google.com/p/google-guice/}Guice}} services.  In order
+  to do so, you must use the
+  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2Inject.html}HK2Inject}} injection
+  annotation.  For example, if you have an HK2 service named HK2Service that is to be injected
+  into a {{{http://code.google.com/p/google-guice/}Guice}} service (called GuiceService) your code
+  would look like this:
+
++---------------------------
+  public class GuiceService {
+      @HK2Inject
+      private HK2Service hk2Service;
+  }
++---------------------------
+
+  In order to do this we have provided an implementation of
+  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Module.html}Module}}
+  that should be given to {{{http://code.google.com/p/google-guice/}Guice}} when creating the
+  {{{http://code.google.com/p/google-guice/}Guice}}
+  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}.
+  This implementation of
+  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Module.html}Module}}
+  is
+  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2IntoGuiceBridge.html}HK2IntoGuiceBridge}}.
+  The following code snippet is an example of how you would create a
+  {{{http://code.google.com/p/google-guice/}Guice}}
+  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
+  using the
+  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2IntoGuiceBridge.html}HK2IntoGuiceBridge}} 
+  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Module.html}Module}} to
+  tell the {{{http://code.google.com/p/google-guice/}Guice}}
+  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
+  about the
+  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}
+  to use for finding HK2 services:
+  
++---------------------------
+  Injector injector = Guice.createInjector(
+                new HK2IntoGuiceBridge(serviceLocator),
+                // application modules);
++---------------------------
+
+  Any {{{http://code.google.com/p/google-guice/}Guice}} service that can be created with this
+  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
+  will now search the provided
+  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}
+  when it encounters a service that is injected with the
+  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2Inject.html}HK2Inject}}
+  annotation.
+  
+{Bi-Directional HK2 Guice Bridge}
+
+  {{{http://code.google.com/p/google-guice/}Guice}} and HK2 can bridge back and forth between
+  each other.  The following code example shows how you could accomplish such a thing:
+
++---------------------------
+  public Injector createBiDirectionalGuiceBridge(ServiceLocator serviceLocator,
+            Module... applicationModules) {
+        Module allModules[] = new Module[applicationModules.length + 1];
+        
+        allModules[0] = new HK2IntoGuiceBridge(serviceLocator);
+        for (int lcv = 0; lcv < applicationModules.length; lcv++) {
+            allModules[lcv + 1] = applicationModules[lcv];
+        }
+        
+        Injector injector = Guice.createInjector(allModules);
+        
+        GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
+        GuiceIntoHK2Bridge g2h = serviceLocator.getService(GuiceIntoHK2Bridge.class);
+        g2h.bridgeGuiceInjector(injector);
+        
+        return injector;
+    }
++---------------------------
+
+  The above method will create a {{{http://code.google.com/p/google-guice/}Guice}}
+  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
+  where services created by Guice can be injected with HK2 services (using the
+  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2Inject.html}HK2Inject}}
+  annotation).  Also services created by HK2 can be injected with
+  {{{http://code.google.com/p/google-guice/}Guice}} services (using any supported HK2 injection
+  annotation).
