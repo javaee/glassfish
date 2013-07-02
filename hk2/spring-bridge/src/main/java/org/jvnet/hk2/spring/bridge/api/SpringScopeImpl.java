@@ -83,8 +83,8 @@ public class SpringScopeImpl implements Scope {
         return locator;
     }
     
-    private ServiceHandle<?> getServiceFromName(String name) {
-        ActiveDescriptor<?> best = locator.getBestDescriptor(BuilderHelper.createContractFilter(name));
+    private ServiceHandle<?> getServiceFromName(String id) {
+        ActiveDescriptor<?> best = locator.getBestDescriptor(BuilderHelper.createTokenizedFilter(id));
         if (best == null) return null;
         
         return locator.getServiceHandle(best);

@@ -45,10 +45,12 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
@@ -110,6 +112,107 @@ public class BuilderHelper {
      */
     public static IndexedFilter createNameAndContractFilter(String contract, String name) {
         return new IndexedFilterImpl(contract, name);
+    }
+    
+    /** The key for the name field of the tokenized string */
+    public final static String NAME_KEY = "name";
+    
+    /** The key for the qualifier field of the tokenized string */
+    public final static String QUALIFIER_KEY = "qualifier";
+    
+    /** The token separator */
+    public final static String TOKEN_SEPARATOR = ";";
+    
+    /**
+     * Creates a filter from a token string as per the following rules.<OL>
+     * <LI>The token delimiter is ;</LI>
+     * <LI>The first token is the contract.  If the tokenString starts with ; there is no contract</LI>
+     * <LI>All other tokens are in key = value form (with = being the separator)</LI>
+     * <LI>A valid key that can appear only once is &quot;name&quot;</LI>
+     * <LI>A valid key that can appear any number of times is &quot;qualifier&quot;</LI>
+     * </OL>
+     * <P>
+     * The following are examples of valid token strings:<UL>
+     * <LI>com.acme.product.RocketShoes</LI>
+     * <LI>com.acme.product.Sneakers;name=Nike</LI>
+     * <LI>com.acme.product.Sneakers;name=Nike;qualifier=com.acme.color.Red;qualifier=com.acme.style.HighTop</LI>
+     * <LI>;name=Narcissus</LI>
+     * </UL>
+     * 
+     * @param tokenString A non-null string following the rules stated above
+     * @return A filter that will match the given string
+     * @throws IllegalArgumentException If the token string is invalid in some way
+     */
+    public static IndexedFilter createTokenizedFilter(String tokenString) throws IllegalArgumentException {
+        if (tokenString == null) throw new IllegalArgumentException("null passed to createTokenizedFilter");
+        
+        StringTokenizer st = new StringTokenizer(tokenString, TOKEN_SEPARATOR);
+        
+        String contract = null;
+        String name = null;
+        final Set<String> qualifiers = new HashSet<String>();
+        
+        boolean firstToken = true;
+        if (tokenString.startsWith(TOKEN_SEPARATOR)) {
+            firstToken = false;
+        }
+        
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            if (firstToken) {
+                firstToken = false;
+                
+                if (token.length() <= 0) continue;
+                contract = token;
+            }
+            else {
+                int index = token.indexOf('=');
+                if (index < 0) {
+                    throw new IllegalArgumentException("No = character found in token " + token);
+                }
+                
+                String leftHandSide = token.substring(0, index);
+                String rightHandSide = token.substring(index + 1);
+                if (rightHandSide.length() <= 0) {
+                    throw new IllegalArgumentException("No value found in token " + token);
+                }
+                
+                if (NAME_KEY.equals(leftHandSide)) {
+                    name = rightHandSide;
+                }
+                else if (QUALIFIER_KEY.equals(leftHandSide)) {
+                    qualifiers.add(rightHandSide);
+                }
+                else {
+                    throw new IllegalArgumentException("Unknown key: " + leftHandSide);
+                }
+            }
+        }
+        
+        final String fContract = contract;
+        final String fName = name;
+        
+        return new IndexedFilter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                if (qualifiers.isEmpty()) return true;
+                
+                return d.getQualifiers().containsAll(qualifiers);
+            }
+
+            @Override
+            public String getAdvertisedContract() {
+                return fContract;
+            }
+
+            @Override
+            public String getName() {
+                return fName;
+            }
+            
+        };
+        
     }
     
     /**
