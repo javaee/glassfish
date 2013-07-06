@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="hk2">
+                    <bean class="org.jvnet.hk2.spring.bridge.api.SpringScopeImpl" >
+	                  <property name="ServiceLocatorName" value="BiDirectionalSpringBridge" />
+	                </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+	
+	<bean id="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_0"
+	      class="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_0"
+	      scope="hk2" 
+	      lazy-init="true"/>
+ 
+	<bean id="SpringService1_1"
+	      class="org.jvnet.hk2.spring.bridge.test.bidirectional.SpringService1_1"
+	      lazy-init="true">
+	  <property name="HK2Service1_0" ref="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_0" />
+	</bean>
+	
+	<bean id="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_2"
+	      class="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_2"
+	      scope="hk2" 
+	      lazy-init="true"/>
+	      
+	<bean id="SpringService1_3"
+	      class="org.jvnet.hk2.spring.bridge.test.bidirectional.SpringService1_3"
+	      lazy-init="true">
+	  <property name="HK2Service1_2" ref="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_2" />
+	</bean>
+ 
+</beans>

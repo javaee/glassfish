@@ -37,50 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.spring.bridge.test.utilities;
+package org.jvnet.hk2.spring.bridge.test.bidirectional;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.jvnet.hk2.spring.bridge.api.SpringBridge;
-import org.jvnet.hk2.spring.bridge.api.SpringIntoHK2Bridge;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import javax.inject.Singleton;
 
 /**
  * @author jwells
  *
  */
-public class Utilities {
-    /**
-     * Creates a ServiceLocator with the SpringBridge initialized
-     * 
-     * @param xmlFileName The name of the spring configuration file
-     * @param uniqueName The name that the service locator should have
-     * @param classes Classes to add to the locator
-     * @return An anonymous service locator with the given classes as services
-     */
-    public static LocatorAndContext createSpringTestLocator(String xmlFileName, String uniqueName, Class<?>...classes) {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(uniqueName);
-        
-        SpringBridge.getSpringBridge().initializeSpringBridge(locator);
-        
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        for (Class<?> clazz : classes) {
-            config.addActiveDescriptor(clazz);
-        }
-        
-        config.commit();
-        
-        // Now setup the bridge
-        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(xmlFileName);
-        SpringIntoHK2Bridge bridge = locator.getService(SpringIntoHK2Bridge.class);
-        bridge.bridgeSpringBeanFactory(context);
-        
-        return new LocatorAndContext(locator, context);
-    }
+@Singleton
+public class HK2Service1_0 {
 
 }
