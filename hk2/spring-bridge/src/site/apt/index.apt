@@ -1,171 +1,195 @@
                 -----
-                The Guice/HK2 Brdige
+                The Spring/HK2 Brdige
                 -----
 
-The Guice/HK2 Bridge
+The Spring/HK2 Bridge
 
- The Guice/HK2 Bridge can be used to inject {{{http://code.google.com/p/google-guice/}Guice}} services
- into HK2 services or inject HK2 services into {{{http://code.google.com/p/google-guice/}Guice}} services.
- It can be used bi-directionally as well.
-
+ The Spring/HK2 Bridge can be used to inject {{{http://www.springsource.com/}Spring}} services
+ into HK2 services or inject HK2 services into {{{http://www.springsource.com/}Spring}} services.
+ 
 Table of Contents
 
  * {{Definitions}}
  
- * {{Injecting Guice services into HK2 services}}
+ * {{Injecting Spring services into HK2 services}}
  
- * {{Injecting HK2 services into Guice services}}
- 
- * {{Bi-Directional HK2 Guice Bridge}}
+ * {{Injecting HK2 services into Spring services}}
 
  []
 
 {Definitions}
 
- * A {{{http://code.google.com/p/google-guice/}Guice}} service is a service that is instantiated (created) by
-   {{{http://code.google.com/p/google-guice/}Guice}}
+ * A {{{http://www.springsource.com/}Spring}} service is a service that is instantiated (created) by
+   {{{http://www.springsource.com/}Spring}}
 
  * An HK2 service is a service that is instantiated (created) by HK2
 
  []
  
-{Injecting Guice services into HK2 services}
+{Injecting Spring services into HK2 services}
 
- {{{http://code.google.com/p/google-guice/}Guice}} services can be injected into any injection point in HK2.  In order to do this
- you must tell HK2 about the {{{http://code.google.com/p/google-guice/}Guice}}
- {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
- which has the {{{http://code.google.com/p/google-guice/}Guice}} service definitions.  This is
+ {{{http://www.springsource.com/}Spring}} services can be injected into any injection point in HK2.  In order to do this
+ you must tell HK2 about the {{{http://www.springsource.com/}Spring}}
+ {{{http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/beans/factory/BeanFactory.html}BeanFactory}}
+ which has the {{{http://www.springsource.com/}Spring}} bean definitions.  This is
  accomplished in two steps.
  
  In the first step you should have the {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}
- that contains services you wish to be injected with {{{http://code.google.com/p/google-guice/}Guice}}
+ that contains services you wish to be injected with {{{http://www.springsource.com/}Spring}}
  services.  You must initialize this
  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} with some required
- Guice/HK2 bridge services.  You can do this using the utility class
- {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/GuiceBridge.html}GuiceBridge}}.
+ Spring/HK2 bridge services.  You can do this using the utility class
+ {{{../nonav/spring-bridge/apidocs/org/jvnet/hk2/spring/bridge/api/SpringBridge.html}SpringBridge}}.
  This is a code snippet that initializes a
  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}:
  
 +-----------------------
-  GuiceBridge.getGuiceBridge().initializeGuiceBridge(aServiceLocator);
+  SpringBridge.getSpringBridge().initializeSpringBridge(aServiceLocator);
 +-----------------------
 
  In the second step you must tell your initialized
  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} about the
- specific {{{http://code.google.com/p/google-guice/}Guice}}
- {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}(s)
+ specific {{{http://www.springsource.com/}Spring}}
+ {{{http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/beans/factory/BeanFactory.html}BeanFactory}}
  that you want it to look for services in.  You do this with the
- {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/GuiceIntoHK2Bridge.html}GuiceIntoHK2Bridge}}
+ {{{../nonav/spring-bridge/apidocs/org/jvnet/hk2/spring/bridge/api/SpringIntoHK2Bridge.html}SpringIntoHK2Bridge}}
  service that was added in the previous step.  The following code snippet adds a
- {{{http://code.google.com/p/google-guice/}Guice}}
- {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
+ {{{http://www.springsource.com/}Spring}}
+ {{{http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/beans/factory/BeanFactory.html}BeanFactory}}
  to be searched for services when injecting into HK2 services:
  
 +-----------------------
-  public void tieInjectorToLocator(ServiceLocator aServiceLocator, Injector guiceInjector) {
-      GuiceIntoHK2Bridge guiceBridge = aServiceLocator.getService(GuiceIntoHK2Bridge.class);
-      guiceBridge.bridgeGuiceInjector(guiceInjector);
+  public void tieBeanFactoryToLocator(ServiceLocator aServiceLocator, BeanFactory springFactory) {
+      SpringIntoHK2Bridge springBridge = aServiceLocator.getService(SpringIntoHK2Bridge.class);
+      springBridge.bridgeSpringBeanFactory(springFactory);
   }
 +-----------------------
 
- Any {{{http://code.google.com/p/google-guice/}Guice}}
- {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
- added with the
- {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/GuiceIntoHK2Bridge.html#bridgeGuiceInjector(com.google.inject.Injector)}bridgeGuiceInjector}}
- method will be searched for services that HK2 cannot otherwise find.
+ Any {{{http://www.springsource.com/}Spring}}
+ {{{http://static.springsource.org/spring/docs/current/javadoc-api/org/springframework/beans/factory/BeanFactory.html}BeanFactory}}
+ added with the bridgeSpringBeanFactory method will be searched for services that HK2 cannot otherwise find.
  
- For example, if you have a service called GuiceService that is created by
- {{{http://code.google.com/p/google-guice/}Guice}}, you can inject it into an HK2 service
+ For example, if you have a service called SpringService that is created by
+ {{{http://www.springsource.com/}Spring}}, you can inject it into an HK2 service
  (called HK2Service) like this:
  
 +---------------------------
   @Service
   public class HK2Service {
       @Inject
-      private GuiceService guiceService;
+      private SpringService springService;
   }
 +---------------------------
 
-{Injecting HK2 services into Guice services}
+{Injecting HK2 services into Spring services}
 
-  HK2 services can be injected into {{{http://code.google.com/p/google-guice/}Guice}} services.  In order
-  to do so, you must use the
-  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2Inject.html}HK2Inject}} injection
-  annotation.  For example, if you have an HK2 service named HK2Service that is to be injected
-  into a {{{http://code.google.com/p/google-guice/}Guice}} service (called GuiceService) your code
-  would look like this:
+  HK2 services can be injected into {{{http://www.springsource.com/}Spring}} services.  A HK2 service
+  can be injected into any place a normal Spring Bean can be injected.  For example, if you have an HK2 service
+  named HK2Service that is to be injected
+  into a {{{http://www.springsource.com/}Spring}} service (called SpringService) your code
+  could look like this:
 
 +---------------------------
-  public class GuiceService {
-      @HK2Inject
+  public class SpringService {
       private HK2Service hk2Service;
+      
+      public void setHK2Service(HK2Service hk2Service) {
+          this.hk2Service = hk2Service;
+      }
   }
 +---------------------------
 
-  In order to do this we have provided an implementation of
-  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Module.html}Module}}
-  that should be given to {{{http://code.google.com/p/google-guice/}Guice}} when creating the
-  {{{http://code.google.com/p/google-guice/}Guice}}
-  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}.
+  All HK2 services are in a {{{http://www.springsource.com/}Spring}}
+  {{{http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/Scope.html}Scope}}
+  that is usually named "hk2".  In order to do this we have provided an implementation of
+  {{{http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/Scope.html}Scope}}
+  called
+  SpringScopeImpl.
+  SpringScopeImpl
+  is a {{{http://www.springsource.com/}Spring}} service
+  that either takes a {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} instance
+  or the name of a {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} as attributes.
+  
   This implementation of
-  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Module.html}Module}}
-  is
-  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2IntoGuiceBridge.html}HK2IntoGuiceBridge}}.
-  The following code snippet is an example of how you would create a
-  {{{http://code.google.com/p/google-guice/}Guice}}
-  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
-  using the
-  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2IntoGuiceBridge.html}HK2IntoGuiceBridge}} 
-  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Module.html}Module}} to
-  tell the {{{http://code.google.com/p/google-guice/}Guice}}
-  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
-  about the
-  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}
-  to use for finding HK2 services:
+  {{{http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/Scope.html}Scope}}
+  can be given to any {{{http://www.springsource.com/}Spring}}
+  {{{http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/beans/factory/config/ConfigurableBeanFactory.html}ConfigurableBeanFactory}}.
+  The usual way this is done is in a {{{http://www.springsource.com/}Spring}} beans.xml.  The following
+  stanza adds a
+  SpringScopeImpl
+  for a
+  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}} named HK2ToSpringTest
+  into a {{{http://www.springsource.com/}Spring}} beans.xml:
   
 +---------------------------
-  Injector injector = Guice.createInjector(
-                new HK2IntoGuiceBridge(serviceLocator),
-                // application modules);
+  <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+      <property name="scopes">
+          <map>
+              <entry key="hk2">
+                  <bean class="org.jvnet.hk2.spring.bridge.api.SpringScopeImpl" >
+	                  <property name="ServiceLocatorName" value="HK2ToSpringTest" />
+	              </bean>
+              </entry>
+          </map>
+      </property>
+  </bean>
 +---------------------------
 
-  Any {{{http://code.google.com/p/google-guice/}Guice}} service that can be created with this
-  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
-  will now search the provided
-  {{{../nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html}ServiceLocator}}
-  when it encounters a service that is injected with the
-  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2Inject.html}HK2Inject}}
-  annotation.
+  An HK2 service is then defined by adding it to the {{{http://www.springsource.com/}Spring}} beans.xml
+  by setting its scope to "hk2".  The id of the HK2 service is formatted as per the
+  utility API
+  BuilderHelper.createTokenizedFilter.  In the usual case this means that the id of the
+  bean is the {{{https://hk2.java.net/nonav/hk2-api/apidocs/org/jvnet/hk2/annotations/Contract.html}Contract}}
+  to be looked up (though other things can be specified such as name or qualifiers).  The
+  following is an example {{{http://www.springsource.com/}Spring}} beans.xml stanza that
+  defines an HK2 service.
   
-{Bi-Directional HK2 Guice Bridge}
-
-  {{{http://code.google.com/p/google-guice/}Guice}} and HK2 can bridge back and forth between
-  each other.  The following code example shows how you could accomplish such a thing:
-
 +---------------------------
-  public Injector createBiDirectionalGuiceBridge(ServiceLocator serviceLocator,
-            Module... applicationModules) {
-        Module allModules[] = new Module[applicationModules.length + 1];
-        
-        allModules[0] = new HK2IntoGuiceBridge(serviceLocator);
-        for (int lcv = 0; lcv < applicationModules.length; lcv++) {
-            allModules[lcv + 1] = applicationModules[lcv];
-        }
-        
-        Injector injector = Guice.createInjector(allModules);
-        
-        GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
-        GuiceIntoHK2Bridge g2h = serviceLocator.getService(GuiceIntoHK2Bridge.class);
-        g2h.bridgeGuiceInjector(injector);
-        
-        return injector;
-    }
+    <bean id="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service"
+	      class="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service"
+	      scope="hk2" />
 +---------------------------
 
-  The above method will create a {{{http://code.google.com/p/google-guice/}Guice}}
-  {{{http://google-guice.googlecode.com/svn/trunk/javadoc/com/google/inject/Injector.html}Injector}}
-  where services created by Guice can be injected with HK2 services (using the
-  {{{../nonav/guice-bridge/apidocs/org/jvnet/hk2/guice/bridge/api/HK2Inject.html}HK2Inject}}
-  annotation).  Also services created by HK2 can be injected with
-  {{{http://code.google.com/p/google-guice/}Guice}} services (using any supported HK2 injection
-  annotation).
+  In the stanza above the scope was set to "hk2," implying that the HK2
+  SpringScopeImpl will be used to lookup the bean.  This bean can then be injected
+  into any other {{{http://www.springsource.com/}Spring}} bean in the normal
+  way.  The following stanza injects HK2Service into SpringService:
+  
++---------------------------
+    <bean id="SpringService" class="org.jvnet.hk2.spring.bridge.test.hk2tospring.SpringService">
+	  <property name="HK2Service" ref="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service" />
+	</bean>
++---------------------------
+
+  To make it clear, the following is the entire {{{http://www.springsource.com/}Spring}} beans.xml
+  which injects HK2Service into SpringService:
+  
++---------------------------
+  <?xml version="1.0" encoding="UTF-8"?>
+  <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="hk2">
+                    <bean class="org.jvnet.hk2.spring.bridge.api.SpringScopeImpl" >
+	                  <property name="ServiceLocatorName" value="HK2ToSpringTest" />
+	                </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+	
+	<bean id="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service"
+	      class="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service"
+	      scope="hk2" />
+ 
+	<bean id="SpringService" class="org.jvnet.hk2.spring.bridge.test.hk2tospring.SpringService">
+	  <property name="HK2Service" ref="org.jvnet.hk2.spring.bridge.test.hk2tospring.HK2Service" />
+	</bean>
+ 
+  </beans>
++---------------------------
