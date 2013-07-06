@@ -598,6 +598,7 @@ public class BuilderHelperTest {
             Assert.assertEquals(f1.getAdvertisedContract(),ACME_INTF);
             Assert.assertNull(f1.getName());
             Assert.assertTrue(f1.matches(d1));
+            Assert.assertTrue(f1.toString().contains(ACME_INTF));
         }
         
         {
@@ -605,6 +606,8 @@ public class BuilderHelperTest {
             Assert.assertEquals(f2.getAdvertisedContract(),ACME_INTF);
             Assert.assertEquals(NAME1, f2.getName());
             Assert.assertTrue(f2.matches(d1));
+            Assert.assertTrue(f2.toString().contains(ACME_INTF));
+            Assert.assertTrue(f2.toString().contains(NAME1));
         }
         
         {
@@ -612,6 +615,8 @@ public class BuilderHelperTest {
             Assert.assertEquals(f3.getAdvertisedContract(),ACME_INTF);
             Assert.assertNull(f3.getName());
             Assert.assertFalse(f3.matches(d1));
+            Assert.assertTrue(f3.toString().contains(ACME_INTF));
+            Assert.assertTrue(f3.toString().contains(QUAL2));
         }
         
         {
@@ -619,13 +624,10 @@ public class BuilderHelperTest {
             Assert.assertEquals(f4.getAdvertisedContract(),ACME_INTF);
             Assert.assertEquals(NAME1, f4.getName());
             Assert.assertFalse(f4.matches(d1));
-        }
-        
-        {
-            IndexedFilter f4 = BuilderHelper.createTokenizedFilter(TOKEN4);
-            Assert.assertEquals(f4.getAdvertisedContract(),ACME_INTF);
-            Assert.assertEquals(NAME1, f4.getName());
-            Assert.assertFalse(f4.matches(d1));
+            Assert.assertTrue(f4.toString().contains(ACME_INTF));
+            Assert.assertTrue(f4.toString().contains(QUAL1));
+            Assert.assertTrue(f4.toString().contains(QUAL2));
+            Assert.assertTrue(f4.toString().contains(NAME1));
         }
         
         {
@@ -633,6 +635,7 @@ public class BuilderHelperTest {
             Assert.assertNull(f5.getAdvertisedContract());
             Assert.assertNull(f5.getName());
             Assert.assertTrue(f5.matches(d1));
+            Assert.assertTrue(f5.toString().contains(QUAL1));
         }
         
         

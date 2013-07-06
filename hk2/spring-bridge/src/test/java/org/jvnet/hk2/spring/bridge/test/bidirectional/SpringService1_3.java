@@ -37,50 +37,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.spring.bridge.test.utilities;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.jvnet.hk2.spring.bridge.api.SpringBridge;
-import org.jvnet.hk2.spring.bridge.api.SpringIntoHK2Bridge;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+package org.jvnet.hk2.spring.bridge.test.bidirectional;
 
 /**
  * @author jwells
  *
  */
-public class Utilities {
+public class SpringService1_3 {
+    private HK2Service1_2 oneTwo;
+    
     /**
-     * Creates a ServiceLocator with the SpringBridge initialized
+     * Called by Spring
      * 
-     * @param xmlFileName The name of the spring configuration file
-     * @param uniqueName The name that the service locator should have
-     * @param classes Classes to add to the locator
-     * @return An anonymous service locator with the given classes as services
+     * @param oneTwo the HK2 service
      */
-    public static LocatorAndContext createSpringTestLocator(String xmlFileName, String uniqueName, Class<?>...classes) {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(uniqueName);
-        
-        SpringBridge.getSpringBridge().initializeSpringBridge(locator);
-        
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        for (Class<?> clazz : classes) {
-            config.addActiveDescriptor(clazz);
-        }
-        
-        config.commit();
-        
-        // Now setup the bridge
-        ConfigurableApplicationContext context = new ClassPathXmlApplicationContext(xmlFileName);
-        SpringIntoHK2Bridge bridge = locator.getService(SpringIntoHK2Bridge.class);
-        bridge.bridgeSpringBeanFactory(context);
-        
-        return new LocatorAndContext(locator, context);
+    public void setHK2Service1_2(HK2Service1_2 oneTwo) {
+        this.oneTwo = oneTwo;
+    }
+    
+    /**
+     * Checks that everything has been instantiated properly
+     * @return returns the lowest level service
+     */
+    public HK2Service1_0 check() {
+        return oneTwo.check();
     }
 
 }

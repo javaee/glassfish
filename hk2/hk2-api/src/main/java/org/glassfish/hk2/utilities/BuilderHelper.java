@@ -45,7 +45,6 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -150,7 +149,7 @@ public class BuilderHelper {
         
         String contract = null;
         String name = null;
-        final Set<String> qualifiers = new HashSet<String>();
+        final Set<String> qualifiers = new LinkedHashSet<String>();
         
         boolean firstToken = true;
         if (tokenString.startsWith(TOKEN_SEPARATOR)) {
@@ -209,6 +208,19 @@ public class BuilderHelper {
             @Override
             public String getName() {
                 return fName;
+            }
+            
+            @Override
+            public String toString() {
+                String cField = (fContract == null) ? "" : fContract;
+                String nField = (fName == null) ? "" : ";name=" + fName;
+                
+                StringBuffer sb = new StringBuffer();
+                for (String q : qualifiers) {
+                    sb.append(";qualifier=" + q);
+                }
+                
+                return "TokenizedFilter(" + cField + nField + sb.toString() + ")";
             }
             
         };
