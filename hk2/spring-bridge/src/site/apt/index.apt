@@ -14,6 +14,8 @@ Table of Contents
  * {{Injecting Spring services into HK2 services}}
  
  * {{Injecting HK2 services into Spring services}}
+ 
+ * {{Bi-Directional Spring/HK2 Bridge}}
 
  []
 
@@ -193,3 +195,61 @@ Table of Contents
  
   </beans>
 +---------------------------
+
+{Bi-Directional Spring/HK2 Bridge}
+
+  When using Spring and HK2 bi-directionally it is important to remember that Spring instantiates beans
+  as soon as they are satisfied (i.e., as soon as all references are available).  This can make bootstrapping
+  difficult as Spring may try to instantiate beans before they are available in HK2.  In order to avoid this
+  you can use any of the methods Spring allows for lazy initialization.  The following Spring beans.xml
+  file uses the lazy-init mechanism for this, but other mechanism (such as the use of proxies) can
+  also be used.
+  
++---------------------------
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+	
+	<bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="hk2">
+                    <bean class="org.jvnet.hk2.spring.bridge.api.SpringScopeImpl" >
+	                  <property name="ServiceLocatorName" value="BiDirectionalSpringBridge" />
+	                </bean>
+                </entry>
+            </map>
+        </property>
+    </bean>
+	
+	<bean id="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_0"
+	      class="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_0"
+	      scope="hk2" 
+	      lazy-init="true"/>
+ 
+	<bean id="SpringService1_1"
+	      class="org.jvnet.hk2.spring.bridge.test.bidirectional.SpringService1_1"
+	      lazy-init="true">
+	  <property name="HK2Service1_0" ref="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_0" />
+	</bean>
+	
+	<bean id="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_2"
+	      class="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_2"
+	      scope="hk2" 
+	      lazy-init="true"/>
+	      
+	<bean id="SpringService1_3"
+	      class="org.jvnet.hk2.spring.bridge.test.bidirectional.SpringService1_3"
+	      lazy-init="true">
+	  <property name="HK2Service1_2" ref="org.jvnet.hk2.spring.bridge.test.bidirectional.HK2Service1_2" />
+	</bean>
+ 
+</beans>
++---------------------------
+
+  In the above example SpringService1_3 has HK2Service1_2 injected into it, while HK2Service1_2 has
+  SpringService1_1 injected into it (though you can't see that in the XML stanza), and SpringService1_1
+  has HK2Service1_0 injected into it.  Since everything in the beans.xml is lazily initialized you
+  can start the Spring BeanFactory either before or after you initialize the ServiceLocator.
