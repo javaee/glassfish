@@ -324,18 +324,18 @@ public abstract class AbstractBinder implements Binder, DynamicConfiguration {
 
     private HK2Loader getDefaultBinderLoader() {
         if (defaultLoader == null) {
-            ClassLoader loader = this.getClass().getClassLoader();
-            if (loader == null) {
-                loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            final ClassLoader binderClassLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
 
-                    @Override
-                    public ClassLoader run() {
+                @Override
+                public ClassLoader run() {
+                    ClassLoader loader = this.getClass().getClassLoader();
+                    if (loader == null) {
                         return ClassLoader.getSystemClassLoader();
                     }
-                    
-                });
-            }
-            final ClassLoader binderClassLoader = loader;
+                    return loader;
+                }
+                
+            });
             
             defaultLoader = new HK2Loader() {
                 @Override
