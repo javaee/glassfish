@@ -76,7 +76,14 @@
 # Note: the release process may use ssh key to interact with the SCM. If so, it will use your user.name as define in the release profile of your settings.xml.
 # Be sure to have your ssh public key exported in your java.net account.
 
-CURRENT_VERSION=`grep "<version>" hk2/pom.xml | head -1 | sed -Ee 's/.*<version>(.*)<\/version>/\1/'`
+if [ `uname | grep -i darwmin | wc -l` -eq 1 ]
+then
+	SED_OPTS="-Ee"
+else
+	SED_OPTS="-re"
+fi
+CURRENT_VERSION=`grep "<version>" hk2/pom.xml | head -1 | sed $SED_OPTS 's/.*<version>(.*)<\/version>/\1/'`
+echo $CURRENT_VERSION
 NEXT_RELEASE_VERSION=`echo $CURRENT_VERSION | sed s@"-SNAPSHOT"@@g`
 NEXT_RELEASE_TAG="hk2-parent-$NEXT_RELEASE_VERSION"
 
@@ -88,7 +95,7 @@ git status | grep "\#" | awk '{print $2}' | xargs rm -rf
 
 # remove tag if exist
 if [ `git tag | grep $NEXT_RELEASE_TAG | wc -l` -eq 1 ]
-then
+ then
    set +e
    git tag -d $NEXT_RELEASE_TAG
    git push origin :refs/tags/$NEXT_RELEASE_TAG
