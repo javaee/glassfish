@@ -59,7 +59,7 @@
       <module>appclient/client/acc</module>
       <module>appclient/server/core</module>
       <module>batch/batch-connector</module>
-      <module>concurrent/admin</module>
+      <module>concurrent/concurrent-impl</module>
       <module>connectors/admin</module>
       <module>deployment/javaee-core</module>
       <module>ejb/ejb-container</module>
