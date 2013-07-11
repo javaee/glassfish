@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.utilities;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -62,12 +61,7 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee, Serializable {
-    /**
-     * For serialization
-     */
-    private static final long serialVersionUID = -1501119884265443727L;
-    
+public class InjecteeImpl implements Injectee {
     private Type requiredType;
     private Set<Annotation> qualifiers;
     private int position;
@@ -248,6 +242,11 @@ public class InjecteeImpl implements Injectee, Serializable {
         return unqualified;
     }
     
+    /**
+     * Sets the unqualified annotation to be associated with this injectee
+     * 
+     * @param unqualified The unqualified annotation to be associated with this injectee
+     */
     public void setUnqualified(Unqualified unqualified) {
         this.unqualified = unqualified;
     }
@@ -257,6 +256,11 @@ public class InjecteeImpl implements Injectee, Serializable {
         return injecteeDescriptor;
     }
     
+    /**
+     * Sets the descriptor to be associated with this injectee
+     * 
+     * @param injecteeDescriptor The injectee to be associated with this injectee
+     */
     public void setInjecteeDescriptor(ActiveDescriptor<?> injecteeDescriptor) {
         this.injecteeDescriptor = injecteeDescriptor;
     }

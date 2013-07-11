@@ -486,7 +486,7 @@ public class BuilderHelper {
         Boolean proxyForSameScope = null;
         ProxyForSameScope pfss = clazz.getAnnotation(ProxyForSameScope.class);
         if (pfss != null) {
-            proxyForSameScope = new Boolean(pfss.value());
+            proxyForSameScope = Boolean.valueOf(pfss.value());
         }
         
         DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
