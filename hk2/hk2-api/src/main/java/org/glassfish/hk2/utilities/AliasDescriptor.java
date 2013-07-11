@@ -321,7 +321,10 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     
     @Override
     public int hashCode() {
-        int retVal = descriptor.hashCode();
+        int retVal;
+        synchronized (this) {
+            retVal = descriptor.hashCode();
+        }
         
         if (getName() != null) {
             retVal ^= getName().hashCode();
