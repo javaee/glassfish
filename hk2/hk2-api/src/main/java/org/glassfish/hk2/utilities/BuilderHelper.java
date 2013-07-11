@@ -423,23 +423,13 @@ public class BuilderHelper {
         Boolean proxy = null;
         UseProxy up = constant.getClass().getAnnotation(UseProxy.class);
         if (up != null) {
-            if (up.value()) {
-                proxy = Boolean.TRUE;
-            }
-            else {
-                proxy = Boolean.FALSE;
-            }
+            proxy = up.value();
         }
         
         Boolean proxyForSameScope = null;
         ProxyForSameScope pfss = constant.getClass().getAnnotation(ProxyForSameScope.class);
         if (pfss != null) {
-            if (pfss.value()) {
-                proxyForSameScope = Boolean.TRUE;
-            }
-            else {
-                proxyForSameScope = Boolean.FALSE;
-            }
+            proxyForSameScope = pfss.value();
         }
         
         DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
@@ -490,7 +480,7 @@ public class BuilderHelper {
         Boolean proxy = null;
         UseProxy up = clazz.getAnnotation(UseProxy.class);
         if (up != null) {
-            proxy = new Boolean(up.value());
+            proxy = Boolean.valueOf(up.value());
         }
         
         Boolean proxyForSameScope = null;

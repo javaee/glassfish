@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,30 +37,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-
 package org.glassfish.hk2.tests.locator.alias;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.jvnet.hk2.annotations.Service;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
+import javax.inject.Qualifier;
 
 /**
- * Test service.
+ * @author jwells
  *
- * @author tbeerbower
  */
-@Service @Qualifier1
-public class MyService implements MyInterface1, MyInterface2, MyInterface3{
-    @Override
-    public void doSomething() {
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface Qualifier1 {
 
-    @Override
-    public void doSomethingElse() {
-    }
-
-    @Override
-    public void doSomethingCompletelyDifferent() {
-    }
 }

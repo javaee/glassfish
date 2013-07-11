@@ -46,6 +46,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
@@ -57,6 +59,7 @@ import org.glassfish.hk2.api.ServiceLocator;
  * A descriptor class that serves as an alias for another descriptor.
  *
  * @author tbeerbower
+ * @param <T> The cache type
  */
 public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
 
@@ -68,7 +71,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     /**
      * The service locator.
      */
-    private final ServiceLocator locator;
+    private ServiceLocator locator;
 
     /**
      * The descriptor that this descriptor will alias.
@@ -78,12 +81,17 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     /**
      * The contract type of this descriptor.
      */
-    private final String contract;
+    private String contract;
 
     /**
      * The set of annotations for this descriptor.
      */
     private Set<Annotation> qualifiers;
+    
+    /**
+     * The set of qualifier names for this descriptor.
+     */
+    private Set<String> qualifierNames;
 
     /**
      * Indicates whether or not this descriptor has been initialized.
@@ -104,6 +112,12 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
     private static final Set<Annotation> EMPTY_ANNOTATION_SET = new HashSet<Annotation>();
 
     // ----- Constructors ---------------------------------------------------
+    /**
+     * For serialization
+     */
+    public AliasDescriptor() {
+        super();
+    }
 
     /**
      * Construct an AliasDescriptor.
@@ -120,7 +134,10 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         // pass in an empty contract set, an empty annotation set and a null
         // scope since we are not really reified and we don't want to reify
         // the given descriptor yet
-        super(EMPTY_CONTRACT_SET, null, name, EMPTY_ANNOTATION_SET,
+        super(EMPTY_CONTRACT_SET,
+                null,
+                name,
+                EMPTY_ANNOTATION_SET,
                 descriptor.getDescriptorType(),
                 descriptor.getDescriptorVisibility(),
                 descriptor.getRanking(),
@@ -199,7 +216,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
      * @see org.glassfish.hk2.api.ActiveDescriptor#getQualifierAnnotations()
      */
     @Override
-    public Set<Annotation> getQualifierAnnotations() {
+    public synchronized Set<Annotation> getQualifierAnnotations() {
         ensureInitialized();
 
         if (qualifiers == null) {
@@ -209,6 +226,18 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
             }
         }
         return qualifiers;
+    }
+    
+    @Override
+    public synchronized Set<String> getQualifiers() {
+        if (qualifierNames != null) return qualifierNames;
+        
+        qualifierNames = new HashSet<String>(descriptor.getQualifiers());
+        if (getName() != null) {
+            qualifierNames.add(Named.class.getName());
+        }
+        
+        return qualifierNames;
     }
 
     /* (non-Javadoc)
@@ -288,5 +317,39 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
 
             initialized = true;
         }
+    }
+    
+    @Override
+    public int hashCode() {
+        int retVal = descriptor.hashCode();
+        
+        if (getName() != null) {
+            retVal ^= getName().hashCode();
+        }
+        
+        if (contract != null) {
+            retVal ^= contract.hashCode();
+        }
+        
+        return retVal;
+    }
+    
+    private static boolean safeEquals(Object a, Object b) {
+        if (a == b) return true;
+        if (a == null) return false;
+        if (b == null) return false;
+        return a.equals(b);
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof AliasDescriptor)) return false;
+        
+        AliasDescriptor<?> other = (AliasDescriptor<?>) o;
+        
+        if (!other.descriptor.equals(descriptor)) return false;
+        if (!safeEquals(other.getName(), getName())) return false;
+        return safeEquals(other.contract, contract);
     }
 }

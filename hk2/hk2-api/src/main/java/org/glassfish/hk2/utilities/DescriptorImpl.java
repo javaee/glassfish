@@ -66,7 +66,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  */
 public class DescriptorImpl implements Descriptor, Externalizable {
     /**
-     * 
+     * For serialization
      */
     private static final long serialVersionUID = 1558442492395467828L;
     
