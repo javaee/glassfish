@@ -843,10 +843,10 @@ public class ReflectionHelper {
         for (String writeMe : list) {
             if (first) {
                 first = false;
-                sb.append(escapeString(writeMe.toString()));
+                sb.append(escapeString(writeMe));
             }
             else {
-                sb.append("," + escapeString(writeMe.toString()));
+                sb.append("," + escapeString(writeMe));
             }
         }
         

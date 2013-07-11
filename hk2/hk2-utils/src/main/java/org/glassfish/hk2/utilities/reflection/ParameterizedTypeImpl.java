@@ -90,10 +90,9 @@ public class ParameterizedTypeImpl implements ParameterizedType {
     
     @Override
     public int hashCode() {
-        return
-                Arrays.hashCode(actualTypeArguments) ^
-                0 ^
-                (rawType == null   ? 0 : rawType.hashCode() );
+        int retVal = Arrays.hashCode(actualTypeArguments);
+        if (rawType == null) return retVal;
+        return retVal ^ rawType.hashCode() ;
     }
     
     @Override

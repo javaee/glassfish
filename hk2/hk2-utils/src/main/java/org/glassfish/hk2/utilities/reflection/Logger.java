@@ -57,9 +57,8 @@ public class Logger {
 
             @Override
             public Boolean run() {
-                // TODO Auto-generated method stub
-                return new Boolean(Boolean.parseBoolean(
-            System.getProperty("org.jvnet.hk2.logger.debugToStdout", "false")));
+                return Boolean.parseBoolean(
+            System.getProperty("org.jvnet.hk2.logger.debugToStdout", "false"));
             }
             
         });
@@ -73,7 +72,7 @@ public class Logger {
     
     /**
      * Gets the singleton instance of the Logger
-     * @return
+     * @return The singleton logger instance (will not return null)
      */
     public static Logger getLogger() {
         return INSTANCE;
@@ -94,7 +93,7 @@ public class Logger {
     /**
      * Sends this message to the Debug channel (FINER level in JDK parlance)
      * 
-     * @param debuggingMessage The non-null message to log to the debug logger
+     * @param warningMessage The non-null message to log to the debug logger
      */
     public void warning(String warningMessage) {
         jdkLogger.warning(warningMessage);
