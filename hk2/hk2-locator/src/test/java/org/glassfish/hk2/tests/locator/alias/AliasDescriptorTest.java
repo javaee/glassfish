@@ -49,8 +49,10 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
+import org.junit.Assert;
 import org.junit.Test;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import java.lang.annotation.Annotation;
@@ -161,10 +163,48 @@ public class AliasDescriptorTest {
 
         final Set<Annotation> qualifierAnnotations = aliasDescriptor.getQualifierAnnotations();
 
-        assertSame(1, qualifierAnnotations.size());
-        Annotation annotation = qualifierAnnotations.iterator().next();
-        assertTrue(annotation instanceof NamedImpl);
-        assertSame("foo", ((NamedImpl)annotation).value());
+        boolean foundNamed = false;
+        boolean foundQ1 = false;
+        assertSame(2, qualifierAnnotations.size());
+        for (Annotation anno : qualifierAnnotations) {
+            if (Named.class.equals(anno.annotationType())) {
+                Named named = (Named) anno;
+                
+                assertSame("foo", named.value());
+                
+                foundNamed = true;
+            }
+            else if (Qualifier1.class.equals(anno.annotationType())) {
+                foundQ1 = true;
+            }
+            else {
+                Assert.fail("Unknown annotation found: " + anno);
+            }
+        }
+        
+        Assert.assertTrue(foundNamed);
+        Assert.assertTrue(foundQ1);
+        
+        // Also check the String version
+        Set<String> qualifierTypes = aliasDescriptor.getQualifiers();
+        
+        foundNamed = false;
+        foundQ1 = false;
+        assertSame(2, qualifierTypes.size());
+        for (String anno : qualifierTypes) {
+            if (Named.class.getName().equals(anno)) {
+                foundNamed = true;
+            }
+            else if (Qualifier1.class.getName().equals(anno)) {
+                foundQ1 = true;
+            }
+            else {
+                Assert.fail("Unknown annotation found: " + anno);
+            }
+        }
+        
+        Assert.assertTrue(foundNamed);
+        Assert.assertTrue(foundQ1);
     }
 
     @Test
@@ -200,6 +240,48 @@ public class AliasDescriptorTest {
         MyService s2 = aliasDescriptor.create(null);
         assertSame(s1, s2);
     }
+    
+    /**
+     * Tests that hashCode and equals is working
+     */
+    @Test
+    public void testHashCodeEquals() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testHashCodeEquals");
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+        ActiveDescriptor<MyService> descriptor1 =
+                (ActiveDescriptor<MyService>)config.<MyService>bind(BuilderHelper.link(MyService.class).
+                        to(MyInterface1.class).in(Singleton.class.getName()).
+                        qualifiedBy(Qualifier1.class.getName()).build());
+        
+        ActiveDescriptor<MyService> descriptor2 =
+                (ActiveDescriptor<MyService>)config.<MyService>bind(BuilderHelper.link(MyService.class).
+                        to(MyInterface1.class).in(Singleton.class.getName()).
+                        qualifiedBy(Qualifier1.class.getName()).build());
+
+        config.commit();
+        
+        AliasDescriptor<MyService> a1 = new AliasDescriptor<MyService>(locator, descriptor1, MyInterface2.class.getName(), "foo");
+        AliasDescriptor<MyService> a2 = new AliasDescriptor<MyService>(locator, descriptor1, MyInterface2.class.getName(), "foo");
+        AliasDescriptor<MyService> a3 = new AliasDescriptor<MyService>(locator, descriptor1, MyInterface3.class.getName(), "foo");
+        AliasDescriptor<MyService> a4 = new AliasDescriptor<MyService>(locator, descriptor1, MyInterface2.class.getName(), "bar");
+        AliasDescriptor<MyService> a5 = new AliasDescriptor<MyService>(locator, descriptor2, MyInterface2.class.getName(), "foo");
+        
+        Assert.assertEquals(a1, a2);
+        Assert.assertEquals(a2, a1);
+        Assert.assertEquals(a1.hashCode(), a2.hashCode());
+        Assert.assertEquals(a3, a3);
+        
+        Assert.assertNotSame(a1, a3);  // Contract different
+        Assert.assertNotSame(a2, a3);  // Contract different
+        
+        Assert.assertNotSame(a1, a4);  // Name different
+        Assert.assertNotSame(a2, a4);  // Name different
+        
+        Assert.assertNotSame(a1, a5);  // Underlying descriptor different
+        Assert.assertNotSame(a2, a5);  // Underlying descriptor different
+    }
 
 
     // ----- Utility methods ------------------------------------------------
@@ -211,7 +293,8 @@ public class AliasDescriptorTest {
 
         ActiveDescriptor<MyService> descriptor =
                 (ActiveDescriptor<MyService>)config.<MyService>bind(BuilderHelper.link(MyService.class).
-                        to(MyInterface1.class).in(Singleton.class.getName()).build());
+                        to(MyInterface1.class).in(Singleton.class.getName()).
+                        qualifiedBy(Qualifier1.class.getName()).build());
 
         config.commit();
 

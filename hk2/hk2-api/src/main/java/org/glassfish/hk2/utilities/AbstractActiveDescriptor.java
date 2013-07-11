@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.utilities;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collections;
@@ -66,7 +65,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  * @author jwells
  * @param <T> The type returned from the cache
  */
-public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl implements ActiveDescriptor<T>, Serializable {
+public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl implements ActiveDescriptor<T> {
     /**
      * For serialization 
      */
@@ -347,6 +346,15 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         return factoryLocatorId;
     }
     
+    /**
+     * Sets the locator and serviceId for the factory.  This
+     * descriptor must be of type PROVIDE_METHOD
+     * 
+     * @param locatorId The locatorId of the factory associated with
+     * this method
+     * @param serviceId The serviceId of the factory associated with
+     * this method
+     */
     public void setFactoryId(Long locatorId, Long serviceId) {
         if (!getDescriptorType().equals(DescriptorType.PROVIDE_METHOD)) {
             throw new IllegalStateException("The descriptor type must be PROVIDE_METHOD");
@@ -370,6 +378,16 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
     @Override
     public synchronized void dispose(T instance) {
 
+    }
+    
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
     }
 }
 
