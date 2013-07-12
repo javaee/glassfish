@@ -83,7 +83,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final ActiveDescriptor<T> activeDescriptor;
     
     private final ServiceLocatorImpl sdLocator;
-    private boolean reified;
+    private transient boolean reified;
     private boolean reifying = false;  // Am I currently reifying
     private boolean preAnalyzed = false;
     
@@ -133,7 +133,6 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             }
             else {
             	activeDescriptor = null;
-                reified = false;
                 preAnalyzed = true;
                 
                 implClass = active.getImplementationClass();
@@ -144,7 +143,6 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         }
         else {
             activeDescriptor = null;
-            reified = false;
         }
     }
 
@@ -733,7 +731,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         int low32 = id.intValue();
         int high32 = (int) (id.longValue() >> 32);
         
-        int locatorLow32 = new Long(sdLocator.getLocatorId()).intValue();
+        int locatorLow32 = (int) sdLocator.getLocatorId();
         int locatorHigh32 = (int) (sdLocator.getLocatorId() >> 32);
         
         return baseDescriptor.hashCode() ^ low32 ^ high32 ^ locatorLow32 ^ locatorHigh32;
@@ -759,7 +757,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
      */
     @Override
     public Long getLocatorId() {
-        return new Long(sdLocator.getLocatorId());
+        return sdLocator.getLocatorId();
     }
     
     /**
