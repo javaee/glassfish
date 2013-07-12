@@ -339,7 +339,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (descriptor == null) throw new IllegalArgumentException();
         
         if (!(descriptor instanceof ActiveDescriptor)) {
-            SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor, true, this, new Long(getNextServiceId()));
+            SystemDescriptor<?> sd = new SystemDescriptor<Object>(descriptor, true, this, getNextServiceId());
             
             Class<?> implClass = loadClass(descriptor, injectee);
             
@@ -937,7 +937,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     onBehalfOf,
                     true,
                     true,
-                    results,
+                    null,
                     filter,
                     qualifiers);
             results = immediate.getTimelessResults();
@@ -1103,7 +1103,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                       null,
                       false,
                       true,
-                      results,
+                      null,
                       filter,
                       qualifiers);
               results = immediate.getTimelessResults();
