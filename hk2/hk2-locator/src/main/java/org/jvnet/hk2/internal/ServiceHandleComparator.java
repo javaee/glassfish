@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.glassfish.hk2.api.ServiceHandle;
@@ -47,7 +48,12 @@ import org.glassfish.hk2.api.ServiceHandle;
  * @author jwells
  *
  */
-public class ServiceHandleComparator implements Comparator<ServiceHandle<?>> {
+public class ServiceHandleComparator implements Comparator<ServiceHandle<?>>, Serializable {
+    /**
+     * For serialization
+     */
+    private static final long serialVersionUID = -3475592779302344427L;
+    
     private final DescriptorComparator baseComparator = new DescriptorComparator();
 
     /* (non-Javadoc)

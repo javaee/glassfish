@@ -54,6 +54,8 @@ import java.util.Set;
  *
  * @author Kohsuke Kawaguchi
  * @author Jerome Dochez
+ * @param <K> The key of the multi-map
+ * @param <V> The types in the multi-map
  */
 public class MultiMap<K, V> implements Serializable, Cloneable {
     /**
@@ -325,7 +327,9 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
      * Keys and values won't cloned.
      */
     @Override
-    public MultiMap<K, V> clone() {
+    public MultiMap<K, V> clone() throws CloneNotSupportedException {
+        super.clone();
+        
         return new MultiMap<K, V>(this);
     }
 

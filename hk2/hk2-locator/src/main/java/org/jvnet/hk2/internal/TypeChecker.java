@@ -101,6 +101,11 @@ public class TypeChecker {
             return true;
         }
         
+        if (!(requiredType instanceof ParameterizedType)) {
+            throw new IllegalArgumentException("requiredType " + requiredType + " is of unknown type");
+            
+        }
+        
         // By the check of null of getRawClass the required type MUST be a parameterized type at this time
         ParameterizedType requiredPT = (ParameterizedType) requiredType;
         
@@ -109,8 +114,11 @@ public class TypeChecker {
         if (beanType instanceof Class) {
             beanTypeVariables = ((Class<?>) beanType).getTypeParameters();
         }
-        else {
+        else if (beanType instanceof ParameterizedType) {
             beanTypeVariables = ((ParameterizedType) beanType).getActualTypeArguments();
+        }
+        else {
+            throw new IllegalArgumentException("Uknown beanType " + beanType);
         }
         
         if (requiredTypeVariables.length != beanTypeVariables.length) {

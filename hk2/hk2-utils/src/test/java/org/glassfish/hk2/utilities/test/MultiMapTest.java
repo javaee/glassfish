@@ -550,9 +550,10 @@ public class MultiMapTest {
     
     /**
      * Tests clone
+     * @throws CloneNotSupportedException 
      */
     @Test
-    public void testClone() {
+    public void testClone() throws CloneNotSupportedException {
         MultiMap<String, String> mm1 = new MultiMap<String,String>();
         
         mm1.add(KEY1, VALUE1_1);
@@ -645,9 +646,10 @@ public class MultiMapTest {
     
     /**
      * Tests merge with null
+     * @throws CloneNotSupportedException 
      */
     @Test
-    public void testMergeNull() {
+    public void testMergeNull() throws CloneNotSupportedException {
         MultiMap<String, String> mm1 = new MultiMap<String,String>();
         
         mm1.add(KEY1, VALUE1_1);

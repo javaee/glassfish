@@ -62,18 +62,32 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      * For serialization
      */
     private static final long serialVersionUID = -7921574114250721537L;
-    private final Class<?> implClass;
-    private final Creator<T> creator;
+    private Class<?> implClass;
+    private Creator<T> creator;
     private SystemDescriptor<?> hk2Parent;
     
     /**
-     * @param clazz 
-     * @param creator 
-     * @param advertisedContracts
-     * @param scope
-     * @param name
-     * @param qualifiers
-     * @param ranking
+     * For serialization
+     */
+    public AutoActiveDescriptor() {
+        super();
+    }
+    
+    /**
+     * Constructor with all relevant fields
+     * 
+     * @param clazz The class of the implementation
+     * @param creator The creator to use (factory or clazz)
+     * @param advertisedContracts The set of advertised contracts
+     * @param scope The scope of the service
+     * @param name The name of the service (may be null)
+     * @param qualifiers The set of qualifier annotations
+     * @param descriptorVisibility The visibility of this descriptor
+     * @param ranking The initial rank
+     * @param proxy Whether or not this can be proxied (null for default)
+     * @param proxyForSameScope Whether or not to proxy within the same scope (null for default)
+     * @param classAnalysisName The name of the class analyzer (null for default)
+     * @param metadata The set of metadata associated with this descriptor
      */
     public AutoActiveDescriptor(
             Class<?> clazz,

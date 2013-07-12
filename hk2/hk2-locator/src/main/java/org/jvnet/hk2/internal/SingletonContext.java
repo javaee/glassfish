@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -216,7 +217,12 @@ public class SingletonContext implements Context<Singleton> {
         
     }
     
-    private static class GenerationComparator implements Comparator<SystemDescriptor<Object>> {
+    private static class GenerationComparator implements Comparator<SystemDescriptor<Object>>, Serializable {
+
+        /**
+         * For serialization
+         */
+        private static final long serialVersionUID = -6931828935035131179L;
 
         @Override
         public int compare(SystemDescriptor<Object> o1,

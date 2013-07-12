@@ -52,7 +52,7 @@ public class UnsatisfiedDependencyException extends HK2RuntimeException {
      */
     private static final long serialVersionUID = 1191047707346290567L;
     
-    private final Injectee injectionPoint;
+    private final transient Injectee injectionPoint;
 
     /**
      * Use this if the injectee is unknown

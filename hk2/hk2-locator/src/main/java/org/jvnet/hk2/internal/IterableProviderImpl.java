@@ -46,6 +46,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import org.glassfish.hk2.api.IterableProvider;
@@ -200,6 +201,8 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
          */
         @Override
         public U next() {
+            if (handles.isEmpty()) throw new NoSuchElementException();
+            
             ServiceHandle<U> nextHandle = handles.removeFirst();
             
             return nextHandle.getService();
