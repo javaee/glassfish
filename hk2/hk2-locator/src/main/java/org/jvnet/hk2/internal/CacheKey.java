@@ -62,6 +62,13 @@ public class CacheKey {
     /** Pre-calculated in order to improve hashMap lookups */
     private final int hashCode;
     
+    /**
+     * Key used for LRU cache
+     * 
+     * @param lookupType The type in the lookup call
+     * @param name The name in the lookup call
+     * @param qualifiers The set of qualifiers being looked up
+     */
     public CacheKey(Type lookupType, String name, Annotation... qualifiers) {
         this.lookupType = lookupType;
         this.name = name;
@@ -82,25 +89,25 @@ public class CacheKey {
             retVal ^= name.hashCode();
         }
         
-        if (qualifiers != null) {
-            for (Annotation anno : qualifiers) {
-                retVal ^= anno.hashCode();
-            }
+        for (Annotation anno : qualifiers) {
+            retVal ^= anno.hashCode();
         }
         
         hashCode = retVal;
     }
     
-    public static boolean safeEquals(Object a, Object b) {
+    private static boolean safeEquals(Object a, Object b) {
         if (a == b) return true;
         if (a == null || b == null) return false;
         return a.equals(b);
     }
     
+    @Override
     public int hashCode() {
         return hashCode;
     }
     
+    @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof CacheKey)) return false;

@@ -107,8 +107,11 @@ public class InjecteeImpl implements Injectee {
         else if (parent instanceof Constructor) {
             pClass = ((Constructor<?>) parent).getDeclaringClass();
         }
-        else {
+        else if (parent instanceof Method) {
             pClass = ((Method) parent).getDeclaringClass();
+        }
+        else {
+            throw new IllegalArgumentException("parent " + parent + " has an unknown type");
         }
     }
 

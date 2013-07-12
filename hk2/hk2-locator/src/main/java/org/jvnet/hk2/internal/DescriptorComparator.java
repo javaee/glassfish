@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.internal;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.glassfish.hk2.api.Descriptor;
@@ -47,7 +48,12 @@ import org.glassfish.hk2.api.Descriptor;
  * @author jwells
  *
  */
-public class DescriptorComparator implements Comparator<Descriptor> {
+public class DescriptorComparator implements Comparator<Descriptor>, Serializable {
+
+    /**
+     * Added for serialization
+     */
+    private static final long serialVersionUID = 4454509124508404602L;
 
     /* (non-Javadoc)
      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)

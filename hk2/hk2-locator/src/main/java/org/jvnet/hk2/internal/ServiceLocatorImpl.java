@@ -173,6 +173,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     private ServiceLocatorState state = ServiceLocatorState.RUNNING;
     
+    private static long getAndIncrementLocatorId() {
+        synchronized (sLock) {
+            return currentLocatorId++;
+        }
+    }
+    
     /**
      * Called by the Generator, and hence must be a public method
      * 
@@ -186,9 +192,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             parent.addChild(this);
         }
         
-        synchronized (sLock) {
-            id = currentLocatorId++;
-        }
+        id = getAndIncrementLocatorId();
         
         Logger.getLogger().debug("Created ServiceLocator " + this);
     }
@@ -360,7 +364,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             sd = (SystemDescriptor<?>) active;
         }
         else {
-            sd = new SystemDescriptor<Object>(descriptor, true, this, new Long(getNextServiceId()));
+            sd = new SystemDescriptor<Object>(descriptor, true, this, getNextServiceId());
         }
         
         Class<?> implClass = sd.getPreAnalyzedClass();

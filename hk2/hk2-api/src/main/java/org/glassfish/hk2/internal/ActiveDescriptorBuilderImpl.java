@@ -74,6 +74,11 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
     private String classAnalysisName = null;
     
+    /**
+     * constructor with the impl class
+     * 
+     * @param implementation The implementation class (may be null)
+     */
     public ActiveDescriptorBuilderImpl(Class<?> implementation) {
         this.implementation = implementation;
     }
@@ -276,7 +281,15 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
          */
         private static final long serialVersionUID = 2434137639270026082L;
         
-        private final Class<?> implementationClass;
+        private Class<?> implementationClass;
+        
+        /**
+         * For serialization
+         */
+        @SuppressWarnings("unused")
+        public BuiltActiveDescriptor() {
+            super();
+        }
         
         private BuiltActiveDescriptor(Class<?> implementationClass,
                 Set<Type> advertisedContracts,

@@ -63,8 +63,15 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      */
     private static final long serialVersionUID = 3663054975929743877L;
     
-    private final T theOne;
-    private final Long locatorId;
+    private T theOne;
+    private Long locatorId;
+    
+    /**
+     * For serialization
+     */
+    public ConstantActiveDescriptor() {
+        super();
+    }
     
     /**
      * Creates a constant active descriptor with the given locator ID
@@ -86,19 +93,24 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
                 null);
         
         this.theOne = theOne;
-        this.locatorId = new Long(locatorId);
+        this.locatorId = locatorId;
     }
     
     /**
      * Constructor with more control over the fields of the descriptor
-     * 
-     * @param theOne
-     * @param advertisedContracts
-     * @param scope
-     * @param name
-     * @param qualifiers
-     * @param ranking
-     * @param locatorId
+     *
+     * @param theOne The non-null constant
+     * @param advertisedContracts its advertised contracts
+     * @param scope its scope
+     * @param name its possibly null name
+     * @param qualifiers its set of qualifiers
+     * @param visibility its visibility
+     * @param ranking its starting rank
+     * @param proxy can it be proxied (null for default)
+     * @param proxyForSameScope  will it be proxied for the same scope (null for default)
+     * @param analyzerName The name of the analyzer (null for default)
+     * @param locatorId its locator parent
+     * @param metadata The metadata associated with it
      */
     public ConstantActiveDescriptor(T theOne,
             Set<Type> advertisedContracts,
@@ -126,7 +138,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
         if (theOne == null) throw new IllegalArgumentException();
         
         this.theOne = theOne;
-        this.locatorId = new Long(locatorId);
+        this.locatorId = locatorId;
     }
 
     /* (non-Javadoc)

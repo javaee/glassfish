@@ -661,12 +661,12 @@ public class Utilities {
 
         UseProxy useProxy = clazz.getAnnotation(UseProxy.class);
         if (useProxy != null) {
-            proxy = new Boolean(useProxy.value());
+            proxy = useProxy.value();
         }
         
         ProxyForSameScope pfss = clazz.getAnnotation(ProxyForSameScope.class);
         if (pfss != null) {
-            proxyForSameScope = new Boolean(pfss.value());
+            proxyForSameScope = pfss.value();
         }
 
         DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
