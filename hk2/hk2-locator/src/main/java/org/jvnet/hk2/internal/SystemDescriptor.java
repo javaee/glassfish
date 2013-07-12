@@ -83,7 +83,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private final ActiveDescriptor<T> activeDescriptor;
     
     private final ServiceLocatorImpl sdLocator;
-    private transient boolean reified;
+    private volatile boolean reified;
     private boolean reifying = false;  // Am I currently reifying
     private boolean preAnalyzed = false;
     
