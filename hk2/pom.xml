@@ -70,31 +70,38 @@
         </license>
     </licenses>
 
-    <developers>
-        <developer>
-            <id>kohuske</id>
-            <name>Kohsuke Kawaguchi</name>
-            <url>http://weblogs.java.net/blog/kohsuke</url>
-            <organization>InfraDNA</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>dochez</id>
+    <contributors>
+        <contributor>
             <name>Jerome Dochez</name>
             <url>http://blogs.sun.com/dochez</url>
-            <organization>Oracle</organization>
+        </contributor>
+        <contributor>
+            <name>Kohsuke Kawaguchi</name>
+            <url>http://weblogs.java.net/blog/kohsuke</url>
+        </contributor>
+        <contributor>
+            <name>Sanjeeb Sahoo</name>
+            <url>http://weblogs.java.net/ss141213</url>
+        </contributor>
+        <contributor>
+            <name>Andriy Zhdanov</name>
+            <url>http://avalez.blogspot.com</url>
+        </contributor>
+    </contributors>
+    
+    <developers>
+        <developer>
+            <id>jwells</id>
+            <name>John Wells</name>
+            <organization>Oracle, Inc</organization>
             <roles>
-                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
         <developer>
-            <id>ss141213</id>
-            <name>Sanjeeb Sahoo</name>
-            <url>http://weblogs.java.net/ss141213</url>
-            <organization>Oracle</organization>
+            <id>mtaube</id>
+            <name>Mason Taube</name>
+            <organization>Oracle, Inc</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -102,7 +109,7 @@
         <developer>
             <id>jeff_trent</id>
             <name>Jeff Trent</name>
-            <organization>Oracle</organization>
+            <organization>Oracle, Inc</organization>
             <roles>
                 <role>developer</role>
             </roles>
@@ -135,12 +142,12 @@
             <archive>http://java.net/projects/hk2/lists/commits/archive</archive>
         </mailingList>
     </mailingLists>
-
+    
     <scm>
         <connection>scm:git:ssh://${user.name}@git.java.net/hk2~git</connection>
         <developerConnection>scm:git:ssh://${user.name}@git.java.net/hk2~git</developerConnection>
         <url>ssh://${user.name}@git.java.net/hk2~git</url>
-      <tag>HEAD</tag>
+        <tag>HEAD</tag>
   </scm>
 
     <build>
@@ -158,6 +165,26 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <stagingDirectory>site</stagingDirectory>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>1.4</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>lt.velykis.maven.skins</groupId>
+                        <artifactId>reflow-velocity-tools</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.velocity</groupId>
+                        <artifactId>velocity</artifactId>
+                        <version>1.7</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -274,36 +301,14 @@
             </extension>
         </extensions>
     </build>
-  
-    <profiles>
-        <profile>
-            <id>build</id>
-            <activation>
-                <property>
-                    <name>!site</name>
-                </property>
-            </activation>
-            <modules>
-                <module>build</module>
-                <module>public</module>
-                <module>kernel</module>
-                <module>bom</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>site</id>
-            <activation>
-                <property>
-                    <name>site</name>
-                </property>
-            </activation>
-            <modules>
-                <module>build</module>
-                <module>public</module>
-                <module>kernel</module>
-            </modules>
-        </profile>        
-    </profiles>
+    
+    <modules>
+        <module>build</module>
+        <module>public</module>
+        <module>kernel</module>
+        <module>bom</module>
+        <module>site</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -350,6 +355,7 @@
                             <report>issue-tracking</report>
                             <report>license</report>
                             <report>scm</report>
+                            <report>index</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -358,6 +364,15 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.8</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -398,11 +413,4 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
-    <distributionManagement>
-        <site>
-            <id>svn.java.net</id>
-            <url>${site.url}</url>
-        </site>
-    </distributionManagement>
 </project>
