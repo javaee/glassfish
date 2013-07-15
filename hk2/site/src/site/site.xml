@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="HK2"
+         xmlns="http://maven.apache.org/DECORATION/1.3.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd">
+
+    <!-- Jersey logo banner on all pages -->
+    <bannerLeft>
+        <!-- Reflow Maven Skin, but with "Reflow" highlighted -->
+        <!-- <img src="images/jersey_logo.png" width="75" /> -->
+        <name><![CDATA[<span class="gf-orange">HK2</span>]]></name>
+        <href>index.html</href>
+    </bannerLeft>
+
+    <publishDate position="bottom" format="yyyy-MM-dd" />
+    <version position="none" />
+    <googleAnalyticsAccountId>UA-3160303-1</googleAnalyticsAccountId>
+
+    <skin>
+        <groupId>lt.velykis.maven.skins</groupId>
+        <artifactId>reflow-maven-skin</artifactId>
+        <version>1.0.0</version>
+    </skin>
+
+    <custom>
+        <reflowSkin>
+            <!-- =============== Global skin configuration ================= -->
+
+            <!-- Make this to 'false' for local development, i.e. file:// URLs -->
+            <!-- TODO change to 'true' before final site generation, set to 'false' for local testing -->
+            <protocolRelativeURLs>false</protocolRelativeURLs>
+
+            <!-- Comment this out for local development. -->
+            <!-- TODO uncomment before final site generation, comment our for local testing -->
+            <!--<absoluteResourceURL>https://hk2.java.net</absoluteResourceURL>-->
+            <absoluteResourceURL>http://localhost:8080/hk2-test/</absoluteResourceURL>
+
+            <!-- Brand on the top menu bar -->
+            <brand>
+                <name>
+                    <![CDATA[
+                        <span class="gf-orange">HK2</span><span> - Hundred Kilobyte Kernel</span>
+                    ]]>
+                </name>
+                <href>index.html</href>
+            </brand>
+
+            <!-- Slogan appears under the Jersey Head logo -->
+            <slogan>A light-weight and dynamic dependency injection framework</slogan>
+
+            <!-- Syntax highlighting Configuration -->
+            <highlightJs>true</highlightJs>
+            <highlightJsTheme>solarized_dark</highlightJsTheme>
+
+            <!-- Skin theme -->
+            <theme>default</theme>
+            <!--<theme>bootswatch-cosmo</theme>-->
+
+            <!-- Top navbar configuration -->
+            <topNav>Documentation|Download</topNav>
+
+            <!-- Bottom nav configuration -->
+            <bottomNav maxSpan="9">
+                <column>Main|Integration</column>
+                <column>Contribute</column>
+                <column>Project Info</column>
+            </bottomNav>
+
+            <!-- Table of Contents - displayed on all pages unless explicitly disabled on a per-page basis. -->
+            <toc>top</toc>
+            <tocTopMax>4</tocTopMax>
+
+            <!-- Misc Configuration -->
+            <smoothScroll>true</smoothScroll>
+            <skinAttribution>false</skinAttribution>
+            <bottomDescription quote="false">
+                <![CDATA[
+                    <center>
+                        <a href="https://glassfish.java.net" style="border:0; display:block">
+                            <img src="images/glassfish_logo.png" style="width:200px; margin-bottom:20px;">
+                        </a>
+                        HK2 is member of <a href="https://glassfish.java.net">GlassFish</a> project.
+                    </center>
+                ]]>
+            </bottomDescription>
+
+            <!-- Per-Page Configuration (allows overriding of global) -->
+            <pages>
+                <!-- index.html -->
+                <index project="site">
+                    <sections>
+                        <body />
+                        <columns>3</columns>
+                    </sections>
+
+                    <toc>true</toc>
+                    <titleTemplate>HK2</titleTemplate>
+                    <bottomDescription>
+                        <![CDATA[
+                        <p class="reference">
+                            Member of <a href="http://glassfish.java.net/">GlassFish</a> Project
+                            <a href="http://glassfish.java.net/">
+                                <img class="reference" src="images/glassfish-logo-small.png" alt="World's first Java EE 7 Application Server"/>
+                            </a>
+                        </p>
+                        <hr class="reference"/>
+                        <hr class="reference"/>
+                        ]]>
+                    </bottomDescription>
+                </index>
+
+                <!-- contribute.html -->
+                <contribute>
+                    <sections>
+                        <body />
+                        <columns>3</columns>
+                    </sections>
+                    <toc>false</toc>
+                </contribute>
+
+                <!-- integration.html -->
+                <integration>
+                    <sections>
+                        <body />
+                    </sections>
+                    <toc>true</toc>
+                </integration>
+
+                <!-- license.html -->
+                <license>
+                    <toc>false</toc>
+                </license>
+                
+                <!-- scm.html -->
+                <scm>
+                    <toc>false</toc>
+                </scm>                
+                
+                <!-- team-list.html -->
+                <team-list>
+                    <toc>false</toc>
+                </team-list>
+                
+                <!-- mailing.html -->
+                <mailing>
+                    <toc>false</toc>
+                </mailing>
+            </pages>
+        </reflowSkin>
+    </custom>
+
+    <body>
+        <head>
+            <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
+        </head>
+        <menu name="Main">
+            <item name="Home" href="index.html" />
+            <item name="License" href="license.html" />
+        </menu>
+        <menu name="Documentation">
+            <item name="Develop" href="develop.html" />
+            <item name="API" href="api.html"/>
+            <item name="Javadoc" href="https://hk2.java.net/nonav/hk2-api/apidocs/index.html" />
+        </menu>
+        <menu name="Contribute">
+            <item name="Contribute" href="contribute.html" />
+            <item name="Mailing Lists" href="mailing.html" />
+        </menu>
+        <menu name="Project Info">
+            <item name="Source Control" href="scm.html" />
+            <item name="Issue Tracking" href="https://java.net/jira/browse/HK2/" />
+            <item name="Mailing Lists" href="mailing.html" />
+            <item name="Project Team" href="team-list.html" />
+        </menu>
+    </body>
+</project>
