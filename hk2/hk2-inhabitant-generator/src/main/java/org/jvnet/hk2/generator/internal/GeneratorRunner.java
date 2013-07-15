@@ -85,6 +85,9 @@ public class GeneratorRunner {
      * @param verbose true if this should print information about progress
      * @param searchPath The path-separator delimited list of files or directories to search for
      *   contracts and qualifiers and various other annotations
+     * @param noSwap true if this run should NOT swap files (faster but riskier)
+     * @param outputDirectory The directory where the file should go
+     * @param includeDate Whether or not the output file should include a date
      */
     public GeneratorRunner(String fileOrDirectory,
             String outjarName,
@@ -362,31 +365,36 @@ public class GeneratorRunner {
         
         JarFile jarFile = new JarFile(jar);
         
-        Enumeration<JarEntry> entries = jarFile.entries();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            
-            String entryName = entry.getName();
-            if (!entryName.endsWith(DOT_CLASS)) continue;
-            
-            InputStream is = null;
-            try {
-                is = jarFile.getInputStream(entry);
+        try {
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
                 
-                LinkedList<DescriptorImpl> dis = createDescriptorIfService(is, jar);
-                retVal.addAll(dis);
-            }
-            finally {
-                if (is != null) {
-                    try {
-                        is.close();
-                    }
-                    catch (IOException ioe) {
-                        // ignore
+                String entryName = entry.getName();
+                if (!entryName.endsWith(DOT_CLASS)) continue;
+                
+                InputStream is = null;
+                try {
+                    is = jarFile.getInputStream(entry);
+                    
+                    LinkedList<DescriptorImpl> dis = createDescriptorIfService(is, jar);
+                    retVal.addAll(dis);
+                }
+                finally {
+                    if (is != null) {
+                        try {
+                            is.close();
+                        }
+                        catch (IOException ioe) {
+                            // ignore
+                        }
                     }
                 }
+                
             }
-            
+        }
+        finally {
+            jarFile.close();
         }
         
         return retVal;

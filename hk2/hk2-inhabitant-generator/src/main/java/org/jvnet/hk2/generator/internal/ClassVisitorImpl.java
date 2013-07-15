@@ -227,6 +227,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     }
     
     private String getDefaultName() {
+        if (implName == null) return "";
         int index = implName.lastIndexOf('.');
         if (index <= 0) return implName;
         
@@ -430,7 +431,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         }        
     }
     
-    private class NamedAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+    private static class NamedAnnotationVisitor extends AbstractAnnotationVisitorImpl {
         private final String defaultName;
         private boolean nameSet = false;
         private String name;
@@ -557,7 +558,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         }      
     }
     
-    private class MethodRankAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+    private static class MethodRankAnnotationVisitor extends AbstractAnnotationVisitorImpl {
         private final DescriptorImpl di;
         
         private MethodRankAnnotationVisitor(DescriptorImpl di) {
@@ -773,7 +774,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
     }
     
-    private class MethodUseProxyAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+    private static class MethodUseProxyAnnotationVisitor extends AbstractAnnotationVisitorImpl {
         private final DescriptorImpl desc;
         
         private MethodUseProxyAnnotationVisitor(DescriptorImpl desc) {
@@ -792,7 +793,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         
     }
     
-    private class MethodVisibilityAnnotationVisitor extends AbstractAnnotationVisitorImpl {
+    private static class MethodVisibilityAnnotationVisitor extends AbstractAnnotationVisitorImpl {
         private final DescriptorImpl desc;
         
         private MethodVisibilityAnnotationVisitor(DescriptorImpl desc) {
