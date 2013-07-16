@@ -32,7 +32,7 @@
             <!-- Comment this out for local development. -->
             <!-- TODO uncomment before final site generation, comment our for local testing -->
             <!--<absoluteResourceURL>https://hk2.java.net</absoluteResourceURL>-->
-            <absoluteResourceURL>file:///Users/romano/workspaces/hk2/hk2~git/hk2/site/target/site/</absoluteResourceURL>
+            <!--<absoluteResourceURL>file://${basedir}/target/site</absoluteResourceURL>-->
 
             <!-- Brand on the top menu bar -->
             <brand>
@@ -65,9 +65,7 @@
                 <column>Project Info</column>
             </bottomNav>
 
-            <!-- Table of Contents - displayed on all pages unless explicitly disabled on a per-page basis. -->
-            <toc>top</toc>
-            <tocTopMax>4</tocTopMax>
+            <toc>false</toc>
 
             <!-- Misc Configuration -->
             <smoothScroll>false</smoothScroll>
@@ -86,74 +84,20 @@
             <!-- Per-Page Configuration (allows overriding of global) -->
             <pages>
                 <!-- index.html -->
-                <index project="site">
+                <index>
                     <sections>
                         <body />
                         <columns>2</columns>
                     </sections>
-                    <toc>false</toc>
-                    <titleTemplate>HK2</titleTemplate>
-                    <bottomDescription>
-                        <![CDATA[
-                        <p class="reference">
-                            Member of <a href="http://glassfish.java.net/">GlassFish</a> Project
-                            <a href="http://glassfish.java.net/">
-                                <img class="reference" src="images/glassfish-logo-small.png" alt="World's first Java EE 7 Application Server"/>
-                            </a>
-                        </p>
-                        <hr class="reference"/>
-                        <hr class="reference"/>
-                        ]]>
-                    </bottomDescription>
                 </index>
+                
                 <!-- contribute.html -->
                 <contribute>
                     <sections>
                         <body />
                         <columns>3</columns>
                     </sections>
-                    <toc>false</toc>
                 </contribute>
-
-                <!-- integration.html -->
-                <integration>
-                    <toc>false</toc>
-                </integration>
-                
-                <!-- issue-tracking.html -->
-                <issue-tracking>
-                    <toc>false</toc>
-                </issue-tracking>
-                
-                <!-- mail-lists.html -->
-                <mail-lists>
-                    <toc>false</toc>
-                </mail-lists>
-                
-                <!-- project-info.html -->
-                <project-info>
-                    <toc>false</toc>
-                </project-info>
-                
-                <!-- source-repository.html -->
-                <source-repository>
-                    <toc>false</toc>
-                </source-repository>
-
-                <!-- license.html -->
-                <license>
-                    <toc>false</toc>
-                </license>
-                
-                <!-- scm.html -->
-                <scm>
-                    <toc>false</toc>
-                </scm>                
-                
-                <!-- team-list.html -->
-                <team-list>
-                    <toc>false</toc>
-                </team-list>
             </pages>
         </reflowSkin>
     </custom>
