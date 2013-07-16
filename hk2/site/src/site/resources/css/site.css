@@ -18,6 +18,10 @@ body {
     font-size: 14px;
 }
 
+div.section li {
+    background: none !important;
+}
+
 h1 {
     color: #E88A43;
 }

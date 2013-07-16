@@ -1,4 +1,4 @@
-<p><var class="icon-ok-sign" style="color: #7F7F7F"></var>
+<p style="margin-bottom: 40px;"><var class="icon-ok-sign" style="color: #7F7F7F"></var>
 HK2 is JSR-330 compliant and  has useful utilities for marking classes as services and interfaces as contracts.
 <br/><a href="http://jcp.org/aboutJava/communityprocess/final/jsr330/">JSR-330</a> defines services and injection points that can be dynamically discovered at runtime and which allow for Inversion of Control (IoC) and dependency injection (DI).
 </p>
@@ -22,43 +22,31 @@ HK2 also has a powerful API that can be used to perform several tasks such as bi
 ---
 
 <h2><a class="headerlink" href="develop.htm">
-    <var class="icon-compass"></var> Develop
+    <var class="icon-compass"></var> Getting started!
 </a></h2>
-
 [Learn][develop] how to use HK2 in your projects.
 
 
 <h2><a class="headerlink" href="api.htm">
     <var class="icon-book"></var> API
 </a></h2>
-
-Learn how to [use][api] the HK2 API.
-<br/>You can also see the javadoc [here][javadoc].
+[Learn][api] more about the HK2 API, or [browse][javadoc] the javadoc.
 
 <h2><a class="headerlink" href="extensibility.html">
     <var class="icon-cloud-download"></var> Extensibility
 </a></h2>
-
 [Learn][extensibility] more about the extensibility features of HK2
 
 
 <h2><a class="headerlink" href="integration.html">
     <var class="icon-tags"></var> Integration
 </a></h2>
-
-HK2 is well integrated with several other products, including [GlassFish][glassfish] and [Guice][guice].
-
-
-<h2><a class="headerlink" href="contribute.html">
-    <var class="icon-group"></var> Contribute
-</a></h2>
-
-[Learn][contpage] how you can contribute to the project
+HK2 is well integrated with [GlassFish][glassfish], [Guice][guice] and others !
 
 [api]: api.html
 [develop]: develop.html
 [contpage]: contribute.html
 [guice]: http://code.google.com/p/google-guice/
 [glassfish]: http://glassfish.org
-[javadoc]: https://hk2.java.net/nonav/hk2-api/apidocs/index.html
+[javadoc]: apidocs/index.html
 [extensibility]: extensibility.html

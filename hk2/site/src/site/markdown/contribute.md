@@ -1,5 +1,7 @@
 ## Contribute
 
+<p style="margin-bottom: 20px;">There are always several ways you can contribute.</p>
+
 ---
 
 <h2><a class="headerlink" href="http://java.net/jira/browse/HK2">
@@ -7,7 +9,6 @@
 </a></h2>
 
 Issue reporting is central to open-source projects. 
-<br/>If an issue is not reported, we cannot fix it. 
 
 Please report any bugs, feature, and/or improvement requests in our [JIRA][jira] issue tracker.
 
@@ -17,24 +18,15 @@ Please report any bugs, feature, and/or improvement requests in our [JIRA][jira]
 </a></h2>
 
 Have a fix or a feature you\'d like to share?  
-<br/>Open an [issue][jira], if not opened
-already, and link your patch with details on what you\'re resolving
-and how you\'ve resolving it.
-
-Good documentation is an important aspect of any software project.
-
-If you see anything missing or an area that could be improved, let us [know][jira] or [submit a patch][scm].
+<br/>Open an [issue][jira] and link your patch with details on what you\'re resolving and how you\'ve resolving it.
+If you see anything missing or that could be improved, let us [know][jira].
 
 
 <h2><a class="headerlink" href="scm.html">
     <var class="icon-eye-open"></var> Review Code
 </a></h2>
 
-More eyes on the code means better quality.
-
 Review our [code][scm] for style issues, potential issues, or glaring bugs.
-Anything helps!
-
 Have insight on an issue another is having? Speak up on our [mailing lists][list].
 
 
