@@ -174,7 +174,14 @@
                 <enabled>true</enabled>
             </snapshots>
         </pluginRepository>
-    </pluginRepositories>    
+    </pluginRepositories>
+    
+    <distributionManagement>
+        <site>
+            <id>svn.java.net</id>
+            <url>dav:https://website.java.net/website/hk2</url>
+        </site>
+    </distributionManagement> 
 
     <properties>
         <java.net.username>${user.name}</java.net.username>
@@ -182,7 +189,6 @@
         <cglib.version>2.2</cglib.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
-        <site.url>dav:https://website.java.net/website/hk2</site.url>
     </properties>
     
     <modules>
@@ -210,7 +216,10 @@
                 <artifactId>maven-site-plugin</artifactId>
                 <configuration>
                     <stagingDirectory>site</stagingDirectory>
+                    <skip>false</skip>
+                    <skipDeploy>false</skipDeploy>
                 </configuration>
+                <inherited>false</inherited>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.doxia</groupId>
@@ -227,7 +236,7 @@
                         <artifactId>velocity</artifactId>
                         <version>1.7</version>
                     </dependency>
-                </dependencies>
+                </dependencies>                 
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -352,9 +361,7 @@
                 <version>2.7</version>
                 <configuration>
                     <customBundle>${project.basedir}/src/site/custom/project-info-report.properties</customBundle>
-                    <anonymousConnection>scm:git:git://java.net/hk2~git</anonymousConnection>
                     <developerConnection>scm:git:ssh://[jvnet_id]@git.java.net/hk2~git/</developerConnection>
-                    <webAccessUrl>https://java.net/projects/hk2/sources/git/show</webAccessUrl>
                 </configuration>               
                 <reportSets>
                     <reportSet>
@@ -374,22 +381,22 @@
                 <version>2.8</version>
                 <configuration>
                     <sourcepath>
-                        ${basedir}/../hk2/src/main/java;
-                        ${basedir}/../hk2-api/src/main/java;
-                        ${basedir}/../hk2-config/src/main/java;
-                        ${basedir}/../hk2-locator/src/main/java;
-                        ${basedir}/../hk2-utils/src/main/java;
-                        ${basedir}/../hk2-runlevel/src/main/java;
-                        ${basedir}/../core/src/main/java;
-                        ${basedir}/../class-model/src/main/java;
-                        ${basedir}/../config-types/src/main/java;
-                        ${basedir}/../guice-bridge/src/main/java;
-                        ${basedir}/../spring-bridge/src/main/java
+                        ${basedir}/hk2/src/main/java;
+                        ${basedir}/hk2-api/src/main/java;
+                        ${basedir}/hk2-config/src/main/java;
+                        ${basedir}/hk2-locator/src/main/java;
+                        ${basedir}/hk2-utils/src/main/java;
+                        ${basedir}/hk2-runlevel/src/main/java;
+                        ${basedir}/core/src/main/java;
+                        ${basedir}/class-model/src/main/java;
+                        ${basedir}/config-types/src/main/java;
+                        ${basedir}/guice-bridge/src/main/java;
+                        ${basedir}/spring-bridge/src/main/java
                     </sourcepath>
                     <doctitle>HK2 API Documentation</doctitle>
                     <windowtitle>HK2 API Documentation</windowtitle>
                     <bottom>
-<![CDATA[Copyright &#169; 1996-2013,
+<![CDATA[Copyright &#169; 2009-2013,
     <a href="http://www.oracle.com">Oracle</a>
     and/or its affiliates. All Rights Reserved.
 ]]>

@@ -58,8 +58,6 @@
         <release.arguments />
         <javax.validation.version>1.1.0.Final</javax.validation.version>
         <hibernate-validator.version>5.0.0.Final</hibernate-validator.version>
-        <maven.site.skip>false</maven.site.skip>
-        <maven.site.deploy.skip>true</maven.site.deploy.skip>
     </properties>
     
     <name>HK2 Bom Pom</name>
@@ -363,6 +361,15 @@
                         <includePom>true</includePom>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.2</version>
+                    <configuration>
+                        <skip>true</skip>
+                        <skipDeploy>true</skipDeploy>
+                    </configuration>
+                </plugin>                
             </plugins>
         </pluginManagement>
     </build>

@@ -52,61 +52,23 @@ img.reference {
     width: 90px;
 }
 
-/* A bit of workaround for links being not clickable due to :before element in headings */
-
-.project-site.page-index img[alt=stack] {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.project-site.page-index h2[id]:before {
-    height: 30px;
-    margin-top: -30px;
-}
-
-.project-site.page-contribute h2[id]:before {
-    height: 30px;
-    margin-top: -30px;
-}
-
 /* Link styles for img/headers */
-.project-site.page-index a.headerlink:link {
+a.headerlink:link {
     color: #7F7F7F;
     text-decoration: none;
 }
 
-.project-site.page-index a.headerlink:visited {
+a.headerlink:visited {
     color: #7F7F7F;
     text-decoration: none;
 }
 
-.project-site.page-index a.headerlink:hover {
+a.headerlink:hover {
     color: #08c;
     text-decoration: none;
 }
 
-.project-site.page-index a.headerlink:active {
-    color: #08c;
-    text-decoration: none;
-}
-
-.project-site.page-contribute a.headerlink:link {
-    color: #7F7F7F;
-    text-decoration: none;
-}
-
-.project-site.page-contribute a.headerlink:visited {
-    color: #7F7F7F;
-    text-decoration: none;
-}
-
-.project-site.page-contribute a.headerlink:hover {
-    color: #08c;
-    text-decoration: none;
-}
-
-.project-site.page-contribute a.headerlink:active {
+a.headerlink:active {
     color: #08c;
     text-decoration: none;
 }
