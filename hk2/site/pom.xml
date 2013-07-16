@@ -24,4 +24,6 @@
             <url>dav:https://website.java.net/website/hk2</url>
         </site>
     </distributionManagement>
+    
+    <url>https://hk2.java.net</url>    
 </project>

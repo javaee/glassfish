@@ -55,16 +55,19 @@
 
     <name>Modules Subsystem</name>
     <description>Generic Modules subsystem</description>
+    <inceptionYear>2009</inceptionYear>
 
     <organization>
         <name>Oracle Corporation</name>
         <url>http://www.oracle.com</url>
     </organization>
+    
+    <url>https://hk2.java.net</url>
 
     <licenses>
         <license>
             <name>CDDL + GPLv2 with classpath exception</name>
-            <url>http://glassfish.java.net/nonav/public/CDDL+GPL_1_1.html</url>
+            <url>https://glassfish.java.net/nonav/public/CDDL+GPL_1_1.html</url>
             <distribution>repo</distribution>
             <comments>A business-friendly OSS license</comments>
         </license>
@@ -87,6 +90,9 @@
             <name>Andriy Zhdanov</name>
             <url>http://avalez.blogspot.com</url>
         </contributor>
+        <contributor>
+            <name>Jeff Trent</name>
+        </contributor>
     </contributors>
     
     <developers>
@@ -101,14 +107,6 @@
         <developer>
             <id>mtaube</id>
             <name>Mason Taube</name>
-            <organization>Oracle, Inc</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>jeff_trent</id>
-            <name>Jeff Trent</name>
             <organization>Oracle, Inc</organization>
             <roles>
                 <role>developer</role>
@@ -143,12 +141,57 @@
         </mailingList>
     </mailingLists>
     
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://java.net/jira/browse/HK2</url>
+    </issueManagement>
+    
     <scm>
-        <connection>scm:git:ssh://${user.name}@git.java.net/hk2~git</connection>
+        <connection>scm:git:git://java.net/hk2~git</connection>
         <developerConnection>scm:git:ssh://${user.name}@git.java.net/hk2~git</developerConnection>
-        <url>ssh://${user.name}@git.java.net/hk2~git</url>
+        <url>https://java.net/projects/hk2/sources/git/show</url>
         <tag>HEAD</tag>
-  </scm>
+    </scm>
+    
+    <repositories>
+        <repository>
+            <id>spring-external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+            <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <!-- search SNAPSHOT plugin artifacts in maven.java.net -->
+        <pluginRepository>
+            <id>jvnet-nexus-snapshots</id>
+            <name>Java.net Nexus Snapshots Repository</name>
+            <url>https://maven.java.net/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>    
+
+    <properties>
+        <java.net.username>${user.name}</java.net.username>
+        <asm.version>3.3</asm.version>
+        <cglib.version>2.2</cglib.version>
+        <findbugs.exclude />
+        <findbugs.threshold>High</findbugs.threshold>
+        <site.url>dav:https://website.java.net/website/hk2</site.url>
+    </properties>
+    
+    <modules>
+        <module>build</module>
+        <module>public</module>
+        <module>kernel</module>
+        <module>bom</module>
+        <module>site</module>
+    </modules>                  
 
     <build>
         <defaultGoal>install</defaultGoal>
@@ -302,60 +345,25 @@
         </extensions>
     </build>
     
-    <modules>
-        <module>build</module>
-        <module>public</module>
-        <module>kernel</module>
-        <module>bom</module>
-        <module>site</module>
-    </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.3.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.easymock</groupId>
-            <artifactId>easymock</artifactId>
-            <version>3.0</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <properties>
-        <java.net.username>${user.name}</java.net.username>
-        <asm.version>3.3</asm.version>
-        <cglib.version>2.2</cglib.version>
-        <findbugs.exclude />
-        <findbugs.threshold>High</findbugs.threshold>
-        <site.url>dav:https://website.java.net/website/hk2</site.url>
-    </properties>
-
     <reporting>
         <plugins>
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.2</version>
+                <version>2.7</version>
+                <configuration>
+                    <customBundle>${project.basedir}/src/site/custom/project-info-report.properties</customBundle>
+                    <anonymousConnection>scm:git:git://java.net/hk2~git</anonymousConnection>
+                    <developerConnection>scm:git:ssh://[jvnet_id]@git.java.net/hk2~git/</developerConnection>
+                    <webAccessUrl>https://java.net/projects/hk2/sources/git/show</webAccessUrl>
+                </configuration>               
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <!--
-                               Maven release process fails with NPE when a dependency report generation
-                               tries to obtain a POM for the system-scope Artifact.
-                               See MPIR-37 for the bug report. Kohsuke to file a bug report on this
-                               with a proposed patch.
-                            -->
-                            <!--report>dependencies</report-->
                             <report>project-team</report>
                             <report>mailing-list</report>
-                            <report>cim</report>
                             <report>issue-tracking</report>
                             <report>license</report>
                             <report>scm</report>
-                            <report>index</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -364,12 +372,35 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.8</version>
+                <configuration>
+                    <sourcepath>
+                        ${basedir}/../hk2/src/main/java;
+                        ${basedir}/../hk2-api/src/main/java;
+                        ${basedir}/../hk2-config/src/main/java;
+                        ${basedir}/../hk2-locator/src/main/java;
+                        ${basedir}/../hk2-utils/src/main/java;
+                        ${basedir}/../hk2-runlevel/src/main/java;
+                        ${basedir}/../core/src/main/java;
+                        ${basedir}/../class-model/src/main/java;
+                        ${basedir}/../config-types/src/main/java;
+                        ${basedir}/../guice-bridge/src/main/java;
+                        ${basedir}/../spring-bridge/src/main/java
+                    </sourcepath>
+                    <doctitle>HK2 API Documentation</doctitle>
+                    <windowtitle>HK2 API Documentation</windowtitle>
+                    <bottom>
+<![CDATA[Copyright &#169; 1996-2013,
+    <a href="http://www.oracle.com">Oracle</a>
+    and/or its affiliates. All Rights Reserved.
+]]>
+                    </bottom>                    
+                </configuration>
                 <reportSets>
                     <reportSet>
-                        <id>aggregate</id>
+                        <id>javadoc</id>
                         <inherited>false</inherited>
                         <reports>
-                            <report>aggregate</report>
+                            <report>javadoc</report>
                         </reports>
                     </reportSet>
                 </reportSets>
@@ -390,27 +421,19 @@
             </plugin>
         </plugins>
     </reporting>
-
-    <repositories>
-        <repository>
-            <id>spring-external</id>
-            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
-            <url>http://repository.springsource.com/maven/bundles/external</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <!-- search SNAPSHOT plugin artifacts in maven.java.net -->
-        <pluginRepository>
-            <id>jvnet-nexus-snapshots</id>
-            <name>Java.net Nexus Snapshots Repository</name>
-            <url>https://maven.java.net/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+    
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>3.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>    
 </project>

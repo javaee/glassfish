@@ -64,7 +64,7 @@
     
     <name>HK2 Bom Pom</name>
     <description>Bom Pom for importing hk2 managed dependencies</description>
-
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
