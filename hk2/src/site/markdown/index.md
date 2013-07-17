@@ -39,12 +39,12 @@ HK2 also has a powerful API that can be used to perform several tasks such as bi
 <h2><a class="headerlink" href="integration.html">
     <var class="icon-tags"></var> Integration
 </a></h2>
-HK2 is well integrated with [GlassFish][glassfish], [Guice][guice] and others !
+HK2 is well integrated with [GlassFish][glassfish], [Spring][spring] and others !
 
 [api]: api.html
 [develop]: getting-started.html
 [contpage]: contribute.html
-[guice]: http://code.google.com/p/google-guice/
+[spring]: http://www.springsource.org
 [glassfish]: http://glassfish.org
 [javadoc]: apidocs/index.html
 [extensibility]: extensibility.html
