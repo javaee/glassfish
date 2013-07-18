@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,12 +40,11 @@
 
 package com.sun.enterprise.module.maven;
 
+import org.glassfish.hk2.maven.Version;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.osgi.Maven2OsgiConverter;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 /**
  * Converts the project version into the OSGi format and
@@ -69,7 +68,7 @@ public class OsgiVersionMojo extends AbstractMojo {
      * @readonly
      */
     protected MavenProject project;
-
+    
     /**
      * Flag used to determine what components of the version will be used
      * in OSGi version.
@@ -87,55 +86,17 @@ public class OsgiVersionMojo extends AbstractMojo {
      * major, minor and micro portions will be used.
      * @parameter
      */
-    protected String dropVersionComponent;
+    protected Version.COMPONENT dropVersionComponent;
 
     /**
      * @parameter default-value="project.osgi.version"
      */
     protected String versionPropertyName;
 
-    private enum VERSION_COMPONENT {major, minor, micro, qualifier};
-
-    /**
-     * @component
-     */
-    protected Maven2OsgiConverter converter;
-
+    @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        DefaultArtifactVersion projectVersion =
-                new DefaultArtifactVersion(project.getVersion());
-        VERSION_COMPONENT compToDrop = dropVersionComponent == null ?
-                null : VERSION_COMPONENT.valueOf(dropVersionComponent);
-
-        DefaultArtifactVersion newVersion = projectVersion;
-        if (compToDrop != null) {
-            switch (compToDrop) {
-                case major: {
-                    newVersion = new DefaultArtifactVersion("0.0.0");
-                    break;
-                }
-                case minor: {
-                    final int major = projectVersion.getMajorVersion();
-                    newVersion = new DefaultArtifactVersion(major +"");
-                    break;
-                }
-                case micro: {
-                    final int major = projectVersion.getMajorVersion();
-                    final int minor = projectVersion.getMinorVersion();
-                    newVersion = new DefaultArtifactVersion(major + "." + minor);
-                    break;
-                }
-                case qualifier: {
-                    final int major = projectVersion.getMajorVersion();
-                    final int minor = projectVersion.getMinorVersion();
-                    final int micro = projectVersion.getIncrementalVersion();
-                    newVersion = new DefaultArtifactVersion(major + "." + minor + "." + micro);
-                    break;
-                }
-            }
-        }
-        String v = converter.getVersion(newVersion.toString());
-
+        Version projectVersion = new Version(project.getVersion());
+        String v = projectVersion.convertToOsgi(dropVersionComponent);
         getLog().debug("OSGi Version for "+project.getVersion()+" is "+v);
         getLog().debug("It is set in project property called "+ versionPropertyName);
         project.getProperties().put(versionPropertyName,v);
