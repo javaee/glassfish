@@ -65,7 +65,10 @@ public class ISBNValidator {
         for (int i = 0; i < isbnChars.length && len < 14; i++) {
             char c = isbnChars[i];
             if ((c >= '0' && c <= '9')) {
-                is[len++] = c - '0';
+                if (len < 13) {
+                    is[len] = c - '0';
+                }
+                len++;
             } else if (c == '-' || c == ' ') {
                 //skip
             } else if ((c == 'X' || c == 'x') && len == 9) { // for isbn 10
