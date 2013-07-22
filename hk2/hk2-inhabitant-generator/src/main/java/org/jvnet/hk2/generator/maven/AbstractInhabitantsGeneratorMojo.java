@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoFailureException;
@@ -114,7 +115,14 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
             return;
         }
         
-        getOutputDirectory().mkdirs();
+        if (!getOutputDirectory().exists()) {
+            if (!getOutputDirectory().mkdirs()) {
+                getLog().info("Could not create output directory " +
+                        getOutputDirectory().getAbsolutePath());
+                return;
+            }
+        }
+        
         if (!getOutputDirectory().exists()) {
             getLog().info("Exiting hk2-inhabitant-generator because could not find output directory " +
                   getOutputDirectory().getAbsolutePath());
@@ -172,6 +180,7 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private String getBuildClasspath() {
         StringBuilder sb = new StringBuilder();
         
