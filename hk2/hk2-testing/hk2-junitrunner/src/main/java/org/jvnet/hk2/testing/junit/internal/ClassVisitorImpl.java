@@ -150,6 +150,8 @@ public class ClassVisitorImpl implements ClassVisitor {
     }
     
     private String getDefaultName() {
+        if (implName == null) throw new IllegalStateException();
+        
         int index = implName.lastIndexOf('.');
         if (index <= 0) return implName;
         

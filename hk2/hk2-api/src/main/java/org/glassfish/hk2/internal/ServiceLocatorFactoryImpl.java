@@ -64,12 +64,15 @@ import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
  * @author jwells
  */
 public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
+    private static final Object sLock = new Object();
+    private static int name_count = 0;
+    private static final String GENERATED_NAME_PREFIX = "__HK2_Generated_";
+    
   private final ServiceLocatorGenerator defaultGenerator;
   private final Object lock = new Object();
   private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
   private final HashSet<ServiceLocatorListener> listeners = new HashSet<ServiceLocatorListener>();
-  private static int name_count = 0;
-  private static final String GENERATED_NAME_PREFIX = "__HK2_Generated_";
+  
 
   private static Logger logger = Logger.getLogger(ServiceLocatorFactoryImpl.class.getPackage().getName());
 
@@ -186,6 +189,13 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             ServiceLocator parent) {
         return create(name, parent, null);
     }
+    
+    private static String getGeneratedName() {
+        synchronized (sLock) {
+            return GENERATED_NAME_PREFIX + name_count++;
+        }
+        
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ServiceLocatorFactory#create(java.lang.String, org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.extension.ServiceLocatorGenerator)
@@ -198,7 +208,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             ServiceLocator retVal;
 
             if (name == null) {
-                name = GENERATED_NAME_PREFIX + name_count++;
+                name = getGeneratedName();
                 return internalCreate(name, parent, generator);
             }
 

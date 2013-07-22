@@ -82,8 +82,7 @@ public class TenantLocatorGenerator {
         System.out.println("Running populator for tenant " + tenantName);
         URL source = EnvironmentXml.class.getResource("/" + tenantName + ".xml");
         ConfigParser parser = new ConfigParser(serviceLocator);
-        @SuppressWarnings({ "rawtypes", "unused" })
-        DomDocument doc = parser.parse(source, new DomDocument(serviceLocator));
+        parser.parse(source, new DomDocument(serviceLocator));
     }
 
     @Inject

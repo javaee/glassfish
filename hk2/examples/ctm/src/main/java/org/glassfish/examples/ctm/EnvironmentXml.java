@@ -69,8 +69,7 @@ public class EnvironmentXml /*implements Populator*/ {
         String tenantName = tenantManager.getCurrentTenant();
         System.out.println("Running populator for tenant " + tenantName);
         URL source = EnvironmentXml.class.getResource("/" + tenantName + ".xml");
-        @SuppressWarnings({ "rawtypes", "unused" })
-        DomDocument doc = parser.parse(source, new DomDocument(habitat));
+        parser.parse(source, new DomDocument(habitat));
     }
 
 }
