@@ -206,8 +206,10 @@ public class GeneratorRunner {
             }
         }
 
-        for (String targetHabitatName : targetHabitatMap.keySet()) {
-            List<DescriptorImpl> descriptors = targetHabitatMap.get(targetHabitatName);
+        for (Map.Entry<String, List<DescriptorImpl>> targetHabitatEntry : targetHabitatMap.entrySet()) {
+            String targetHabitatName = targetHabitatEntry.getKey();
+            List<DescriptorImpl> descriptors = targetHabitatEntry.getValue();
+            
             if (descriptors.size() == 0) {
                 continue;
             }
@@ -216,7 +218,10 @@ public class GeneratorRunner {
             File outputFile = new File(inhabitantsDir, targetHabitatName);
 
             if (!inhabitantsDir.exists()) {
-                inhabitantsDir.mkdirs();
+                if (!inhabitantsDir.mkdirs()) {
+                    throw new IOException("Could not create directory " +
+                        inhabitantsDir.getAbsolutePath());
+                }
             }
 
             File noSwapFile = null;
@@ -269,43 +274,55 @@ public class GeneratorRunner {
         FileInputStream fis = new FileInputStream(jarFile);
         ZipInputStream zis = new ZipInputStream(fis);
         
-        FileOutputStream fos = new FileOutputStream(tmpJarFile);
-        ZipOutputStream zos = new ZipOutputStream(fos);
+        FileOutputStream fos = null;
+        ZipOutputStream zos = null;
         
-        ZipEntry zentry = zis.getNextEntry();
-        while (zentry != null) {
-            String entryName = zentry.getName();
+        try {
+            fos = new FileOutputStream(tmpJarFile);
+            zos = new ZipOutputStream(fos);
+        
+            ZipEntry zentry = zis.getNextEntry();
+            while (zentry != null) {
+                String entryName = zentry.getName();
             
-            if (entryName.equals(META_INF + "/" + INHABITANTS + "/" + locatorName)) {
-                // Don't write out the old one
+                if (entryName.equals(META_INF + "/" + INHABITANTS + "/" + locatorName)) {
+                    // Don't write out the old one
+                    zentry = zis.getNextEntry();
+                    continue;
+                }
+            
+                zos.putNextEntry(new ZipEntry(entryName));
+            
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    zos.write(buffer, 0, len);
+                }
+            
                 zentry = zis.getNextEntry();
-                continue;
             }
-            
-            zos.putNextEntry(new ZipEntry(entryName));
-            
-            int len;
-            while ((len = zis.read(buffer)) > 0) {
-                zos.write(buffer, 0, len);
+        
+            if (!descriptors.isEmpty()) {
+                zos.putNextEntry(new ZipEntry(META_INF + "/" + INHABITANTS + "/" + locatorName));
+        
+                FileInputStream desc_os = new FileInputStream(writeMeFile);
+                try {
+                    int len;
+                    while ((len = desc_os.read(buffer)) > 0) {
+                        zos.write(buffer, 0, len);
+                    }
+                }
+                finally {
+                    desc_os.close();
+                }
             }
-            
-            zentry = zis.getNextEntry();
         }
-        
-        zis.close();
-        
-        if (!descriptors.isEmpty()) {
-            zos.putNextEntry(new ZipEntry(META_INF + "/" + INHABITANTS + "/" + locatorName));
-        
-            FileInputStream desc_os = new FileInputStream(writeMeFile);
-            int len;
-            while ((len = desc_os.read(buffer)) > 0) {
-                zos.write(buffer, 0, len);
+        finally {
+            zis.close();
+            
+            if (zos != null) {
+                zos.close();
             }
-            desc_os.close();
         }
-        
-        zos.close();
         
         // All went well, replace the JAR file with the new and improved jar file
         String tmpFileName = tmpJarFile.getAbsolutePath();

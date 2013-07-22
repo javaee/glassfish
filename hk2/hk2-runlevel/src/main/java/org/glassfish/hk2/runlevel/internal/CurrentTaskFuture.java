@@ -299,7 +299,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         if (allTheWay == null) return null;
         
         Boolean result = null;
-        while (result == null) {
+        do {
             try {
                 result = allTheWay.waitForResult(timeout, unit);
                 if (result == null) {
@@ -311,8 +311,6 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                             allTheWay = downAllTheWay;
                         }
                     }
-                    
-                    if (allTheWay == null) return null;
                     
                     continue;
                 }
@@ -334,7 +332,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 
                 throw new ExecutionException(me);
             }
-        }
+        } while (result == null);
         
         return null;
     }
@@ -928,7 +926,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
         
         private void oneJob(ServiceHandle<?> fService, boolean block) {
-            fService.setServiceData(new Boolean(!block));
+            fService.setServiceData(!block);
             boolean completed = true;
             try {
                 boolean ok;
