@@ -101,7 +101,7 @@ public class SpringToHK2JITResolver implements JustInTimeInjectionResolver {
             }
             else {
                 if (beanFactory.getBean(lookForMe) != null) {
-                    addMe(lookForMe, name, failedInjectionPoint);
+                    addMe(lookForMe, null, failedInjectionPoint);
                     return true;
                 }
                 

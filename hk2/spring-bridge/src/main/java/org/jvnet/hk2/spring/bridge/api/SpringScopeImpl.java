@@ -83,7 +83,10 @@ public class SpringScopeImpl implements Scope {
         return locator;
     }
     
-    private ServiceHandle<?> getServiceFromName(String id) {
+    private synchronized ServiceHandle<?> getServiceFromName(String id) {
+        if (locator == null) throw new IllegalStateException(
+                "ServiceLocator must be set");
+        
         ActiveDescriptor<?> best = locator.getBestDescriptor(BuilderHelper.createTokenizedFilter(id));
         if (best == null) return null;
         
@@ -95,8 +98,6 @@ public class SpringScopeImpl implements Scope {
      */
     @Override
     public Object get(String contractName, ObjectFactory<?> factory) {
-        if (locator == null) throw new IllegalStateException("ServiceLocator must be set prior to calling get");
-        
         ServiceHandle<?> serviceHandle = getServiceFromName(contractName);
         if (serviceHandle == null) return factory.getObject();
         
