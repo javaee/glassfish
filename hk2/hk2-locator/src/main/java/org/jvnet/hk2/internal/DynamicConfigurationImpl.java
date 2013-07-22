@@ -137,7 +137,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         final SystemDescriptor<?> boundAsFactory = new SystemDescriptor<Object>(asFactory,
                 requiresDeepCopy,
                 locator,
-                new Long(locator.getNextServiceId()));
+                locator.getNextServiceId());
         
         if (asService instanceof ActiveDescriptor) {
             boundAsFactory.setFactoryIds(boundAsService.getLocatorId(),

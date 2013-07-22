@@ -291,34 +291,44 @@ public class HK2Runner {
             return;
         }
         
-        for (String pack : packages) {
-            String packAsFile = convertToFileFormat(pack);
-            int packAsFileLen = packAsFile.length() + 1;
+        try {
+            for (String pack : packages) {
+                String packAsFile = convertToFileFormat(pack);
+                int packAsFileLen = packAsFile.length() + 1;
             
-            Enumeration<JarEntry> entries = jarFile.entries();
-            while (entries.hasMoreElements()) {
-                JarEntry entry = entries.nextElement();
+                Enumeration<JarEntry> entries = jarFile.entries();
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
                 
-                String entryName = entry.getName();
-                if (!entryName.startsWith(packAsFile)) {
-                    // Not in the correct directory
-                    continue;
-                }
-                if (entryName.substring(packAsFileLen).contains("/")) {
-                    // Next directory down
-                    continue;
-                }
-                if (!entryName.endsWith(DOT_CLASS)) {
-                    // Not a class
-                    continue;
-                }
+                    String entryName = entry.getName();
+                    if (!entryName.startsWith(packAsFile)) {
+                        // Not in the correct directory
+                        continue;
+                    }
+                    if (entryName.substring(packAsFileLen).contains("/")) {
+                        // Next directory down
+                        continue;
+                    }
+                    if (!entryName.endsWith(DOT_CLASS)) {
+                        // Not a class
+                        continue;
+                    }
                 
-                try {
-                    addClassIfService(config, jarFile.getInputStream(entry));
+                    try {
+                        addClassIfService(config, jarFile.getInputStream(entry));
+                    }
+                    catch (IOException ioe) {
+                        // Simply don't add it if we can't read it
+                    }
                 }
-                catch (IOException ioe) {
-                    // Simply don't add it if we can't read it
-                }
+            }
+        }
+        finally {
+            try {
+                jarFile.close();
+            }
+            catch (IOException e) {
+                // Ignore
             }
         }
     }

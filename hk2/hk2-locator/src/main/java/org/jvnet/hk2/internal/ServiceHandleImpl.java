@@ -138,6 +138,8 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         boolean localServiceSet;
         boolean serviceActive;
         
+        if (!root.isReified()) return;
+        
         synchronized (lock) {
             serviceActive = isActive();
             
