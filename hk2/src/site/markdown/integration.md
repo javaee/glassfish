@@ -54,8 +54,6 @@ One can also use the [DynamicConfigurationService][dynamicConf] in order to add 
 
 This also works along with the [Binder][bindeer]: and [BuilderHelper][buildhelper] service builders.
 
----
-
 ### CDI Integration
 
 HK2 is fully integrated with the GlassFish 4.0 CDI implementation.
@@ -69,8 +67,19 @@ This is because CDI does early validation of all injection points, and hence all
 The CDI validation phase occurs prior to any application code being run.
 Due to the dynamic nature of HK2 services, CDI services can be injected into HK2 services that were created at any time in the life of the application.
 
+### Guice
+
+HK2 services can be injected into [Guice][guice] services and [Guice][guice] services can be injected into HK2 services.
+To do so use the Guice/HK2 bridge, which is described [here](guice-bridge.html).
+  
+### Spring
+
+We are working on a Spring bridge as well.  However, it is not yet complete.  If you are interested
+in such a feature, please vote for it here: [Spring Integration](https://java.net/jira/browse/HK2-40).
+
 [inhabitant-generator]: inhabitant-generator.html
 [serviceLoc]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [dynamicConf]: apidocs/org/glassfish/hk2/api/DynamicConfigurationService.html
 [bindeer]: apidocs/org/glassfish/hk2/utilities/Binder.html
 [buildhelper]: apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
+[guice]: http://code.google.com/p/google-guice
