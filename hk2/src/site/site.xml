@@ -112,7 +112,7 @@
             <item name="Contribute" href="contribute.html" />
         </menu>
         <menu name="Documentation">
-            <item name="Getting started" href="develop.html" />
+            <item name="Getting started" href="getting-started.html" />
             <item name="API overview" href="api.html"/>
             <item name="API javadoc" href="apidocs/index.html" />
             <item name="API xref" href="xref/index.html"/>
