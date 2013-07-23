@@ -389,7 +389,8 @@
                         ${basedir}/class-model/src/main/java;
                         ${basedir}/config-types/src/main/java;
                         ${basedir}/guice-bridge/src/main/java;
-                        ${basedir}/spring-bridge/src/main/java
+                        ${basedir}/spring-bridge/src/main/java;
+                        ${basedir}/hk2-inhabitant-generator/src/main
                     </sourcepath>
                     <doctitle>HK2 API Documentation</doctitle>
                     <windowtitle>HK2 API Documentation</windowtitle>
@@ -427,7 +428,8 @@
                         ${basedir}/class-model/src/main/java;
                         ${basedir}/config-types/src/main/java;
                         ${basedir}/guice-bridge/src/main/java;
-                        ${basedir}/spring-bridge/src/main/java
+                        ${basedir}/spring-bridge/src/main/java;
+                        ${basedir}/hk2-inhabitant-generator/src/main/java
                     </sourcePath>
                 </configuration>
             </plugin>
