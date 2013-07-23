@@ -2,7 +2,7 @@
 
 The HK2 Inhabitants Generator is a utility that will generate inhabitants file during the
 build of your JAR file.  It works by analyzing the classes that have been built by javac and
-then creating the file META-INF/hk2-locator/default (by default) in your JAR file that has
+then creating the file **META-INF/hk2-locator/default** (by default) in your JAR file that has
 information in it about all of the classes that you have marked with [@Service][service] or
 [@Contract][contract].
 
@@ -52,7 +52,7 @@ value is "default" by default.
 
 The --verbose option make the generator print extra information as it does its work.
 
-This command line utility will call System.exit when it is done with a 0 code if it was able
+This command line utility will call **System.exit** when it is done with a 0 code if it was able
 to work properly and a non-zero value if it failed in some way.
  
 <h3>Embedded Usage</h3>
@@ -74,7 +74,7 @@ in your build will cause inhabitants files to be generated in your output direct
 
 The following example plugin snippet from a pom.xml will run the InhabitantsGenerator in
 both the main tree and in the test tree, in case you would like your test sources to also
-be analyzed for classes marked with @Service.
+be analyzed for classes marked with [@Service][service].
  
 ```xml
     <plugin>
