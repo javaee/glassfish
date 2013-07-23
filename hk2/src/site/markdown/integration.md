@@ -69,8 +69,8 @@ This is because CDI does early validation of all injection points, and hence all
 The CDI validation phase occurs prior to any application code being run.
 Due to the dynamic nature of HK2 services, CDI services can be injected into HK2 services that were created at any time in the life of the application.
 
-[inhabitant-generator]: https://hk2.java.net/hk2-inhabitant-generator/index.html
-[serviceLoc]: https://hk2.java.net/nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html
-[dynamicConf]: https://hk2.java.net/nonav/hk2-api/apidocs/org/glassfish/hk2/api/DynamicConfigurationService.html
-[bindeer]: https://hk2.java.net/nonav/hk2-api/apidocs/org/glassfish/hk2/utilities/Binder.html
-[buildhelper]: https://hk2.java.net/nonav/hk2-api/apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
+[inhabitant-generator]: hk2-inhabitant-generator.html
+[serviceLoc]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
+[dynamicConf]: apidocs/org/glassfish/hk2/api/DynamicConfigurationService.html
+[bindeer]: apidocs/org/glassfish/hk2/utilities/Binder.html
+[buildhelper]: apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
