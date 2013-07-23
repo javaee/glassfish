@@ -9,9 +9,23 @@
 .gf-orange {
     color: #E88A43;
 }
-/*#bannerLeft h1{
-    padding-top: 75px;
-}*/
+
+.project-hk2-parent.page-index img[alt=stack] {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.project-hk2-parent.page-index h2[id]:before {
+    height: 20px;
+    margin-top: 0px;
+}
+
+.project-hk2-parent.page-contribute h2[id]:before {
+    height: 20px;
+    margin-top: 0px;
+}
+
 body {
     background-image: url(../images/bg.png);
     font-family: "Open Sans", Calibri, Candara, Arial, sans-serif;
