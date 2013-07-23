@@ -22,7 +22,7 @@ The following is example code that returns the application ServiceLocator:
     }
 ```java
 
-There are several options for populating the per-application ServiceLocator. The first is to use the hk2-inhabitant-generator. 
+There are several options for populating the per-application ServiceLocator. The first is to use the [hk2-inhabitant-generator][inhabitant-generator]. 
 For EJBs and Library JAR files the system will read files named application located in **META-INF/hk2-locator/**. For war files the system will read files named application located in WEB-INF/classes/hk2-locator.
 
 The following is an example maven stanza using the [hk2-inhabitant-generator][inhabitant-generator] to place the inhabitant file of an EJB in the proper place:
@@ -69,7 +69,7 @@ This is because CDI does early validation of all injection points, and hence all
 The CDI validation phase occurs prior to any application code being run.
 Due to the dynamic nature of HK2 services, CDI services can be injected into HK2 services that were created at any time in the life of the application.
 
-[inhabitant-generator]: hk2-inhabitant-generator.html
+[inhabitant-generator]: inhabitant-generator.html
 [serviceLoc]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [dynamicConf]: apidocs/org/glassfish/hk2/api/DynamicConfigurationService.html
 [bindeer]: apidocs/org/glassfish/hk2/utilities/Binder.html

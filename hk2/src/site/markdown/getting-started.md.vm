@@ -62,10 +62,10 @@ In order for HK2 to automatically find services at runtime it can read files cal
  There is also a simple API for creating and populating a [ServiceLocator][servicelocator] with services found in these files.
 
 In order to have your Maven build generate the META-INF files that hk2 reads in order to populate a [ServiceLocator][servicelocator] 
-use the [hk2-inhabitant-generator][hk2-inhabitant-generator].
+use the [hk2-inhabitant-generator][inhabitant-generator].
 This tool can be used from the command line, or it can be put into your maven or ant builds.
 
-In order to have your program automatically load the files generated with the [hk2-inhabitant-generator][hk2-inhabitant-generator] you can
+In order to have your program automatically load the files generated with the [hk2-inhabitant-generator][inhabitant-generator] you can
 use the [createAndPopulateServiceLocator][createandpopulateservicelocator] method near the start of your main method, like this:
   
 ```java
@@ -79,6 +79,6 @@ use the [createAndPopulateServiceLocator][createandpopulateservicelocator] metho
 ```java
 
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
-[inhabitant-generator]: hk2-inhabitant-generator.html
+[inhabitant-generator]: inhabitant-generator.html
 [createandpopulateservicelocator]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#createAndPopulateServiceLocator()
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
