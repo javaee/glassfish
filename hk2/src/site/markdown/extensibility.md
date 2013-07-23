@@ -1,76 +1,239 @@
 ## Extensibility
 
 
-### GlassFish integration
+### Compatibility
 
-HK2 can be used in GlassFish applications.
-Every deployed GlassFish application has a unique ServiceLocator associated with it that can be looked up with JNDI name **java:app/hk2/ServiceLocator**.
-This ServiceLocator will not have a parent, and will be destroyed when the application is undeployed. 
-The following is example code that returns the application ServiceLocator:
+This page describes extensibility with the HK2 2.0 API, which is based on the
+JSR-330 standard annotations.  Also, Habitat has been replaced with a new
+interface called [ServiceLocator][servicelocator].
+More information can be found [here][index].
+    
+###Extensibility of HK2
+
+HK2 is extensible along many dimensions.  This page is intended to give an overview and example of each dimension along which
+users can customize thier HK2 environment.  Among the set of things which can be extended are these:
+
++ [Adding a Scope and Context to the system](extensibility.html#Adding_a_Scope_and_Context_to_the_system)
++ [PerThread Scope](extensibility.html#PerThread_Scope)
++ [Proxies](extensibility.html#Proxies)
++ [Dealing with ClassLoading issues](extensibility.html#)
++ [Custom Injection Resolvers](extensibility.html#aCustom_Injection_Resolvers)
++ [Validation](extensibility.html#Validation)
++ [Instance Lifecycle](extensibility.html#Instance_Lifecycle)
++ [Class Analysis](extensibility.html#Class_Analysis)
+
+### Adding a Scope and Context to the system
+
+In HK2 a [Context][context] is a class that is used to control the lifecycle of service instances.  A [Scope][scope] is an annotation that is put onto another
+annotation that is used to associate any service with a particular [Context][context].  All services
+in HK2 are associated with a single scope.
+
+There are two system provided scope/context pairs.  The default [Scope][scope] for services annotated with [@Service][service] is the
+[Singleton][singleton] scope.  Service instances in the [Singleton][singleton] scope are created once and are never destroyed.
+
+The default [Scope][scope] for services bound with the [DynamicConfiguration][dynamicconfiguration] bind call is [PerLookup][perlookup].
+Service instances in the [PerLookup][perlookup] scope are created every time that the service is injected or looked up via the API.
+These instances are destroyed when the [ServiceHandle][servicehandle] destroy method is called on any service that has injected a [PerLookup][perlookup] object.
+
+Any number of other scope/context pairs can be added to the system.  In order to do so, the user must write
+an implementation of [Context][context] where the parameterized type of the [Context][context] is the annotation annotated with [Scope][scope] that the [Context][context] is handling.
+This implementation of [Context][context] is then bound into the [ServiceLocator][servicelocator] like any other service.
+
+To make this more clear, we have two examples of user scope/context pairs:
+
+- This [example][ctm-example] adds a context that is based on the current running tenant.
+- This [example][custom-resolver-example] adds a request scoped context.
+
+### PerThread Scope
+
+There is also a per-thread scope/context pair optionally supported in HK2.  
+Services marked with [PerThread][perthread] have their life cycle defined by the thread they are on.
+Two different threads injecting a service from the [PerThread][perthread] scope will get different objects.
+Two objects on the same thread injecting a [PerThread][perthread] scope service will get the same object.
+ 
+The [PerThread][perthread] scope can be added to any [ServiceLocator][servicelocator] by using the method [enablePerThreadScope][enableperthreadscope]
+ 
+### Proxies
+
+Rather than injecting an instance of a service itself, HK2 can also inject a Proxy to that service.  There are a few
+reasons that you might want to use proxies.  One reason is because the lifeycle of two different scopes may be
+different.  For example, you might have something like a RequestScoped scope, and you would like to inject it
+into a Singleton scoped object.  But the Singleton scoped object is only injected once, and the RequestScoped service
+will be changing every time the Request has changed.  This can be solved by injecting a proxy into the
+Singleton scoped object.  Then every time the Singleton scoped service uses the RequestScoped service the proxy
+will make sure to use the real RequestScoped service that is appropriate for the current request.
+
+Another reason you might want to use a proxy for a service is if the service is extremely expensive to create, and
+if possible you want to delay the creation until the service is actually used by the caller.  In fact, if the caller
+never invokes on the proxy, it is possible the service will never get started!  This can be done by injecting a
+proxy into a service rather than the real service.  The proxy will not attempt to create the service until some method
+of that proxy is invoked.
+
+All proxies created by HK2 will also implement [ProxyCtl][proxyctl].
+[ProxyCtl][proxyctl] can be used to force the creation of the underlying service without calling any of the methods of that service.
+Of course every service that is to be proxied must be proxiable, so the service to be proxied must either be an interface or a class that is not declared final,
+has no final fields or methods and has a public zero-argument constructor.  In general it is better to proxy interfaces
+rather than classes.
+
+In order to have HK2 create a proxy for your service rather than the service itself you can create a proxiable scope.
+A proxiable scope is just like a normal scope, except that the scope annotation is also annotated with [Proxiable][proxiable].
+All services injected or looked up from this scope will be given a proxy rather than the real service.
+
+This is an example of a proxiable scope: 
 
 ```java
-  public ServiceLocator getServiceLocator() {
-
-        try {
-          Context context = new InitialContext();
-
-          return (ServiceLocator) context.lookup("java:app/hk2/ServiceLocator");
-        }
-        catch (NamingException ne) {
-            return null;
-        }
-    }
+@Scope
+@Proxiable
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD })
+public @interface ProxiableSingleton {
+}
 ```java
 
-There are several options for populating the per-application ServiceLocator. The first is to use the hk2-inhabitant-generator. 
-For EJBs and Library JAR files the system will read files named application located in **META-INF/hk2-locator/**. For war files the system will read files named application located in WEB-INF/classes/hk2-locator.
+While normally every service in a proxiable scope is proxiable, you can override the default proxying behavior
+on a per-service basis.  This is also true for services in non-proxiable scopes.  For example you can make
+a service that is in Singleton scope (which is not proxiable) be proxied.  
+You do this by setting the field [isProxiable][isproxiable].
+If that method returns null then that service will use the scopes mode when it comes to proxying.
+If that method returns non-null then the system will either proxy or not proxy based on the returned value.
+Classes that are automatically analyzed can also use the [UseProxy][useproxy] annotation to indicate explicitly
+whether or not they should be proxied.  This is a service in Singleton scope that will be proxied:
 
-The following is an example maven stanza using the [hk2-inhabitant-generator][inhabitant-generator] to place the inhabitant file of an EJB in the proper place:
+```java
+@Singleton @UseProxy
+public class SingletonService {
+}
+```java
 
-```xml
-    <build>
-      <plugins>
-          <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-inhabitant-generator</artifactId>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <locator>application</locator>
-                        </configuration>
-                        <goals>
-                            <goal>generate-inhabitants</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-```xml
-Note that the same stanza can be used for a WAR file, and if the packaging type of the pom is "war" then the [hk2-inhabitant-generator][inhabitant-generator] will automatically put the generated inhabitant file into the correct place.
+This is a service in the ProxiableSingleton scope that will NOT be proxied (even though ProxiableSingleton is
+a Proxiable scope):
 
-All inhabitant files are read when the application is deployed, and hence should be able to be looked up from the application [ServiceLocator][serviceLoc].
-One can also use the [DynamicConfigurationService][dynamicConf] in order to add services as per any normal HK2 installation. 
+```java
+@ProxiableSingleton @UseProxy(false)
+public class AnotherService {
+}
+```java
 
-This also works along with the [Binder][bindeer]: and [BuilderHelper][buildhelper] service builders.
+### Proxying within the same scope
 
----
+By default if a service is proxiable then it will be proxied even when being injected into other services within the same scope.
+This allows for the lazy use case.  However, it is sometimes the case that it is counter-productive to proxy services when
+they are injected into other services of the same scope.  HK2 supports Proxiable scopes that do NOT proxy services when they
+are being injected into the same scope.  The [Proxiable][proxiable] annotation has a field called proxyForSameScope that by default is true but which can be set to false.
+The following scope is a proxiable scope where services injected into other services in the same scope will not be proxied:
 
-### CDI Integration
+```java
+@Scope
+@Proxiable(proxyForSameScope=false)
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD })
+public @interface RequestScope {
+}
+```java
 
-HK2 is fully integrated with the GlassFish 4.0 CDI implementation.
+ Individual descriptors can also explicity set whether or not they should be proxied for other services in the same
+ scope by setting the [isProxyForSameScope][isproxyforsamescope] value.
+ This value can also be set when using automatic class analysis by using the [ProxyForSameScope][proxyforsamescope].  The following
+ service is in the ProxiableSingelton scope which would normally not proxy when being injected into the same scope, but
+ which in this case WILL be proxied even when injected into another service in the same scope:
 
-In other words, services created with CDI can be injected into services created with HK2, and services created with HK2 can be injected into services created with CDI. 
-It should be noted that if left alone, CDI will think that nearly every object is a CDI object, and hence it is best to let CDI create most of your objects, unless you are using specific features of HK2 that cannot be achieved with CDI.
+```java
+@RequestScope @ProxyForSameScope
+public class ExpensiveRequestService {
+}
+```java
 
-Furthermore, only HK2 services that have been loaded with **META-INF/hk2-locator/application** (for EJB and JAR) and **WEB-INF/classes/hk2-locator/application** (for WARs) can be injected into CDI services.
+### Dealing with ClassLoading issues
 
-This is because CDI does early validation of all injection points, and hence all services that are to be injected into CDI must be present prior to the CDI validation phase.
-The CDI validation phase occurs prior to any application code being run.
-Due to the dynamic nature of HK2 services, CDI services can be injected into HK2 services that were created at any time in the life of the application.
+Classloading is an interesting challenge in any Java environment.  HK2 defers classloading as long as possible, but at some
+point, it must get access to the true class in order to create and inject instances.  At that moment, HK2 will attempt
+to reify the descriptor, using the [ServiceLocator][servicelocator] reify method.
 
-[inhabitant-generator]: https://hk2.java.net/hk2-inhabitant-generator/index.html
-[serviceLoc]: https://hk2.java.net/nonav/hk2-api/apidocs/org/glassfish/hk2/api/ServiceLocator.html
-[dynamicConf]: https://hk2.java.net/nonav/hk2-api/apidocs/org/glassfish/hk2/api/DynamicConfigurationService.html
-[bindeer]: https://hk2.java.net/nonav/hk2-api/apidocs/org/glassfish/hk2/utilities/Binder.html
-[buildhelper]: https://hk2.java.net/nonav/hk2-api/apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
+Every [Descriptor][descriptor] bound into the system has an associated [HK2Loader][hk2loader].
+If the getLoader method of [Descriptor][descriptor] returns null, then the system defined algorithm
+for loading classes will be used.  Otherwise, the given [HK2Loader][hk2loader] will be used to load the class described by this [Descriptor][descriptor].
+
+The system algorithm used when the getLoader method of [Descriptor][descriptor] returns null is to first consult the classloader of the class being injected into, if available.
+If not available, HK2 will use the classloader that loaded HK2 itself.
+Failing this, the class will fail to be loaded and an exception will be thrown.
+
+Note that since the user is providing an implementation of [HK2Loader][hk2loader] 
+rather than a java.lang.ClassLoader that it is possible to delay the instantiation of the underlying ClassLoader until
+the [Descriptor][descriptor] is being reified.  It might also be possible to have the implementation of [HK2Loader][hk2loadear] consult several underlying ClassLoaders,
+or construct the class dynamically using weaving or some other class building technology.
+The mind boggles at all the ways [HK2Loader][hk2loader] can be implemented.
+
+### Custom Injection Resolvers
+
+By default the system provides JSR-330 standard injection.
+That means honoring [@Inject][javaxinject] and all other parts of the JSR-330 specification. (For more information see TBD).
+However, it is sometimes the case that a user would like to customize the JSR-330 resolution in some manner, 
+or provide their own injection points based on a different annotation.
+
+In order to do so, the user implements [InjectionResolver][injectionresolver].
+The parameterized type of the [InjectionResolver][injectionresolver] must be the injection annotation that they will resolve.
+The user implementation of [InjectionResolver][injectionresolver] is then bound into a [ServiceLocator][servicelocator] like any other service.
+
+This [example][custom-resolver-example] adds a custom injection resolver that customizes the default JSR-330 injection resolver.
+
+### Validation
+
+In this example we show how the [ValidationService][validationservice] can be used to do a complete
+security lockdown of the system.  This example runs with the J2SE security manager turned on and
+grants some privileges to some projects and other privileges to other projects to ensure that 
+the [ValidationService][ValidationService] can be used to define the security of the system.
+
+The example can be seen [here][security-lockdown-example-runner].
+
+### Instance Lifecycle
+
+A user may register an implementation of [InstanceLifecycleListener][instancelifecyclelistener] to be notified whenver an instance of a service is created.
+Unlike the [ValidationService][validationservice], which deals only with the metadata of a service, 
+the [InstanceLifecycleListener][instancelifecyclelistener] is notified whenever an instance
+of a service is created or destroyed.  This is a useful facility for tracing or for scenarios where a service wishes to become
+an automatic listener for anything that it is injected into.
+
+### Class Analysis
+
+HK2 often needs to look at a java class in order to find things about that class such as its set
+of constructors, methods or fields.  The choices HK2 makes is usually determined by specifications
+such as JSR-330 or JSR-299.  However, in some cases different specifications make different choices,
+or the user of the HK2 system may have some other scheme it would like to use in order to
+select the parts of class which HK2 should manipulate.  For example, the JAX-RS specification
+requires the system to choose the constructor with the largest number of parameters (by default)
+while the JSR-299 specification requires the system to choose the zero-argument constructor
+or else fail.
+
+The HK2 system allows the user to register named implementation of the [ClassAmalyzer][classanalyzer] 
+in order to modify or completely replace the constructors, fields and methods HK2 would choose.
+Individual HK2 [Descriptors][descriptor] can set the name of the [ClassAnalyzer][classanalyzer] 
+that should be used to analyze the implementation class.
+
+HK2 always adds an implementation of [ClassAnalyzer][classanalyzer] with the name "default" that implements the JSR-299 style of selection.
+
+[servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
+[context]: apidocs/org/glassfish/hk2/api/Context.html
+[servicehandle]: apidocs/org/glassfish/hk2/api/ServiceHandle.html
+[perlookup]: apidocs/org/glassfish/hk2/api/PerLookup.html
+[perthread]: apidocs/org/glassfish/hk2/api/PerThread.html
+[enableperthreadscope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enablePerThreadScope
+[service]: apidocs/org/jvnet/hk2/annotations/Service.html
+[dynamicconfiguration]: apidocs/org/glassfish/hk2/api/DynamicConfiguration.html
+[scope]: http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html
+[singleton]: http://docs.oracle.com/javaee/6/api/javax/inject/Singleton.html
+[ctm-example]: ctm-example.html
+[proxyctl]: apidocs/org/glassfish/hk2/api/ProxyCtl.html
+[proxiable]: apidocs/org/glassfish/hk2/api/Proxiable.html
+[isproxiable]: apidocs/org/glassfish/hk2/api/Descriptor.html#isProxiable()
+[useproxy]: apidocs/org/glassfish/hk2/api/UseProxy.html
+[isproxyforsamescope]: apidocs/org/glassfish/hk2/api/Descriptor.html#isProxyForSameScope()
+[proxyforsamescope]: apidocs/org/glassfish/hk2/api/ProxyForSameScope.html}ProxyForSameScope
+[descriptor]: apidocs/org/glassfish/hk2/api/Descriptor.html
+[hk2loader]: apidocs/org/glassfish/hk2/api/HK2Loader.html
+[javaxinject]: http://docs.oracle.com/javaee/6/api/javax/inject/Inject.html
+[injectionresolver]: apidocs/org/glassfish/hk2/api/InjectionResolver.html
+[validationservice]: apidocs/org/glassfish/hk2/api/ValidationService.html
+[security-lockdown-example-runner]: security-lockdown-example-runner.html
+[instancelifecyclelistener]: apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html
+[classanalyzer]: apidocs/org/glassfish/hk2/api/ClassAnalyzer.html
+[custom-resolver-example]: custom-resolver-example.html

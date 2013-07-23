@@ -25,7 +25,7 @@ HK2 also has a powerful API that can be used to perform several tasks such as bi
 [Learn][develop] how to use HK2 in your projects.
 
 
-<h2><a class="headerlink" href="api.html">
+<h2><a class="headerlink" href="api-overview.html">
     <var class="icon-book"></var> API
 </a></h2>
 [Learn][api] more about the HK2 API, or [browse][javadoc] the javadoc.
@@ -41,7 +41,7 @@ HK2 also has a powerful API that can be used to perform several tasks such as bi
 </a></h2>
 HK2 is well integrated with [GlassFish][glassfish], [Spring][spring] and others !
 
-[api]: api.html
+[api]: api-overview.html
 [develop]: getting-started.html
 [contpage]: contribute.html
 [spring]: http://www.springsource.org
