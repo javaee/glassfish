@@ -27,11 +27,11 @@
 
             <!-- Make this to 'false' for local development, i.e. file:// URLs -->
             <!-- TODO change to 'true' before final site generation, set to 'false' for local testing -->
-            <protocolRelativeURLs>false</protocolRelativeURLs>
+            <protocolRelativeURLs>true</protocolRelativeURLs>
 
             <!-- Comment this out for local development. -->
             <!-- TODO uncomment before final site generation, comment our for local testing -->
-            <!--<absoluteResourceURL>https://hk2.java.net</absoluteResourceURL>-->
+            <absoluteResourceURL>https://hk2.java.net</absoluteResourceURL>
             <!--<absoluteResourceURL>file://${basedir}/target/site</absoluteResourceURL>-->
 
             <!-- Brand on the top menu bar -->
