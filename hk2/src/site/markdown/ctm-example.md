@@ -86,6 +86,7 @@ public class TenantManager {
     public String getCurrentTenant() {
         return currentTenant;
     }
+}
 ```java
 
 OK, great, now we know how to change the current tenant that is running on the system.  But how do we make the system understand this?
