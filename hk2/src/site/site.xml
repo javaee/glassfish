@@ -120,6 +120,7 @@
         </menu>
         <menu name="QuickLinks">
             <item name="Inhabitant Generator" href="inhabitant-generator.html" />
+            <item name="Dependency Injection" href="dependency-injection.html"/>
             <item name="Guice Bridge" href="guice-bridge.html"/>
             <item name="Multitenancy Example" href="ctm-example.html" />
             <item name="Resolver Example" href="custom-resolver-example.html"/>
