@@ -1,0 +1,138 @@
+<h2>HK2 Inhabitants Generator</h2>
+
+The HK2 Inhabitants Generator is a utility that will generate inhabitants file during the
+build of your JAR file.  It works by analyzing the classes that have been built by javac and
+then creating the file **META-INF/hk2-locator/default** (by default) in your JAR file that has
+information in it about all of the classes that you have marked with [@Service][service] or
+[@Contract][contract].
+
+The HK2 Inhabitatants Generator can be used as a standalone command-line tool, or it can
+be embedded in any Java program.  It can also be used in a Maven build.  An Eclipse build
+and an ant task are also planned.  Here are the ways that the HK2 Inhabitants Generator can
+be used:
+ 
++ [Command Line Tool](inhabitant-generator.html#Command_Line_Tool)
++ [Embedded Usage](inhabitant-generator.html#Embedded_Usage)
++ [Using Maven](inhabitant-generator.html#Using_Maven)
++ [Ant Task](inhabitant-generator.html#Ant_Task)
+
+<h3>Command Line Tool</h3>
+
+The HK2 Inhabitants Genertor can be run from the command line like this:
+ 
+```java
+java org.jvnet.hk2.generator.HabitatGenerator
+```java
+
+By default the [HabibatGenerator][habitatgenerator] will attempt to analyze the first element of the classpath
+and replace that element (if it is a JAR) with a new JAR that has an inhabitants file in
+it describing all of the classes marked with [@Service][service].  If the first element of the classpath
+is a directory it will attempt to create a new inhabitants file in that directory describing
+all of the classes marked with [@Service][service].
+
+You can modify this behavior by using command line options.
+Here is the usage statement for [HabibatGenerator][habitatgenerator]:
+ 
+```
+java org.jvnet.hk2.generator.HabitatGenerator
+  [--file jarFileOrDirectory]
+  [--outjar jarFile]
+  [--locator locatorName]
+  [--verbose]
+```
+
+The --file option allows the user to pick a directory or JAR file to analyze for classes marked
+with @Service.
+
+The --outjar option allows the user to pick the output JAR file that the generator should create
+with the inhabitants file in it.
+
+The --locator option allows the user to name the locator that these services should go into.  This
+value is "default" by default.
+
+The --verbose option make the generator print extra information as it does its work.
+
+This command line utility will call **System.exit** when it is done with a 0 code if it was able
+to work properly and a non-zero value if it failed in some way.
+ 
+<h3>Embedded Usage</h3>
+
+The class [org.jvnet.hk2.generator.HabitatGenerator][habitatgenerator] has a static method on called embeddedMain.
+The embeddedMain takes the typical argv[] array of parameters and so has the same behavior
+as the command line usage.  The biggest difference is that this method returns an
+int as the return code, either 0 for success or non-zero for failure and does not call
+System.exit().  See the [javadoc][habitatgenerator] for more information.
+ 
+Using embeddedMain is useful if you want to build your own build tools that generate inhabitants
+files for your own IDE or other build environment.
+ 
+<h3>Using Maven</h3>
+
+The HabitatGenerator is also available as a Maven plugin.  It has a single goal, called
+generateInhabitants that is run in the process-classes phase by default.  Using this plugin
+in your build will cause inhabitants files to be generated in your output directory.
+
+The following example plugin snippet from a pom.xml will run the InhabitantsGenerator in
+both the main tree and in the test tree, in case you would like your test sources to also
+be analyzed for classes marked with [@Service][service].
+ 
+```xml
+    <plugin>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>hk2-inhabitant-generator</artifactId>
+      <version>${project.version}</version>
+      <executions>
+        <execution>
+          <goals>
+            <goal>generate-inhabitants</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+```xml
+
+ The plugin has the following configuration options:
+ 
++ outputDirectory (the place the output file will go, defaults to \$\{project.build.outputDirectory\})
++ testOutputDirectory (the place the output will go if test is true, defaults to \$\{project.build.testOutputDirectory\})
++ verbose (true or false)
++ test Set to true if this execution should be for the tests rather than main
++ locator The name of the locator file (which is "default" by default)
++ noswap (true or false) if set to true the generator will overwrite files in place which is riskier but faster
+  
+<h3>Ant Task</h3>
+
+The inhabitant generator can also be used as an ant task.  The ant task is org.jvnet.hk2.generator.maven.ant.HK2InhabitantGeneratorTask.
+Below find an example ant file that uses the task:
+  
+```xml
+<project name="HK2 Ant Build File" default="build" basedir=".">
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="target/classes"/>
+
+  <taskdef name="hk2-inhabitant-generator"
+           classname="org.jvnet.hk2.generator.ant.HK2InhabitantGeneratorTask"/>
+
+  <target name="compile" >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}"/>
+    <hk2-inhabitant-generator targetDirectory="${build}"/>
+  </target>
+</project>
+```xml
+
+The thing to note in the example above is that the hk2-inhabitant-generator must run after the classes are built, as the hk2-inhabitant-generator
+inspects the class files.
+
+The ant plugin has the following options:
+ 
++ targetDirectory (the directory to find the classes, defaults to target/classes)
++ outputDirectory (the place the output file will go, defaults to target/classes)
++ verbose (true or false)
++ locator The name of the locator file (which is "default" by default)
++ noswap (true or false) if set to true the generator will overwrite files in place which is riskier but faster
+
+[service]: apidocs/org/jvnet/hk2/annotations/Service.html
+[contract]: apidocs/org/jvnet/hk2/annotations/Contract.html
+[habitatgenerator]: apidocs/org/jvnet/hk2/generator/HabitatGenerator.html
