@@ -593,8 +593,20 @@ private class ProtectedList extends AbstractList {
                     (Class<ConfigBeanProxy>) master.getImplementationClass());
 
         }
-        changeEvents.add(new PropertyChangeEvent(defaultView, id, null, param));
-        return proxied.add(object);
+        PropertyChangeEvent evt = new PropertyChangeEvent(defaultView, id, null, param);
+        changeEvents.add(evt);
+
+        boolean added =  proxied.add(object);
+
+        try {
+            for (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
+                interceptor.beforeChange(evt);
+            }
+        } catch(PropertyVetoException e) {
+            throw new RuntimeException(e);
+        }
+
+        return added;
     }
 
     @Override
@@ -633,16 +645,17 @@ private class ProtectedList extends AbstractList {
 
     @Override
     public synchronized boolean remove(Object object) {
-        changeEvents.add(new PropertyChangeEvent(defaultView, id, object, null));
+        PropertyChangeEvent evt = new PropertyChangeEvent(defaultView, id, object, null);
+        boolean removed = false;
 
         try {
             ConfigView handler = ((ConfigView) Proxy.getInvocationHandler(object)).getMasterView();
-            for (int index = 0 ; index<proxied.size() ; index++) {
+            for (int index = 0 ; index<proxied.size() && !removed; index++) {
                 Object target = proxied.get(index);
                 try {
                     ConfigView targetHandler = ((ConfigView) Proxy.getInvocationHandler(target)).getMasterView();
                     if (targetHandler==handler) {
-                        return (proxied.remove(index)!=null);
+                        removed = (proxied.remove(index)!=null);
                     }
                 } catch(IllegalArgumentException ex) {
                     // ignore
@@ -650,10 +663,21 @@ private class ProtectedList extends AbstractList {
             }
         } catch(IllegalArgumentException e) {
             // ignore, this is a leaf
-            return proxied.remove(object);
+            removed = proxied.remove(object);
 
         }
-        return false;
+
+        try {
+            for (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
+                interceptor.beforeChange(evt);
+            }
+        } catch(PropertyVetoException e) {
+            throw new RuntimeException(e);
+        }
+
+        changeEvents.add(evt);
+
+        return removed;
     }
 
 }
