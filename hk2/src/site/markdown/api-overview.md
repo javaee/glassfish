@@ -314,7 +314,7 @@ the preDestroy to be called on it by using the preDestroy method:
 This sequence can be very useful when there is some special processing that needs to happen and the user does not want to have HK2 manage
 the objects themselves.
  
-[builderhelper]: apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
+[buildhelper]: apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [filter]: apidocs/org/glassfish/hk2/api/Filter.html
 [descriptor]: apidocs/org/glassfish/hk2/api/Descriptor.html
