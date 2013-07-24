@@ -4,8 +4,6 @@ The Guice/HK2 Bridge can be used to inject [Guice][guice] services
 into HK2 services or inject HK2 services into [Guice][guice] services.
 It can be used bi-directionally as well.
 
-Table of Contents
-
 + [Definitions](guice-bridge.html#Definitions)
 + [Injecting Guice services into HK2 services](guice-bridge.html#Injecting_Guice_services_into_HK2_services)
 + [Injecting HK2 services into Guice services](guice-bridge.html#Injecting_HK2_services_into_Guice_services)

@@ -4,8 +4,6 @@
 
 This page describes the HK2 2.0 API, which is based on JSR-330 standard annotations.
 Also, Habitat has been replaced with a new interface called [ServiceLocator][servicelocator].
-  
-Table of Contents
 
 + [Introduction](api-overview.html#Introduction)
 + [ServiceLocator](api-overview.html#ServiceLocator)

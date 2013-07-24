@@ -113,6 +113,7 @@
             <item name="Contribute" href="contribute.html" />
         </menu>
         <menu name="Documentation">
+            <item name="Introduction" href="introduction.html" />
             <item name="Getting Started" href="getting-started.html" />
             <item name="API Overview" href="api-overview.html"/>
             <item name="API jJavadoc" href="apidocs/index.html" />
@@ -120,11 +121,10 @@
         </menu>
         <menu name="QuickLinks">
             <item name="Inhabitant Generator" href="inhabitant-generator.html" />
-            <item name="Dependency Injection" href="dependency-injection.html"/>
             <item name="Guice Bridge" href="guice-bridge.html"/>
             <item name="Multitenancy Example" href="ctm-example.html" />
             <item name="Resolver Example" href="custom-resolver-example.html"/>
-            <item name="Security Example" href="security-lockdown-example.html"/>
+            <item name="Security Example" href="security-lockdown-example-runner.html"/>
         </menu>
         <menu name="Project Info">
             <item name="Source Control" href="source-repository.html" />

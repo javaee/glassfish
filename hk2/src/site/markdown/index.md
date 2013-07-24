@@ -22,7 +22,7 @@ HK2 also has a powerful API that can be used to perform several tasks such as bi
 <h2><a class="headerlink" href="getting-started.html">
     <var class="icon-compass"></var> Getting started!
 </a></h2>
-[Learn][develop] how to use HK2 in your projects.
+Read the [introduction](introduction.html) and [get started][gettingstarted] with HK2.
 
 
 <h2><a class="headerlink" href="api-overview.html">
@@ -42,7 +42,7 @@ HK2 also has a powerful API that can be used to perform several tasks such as bi
 HK2 is well integrated with [GlassFish][glassfish], [Spring][spring] and others !
 
 [api]: api-overview.html
-[develop]: getting-started.html
+[gettingstarted]: getting-started.html
 [contpage]: contribute.html
 [spring]: http://www.springsource.org
 [glassfish]: http://glassfish.org
