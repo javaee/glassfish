@@ -88,7 +88,7 @@ Any [Guice][guice] service that can be created with this [Injector][injector]
 will now search the provided [ServiceLocator][servicelocator] 
 when it encounters a service that is injected with the [HK2Inject][hk2inject] annotation.
   
-## Bi-Directional HK2 Guice Bridge
+### Bi-Directional HK2 Guice Bridge
 
 [Guice][guice] and HK2 can bridge back and forth between each other.
 The following code example shows how you could accomplish such a thing:
