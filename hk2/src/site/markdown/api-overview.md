@@ -270,7 +270,7 @@ The most common case is to use an [IndexedFilter][indexedfilter] provided by [Bu
 
 Using an [IndexedFilter][indexedfilter] can greatly improve the search time for your [Descriptors][descriptor].
  
-## Unmanaged Creation, Injection and Lifecycle
+### Unmanaged Creation, Injection and Lifecycle
 
 There are times when you would like to have an object created, injected or have its lifecycle methods called by HK2, but
 not have that Object be explicitly managed by HK2.  The [ServiceLocator][serviceLocator] has methods that suit this case.

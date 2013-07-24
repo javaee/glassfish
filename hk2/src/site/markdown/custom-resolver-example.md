@@ -263,7 +263,7 @@ The scope is Proxiable, so that it can be injected into other objects with a dif
 AlternateInjectResolver itself).  Further, it properly disposes all request scoped objects that were created
 when the request has terminated.
  
-## Putting it all together
+### Putting it all together
 
 We now have a custom injection resolver and a custom scope.  Lets look at the other classes in the example, to see
 how they tie everything together.
@@ -364,7 +364,7 @@ After having this utility method, the test itself is very simple, and just ensur
     }
 ```java
 
-## Conclusion
+### Conclusion
 
  In this example we have learned how to create and use a custom injection resolver and a request scoped context.  We have done so
  with a fake HttpServer example, that takes requests from a fake network and passes values to services based on fields in the
