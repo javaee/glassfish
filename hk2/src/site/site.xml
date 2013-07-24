@@ -62,6 +62,7 @@
             <bottomNav maxSpan="9">
                 <column>Main</column>
                 <column>Documentation</column>
+                <column>QuickLinks</column>
                 <column>Project Info</column>
             </bottomNav>
 
@@ -112,10 +113,17 @@
             <item name="Contribute" href="contribute.html" />
         </menu>
         <menu name="Documentation">
-            <item name="Getting started" href="getting-started.html" />
-            <item name="API overview" href="api-overview.html"/>
-            <item name="API javadoc" href="apidocs/index.html" />
-            <item name="API xref" href="xref/index.html"/>
+            <item name="Getting Started" href="getting-started.html" />
+            <item name="API Overview" href="api-overview.html"/>
+            <item name="API jJavadoc" href="apidocs/index.html" />
+            <item name="API Xref" href="xref/index.html"/>
+        </menu>
+        <menu name="QuickLinks">
+            <item name="Inhabitant Generator" href="inhabitant-generator.html" />
+            <item name="Guice Bridge" href="guice-bridge.html"/>
+            <item name="Multitenancy Example" href="ctm-example.html" />
+            <item name="Resolver Example" href="custom-resolver-example.html"/>
+            <item name="Security Example" href="security-lockdown-example.html"/>
         </menu>
         <menu name="Project Info">
             <item name="Source Control" href="source-repository.html" />
