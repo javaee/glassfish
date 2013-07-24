@@ -268,8 +268,8 @@ be created, since no-one ever called the [get][providerget] method of the yellow
 It is often the case that a single contract has more than one implementation.  Sometimes it is useful to get access to
 all of the implementations of the contract.
 This can be done by using an [IterableProvider][iterableprovider].
-[IterableProvider|iterableprovider] extends [Provider][provider] and also implements [Iterable][iterable].
-Anywhere a service can be injected an [IterableProvider|iterableprovider] for that service can be injected.
+[IterableProvider][iterableprovider] extends [Provider][provider] and also implements [Iterable][iterable].
+Anywhere a service can be injected an [IterableProvider][iterableprovider] for that service can be injected.
 
 In this example we create a Library service that wants to be able to list all of the books it carries:
 
@@ -291,10 +291,10 @@ public class Library {
 }
 ```java
 
-Since [IterableProvider|iterableprovider] implements [Iterable][iterable] 
+Since [IterableProvider][iterableprovider] implements [Iterable][iterable] 
 it can be used in Java for/while loops, as demonstrated in the above example.
 
-Another feature of the [IterableProvider|iterableprovider] is that it can
+Another feature of the [IterableProvider][iterableprovider] is that it can
 be used to further narrow down the selection criteria at run time.
 In our above example we can progrommatically choose the book we are interested 
 in based on a name passed into a method.  Here is how it would look:
@@ -311,7 +311,7 @@ public class Library {
 }
 ```java
 
-In the above example we call the [named][iterableprovidernamed] method [IterableProvider|iterableprovider]
+In the above example we call the [named][iterableprovidernamed] method [IterableProvider][iterableprovider]
 in order to select the book with the given name.
 The call to [get][providerget] then just returns the book with the given name.
  
@@ -319,7 +319,7 @@ The call to [get][providerget] then just returns the book with the given name.
 
 The majority of usages of HK2 should use standard JSR-330 annotations along with
 [@Service][service] and [@Contract][contract].
-In some cases code will also use [IterableProvider|iterableprovider] as outlined above.
+In some cases code will also use [IterableProvider][iterableprovider] as outlined above.
 In even rarer cases the code may need extremely specialized control over HK2 by using the
 progrommatic API, as described [here][api-overview].
 
