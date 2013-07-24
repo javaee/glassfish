@@ -1,82 +1,136 @@
-<?xml version="1.0" ?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="HK2"
+         xmlns="http://maven.apache.org/DECORATION/1.3.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd">
 
-    DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+    <!-- logo banner on all pages -->
+    <bannerLeft>
+        <!-- Reflow Maven Skin, but with "Reflow" highlighted -->
+        <name><![CDATA[<span class="gf-orange">HK2</span>]]></name>
+        <href>index.html</href>
+    </bannerLeft>
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    <publishDate position="bottom" format="yyyy-MM-dd" />
+    <version position="none" />
+    <googleAnalyticsAccountId>UA-3160303-1</googleAnalyticsAccountId>
 
-    The contents of this file are subject to the terms of either the GNU
-    General Public License Version 2 only ("GPL") or the Common Development
-    and Distribution License("CDDL") (collectively, the "License").  You
-    may not use this file except in compliance with the License.  You can
-    obtain a copy of the License at
-    https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
-    or packager/legal/LICENSE.txt.  See the License for the specific
-    language governing permissions and limitations under the License.
+    <skin>
+        <groupId>lt.velykis.maven.skins</groupId>
+        <artifactId>reflow-maven-skin</artifactId>
+        <version>1.0.0</version>
+    </skin>
 
-    When distributing the software, include this License Header Notice in each
-    file and include the License file at packager/legal/LICENSE.txt.
+    <custom>
+        <reflowSkin>
+            <!-- =============== Global skin configuration ================= -->
 
-    GPL Classpath Exception:
-    Oracle designates this particular file as subject to the "Classpath"
-    exception as provided by Oracle in the GPL Version 2 section of the License
-    file that accompanied this code.
+            <!-- Make this to 'false' for local development, i.e. file:// URLs -->
+            <!-- TODO change to 'true' before final site generation, set to 'false' for local testing -->
+            <protocolRelativeURLs>false</protocolRelativeURLs>
 
-    Modifications:
-    If applicable, add the following below the License Header, with the fields
-    enclosed by brackets [] replaced by your own identifying information:
-    "Portions Copyright [year] [name of copyright owner]"
+            <!-- Comment this out for local development. -->
+            <!-- TODO uncomment before final site generation, comment our for local testing -->
+            <!--<absoluteResourceURL>https://hk2.java.net</absoluteResourceURL>-->
+            <!--<absoluteResourceURL>file://${basedir}/target/site</absoluteResourceURL>-->
 
-    Contributor(s):
-    If you wish your version of this file to be governed by only the CDDL or
-    only the GPL Version 2, indicate your decision by adding "[Contributor]
-    elects to include this software in this distribution under the [CDDL or GPL
-    Version 2] license."  If you don't indicate a single choice of license, a
-    recipient has the option to distribute your version of this file under
-    either the CDDL, the GPL Version 2 or to extend the choice of license to
-    its licensees as provided above.  However, if you add GPL Version 2 code
-    and therefore, elected the GPL Version 2 license, then the option applies
-    only if the new code is made subject to such option by the copyright
-    holder.
+            <!-- Brand on the top menu bar -->
+            <brand>
+                <name>
+                    <![CDATA[
+                        <span class="gf-orange">HK2</span><span> - Dependency Injection Kernel</span>
+                    ]]>
+                </name>
+                <href>index.html</href>
+            </brand>
 
--->
+            <!-- Slogan appears under the Head logo -->
+            <slogan>A light-weight and dynamic dependency injection framework</slogan>
 
-<project name="hk2">
-  <bannerLeft>
-    <name>hk2</name>
-    <src>https://glassfish.dev.java.net/glassfish.gif</src>
-    <href>https://hk2.dev.java.net/</href>
-  </bannerLeft>
-  <skin>
-    <groupId>com.sun.enterprise.glassfish</groupId>
-    <artifactId>maven-skin</artifactId>
-    <version>1.1</version>
-  </skin>
-  <body>
-    <!--links>
-      <item name="Glassfish" href="http://glassfish.dev.java.net/"/>
-    </links-->
+            <!-- Syntax highlighting Configuration -->
+            <highlightJs>true</highlightJs>
+            <highlightJsTheme>solarized_dark</highlightJsTheme>
 
-    <menu name="Module Subsystem">
-      <item name="Introduction" href="index.html"/>
-      <!--
-      <item name="Download" href="https://jax-ws-commons.dev.java.net/servlets/ProjectDocumentList?folderID=6358"/>
-      -->
-      <!--
-      <item name="Reference" href="reference.html"/>
-      -->
-    </menu>
+            <!-- Skin theme -->
+            <theme>default</theme>
+            <!--<theme>bootswatch-cosmo</theme>-->
 
-    <menu name="Modules APIs">
-        <item name="Description" href="modules.html"/>
-        <item name="APIs" href="nonav/hk2/apidocs/index.html"/>
-    </menu>
-    <menu name="Components APIs">
-      <item name="Description" href="components.html"/>
-        <item name="APIs" href="nonav/auto-depends/apidocs/index.html"/>
-    </menu>
+            <!-- Top navbar configuration -->
+            <topNav>Documentation|Download</topNav>
 
-    ${reports}
+            <!-- Bottom nav configuration -->
+            <bottomNav maxSpan="9">
+                <column>Main</column>
+                <column>Documentation</column>
+                <column>QuickLinks</column>
+                <column>Project Info</column>
+            </bottomNav>
 
-  </body>
+            <toc>false</toc>
+
+            <!-- Misc Configuration -->
+            <smoothScroll>false</smoothScroll>
+            <skinAttribution>false</skinAttribution>
+            <bottomDescription quote="false">
+                <![CDATA[
+                    <center>
+                        <a href="https://glassfish.java.net" style="border:0; display:block">
+                            <img src="images/glassfish_logo.png" style="width:200px; margin-bottom:20px;">
+                        </a>
+                        HK2 is member of <a href="https://glassfish.java.net">GlassFish</a> project.
+                    </center>
+                ]]>
+            </bottomDescription>
+
+            <!-- Per-Page Configuration (allows overriding of global) -->
+            <pages>
+                <!-- index.html -->
+                <index>
+                    <sections>
+                        <body />
+                        <columns>2</columns>
+                    </sections>
+                </index>
+                
+                <!-- contribute.html -->
+                <contribute>
+                    <sections>
+                        <body />
+                        <columns>3</columns>
+                    </sections>
+                </contribute>
+            </pages>
+        </reflowSkin>
+    </custom>
+
+    <body>
+        <head>
+            <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
+        </head>
+        <menu name="Main">
+            <item name="Home" href="index.html" />
+            <item name="License" href="license.html" />
+            <item name="Contribute" href="contribute.html" />
+        </menu>
+        <menu name="Documentation">
+            <item name="Introduction" href="introduction.html" />
+            <item name="Getting Started" href="getting-started.html" />
+            <item name="API Overview" href="api-overview.html"/>
+            <item name="API jJavadoc" href="apidocs/index.html" />
+            <item name="API Xref" href="xref/index.html"/>
+        </menu>
+        <menu name="QuickLinks">
+            <item name="Inhabitant Generator" href="inhabitant-generator.html" />
+            <item name="Guice Bridge" href="guice-bridge.html"/>
+            <item name="Multitenancy Example" href="ctm-example.html" />
+            <item name="Resolver Example" href="custom-resolver-example.html"/>
+            <item name="Security Example" href="security-lockdown-example-runner.html"/>
+        </menu>
+        <menu name="Project Info">
+            <item name="Source Control" href="source-repository.html" />
+            <item name="Issue Tracking" href="issue-tracking.html" />
+            <item name="Mailing Lists" href="mail-lists.html" />
+            <item name="Project Team" href="team-list.html" />
+        </menu>
+    </body>
 </project>

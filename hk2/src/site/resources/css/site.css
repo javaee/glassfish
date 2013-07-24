@@ -1,0 +1,116 @@
+.color-black {
+    color: #000000;
+}
+
+.color-brown {
+    color: #AE8C54;
+}
+
+.gf-orange {
+    color: #E88A43;
+}
+
+.project-hk2-parent.page-index img[alt=stack] {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.project-hk2-parent.page-index h2[id]:before {
+    height: 20px;
+    margin-top: 0px;
+}
+
+.project-hk2-parent.page-contribute h2[id]:before {
+    height: 20px;
+    margin-top: 0px;
+}
+
+body {
+    background-image: url(../images/bg.png);
+    font-family: "Open Sans", Calibri, Candara, Arial, sans-serif;
+    font-size: 14px;
+}
+
+div.section li {
+    background: none !important;
+}
+
+h1 {
+    color: #E88A43;
+}
+
+h2 {
+    color: #7F7F7F;
+}
+
+h3 {
+    color: #7F7F7F;
+}
+
+p.reference {
+    font-size: 12px;
+    line-height: 12px;
+    width: 180px;
+}
+
+hr.reference {
+    width: 180px;
+    margin: 6px 0;
+}
+
+img.reference {
+    margin-top: 0;
+    border: 0;
+    display: block;
+    width: 90px;
+}
+
+/* Link styles for img/headers */
+a.headerlink:link {
+    color: #7F7F7F;
+    text-decoration: none;
+}
+
+a.headerlink:visited {
+    color: #7F7F7F;
+    text-decoration: none;
+}
+
+a.headerlink:hover {
+    color: #08c;
+    text-decoration: none;
+}
+
+a.headerlink:active {
+    color: #08c;
+    text-decoration: none;
+}
+
+.thumbnail .caption {
+    color: rgb(0, 0, 0);
+}
+
+/*
+   Tweak the color of the font in code/pre blocks.
+   We have to do this as bootstrap's css is overriding that
+   of highlight.js
+*/
+code, pre {
+    padding: 0px 3px 2px;
+    font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+    font-size: 12px;
+    color: rgb(100, 100, 100);
+    border-radius: 3px 3px 3px 3px;
+    display: block;
+    padding: 9.5px;
+    margin: 0px 0px 10px;
+    font-size: 13px;
+    line-height: 20px;
+    word-break: break-all;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    background-color: rgb(245, 245, 245);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+
+}
