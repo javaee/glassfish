@@ -22,7 +22,7 @@ Have a fix or a feature you\'d like to share?
 If you see anything missing or that could be improved, let us [know][jira].
 
 
-<h2><a class="headerlink" href="scm.html">
+<h2><a class="headerlink" href="source-repository.html">
     <var class="icon-eye-open"></var> Review Code
 </a></h2>
 
