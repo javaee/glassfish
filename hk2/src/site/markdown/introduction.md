@@ -267,7 +267,7 @@ be created, since no-one ever called the [get][providerget] method of the yellow
 
 It is often the case that a single contract has more than one implementation.  Sometimes it is useful to get access to
 all of the implementations of the contract.
-This can be done by using an [IterableProvider|iterableprovider].
+This can be done by using an [IterableProvider][iterableprovider].
 [IterableProvider|iterableprovider] extends [Provider][provider] and also implements [Iterable][iterable].
 Anywhere a service can be injected an [IterableProvider|iterableprovider] for that service can be injected.
 
