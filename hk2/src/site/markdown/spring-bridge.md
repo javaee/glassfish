@@ -2,8 +2,6 @@
 
 The Spring/HK2 Bridge can be used to inject [Spring][spring] services
 into HK2 services or inject HK2 services into [Spring][spring] services.
- 
-Table of Contents
 
 + [Definitions](spring-bridge.html#Definitions)
 + [Injecting Spring services into HK2 services](spring-bridge.html#Injecting_Spring_services_into_HK2_services)
