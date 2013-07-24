@@ -116,7 +116,7 @@
             <item name="Introduction" href="introduction.html" />
             <item name="Getting Started" href="getting-started.html" />
             <item name="API Overview" href="api-overview.html"/>
-            <item name="API jJavadoc" href="apidocs/index.html" />
+            <item name="API Javadoc" href="apidocs/index.html" />
             <item name="API Xref" href="xref/index.html"/>
         </menu>
         <menu name="QuickLinks">
