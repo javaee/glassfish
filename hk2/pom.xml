@@ -178,7 +178,7 @@
     
     <distributionManagement>
         <site>
-            <id>svn.java.net</id>
+            <id>website.java.net</id>
             <url>dav:https://website.java.net/website/hk2</url>
         </site>
     </distributionManagement> 
