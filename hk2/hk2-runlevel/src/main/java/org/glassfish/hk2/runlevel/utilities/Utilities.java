@@ -60,10 +60,12 @@ public class Utilities {
     public static Integer getRunLevelValue(Descriptor descriptor) {
         List<String> list = descriptor.getMetadata().
                 get(RunLevel.RUNLEVEL_VAL_META_TAG);
-
-        return list == null ?
-                RunLevel.RUNLEVEL_VAL_IMMEDIATE :
-                Integer.valueOf(list.get(0));
+        
+        if (list == null || list.isEmpty()) {
+            return RunLevel.RUNLEVEL_VAL_IMMEDIATE;
+        }
+        
+        return Integer.valueOf(list.get(0));
     }
 
     /**

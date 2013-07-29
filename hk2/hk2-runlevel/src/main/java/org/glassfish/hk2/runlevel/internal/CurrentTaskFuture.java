@@ -299,7 +299,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         if (allTheWay == null) return null;
         
         Boolean result = null;
-        do {
+        for (;;) {
             try {
                 result = allTheWay.waitForResult(timeout, unit);
                 if (result == null) {
@@ -332,9 +332,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 
                 throw new ExecutionException(me);
             }
-        } while (result == null);
-        
-        return null;
+        }
     }
     
     private void invokeOnProgress(ChangeableRunLevelFuture job, int level,
@@ -386,6 +384,17 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     }
     
     private interface AllTheWay {
+        /**
+         * The method to call on the internal job
+         * 
+         * @param timeout The amount of time to wait for a result
+         * @param unit The unit of the above time value
+         * @return True if the job finished, False if the timeout is up prior to the job
+         * finishing, and null if the job was repurposed and the caller may now need to
+         * listen on a different job
+         * @throws InterruptedException On a thread getting jacked
+         * @throws MultiException Other exceptions
+         */
         public Boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException;
         
     }

@@ -52,7 +52,7 @@ public class CurrentlyRunningException extends RuntimeException {
      */
     private static final long serialVersionUID = -1712057070339111837L;
     
-    private RunLevelFuture currentJob;
+    private transient RunLevelFuture currentJob;
     
     /**
      * Basic no-arg constructor

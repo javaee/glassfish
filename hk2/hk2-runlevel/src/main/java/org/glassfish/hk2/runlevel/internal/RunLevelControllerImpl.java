@@ -65,7 +65,6 @@ public class RunLevelControllerImpl implements RunLevelController {
     @Override
     public void proceedTo(int runLevel) {
         RunLevelFuture future = context.proceedTo(runLevel);
-        if (future == null) return;  // Happens if USE_NO_THREADS is true
         
         try {
             future.get();
