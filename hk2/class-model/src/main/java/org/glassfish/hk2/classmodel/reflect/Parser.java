@@ -220,27 +220,24 @@ public class Parser implements Closeable {
     public void parse(final File source, final Runnable doneHook) throws IOException {
         // todo : use protocol to lookup implementation
         final ArchiveAdapter adapter = createArchiveAdapter(source, doneHook);
-        if (null == adapter) {
-          context.logger.log(Level.FINE, "{0} is not a valid archive type - ignoring it!", source);
-        } else {
-          final Runnable cleanUpAndNotify = new Runnable() {
-            @Override
-            public void run() {
+        
+        final Runnable cleanUpAndNotify = new Runnable() {
+          @Override
+          public void run() {
+            try {
               try {
-                try {
-                  adapter.close();
-                } catch (IOException e) {
-                  throw new RuntimeException(e);
-                }
-              } finally {
-                if (doneHook!=null) {
-                    doneHook.run();
-                }
+                adapter.close();
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            } finally {
+              if (doneHook!=null) {
+                  doneHook.run();
               }
             }
-          };
-          parse(adapter, cleanUpAndNotify);
-        }
+          }
+        };
+        parse(adapter, cleanUpAndNotify);
     }
 
     private ArchiveAdapter createArchiveAdapter(File source, Runnable doneHook)
@@ -415,7 +412,7 @@ public class Parser implements Closeable {
     }
     
 
-    public class Result {
+    public static class Result {
         public final String name;
         public  final Exception fault;
 

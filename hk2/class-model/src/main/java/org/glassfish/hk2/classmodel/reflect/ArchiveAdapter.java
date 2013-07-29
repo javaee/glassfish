@@ -121,18 +121,26 @@ public interface ArchiveAdapter extends Closeable {
     public final class Entry {
         final public String name;
         final public long size;
-        final boolean isDirectory;
 
         /**
          * creates a new archive entry
          * @param name the entry name
          * @param size the entry size
          * @param isDirectory true if this entry is a directory
+         * @deprecated Use the other constructor, isDirectory is not used
          */
         public Entry(String name, long size, boolean isDirectory) {
             this.name = name;
             this.size = size;
-            this.isDirectory = isDirectory;
+        }
+        
+        /**
+         * creates a new archive entry
+         * @param name the entry name
+         * @param size the entry size
+         */
+        public Entry(String name, long size) {
+            this(name, size, false);
         }
     }
 }

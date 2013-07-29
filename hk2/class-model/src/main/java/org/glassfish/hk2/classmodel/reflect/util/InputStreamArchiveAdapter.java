@@ -116,7 +116,7 @@ public class InputStreamArchiveAdapter extends AbstractAdapter {
     
                             // if the size was not known, let's reset it now.
                             if (je.size==-1) {
-                                je = new Entry(ja.getName(), allRead+1, ja.isDirectory());
+                                je = new Entry(ja.getName(), allRead+1);
                             }
                         }
                         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);

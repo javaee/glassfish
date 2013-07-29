@@ -117,7 +117,7 @@ public class JarArchive extends AbstractAdapter {
              }
              InputStream is = null;
              try {
-                 Entry entry = new Entry(ja.getName(), ja.getSize(), ja.isDirectory());
+                 Entry entry = new Entry(ja.getName(), ja.getSize());
                  if (!selector.isSelected(entry))
                     continue;
                  is = jar.getInputStream(ja);
