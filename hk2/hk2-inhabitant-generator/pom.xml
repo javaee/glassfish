@@ -56,6 +56,10 @@
     <name>Inhabitant Generator</name>
     <description>${project.name}</description>
 
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
