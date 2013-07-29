@@ -301,6 +301,13 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
         
     }
     
+    /**
+     * This method is called to change the proceedTo level of the system
+     * @param level The level to change to
+     * @return A non-null RunLevelFuture that is the handle to give the
+     * caller
+     * @throws CurrentlyRunningException If there is already a running job
+     */
     public RunLevelFuture proceedTo(int level) throws CurrentlyRunningException {
         CurrentTaskFutureWrapper localTask;
         synchronized (this) {
