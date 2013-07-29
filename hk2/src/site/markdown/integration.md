@@ -74,8 +74,8 @@ To do so use the Guice/HK2 bridge, which is described [here](guice-bridge.html).
   
 ### Spring
 
-We are working on a Spring bridge as well.  However, it is not yet complete.  If you are interested
-in such a feature, please vote for it here: [Spring Integration](https://java.net/jira/browse/HK2-40).
+HK2 services can be used as [Spring][spring] beans, and [Spring][spring] beans can be injected into
+HK2 services.  To do so use the Spring/HK2 bridge, which is described [here](spring-bridge.html).
 
 [inhabitant-generator]: inhabitant-generator.html
 [serviceLoc]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
@@ -83,3 +83,4 @@ in such a feature, please vote for it here: [Spring Integration](https://java.ne
 [bindeer]: apidocs/org/glassfish/hk2/utilities/Binder.html
 [buildhelper]: apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
 [guice]: http://code.google.com/p/google-guice
+[spring]: http://www.springsource.org
