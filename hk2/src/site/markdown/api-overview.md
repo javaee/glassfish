@@ -281,7 +281,7 @@ The first method is the create method, which will attempt to create an instance 
 rules of HK2:
 
 ```java
-  Widget widget = locator.create(WidgetImpl.class);```java
+  Widget widget = locator.create(WidgetImpl.class);
 ```java
 
 It is important to note that the only references to other beans that will have been initialized when this returns are those necessary
