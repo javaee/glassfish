@@ -89,6 +89,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             }
             catch (Throwable th) {
                 Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).warning("Error finding implementation of hk2: " + th.getMessage());
+                // th.printStackTrace();
                 // Thread.dumpStack();
                 return null;
             }
@@ -97,8 +98,18 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
       });
   }
   
+  private static Iterable<? extends ServiceLocatorGenerator> getOSGiSafeGenerators() {
+      try {
+          return ServiceLoader.lookupProviderInstances(ServiceLocatorGenerator.class);
+      }
+      catch (Throwable th) {
+          // The bundle providing ServiceLoader need not be on the classpath
+          return null;
+      }
+  }
+  
   private static ServiceLocatorGenerator getGenerator() {
-      Iterable<? extends ServiceLocatorGenerator> generators = ServiceLoader.lookupProviderInstances(ServiceLocatorGenerator.class);
+      Iterable<? extends ServiceLocatorGenerator> generators = getOSGiSafeGenerators();
       if (generators != null) {
           // non-null indicates we are in OSGi environment
           // So, we will return whatever we find. If we don't find anything here, then we assume it is a
