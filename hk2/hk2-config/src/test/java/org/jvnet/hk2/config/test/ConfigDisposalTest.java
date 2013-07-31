@@ -82,6 +82,10 @@ public class ConfigDisposalTest {
         assertEquals("Removed extensions", 0, sc.getExtensions().size());
 
         assertNull("Nested child", habitat.getService(GenericConfig.class));
+    }
+
+    @Test
+    public void testDummy() {
         
     }
 }
