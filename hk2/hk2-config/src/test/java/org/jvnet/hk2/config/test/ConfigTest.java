@@ -97,7 +97,8 @@ public class ConfigTest {
     public void lookupAllInjectors() {
         String[] expected = {
                 SimpleConnectorInjector.class.getName(), EjbContainerAvailabilityInjector.class.getName(),
-                WebContainerAvailabilityInjector.class.getName(), GenericContainerInjector.class.getName()
+                WebContainerAvailabilityInjector.class.getName(), GenericContainerInjector.class.getName(),
+                GenericConfigInjector.class.getName()
         };
         List<String> expectedInjectors = Arrays.asList(expected);
 
@@ -107,7 +108,8 @@ public class ConfigTest {
             inhabitantNames.add(inh.getActiveDescriptor().getImplementation());
         }
 
-        assert(inhabitants.size() == expected.length && inhabitantNames.containsAll(expectedInjectors));
+        assert(inhabitants.size() == expected.length);
+        assert(inhabitantNames.containsAll(expectedInjectors));
     }
 
     // @Test
