@@ -110,6 +110,7 @@ public class ConfigModule {
         bindInjector(configurator, "ejb-container-availability", EjbContainerAvailability.class, EjbContainerAvailabilityInjector.class);
         bindInjector(configurator, "web-container-availability", WebContainerAvailability.class, WebContainerAvailabilityInjector.class);
         bindInjector(configurator, "generic-container",          GenericContainer.class,         GenericContainerInjector.class);
+        bindInjector(configurator, "generic-config",          GenericConfig.class,         GenericConfigInjector.class);
 
     }
     
