@@ -46,6 +46,7 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 
 import java.beans.PropertyVetoException;
+import java.util.List;
 
 
 /**
@@ -113,6 +114,9 @@ public interface SimpleConnector extends ConfigBeanProxy {
     public GenericContainer getGenericContainer();
 
     void setGenericContainer(GenericContainer v);
+
+    @Element("*")
+    List<GenericContainer> getExtensions();
 
 }
 

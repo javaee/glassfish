@@ -45,7 +45,6 @@ import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 
-import java.beans.PropertyVetoException;
 import java.util.List;
 
 @Configured
@@ -65,5 +64,8 @@ public interface GenericContainer extends ConfigBeanProxy {
 
     @Attribute (defaultValue="1234")
     int getIntValue();
+
+    @Element("*")
+    List<GenericConfig> getExtensions();
 
 }

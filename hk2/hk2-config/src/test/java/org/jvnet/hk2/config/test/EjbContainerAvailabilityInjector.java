@@ -1,3 +1,4 @@
+
 package org.jvnet.hk2.config.test;
 
 import org.jvnet.hk2.annotations.Service;
