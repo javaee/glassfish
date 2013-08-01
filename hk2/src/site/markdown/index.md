@@ -14,6 +14,7 @@ HK2 also has a powerful API that can be used to perform several tasks such as bi
 <li>Assisted injection</li>
 <li>Just In Time injection resolution</li>
 <li>Custom validation and security</li>
+<li>Run Level Services</li>
 </ul>
 </p>
 
