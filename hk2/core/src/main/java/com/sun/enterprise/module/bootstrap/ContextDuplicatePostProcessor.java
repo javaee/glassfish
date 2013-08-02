@@ -39,15 +39,9 @@
  */
 package com.sun.enterprise.module.bootstrap;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.DuplicatePostProcessor;
 
 /**
  * This class will weed out and duplicate implementations of anything populated into the
@@ -55,61 +49,8 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  * inhabitant files, and hence is not annotated with &#64;Service
  * 
  * @author jwells
- *
+ * @deprecated Use DuplicatePostProcessor instead
  */
 @PerLookup
-public class ContextDuplicatePostProcessor implements PopulatorPostProcessor {
-    private final HashSet<DescriptorImpl> dupSet = new HashSet<DescriptorImpl>();
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.bootstrap.PopulatorPostProcessor#process(org.glassfish.hk2.utilities.DescriptorImpl)
-     */
-    @Override
-    public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
-        if (dupSet.contains(descriptorImpl)) {
-            return null;
-        }
-        dupSet.add(descriptorImpl);
-        
-        Set<String> contracts = descriptorImpl.getAdvertisedContracts();
-        String contract = null;
-        for (String candidate : contracts) {
-            if (candidate.equals(descriptorImpl.getImplementation())) {
-                // Prefer this one over anything else
-                contract = candidate;
-                break;
-            }
-            
-            contract = candidate;
-        }
-        
-        final String fContract = contract;
-        final String fName = descriptorImpl.getName();
-        final DescriptorImpl fDescriptorImpl = descriptorImpl;
-        
-        if (serviceLocator.getBestDescriptor(new IndexedFilter() {
-
-            @Override
-            public boolean matches(Descriptor d) {
-                return fDescriptorImpl.equals(d);
-            }
-
-            @Override
-            public String getAdvertisedContract() {
-                return fContract;
-            }
-
-            @Override
-            public String getName() {
-                return fName;
-            }
-            
-        }) != null) {
-            // Already in the locator, do not add again
-            return null;
-        }
-        
-        return descriptorImpl;
-    }
-
+public class ContextDuplicatePostProcessor extends DuplicatePostProcessor implements PopulatorPostProcessor {
 }
