@@ -57,6 +57,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.DuplicatePostProcessor;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -76,6 +77,8 @@ public class DynamicPopulateTest {
     private final static String DUMMY_IMPL_5 = "com.acme.dummy.Dummy5";
     private final static String DUMMY_IMPL_6 = "com.acme.dummy.Dummy6";
     private final static String DUMMY_IMPL_7 = "com.acme.dummy.Dummy7";
+    private final static String DUMMY_IMPL_8 = "com.acme.dummy.Dummy8";
+    private final static String DUMMY_IMPL_9 = "com.acme.dummy.Dummy9";
     
     private final static String KEY = "key";
     private final static String VALUE = "value";
@@ -381,6 +384,75 @@ public class DynamicPopulateTest {
             
             if (!found) throw me;
         }
+    }
+    
+    /**
+     * Tests the duplicate post processor will remove duplicates found
+     * in the input stream
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testDuplicatePostProcessor() throws IOException {
+        DescriptorImpl di_8 = new DescriptorImpl();
+        di_8.setImplementation(DUMMY_IMPL_8);
+        di_8.addAdvertisedContract(DUMMY_IMPL_8);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(baos);
+        
+        di_8.writeObject(pw);
+        di_8.writeObject(pw);  // Doing it twice is twice as nice!
+        
+        pw.close();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        Assert.assertNotNull(dcs);
+        
+        Populator populator = dcs.getPopulator();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        populator.populate(new MyDescriptorFinder(bais), new DuplicatePostProcessor());
+        
+        List<ActiveDescriptor<?>> lucky8list = locator.getDescriptors(BuilderHelper.createContractFilter(DUMMY_IMPL_8));
+        
+        // Duplicator should have gotten rid of one of them!
+        Assert.assertEquals(1, lucky8list.size());
+    }
+    
+    /**
+     * Tests the duplicate post processor will remove duplicates already
+     * in the service locator
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testDuplicatePostProcessorWithExistingService() throws IOException {
+        DescriptorImpl di_9 = new DescriptorImpl();
+        di_9.setImplementation(DUMMY_IMPL_9);
+        di_9.addAdvertisedContract(DUMMY_IMPL_9);
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, di_9);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(baos);
+        
+        di_9.writeObject(pw);
+        
+        pw.close();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        Assert.assertNotNull(dcs);
+        
+        Populator populator = dcs.getPopulator();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        populator.populate(new MyDescriptorFinder(bais), new DuplicatePostProcessor());
+        
+        List<ActiveDescriptor<?>> lucky9list = locator.getDescriptors(BuilderHelper.createContractFilter(DUMMY_IMPL_9));
+        
+        // Duplicator should have gotten rid of one of them!
+        Assert.assertEquals(1, lucky9list.size());
     }
     
     private static class MyDescriptorFinder implements DescriptorFileFinder {
