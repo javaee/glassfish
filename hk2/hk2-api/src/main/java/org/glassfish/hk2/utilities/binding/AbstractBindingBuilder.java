@@ -138,6 +138,12 @@ abstract class AbstractBindingBuilder<T> implements
         contracts.add(contract.getType());
         return this;
     }
+    
+    @Override
+    public AbstractBindingBuilder<T> to(Type contract) {
+        contracts.add(contract);
+        return this;
+    }
 
     @Override
     public AbstractBindingBuilder<T> loadedBy(HK2Loader loader) {
