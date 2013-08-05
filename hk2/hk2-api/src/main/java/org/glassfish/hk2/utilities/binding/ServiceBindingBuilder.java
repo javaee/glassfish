@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities.binding;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import org.glassfish.hk2.api.HK2Loader;
@@ -67,6 +68,14 @@ public interface ServiceBindingBuilder<T> extends BindingBuilder<T> {
      * @return updated binder.
      */
     public ServiceBindingBuilder<T> to(TypeLiteral<?> contract);
+    
+    /**
+     * Bind a new contract to a service.
+     *
+     * @param contract contract type.
+     * @return updated binder.
+     */
+    public ServiceBindingBuilder<T> to(Type contract);
 
     /**
      * Custom HK2 loader to be used when service class is about to be loaded.
