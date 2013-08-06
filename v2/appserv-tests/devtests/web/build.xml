@@ -342,6 +342,7 @@
         <ant dir="servlet-3.1/resetCharacterEncoding" target="all"/>
         <ant dir="servlet-3.1/partSubmittedFileName" target="all"/>
         <ant dir="servlet-3.1/servletContextGetVirtualServerName" target="all"/>
+        <ant dir="localeEncodingMapping" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
