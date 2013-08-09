@@ -122,4 +122,4 @@ ARGS=" $*"
 # e.g to supply -Dmaven.skip.test or -Dmaven.repo.local=/path/to/repo
 
 mvn -B -e release:prepare -DpreparationGoals="'install' $ARGS" $ARGS -Prelease
-mvn -B -e release:perform -Dgoals="'deploy site-deploy' $ARGS" $ARGS -Prelease
+mvn -B -e release:perform -Dgoals="'deploy' 'site-deploy' $ARGS" $ARGS -Prelease

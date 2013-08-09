@@ -59,7 +59,7 @@ import java.util.Set;
  * A service is required to minimally have a type name representing the
  * concrete (i.e., byType) definition.
  * <p>
- * @see {@link ActiveDescriptor}, {@link Metadata}
+ * @see ActiveDescriptor Metadata
  * 
  * @author Jerome Dochez, Jeff Trent, Mason Taube
  */
@@ -251,7 +251,7 @@ public interface Descriptor {
     public Boolean isProxyForSameScope();
     
     /**
-     * Returns the name of the {@link ClassAnalysis} service that
+     * Returns the name of the {@link ClassAnalyzer} service that
      * should be used to discover the constructors, initialization methods,
      * field and postConstruct and preDestory methods.  If null the default
      * implementation will be used.  Will be ignored for descriptors that
