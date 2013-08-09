@@ -13,6 +13,10 @@ public interface GenericConfig extends ConfigBeanProxy {
     String getName();
     void setName(String name);
 
+    @Element
+    GenericConfig getGenericConfig();
+    void setGenericConfig(GenericConfig genericConfig);
+
     @Element("*")
     List<GenericContainer> getExtensions();
 }

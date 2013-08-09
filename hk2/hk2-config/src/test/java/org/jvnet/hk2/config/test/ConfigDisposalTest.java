@@ -53,7 +53,7 @@ public class ConfigDisposalTest {
     // mvn config-generator:generate-test-injectors
     // cp target/generated-sources/hk2-config-generator/src/test/java/org/jvnet/hk2/config/test/* src/test/java/org/jvnet/hk2/config/test/
     @Test // Removed container causes nested elements be removed
-    public void testDisposedNested() throws TransactionFailure {
+    public void testDisposedNestedAndNamed() throws TransactionFailure {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         assertEquals("Added extensions", 1, sc.getExtensions().size());
         assertEquals("Nested extensions", 1, sc.getExtensions().get(0).getExtensions().size());
@@ -72,6 +72,6 @@ public class ConfigDisposalTest {
         assertEquals("Removed extensions", 0, sc.getExtensions().size());
 
         // FIXME: uncomment failing check
-        //assertNull("Nested child", habitat.getService(GenericConfig.class));
+        //assertNull("Nested named child", habitat.getService(GenericConfig.class));
     }
 }
