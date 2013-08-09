@@ -21,6 +21,7 @@ users can customize thier HK2 environment.  Among the set of things which can be
 + [Validation](extensibility.html#Validation)
 + [Instance Lifecycle](extensibility.html#Instance_Lifecycle)
 + [Class Analysis](extensibility.html#Class_Analysis)
++ [Run Level Services](extensibility.html#Run_Level_Services)
 
 ### Adding a Scope and Context to the system
 
@@ -209,7 +210,17 @@ in order to modify or completely replace the constructors, fields and methods HK
 Individual HK2 [Descriptors][descriptor] can set the name of the [ClassAnalyzer][classanalyzer] 
 that should be used to analyze the implementation class.
 
-HK2 always adds an implementation of [ClassAnalyzer][classanalyzer] with the name "default" that implements the JSR-299 style of selection.
+HK2 always adds an implementation of [ClassAnalyzer][classanalyzer] with the name "default" that implements
+the JSR-299 style of selection.
+
+### Run Level Services
+
+If your system has sets of services that need to come up and down in an orderly fashion consider
+using the HK2 Run Level Services.  The Run Level Service allows one to specify levels at
+which services come up and down and will bring these services up and down when the system run level
+has changed.
+
+Learn more about Run Level Services [here][runlevelservices].
 
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [context]: apidocs/org/glassfish/hk2/api/Context.html
@@ -237,3 +248,4 @@ HK2 always adds an implementation of [ClassAnalyzer][classanalyzer] with the nam
 [instancelifecyclelistener]: apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html
 [classanalyzer]: apidocs/org/glassfish/hk2/api/ClassAnalyzer.html
 [custom-resolver-example]: custom-resolver-example.html
+[runlevelservices]: runlevel.html

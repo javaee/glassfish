@@ -98,7 +98,7 @@ abstract class AbstractBindingBuilder<T> implements
     /**
      * Injectee is proxiable.
      */
-    boolean proxiable = false;
+    Boolean proxiable = null;
     /**
      * Injectee should be proxied even inside the same scope
      */
@@ -136,6 +136,12 @@ abstract class AbstractBindingBuilder<T> implements
     @Override
     public AbstractBindingBuilder<T> to(TypeLiteral<?> contract) {
         contracts.add(contract.getType());
+        return this;
+    }
+    
+    @Override
+    public AbstractBindingBuilder<T> to(Type contract) {
+        contracts.add(contract);
         return this;
     }
 
@@ -235,8 +241,8 @@ abstract class AbstractBindingBuilder<T> implements
                 builder.to(contract);
             }
 
-            if (proxiable) {
-                builder.proxy();
+            if (proxiable != null) {
+                builder.proxy(proxiable);
             }
             
             if (proxyForSameScope != null) {
@@ -286,7 +292,13 @@ abstract class AbstractBindingBuilder<T> implements
                 descriptor.addContractType(contract);
             }
 
-            descriptor.setProxiable(proxiable);
+            if (proxiable != null) {
+                descriptor.setProxiable(proxiable);
+            }
+            
+            if (proxyForSameScope != null) {
+                descriptor.setProxyForSameScope(proxyForSameScope);
+            }
 
             configuration.bind(descriptor, false);
         }
@@ -307,10 +319,7 @@ abstract class AbstractBindingBuilder<T> implements
 
             AbstractActiveDescriptor<?> factoryContractDescriptor = BuilderHelper.createConstantDescriptor(factory);
             factoryContractDescriptor.addContractType(factory.getClass());
-            factoryContractDescriptor.setName(name);
             factoryContractDescriptor.setLoader(this.loader);
-            factoryContractDescriptor.setProxiable(proxiable);
-            factoryContractDescriptor.setClassAnalysisName(this.analyzer);
 
             ActiveDescriptorBuilder descriptorBuilder = BuilderHelper.activeLink(factory.getClass())
                     .named(name)
@@ -334,10 +343,18 @@ abstract class AbstractBindingBuilder<T> implements
                 factoryContractDescriptor.addContractType(new ParameterizedTypeImpl(Factory.class, contract));
                 descriptorBuilder.to(contract);
             }
+            
+            if (proxiable != null) {
+                descriptorBuilder.proxy(proxiable);
+            }
+            
+            if (proxyForSameScope != null) {
+                descriptorBuilder.proxyForSameScope(proxyForSameScope);
+            }
 
             configuration.bind(new FactoryDescriptorsImpl(
                     factoryContractDescriptor,
-                    descriptorBuilder.buildFactory()));
+                    descriptorBuilder.buildProvideMethod()));
         }
     }
 
@@ -368,7 +385,6 @@ abstract class AbstractBindingBuilder<T> implements
             ActiveDescriptorBuilder descriptorBuilder = BuilderHelper.activeLink(factoryClass)
                     .named(name)
                     .andLoadWith(this.loader)
-                    .proxy(proxiable)
                     .analyzeWith(this.analyzer);
 
             if (scope != null) {
@@ -389,10 +405,18 @@ abstract class AbstractBindingBuilder<T> implements
                 factoryDescriptorBuilder.to(new ParameterizedTypeImpl(Factory.class, contract));
                 descriptorBuilder.to(contract);
             }
+            
+            if (proxiable != null) {
+                descriptorBuilder.proxy(proxiable);
+            }
+            
+            if (proxyForSameScope != null) {
+                descriptorBuilder.proxyForSameScope(proxyForSameScope);
+            }
 
             configuration.bind(new FactoryDescriptorsImpl(
                     factoryDescriptorBuilder.build(),
-                    descriptorBuilder.buildFactory()));
+                    descriptorBuilder.buildProvideMethod()));
         }
     }
 

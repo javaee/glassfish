@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,20 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package com.sun.enterprise.module.bootstrap;
-
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.bootstrap.PopulatorPostProcessor;
-import org.glassfish.hk2.utilities.DuplicatePostProcessor;
+package org.glassfish.hk2.tests.locator.binder;
 
 /**
- * This class will weed out and duplicate implementations of anything populated into the
- * locator.  This service must be put into the ServiceLocator prior to populating from the
- * inhabitant files, and hence is not annotated with &#64;Service
- * 
  * @author jwells
- * @deprecated Use DuplicatePostProcessor instead
+ *
  */
-@PerLookup
-public class ContextDuplicatePostProcessor extends DuplicatePostProcessor implements PopulatorPostProcessor {
+public class Legolas implements CouncilOfElrond<Elves> {
+
 }
