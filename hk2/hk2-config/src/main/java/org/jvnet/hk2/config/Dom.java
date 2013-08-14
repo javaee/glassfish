@@ -620,7 +620,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     ServiceLocatorUtilities.removeFilter(getHabitat(), BuilderHelper.createNameAndContractFilter(
-                            reference.getProxyType().getName(), reference.getKey()));
+                            reference.getProxyType().getName(), reference.getKey()), true);
                     addWithAlias(getHabitat(), newNode,newNode.getProxyType(), newNode.getKey());
                     
                     itr.set(new NodeChild(name,newNode));
@@ -644,7 +644,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 if(nc.dom==reference) {
                     itr.remove();
                     ServiceLocatorUtilities.removeFilter(getHabitat(), BuilderHelper.createNameAndContractFilter(
-                            reference.getProxyType().getName(), reference.getKey()));
+                            reference.getProxyType().getName(), reference.getKey()), true);
                     reference.release();
                     return;
                 }
