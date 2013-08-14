@@ -84,7 +84,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
 
     private final Dom parent;
 
-    private DomDescriptor domDescriptor;
+    private ActiveDescriptor<Dom> domDescriptor;
     
     private ServiceHandle<Dom> serviceHandle;
     /**
@@ -210,7 +210,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         DomDescriptor<Dom> domDesc = new DomDescriptor<Dom>(this, ctrs, Singleton.class,
                 getImplementation(), new HashSet<Annotation>());
         domDesc.setLoader(loader);
-        ActiveDescriptor<Dom> addedDescriptor = dc.addActiveDescriptor(domDesc, false);
+        domDescriptor = dc.addActiveDescriptor(domDesc, false);
 
         String key = getKey();
         for (String contract : model.contracts) {
@@ -224,8 +224,8 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
 
         dc.commit();
         
-        final long locatorId = addedDescriptor.getLocatorId();
-        final long serviceId = addedDescriptor.getServiceId();
+        final long locatorId = domDescriptor.getLocatorId();
+        final long serviceId = domDescriptor.getServiceId();
         final String name = getImplementation();
         
         ActiveDescriptor<Dom> myDescriptor = (ActiveDescriptor<Dom>) getHabitat().getBestDescriptor(new IndexedFilter() {
@@ -643,8 +643,13 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.remove();
-                    ServiceLocatorUtilities.removeFilter(getHabitat(), BuilderHelper.createNameAndContractFilter(
-                            reference.getProxyType().getName(), reference.getKey()), true);
+                     ServiceLocatorUtilities.removeOneDescriptor(getHabitat(), reference.domDescriptor);
+                     String key = reference.getKey();
+                     if (key != null) {
+                         ServiceLocatorUtilities.removeFilter(getHabitat(), BuilderHelper.createNameAndContractFilter(
+                                 reference.getProxyType().getName(), key), true);
+                     }
+
                     reference.release();
                     return;
                 }
@@ -1312,6 +1317,8 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
     }
 
     private void release() {
+        domDescriptor.dispose(this);
+        serviceHandle.destroy();
         listeners.clear();
     }
 
