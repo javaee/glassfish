@@ -39,9 +39,11 @@
  */
 package org.jvnet.hk2.config;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.annotation.ElementType;
@@ -52,7 +54,8 @@ import java.util.*;
 
 import javax.validation.*;
 import javax.validation.metadata.ConstraintDescriptor;
-import javax.validation.metadata.ElementDescriptor;
+
+import org.jvnet.hk2.config.ConfigModel.Property;
 
 /**
  * A WriteableView is a view of a ConfigBean object that allow access to the
@@ -656,9 +659,14 @@ private class ProtectedList extends AbstractList {
                     ConfigView targetHandler = ((ConfigView) Proxy.getInvocationHandler(target)).getMasterView();
                     if (targetHandler==handler) {
                         removed = (proxied.remove(index)!=null);
+                        if (removed) {
+                            removeNestedElements(object);
+                        }
                     }
                 } catch(IllegalArgumentException ex) {
                     // ignore
+                } catch (TransactionFailure e) {
+                    throw new RuntimeException(e);
                 }
             }
         } catch(IllegalArgumentException e) {
@@ -678,6 +686,22 @@ private class ProtectedList extends AbstractList {
         changeEvents.add(evt);
 
         return removed;
+    }
+
+    private boolean removeNestedElements(Object object) throws TransactionFailure {
+        ConfigBeanProxy writable = currentTx.enroll((ConfigBeanProxy) object);
+        WriteableView writableView = ((WriteableView) Proxy.getInvocationHandler(writable));
+        
+        Property property = writableView.bean.model.getElement("*");
+        
+        Object nested = writableView.getter(property, parameterizedType);
+        ProtectedList list = (ProtectedList) nested;
+        if (list.size() > 0) {
+            list.clear();
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
@@ -872,5 +896,24 @@ private class ProtectedList extends AbstractList {
             return false;
         }
     }
+
+    private final static ParameterizedType parameterizedType = new ParameterizedType() {
+
+        @Override
+        public Type[] getActualTypeArguments() {
+            return new Type[] {ConfigBeanProxy.class};
+        }
+
+        @Override
+        public Type getRawType() {
+            return Collection.class;
+        }
+
+        @Override
+        public Type getOwnerType() {
+            return null;
+        }
+        
+    };
 
 }
