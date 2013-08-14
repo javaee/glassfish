@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.alias;
 
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -49,6 +50,7 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -74,6 +76,11 @@ import static org.junit.Assert.assertTrue;
  */
 public class AliasDescriptorTest {
 
+    /**
+     * Tests adding alias descriptors to the system
+     * 
+     * @throws Exception
+     */
     @Test
     public void testAddAliasDescriptors() throws Exception {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testAddDescriptor");
@@ -281,6 +288,136 @@ public class AliasDescriptorTest {
         
         Assert.assertNotSame(a1, a5);  // Underlying descriptor different
         Assert.assertNotSame(a2, a5);  // Underlying descriptor different
+    }
+    
+    /**
+     * Tests removing alias descriptors to the system
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRemoveAliasDescriptors() throws Exception {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testRemoveAliasDescriptors");
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+        ActiveDescriptor<MyService> descriptor =
+                (ActiveDescriptor<MyService>) config.<MyService>bind(BuilderHelper.link(MyService.class).
+                        to(MyInterface1.class).in(Singleton.class.getName()).build());
+
+        config.commit();
+
+        config = dcs.createDynamicConfiguration();
+        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo"));
+        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface3.class.getName(), "bar"));
+        config.commit();
+
+        {
+            MyInterface2 s2 = locator.getService(MyInterface2.class, "foo");
+            Assert.assertNotNull(s2);
+
+            MyInterface3 s3 = locator.getService(MyInterface3.class, "bar");
+            Assert.assertNotNull(s3);
+        }
+
+        // Should remove the alias descriptors as well
+        ServiceLocatorUtilities.removeOneDescriptor(locator, descriptor, true);
+        
+        {
+            MyInterface2 s2 = locator.getService(MyInterface2.class, "foo");
+            Assert.assertNull(s2);
+
+            MyInterface3 s3 = locator.getService(MyInterface3.class, "bar");
+            Assert.assertNull(s3);
+        }
+    }
+    
+    /**
+     * Tests removing alias descriptors to the system (from the original descriptor)
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRemoveAliasDescriptorsOriginalDescriptor() throws Exception {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testRemoveAliasDescriptorsOriginal");
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+        Descriptor originalDescriptor = BuilderHelper.link(MyService.class).
+                to(MyInterface1.class).in(Singleton.class.getName()).build();
+        
+        ActiveDescriptor<MyService> descriptor =
+                (ActiveDescriptor<MyService>) config.<MyService>bind(originalDescriptor);
+
+        config.commit();
+
+        config = dcs.createDynamicConfiguration();
+        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo"));
+        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface3.class.getName(), "bar"));
+        config.commit();
+
+        {
+            MyInterface2 s2 = locator.getService(MyInterface2.class, "foo");
+            Assert.assertNotNull(s2);
+
+            MyInterface3 s3 = locator.getService(MyInterface3.class, "bar");
+            Assert.assertNotNull(s3);
+        }
+
+        // Should remove the alias descriptors as well
+        ServiceLocatorUtilities.removeOneDescriptor(locator, originalDescriptor, true);
+        
+        {
+            MyInterface2 s2 = locator.getService(MyInterface2.class, "foo");
+            Assert.assertNull(s2);
+
+            MyInterface3 s3 = locator.getService(MyInterface3.class, "bar");
+            Assert.assertNull(s3);
+        }
+    }
+    
+    /**
+     * Tests removing alias descriptors to the system (via Filter)
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testRemoveAliasDescriptorsWithFilterDescriptor() throws Exception {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create("testRemoveAliasDescriptorsOriginal");
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+
+        Descriptor originalDescriptor = BuilderHelper.link(MyService.class).
+                to(MyInterface1.class).in(Singleton.class.getName()).build();
+        
+        ActiveDescriptor<MyService> descriptor =
+                (ActiveDescriptor<MyService>) config.<MyService>bind(originalDescriptor);
+
+        config.commit();
+
+        config = dcs.createDynamicConfiguration();
+        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface2.class.getName(), "foo"));
+        config.addActiveDescriptor(new AliasDescriptor<MyService>(locator, descriptor, MyInterface3.class.getName(), "bar"));
+        config.commit();
+
+        {
+            MyInterface2 s2 = locator.getService(MyInterface2.class, "foo");
+            Assert.assertNotNull(s2);
+
+            MyInterface3 s3 = locator.getService(MyInterface3.class, "bar");
+            Assert.assertNotNull(s3);
+        }
+
+        // Should remove the alias descriptors as well
+        ServiceLocatorUtilities.removeFilter(locator, BuilderHelper.createContractFilter(MyInterface1.class.getName()), true);
+        
+        {
+            MyInterface2 s2 = locator.getService(MyInterface2.class, "foo");
+            Assert.assertNull(s2);
+
+            MyInterface3 s3 = locator.getService(MyInterface3.class, "bar");
+            Assert.assertNull(s3);
+        }
     }
 
 
