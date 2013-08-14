@@ -214,43 +214,17 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
 
         String key = getKey();
         for (String contract : model.contracts) {
-            ActiveDescriptor<Dom> alias = new AliasDescriptor<Dom>(locator, domDesc, contract, key);
+            ActiveDescriptor<Dom> alias = new AliasDescriptor<Dom>(locator, domDescriptor, contract, key);
             dc.addActiveDescriptor(alias, false);
         }
         if (key!=null) {
-            ActiveDescriptor<Dom> alias = new AliasDescriptor<Dom>(locator, domDesc, model.targetTypeName, key);
+            ActiveDescriptor<Dom> alias = new AliasDescriptor<Dom>(locator, domDescriptor, model.targetTypeName, key);
             dc.addActiveDescriptor(alias, false);
         }
 
         dc.commit();
         
-        final long locatorId = domDescriptor.getLocatorId();
-        final long serviceId = domDescriptor.getServiceId();
-        final String name = getImplementation();
-        
-        ActiveDescriptor<Dom> myDescriptor = (ActiveDescriptor<Dom>) getHabitat().getBestDescriptor(new IndexedFilter() {
-
-            @Override
-            public boolean matches(Descriptor d) {
-                if (d.getServiceId().longValue() != serviceId) return false;
-                if (d.getLocatorId().longValue() != locatorId) return false;
-                
-                return true;
-            }
-
-            @Override
-            public String getAdvertisedContract() {
-                return ConfigBean.class.getName();
-            }
-
-            @Override
-            public String getName() {
-                return name;
-            }
-            
-        });
-        
-        serviceHandle = getHabitat().getServiceHandle(myDescriptor);
+        serviceHandle = getHabitat().getServiceHandle(domDescriptor);
     }
 
     /**
