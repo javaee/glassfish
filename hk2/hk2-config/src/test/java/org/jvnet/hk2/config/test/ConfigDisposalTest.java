@@ -60,7 +60,7 @@ public class ConfigDisposalTest {
     // to regenerate config injectors do the following in command line:
     // mvn config-generator:generate-test-injectors
     // cp target/generated-sources/hk2-config-generator/src/test/java/org/jvnet/hk2/config/test/* src/test/java/org/jvnet/hk2/config/test/
-    //@Test // Removed container causes nested elements be removed
+    @Test // Removed container causes nested elements be removed
     public void testDisposedNestedAndNamed() throws TransactionFailure {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         assertEquals("Extensions", 1, sc.getExtensions().size());
