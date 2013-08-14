@@ -105,4 +105,20 @@ public class DomDescriptor<T>
 
         theOne = creator.create();
     }
+
+    @Override
+    public synchronized void dispose(T instance) {
+        super.dispose(instance);
+        theDom = null;
+    }
+
+    @Override
+    public boolean equals(Object a) {
+        if (a instanceof DomDescriptor && super.equals(a)) {
+            DomDescriptor other = (DomDescriptor) a;
+            return theDom.equals(other.theDom);
+            
+        }
+        return false;
+    }
 }
