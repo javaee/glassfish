@@ -2,8 +2,10 @@
     <ejb-container-availability/>
     <web-container-availability/>
     <generic-container>
-        <generic-config name="test">
-            <generic-config name="test"/>
+        <generic-config name="test1">
+          <generic-config name="test"/>
+        </generic-config>
+        <generic-config name="test2">
         </generic-config>
     </generic-container>
 </simple-connector>
