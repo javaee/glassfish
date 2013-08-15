@@ -694,15 +694,18 @@ private class ProtectedList extends AbstractList {
         ConfigBeanProxy writable = currentTx.enroll((ConfigBeanProxy) object);
         WriteableView writableView = ((WriteableView) Proxy.getInvocationHandler(writable));
         
-        Property property = writableView.bean.model.getElement("*");
-        if (property != null) {
-            Object nested = writableView.getter(property, parameterizedType);
-            ProtectedList list = (ProtectedList) nested;
-            if (list.size() > 0) {
-                list.clear();
-                return true;
+        for (Property property : writableView.bean.model.elements.values()) {
+            if (property.isCollection()) {
+                Object nested = writableView.getter(property, parameterizedType);
+                ProtectedList list = (ProtectedList) nested;
+                if (list.size() > 0) {
+                    list.clear();
+                }
+            } else if (!property.isLeaf()) { // Element
+                writableView.setter(property, null, Dom.class);
             }
-        }
+            return true;
+        }        
         return false;
     }
 
