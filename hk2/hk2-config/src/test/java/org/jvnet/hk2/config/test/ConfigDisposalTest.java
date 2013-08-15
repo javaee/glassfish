@@ -79,10 +79,11 @@ public class ConfigDisposalTest {
 
         assertEquals("Removed extensions", 0, sc.getExtensions().size());
         // NOTE, habitat.getService(GenericConfig.class) creates new instance
-        //       if not all instances of GenericConfig are removed 
+        //       if not all instances of GenericConfig descriptors are removed 
         assertNull("GenericContainer descriptor", habitat.getService(GenericContainer.class));
+        assertNull("GenericConfig descriptor test", habitat.getService(GenericConfig.class, "test"));
         assertNull("GenericConfig descriptor", habitat.getService(GenericConfig.class));
-        // assert with visualVm there is no GenericContainer and GenericConfig instances with OQL query:
+        // assert with VisualVm there is no GenericContainer and GenericConfig instances with OQL query:
         // select x.implementation.toString() from org.jvnet.hk2.config.test.SimpleConfigBeanWrapper x
     }
 
@@ -113,7 +114,7 @@ public class ConfigDisposalTest {
         assertNotNull("Nested named grand child", habitat.getService(GenericConfig.class, "test"));
     }
 
-    //@Test 
+    @Test 
     public void testRemovedOne() throws TransactionFailure {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         assertEquals("Extensions", 1, sc.getExtensions().size());
