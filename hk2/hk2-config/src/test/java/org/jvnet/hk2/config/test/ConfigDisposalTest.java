@@ -158,6 +158,31 @@ public class ConfigDisposalTest {
     }
 
     @Test 
+    public void testReplaceNode() throws TransactionFailure {
+        SimpleConnector sc = habitat.getService(SimpleConnector.class);
+        assertEquals("Eextensions", 1, sc.getExtensions().size());
+        
+        GenericContainer extension = sc.getExtensions().get(0);
+        assertEquals("Child extensions", 2, extension.getExtensions().size());
+        GenericConfig nestedChild = extension.getExtensions().get(0);
+
+        ConfigSupport.apply(new SingleConfigCode<GenericConfig>() {
+            @Override
+            public Object run(GenericConfig nestedChild)
+                    throws PropertyVetoException, TransactionFailure {
+                GenericConfig newChild = nestedChild.createChild(GenericConfig.class);
+                newChild.setName("test3");
+                nestedChild.setGenericConfig(newChild);
+                return nestedChild;
+            }
+        }, nestedChild);
+
+        assertNotNull("Nested named child 1", habitat.getService(GenericConfig.class, "test1"));
+        assertNotNull("Nested named child 2", habitat.getService(GenericConfig.class, "test2"));
+        assertNull("Nested named grand child replaced", habitat.getService(GenericConfig.class, "test"));
+    }
+
+    @Test 
     public void testReplaceChild() throws TransactionFailure {
         SimpleConnector sc = habitat.getService(SimpleConnector.class);
         assertEquals("Eextensions", 1, sc.getExtensions().size());
