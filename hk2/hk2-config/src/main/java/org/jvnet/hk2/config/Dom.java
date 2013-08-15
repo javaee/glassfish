@@ -609,7 +609,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
      * Removes an existing {@link NodeChild}
      *
      */
-    public synchronized void removeChild(Dom reference) {
+    public synchronized void removeChild(final Dom reference) {
         ListIterator<Child> itr = children.listIterator();
         while(itr.hasNext()) {
             Child child = itr.next();
@@ -617,12 +617,24 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.remove();
-                     ServiceLocatorUtilities.removeOneDescriptor(getHabitat(), reference.domDescriptor);
-                     String key = reference.getKey();
-                     if (key != null) {
-                         ServiceLocatorUtilities.removeFilter(getHabitat(), BuilderHelper.createNameAndContractFilter(
-                                 reference.getProxyType().getName(), key), true);
-                     }
+                    ServiceLocatorUtilities.removeFilter(getHabitat(), new IndexedFilter() {
+
+                        @Override
+                        public boolean matches(Descriptor descriptor) {
+                            return reference.domDescriptor.equals(descriptor);
+                        }
+
+                        @Override
+                        public String getAdvertisedContract() {
+                            return ConfigBean.class.getName();
+                        }
+
+                        @Override
+                        public String getName() {
+                            return reference.domDescriptor.getName();
+                        }
+                        
+                    }, true);
 
                     reference.release();
                     return;
