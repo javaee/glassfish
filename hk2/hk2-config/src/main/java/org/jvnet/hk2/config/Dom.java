@@ -593,8 +593,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
             if (child instanceof NodeChild) {
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
-                    ServiceLocatorUtilities.removeFilter(getHabitat(), BuilderHelper.createNameAndContractFilter(
-                            reference.getProxyType().getName(), reference.getKey()), true);
+                    reference.release();
                     addWithAlias(getHabitat(), newNode,newNode.getProxyType(), newNode.getKey());
                     
                     itr.set(new NodeChild(name,newNode));
