@@ -710,6 +710,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 if(jtr.hasNext()) {
                     itr.set(jtr.next());    // replace
                     last = itr.nextIndex();
+                    removed.add(child);
                 } else {
                     itr.remove();   // remove
                     removed.add(child);
