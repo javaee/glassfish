@@ -68,6 +68,7 @@ public class DomDescriptor<T>
         if (theDom == null) throw new IllegalArgumentException();
 
         this.theDom = theDom;
+        setImplementation(theDom.getClass().getName());
     }
 
     /* (non-Javadoc)
