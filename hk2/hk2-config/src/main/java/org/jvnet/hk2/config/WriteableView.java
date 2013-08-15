@@ -702,7 +702,10 @@ private class ProtectedList extends AbstractList {
                     list.clear();
                 }
             } else if (!property.isLeaf()) { // Element
-                writableView.setter(property, null, Dom.class);
+                Object oldValue = writableView.getter(property, Dom.class);
+                if (oldValue != null) {
+                    writableView.setter(property, null, Dom.class);
+                }
             }
             return true;
         }        
