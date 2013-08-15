@@ -617,25 +617,6 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.remove();
-                    ServiceLocatorUtilities.removeFilter(getHabitat(), new IndexedFilter() {
-
-                        @Override
-                        public boolean matches(Descriptor descriptor) {
-                            return reference.domDescriptor.equals(descriptor);
-                        }
-
-                        @Override
-                        public String getAdvertisedContract() {
-                            return ConfigBean.class.getName();
-                        }
-
-                        @Override
-                        public String getName() {
-                            return reference.domDescriptor.getName();
-                        }
-                        
-                    }, true);
-
                     reference.release();
                     return;
                 }
@@ -713,7 +694,8 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
      *   M=[B,C], S=[A',A'] => [B,C,A',A']
      * </pre>
      */
-    private static void stitchList(List<Child> list, String name, List<? extends Child> newSubList) {
+    private static List<Child> stitchList(List<Child> list, String name, List<? extends Child> newSubList) {
+        List<Child> removed = new LinkedList<Child>();
         // to preserve order, try to put new itesm where old items are found.
         // if the new list is longer than the current list, we put all the extra
         // after the last item in the sequence. That is,
@@ -729,14 +711,19 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 if(jtr.hasNext()) {
                     itr.set(jtr.next());    // replace
                     last = itr.nextIndex();
-                } else
+                } else {
                     itr.remove();   // remove
+                    removed.add(child);
+                }
+                
             }
         }
 
         // new list is longer than the current one
         if(jtr.hasNext())
             list.addAll(last,newSubList.subList(jtr.nextIndex(),newSubList.size()));
+
+        return removed;
     }
 
     /**
@@ -825,8 +812,12 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         for (int i = 0; i < values.length; i++)
             leaves[i] = new NodeChild(name,values[i]);
 
-        stitchList(newChildren,name,Arrays.asList(leaves));
+        List<Child> removed = stitchList(newChildren,name,Arrays.asList(leaves));
         children = newChildren;
+
+        for (Child c : removed) {
+            ((NodeChild) c).dom.release();
+        }
 
         // see attribute(String,String) for the issue with this
         getInjector().injectElement(this,name,get());
@@ -1303,6 +1294,25 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
     }
 
     private void release() {
+        ServiceLocatorUtilities.removeFilter(getHabitat(), new IndexedFilter() {
+
+            @Override
+            public boolean matches(Descriptor descriptor) {
+                return domDescriptor.equals(descriptor);
+            }
+
+            @Override
+            public String getAdvertisedContract() {
+                return ConfigBean.class.getName();
+            }
+
+            @Override
+            public String getName() {
+                return domDescriptor.getName();
+            }
+            
+        }, true);
+
         domDescriptor.dispose(this);
         serviceHandle.destroy();
         listeners.clear();
