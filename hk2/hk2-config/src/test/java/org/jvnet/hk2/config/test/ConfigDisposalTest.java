@@ -100,19 +100,18 @@ public class ConfigDisposalTest {
         assertEquals("Eextensions", 1, sc.getExtensions().size());
         assertEquals("Nested children", 2, sc.getExtensions().get(0).getExtensions().size());
         
-        List<GenericContainer> extensions = sc.getExtensions();
-        GenericContainer child = extensions.get(extensions.size() - 1);
+        GenericContainer extension = sc.getExtensions().get(0);
 
         ConfigSupport.apply(new SingleConfigCode<GenericContainer>() {
             @Override
-            public Object run(GenericContainer child)
+            public Object run(GenericContainer container)
                     throws PropertyVetoException, TransactionFailure {
-                List<GenericConfig> childExtensions = child.getExtensions();
+                List<GenericConfig> childExtensions = container.getExtensions();
                 GenericConfig nestedChild = childExtensions.get(childExtensions.size() - 1);
                 childExtensions.remove(nestedChild);
                 return nestedChild;
             }
-        }, child);
+        }, extension);
 
         assertEquals("Removed extensions", 1, sc.getExtensions().size());
         assertNull("Removed nested named child", habitat.getService(GenericConfig.class, "test2"));
@@ -156,5 +155,33 @@ public class ConfigDisposalTest {
         assertNotNull("Nested named grand child", habitat.getService(GenericConfig.class, "test"));
         assertNotNull("Nested named child 2", habitat.getService(GenericConfig.class, "test2"));
         assertNotNull("GenericContainer Service", habitat.getService(GenericContainer.class));
+    }
+
+    @Test 
+    public void testReplaceChild() throws TransactionFailure {
+        SimpleConnector sc = habitat.getService(SimpleConnector.class);
+        assertEquals("Eextensions", 1, sc.getExtensions().size());
+        
+        GenericContainer extension = sc.getExtensions().get(0);
+        assertEquals("Child extensions", 2, extension.getExtensions().size());
+
+        ConfigSupport.apply(new SingleConfigCode<GenericContainer>() {
+            @Override
+            public Object run(GenericContainer extension)
+                    throws PropertyVetoException, TransactionFailure {
+                GenericConfig newChild = extension.createChild(GenericConfig.class);
+                newChild.setName("test3");
+                GenericConfig nestedChild = extension.getExtensions().set(0, newChild);
+                return nestedChild;
+            }
+        }, extension);
+
+        assertEquals("Extensions", 2, extension.getExtensions().size());
+        assertNull("Nested named child 1", habitat.getService(GenericConfig.class, "test1"));
+        assertNull("Nested named grand child replaced", habitat.getService(GenericConfig.class, "test"));
+        assertEquals("New Nested child", "test3", extension.getExtensions().get(0).getName());
+        // can't verify it with getService becaue named alias is not created with createChild
+        //assertNotNull("New Nested child", habitat.getService(GenericConfig.class, "test3"));
+        assertNotNull("Nested named child 2", habitat.getService(GenericConfig.class, "test2"));
     }
 }
