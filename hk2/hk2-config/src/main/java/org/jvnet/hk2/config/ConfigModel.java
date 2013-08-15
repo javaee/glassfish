@@ -457,8 +457,9 @@ public final class ConfigModel {
                     }
 
                     public Object set(int index, Object element) {
+                        Dom replaced = v.get(index);
                         Dom child = Dom.unwrap((ConfigBeanProxy) element);
-                        dom.replaceChild( v.get(index), xmlName, child );
+                        dom.replaceChild(replaced, replaced.getName(), child);
                         return v.set(index,child).createProxy();
                     }
 

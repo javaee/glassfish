@@ -405,7 +405,12 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                                 Object element = originalList.get(index);
                                 Dom dom = Dom.unwrap((ConfigBeanProxy) element);
                                 if (dom==toBeRemoved) {
-                                    originalList.remove(index);
+                                    Object newValue = event.getNewValue();
+                                    if (newValue == null) {
+                                        originalList.remove(index);
+                                    } else {
+                                        originalList.set(index, newValue);
+                                    }
                                 }
                             }
                         }
@@ -712,7 +717,24 @@ private class ProtectedList extends AbstractList {
         return false;
     }
 
-}
+    public Object set(int index, Object object) {
+        Object replaced = proxied.set(index, object);
+        PropertyChangeEvent evt = new PropertyChangeEvent(defaultView, id, replaced, object);
+        try {
+            for (ConfigBeanInterceptor interceptor : bean.getOptionalFeatures()) {
+                interceptor.beforeChange(evt);
+            }
+        } catch(PropertyVetoException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            removeNestedElements(replaced);
+        } catch (TransactionFailure e) {
+            throw new RuntimeException(e);
+        }
+        changeEvents.add(evt);
+        return replaced;
+    }}
 
     private String toCamelCase(String xmlName) {
         StringTokenizer st =  new StringTokenizer(xmlName, "-");
