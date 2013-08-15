@@ -13,6 +13,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -80,9 +81,15 @@ public class ConfigDisposalTest {
         assertEquals("Removed extensions", 0, sc.getExtensions().size());
         // NOTE, habitat.getService(GenericConfig.class) creates new instance
         //       if not all instances of GenericConfig descriptors are removed 
-        assertNull("GenericContainer descriptor", habitat.getService(GenericContainer.class));
-        assertNull("GenericConfig descriptor test", habitat.getService(GenericConfig.class, "test"));
-        assertNull("GenericConfig descriptor", habitat.getService(GenericConfig.class));
+        assertNull("GenericContainer descriptor still has " +
+                habitat.getDescriptors(BuilderHelper.createContractFilter(GenericContainer.class.getName())),
+                habitat.getService(GenericContainer.class));
+        assertNull("GenericConfig descriptor test still has " +
+                habitat.getDescriptors(BuilderHelper.createContractFilter(GenericConfig.class.getName())),
+                habitat.getService(GenericConfig.class, "test"));
+        assertNull("GenericConfig descriptor still has " +
+                habitat.getDescriptors(BuilderHelper.createContractFilter(GenericConfig.class.getName())),
+                habitat.getService(GenericConfig.class));
         // assert with VisualVm there is no GenericContainer and GenericConfig instances with OQL query:
         // select x.implementation.toString() from org.jvnet.hk2.config.test.SimpleConfigBeanWrapper x
     }
