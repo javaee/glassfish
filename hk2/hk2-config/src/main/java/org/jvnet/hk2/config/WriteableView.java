@@ -696,8 +696,12 @@ private class ProtectedList extends AbstractList {
     }
 
     private boolean removeNestedElements(Object object) throws TransactionFailure {
-        ConfigBeanProxy writable = currentTx.enroll((ConfigBeanProxy) object);
-        WriteableView writableView = ((WriteableView) Proxy.getInvocationHandler(writable));
+        InvocationHandler h = Proxy.getInvocationHandler(object);
+        if (!(h instanceof WriteableView)) {
+            ConfigBeanProxy writable = currentTx.enroll((ConfigBeanProxy) object);
+            h = Proxy.getInvocationHandler(writable);
+        }
+        WriteableView writableView = (WriteableView) h;
         
         for (Property property : writableView.bean.model.elements.values()) {
             if (property.isCollection()) {
