@@ -45,8 +45,11 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -64,7 +67,6 @@ import org.junit.Test;
  */
 public class ServiceLocatorUtilitiesTest {
     private final static String TEST_NAME = "ServiceLocatorUtilitiesTest";
-    private static int gen = 0;
     
     private SimpleService addSimpleService(ServiceLocator locator) {
         SimpleService ss1 = locator.getService(SimpleService.class);
@@ -82,9 +84,7 @@ public class ServiceLocatorUtilitiesTest {
     }
     
     private static ServiceLocator uniqueCreate() {
-        synchronized (ServiceLocatorUtilitiesTest.class) {
-            return LocatorHelper.create(TEST_NAME + "_" + gen++, null);
-        }
+        return ServiceLocatorFactory.getInstance().create(null);
     }
 
     @Test
@@ -531,6 +531,46 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertEquals(VALUE1, ServiceLocatorUtilities.getOneMetadataField(d, FIELD1));
         Assert.assertEquals(VALUE2, ServiceLocatorUtilities.getOneMetadataField(d, FIELD2));
         Assert.assertNull(ServiceLocatorUtilities.getOneMetadataField(d, FIELD3));
+        
+    }
+    
+    @Test
+    public void testErrorRethrower() {
+        ServiceLocator locator = uniqueCreate();
+        
+        DescriptorImpl di = BuilderHelper.link(FailService.class.getName()).andLoadWith(new HK2LoaderFail()).build();
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, di);
+        
+        // The lookup prior to enabling the rethrow should return null
+        Assert.assertNull(locator.getService(FailService.class));
+        
+        Assert.assertEquals(0, locator.getAllServices(ErrorService.class).size());
+        
+        ServiceLocatorUtilities.enableLookupExceptions(locator);
+        
+        Assert.assertEquals(1, locator.getAllServices(ErrorService.class).size());
+        
+        try {
+            locator.getService(FailService.class);
+            Assert.fail("Should have rethrown reification failure");
+        }
+        catch (MultiException me) {
+            // expected
+        }
+        
+        // Make sure second one does not add another impl
+        ServiceLocatorUtilities.enableLookupExceptions(locator);
+        
+        Assert.assertEquals(1, locator.getAllServices(ErrorService.class).size());
+        
+        try {
+            locator.getService(FailService.class);
+            Assert.fail("Should have rethrown reification failure (2)");
+        }
+        catch (MultiException me) {
+            // expected
+        }
         
     }
 }
