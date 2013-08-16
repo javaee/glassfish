@@ -1294,27 +1294,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
     }
 
     private void release() {
-        ServiceLocatorUtilities.removeFilter(getHabitat(), new IndexedFilter() {
-
-            @Override
-            public boolean matches(Descriptor descriptor) {
-                return domDescriptor.equals(descriptor);
-            }
-
-            @Override
-            public String getAdvertisedContract() {
-                return ConfigBean.class.getName();
-            }
-
-            @Override
-            public String getName() {
-                return domDescriptor.getName();
-            }
-            
-        }, true);
-
-        domDescriptor.dispose(this);
-        serviceHandle.destroy();
+        ServiceLocatorUtilities.removeOneDescriptor(getHabitat(), domDescriptor, true);
         listeners.clear();
     }
 

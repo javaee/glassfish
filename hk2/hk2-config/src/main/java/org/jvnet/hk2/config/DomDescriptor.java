@@ -108,12 +108,6 @@ public class DomDescriptor<T>
     }
 
     @Override
-    public synchronized void dispose(T instance) {
-        super.dispose(instance);
-        theDom = null;
-    }
-
-    @Override
     public boolean equals(Object a) {
         if (a instanceof DomDescriptor && super.equals(a)) {
             DomDescriptor other = (DomDescriptor) a;
