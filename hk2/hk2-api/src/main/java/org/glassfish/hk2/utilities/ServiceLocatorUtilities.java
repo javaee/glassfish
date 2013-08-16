@@ -659,4 +659,24 @@ public abstract class ServiceLocatorUtilities {
         }
         
     }
+    
+    /**
+     * This method will cause lookup operations to throw exceptions when
+     * exceptions are encountered in underlying operations such as
+     * classloading.  This method is idempotent.  This method works
+     * by adding {@link RethrowErrorService} to the service registry
+     * <p>
+     * Do not use this methods in secure applications where callers to lookup
+     * should not be given the information that they do NOT have access
+     * to a service
+     * 
+     * @param locator The service locator to
+     */
+    public static void enableLookupExceptions(ServiceLocator locator) {
+        if (locator == null) throw new IllegalArgumentException();
+        
+        if (locator.getService(RethrowErrorService.class) != null) return;
+        
+        addClasses(locator, RethrowErrorService.class);
+    }
 }
