@@ -701,7 +701,7 @@ private class ProtectedList extends AbstractList {
             h = Proxy.getInvocationHandler(writable);
         }
         WriteableView writableView = (WriteableView) h;
-        
+        boolean removed = false;
         for (Property property : writableView.bean.model.elements.values()) {
             if (property.isCollection()) {
                 Object nested = writableView.getter(property, parameterizedType);
@@ -709,15 +709,16 @@ private class ProtectedList extends AbstractList {
                 if (list.size() > 0) {
                     list.clear();
                 }
+                removed = true;
             } else if (!property.isLeaf()) { // Element
                 Object oldValue = writableView.getter(property, Dom.class);
                 if (oldValue != null) {
                     writableView.setter(property, null, Dom.class);
                 }
             }
-            return true;
+            removed = true;
         }        
-        return false;
+        return removed;
     }
 
     public Object set(int index, Object object) {
