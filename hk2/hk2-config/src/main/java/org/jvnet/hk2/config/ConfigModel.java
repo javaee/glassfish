@@ -457,9 +457,9 @@ public final class ConfigModel {
                     }
 
                     public Object set(int index, Object element) {
-                        Dom replaced = v.get(index);
                         Dom child = Dom.unwrap((ConfigBeanProxy) element);
-                        dom.replaceChild(replaced, replaced.getName(), child);
+                        String name = "*".equals(xmlName) ? child.model.injector.getName() : xmlName;
+                        dom.replaceChild(v.get(index), name, child);
                         return v.set(index,child).createProxy();
                     }
 
