@@ -530,16 +530,18 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         return t(rawLeafElement(name));
     }
     
-    private static void addWithAlias(ServiceLocator locator, ActiveDescriptor<?> descriptor, Class<?> contract, String name) {
-        ActiveDescriptor<Object> added = ServiceLocatorUtilities.findOneDescriptor(locator, descriptor);
+    private static ActiveDescriptor<Dom> addWithAlias(ServiceLocator locator, ActiveDescriptor<?> descriptor, Class<?> contract, String name) {
+        ActiveDescriptor<Dom> added = ServiceLocatorUtilities.findOneDescriptor(locator, descriptor);
         
         if (added == null) {
             added = ServiceLocatorUtilities.addOneDescriptor(locator, descriptor);
         }
         
-        AliasDescriptor<Object> alias = new AliasDescriptor<Object>(locator, added, contract.getName(), name);
+        AliasDescriptor<Dom> alias = new AliasDescriptor<Dom>(locator, added, contract.getName(), name);
         
         ServiceLocatorUtilities.addOneDescriptor(locator, alias);
+
+        return added;
     }
 
     /**
@@ -561,7 +563,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         }
         if(reference==null) {
             children.add(0, newChild);
-            addWithAlias(getHabitat(), newNode, newNode.getProxyType(), newNode.getKey());
+            newNode.domDescriptor = addWithAlias(getHabitat(), newNode, newNode.getProxyType(), newNode.getKey());
             return;
         }
 
@@ -594,7 +596,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     reference.release();
-                    addWithAlias(getHabitat(), newNode,newNode.getProxyType(), newNode.getKey());
+                    newNode.domDescriptor = addWithAlias(getHabitat(), newNode,newNode.getProxyType(), newNode.getKey());
                     
                     itr.set(new NodeChild(name,newNode));
                     return;
@@ -1294,7 +1296,9 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
     }
 
     private void release() {
-        ServiceLocatorUtilities.removeOneDescriptor(getHabitat(), domDescriptor, true);
+        if (domDescriptor != null) { // children added via createProxy are not registered in serviceLocator
+            ServiceLocatorUtilities.removeOneDescriptor(getHabitat(), domDescriptor, true);
+        }
         listeners.clear();
     }
 
