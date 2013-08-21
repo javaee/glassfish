@@ -70,6 +70,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
     private final Map<String, PropertyChangeEvent> changedAttributes;
     private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
+    private boolean isDeleted;
     private static Validator beanValidator=null;
 
     private final static ResourceBundle i18n = ResourceBundle.getBundle("org.jvnet.hk2.config.LocalStrings");
@@ -303,13 +304,16 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
      * @return true if the trsaction commiting would be successful
      */
     public synchronized boolean canCommit(Transaction t) throws TransactionFailure {
-        Set constraintViolations =
-            beanValidator.validate(this.getProxy(this.getProxyType()));
+        if (!isDeleted) { // HK2-127: validate only if not marked for deletion
 
-        try {
-            handleValidationException(constraintViolations);
-        } catch (ConstraintViolationException constraintViolationException) {
-            throw new TransactionFailure(constraintViolationException.getMessage(), constraintViolationException);
+            Set constraintViolations =
+                beanValidator.validate(this.getProxy(this.getProxyType()));
+    
+            try {
+                handleValidationException(constraintViolations);
+            } catch (ConstraintViolationException constraintViolationException) {
+                throw new TransactionFailure(constraintViolationException.getMessage(), constraintViolationException);
+            }
         }
 
         return currentTx==t;
@@ -701,6 +705,7 @@ private class ProtectedList extends AbstractList {
             h = Proxy.getInvocationHandler(writable);
         }
         WriteableView writableView = (WriteableView) h;
+        writableView.isDeleted = true;
         boolean removed = false;
         for (Property property : writableView.bean.model.elements.values()) {
             if (property.isCollection()) {
@@ -708,15 +713,15 @@ private class ProtectedList extends AbstractList {
                 ProtectedList list = (ProtectedList) nested;
                 if (list.size() > 0) {
                     list.clear();
+                    removed = true;
                 }
-                removed = true;
             } else if (!property.isLeaf()) { // Element
                 Object oldValue = writableView.getter(property, Dom.class);
                 if (oldValue != null) {
                     writableView.setter(property, null, Dom.class);
+                    removed = true;
                 }
             }
-            removed = true;
         }        
         return removed;
     }
