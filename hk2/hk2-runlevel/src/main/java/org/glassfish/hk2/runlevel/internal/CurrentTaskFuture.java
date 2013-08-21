@@ -105,8 +105,6 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
         if (currentLevel == proposedLevel) {
             done = true;
-            
-            parent.jobDone();
         }
         else if (currentLevel < proposedLevel) {
             upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, allSorterHandles, maxThreads, useThreads);
@@ -135,6 +133,9 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             else {
                 localDownAllTheWay.run();
             }
+        }
+        else {
+            parent.jobDone();
         }
     }
     
@@ -664,6 +665,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 jobComplete();
                 return;
             }
+            
             
             int runnersToCreate = ((numJobs < maxThreads) ? numJobs : maxThreads) - 1;
             if (!useThreads) runnersToCreate = 0;
