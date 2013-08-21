@@ -574,7 +574,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
                 NodeChild nc = (NodeChild) child;
                 if(nc.dom==reference) {
                     itr.add(newChild);
-                    addWithAlias(getHabitat(), newNode, newNode.getProxyType(), newNode.getKey());
+                    newNode.domDescriptor = addWithAlias(getHabitat(), newNode, newNode.getProxyType(), newNode.getKey());
                     
                     return;
                 }
