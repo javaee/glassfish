@@ -59,7 +59,7 @@ public class GrumpyService {
     @PostConstruct
     /* package */ void postConstruct() {
         called();
-        throw new RuntimeException("Expected exception from EpicFailService");
+        throw new RuntimeException("Expected exception from GrumpyService");
     }
     
     /* package */ static synchronized int getCalled() {
