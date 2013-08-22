@@ -552,10 +552,11 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
                     removed = true;
                 }
             } else if (!property.isLeaf()) { // Element
-                Object oldValue = writableView.getter(property, Dom.class);
+                Object oldValue = writableView.getter(property, ConfigBeanProxy.class);
                 if (oldValue != null) {
                     writableView.setter(property, null, Dom.class);
                     removed = true;
+                    removeNestedElements(oldValue);
                 }
             }
         }
