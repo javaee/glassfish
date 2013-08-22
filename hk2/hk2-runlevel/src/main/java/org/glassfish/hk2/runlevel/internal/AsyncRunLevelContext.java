@@ -44,13 +44,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,6 +89,13 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
      */
     private final Map<ActiveDescriptor<?>, Object> backingMap =
             new HashMap<ActiveDescriptor<?>, Object>();
+    
+    /*
+     * The within level errors thrown.  This prevents double
+     * starting a service that failed within a level
+     */
+    private final Map<ActiveDescriptor<?>, RuntimeException> levelErrorMap =
+            new HashMap<ActiveDescriptor<?>, RuntimeException>();
     
     /**
      * The set of services currently being created
@@ -139,6 +144,11 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             retVal = (U) backingMap.get(activeDescriptor);
             if (retVal != null) return retVal;
             
+            RuntimeException previousException = levelErrorMap.get(activeDescriptor);
+            if (previousException != null) {
+                throw previousException;
+            }
+            
             while (creatingDescriptors.containsKey(activeDescriptor)) {
                 long holdingLock = creatingDescriptors.get(activeDescriptor);
                 if (holdingLock == Thread.currentThread().getId()) {
@@ -162,6 +172,11 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             retVal = (U) backingMap.get(activeDescriptor);
             if (retVal != null) return retVal;
             
+            previousException = levelErrorMap.get(activeDescriptor);
+            if (previousException != null) {
+                throw previousException;
+            }
+            
             creatingDescriptors.put(activeDescriptor, Thread.currentThread().getId());
             
             localCurrentLevel = currentLevel;
@@ -174,6 +189,7 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             }
         }
         
+        RuntimeException error = null;
         try {
             int mode = Utilities.getRunLevelMode(activeDescriptor);
 
@@ -185,11 +201,28 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
             
             return retVal;
         }
+        catch (RuntimeException th) {
+            if (th instanceof MultiException) {
+                if (!CurrentTaskFuture.isWouldBlock((MultiException) th)) {
+                    error = th;
+                }
+                
+                // We want WouldBlock rethrown
+            }
+            else {
+                error = th;
+            }
+            
+            throw th;
+        }
         finally {
             synchronized (this) {
                 if (retVal != null) {
                     backingMap.put(activeDescriptor, retVal);
                     orderedCreationList.addFirst(activeDescriptor);
+                }
+                else if (error != null) {
+                    levelErrorMap.put(activeDescriptor, error);
                 }
                 
                 creatingDescriptors.remove(activeDescriptor);
@@ -338,6 +371,11 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
         currentTask = null;
     }
     
+    /**
+     * Gets the current task
+     * 
+     * @return The current task, may be null if there is no current task
+     */
     public synchronized RunLevelFuture getCurrentFuture() {
         return currentTask;
     }
@@ -353,6 +391,10 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     
     /* package */ synchronized int getMaximumThreads() {
         return maxThreads;
+    }
+    
+    /* package */ synchronized void clearErrors() {
+        levelErrorMap.clear();
     }
     
     private static class RunLevelControllerThread extends Thread {

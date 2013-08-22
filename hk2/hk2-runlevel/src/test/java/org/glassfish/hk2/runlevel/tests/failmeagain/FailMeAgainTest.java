@@ -52,18 +52,15 @@ import org.junit.Test;
  *
  */
 public class FailMeAgainTest {
-    /**
-     * Dummy test
-     */
-    @Test
-    public void testDummy() {
-        
-    }
     
     /**
-     * Tests that the grumpy service is only invoked once
+     * Tests that the grumpy service is only invoked once.  This
+     * thread is probabilistic in terms of failure.  That being said,
+     * I've only ever seen it reach iteration 77 before it failed,
+     * and we are running it 1000 times, so we can be pretty confident
+     * this test will catch the problem
      */
-    @Test @Ignore
+    @Test
     public void testGrumpyOnlyCalledOnce() {
         ServiceLocator locator = Utilities.getServiceLocator(
                 DependsOnGrumpyOne.class,
