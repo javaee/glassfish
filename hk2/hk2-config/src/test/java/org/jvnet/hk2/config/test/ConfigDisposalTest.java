@@ -90,9 +90,6 @@ public class ConfigDisposalTest {
         assertNull("GenericConfig descriptor still has " +
                 habitat.getDescriptors(BuilderHelper.createContractFilter(GenericConfig.class.getName())),
                 habitat.getService(GenericConfig.class));
-        assertNull("WebContainerAvailability descriptor still has " +
-                habitat.getDescriptors(BuilderHelper.createContractFilter(WebContainerAvailability.class.getName())),
-                habitat.getService(WebContainerAvailability.class));
         // assert with VisualVm there is no GenericContainer and GenericConfig instances with OQL query:
         // select x.implementation.toString() from org.jvnet.hk2.config.test.SimpleConfigBeanWrapper x
     }

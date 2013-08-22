@@ -1,5 +1,6 @@
 <simple-connector>
     <ejb-container-availability/>
+    <web-container-availability/>
     <generic-container>
         <generic-config name="test1">
           <generic-config name="test"/>
