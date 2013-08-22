@@ -47,6 +47,8 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 @Configured
 public interface GenericContainer extends ConfigBeanProxy {
     public static final int DEFAULT_THREAD_CORE_POOL_SIZE = 16;
@@ -64,6 +66,11 @@ public interface GenericContainer extends ConfigBeanProxy {
 
     @Attribute (defaultValue="1234")
     int getIntValue();
+
+    @NotNull
+    @Element
+    public WebContainerAvailability getWebContainerAvailability();
+    void setWebContainerAvailability(WebContainerAvailability v);
 
     @Element("*")
     List<GenericConfig> getExtensions();
