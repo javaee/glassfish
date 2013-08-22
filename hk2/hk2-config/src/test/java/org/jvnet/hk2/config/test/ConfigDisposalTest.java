@@ -172,6 +172,7 @@ public class ConfigDisposalTest {
             @Override
             public Object run(GenericConfig nestedChild)
                     throws PropertyVetoException, TransactionFailure {
+                nestedChild.setGenericConfig(null);
                 GenericConfig newChild = nestedChild.createChild(GenericConfig.class);
                 newChild.setName("test3");
                 nestedChild.setGenericConfig(newChild);
