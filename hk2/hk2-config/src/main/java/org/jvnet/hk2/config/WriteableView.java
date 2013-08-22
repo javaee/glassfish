@@ -51,6 +51,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 
 import javax.validation.*;
 import javax.validation.metadata.ConstraintDescriptor;
@@ -251,6 +252,9 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
         // setter
         Object oldValue = bean.getter(property, t);
+        if (oldValue != null && oldValue instanceof ConfigBeanProxy) {
+            removeNestedElements(oldValue);
+        }
         if (newValue instanceof ConfigBeanProxy) {
             ConfigView bean = (ConfigView)
                 Proxy.getInvocationHandler((ConfigBeanProxy) newValue);
@@ -514,6 +518,50 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         return (T) Proxy.newProxyInstance(cl, interfacesClasses, this);
     }
 
+    private boolean removeNestedElements(Object object) {
+        InvocationHandler h = Proxy.getInvocationHandler(object);
+        if (!(h instanceof WriteableView)) {
+            ConfigBeanProxy writable;
+            Lock lock = ((ConfigBean) ((ConfigView) h).getMasterView()).getLock();
+            if (lock.tryLock()) { // avoid 3s block if already locked
+                synchronized (lock) {
+                    lock.unlock();
+                    try {
+                        writable = currentTx.enroll((ConfigBeanProxy) object);
+                    } catch (TransactionFailure e) {
+                        throw new RuntimeException(e); // something is seriously wrong
+                    }
+                }
+            } else {
+                // it's possible to set leaf multiple times,
+                // so oldValue was already processedплок
+                return false;  
+            }
+            h = Proxy.getInvocationHandler(writable);
+        }
+        WriteableView writableView = (WriteableView) h;
+        writableView.isDeleted = true;
+        boolean removed = false;
+        for (Property property : writableView.bean.model.elements.values()) {
+            if (property.isCollection()) {
+                Object nested = writableView.getter(property,
+                        parameterizedType);
+                ProtectedList list = (ProtectedList) nested;
+                if (list.size() > 0) {
+                    list.clear();
+                    removed = true;
+                }
+            } else if (!property.isLeaf()) { // Element
+                Object oldValue = writableView.getter(property, Dom.class);
+                if (oldValue != null) {
+                    writableView.setter(property, null, Dom.class);
+                    removed = true;
+                }
+            }
+        }
+        return removed;
+    }
+
 /**
  * A Protected List is a @Link java.util.List implementation which mutable
  * operations are constrained by the owner of the list.
@@ -675,8 +723,6 @@ private class ProtectedList extends AbstractList {
                     }
                 } catch(IllegalArgumentException ex) {
                     // ignore
-                } catch (TransactionFailure e) {
-                    throw new RuntimeException(e);
                 }
             }
         } catch(IllegalArgumentException e) {
@@ -698,34 +744,6 @@ private class ProtectedList extends AbstractList {
         return removed;
     }
 
-    private boolean removeNestedElements(Object object) throws TransactionFailure {
-        InvocationHandler h = Proxy.getInvocationHandler(object);
-        if (!(h instanceof WriteableView)) {
-            ConfigBeanProxy writable = currentTx.enroll((ConfigBeanProxy) object);
-            h = Proxy.getInvocationHandler(writable);
-        }
-        WriteableView writableView = (WriteableView) h;
-        writableView.isDeleted = true;
-        boolean removed = false;
-        for (Property property : writableView.bean.model.elements.values()) {
-            if (property.isCollection()) {
-                Object nested = writableView.getter(property, parameterizedType);
-                ProtectedList list = (ProtectedList) nested;
-                if (list.size() > 0) {
-                    list.clear();
-                    removed = true;
-                }
-            } else if (!property.isLeaf()) { // Element
-                Object oldValue = writableView.getter(property, Dom.class);
-                if (oldValue != null) {
-                    writableView.setter(property, null, Dom.class);
-                    removed = true;
-                }
-            }
-        }        
-        return removed;
-    }
-
     public Object set(int index, Object object) {
         Object replaced = proxied.set(index, object);
         PropertyChangeEvent evt = new PropertyChangeEvent(defaultView, id, replaced, object);
@@ -736,11 +754,7 @@ private class ProtectedList extends AbstractList {
         } catch(PropertyVetoException e) {
             throw new RuntimeException(e);
         }
-        try {
-            removeNestedElements(replaced);
-        } catch (TransactionFailure e) {
-            throw new RuntimeException(e);
-        }
+        removeNestedElements(replaced);
         changeEvents.add(evt);
         return replaced;
     }}
