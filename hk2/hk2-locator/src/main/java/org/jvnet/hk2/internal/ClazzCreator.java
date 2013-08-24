@@ -44,8 +44,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +70,8 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 public class ClazzCreator<T> implements Creator<T> {
     private final ServiceLocatorImpl locator;
     private final Class<?> implClass;
-    private final Set<ResolutionInfo> myInitializers = new HashSet<ResolutionInfo>();
-    private final Set<ResolutionInfo> myFields = new HashSet<ResolutionInfo>();
+    private final Set<ResolutionInfo> myInitializers = new LinkedHashSet<ResolutionInfo>();
+    private final Set<ResolutionInfo> myFields = new LinkedHashSet<ResolutionInfo>();
     private ActiveDescriptor<?> selfDescriptor;
 
     private ResolutionInfo myConstructor;
@@ -218,7 +218,7 @@ public class ClazzCreator<T> implements Creator<T> {
     private Map<Injectee, Object> resolveAllDependencies(ServiceHandle<?> root) throws IllegalStateException {
         Collector errorCollector = new Collector();
 
-        Map<Injectee, Object> retVal = new HashMap<Injectee, Object>();
+        Map<Injectee, Object> retVal = new LinkedHashMap<Injectee, Object>();
 
         for (Injectee injectee : myConstructor.injectees) {
             InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, injectee);
