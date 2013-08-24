@@ -83,6 +83,7 @@ import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.ServiceLocatorState;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationService;
@@ -759,10 +760,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
             synchronized (children) {
                 children.clear();
             }
-            
-            Logger.getLogger().debug("Shutdown ServiceLocator " + this);
         }
-
+        
+        ServiceLocatorFactory.getInstance().destroy(this);
+        
+        Logger.getLogger().debug("ServiceLocator " + this + " has been shutdown");
     }
 
     /* (non-Javadoc)
