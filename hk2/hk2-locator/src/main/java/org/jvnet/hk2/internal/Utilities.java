@@ -1341,7 +1341,7 @@ public class Utilities {
             Class<?> annotatedType,
             ServiceLocatorImpl locator,
             Collector errorCollector) {
-        HashSet<Method> retVal = new HashSet<Method>();
+        LinkedHashSet<Method> retVal = new LinkedHashSet<Method>();
 
         for (Method method : getAllMethods(annotatedType)) {
             if (!hasInjectAnnotation(locator, method, true)) {
@@ -1373,7 +1373,7 @@ public class Utilities {
     public static Set<Field> findInitializerFields(Class<?> annotatedType,
                                                    ServiceLocatorImpl locator,
                                                    Collector errorCollector) {
-        HashSet<Field> retVal = new HashSet<Field>();
+        LinkedHashSet<Field> retVal = new LinkedHashSet<Field>();
 
         for (Field field : getAllFields(annotatedType, errorCollector)) {
             if (!hasInjectAnnotation(locator, field, false)) {

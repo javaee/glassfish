@@ -60,6 +60,11 @@ import org.glassfish.hk2.api.MultiException;
 public class DefaultClassAnalyzer implements ClassAnalyzer {
     private final ServiceLocatorImpl locator;
     
+    /**
+     * The DefaultClassAnalyzer is per ServiceLocatorImpl
+     * 
+     * @param locator The non-null locator associated with this analyzer
+     */
     public DefaultClassAnalyzer(ServiceLocatorImpl locator) {
         this.locator = locator;
     }
