@@ -909,7 +909,7 @@ public class Utilities {
      * or null if not known
      * @return true if this descriptor must be proxied, false otherwise
      */
-    public static boolean isProxiable(ActiveDescriptor<?> desc, Injectee injectee) {
+    private static boolean isProxiable(ActiveDescriptor<?> desc, Injectee injectee) {
         Boolean directed = desc.isProxiable();
         
         if (directed != null) {
@@ -2227,7 +2227,7 @@ public class Utilities {
             root = (ActiveDescriptor<T>) locator.reifyDescriptor(root, injectee);
         }
 
-        if (Utilities.isProxiable(root, injectee)) {
+        if (isProxiable(root, injectee)) {
             boolean isInterface = (requestedClass == null) ? false : requestedClass.isInterface() ;
 
             final Class<?> proxyClass;
