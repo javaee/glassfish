@@ -57,6 +57,7 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -154,8 +155,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new LinkedHashSet<ValidationService>();
     private final LinkedList<ErrorService> errorHandlers =
             new LinkedList<ErrorService>();
-    private final HashMap<Class<? extends Annotation>, Context<?>> contextCache =
-            new HashMap<Class<? extends Annotation>, Context<?>>();
+    private final ConcurrentHashMap<Class<? extends Annotation>, Context<?>> contextCache =
+            new ConcurrentHashMap<Class<? extends Annotation>, Context<?>>();
     
     // Fields needed for caching
     private final LRUCache<CacheKey, NarrowResults> cache = LRUCache.createCache(CACHE_SIZE);
@@ -1674,10 +1675,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (scope.equals(Singleton.class)) return singletonContext;
         if (scope.equals(PerLookup.class)) return perLookupContext;
         
-        synchronized (lock) {
-            Context<?> retVal = contextCache.get(scope);
-            if (retVal != null) return retVal;
+        // Outside of lock
+        Context<?> retVal = contextCache.get(scope);
+        if (retVal != null) return retVal;
         
+        synchronized (lock) {
             Type actuals[] = new Type[1];
             actuals[0] = scope;
             ParameterizedType findContext = new ParameterizedTypeImpl(Context.class, actuals);
