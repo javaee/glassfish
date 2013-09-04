@@ -252,9 +252,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
         // setter
         Object oldValue = bean.getter(property, t);
-        if (oldValue != null && oldValue instanceof ConfigBeanProxy) {
-            removeNestedElements(oldValue);
-        }
         if (newValue instanceof ConfigBeanProxy) {
             ConfigView bean = (ConfigView)
                 Proxy.getInvocationHandler((ConfigBeanProxy) newValue);
@@ -518,7 +515,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         return (T) Proxy.newProxyInstance(cl, interfacesClasses, this);
     }
 
-    private boolean removeNestedElements(Object object) {
+    boolean removeNestedElements(Object object) {
         InvocationHandler h = Proxy.getInvocationHandler(object);
         if (!(h instanceof WriteableView)) {
             ConfigBeanProxy writable;
@@ -718,9 +715,6 @@ private class ProtectedList extends AbstractList {
                     ConfigView targetHandler = ((ConfigView) Proxy.getInvocationHandler(target)).getMasterView();
                     if (targetHandler==handler) {
                         removed = (proxied.remove(index)!=null);
-                        if (removed) {
-                            removeNestedElements(object);
-                        }
                     }
                 } catch(IllegalArgumentException ex) {
                     // ignore
@@ -755,7 +749,6 @@ private class ProtectedList extends AbstractList {
         } catch(PropertyVetoException e) {
             throw new RuntimeException(e);
         }
-        removeNestedElements(replaced);
         changeEvents.add(evt);
         return replaced;
     }}

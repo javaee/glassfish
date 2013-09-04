@@ -65,7 +65,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 public class ConfigBean extends Dom implements ConfigView {
     private static final int WAIT_ITERATIONS = Integer.getInteger("org.glassfish.hk2.config.locktimeout.iterations", 100);
 
-
+    private WriteableView writeableView;
     private volatile boolean writeLock = false;
     private final Map<Class , ConfigBeanInterceptor> optionalFeatures =
             new HashMap<Class, ConfigBeanInterceptor>();
@@ -308,6 +308,18 @@ public class ConfigBean extends Dom implements ConfigView {
         return (ConfigBean) super.parent();
     }
 
+    void setWriteableView(WriteableView writeableView) {
+        if (writeLock) {
+            this.writeableView = writeableView;
+        } else {
+            throw new IllegalStateException("Config bean is not locked");
+        }
+    }
+
+    WriteableView getWriteableView() {
+        return writeableView;
+    }
+
     /**
      * simplistic non reentrant lock implementation, needs rework
      */
@@ -352,6 +364,7 @@ public class ConfigBean extends Dom implements ConfigView {
 
         public synchronized void unlock() {
             writeLock = false;
+            writeableView = null;
         }
 
         public Condition newCondition() {

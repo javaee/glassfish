@@ -49,7 +49,7 @@ public class ConfigDisposalTest {
         System.out.println("URL : " + url);
 
         try {
-            DomDocument doc = parser.parse(url);
+            DomDocument doc = parser.parse(url, new SimpleDocument(habitat));
             System.out.println("[parseDomainXml] ==> Successfully parsed");
             assert(doc != null);
         } catch (Exception ex) {
