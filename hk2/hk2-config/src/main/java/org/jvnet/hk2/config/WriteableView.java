@@ -517,24 +517,22 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
 
     boolean removeNestedElements(Object object) {
         InvocationHandler h = Proxy.getInvocationHandler(object);
-        if (!(h instanceof WriteableView)) {
-            ConfigBeanProxy writable;
-            Lock lock = ((ConfigBean) ((ConfigView) h).getMasterView()).getLock();
-            if (lock.tryLock()) { // avoid 3s block if already locked
-                synchronized (lock) {
-                    lock.unlock();
-                    try {
-                        writable = currentTx.enroll((ConfigBeanProxy) object);
-                    } catch (TransactionFailure e) {
-                        throw new RuntimeException(e); // something is seriously wrong
-                    }
+        if (!(h instanceof WriteableView)) { // h instanceof ConfigView
+            ConfigBean bean = (ConfigBean) ((ConfigView) h).getMasterView();
+            h = bean.getWriteableView();
+            if (h == null) {
+                ConfigBeanProxy writable;
+                try {
+                    writable = currentTx.enroll((ConfigBeanProxy) object);
+                } catch (TransactionFailure e) {
+                    throw new RuntimeException(e); // something is seriously wrong
                 }
+                h = Proxy.getInvocationHandler(writable);
             } else {
                 // it's possible to set leaf multiple times,
-                // so oldValue was already processedплок
-                return false;  
+                // so oldValue was already processed
+                return false;
             }
-            h = Proxy.getInvocationHandler(writable);
         }
         WriteableView writableView = (WriteableView) h;
         writableView.isDeleted = true;
