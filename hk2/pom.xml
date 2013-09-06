@@ -210,11 +210,44 @@
                     <downloadJavadocs>true</downloadJavadocs>
                 </configuration>
             </plugin>
+            <!--
+                maven site URL contains the version.
+                Thus, we need to do the following redirects:
+                  / -> /${project.version}
+                  /apidocs -> ${project.version}/apidocs
+                  /xref -> ${project.version}/xref
+            -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/site</outputDirectory>
+                            <resources>          
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>              
+                        </configuration>            
+                    </execution>
+                </executions>
+            </plugin>            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <configuration>
-                    <stagingDirectory>site</stagingDirectory>
+                    <!-- site is generated under target/site/${project.version} -->
+                    <stagingDirectory>${project.reporting.outputDirectory}</stagingDirectory>
+                    <!-- site is deployed from target/site to include the redirects pages -->
+                    <inputDirectory>${project.build.directory}/site</inputDirectory>
                     <skip>false</skip>
                     <skipDeploy>false</skipDeploy>
                 </configuration>
@@ -354,6 +387,7 @@
     </build>
     
     <reporting>
+        <outputDirectory>${project.build.directory}/site/${project.version}</outputDirectory>
         <plugins>
             <plugin>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
@@ -417,7 +451,7 @@
                 <version>2.3</version>
                 <configuration>
                     <linkJavadoc>true</linkJavadoc>
-                    <javadocDir>${project.build.directory}/site/apidocs</javadocDir>                    
+                    <javadocDir>${project.reporting.outputDirectory}/apidocs</javadocDir>                    
                     <sourcePath>
                         ;${basedir}/hk2-api/src/main/java;
                         ${basedir}/hk2-config/src/main/java;
