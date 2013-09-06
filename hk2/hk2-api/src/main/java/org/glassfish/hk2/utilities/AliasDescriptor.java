@@ -62,6 +62,21 @@ import org.glassfish.hk2.api.ServiceLocator;
  * @param <T> The cache type
  */
 public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
+    /**
+     * This will be put in all Alias descriptors.  The value
+     * will be ALIAS_FREE_DESCRIPTOR if the descritpor being
+     * aliased does not have a locator and service id.  If
+     * the descriptor being aliased does have a locator and
+     * service id the value will be <locatorId>.<serviceId>
+     */
+    public final static String ALIAS_METADATA_MARKER = "__AliasOf";
+    
+    /**
+     * This is the value the metadata field ALIAS_METADATA_MARKER will
+     * take if the descriptor being aliased does not have a locator id
+     * or a service id
+     */
+    public final static String ALIAS_FREE_DESCRIPTOR = "FreeDescriptor";
 
     /**
      * For serialization
@@ -150,8 +165,17 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         this.contract   = contract;
         addAdvertisedContract(contract);
         super.setScope(descriptor.getScope());
+        super.addMetadata(ALIAS_METADATA_MARKER, getAliasMetadataValue(descriptor));
     }
-
+    
+    private static String getAliasMetadataValue(ActiveDescriptor<?> descriptor) {
+        Long locatorId = descriptor.getLocatorId();
+        Long serviceId = descriptor.getServiceId();
+        
+        if (locatorId == null || serviceId == null) return ALIAS_FREE_DESCRIPTOR;
+        
+        return locatorId + "." + serviceId;
+    }
 
     // ----- ActiveDescriptor -----------------------------------------------
 

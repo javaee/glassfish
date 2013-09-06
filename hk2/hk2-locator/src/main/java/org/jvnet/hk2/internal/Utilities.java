@@ -120,8 +120,8 @@ public class Utilities {
     private final static Object lock = new Object();
     
     // We don't want to hold onto these classes if they are released by others
-    private static final Map<Class<?>, Set<MemberKey>> methodKeyCache = new WeakHashMap<Class<?>, Set<MemberKey>>();
-    private static Map<Class<?>, Set<MemberKey>> fieldCache = new WeakHashMap<Class<?>, Set<MemberKey>>();
+    private static final Map<Class<?>, LinkedHashSet<MemberKey>> methodKeyCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
+    private static Map<Class<?>, LinkedHashSet<MemberKey>> fieldCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
     private final static Map<Class<?>, Method> postConstructCache = new WeakHashMap<Class<?>, Method>();
     private final static Map<Class<?>, Method> preDestroyCache = new WeakHashMap<Class<?>, Method>();
     
@@ -909,7 +909,7 @@ public class Utilities {
      * or null if not known
      * @return true if this descriptor must be proxied, false otherwise
      */
-    public static boolean isProxiable(ActiveDescriptor<?> desc, Injectee injectee) {
+    private static boolean isProxiable(ActiveDescriptor<?> desc, Injectee injectee) {
         Boolean directed = desc.isProxiable();
         
         if (directed != null) {
@@ -1009,9 +1009,9 @@ public class Utilities {
      * @return A set of all the fields on this class
      */
     private static Set<Field> getAllFields(Class<?> clazz, Collector collector) {
-        HashSet<Field> retVal = new HashSet<Field>();
+        LinkedHashSet<Field> retVal = new LinkedHashSet<Field>();
 
-        HashSet<MemberKey> keys = new HashSet<MemberKey>();
+        LinkedHashSet<MemberKey> keys = new LinkedHashSet<MemberKey>();
 
         getAllFieldKeys(clazz, keys, collector);
 
@@ -1024,7 +1024,7 @@ public class Utilities {
     
     
 
-    private static void getAllFieldKeys(Class<?> clazz, Set<MemberKey> currentFields, Collector collector) {
+    private static void getAllFieldKeys(Class<?> clazz, LinkedHashSet<MemberKey> currentFields, Collector collector) {
         if (clazz == null) return;
         
         Set<MemberKey> discovered;
@@ -1047,7 +1047,7 @@ public class Utilities {
             }
             
             synchronized (lock) {
-                fieldCache.put(clazz, new HashSet<MemberKey>(currentFields));
+                fieldCache.put(clazz, new LinkedHashSet<MemberKey>(currentFields));
             }
         } catch (Throwable th) {
             collector.addThrowable(new IllegalStateException("Error while getting fields of class " + clazz.getName(), th));
@@ -1255,9 +1255,9 @@ public class Utilities {
      * @return A set of all methods on this class
      */
     private static Set<Method> getAllMethods(Class<?> clazz) {
-        HashSet<Method> retVal = new HashSet<Method>();
+        LinkedHashSet<Method> retVal = new LinkedHashSet<Method>();
 
-        HashSet<MemberKey> keys = new HashSet<MemberKey>();
+        LinkedHashSet<MemberKey> keys = new LinkedHashSet<MemberKey>();
 
         getAllMethodKeys(clazz, keys);
 
@@ -1298,7 +1298,7 @@ public class Utilities {
         return CONVENTION_PRE_DESTROY.equals(m.getName());
     }
 
-    private static void getAllMethodKeys(Class<?> clazz, Set<MemberKey> currentMethods) {
+    private static void getAllMethodKeys(Class<?> clazz, LinkedHashSet<MemberKey> currentMethods) {
         if (clazz == null) return;
         
         Set<MemberKey> discoveredMethods;
@@ -1323,7 +1323,7 @@ public class Utilities {
         }
         
         synchronized (lock) {
-            methodKeyCache.put(clazz, new HashSet<MemberKey>(currentMethods));
+            methodKeyCache.put(clazz, new LinkedHashSet<MemberKey>(currentMethods));
         }
     }
 
@@ -1341,7 +1341,7 @@ public class Utilities {
             Class<?> annotatedType,
             ServiceLocatorImpl locator,
             Collector errorCollector) {
-        HashSet<Method> retVal = new HashSet<Method>();
+        LinkedHashSet<Method> retVal = new LinkedHashSet<Method>();
 
         for (Method method : getAllMethods(annotatedType)) {
             if (!hasInjectAnnotation(locator, method, true)) {
@@ -1373,7 +1373,7 @@ public class Utilities {
     public static Set<Field> findInitializerFields(Class<?> annotatedType,
                                                    ServiceLocatorImpl locator,
                                                    Collector errorCollector) {
-        HashSet<Field> retVal = new HashSet<Field>();
+        LinkedHashSet<Field> retVal = new LinkedHashSet<Field>();
 
         for (Field field : getAllFields(annotatedType, errorCollector)) {
             if (!hasInjectAnnotation(locator, field, false)) {
@@ -2227,7 +2227,7 @@ public class Utilities {
             root = (ActiveDescriptor<T>) locator.reifyDescriptor(root, injectee);
         }
 
-        if (Utilities.isProxiable(root, injectee)) {
+        if (isProxiable(root, injectee)) {
             boolean isInterface = (requestedClass == null) ? false : requestedClass.isInterface() ;
 
             final Class<?> proxyClass;

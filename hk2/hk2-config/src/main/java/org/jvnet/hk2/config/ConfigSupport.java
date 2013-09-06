@@ -213,6 +213,7 @@ public class ConfigSupport {
         WriteableView f = new WriteableView(s);
         try {
             if (sourceBean.getLock().tryLock(lockTimeOutInSeconds, TimeUnit.SECONDS)) {
+                sourceBean.setWriteableView(f);
                 return f;
             }
         } catch(InterruptedException e) {

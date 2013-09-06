@@ -68,6 +68,7 @@ public class DomDescriptor<T>
         if (theDom == null) throw new IllegalArgumentException();
 
         this.theDom = theDom;
+        setImplementation(theDom.getClass().getName());
     }
 
     /* (non-Javadoc)
@@ -104,5 +105,15 @@ public class DomDescriptor<T>
         }
 
         theOne = creator.create();
+    }
+
+    @Override
+    public boolean equals(Object a) {
+        if (a instanceof DomDescriptor && super.equals(a)) {
+            DomDescriptor other = (DomDescriptor) a;
+            return theDom.equals(other.theDom);
+            
+        }
+        return false;
     }
 }

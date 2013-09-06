@@ -42,6 +42,7 @@ package org.glassfish.hk2.utilities;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -207,6 +208,7 @@ public abstract class ServiceLocatorUtilities {
      *
      * @param locator The non-null locator to add this descriptor to
      * @param descriptor The non-null descriptor to add to this locator
+     * @return The descriptor that was added to the system
      * @throws MultiException On a commit failure
      */
     public static <T> ActiveDescriptor<T> addOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
@@ -226,6 +228,7 @@ public abstract class ServiceLocatorUtilities {
      * is the responsibility of the caller to ensure that the fields
      * of the Descriptor never change (with the exception of any
      * writeable fields, such as ranking)
+     * @return The descriptor that was added to the system
      * @throws MultiException On a commit failure
      */
     @SuppressWarnings("unchecked")
@@ -261,7 +264,9 @@ public abstract class ServiceLocatorUtilities {
      * a service locator.  This method adds that one class
      *
      * @param locator The non-null locator to add this descriptor to
-     * @param addMe The classes to add to the locator
+     * @param toAdd The classes to add to the locator
+     * @return The list of descriptors added to the system.  Will not return null but
+     * may return an empty list
      * @throws MultiException On a commit failure
      */
     public static List<ActiveDescriptor<?>> addClasses(ServiceLocator locator, Class<?>... toAdd) {
@@ -360,6 +365,23 @@ public abstract class ServiceLocatorUtilities {
      * @param descriptor The non-null descriptor to remove from the locator
      */
     public static void removeOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
+        removeOneDescriptor(locator, descriptor, false);
+    }
+    
+    /**
+     * This method will attempt to remove descriptors matching the passed in descriptor from
+     * the given locator.  If the descriptor has its locatorId and serviceId values set then
+     * only a descriptor matching those exact locatorId and serviceId will be removed.  Otherwise
+     * any descriptor that returns true from the {@link DescriptorImpl#equals(Object)} method
+     * will be removed from the locator.  Note that if more than one descriptor matches they
+     * will all be removed.  Hence more than one descriptor may be removed by this method.
+     * 
+     * @param locator The non-null locator to remove the descriptor from
+     * @param descriptor The non-null descriptor to remove from the locator
+     * @param includeAliasDescriptors If set to true all {@link AliasDescriptor}s that point
+     * to any descriptors found by filter will also be removed
+     */
+    public static void removeOneDescriptor(ServiceLocator locator, Descriptor descriptor, boolean includeAliasDescriptors) {
         if (locator == null || descriptor == null) throw new IllegalArgumentException();
         
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
@@ -369,6 +391,15 @@ public abstract class ServiceLocatorUtilities {
             Filter destructionFilter = BuilderHelper.createSpecificDescriptorFilter(descriptor);
             
             config.addUnbindFilter(destructionFilter);
+            
+            if (includeAliasDescriptors == true) {
+                List<ActiveDescriptor<?>> goingToDie = locator.getDescriptors(destructionFilter);
+                if (!goingToDie.isEmpty()) {
+                    AliasFilter af = new AliasFilter(goingToDie);
+                    
+                    config.addUnbindFilter(af);
+                }
+            }
             
             config.commit();
             
@@ -395,6 +426,15 @@ public abstract class ServiceLocatorUtilities {
         
         config.addUnbindFilter(destructionFilter);
         
+        if (includeAliasDescriptors == true) {
+            List<ActiveDescriptor<?>> goingToDie = locator.getDescriptors(destructionFilter);
+            if (!goingToDie.isEmpty()) {
+                AliasFilter af = new AliasFilter(goingToDie);
+                
+                config.addUnbindFilter(af);
+            }
+        }
+        
         config.commit();
     }
     
@@ -406,12 +446,34 @@ public abstract class ServiceLocatorUtilities {
      * @param filter The non-null filter which will determine what descriptors to remove
      */
     public static void removeFilter(ServiceLocator locator, Filter filter) {
+        removeFilter(locator, filter, false);
+    }
+    
+    /**
+     * Removes all the descriptors from the given locator that match the
+     * given filter
+     * 
+     * @param locator The non-null locator to remove the descriptors from
+     * @param filter The non-null filter which will determine what descriptors to remove
+     * @param includeAliasDescriptors If set to true all {@link AliasDescriptor}s that point
+     * to any descriptors found by filter will also be removed
+     */
+    public static void removeFilter(ServiceLocator locator, Filter filter, boolean includeAliasDescriptors) {
         if (locator == null || filter == null) throw new IllegalArgumentException();
         
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         
         config.addUnbindFilter(filter);
+        
+        if (includeAliasDescriptors == true) {
+            List<ActiveDescriptor<?>> goingToDie = locator.getDescriptors(filter);
+            if (!goingToDie.isEmpty()) {
+                AliasFilter af = new AliasFilter(goingToDie);
+                
+                config.addUnbindFilter(af);
+            }
+        }
         
         config.commit();
     }
@@ -440,7 +502,7 @@ public abstract class ServiceLocatorUtilities {
      * @param locator The non-null locator in which to get the service associated with
      * this descriptor
      * @param descriptor The non-null descriptor to find the corresponding service for
-     * @return
+     * @return The service object
      */
     @SuppressWarnings("unchecked")
     public static <T> T getService(ServiceLocator locator, Descriptor descriptor) {
@@ -574,5 +636,47 @@ public abstract class ServiceLocatorUtilities {
      */
     public static ServiceLocator createAndPopulateServiceLocator() {
         return createAndPopulateServiceLocator(null);
+    }
+    
+    private static class AliasFilter implements Filter {
+        private final Set<String> values = new HashSet<String>();
+        
+        private AliasFilter(List<ActiveDescriptor<?>> bases) {
+            for (ActiveDescriptor<?> base : bases) {
+                String val = base.getLocatorId() + "." + base.getServiceId();
+                values.add(val);
+            }
+        }
+
+        @Override
+        public boolean matches(Descriptor d) {
+            List<String> mAliasVals = d.getMetadata().get(AliasDescriptor.ALIAS_METADATA_MARKER);
+            if (mAliasVals == null || mAliasVals.isEmpty()) return false;
+            
+            String aliasVal = mAliasVals.get(0);
+            
+            return values.contains(aliasVal);
+        }
+        
+    }
+    
+    /**
+     * This method will cause lookup operations to throw exceptions when
+     * exceptions are encountered in underlying operations such as
+     * classloading.  This method is idempotent.  This method works
+     * by adding {@link RethrowErrorService} to the service registry
+     * <p>
+     * Do not use this methods in secure applications where callers to lookup
+     * should not be given the information that they do NOT have access
+     * to a service
+     * 
+     * @param locator The service locator to
+     */
+    public static void enableLookupExceptions(ServiceLocator locator) {
+        if (locator == null) throw new IllegalArgumentException();
+        
+        if (locator.getService(RethrowErrorService.class) != null) return;
+        
+        addClasses(locator, RethrowErrorService.class);
     }
 }

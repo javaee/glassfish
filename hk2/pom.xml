@@ -47,7 +47,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-bom</artifactId>
-        <version>2.2.0-b15-SNAPSHOT</version>
+        <version>2.2.0-b16-SNAPSHOT</version>
         <relativePath>bom/pom.xml</relativePath>
     </parent>
     <artifactId>hk2-parent</artifactId>
@@ -375,6 +375,11 @@
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>1.7</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.glassfish.hk2</groupId>
+                    <artifactId>config-generator</artifactId>
+                    <version>${project.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <extensions>
@@ -415,13 +420,8 @@
                 <configuration>
                     <sourcepath>
                         ${basedir}/hk2-api/src/main/java;
-                        ${basedir}/hk2-config/src/main/java;
-                        ${basedir}/hk2-locator/src/main/java;
                         ${basedir}/hk2-utils/src/main/java;
                         ${basedir}/hk2-runlevel/src/main/java;
-                        ${basedir}/core/src/main/java;
-                        ${basedir}/class-model/src/main/java;
-                        ${basedir}/config-types/src/main/java;
                         ${basedir}/guice-bridge/src/main/java;
                         ${basedir}/spring-bridge/src/main/java;
                         ${basedir}/hk2-inhabitant-generator/src/main
