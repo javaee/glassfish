@@ -105,8 +105,6 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
         if (currentLevel == proposedLevel) {
             done = true;
-            
-            parent.jobDone();
         }
         else if (currentLevel < proposedLevel) {
             upAllTheWay = new UpAllTheWay(proposedLevel, this, allListenerHandles, allSorterHandles, maxThreads, useThreads);
@@ -135,6 +133,9 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             else {
                 localDownAllTheWay.run();
             }
+        }
+        else {
+            parent.jobDone();
         }
     }
     
@@ -521,6 +522,8 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
         
         private void currentJobComplete(MultiException exception) {
+            parent.clearErrors();
+            
             if (exception != null) {
                 ErrorInformation info =
                         invokeOnError(future, exception, ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP, listeners);
@@ -664,6 +667,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 jobComplete();
                 return;
             }
+            
             
             int runnersToCreate = ((numJobs < maxThreads) ? numJobs : maxThreads) - 1;
             if (!useThreads) runnersToCreate = 0;
@@ -969,7 +973,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
     }
     
-    private final static boolean isWouldBlock(MultiException me) {
+    /* package */ final static boolean isWouldBlock(MultiException me) {
         for (Throwable th : me.getErrors()) {
             if (th instanceof WouldBlockException) return true;
         }

@@ -57,6 +57,7 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -83,6 +84,7 @@ import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.ServiceLocatorState;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationService;
@@ -153,8 +155,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new LinkedHashSet<ValidationService>();
     private final LinkedList<ErrorService> errorHandlers =
             new LinkedList<ErrorService>();
-    private final HashMap<Class<? extends Annotation>, Context<?>> contextCache =
-            new HashMap<Class<? extends Annotation>, Context<?>>();
+    private final ConcurrentHashMap<Class<? extends Annotation>, Context<?>> contextCache =
+            new ConcurrentHashMap<Class<? extends Annotation>, Context<?>>();
     
     // Fields needed for caching
     private final LRUCache<CacheKey, NarrowResults> cache = LRUCache.createCache(CACHE_SIZE);
@@ -759,10 +761,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
             synchronized (children) {
                 children.clear();
             }
-            
-            Logger.getLogger().debug("Shutdown ServiceLocator " + this);
         }
-
+        
+        ServiceLocatorFactory.getInstance().destroy(this);
+        
+        Logger.getLogger().debug("ServiceLocator " + this + " has been shutdown");
     }
 
     /* (non-Javadoc)
@@ -1672,10 +1675,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
         if (scope.equals(Singleton.class)) return singletonContext;
         if (scope.equals(PerLookup.class)) return perLookupContext;
         
-        synchronized (lock) {
-            Context<?> retVal = contextCache.get(scope);
-            if (retVal != null) return retVal;
+        // Outside of lock
+        Context<?> retVal = contextCache.get(scope);
+        if (retVal != null) return retVal;
         
+        synchronized (lock) {
             Type actuals[] = new Type[1];
             actuals[0] = scope;
             ParameterizedType findContext = new ParameterizedTypeImpl(Context.class, actuals);

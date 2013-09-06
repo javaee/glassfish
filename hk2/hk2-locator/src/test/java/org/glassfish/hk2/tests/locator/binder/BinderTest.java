@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.locator.binder;
 
+import java.lang.reflect.Type;
+
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -146,6 +148,30 @@ public class BinderTest {
         
         RingOfPower secondRing = (RingOfPower) pc.__make();  // Makes sure factory gets called
         Assert.assertNotNull(secondRing);
+    }
+    
+    /**
+     * Tests that you can use a {@link Type} for to
+     */
+    @Test
+    public void testTypeTo() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        final Type bindTo = Legolas.class.getGenericInterfaces()[0];
+        Assert.assertFalse(bindTo instanceof Class);
+        
+        ServiceLocatorUtilities.bind(locator, new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(Legolas.class).to(bindTo);
+            }
+            
+        });
+        
+        CouncilOfElrond<Elves> legolas = locator.getService(new ParameterizedTypeImpl(CouncilOfElrond.class, Elves.class));
+        Assert.assertNotNull(legolas);
+        
+        Assert.assertNull(locator.getService(new ParameterizedTypeImpl(CouncilOfElrond.class, Dwarves.class)));
     }
     
     private static class NazgulBinder implements Binder {

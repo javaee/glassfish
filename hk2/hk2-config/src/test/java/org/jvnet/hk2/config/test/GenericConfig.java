@@ -1,7 +1,5 @@
 package org.jvnet.hk2.config.test;
 
-import java.util.List;
-
 import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
@@ -13,6 +11,7 @@ public interface GenericConfig extends ConfigBeanProxy {
     String getName();
     void setName(String name);
 
-    @Element("*")
-    List<GenericContainer> getExtensions();
+    @Element
+    GenericConfig getGenericConfig();
+    void setGenericConfig(GenericConfig genericConfig);
 }
