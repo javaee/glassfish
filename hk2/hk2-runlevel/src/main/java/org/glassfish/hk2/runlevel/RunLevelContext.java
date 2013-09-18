@@ -46,7 +46,6 @@ import javax.inject.Inject;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.internal.AsyncRunLevelContext;
 import org.jvnet.hk2.annotations.Service;
 
@@ -59,8 +58,12 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class RunLevelContext implements Context<RunLevel> {
+    private final AsyncRunLevelContext asyncRunLevelContext;
+    
     @Inject
-    private AsyncRunLevelContext asyncRunLevelContext;
+    private RunLevelContext(AsyncRunLevelContext asyncRunLevelContext) {
+        this.asyncRunLevelContext = asyncRunLevelContext;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#getScope()
