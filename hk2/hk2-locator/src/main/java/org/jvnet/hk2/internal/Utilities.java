@@ -39,6 +39,8 @@
  */
 package org.jvnet.hk2.internal;
 
+import org.glassfish.hk2.utilities.cache.Cache;
+import org.glassfish.hk2.utilities.cache.Computable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.lang.reflect.AnnotatedElement;
@@ -63,6 +65,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -118,19 +122,19 @@ import org.jvnet.hk2.annotations.Service;
  */
 public class Utilities {
     private final static Object lock = new Object();
-    
+
     // We don't want to hold onto these classes if they are released by others
     private static final Map<Class<?>, LinkedHashSet<MemberKey>> methodKeyCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
     private static Map<Class<?>, LinkedHashSet<MemberKey>> fieldCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
     private final static Map<Class<?>, Method> postConstructCache = new WeakHashMap<Class<?>, Method>();
     private final static Map<Class<?>, Method> preDestroyCache = new WeakHashMap<Class<?>, Method>();
-    
+
     private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
     private final static String CONVENTION_PRE_DESTROY = "preDestroy";
-    
+
     /**
      * Returns the class analyzer with the given name
-     * 
+     *
      * @param sli The ServiceLocator to search in.  May not be null
      * @param analyzerName The name of the analyzer (may be null for the default analyzer)
      * @param errorCollector A non-null collector of exceptions
@@ -142,10 +146,10 @@ public class Utilities {
             Collector errorCollector) {
         return sli.getAnalyzer(analyzerName, errorCollector);
     }
-    
+
     /**
      * Gets the constructor given the implClass and analyzer.  Checks service output
-     * 
+     *
      * @param implClass The implementation class (not null)
      * @param analyzer The analyzer (not null)
      * @param collector A collector for errors (not null)
@@ -164,19 +168,28 @@ public class Utilities {
             collector.addThrowable(th);
             return element;
         }
-        
+
         if (element == null) {
             collector.addThrowable(new AssertionError("null return from getConstructor method of analyzer " +
                 analyzer + " for class " + implClass.getName()));
             return element;
         }
-        
+        final Constructor<T> result = element;
+        AccessController.doPrivileged(new PrivilegedAction<Object>(){
+
+            @Override
+            public Object run() {
+                result.setAccessible(true);
+                return null;
+            }
+        });
+
         return element;
     }
-    
+
     /**
      * Gets the initializer methods from the given class and analyzer.  Checks service output
-     * 
+     *
      * @param implClass the non-null impl class
      * @param analyzer the non-null analyzer
      * @param collector for gathering errors
@@ -195,19 +208,19 @@ public class Utilities {
             collector.addThrowable(th);
             return Collections.emptySet();
         }
-        
+
         if (retVal == null) {
             collector.addThrowable(new AssertionError("null return from getInitializerMethods method of analyzer " +
                     analyzer + " for class " + implClass.getName()));
             return Collections.emptySet();
         }
-        
+
         return retVal;
     }
-    
+
     /**
      * Gets the initializer fields from the given class and analyzer.  Checks service output
-     * 
+     *
      * @param implClass the non-null impl class
      * @param analyzer the non-null analyzer
      * @param collector for gathering errors
@@ -226,19 +239,19 @@ public class Utilities {
             collector.addThrowable(th);
             return Collections.emptySet();
         }
-        
+
         if (retVal == null) {
             collector.addThrowable(new AssertionError("null return from getFields method of analyzer " +
                     analyzer + " for class " + implClass.getName()));
             return Collections.emptySet();
         }
-        
+
         return retVal;
     }
-    
+
     /**
      * Gets the post construct from the analyzer, checking output
-     * 
+     *
      * @param implClass The non-null implementation class
      * @param analyzer The non-null analyzer
      * @param collector The non-null error collector
@@ -257,10 +270,10 @@ public class Utilities {
             return null;
         }
     }
-    
+
     /**
      * Gets the preDestroy from the analyzer, checking output
-     * 
+     *
      * @param implClass The non-null implementation class
      * @param analyzer The non-null analyzer
      * @param collector The non-null error collector
@@ -279,7 +292,7 @@ public class Utilities {
             return null;
         }
     }
-    
+
     /**
      * This utility will return the proper implementation class, taking into account that the
      * descriptor may be a factory
@@ -527,13 +540,13 @@ public class Utilities {
      */
     private static Class<?> getFactoryProductionClass(Class<?> factoryClass) {
         Type factoryProvidedType = getFactoryProductionType(factoryClass);
-        
+
         Class<?> retVal = ReflectionHelper.getRawClass(factoryProvidedType);
         if (retVal != null) return retVal;
-        
+
         throw new MultiException(new AssertionError("Could not find true produced type of factory " + factoryClass.getName()));
     }
-    
+
     /**
      * This method returns the type produced by a factory class
      *
@@ -545,11 +558,11 @@ public class Utilities {
     public static Type getFactoryProductionType(Class<?> factoryClass) {
         Set<Type> factoryTypes = ReflectionHelper.getTypeClosure(factoryClass,
                 Collections.singleton(Factory.class.getName()));
-        
+
         ParameterizedType parameterizedType = (ParameterizedType) factoryTypes.iterator().next();
 
         Type factoryProvidedType = parameterizedType.getActualTypeArguments()[0];
-        
+
         return factoryProvidedType;
     }
 
@@ -663,7 +676,7 @@ public class Utilities {
         if (useProxy != null) {
             proxy = useProxy.value();
         }
-        
+
         ProxyForSameScope pfss = clazz.getAnnotation(ProxyForSameScope.class);
         if (pfss != null) {
             proxyForSameScope = pfss.value();
@@ -688,11 +701,11 @@ public class Utilities {
                 proxyForSameScope,
                 analyzerName,
                 metadata);
-        
+
         creator.initialize(retVal, analyzerName, collector);
-        
+
         collector.throwIfErrors();
-        
+
         return retVal;
     }
 
@@ -701,16 +714,16 @@ public class Utilities {
      *
      * @param preMe pre destroys the thing
      * @param locator The non-null service locator associated with the operation (for finding the strategy)
-     * @param strategy The strategy to use for analyzing the class 
+     * @param strategy The strategy to use for analyzing the class
      */
     public static void justPreDestroy(Object preMe, ServiceLocatorImpl locator, String strategy) {
         if (preMe == null) throw new IllegalArgumentException();
-        
+
         Collector collector = new Collector();
-        
+
         ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy, collector);
         collector.throwIfErrors();
-        
+
         collector.throwIfErrors();
 
         Class<?> baseClass = preMe.getClass();
@@ -737,9 +750,9 @@ public class Utilities {
      */
     public static void justPostConstruct(Object postMe, ServiceLocatorImpl locator, String strategy) {
         if (postMe == null) throw new IllegalArgumentException();
-        
+
         Collector collector = new Collector();
-        
+
         ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy, collector);
         collector.throwIfErrors();
 
@@ -766,12 +779,12 @@ public class Utilities {
      */
     public static void justInject(Object injectMe, ServiceLocatorImpl locator, String strategy) {
         if (injectMe == null) throw new IllegalArgumentException();
-        
+
         Collector collector = new Collector();
-        
+
         ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy, collector);
         collector.throwIfErrors();
-        
+
         Class<?> baseClass = injectMe.getClass();
 
         Set<Field> fields = Utilities.getInitFields(baseClass, analyzer, collector);
@@ -790,7 +803,7 @@ public class Utilities {
             Injectee injectee = injecteeFields.get(0);
 
             Object fieldValue = resolver.resolve(injectee, null);
-            
+
             try {
                 ReflectionHelper.setField(field, injectMe, fieldValue);
             }
@@ -831,7 +844,7 @@ public class Utilities {
     @SuppressWarnings("unchecked")
     public static <T> T justCreate(Class<T> createMe, ServiceLocatorImpl locator, String strategy) {
         if (createMe == null) throw new IllegalArgumentException();
-        
+
         Collector collector = new Collector();
         ClassAnalyzer analyzer = getClassAnalyzer(locator, strategy, collector);
         collector.throwIfErrors();
@@ -900,6 +913,15 @@ public class Utilities {
         return false;
     }
 
+    static Cache<Class<? extends Annotation>, Boolean> proxiableAnnotationCache =
+            new Cache<Class<? extends Annotation>, Boolean>(new Computable<Class<? extends Annotation>, Boolean>(){
+
+        @Override
+        public Boolean compute(Class<? extends Annotation> a) {
+            return a.isAnnotationPresent(Proxiable.class);
+        }
+    });
+
     /**
      * This method determines whether or not the descriptor should be proxied.
      * The given descriptor must be reified and valid.
@@ -911,30 +933,30 @@ public class Utilities {
      */
     private static boolean isProxiable(ActiveDescriptor<?> desc, Injectee injectee) {
         Boolean directed = desc.isProxiable();
-        
+
         if (directed != null) {
             if (injectee == null) {
                 // No other scope to compare to
                 return directed;
             }
-            
+
             if (!directed) {
                 // Doesn't matter what the other scope is, not proxied
                 return false;
             }
-            
+
             ActiveDescriptor<?> injecteeDescriptor = injectee.getInjecteeDescriptor();
             if (injecteeDescriptor == null) {
                 // No other scope to compare to
                 return true;
             }
-            
+
             Boolean sameScope = desc.isProxyForSameScope();
             if (sameScope == null || sameScope) {
                 // The default case is to be lazy
                 return true;
             }
-            
+
             // OK, same scope is false, forced Proxy is true,
             // now we need to see if the scopes of the two
             // things are in fact the same
@@ -943,27 +965,29 @@ public class Utilities {
                 // so the answer is no, do not proxy
                 return false;
             }
-            
+
             // The scopes are different, deal with it
             return true;
         }
 
-        if (!isProxiableScope(desc.getScopeAnnotation())) return false;
-        
+        final Class<? extends Annotation> scopeAnnotation = desc.getScopeAnnotation();
+        if (!proxiableAnnotationCache.compute(scopeAnnotation)) return false;
+
+
         if (injectee == null) {
             // No other scope to compare to
             return true;
         }
-        
+
         ActiveDescriptor<?> injecteeDescriptor = injectee.getInjecteeDescriptor();
         if (injecteeDescriptor == null) {
             // No other scope to compare to
             return true;
         }
-        
+
+        Proxiable proxiable = scopeAnnotation.getAnnotation(Proxiable.class);
         Boolean proxyForSameScope = desc.isProxyForSameScope();
-        Proxiable proxiable = desc.getScopeAnnotation().getAnnotation(Proxiable.class);
-        
+
         if (proxyForSameScope != null) {
             if (proxyForSameScope) {
               return true;
@@ -973,17 +997,17 @@ public class Utilities {
             // The default case is to be lazy
             return true;
         }
-        
+
         // OK, same scope is false, and we are in Proxiable scope,
         // now we need to see if the scopes of the two
         // things are in fact the same
         if (desc.getScope().equals(injecteeDescriptor.getScope())) {
             // The scopes are the same, proxy-for-same-scope is false,
             // so the answer is no, do not proxy
-            
+
             return false;
         }
-        
+
         // The scopes are different, deal with it
         return true;
     }
@@ -1021,17 +1045,17 @@ public class Utilities {
 
         return retVal;
     }
-    
-    
+
+
 
     private static void getAllFieldKeys(Class<?> clazz, LinkedHashSet<MemberKey> currentFields, Collector collector) {
         if (clazz == null) return;
-        
+
         Set<MemberKey> discovered;
         synchronized (lock) {
             discovered = fieldCache.get(clazz);
         }
-        
+
         if (discovered != null) {
             currentFields.addAll(discovered);
             return;
@@ -1045,7 +1069,7 @@ public class Utilities {
             for (Field field : getDeclaredFields(clazz)) {
                 currentFields.add(new MemberKey(field, false, false));
             }
-            
+
             synchronized (lock) {
                 fieldCache.put(clazz, new LinkedHashSet<MemberKey>(currentFields));
             }
@@ -1238,7 +1262,7 @@ public class Utilities {
             public Constructor<?>[] run() {
                 return clazz.getDeclaredConstructors();
             }
-            
+
         });
 
         for (Constructor<?> constructor : constructors) {
@@ -1272,40 +1296,40 @@ public class Utilities {
                 preDestroyMethod = (Method) key.getBackingMember();
             }
         }
-        
+
         synchronized (lock) {
             // It is ok for postConstructMethod to be null
             postConstructCache.put(clazz, postConstructMethod);
-            
+
             // It is ok for preDestroyMethod to be null
             preDestroyCache.put(clazz, preDestroyMethod);
         }
 
         return retVal;
     }
-    
+
     private static boolean isPostConstruct(Method m) {
         if (m.isAnnotationPresent(PostConstruct.class)) return true;
-        
+
         if (m.getParameterTypes().length != 0) return false;
         return CONVENTION_POST_CONSTRUCT.equals(m.getName());
     }
-    
+
     private static boolean isPreDestroy(Method m) {
         if (m.isAnnotationPresent(PreDestroy.class)) return true;
-        
+
         if (m.getParameterTypes().length != 0) return false;
         return CONVENTION_PRE_DESTROY.equals(m.getName());
     }
 
     private static void getAllMethodKeys(Class<?> clazz, LinkedHashSet<MemberKey> currentMethods) {
         if (clazz == null) return;
-        
+
         Set<MemberKey> discoveredMethods;
         synchronized (lock) {
             discoveredMethods = methodKeyCache.get(clazz);
         }
-        
+
         if (discoveredMethods != null) {
             currentMethods.addAll(discoveredMethods);
             return;
@@ -1318,10 +1342,10 @@ public class Utilities {
         for (Method method : getDeclaredMethods(clazz)) {
             boolean isPostConstruct = isPostConstruct(method);
             boolean isPreDestroy = isPreDestroy(method);
-            
+
             currentMethods.add(new MemberKey(method, isPostConstruct, isPreDestroy));
         }
-        
+
         synchronized (lock) {
             methodKeyCache.put(clazz, new LinkedHashSet<MemberKey>(currentMethods));
         }
@@ -1438,6 +1462,42 @@ public class Utilities {
         return false;
     }
 
+    private static class AnnotatedElementAnnotationInfo {
+        final Annotation[] elementAnnotations;
+        final Annotation[][] paramAnnotations;
+        final boolean hasParams;
+        final boolean isConstructor;
+
+        AnnotatedElementAnnotationInfo(Annotation[] elementAnnotation, boolean hasParams, Annotation[][] paramAnnotation, boolean isConstructor) {
+            this.elementAnnotations = elementAnnotation;
+            this.hasParams = hasParams;
+            this.paramAnnotations = paramAnnotation;
+            this.isConstructor = isConstructor;
+        }
+    }
+
+    private static final Cache<AnnotatedElement, AnnotatedElementAnnotationInfo> AnnotationCache =
+            new Cache<AnnotatedElement, AnnotatedElementAnnotationInfo>(new Computable<AnnotatedElement, AnnotatedElementAnnotationInfo>() {
+
+        @Override
+        public AnnotatedElementAnnotationInfo compute(AnnotatedElement annotatedElement) {
+
+            if (annotatedElement instanceof Method) {
+
+                final Method m = (Method) annotatedElement;
+                return new AnnotatedElementAnnotationInfo(m.getAnnotations(), true, m.getParameterAnnotations(), false);
+
+            } else if (annotatedElement instanceof Constructor) {
+
+                final Constructor<?> c = (Constructor<?>) annotatedElement;
+                return new AnnotatedElementAnnotationInfo(c.getAnnotations(), true, c.getParameterAnnotations(), true);
+
+            } else {
+                return new AnnotatedElementAnnotationInfo(annotatedElement.getAnnotations(), false, null, false);
+            }
+        }
+    });
+
     /**
      * Gets the annotation that was used for the injection
      *
@@ -1451,47 +1511,32 @@ public class Utilities {
      * @return The annotation that is the inject annotation, or null
      * if no inject annotation was found
      */
-    private static Annotation getInjectAnnotation(ServiceLocatorImpl locator, AnnotatedElement annotated,
-                                                  boolean checkParams, int position) {
+    private static Annotation getInjectAnnotation(final ServiceLocatorImpl locator, final AnnotatedElement annotated,
+            final boolean checkParams, final int position) {
+
+        final AnnotatedElementAnnotationInfo annotationInfo = AnnotationCache.compute(annotated);
 
         if (checkParams) {
 
-            boolean isConstructor = false;
-            boolean hasParams = false;
-            Annotation allAnnotations[][] = null;
-            if (annotated instanceof Method) {
-                Method m = (Method) annotated;
-
-                isConstructor = false;
-                allAnnotations = m.getParameterAnnotations();
-                hasParams = true;
-            } else if (annotated instanceof Constructor) {
-                Constructor<?> c = (Constructor<?>) annotated;
-
-                isConstructor = true;
-                allAnnotations = c.getParameterAnnotations();
-                hasParams = true;
-            }
-
-            if (hasParams) {
-                for (Annotation paramAnno : allAnnotations[position]) {
-                    if (locator.isInjectAnnotation(paramAnno, isConstructor)) {
+            if (annotationInfo.hasParams) {
+                for (Annotation paramAnno : annotationInfo.paramAnnotations[position]) {
+                    if (locator.isInjectAnnotation(paramAnno, annotationInfo.isConstructor)) {
                         return paramAnno;
                     }
                 }
             }
         }
 
-        for (Annotation anno : annotated.getAnnotations()) {
-            if (locator.isInjectAnnotation(anno)) {
-                return anno;
+        for (Annotation annotation : annotationInfo.elementAnnotations) {
+            if (locator.isInjectAnnotation(annotation)) {
+                return annotation;
             }
         }
 
         return null;
     }
 
-    private static boolean isProperMethod(Method member) {
+  private static boolean isProperMethod(Method member) {
         if (ReflectionHelper.isStatic(member)) return false;
         if (isAbstract(member)) return false;
         for (Class<?> paramClazz : member.getParameterTypes()) {
@@ -1545,18 +1590,27 @@ public class Utilities {
 
         return ((modifiers & Modifier.FINAL) != 0);
     }
-    
+
+    private static final Cache<Class<?>, String> autoAnalyzerNameCache = new Cache<Class<?>, String>(new Computable<Class<?>, String>() {
+
+        @Override
+        public String compute(final Class<?> c) {
+
+            Service s = c.getAnnotation(Service.class);
+            if (s == null) return null;
+
+            return s.analyzer();
+        }
+    });
+
     /**
      * Gets the analyzer name from the Service annotation
-     * 
+     *
      * @param c The class to get the analyzer name from
      * @return The name of the analyzer (null for default)
      */
     public static String getAutoAnalyzerName(Class<?> c) {
-        Service s = c.getAnnotation(Service.class);
-        if (s == null) return null;
-        
-        return s.analyzer();
+        return autoAnalyzerNameCache.compute(c);
     }
 
     @SuppressWarnings("unchecked")
@@ -1711,6 +1765,8 @@ public class Utilities {
             ServiceLocatorImpl locator, AnnotatedElement annotatedGuy, int position) throws IllegalStateException {
         boolean methodOrConstructor = annotatedGuy instanceof Method || annotatedGuy instanceof Constructor<?>;
         Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy, methodOrConstructor, position);
+
+        //Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy, position);
 
         Class<? extends Annotation> injectType = (injectAnnotation == null) ?
                 Inject.class : injectAnnotation.annotationType();
@@ -1924,20 +1980,20 @@ public class Utilities {
 
         return retVal;
     }
-    
+
     private static Set<Annotation> getFieldAdjustedQualifierAnnotations(Field f) {
         Set<Annotation> unadjustedAnnotations = ReflectionHelper.getQualifierAnnotations(f);
-        
+
         // The getQualifierAnnotations will NOT add a Named annotation that has no
         // value.  So we must now determine if that is the case, and if so add
         // our own NamedImpl based on the name of the field
         Named n = f.getAnnotation(Named.class);
         if (n == null) return unadjustedAnnotations;
-        
+
         if (n.value() == null || "".equals(n.value())) {
             unadjustedAnnotations.add(new NamedImpl(f.getName()));
         }
-        
+
         return unadjustedAnnotations;
     }
 
@@ -2003,7 +2059,7 @@ public class Utilities {
 
     }
 
-    
+
 
     /**
      * Finds the post construct method on this class
@@ -2021,31 +2077,31 @@ public class Utilities {
                 return null;
             }
         }
-        
+
         boolean containsKey;
         Method retVal;
         synchronized (lock) {
             containsKey = postConstructCache.containsKey(clazz);
             retVal = postConstructCache.get(clazz);
         }
-        
+
         if (!containsKey) {
             getAllMethods(clazz);  // Fills in the cache
-            
+
             synchronized (lock) {
                 retVal = postConstructCache.get(clazz);
             }
         }
-        
+
         if (retVal == null) return null;
-            
+
         if (retVal.isAnnotationPresent(PostConstruct.class) &&
                 (retVal.getParameterTypes().length != 0)) {
             collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(retVal) +
                         " annotated with @PostConstruct must not have any arguments"));
             return null;
         }
-            
+
         return retVal;
     }
 
@@ -2064,31 +2120,31 @@ public class Utilities {
                 return null;
             }
         }
-        
+
         boolean containsKey;
         Method retVal;
         synchronized (lock) {
             containsKey = preDestroyCache.containsKey(clazz);
             retVal = preDestroyCache.get(clazz);
         }
-        
+
         if (!containsKey) {
             getAllMethods(clazz);  // Fills in the cache
-            
+
             synchronized (lock) {
                 retVal = preDestroyCache.get(clazz);
             }
         }
-        
+
         if (retVal == null) return null;
-        
+
         if (retVal.isAnnotationPresent(PreDestroy.class) &&
                 (retVal.getParameterTypes().length != 0)) {
             collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(retVal) +
                     " annotated with @PreDestroy must not have any arguments"));
             return null;
         }
-            
+
         return retVal;
     }
 
@@ -2205,7 +2261,7 @@ public class Utilities {
     /**
      * Creates the service (without the need for an intermediate ServiceHandle
      * to be created)
-     * 
+     *
      * @param root The ultimate parent of this operation
      * @param injectee the injectee we are creating this service for
      * @param locator The locator to use to find services
@@ -2278,7 +2334,7 @@ public class Utilities {
         catch (Throwable th) {
             Exception addMe = new IllegalStateException("While attempting to create a service for " + root +
                     " in scope " + root.getScope() + " an error occured while locating the context");
-            
+
             if (th instanceof MultiException) {
                 MultiException me = (MultiException) th;
 
@@ -2301,7 +2357,7 @@ public class Utilities {
         catch (Throwable th) {
             throw new MultiException(th);
         }
-        
+
         if (service == null && !context.supportsNullCreation()) {
             throw new MultiException(new IllegalStateException("Context " +
                 context + " findOrCreate returned a null for descriptor " + root +
@@ -2327,11 +2383,11 @@ public class Utilities {
         private Member getBackingMember() {
             return backingMember;
         }
-        
+
         private boolean isPostConstruct() {
             return postConstruct;
         }
-        
+
         private boolean isPreDestroy() {
             return preDestroy;
         }
@@ -2361,7 +2417,7 @@ public class Utilities {
 
             return startCode;
         }
-        
+
         public int hashCode() {
             return hashCode;
         }
