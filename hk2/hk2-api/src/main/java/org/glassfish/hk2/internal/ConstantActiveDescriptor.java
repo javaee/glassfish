@@ -60,19 +60,20 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      * For serialization
      */
     private static final long serialVersionUID = -9196390718074767455L;
-    
-    private T theOne;
-    
+
+    private final T theOne;
+
     /**
      * For serializable
      */
     public ConstantActiveDescriptor() {
         super();
+        theOne = null;
     }
-    
+
     /**
      * Creates the constant descriptor
-     * 
+     *
      * @param theOne May not be null
      * @param advertisedContracts
      * @param scope
@@ -101,7 +102,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
                 classAnalysisName,
                 metadata);
         if (theOne == null) throw new IllegalArgumentException();
-        
+
         this.theOne = theOne;
     }
 

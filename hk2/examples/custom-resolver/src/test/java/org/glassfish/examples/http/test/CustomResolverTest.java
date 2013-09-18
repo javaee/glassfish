@@ -52,39 +52,39 @@ import org.junit.Test;
 
 /**
  * The test that ensures that this example works properly
- * 
+ *
  * @author jwells
  */
 public class CustomResolverTest {
     private ServiceLocator locator;
-    
+
     /**
      * For Junit, does this before every test
      */
     @Before
     public void doBefore() {
         locator = ServiceLocatorFactory.getInstance().create("CustomResolverTest");
-        
+
         Populator.populate(locator);
     }
-    
+
     private void doRequest(int rank, long id, String event) {
         HttpServer httpServer = locator.getService(HttpServer.class);
-        
+
         httpServer.startRequest("" + rank, "" + id, event);
-        
+
         RequestProcessor processor = locator.getService(RequestProcessor.class);
-        
+
         HttpEventReceiver receiver = processor.processHttpRequest();
-        
+
         httpServer.finishRequest();
-        
+
         // And now test that we got what we should have
         Assert.assertEquals(rank, receiver.getLastRank());
         Assert.assertEquals(id, receiver.getLastId());
         Assert.assertEquals(event, receiver.getLastAction());
     }
-    
+
     /**
      * Runs some requests through our fake HttpServer
      */
@@ -93,6 +93,5 @@ public class CustomResolverTest {
         doRequest(50, 1, "FirstRequest");
         doRequest(100, 2, "SecondRequest");
         doRequest(1000, 3, "ThirdRequest");
-        
     }
 }

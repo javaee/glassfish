@@ -37,31 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.singletoncycle;
-
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Test;
+package org.glassfish.hk2.utilities.cache;
 
 /**
- * @author jwells
+ * Utility interface to capture generic computation of type V from type K.
+ * Used in {@link Cache}.
  *
+ * @author Jakub Podlesak (jakub.podlesak @ oracle.com)
  */
-public class SingletonCycleTest {
-    private final static String TEST_NAME = "SingletonCycleTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new SingletonCycleModule());
+public interface Computable<K, V> {
 
-    @Test(expected=MultiException.class)
-    public void testCycleFromFoo() {
-        locator.getService(Foo.class);
-
-    }
-
-    @Test(expected=MultiException.class)
-    public void testCycleFromBar() {
-        locator.getService(Bar.class);
-
-    }
-
+    /**
+     * Defines an expensive computation to retrieve value V from key K.
+     *
+     * @param key input data.
+     * @return output from the computation.
+     */
+    public V compute(K key);
 }

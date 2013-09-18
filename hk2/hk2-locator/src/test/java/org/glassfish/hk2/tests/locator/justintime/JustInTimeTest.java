@@ -42,7 +42,6 @@ package org.glassfish.hk2.tests.locator.justintime;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
@@ -58,7 +57,7 @@ import org.junit.Test;
 public class JustInTimeTest {
     private final static String TEST_NAME = "JustInTimeTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new JustInTimeModule());
-    
+
     /**
      * Tests that if I forgot to add a service, I can add it just in time
      */
@@ -67,15 +66,15 @@ public class JustInTimeTest {
         InjectedThriceService threeTimes = locator.getService(InjectedThriceService.class);
         Assert.assertNotNull(threeTimes);
         Assert.assertTrue(threeTimes.isValid());
-        
+
         // Make sure the resolver was only called once
         SimpleServiceJITResolver jitResolver = locator.getService(SimpleServiceJITResolver.class);
         Assert.assertNotNull(jitResolver);
-        
+
         Assert.assertEquals("Expected 1 JIT resolution, but got " + jitResolver.getNumTimesCalled(), 1, jitResolver.getNumTimesCalled());
-        
+
     }
-    
+
     /**
      * In this test the resolver itself has resolution problems.  We make sure this does not
      * mess up the other resolver, and that once the resolution problem of the resolver has
@@ -86,17 +85,16 @@ public class JustInTimeTest {
         try {
             locator.getService(DoubleTroubleService.class);
             Assert.fail("DoubleTrouble depends on Service2 which should not be available yet");
-        }
-        catch (MultiException me) {
+        } catch (MultiException me) {
             // Good
         }
-        
+
         // SimpleService3 will fix the DoubleTrouble JIT resolver
         ServiceLocatorUtilities.addOneDescriptor(locator, BuilderHelper.link(SimpleService3.class).build());
-        
+
         Assert.assertNotNull(locator.getService(DoubleTroubleService.class));
     }
-    
+
     /**
      * This test ensures that a direct lookup (with {@link ServiceLocator#getInjecteeDescriptor(org.glassfish.hk2.api.Injectee)})
      * works properly
@@ -104,7 +102,7 @@ public class JustInTimeTest {
     @Test
     public void testJITInLookup() {
         InjecteeImpl injectee = new InjecteeImpl(SimpleService.class);
-        
+
         ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
         Assert.assertNotNull(ad);
     }

@@ -42,7 +42,6 @@ package org.jvnet.hk2.internal;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -53,6 +52,8 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.cache.Cache;
+import org.glassfish.hk2.utilities.cache.Computable;
 import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
@@ -63,9 +64,69 @@ import org.glassfish.hk2.utilities.reflection.Logger;
 public class SingletonContext implements Context<Singleton> {
     private int generationNumber = Integer.MIN_VALUE;
     private final ServiceLocatorImpl locator;
-    
-    private final HashMap<ActiveDescriptor<?>, Long> creatingDescriptors = new HashMap<ActiveDescriptor<?>, Long>();
-    
+
+    private class ActiveDescriptorAndRoot<T> {
+        final ActiveDescriptor<T> desc;
+        final ServiceHandle<?> root;
+
+        public ActiveDescriptorAndRoot(ActiveDescriptor<T> desc, ServiceHandle<?> root) {
+            this.desc = desc;
+            this.root = root;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 59 * hash + (this.desc != null ? this.desc.hashCode() : 0);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final ActiveDescriptorAndRoot other = (ActiveDescriptorAndRoot) obj;
+            if (this.desc != other.desc && (this.desc == null || !this.desc.equals(other.desc))) {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private final Cache<ActiveDescriptorAndRoot, Object> valueCache = new Cache<ActiveDescriptorAndRoot, Object>(new Computable<ActiveDescriptorAndRoot, Object>() {
+
+        @Override
+        public Object compute(ActiveDescriptorAndRoot a) {
+
+            final ActiveDescriptor activeDescriptor = a.desc;
+
+            final Object cachedVal = activeDescriptor.getCache();
+            if (cachedVal != null) {
+                return cachedVal;
+            }
+
+            final Object createdVal = activeDescriptor.create(a.root);
+            activeDescriptor.setCache(createdVal);
+            if (activeDescriptor instanceof SystemDescriptor) {
+                ((SystemDescriptor) activeDescriptor).setSingletonGeneration(generationNumber++);
+            }
+
+            return createdVal;
+        }
+    }, new Cache.CycleHandler<ActiveDescriptorAndRoot>(){
+
+        @Override
+        public void handleCycle(ActiveDescriptorAndRoot key) {
+            throw new MultiException(new IllegalStateException(
+                            "A circular dependency involving Singleton service " + key.desc.getImplementation() +
+                            " was found.  Full descriptor is " + key.desc));
+        }
+    });
+
     /* package */ SingletonContext(ServiceLocatorImpl impl) {
         locator = impl;
     }
@@ -84,56 +145,15 @@ public class SingletonContext implements Context<Singleton> {
     @Override
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) {
-        T retVal;
-        
-        
-        synchronized (this) {
-            retVal = activeDescriptor.getCache();
-            if (retVal != null) return retVal;
-            
-            while (creatingDescriptors.containsKey(activeDescriptor)) {
-                long creatingThreadId = creatingDescriptors.get(activeDescriptor);
-                
-                if (creatingThreadId == Thread.currentThread().getId()) {
-                    throw new MultiException(new IllegalStateException(
-                            "A circular dependency involving Singleton service " + activeDescriptor.getImplementation() +
-                            " was found.  Full descriptor is " + activeDescriptor));
-                    
-                }
-                try {
-                    this.wait();
-                }
-                catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-            
-            retVal = activeDescriptor.getCache();
-            if (retVal != null) return retVal;
-            
-            creatingDescriptors.put(activeDescriptor, Thread.currentThread().getId());
-        }
-        
+
         try {
-            retVal = activeDescriptor.create(root);
-        }
-        finally {
-            synchronized (this) {
-                if (retVal != null) {
-                    activeDescriptor.setCache(retVal);
-                    
-                    if (activeDescriptor instanceof SystemDescriptor) {
-                        ((SystemDescriptor<T>) activeDescriptor).setSingletonGeneration(generationNumber++);
-                    }
-                }
-                
-                creatingDescriptors.remove(activeDescriptor);
-                this.notifyAll();
+            return (T)valueCache.compute(new ActiveDescriptorAndRoot(activeDescriptor, root));
+        } catch (RuntimeException re) {
+            if (re instanceof MultiException) {
+                throw re;
             }
+            throw new MultiException(re.getCause());
         }
-        
-        return retVal;
     }
 
     /* (non-Javadoc)
@@ -141,9 +161,7 @@ public class SingletonContext implements Context<Singleton> {
      */
     @Override
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        synchronized (this) {
-            return (descriptor.getCache() != null);
-        }
+        return valueCache.containsKey(new ActiveDescriptorAndRoot(descriptor, null));
     }
 
     /* (non-Javadoc)
@@ -169,54 +187,54 @@ public class SingletonContext implements Context<Singleton> {
     @Override
     public void shutdown() {
         List<ActiveDescriptor<?>> all = locator.getDescriptors(BuilderHelper.allFilter());
-        
+
         long myLocatorId = locator.getLocatorId();
-        
+
         TreeSet<SystemDescriptor<Object>> singlesOnly = new TreeSet<SystemDescriptor<Object>>(
                 new GenerationComparator());
         for (ActiveDescriptor<?> one : all) {
             if (one.getScope() == null || !one.getScope().equals(Singleton.class.getName())) continue;
-            
+
             synchronized (this) {
                 if (one.getCache() == null) continue;
             }
-            
+
             if (one.getLocatorId() == null || one.getLocatorId().longValue() != myLocatorId) continue;
-            
+
             SystemDescriptor<Object> oneAsObject = (SystemDescriptor<Object>) one;
-            
+
             singlesOnly.add(oneAsObject);
         }
-        
+
         for (SystemDescriptor<Object> one : singlesOnly) {
             destroyOne(one);
         }
     }
-    
+
     /**
      * Release one system descriptor
-     * 
+     *
      * @param one The descriptor to release (may not be null).  Further, the cache MUST be set
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void destroyOne(ActiveDescriptor<?> one) {
         Object value;
-        synchronized (this) {
-            value = one.getCache();
-            one.releaseCache();
-        
-            if (value == null) return;
-        }
-        
+        valueCache.remove(new ActiveDescriptorAndRoot(one, null));
+        value = one.getCache();
+        one.releaseCache();
+
+        if (value == null) return;
+
         try {
             ((ActiveDescriptor<Object>) one).dispose(value);
         }
         catch (Throwable th) {
             Logger.getLogger().debug("SingletonContext", "releaseOne", th);
         }
-        
+
     }
-    
+
     private static class GenerationComparator implements Comparator<SystemDescriptor<Object>>, Serializable {
 
         /**
@@ -233,9 +251,9 @@ public class SingletonContext implements Context<Singleton> {
             if (o1.getSingletonGeneration() == o2.getSingletonGeneration()) {
                 return 0;
             }
-            
+
             return 1;
         }
-        
+
     }
 }

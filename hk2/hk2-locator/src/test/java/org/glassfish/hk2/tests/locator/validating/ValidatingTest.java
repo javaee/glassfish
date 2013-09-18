@@ -64,7 +64,7 @@ import org.junit.Test;
  */
 public class ValidatingTest {
     private final String EXCEPTION_STRING = "There was no object available for injection at";
-    
+
     private final static String TEST_NAME = "ValidatingTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new ValidatingModule());
 
@@ -76,7 +76,7 @@ public class ValidatingTest {
         SystemService systemService = locator.getService(SystemService.class);
         Assert.assertNotNull(systemService);  // If I got it, it worked!
     }
-    
+
     /**
      * The user service should NOT be able to see the secret service
      */
@@ -88,20 +88,20 @@ public class ValidatingTest {
         }
         catch (MultiException me) {
             List<Throwable> errors = me.getErrors();
-            
+
             Assert.assertEquals(me.toString(), 3, errors.size());
-            
+
             for (Throwable lookAtMe : errors) {
                 if (lookAtMe.getMessage().contains(EXCEPTION_STRING)) {
                     // Success
                     return;
                 }
             }
-            
+
             Assert.fail("None of the exceptions in the multi exception had the expected string " + me);
         }
     }
-    
+
     /**
      * The validator does not allow direct lookup of this service
      */
@@ -109,7 +109,7 @@ public class ValidatingTest {
     public void testEvilLookup() {
         Assert.assertNull(locator.getService(SuperSecretService.class));
     }
-    
+
     /**
      * Tests a bind that should fail validation
      */
@@ -117,9 +117,9 @@ public class ValidatingTest {
     public void testBindValidationFailure() {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration configuration = dcs.createDynamicConfiguration();
-        
+
         configuration.bind(BuilderHelper.link(NeverBindMeService.class).build());
-        
+
         try {
             configuration.commit();
             Assert.fail("Bind should have failed due to validation problem");
@@ -129,7 +129,7 @@ public class ValidatingTest {
                 " did not pass the BIND validation"));
         }
     }
-    
+
     /**
      * Tests a bind that should fail validation
      */
@@ -137,9 +137,9 @@ public class ValidatingTest {
     public void testUnBindValidationFailure() {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration configuration = dcs.createDynamicConfiguration();
-        
+
         configuration.addUnbindFilter(BuilderHelper.createContractFilter(NeverUnbindMeService.class.getName()));
-        
+
         try {
             configuration.commit();
             Assert.fail("Bind should have failed due to unbind validation problem");
@@ -149,42 +149,42 @@ public class ValidatingTest {
                     " did not pass the UNBIND validation"));
         }
     }
-    
+
     /**
      * This test ensures that validation changes in the parent properly affects children
      */
     @Test
     public void testValidationChangeInParent() {
         ServiceLocator childLocator = LocatorHelper.create("child", locator, null);
-        
+
         DynamicValidator dv = childLocator.getService(DynamicValidator.class);
-        
+
         dv.addBadGuy(DynamicServiceImpl1.class.getName());
-        
+
         List<DynamicService> services = childLocator.getAllServices(DynamicService.class);
-        
+
         // Only one, because the other is not valid in the parent
         Assert.assertEquals(1, services.size());
-        
+
         DynamicService ds2 = services.get(0);
-        
+
         Assert.assertEquals(2, ds2.getImplNumber());
-        
+
         // Now dynamically change the validation, so that 1 is ok again
         dv.removeBadGuy(DynamicServiceImpl1.class.getName());
-        
+
         services = childLocator.getAllServices(DynamicService.class);
-        
+
         // Should now have both services
         Assert.assertEquals(2, services.size());
-        
+
         DynamicService ds1 = services.get(0);
         ds2 = services.get(1);
-        
+
         Assert.assertEquals(1, ds1.getImplNumber());
         Assert.assertEquals(2, ds2.getImplNumber());
     }
-    
+
     /**
      * Tests a state based validation using getService
      */
@@ -192,7 +192,7 @@ public class ValidatingTest {
     public void testStateBasedValidation() {
         // Overrides global one
         ServiceLocator locator = LocatorHelper.create("ValidationTest_2", null);
-        
+
         ServiceLocatorUtilities.bind(locator, new Binder() {
 
             @Override
@@ -209,206 +209,206 @@ public class ValidatingTest {
                         to(ValidationService.class.getName()).
                         in(Singleton.class.getName()).
                         build());
-                
+
             }
-            
+
         });
-        
+
         // First get one
         StateBasedValidationService sbvs = (StateBasedValidationService)
                 locator.getService(ValidationService.class);
         Assert.assertNotNull(sbvs);
-        
+
         sbvs.setCurrentState(1);
-        
+
         DynamicService d1 = locator.getService(DynamicService.class);
         Assert.assertNotNull(d1);
         Assert.assertEquals(1, d1.getImplNumber());
-        
+
         // Now switch the state to state 2
         sbvs.setCurrentState(2);
-        
+
         DynamicService d2 = locator.getService(DynamicService.class);
         Assert.assertNotNull(d2);
         Assert.assertEquals(2, d2.getImplNumber());
     }
-    
+
     private static ServiceLocator generateGetCallerLocators(String testName) {
         ServiceLocator retVal = LocatorHelper.create(TEST_NAME + "." + testName, null);
-        
+
         ServiceLocatorUtilities.addClasses(retVal, CheckCallerValidationService.class);
-        
+
         return retVal;
     }
-    
+
     /**
      * Tests that the stack frame for a direct lookup call is this one!
      */
     @Test
     public void testImmediateCaller() {
         ServiceLocator testLocator = generateGetCallerLocators("testImmediateCaller");
-        
+
         CheckCallerValidationService val = testLocator.getService(CheckCallerValidationService.class);
         Assert.assertNotNull(val);
-        
+
         StackTraceElement callerFrame = val.getLastCaller().get(0);
         Assert.assertNotNull(callerFrame);
-        
+
         Assert.assertEquals(getClass().getName(), callerFrame.getClassName());
         Assert.assertEquals("testImmediateCaller", callerFrame.getMethodName());
     }
-    
+
     /**
      * Tests that the stack frame for direct bind/unbind calls is this one!
      */
     @Test
     public void testBindUnbindCaller() {
         ServiceLocator testLocator = generateGetCallerLocators("testBindUnbindCaller");
-        
+
         CheckCallerValidationService val = testLocator.getService(CheckCallerValidationService.class);
         Assert.assertNotNull(val);
-        
+
         List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(testLocator, SuperSecretService.class);
-        
+
         StackTraceElement callerFrame = val.getLastCaller().get(0);
         Assert.assertNotNull(callerFrame);
-        
+
         Assert.assertEquals(getClass().getName(), callerFrame.getClassName());
         Assert.assertEquals("testBindUnbindCaller", callerFrame.getMethodName());
-        
+
         val.clear();
-        
+
         for (ActiveDescriptor<?> ad : added) {
             ServiceLocatorUtilities.removeOneDescriptor(testLocator, ad);
         }
-        
+
         callerFrame = val.getLastCaller().get(0);
         Assert.assertNotNull(callerFrame);
-        
+
         Assert.assertEquals(getClass().getName(), callerFrame.getClassName());
         Assert.assertEquals("testBindUnbindCaller", callerFrame.getMethodName());
     }
-    
+
     /**
      * Tests that the stack frame is returning the correct thing for all the nested injections
      */
     @Test
     public void testInjecteeCallers() {
         ServiceLocator testLocator = generateGetCallerLocators("testInjecteeCallers");
-        
+
         CheckCallerValidationService val = testLocator.getService(CheckCallerValidationService.class);
         Assert.assertNotNull(val);
-        
+
         ServiceLocatorUtilities.addClasses(testLocator, ServiceA.class, ServiceB.class, ServiceC.class);
-        
+
         val.clear();
-        
+
         testLocator.getService(ServiceC.class);
-        
+
         List<StackTraceElement> stacks = val.getLastCaller();
-        
+
         Assert.assertEquals(3, stacks.size());
-        
+
         for (int lcv = 0; lcv < 3; lcv++) {
           StackTraceElement callerFrame = stacks.get(lcv);
           Assert.assertNotNull(callerFrame);
-        
+
           Assert.assertEquals(getClass().getName(), callerFrame.getClassName());
           Assert.assertEquals("testInjecteeCallers", callerFrame.getMethodName());
         }
     }
-    
+
     /**
      * Tests that the caller is correct for nested getService lookups
      */
     @Test
     public void testNestedLookupCallers() {
         ServiceLocator testLocator = generateGetCallerLocators("testNestedLookupCallers");
-        
+
         CheckCallerValidationService val = testLocator.getService(CheckCallerValidationService.class);
         Assert.assertNotNull(val);
-        
+
         ServiceLocatorUtilities.addClasses(testLocator, ServiceA.class, ServiceD.class);
-        
+
         val.clear();
-        
+
         testLocator.getService(ServiceD.class);
-        
+
         List<StackTraceElement> stacks = val.getLastCaller();
-        
+
         // One for ServiceLocator in ServiceD,
         // one for this lookup itself, and one for the lookup
         // in the postConstruct of ServiceD
         Assert.assertEquals(3, stacks.size());
-        
+
         StackTraceElement callerFrame = stacks.get(0);
         Assert.assertNotNull(callerFrame);
-        
+
         Assert.assertEquals(ServiceD.class.getName(), callerFrame.getClassName());
         Assert.assertEquals("postConstruct", callerFrame.getMethodName());
-        
+
         callerFrame = stacks.get(1);
         Assert.assertNotNull(callerFrame);
-        
+
         Assert.assertEquals(getClass().getName(), callerFrame.getClassName());
         Assert.assertEquals("testNestedLookupCallers", callerFrame.getMethodName());
-        
+
         callerFrame = stacks.get(2);
         Assert.assertNotNull(callerFrame);
-        
+
         Assert.assertEquals(getClass().getName(), callerFrame.getClassName());
         Assert.assertEquals("testNestedLookupCallers", callerFrame.getMethodName());
     }
-    
+
     /**
      * Tests that the stack frame is returning the correct thing for all the nested injections
      */
     @Test
     public void testLookupProxiableServiceCallers() {
         ServiceLocator testLocator = generateGetCallerLocators("testLookupProxiableServiceCallers");
-        
+
         CheckCallerValidationService val = testLocator.getService(CheckCallerValidationService.class);
         Assert.assertNotNull(val);
-        
+
         ServiceLocatorUtilities.addClasses(testLocator, ServiceE.class);
-        
+
         val.clear();
-        
+
         ServiceE e = testLocator.getService(ServiceE.class);
         Assert.assertTrue(e instanceof ProxyCtl);
-        
+
         List<StackTraceElement> stacks = val.getLastCaller();
-        
+
         // One for ServiceLocator in ServiceD,
         // one for this lookup itself, and one for the lookup
         // in the postConstruct of ServiceD
         Assert.assertEquals(1, stacks.size());
-        
+
         StackTraceElement callerFrame = stacks.get(0);
         Assert.assertNotNull(callerFrame);
-        
+
         Assert.assertEquals(getClass().getName(), callerFrame.getClassName());
         Assert.assertEquals("testLookupProxiableServiceCallers", callerFrame.getMethodName());
-        
+
         val.clear();
-        
+
         e.callMe();
-        
+
         stacks = val.getLastCaller();
-        
+
         // Guarantees that validation is not called when the proxiable method is invoked
         Assert.assertEquals(0, stacks.size());
     }
-    
+
     @Test
     public void testInvalidCallerCall() {
         ServiceLocator testLocator = LocatorHelper.create(TEST_NAME + "." + "testInvalidCallerCall", null);
-        
+
         ServiceLocatorUtilities.addClasses(testLocator, InvalidCheckCallerValidationService.class);
-        
+
         InvalidCheckCallerValidationService val = testLocator.getService(InvalidCheckCallerValidationService.class);
         Assert.assertNotNull(val);
-        
+
         val.check();
     }
 }
