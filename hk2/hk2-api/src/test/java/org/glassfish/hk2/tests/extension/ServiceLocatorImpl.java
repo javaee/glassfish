@@ -419,4 +419,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public boolean getNeutralContextClassLoader() {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    public void setNeutralContextClassLoader(boolean neutralContextClassLoader) {
+        // TODO Auto-generated method stub
+        
+    }
 }

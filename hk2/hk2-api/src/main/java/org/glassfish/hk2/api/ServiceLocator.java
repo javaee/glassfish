@@ -500,6 +500,53 @@ public interface ServiceLocator {
     public ServiceLocatorState getState();
     
     /**
+     * This returns the value of neutralContextClassLoader.  If
+     * this value is true then HK2 will ensure that the context
+     * class loader on the thread is maintained whenever hk2 calls
+     * into user code.  If this value is false then the value of
+     * the context class loader on the thread may be changed by
+     * the code hk2 is calling.
+     * <p>
+     * When set to false this value is used to increase performance
+     * since getting and setting the context class loader can be expensive.
+     * However, if the user code being called by hk2 may change the context
+     * class loader of the thread, this value should be true to ensure that
+     * tricky and hard to find bugs don't arise when this thread is used for
+     * other purposes later on
+     * <p>
+     * All new ServiceLocator implementation have this value initially set
+     * to true
+     * @return If true hk2 will ensure that the context class loader cannot
+     * be changed by user code.  If false hk2 will not modify the context
+     * class loader of the thread when user code has finished
+     */
+    public boolean getNeutralContextClassLoader();
+    
+    /**
+     * This sets the value of neutralContextClassLoader.  If
+     * this value is true then HK2 will ensure that the context
+     * class loader on the thread is maintained whenever hk2 calls
+     * into user code.  If this value is false then the value of
+     * the context class loader on the thread may be changed by
+     * the code hk2 is calling.
+     * <p>
+     * When set to false this value is used to increase performance
+     * since getting and setting the context class loader can be expensive.
+     * However, if the user code being called by hk2 may change the context
+     * class loader of the thread, this value should be true to ensure that
+     * tricky and hard to find bugs don't arise when this thread is used for
+     * other purposes later on
+     * <p>
+     * All new ServiceLocator implementation have this value initially set
+     * to true
+     * 
+     * @param neutralContextClassLoader true if hk2 should ensure context class
+     * loader neutrality, false if hk2 should not change the context class loader
+     * on the thread around user code calls
+     */
+    public void setNeutralContextClassLoader(boolean neutralContextClassLoader);
+    
+    /**
      * This method will analyze the given class, and create it if can.  The object
      * created in this way will not be managed by HK2.  It is the responsibility of
      * the caller to ensure that any lifecycle this object has is honored

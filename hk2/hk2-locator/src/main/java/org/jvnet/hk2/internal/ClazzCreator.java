@@ -258,7 +258,7 @@ public class ClazzCreator<T> implements Creator<T> {
             args[injectee.getPosition()] = resolved.get(injectee);
         }
 
-        return ReflectionHelper.makeMe(c, args);
+        return ReflectionHelper.makeMe(c, args, locator.getNeutralContextClassLoader());
     }
 
     private void fieldMe(Map<Injectee, Object> resolved, T t) throws Throwable {
@@ -287,7 +287,7 @@ public class ClazzCreator<T> implements Creator<T> {
                 args[injectee.getPosition()] = resolved.get(injectee);
             }
 
-            ReflectionHelper.invoke(t, m, args);
+            ReflectionHelper.invoke(t, m, args, locator.getNeutralContextClassLoader());
         }
     }
 
@@ -301,7 +301,7 @@ public class ClazzCreator<T> implements Creator<T> {
 
         if (postConstructMethod == null) return;
 
-        ReflectionHelper.invoke(t, postConstructMethod, new Object[0]);
+        ReflectionHelper.invoke(t, postConstructMethod, new Object[0], locator.getNeutralContextClassLoader());
     }
 
     private void preDestroyMe(T t) throws Throwable {
@@ -314,7 +314,7 @@ public class ClazzCreator<T> implements Creator<T> {
 
         if (preDestroyMethod == null) return;
 
-        ReflectionHelper.invoke(t, preDestroyMethod, new Object[0]);
+        ReflectionHelper.invoke(t, preDestroyMethod, new Object[0], locator.getNeutralContextClassLoader());
     }
 
     /* (non-Javadoc)

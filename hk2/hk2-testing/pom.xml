@@ -57,5 +57,6 @@
     <modules>
             <module>hk2-junitrunner</module>
             <module>ant</module>
+            <module>hk2-locator-extras</module>
     </modules>
 </project>
