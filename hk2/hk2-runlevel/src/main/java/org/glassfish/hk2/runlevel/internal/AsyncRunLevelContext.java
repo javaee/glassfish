@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.runlevel.internal;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,7 +70,7 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 @Service
-public class AsyncRunLevelContext implements Context<RunLevel> {
+public class AsyncRunLevelContext {
     private static final Logger logger = Logger.getLogger(AsyncRunLevelContext.class.getName());
     
     private static final ThreadFactory THREAD_FACTORY = new RunLevelThreadFactory();
@@ -109,18 +108,24 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
     private int maxThreads = Integer.MAX_VALUE;
     private RunLevelController.ThreadingPolicy policy = RunLevelController.ThreadingPolicy.FULLY_THREADED;
     
+    /**
+     * Constructor for the guy who does the work
+     * 
+     * @param locator The locator to use
+     */
     @Inject
     private AsyncRunLevelContext(ServiceLocator locator) {
         this.locator = locator;
     }
 
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return RunLevel.class;
-    }
-
+    /**
+     * This is from the {@link Context} API, called by the wrapper
+     * 
+     * @param activeDescriptor the descriptor to create
+     * @param root The root descriptor
+     * @return The object created
+     */
     @SuppressWarnings("unchecked")
-    @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
         boolean throwWouldBlock;
@@ -231,15 +236,24 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
         }
     }
 
-    @Override
+    /**
+     * The {@link Context} API for discovering if a descriptor has been created
+     * 
+     * @param descriptor The descriptor to find
+     * @return true if already created, false otherwise
+     */
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
         synchronized (this) {
             return backingMap.containsKey(descriptor);
         }
     }
     
+    /**
+     * The {@link Context} API.  Removes a descriptor from the set
+     * 
+     * @param descriptor The descriptor to destroy
+     */
     @SuppressWarnings("unchecked")
-    @Override
     public void destroyOne(ActiveDescriptor<?> descriptor) {
         Object retVal = null;
         synchronized (this) {
@@ -248,24 +262,6 @@ public class AsyncRunLevelContext implements Context<RunLevel> {
         }
             
         ((ActiveDescriptor<Object>) descriptor).dispose(retVal);
-    }
-
-    @Override
-    public boolean supportsNullCreation() {
-        // Run-Level services may not be null
-        return false;
-    }
-
-    @Override
-    public boolean isActive() {
-        // This context is always active
-        return true;
-    }
-
-    @Override
-    public void shutdown() {
-        // Do nothing, shutdown is controlled by the current level
-        
     }
     
     /**

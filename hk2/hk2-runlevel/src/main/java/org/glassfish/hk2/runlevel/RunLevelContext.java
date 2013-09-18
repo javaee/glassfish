@@ -37,44 +37,88 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel.tests.utilities;
+package org.glassfish.hk2.runlevel;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
+import java.lang.annotation.Annotation;
+
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.runlevel.RunLevelContext;
 import org.glassfish.hk2.runlevel.internal.AsyncRunLevelContext;
-import org.glassfish.hk2.runlevel.internal.RunLevelControllerImpl;
+import org.jvnet.hk2.annotations.Service;
 
 /**
+ * This is the implementation of the {@link Context}
+ * for the {@link RunLevel} scope
+ * 
  * @author jwells
  *
  */
-public class Utilities {
-    /**
-     * Creates a ServiceLocator equipped with a RunLevelService and the set of classes given
-     * 
-     * @param classes The set of classes to also add to the descriptor (should probably contain some run level services, right?)
-     * @return The ServiceLocator to use
+@Service
+public class RunLevelContext implements Context<RunLevel> {
+    @Inject
+    private AsyncRunLevelContext asyncRunLevelContext;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#getScope()
      */
-    public static ServiceLocator getServiceLocator(Class<?>... classes) {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
-        
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        config.addActiveDescriptor(RunLevelControllerImpl.class);
-        config.addActiveDescriptor(AsyncRunLevelContext.class);
-        config.addActiveDescriptor(RunLevelContext.class);
-        
-        for (Class<?> clazz : classes) {
-            config.addActiveDescriptor(clazz);
-        }
-        
-        config.commit();
-        
-        return locator;
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return RunLevel.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        return asyncRunLevelContext.findOrCreate(activeDescriptor, root);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return asyncRunLevelContext.containsKey(descriptor);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        asyncRunLevelContext.destroyOne(descriptor);
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        // Do nothing
+
     }
 
 }
