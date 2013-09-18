@@ -1010,17 +1010,22 @@ public final class ReflectionHelper {
      * @param m the method to invoke
      * @param o the object on which to invoke it
      * @param args The arguments to invoke (may not be null)
+     * @param neutralCCL true if the ContextClassLoader shoult remain null with this call
      * @return The return from the invocation
      * @throws Throwable The unwrapped throwable thrown by the method
      */
-    public static Object invoke(Object o, Method m, Object args[])
+    public static Object invoke(Object o, Method m, Object args[], boolean neutralCCL)
             throws Throwable {
         if (isStatic(m)) {
             o = null;
         }
 
         accessibleMethodCache.compute(m);
-        final ClassLoader currentCCL = getCurrentContextClassLoader();
+        
+        ClassLoader currentCCL = null;
+        if (neutralCCL) {
+            currentCCL = getCurrentContextClassLoader();
+        }
 
         try {
             return m.invoke(o, args);
@@ -1035,7 +1040,9 @@ public final class ReflectionHelper {
             throw th;
         }
         finally {
-            setContextClassLoader(Thread.currentThread(), currentCCL);
+            if (neutralCCL) {
+                setContextClassLoader(Thread.currentThread(), currentCCL);
+            }
         }
     }
 
@@ -1093,13 +1100,18 @@ public final class ReflectionHelper {
      *
      * @param c the constructor to call
      * @param args The arguments to invoke (may not be null)
+     * @param neutralCCL true if the context class loader should remain null through this call
      * @return The return from the invocation
      * @throws Throwable The unwrapped throwable thrown by the method
      */
-    public static Object makeMe(Constructor<?> c, Object args[])
+    public static Object makeMe(Constructor<?> c, Object args[], boolean neutralCCL)
             throws Throwable {
 
-        final ClassLoader currentCCL = getCurrentContextClassLoader();
+        
+        ClassLoader currentCCL = null;
+        if (neutralCCL) {
+            currentCCL = getCurrentContextClassLoader();
+        }
 
         try {
             return c.newInstance(args);
@@ -1111,7 +1123,9 @@ public final class ReflectionHelper {
             Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), th);
             throw th;
         } finally {
-            setContextClassLoader(Thread.currentThread(), currentCCL);
+            if (neutralCCL) {
+                setContextClassLoader(Thread.currentThread(), currentCCL);
+            }
         }
     }
 

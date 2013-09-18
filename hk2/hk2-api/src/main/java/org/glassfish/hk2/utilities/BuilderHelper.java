@@ -557,7 +557,7 @@ public class BuilderHelper {
 	        
 	        Object addMe;
 	        try {
-	            addMe = ReflectionHelper.invoke(annotation, annotationMethod, new Object[0]);
+	            addMe = ReflectionHelper.invoke(annotation, annotationMethod, new Object[0], false);
 	        }
 	        catch (Throwable th) {
 	            throw new MultiException(th);

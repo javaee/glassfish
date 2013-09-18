@@ -150,6 +150,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final String locatorName;
     private final long id;
     private final ServiceLocatorImpl parent;
+    private volatile boolean neutralContextClassLoader = true;
 
     private final IndexedListData allDescriptors = new IndexedListData();
     private final HashMap<String, IndexedListData> descriptorsByAdvertisedContract =
@@ -2032,8 +2033,27 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public ServiceLocator getParent() {
         return parent;
     }
+    
+    @Override
+    public boolean getNeutralContextClassLoader() {
+        return neutralContextClassLoader;
+    }
+
+    @Override
+    public void setNeutralContextClassLoader(boolean neutralContextClassLoader) {
+        wLock.lock();
+        try {
+            this.neutralContextClassLoader = neutralContextClassLoader;
+        }
+        finally {
+            wLock.unlock();
+        }
+        
+    }
 
     public String toString() {
         return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

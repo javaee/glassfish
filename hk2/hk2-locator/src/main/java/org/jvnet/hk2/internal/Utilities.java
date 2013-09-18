@@ -65,8 +65,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -735,7 +733,7 @@ public class Utilities {
         if (preDestroy == null) return;
 
         try {
-            ReflectionHelper.invoke(preMe, preDestroy, new Object[0]);
+            ReflectionHelper.invoke(preMe, preDestroy, new Object[0], locator.getNeutralContextClassLoader());
         } catch (Throwable e) {
             throw new MultiException(e);
         }
@@ -765,7 +763,7 @@ public class Utilities {
         if (postConstruct == null) return;
 
         try {
-            ReflectionHelper.invoke(postMe, postConstruct, new Object[0]);
+            ReflectionHelper.invoke(postMe, postConstruct, new Object[0], locator.getNeutralContextClassLoader());
         } catch (Throwable e) {
             throw new MultiException(e);
         }
@@ -826,7 +824,7 @@ public class Utilities {
             }
 
             try {
-                ReflectionHelper.invoke(injectMe, method, args);
+                ReflectionHelper.invoke(injectMe, method, args, locator.getNeutralContextClassLoader());
             } catch (Throwable e) {
                 throw new MultiException(e);
             }
@@ -866,7 +864,7 @@ public class Utilities {
         }
 
         try {
-          return (T) ReflectionHelper.makeMe(c, args);
+          return (T) ReflectionHelper.makeMe(c, args, locator.getNeutralContextClassLoader());
         } catch (Throwable th) {
             throw new MultiException(th);
         }

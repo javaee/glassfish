@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,60 +37,59 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.extras.contextclassloader;
 
-import java.lang.reflect.Method;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
-
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class MethodInterceptorImpl implements MethodInterceptor {
-    private final static String PROXY_MORE_METHOD_NAME = "__make";
+public class ContextClassLoaderTest {
+    private ServiceLocator locator;
     
-    private final ServiceLocatorImpl locator;
-    private final ActiveDescriptor<?> descriptor;
-    private final ServiceHandle<?> root;
-    
-    /* package */ MethodInterceptorImpl(ServiceLocatorImpl sli, ActiveDescriptor<?> descriptor, ServiceHandle<?> root) {
-        this.locator = sli;
-        this.descriptor = descriptor;
-        this.root = root;
+    @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                CCLChangingService.class,
+                ServiceA.class);
+        
     }
-
-    /* (non-Javadoc)
-     * @see net.sf.cglib.proxy.MethodInterceptor#intercept(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], net.sf.cglib.proxy.MethodProxy)
-     */
-    @Override
-    public Object intercept(Object target, Method method, Object[] params,
-            MethodProxy proxy) throws Throwable {
-        Context<?> context;
-        Object service;
+    
+    @Test
+    public void testCCLNeutral() {
+        ServiceHandle<?> handle = locator.getServiceHandle(CCLChangingService.class);
         
-        context = locator.resolveContext(descriptor.getScopeAnnotation());
-        service = context.findOrCreate(descriptor, root);
+        ClassLoader cclClassLoader = new MyClassLoader();
+        Thread.currentThread().setContextClassLoader(cclClassLoader);
         
-        if (service == null) {
-            throw new MultiException(new IllegalStateException("Proxiable context " +
-                    context + " findOrCreate returned a null for descriptor " + descriptor +
-                    " and handle " + root));
+        try {
+            /**
+             * Will be CCL neutral
+             */
+            handle.getService();
+        
+            Assert.assertEquals(cclClassLoader, Thread.currentThread().getContextClassLoader());
+            
+            handle.destroy();
+            
+            Assert.assertEquals(cclClassLoader, Thread.currentThread().getContextClassLoader());
         }
-        
-        if (method.getName().equals(PROXY_MORE_METHOD_NAME)) {
-            // We did what we came here to do
-            return service;
+        finally {
+            Thread.currentThread().setContextClassLoader(null);   
         }
+    }
+    
+    private static class MyClassLoader extends ClassLoader {
         
-        return ReflectionHelper.invoke(service, method, params, locator.getNeutralContextClassLoader());
     }
 
 }
