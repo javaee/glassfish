@@ -79,39 +79,39 @@ public class ClazzCreator<T> implements Creator<T> {
 
     private Method postConstructMethod;
     private Method preDestroyMethod;
-    
+
     /* package */ ClazzCreator(ServiceLocatorImpl locator,
             Class<?> implClass) {
         this.locator = locator;
         this.implClass = implClass;
     }
-    
+
     /* package */ void initialize(
             ActiveDescriptor<?> selfDescriptor,
             String analyzerName,
             Collector collector) {
         this.selfDescriptor = selfDescriptor;
-        
+
         if ((selfDescriptor != null) &&
                 selfDescriptor.getAdvertisedContracts().contains(
                 ClassAnalyzer.class.getName())) {
             String descriptorAnalyzerName = selfDescriptor.getName();
             if (descriptorAnalyzerName == null) descriptorAnalyzerName = locator.getDefaultClassAnalyzerName();
-            
+
             String incomingAnalyzerName = analyzerName;
             if (incomingAnalyzerName == null) incomingAnalyzerName = locator.getDefaultClassAnalyzerName();
-            
+
             if (descriptorAnalyzerName.equals(incomingAnalyzerName)) {
                 collector.addThrowable(new IllegalArgumentException(
-                        "The ClassAnalyzer named " + descriptorAnalyzerName + 
+                        "The ClassAnalyzer named " + descriptorAnalyzerName +
                         " is its own ClassAnalyzer. Ensure that an implementation of" +
                         " ClassAnalyzer is not its own ClassAnalyzer"));
                 myConstructor = null;
                 return;
             }
         }
-        
-        ClassAnalyzer analyzer = Utilities.getClassAnalyzer(locator, analyzerName, collector);     
+
+        ClassAnalyzer analyzer = Utilities.getClassAnalyzer(locator, analyzerName, collector);
         if (analyzer == null) {
             myConstructor = null;
             return;
@@ -173,22 +173,22 @@ public class ClazzCreator<T> implements Creator<T> {
     /* package */ void initialize(
             ActiveDescriptor<?> selfDescriptor,
             Collector collector) {
-        initialize(selfDescriptor, (selfDescriptor == null) ? null : 
+        initialize(selfDescriptor, (selfDescriptor == null) ? null :
             selfDescriptor.getClassAnalysisName(), collector);
     }
-    
+
     /**
      * This is done because sometimes when creating the creator we do not know
      * what the true system descriptor will be
-     * 
+     *
      * @param selfDescriptor The descriptor that should replace our self descriptor
      */
     /* package */ void resetSelfDescriptor(ActiveDescriptor<?> selfDescriptor) {
         this.selfDescriptor = selfDescriptor;
-        
+
         for (Injectee injectee : allInjectees) {
             if (!(injectee instanceof InjecteeImpl)) continue;
-                
+
             ((InjecteeImpl) injectee).resetInjecteeDescriptor(selfDescriptor);
         }
     }
@@ -215,10 +215,10 @@ public class ClazzCreator<T> implements Creator<T> {
         }
     }
 
-    private Map<Injectee, Object> resolveAllDependencies(ServiceHandle<?> root) throws IllegalStateException {
+    private Map<Injectee, Object> resolveAllDependencies(final ServiceHandle<?> root) throws MultiException, IllegalStateException {
         Collector errorCollector = new Collector();
 
-        Map<Injectee, Object> retVal = new LinkedHashMap<Injectee, Object>();
+        final Map<Injectee, Object> retVal = new LinkedHashMap<Injectee, Object>();
 
         for (Injectee injectee : myConstructor.injectees) {
             InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, injectee);
@@ -240,8 +240,8 @@ public class ClazzCreator<T> implements Creator<T> {
         }
 
         if (errorCollector.hasErrors()) {
-            errorCollector.addThrowable(new IllegalArgumentException("While attempting to resolve the dependencies of " +
-                    implClass.getName() + " errors were found"));
+            errorCollector.addThrowable(new IllegalArgumentException("While attempting to resolve the dependencies of "
+                    + implClass.getName() + " errors were found"));
 
             errorCollector.throwIfErrors();
         }
@@ -325,8 +325,9 @@ public class ClazzCreator<T> implements Creator<T> {
     public T create(ServiceHandle<?> root, SystemDescriptor<?> eventThrower) {
         String failureLocation = "resolve";
         try {
-            Map<Injectee, Object> allResolved = resolveAllDependencies(root);
-            
+
+            final Map<Injectee, Object> allResolved = resolveAllDependencies(root);
+
             if (eventThrower != null) {
                 eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.PRE_PRODUCTION,
                     null, allResolved, eventThrower));
@@ -348,7 +349,7 @@ public class ClazzCreator<T> implements Creator<T> {
                 eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
                     retVal, allResolved, eventThrower));
             }
-            
+
             return retVal;
         } catch (Throwable th) {
             if (th instanceof MultiException) {
@@ -377,7 +378,7 @@ public class ClazzCreator<T> implements Creator<T> {
             if (th instanceof MultiException) {
                 throw (MultiException) th;
             }
-            
+
             throw new MultiException(th);
         }
 
