@@ -46,6 +46,7 @@ import javax.inject.Inject;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.runlevel.CurrentlyRunningException;
+import org.glassfish.hk2.runlevel.RunLevelContext;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.jvnet.hk2.annotations.ContractsProvided;
@@ -60,8 +61,7 @@ import org.jvnet.hk2.annotations.Service;
 public class RunLevelControllerImpl implements RunLevelController {
     @Inject
     private AsyncRunLevelContext context;
-    
-    
+     
     @Override
     public void proceedTo(int runLevel) {
         RunLevelFuture future = context.proceedTo(runLevel);
