@@ -54,6 +54,9 @@ import org.junit.Test;
 public class ContextClassLoaderTest {
     private ServiceLocator locator;
     
+    /**
+     * Called prior to the tests
+     */
     @Before
     public void before() {
         locator = ServiceLocatorFactory.getInstance().create(null);
@@ -64,6 +67,9 @@ public class ContextClassLoaderTest {
         
     }
     
+    /**
+     * Tests that the locator is CCL neutral by default
+     */
     @Test
     public void testCCLNeutral() {
         ServiceHandle<?> handle = locator.getServiceHandle(CCLChangingService.class);
@@ -85,6 +91,103 @@ public class ContextClassLoaderTest {
         }
         finally {
             Thread.currentThread().setContextClassLoader(null);   
+        }
+    }
+    
+    /**
+     * Tests that you can make the locator non CCL neutral
+     */
+    @Test
+    public void testCCLNotNeutral() {
+        locator.setNeutralContextClassLoader(false);
+        
+        ServiceHandle<?> handle = locator.getServiceHandle(CCLChangingService.class);
+        
+        ClassLoader cclClassLoader = new MyClassLoader();
+        Thread.currentThread().setContextClassLoader(cclClassLoader);
+        
+        try {
+            /**
+             * Will be CCL neutral
+             */
+            handle.getService();
+        
+            ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
+            Assert.assertNotSame(cclClassLoader, currentCCL);
+            
+            handle.destroy();
+            
+            Assert.assertNotSame(currentCCL, Thread.currentThread().getContextClassLoader());
+        }
+        finally {
+            Thread.currentThread().setContextClassLoader(null);
+            locator.setNeutralContextClassLoader(true);
+        }
+    }
+    
+    /**
+     * Tests the raw operations are naturally neutral
+     */
+    @Test
+    public void testRawOperationsNeutral() {
+        ClassLoader cclClassLoader = new MyClassLoader();
+        Thread.currentThread().setContextClassLoader(cclClassLoader);
+        
+        try {
+            Object o = locator.create(CCLChangingService.class);
+        
+            Assert.assertEquals(cclClassLoader, Thread.currentThread().getContextClassLoader());
+            
+            locator.inject(o);
+            
+            Assert.assertEquals(cclClassLoader, Thread.currentThread().getContextClassLoader());
+            
+            locator.postConstruct(o);
+            
+            Assert.assertEquals(cclClassLoader, Thread.currentThread().getContextClassLoader());
+            
+            locator.preDestroy(o);
+            
+            Assert.assertEquals(cclClassLoader, Thread.currentThread().getContextClassLoader());
+        }
+        finally {
+            Thread.currentThread().setContextClassLoader(null);
+        }
+    }
+    
+    /**
+     * Tests the raw operations are naturally neutral
+     */
+    @Test
+    public void testRawOperationsCanNotBeNeutral() {
+        locator.setNeutralContextClassLoader(false);
+        
+        ClassLoader cclClassLoader = new MyClassLoader();
+        Thread.currentThread().setContextClassLoader(cclClassLoader);
+        
+        try {
+            Object o = locator.create(CCLChangingService.class);
+        
+            ClassLoader currentCCL = Thread.currentThread().getContextClassLoader();
+            Assert.assertNotSame(cclClassLoader, currentCCL);
+            
+            locator.inject(o);
+            
+            Assert.assertNotSame(currentCCL, Thread.currentThread().getContextClassLoader());
+            currentCCL = Thread.currentThread().getContextClassLoader();
+            
+            locator.postConstruct(o);
+            
+            Assert.assertNotSame(currentCCL, Thread.currentThread().getContextClassLoader());
+            currentCCL = Thread.currentThread().getContextClassLoader();
+            
+            locator.preDestroy(o);
+            
+            Assert.assertNotSame(currentCCL, Thread.currentThread().getContextClassLoader());
+        }
+        finally {
+            Thread.currentThread().setContextClassLoader(null);
+            locator.setNeutralContextClassLoader(true);
         }
     }
     
