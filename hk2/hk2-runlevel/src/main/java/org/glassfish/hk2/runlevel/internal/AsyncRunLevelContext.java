@@ -163,7 +163,7 @@ public class AsyncRunLevelContext {
                 }
                 
                 if (throwWouldBlock) {
-                    throw new MultiException(new WouldBlockException());
+                    throw new MultiException(new WouldBlockException(activeDescriptor));
                 }
                 
                 try {

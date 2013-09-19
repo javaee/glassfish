@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.runlevel.internal;
 
+import org.glassfish.hk2.api.Descriptor;
+
 /**
  * @author jwells
  *
@@ -49,5 +51,13 @@ public class WouldBlockException extends Exception {
      * 
      */
     private static final long serialVersionUID = 3273389390415705962L;
-
+    
+    /**
+     * This indicates a blocking condition on a given descriptor
+     * 
+     * @param d The non-null descriptor that would cause a blocking condition
+     */
+    public WouldBlockException(Descriptor d) {
+        super("This descriptor would block: " + d);
+    }
 }
