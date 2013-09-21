@@ -973,9 +973,22 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
     }
     
-    /* package */ final static boolean isWouldBlock(MultiException me) {
-        for (Throwable th : me.getErrors()) {
-            if (th instanceof WouldBlockException) return true;
+    /* package */ final static boolean isWouldBlock(Throwable th) {
+        Throwable cause = th;
+        while (cause != null) {
+            if (cause instanceof MultiException) {
+                MultiException me = (MultiException) cause;
+                for (Throwable innerMulti : me.getErrors()) {
+                    if (isWouldBlock(innerMulti)) {
+                        return true;
+                    }
+                }
+            }
+            else if (cause instanceof WouldBlockException) {
+                return true;
+            }
+            
+            cause = cause.getCause();
         }
         
         return false;
