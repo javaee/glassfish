@@ -73,6 +73,8 @@ public class ThruSingletonTest {
                 LowPriorityForceService.class,
                 SingletonServiceA.class);
         
+        BlockingService.reset();
+        
         RunLevelController controller = locator.getService(RunLevelController.class);
         
         controller.setThreadingPolicy(ThreadingPolicy.FULLY_THREADED);
@@ -90,13 +92,44 @@ public class ThruSingletonTest {
         
         Assert.assertTrue(future.isDone());
         
-        Assert.assertEquals(5, controller.getCurrentRunLevel());
+        Assert.assertEquals(5, controller.getCurrentRunLevel());   
+    }
+    
+    /**
+     * Tests that run-level services may get started through other contexts, such
+     * as singleton context (even if there is a blocking condition)
+     * @throws InterruptedException
+     * @throws TimeoutException 
+     * @throws ExecutionException 
+     */
+    @Test
+    public void testRunLevelServiceStartedThroughPerLookupAndBlocking() throws InterruptedException, ExecutionException, TimeoutException {
+        ServiceLocator locator = Utilities.getServiceLocator(
+                BlockingService.class,
+                HighPriorityServiceOne.class,
+                HighPriorityServiceTwo.class,
+                LowPriorityForceService.class,
+                PerLookupService.class);
+        BlockingService.reset();
         
+        RunLevelController controller = locator.getService(RunLevelController.class);
         
+        controller.setThreadingPolicy(ThreadingPolicy.FULLY_THREADED);
+        controller.setMaximumUseableThreads(2);
         
+        RunLevelFuture future = controller.proceedToAsync(5);
         
-                
+        Thread.sleep(100);
         
+        Assert.assertFalse(future.isDone());
+        
+        BlockingService.go();
+        
+        future.get(1, TimeUnit.HOURS);
+        
+        Assert.assertTrue(future.isDone());
+        
+        Assert.assertEquals(5, controller.getCurrentRunLevel());   
     }
 
 }

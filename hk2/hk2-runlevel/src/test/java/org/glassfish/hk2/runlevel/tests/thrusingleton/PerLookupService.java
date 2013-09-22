@@ -41,20 +41,16 @@ package org.glassfish.hk2.runlevel.tests.thrusingleton;
 
 import javax.inject.Inject;
 
-import org.glassfish.hk2.api.Rank;
-import org.glassfish.hk2.runlevel.RunLevel;
-import org.jvnet.hk2.annotations.Optional;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * @author jwells
  *
  */
-@RunLevel(5) @Rank(100)
-public class HighPriorityServiceOne {
-    @Inject @Optional
-    private SingletonServiceA a;
-    
-    @Inject @Optional
-    private PerLookupService b;
+@PerLookup
+public class PerLookupService {
+    @SuppressWarnings("unused")
+    @Inject
+    private BlockingService blocking;
 
 }
