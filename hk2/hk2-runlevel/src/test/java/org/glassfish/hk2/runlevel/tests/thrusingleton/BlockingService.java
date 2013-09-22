@@ -54,6 +54,15 @@ public class BlockingService {
     private static boolean go = false;
     
     /**
+     * Rests the blocking service for use in other tests
+     */
+    public static void reset() {
+        synchronized (sLock) {
+            go = false;
+        }
+    }
+    
+    /**
      * For the test to use to make the blocker go
      */
     public static void go() {

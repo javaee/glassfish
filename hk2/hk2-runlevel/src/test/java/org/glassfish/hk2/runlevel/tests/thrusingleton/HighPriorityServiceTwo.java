@@ -43,6 +43,7 @@ import javax.inject.Inject;
 
 import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.runlevel.RunLevel;
+import org.jvnet.hk2.annotations.Optional;
 
 /**
  * @author jwells
@@ -50,8 +51,10 @@ import org.glassfish.hk2.runlevel.RunLevel;
  */
 @RunLevel(5) @Rank(100)
 public class HighPriorityServiceTwo {
-    @SuppressWarnings("unused")
-    @Inject
+    @Inject @Optional
     private SingletonServiceA a;
+    
+    @Inject @Optional
+    private PerLookupService b;
 
 }
