@@ -42,17 +42,12 @@ package test;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
-import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.WebConnection;
 
 /**
