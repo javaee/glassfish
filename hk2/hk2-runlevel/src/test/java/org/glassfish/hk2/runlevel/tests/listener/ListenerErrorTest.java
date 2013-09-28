@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.runlevel.tests.listener;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.ErrorInformation;
@@ -251,6 +252,131 @@ public class ListenerErrorTest {
         Assert.assertEquals(4, listener.getLatestOnProgress());
         
         Assert.assertTrue(levelFiveService.isPreDestroyCalled());
+    }
+    
+    /**
+     * Ensures that the expected exception was given to the error handler
+     */
+    @Test
+    public void testCheckDescriptorFromErrorInformationOnWayUp() {
+        ServiceLocator locator = Utilities.getServiceLocator(
+                LevelFiveService.class,
+                LevelFiveErrorService.class,
+                OnProgressLevelChangerListener.class);
+        
+        OnProgressLevelChangerListener listener = locator.getService(OnProgressLevelChangerListener.class);
+        listener.reset();
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setThreadingPolicy(ThreadingPolicy.USE_NO_THREADS);
+        
+        try {
+          controller.proceedTo(5);
+          Assert.fail("Should have failed at level 5");
+        }
+        catch (MultiException me) {
+            
+        }
+        
+        // Sanity check
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
+        
+        ErrorInformation errorInfo = listener.getLastErrorInformation();
+        Assert.assertNotNull(errorInfo);
+        
+        Descriptor failedDescriptor = errorInfo.getFailedDescriptor();
+        Assert.assertNotNull(failedDescriptor);
+        
+        Assert.assertEquals(failedDescriptor.getImplementation(), LevelFiveErrorService.class.getName());
+    }
+    
+    /**
+     * Tests that the error handler is only called once when going up
+     */
+    @Test
+    public void testErrorHandlerOnlyCalledOnceUp() {
+        ServiceLocator locator = Utilities.getServiceLocator(
+                LevelFiveErrorService.class,
+                OnProgressLevelChangerListener.class);
+        
+        OnProgressLevelChangerListener listener = locator.getService(OnProgressLevelChangerListener.class);
+        listener.reset();
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setThreadingPolicy(ThreadingPolicy.USE_NO_THREADS);
+        
+        try {
+          controller.proceedTo(5);
+          Assert.fail("Should have failed at level 5");
+        }
+        catch (MultiException me) {
+            
+        }
+        
+        // Sanity check
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
+        
+        Assert.assertEquals(1, listener.getNumOnErrorCalled());
+    }
+    
+    /**
+     * Tests that the error handler is only called once when going down
+     */
+    @Test
+    public void testErrorHandlerOnlyCalledOnceDown() {
+        ServiceLocator locator = Utilities.getServiceLocator(
+                LevelFiveDownErrorService.class,
+                LevelFiveService.class,
+                OnProgressLevelChangerListener.class);
+        
+        OnProgressLevelChangerListener listener = locator.getService(OnProgressLevelChangerListener.class);
+        listener.reset();
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setThreadingPolicy(ThreadingPolicy.USE_NO_THREADS);
+        
+        controller.proceedTo(6);
+        
+        Assert.assertEquals(0, listener.getNumOnErrorCalled());
+        
+        controller.proceedTo(4);
+        
+        // Sanity check
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
+        
+        Assert.assertEquals(1, listener.getNumOnErrorCalled());
+    }
+    
+    /**
+     * Ensures that the expected exception was given to the error handler
+     * on the way down
+     */
+    @Test
+    public void testCheckDescriptorFromErrorInformationOnWayDown() {
+        ServiceLocator locator = Utilities.getServiceLocator(
+                LevelFiveService.class,
+                LevelFiveDownErrorService.class,
+                OnProgressLevelChangerListener.class);
+        
+        OnProgressLevelChangerListener listener = locator.getService(OnProgressLevelChangerListener.class);
+        listener.reset();
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.setThreadingPolicy(ThreadingPolicy.USE_NO_THREADS);
+        
+        controller.proceedTo(6);
+        controller.proceedTo(4);
+        
+        // Sanity check
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
+        
+        ErrorInformation errorInfo = listener.getLastErrorInformation();
+        Assert.assertNotNull(errorInfo);
+        
+        Descriptor failedDescriptor = errorInfo.getFailedDescriptor();
+        Assert.assertNotNull(failedDescriptor);
+        
+        Assert.assertEquals(failedDescriptor.getImplementation(), LevelFiveDownErrorService.class.getName());
     }
 
 }
