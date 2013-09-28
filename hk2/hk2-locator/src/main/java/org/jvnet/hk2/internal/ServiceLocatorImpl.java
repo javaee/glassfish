@@ -40,7 +40,9 @@
 package org.jvnet.hk2.internal;
 
 import org.glassfish.hk2.utilities.cache.Cache;
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.Computable;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -95,7 +97,6 @@ import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.cache.CacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUCache;
 import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.reflection.Logger;
@@ -173,7 +174,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     });
     // Fields needed for caching
     private final LRUCache<CacheKey, NarrowResults> cache = LRUCache.createCache(CACHE_SIZE);
-    private final HashMap<String, List<CacheEntry>> cacheEntries = new HashMap<String, List<CacheEntry>>();
+    
     private final Map<ServiceLocatorImpl, ServiceLocatorImpl> children =
             new WeakHashMap<ServiceLocatorImpl, ServiceLocatorImpl>(); // Must be Weak for throw away children
 
@@ -775,7 +776,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
             allValidators.clear();
             errorHandlers.clear();
             cache.releaseCache();
-            cacheEntries.clear();
             synchronized (children) {
                 children.clear();
             }
@@ -977,16 +977,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
             }
             else if (ck != null) {
-                    CacheEntry entry = cache.put(ck, results);
-
-                    String releaseKey = rawClass.getName();
-                    List<CacheEntry> addToMe = cacheEntries.get(releaseKey);
-                    if (addToMe == null) {
-                        addToMe = new LinkedList<CacheEntry>();
-                        cacheEntries.put(releaseKey, addToMe);
-                    }
-
-                    addToMe.add(entry);
+                cache.put(ck, results);
             }
           }
           else {
@@ -1146,16 +1137,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                   currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
               }
               else if (ck != null) {
-                      CacheEntry entry = cache.put(ck, results);
-
-                      String releaseKey = rawClass.getName();
-                      List<CacheEntry> addToMe = cacheEntries.get(releaseKey);
-                      if (addToMe == null) {
-                          addToMe = new LinkedList<CacheEntry>();
-                          cacheEntries.put(releaseKey, addToMe);
-                      }
-
-                      addToMe.add(entry);
+                  cache.put(ck, results);   
               }
           }
           else {
@@ -1591,12 +1573,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
         wLock.lock();
         try {
             for (String affectedContract : affectedContracts) {
-                List<CacheEntry> entries = cacheEntries.remove(affectedContract);
-                if (entries == null) continue;
+                final String fAffectedContract = affectedContract;
+                
+                cache.releaseMatching(new CacheKeyFilter<CacheKey>() {
 
-                for (CacheEntry entry : entries) {
-                    entry.removeFromCache();
-                }
+                    @Override
+                    public boolean matches(CacheKey key) {
+                        return key.matchesRemovalName(fAffectedContract);
+                    }
+                    
+                });
             }
         } finally {
             wLock.unlock();

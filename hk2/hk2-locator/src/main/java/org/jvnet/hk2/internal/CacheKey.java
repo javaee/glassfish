@@ -45,6 +45,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 import org.glassfish.hk2.utilities.reflection.Pretty;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * This is the cache key, which encapsulates very specific lookup queries.
@@ -55,6 +56,7 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
  *
  */
 public class CacheKey {
+    private final String removalName;
     private final Type lookupType;
     private final String name;
     private final Annotation qualifiers[];
@@ -71,6 +73,15 @@ public class CacheKey {
      */
     public CacheKey(Type lookupType, String name, Annotation... qualifiers) {
         this.lookupType = lookupType;
+        
+        Class<?> rawClass = ReflectionHelper.getRawClass(lookupType);
+        if (rawClass != null) {
+            removalName = rawClass.getName();
+        }
+        else {
+            removalName = null;
+        }
+        
         this.name = name;
         if (qualifiers.length > 0) {
             this.qualifiers = qualifiers;
@@ -142,6 +153,23 @@ public class CacheKey {
         else if (other.qualifiers != null) return false;
         
         return true;
+    }
+    
+    /**
+     * Used when bulk removing a contract that has
+     * been removed from the system
+     * 
+     * @param name The name of the contract that
+     * has been removed from the system
+     * @return true if this CacheKey is associated
+     * with the name contract, and should thus
+     * be removed
+     */
+    public boolean matchesRemovalName(String name) {
+        if (removalName == null) return false;
+        if (name == null) return false;
+        
+        return removalName.equals(name);
     }
     
     public String toString() {

@@ -42,10 +42,12 @@ package org.glassfish.hk2.utilities.cache.internal;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.hk2.utilities.cache.CacheEntry;
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.LRUCache;
 
 /**
@@ -57,6 +59,8 @@ import org.glassfish.hk2.utilities.cache.LRUCache;
  * for making reads quite cheap in a multi-threaded environment.
  *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
+ * @param <K> The key of the cache
+ * @param <V> The values in the cache
  */
 public class LRUCacheCheapRead<K,V> extends LRUCache<K,V> {
 
@@ -101,6 +105,18 @@ public class LRUCacheCheapRead<K,V> extends LRUCache<K,V> {
     public int getMaxCacheSize() {
         return maxCacheSize;
     }
+    
+    @Override
+    public void releaseMatching(CacheKeyFilter<K> filter) {
+        if (filter == null) return;
+        
+        for (Map.Entry<K, CacheEntryImpl<K,V>> entry : (new HashMap<K, CacheEntryImpl<K,V>>(cache)).entrySet()) {
+            if (filter.matches(entry.getKey())) {
+                entry.getValue().removeFromCache();
+            }
+        }
+        
+    }
 
     /**
      * Remove least recently used item form the cache.
@@ -114,10 +130,10 @@ public class LRUCacheCheapRead<K,V> extends LRUCache<K,V> {
 
     private static final CacheEntryImplComparator COMPARATOR = new CacheEntryImplComparator();
 
-    private static class CacheEntryImplComparator implements Comparator<CacheEntryImpl> {
+    private static class CacheEntryImplComparator implements Comparator<CacheEntryImpl<?,?>> {
 
         @Override
-        public int compare(CacheEntryImpl first, CacheEntryImpl second) {
+        public int compare(CacheEntryImpl<?,?> first, CacheEntryImpl<?,?> second) {
             final long diff = first.lastHit - second.lastHit;
             return diff > 0 ? 1 : diff == 0 ? 0 : -1;
         }
@@ -148,4 +164,6 @@ public class LRUCacheCheapRead<K,V> extends LRUCache<K,V> {
             return this;
         }
     }
+
+    
 }
