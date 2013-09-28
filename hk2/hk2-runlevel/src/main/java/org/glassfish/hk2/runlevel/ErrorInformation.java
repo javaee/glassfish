@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.runlevel;
 
+import org.glassfish.hk2.api.Descriptor;
+
 /**
  * @author jwells
  *
@@ -96,5 +98,14 @@ public interface ErrorInformation {
      * once the onError method has returned
      */
     public void setAction(ErrorAction action);
+    
+    /**
+     * Returns the descriptor associated with this failure,
+     * or null if the descriptor could not be determined
+     * 
+     * @return The failed descriptor, or null if the
+     * descriptor could not be determined
+     */
+    public Descriptor getFailedDescriptor();
 
 }

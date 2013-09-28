@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.runlevel.internal;
 
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.runlevel.ErrorInformation;
 
 /**
@@ -48,10 +49,12 @@ import org.glassfish.hk2.runlevel.ErrorInformation;
 public class ErrorInformationImpl implements ErrorInformation {
     private final Throwable error;
     private ErrorAction action;
+    private final Descriptor descriptor;
     
-    /* package */ ErrorInformationImpl(Throwable error, ErrorAction action) {
+    /* package */ ErrorInformationImpl(Throwable error, ErrorAction action, Descriptor descriptor) {
         this.error = error;
         this.action = action;
+        this.descriptor = descriptor;
     }
 
     /* (non-Javadoc)
@@ -78,6 +81,11 @@ public class ErrorInformationImpl implements ErrorInformation {
         if (action == null) throw new IllegalArgumentException("action may not be null in setAction");
         
         this.action = action;
+    }
+
+    @Override
+    public Descriptor getFailedDescriptor() {
+        return descriptor;
     }
 
 }

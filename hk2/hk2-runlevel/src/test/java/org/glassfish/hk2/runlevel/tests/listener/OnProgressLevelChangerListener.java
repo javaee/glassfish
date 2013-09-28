@@ -59,6 +59,8 @@ public class OnProgressLevelChangerListener implements RunLevelListener {
     private ErrorInformation.ErrorAction changeToErrorAction = null;
     
     private int latestOnProgress = ListenerTest.NO_LEVEL;
+    private ErrorInformation lastErrorInformation = null;
+    private int numOnErrorCalled;
     
     /* package */ void setLevels(int changeAtLevel, int changeToLevel, int sleepAtLevel) {
         this.changeAtLevel = changeAtLevel;
@@ -109,10 +111,27 @@ public class OnProgressLevelChangerListener implements RunLevelListener {
      * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, java.lang.Throwable)
      */
     @Override
-    public void onError(RunLevelFuture currentJob, ErrorInformation info) {
+    public synchronized void onError(RunLevelFuture currentJob, ErrorInformation info) {
+        numOnErrorCalled++;
+        
         if (changeToErrorAction != null) {
             info.setAction(changeToErrorAction);
         }
+        lastErrorInformation = info;
     }
+    
+    public synchronized void reset() {
+        lastErrorInformation = null;
+        numOnErrorCalled = 0;
+    }
+    
+    public synchronized ErrorInformation getLastErrorInformation() {
+        return lastErrorInformation;
+    }
+    
+    public synchronized int getNumOnErrorCalled() {
+        return numOnErrorCalled;
+    }
+    
 
 }

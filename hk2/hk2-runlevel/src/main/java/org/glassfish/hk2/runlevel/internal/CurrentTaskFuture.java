@@ -368,8 +368,9 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     
     private static ErrorInformation invokeOnError(CurrentTaskFuture job, Throwable th,
             ErrorInformation.ErrorAction action,
-            List<ServiceHandle<RunLevelListener>> listeners) {
-        ErrorInformationImpl errorInfo = new ErrorInformationImpl(th, action);
+            List<ServiceHandle<RunLevelListener>> listeners,
+            Descriptor descriptor) {
+        ErrorInformationImpl errorInfo = new ErrorInformationImpl(th, action, descriptor);
         
         for (ServiceHandle<RunLevelListener> listener : listeners) {
             try {
@@ -521,28 +522,23 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             }
         }
         
-        private void currentJobComplete(MultiException exception) {
+        private void currentJobComplete(MultiException accumulatedExceptions) {
             parent.clearErrors();
             
-            if (exception != null) {
-                ErrorInformation info =
-                        invokeOnError(future, exception, ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP, listeners);
+            if (accumulatedExceptions != null) {
+                DownAllTheWay downer = new DownAllTheWay(workingOn - 1, null, null);
                 
-                if (!ErrorInformation.ErrorAction.IGNORE.equals(info.getAction())) {
-                    DownAllTheWay downer = new DownAllTheWay(workingOn - 1, null, null);
+                downer.run();
                 
-                    downer.run();
-                
-                    synchronized (lock) {                    
-                        done = true;
-                        this.exception = exception;
-                        lock.notifyAll();
+                synchronized (lock) {                    
+                    done = true;
+                    this.exception = accumulatedExceptions;
+                    lock.notifyAll();
                     
-                        parent.jobDone();
-                    }
-                
-                    return;
+                    parent.jobDone();
                 }
+                
+                return;
             }
             
             DownAllTheWay downer = null;
@@ -586,7 +582,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private final int maxThreads;
         private int numJobs;
         private int completedJobs;
-        private MultiException exception;
+        private MultiException accumulatedExceptions;
         private boolean cancelled = false;
         private int numJobsRunning = 0;
         
@@ -668,7 +664,6 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 return;
             }
             
-            
             int runnersToCreate = ((numJobs < maxThreads) ? numJobs : maxThreads) - 1;
             if (!useThreads) runnersToCreate = 0;
             
@@ -682,18 +677,20 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             myRunner.run();
         }
         
-        private void fail(Throwable th) {
+        private void fail(Throwable th, Descriptor descriptor) {
             synchronized (lock) {
                 ErrorInformation info = invokeOnError(currentTaskFuture, th,
-                        ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP, listeners);
+                        ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP,
+                        listeners,
+                        descriptor);
                 
                 if (ErrorInformation.ErrorAction.IGNORE.equals(info.getAction())) return;
                 
-                if (exception == null) {
-                    exception = new MultiException();
+                if (accumulatedExceptions == null) {
+                    accumulatedExceptions = new MultiException();
                 }
                 
-                exception.addError(th);
+                accumulatedExceptions.addError(th);
             }
         }
         
@@ -707,7 +704,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             }
             
             if (complete) {
-                master.currentJobComplete(exception);
+                master.currentJobComplete(accumulatedExceptions);
             }
         }
         
@@ -805,7 +802,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                     }
                     catch (Throwable th) {
                         if (future != null) {
-                            errorInfo = invokeOnError(future, th, ErrorInformation.ErrorAction.IGNORE, listeners);
+                            errorInfo = invokeOnError(future, th, ErrorInformation.ErrorAction.IGNORE, listeners, removeMe);
                         }
                     }
                     
@@ -944,7 +941,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             try {
                 boolean ok;
                 synchronized (parentLock) {
-                    ok = (!parent.cancelled && (parent.exception == null));
+                    ok = (!parent.cancelled && (parent.accumulatedExceptions == null));
                 }
                     
                 if (ok) {
@@ -958,11 +955,11 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                     completed = false;
                 }
                 else {
-                    parent.fail(me);
+                    parent.fail(me, fService.getActiveDescriptor());
                 }
             }
             catch (Throwable th) {
-                parent.fail(th);
+                parent.fail(th, fService.getActiveDescriptor());
             }
             finally {
                 fService.setServiceData(null);
