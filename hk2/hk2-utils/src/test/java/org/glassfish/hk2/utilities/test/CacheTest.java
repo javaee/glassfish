@@ -42,6 +42,7 @@ package org.glassfish.hk2.utilities.test;
 import junit.framework.Assert;
 
 import org.glassfish.hk2.utilities.cache.CacheEntry;
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.LRUCache;
 import org.junit.Test;
 
@@ -229,6 +230,9 @@ public class CacheTest {
         Assert.assertNull(cache.get(3));
     }
     
+    /**
+     * Tests changing entries around
+     */
     @Test
     public void testChangeEntries() {
         LRUCache<Integer, Integer> cache = LRUCache.createCache(3);
@@ -262,6 +266,39 @@ public class CacheTest {
         entry.removeFromCache();
         
         Assert.assertNull(cache.get(2));
+    }
+    
+    /**
+     * This removes multiple entries from the cache based
+     * on a filter
+     */
+    @Test
+    public void testRemoveEvenEntries() {
+        LRUCache<Integer, Integer> cache = LRUCache.createCache(20);
+        
+        for (int i = 0; i < 10; i++) {
+            cache.put(i, i);
+        }
+        
+        cache.releaseMatching(new CacheKeyFilter<Integer>() {
+
+            @Override
+            public boolean matches(Integer key) {
+                if ((key % 2) == 0) return true;
+                
+                return false;
+            }
+            
+        });
+        
+        for (int i = 0; i < 10; i++) {
+            if ((i % 2) == 0) {
+                Assert.assertNull(cache.get(i));
+            }
+            else {
+                Assert.assertSame(cache.get(i), i);
+            }
+        }
     }
 
 }

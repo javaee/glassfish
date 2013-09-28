@@ -40,13 +40,14 @@
 package org.glassfish.hk2.utilities.cache;
 
 import org.glassfish.hk2.utilities.cache.internal.LRUCacheCheapRead;
-import org.glassfish.hk2.utilities.cache.internal.LRUCacheImpl;
 
 /**
  * A cache that contains a certain number of entries, and whose oldest accessed
  * entries are removed when removal is necessary.
  *
  * @author jwells
+ * @param <K> The key type for this cache
+ * @param <V> The value type for this cache
  *
  */
 public abstract class LRUCache<K,V> {
@@ -90,4 +91,14 @@ public abstract class LRUCache<K,V> {
      * @return The maximum number of entries that will be stored in this cache
      */
     public abstract int getMaxCacheSize();
+    
+    /**
+     * This method will remove all cache entries for which this filter
+     * matches
+     * 
+     * @param filter Entries in the cache that match this filter will
+     * be removed from the cache.  If filter is null nothing
+     * will be removed from the cache
+     */
+    public abstract void releaseMatching(CacheKeyFilter<K> filter);
 }
