@@ -44,7 +44,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>external</artifactId>
-        <version>2.2.0-b18-SNAPSHOT</version>
+        <version>2.2.0-b18</version>
     </parent>
     <groupId>org.glassfish.hk2.external</groupId>
     <modelVersion>4.0.0</modelVersion>
