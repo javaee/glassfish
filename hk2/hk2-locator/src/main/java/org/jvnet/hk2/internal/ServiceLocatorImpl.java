@@ -40,7 +40,6 @@
 package org.jvnet.hk2.internal;
 
 import org.glassfish.hk2.utilities.cache.Cache;
-import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.Computable;
 
 import java.lang.annotation.Annotation;
@@ -48,6 +47,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -62,6 +62,8 @@ import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
@@ -97,8 +99,11 @@ import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.cache.LRUCache;
 import org.glassfish.hk2.utilities.InjecteeImpl;
+import org.glassfish.hk2.utilities.cache.CacheEntry;
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
+import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
+import org.glassfish.hk2.utilities.cache.LRUHybridCache;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -147,7 +152,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final WriteLock wLock = readWriteLock.writeLock();
     private final ReadLock rLock = readWriteLock.readLock();
-    private long nextServiceId = 0L;
+    private AtomicLong nextServiceId = new AtomicLong();
     private final String locatorName;
     private final long id;
     private final ServiceLocatorImpl parent;
@@ -173,8 +178,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     });
     // Fields needed for caching
-    private final LRUCache<CacheKey, NarrowResults> cache = LRUCache.createCache(CACHE_SIZE);
-    
+//    private final ConcurrentHashMap<String, List<HybridCacheEntry>> hybridIgdCacheEntries = new ConcurrentHashMap<String, List<HybridCacheEntry>>();
+//    private final ConcurrentHashMap<String, List<HybridCacheEntry>> hybridIgashCacheEntries = new ConcurrentHashMap<String, List<HybridCacheEntry>>();
     private final Map<ServiceLocatorImpl, ServiceLocatorImpl> children =
             new WeakHashMap<ServiceLocatorImpl, ServiceLocatorImpl>(); // Must be Weak for throw away children
 
@@ -605,7 +610,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
         checkState();
 
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, null, qualifiers);
-        if (ad == null) return null;
+        if (ad == null){
+            return null;
+        }
 
         T retVal = Utilities.createService(ad, null, this, null, ReflectionHelper.getRawClass(contractOrImpl));
 
@@ -776,7 +783,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             allResolvers.clear();
             allValidators.clear();
             errorHandlers.clear();
-            cache.releaseCache();
+            igdCache.clear();
+            igashCache.clear();
+//            hybridIgdCacheEntries.clear();
+//            hybridIgashCacheEntries.clear();
             synchronized (children) {
                 children.clear();
             }
@@ -920,6 +930,117 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return null;
     }
 
+    private final static class IgdCacheKey {
+
+        private final CacheKey cacheKey;
+        private final String name;
+        private final Injectee onBehalfOf;
+        private final Type contractOrImpl;
+        private final Class<?> rawClass;
+        private final Annotation[] qualifiers;
+        private final Filter filter;
+
+        private final int hashCode;
+
+        IgdCacheKey(CacheKey key, String name, Injectee onBehalfOf, Type contractOrImpl, Class<?> rawClass, Annotation[] qualifiers, Filter filter) {
+            this.cacheKey = key;
+            this.name = name;
+            this.onBehalfOf = onBehalfOf;
+            this.contractOrImpl = contractOrImpl;
+            this.rawClass = rawClass;
+            this.qualifiers = qualifiers;
+            this.filter = filter;
+
+            int hash = 5;
+            hash = 41 * hash + (this.cacheKey != null ? this.cacheKey.hashCode() : 0);
+            hash = 41 * hash + (this.name != null ? this.name.hashCode() : 0);
+            hash = 41 * hash + (this.onBehalfOf != null ? this.onBehalfOf.hashCode() : 0);
+            hash = 41 * hash + (this.contractOrImpl != null ? this.contractOrImpl.hashCode() : 0);
+            hash = 41 * hash + Arrays.deepHashCode(this.qualifiers);
+
+            this.hashCode = hash;
+        }
+
+        @Override
+        public int hashCode() {
+            return hashCode;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj instanceof IgdCacheKey)) {
+                return false;
+            }
+            final IgdCacheKey other = (IgdCacheKey) obj;
+            if (this.hashCode != other.hashCode) {
+                return false;
+            }
+            if ((this.cacheKey == null) ? (other.cacheKey != null) : !this.cacheKey.equals(other.cacheKey)) {
+                return false;
+            }
+            if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+                return false;
+            }
+            if (this.onBehalfOf != other.onBehalfOf && (this.onBehalfOf == null || !this.onBehalfOf.equals(other.onBehalfOf))) {
+                return false;
+            }
+            if (this.contractOrImpl != other.contractOrImpl && (this.contractOrImpl == null || !this.contractOrImpl.equals(other.contractOrImpl))) {
+                return false;
+            }
+            if (!Arrays.deepEquals(this.qualifiers, other.qualifiers)) {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private class IgdValue {
+        final NarrowResults results;
+        final ImmediateResults immediate;
+        final AtomicInteger freshnessKeeper = new AtomicInteger(1);
+
+        public IgdValue(NarrowResults results, ImmediateResults immediate) {
+            this.results = results;
+            this.immediate = immediate;
+        }
+    }
+
+    final LRUHybridCache<IgdCacheKey, IgdValue> igdCache =
+            new LRUHybridCache<IgdCacheKey, IgdValue>(CACHE_SIZE, new Computable<IgdCacheKey, HybridCacheEntry<IgdValue>>() {
+        @Override
+        public HybridCacheEntry<IgdValue> compute(final IgdCacheKey key) {
+
+            final List<SystemDescriptor<?>> candidates = getDescriptors(key.filter, key.onBehalfOf, true, false, true);
+            final ImmediateResults immediate = narrow(ServiceLocatorImpl.this,
+                    candidates,
+                    key.contractOrImpl,
+                    key.name,
+                    key.onBehalfOf,
+                    true,
+                    true,
+                    null,
+                    key.filter,
+                    key.qualifiers);
+            final NarrowResults results = immediate.getTimelessResults();
+            if (!results.getErrors().isEmpty()) {
+                Utilities.handleErrors(results, new LinkedList<ErrorService>(errorHandlers));
+                return igdCache.createCacheEntry(key, new IgdValue(results, immediate), true);
+            } else {
+//                final String releaseKey = key.rawClass.getName();
+//                final List<HybridCacheEntry> addToMe = new LinkedList<HybridCacheEntry>();
+//                final List<HybridCacheEntry> prevList = hybridIgdCacheEntries.putIfAbsent(releaseKey, addToMe);
+//                final List<HybridCacheEntry> additionTarget = (prevList == null) ? addToMe : prevList;
+                final HybridCacheEntry<IgdValue> entry = igdCache.createCacheEntry(key, new IgdValue(results, immediate), false);
+//                additionTarget.add(entry);
+                return entry;
+            }
+        }
+    });
+
+
     @SuppressWarnings("unchecked")
     private <T> ActiveDescriptor<T> internalGetDescriptor(Injectee onBehalfOf, Type contractOrImpl,
             String name,
@@ -929,88 +1050,96 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
         if (rawClass == null) return null;  // Can't be a TypeVariable or Wildcard
+
         Utilities.checkLookupType(rawClass);
 
         rawClass = Utilities.translatePrimitiveType(rawClass);
 
         name = getName(name, qualifiers);
 
-        boolean useCache = false;
-        Filter filter;
-        if (unqualified == null) {
-            filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
-            useCache = true;
-        }
-        else {
-            filter = new UnqualifiedIndexedFilter(rawClass.getName(), name, unqualified);
-        }
+        final boolean useCache = unqualified == null;
 
         NarrowResults results = null;
         LinkedList<ErrorService> currentErrorHandlers = null;
 
-        CacheKey ck = null;
-        if (useCache) {
-            // Create the CacheKey outside of the lock
-            ck = new CacheKey(contractOrImpl, name, qualifiers);
-        }
-
         ImmediateResults immediate = null;
-        rLock.lock();
-        try {
-          if (useCache) {
-              results = cache.get(ck);
-          }
 
-          if (results == null) {
-            List<SystemDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false, true);
-            immediate = narrow(this,
-                    candidates,
-                    contractOrImpl,
-                    name,
-                    onBehalfOf,
-                    true,
-                    true,
-                    null,
-                    filter,
-                    qualifiers);
-            results = immediate.getTimelessResults();
-            if (!results.getErrors().isEmpty()) {
-                currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+        if (!useCache) {
+            final Filter filter = new UnqualifiedIndexedFilter(rawClass.getName(), name, unqualified);
+            rLock.lock();
+            try {
+                List<SystemDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false, true);
+                immediate = narrow(this,
+                        candidates,
+                        contractOrImpl,
+                        name,
+                        onBehalfOf,
+                        true,
+                        true,
+                        null,
+                        filter,
+                        qualifiers);
+                results = immediate.getTimelessResults();
+                if (!results.getErrors().isEmpty()) {
+                    currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+                    // was outside of the lock:
+                    Utilities.handleErrors(results, currentErrorHandlers);
+                }
+            } finally {
+                rLock.unlock();
             }
-            else if (ck != null) {
-                cache.put(ck, results);
+
+            // Must do validation here in order to allow for caching
+            ActiveDescriptor<T> postValidateResult = immediate.getImmediateResults().isEmpty() ? null
+                    : (ActiveDescriptor<T>) immediate.getImmediateResults().get(0);
+
+            return postValidateResult;
+        } else { // USE CACHE!
+
+            final CacheKey cacheKey = new CacheKey(contractOrImpl, name, qualifiers);
+            final Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
+            final IgdCacheKey igdCacheKey = new IgdCacheKey(cacheKey, name, onBehalfOf, contractOrImpl, rawClass, qualifiers, filter);
+
+            rLock.lock();
+            try {
+                final HybridCacheEntry<IgdValue> entry = igdCache.compute(igdCacheKey);
+                final IgdValue value = entry.getValue();
+                final boolean freshOne = value.freshnessKeeper.compareAndSet(1, 2);
+                if (!freshOne) {
+                    immediate = narrow(this,
+                            null,
+                            contractOrImpl,
+                            name,
+                            onBehalfOf,
+                            true,
+                            true,
+                            value.results,
+                            filter,
+                            qualifiers);
+                    results = immediate.getTimelessResults();
+                } else {
+                    results = value.results;
+                    immediate = value.immediate;
+                }
+
+                if (!results.getErrors().isEmpty()) {
+                    currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+                }
+            } finally {
+                rLock.unlock();
             }
-          }
-          else {
-              immediate = narrow(this,
-                      null,
-                      contractOrImpl,
-                      name,
-                      onBehalfOf,
-                      true,
-                      true,
-                      results,
-                      filter,
-                      qualifiers);
-              results = immediate.getTimelessResults();
-              if (!results.getErrors().isEmpty()) {
-                  currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-              }
-          }
-        } finally {
-            rLock.unlock();
+
+            if (currentErrorHandlers != null) {
+                // Do this next call OUTSIDE of the lock
+                Utilities.handleErrors(results, currentErrorHandlers);
+            }
+
+            // Must do validation here in order to allow for caching
+            ActiveDescriptor<T> postValidateResult = immediate.getImmediateResults().isEmpty() ? null
+                    : (ActiveDescriptor<T>) immediate.getImmediateResults().get(0);
+
+            return postValidateResult;
         }
-
-        if (currentErrorHandlers != null) {
-            // Do this next call OUTSIDE of the lock
-            Utilities.handleErrors(results, currentErrorHandlers);
-        }
-
-        // Must do validation here in order to allow for caching
-        ActiveDescriptor<T> postValidateResult = immediate.getImmediateResults().isEmpty() ? null :
-            (ActiveDescriptor<T>) immediate.getImmediateResults().get(0);
-
-        return postValidateResult;
     }
 
     @Override
@@ -1081,47 +1210,65 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 internalGetAllServiceHandles(contractOrImpl, unqualified, true, qualifiers);
     }
 
+    final private LRUHybridCache<IgdCacheKey, IgdValue> igashCache =
+            new LRUHybridCache<IgdCacheKey, IgdValue>(CACHE_SIZE, new Computable<IgdCacheKey, HybridCacheEntry<IgdValue>>() {
+        @Override
+        public HybridCacheEntry<IgdValue> compute(final IgdCacheKey key) {
+
+            List<SystemDescriptor<?>> candidates = getDescriptors(key.filter, null, true, false, true);
+            ImmediateResults immediate = narrow(ServiceLocatorImpl.this,
+                    candidates,
+                    key.contractOrImpl,
+                    null,
+                    null,
+                    false,
+                    true,
+                    null,
+                    key.filter,
+                    key.qualifiers);
+            NarrowResults results = immediate.getTimelessResults();
+            if (!results.getErrors().isEmpty()) {
+                Utilities.handleErrors(results, new LinkedList<ErrorService>(errorHandlers));
+                return igashCache.createCacheEntry(key, new IgdValue(results, immediate), true);
+            } else {
+//                final String releaseKey = key.rawClass.getName();
+//                final List<HybridCacheEntry> addToMe = new LinkedList<HybridCacheEntry>();
+//                final List<HybridCacheEntry> prevList = hybridIgashCacheEntries.putIfAbsent(releaseKey, addToMe);
+//                final List<HybridCacheEntry> additionTarget = (prevList == null) ? addToMe : prevList;
+                final HybridCacheEntry<IgdValue> entry = igashCache.createCacheEntry(key, new IgdValue(results, immediate), false);
+//                additionTarget.add(entry);
+                return entry;
+            }
+        }
+    });
+
     private List<?> internalGetAllServiceHandles(
             Type contractOrImpl,
             Unqualified unqualified,
             boolean getHandles,
             Annotation... qualifiers)
             throws MultiException {
+
         if (contractOrImpl == null) throw new IllegalArgumentException();
         checkState();
 
-        Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
+        final Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
         if (rawClass == null) {
             throw new MultiException(new IllegalArgumentException("Type must be a class or parameterized type, it was " + contractOrImpl));
         }
 
-        boolean useCache = false;
-        Filter filter;
-        if (unqualified == null) {
-            filter = BuilderHelper.createContractFilter(rawClass.getName());
-            useCache = true;
-        }
-        else {
-            filter = new UnqualifiedIndexedFilter(rawClass.getName(), null, unqualified);
-        }
+        final boolean useCache = unqualified == null;
+        final String name = rawClass.getName();
 
         NarrowResults results = null;
         LinkedList<ErrorService> currentErrorHandlers = null;
 
-        CacheKey ck = null;
-        if (useCache) {
-            // Create the CacheKey outside of the lock
-            ck = new CacheKey(contractOrImpl, null, qualifiers);
-        }
-
         ImmediateResults immediate = null;
-        rLock.lock();
-        try {
-          if (useCache) {
-              results = cache.get(ck);
-          }
 
-          if (results == null) {
+        if (!useCache) {
+            final Filter filter = new UnqualifiedIndexedFilter(name, null, unqualified);
+            rLock.lock();
+            try {
               List<SystemDescriptor<?>> candidates = getDescriptors(filter, null, true, false, true);
               immediate = narrow(this,
                       candidates,
@@ -1134,32 +1281,46 @@ public class ServiceLocatorImpl implements ServiceLocator {
                       filter,
                       qualifiers);
               results = immediate.getTimelessResults();
-              if (!results.getErrors().isEmpty()) {
-                  currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-              }
-              else if (ck != null) {
-                  cache.put(ck, results);   
-              }
-          }
-          else {
-              immediate = narrow(this,
-                      null,
-                      contractOrImpl,
-                      null,
-                      null,
-                      false,
-                      true,
-                      results,
-                      filter,
-                      qualifiers);
-              results = immediate.getTimelessResults();
-              if (!results.getErrors().isEmpty()) {
-                  currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-              }
-          }
+            if (!results.getErrors().isEmpty()) {
+                currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+            }
+            } finally {
+                rLock.unlock();
+            }
+        } else { // USE CACHE!
 
-        } finally {
-            rLock.unlock();
+            final CacheKey cacheKey = new CacheKey(contractOrImpl, null, qualifiers);
+            final Filter filter = BuilderHelper.createContractFilter(name);
+            final IgdCacheKey igdCacheKey = new IgdCacheKey(cacheKey, name, null, contractOrImpl, rawClass, qualifiers, filter);
+
+            rLock.lock();
+            try {
+                final HybridCacheEntry<IgdValue> entry = igashCache.compute(igdCacheKey);
+                final IgdValue value = entry.getValue();
+                final boolean freshOne = value.freshnessKeeper.compareAndSet(1, 2);
+                if (!freshOne) {
+                    immediate = narrow(this,
+                            null,
+                            contractOrImpl,
+                            null,
+                            null,
+                            false,
+                            true,
+                            value.results,
+                            filter,
+                            qualifiers);
+                    results = immediate.getTimelessResults();
+                } else {
+                    results = value.results;
+                    immediate = value.immediate;
+                }
+
+                if (!results.getErrors().isEmpty()) {
+                    currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
+                }
+            } finally {
+                rLock.unlock();
+            }
         }
 
         if (currentErrorHandlers != null) {
@@ -1575,15 +1736,27 @@ public class ServiceLocatorImpl implements ServiceLocator {
         try {
             for (String affectedContract : affectedContracts) {
                 final String fAffectedContract = affectedContract;
-                
-                cache.releaseMatching(new CacheKeyFilter<CacheKey>() {
-
+                final CacheKeyFilter<IgdCacheKey> cacheKeyFilter = new CacheKeyFilter<IgdCacheKey>() {
                     @Override
-                    public boolean matches(CacheKey key) {
-                        return key.matchesRemovalName(fAffectedContract);
+                    public boolean matches(IgdCacheKey key) {
+                        return key.cacheKey.matchesRemovalName(fAffectedContract);
                     }
-                    
-                });
+                };
+
+                igdCache.releaseMatching(cacheKeyFilter);
+                igashCache.releaseMatching(cacheKeyFilter);
+//                List<? extends CacheEntry> hybridIgdEntries = hybridIgdCacheEntries.remove(affectedContract);
+//                List<? extends CacheEntry> hybridIgashEntries = hybridIgashCacheEntries.remove(affectedContract);
+//                if (hybridIgdEntries != null) {
+//                    for (CacheEntry entry : hybridIgdEntries) {
+//                        entry.removeFromCache();
+//                    }
+//                }
+//                if (hybridIgashEntries != null) {
+//                    for (CacheEntry entry : hybridIgashEntries) {
+//                        entry.removeFromCache();
+//                    }
+//                }
             }
         } finally {
             wLock.unlock();
@@ -1850,12 +2023,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
 
     /* package */ long getNextServiceId() {
-        wLock.lock();
-        try {
-            return nextServiceId++;
-        } finally {
-            wLock.unlock();
-        }
+//        wLock.lock();
+//        try {
+            return nextServiceId.getAndIncrement();
+//        } finally {
+//            wLock.unlock();
+//        }
     }
 
     private void addChild(ServiceLocatorImpl child) {
@@ -2020,7 +2193,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public ServiceLocator getParent() {
         return parent;
     }
-    
+
     @Override
     public boolean getNeutralContextClassLoader() {
         return neutralContextClassLoader;
@@ -2035,12 +2208,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
         finally {
             wLock.unlock();
         }
-        
+
     }
 
     public String toString() {
         return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";
     }
 
-    
+
 }

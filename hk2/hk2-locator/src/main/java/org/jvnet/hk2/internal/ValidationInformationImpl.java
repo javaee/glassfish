@@ -55,7 +55,7 @@ public class ValidationInformationImpl implements ValidationInformation {
     private final static String SERVICE_LOCATOR_IMPL = "org.jvnet.hk2.internal.ServiceLocatorImpl";
     private final static String VALIDATE_METHOD = "validate";
     private final static String CHECK_METHOD = "checkConfiguration";
-    
+
     private final static String[] SKIP_ME = {
         "org.jvnet.hk2.internal",
         "org.jvnet.hk2.external.generator",
@@ -68,11 +68,12 @@ public class ValidationInformationImpl implements ValidationInformation {
         "org.glassfish.hk2.utilities.cache",
         "org.glassfish.hk2.utilities.cache.internal",
         "org.glassfish.hk2.utilities.reflection",
-        "org.jvnet.hk2.component"
+        "org.jvnet.hk2.component",
+        "java.util.concurrent"
     };
-    
+
     private final static HashSet<String> PACKAGES_TO_SKIP = new HashSet<String>();
-    
+
     static {
         for (String pack : SKIP_ME) {
             PACKAGES_TO_SKIP.add(pack);
@@ -82,7 +83,7 @@ public class ValidationInformationImpl implements ValidationInformation {
     private final ActiveDescriptor<?> candidate;
     private final Injectee injectee;
     private final Filter filter;
-    
+
     /**
      * Creates the validation information
      * @param operation The operation to perform
@@ -99,7 +100,7 @@ public class ValidationInformationImpl implements ValidationInformation {
         this.injectee = injectee;
         this.filter = filter;
     }
-    
+
     /**
      * Creates the validation information
      * @param operation The operation to perform
@@ -141,14 +142,14 @@ public class ValidationInformationImpl implements ValidationInformation {
     public Filter getFilter() {
         return filter;
     }
-    
+
     private String getPackage(String name) {
         int index = name.lastIndexOf('.');
         if (index < 0) return name;
-        
+
         return name.substring(0, index);
     }
-    
+
     /**
      * The implementation of this method is VERY dependent on the implementation
      * of ServiceLocatorImpl.  Any refactoring of ServiceLocatorImpl having to
@@ -158,7 +159,7 @@ public class ValidationInformationImpl implements ValidationInformation {
     @Override
     public StackTraceElement getCaller() {
         StackTraceElement frames[] = Thread.currentThread().getStackTrace();
-        
+
         boolean foundValidationCaller = false;
         for (StackTraceElement e : frames) {
             if (!foundValidationCaller) {
@@ -173,7 +174,7 @@ public class ValidationInformationImpl implements ValidationInformation {
                 if (!PACKAGES_TO_SKIP.contains(pack)) return e;
             }
         }
-        
+
         return null;
     }
 

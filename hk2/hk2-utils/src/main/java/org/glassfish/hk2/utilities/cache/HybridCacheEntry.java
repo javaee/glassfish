@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,31 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.optional;
-
-import junit.framework.Assert;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Test;
+package org.glassfish.hk2.utilities.cache;
 
 /**
- * @author jwells
+ * Represents a single hybrid cache entry.
+ * The entry can avoid being cached, see {@link #dropMe()} for details.
  *
+ * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-public class OptionalTest {
-    private final static String TEST_NAME = "OptionalTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new OptionalModule());
+public interface HybridCacheEntry<V> extends CacheEntry {
 
     /**
-     * All the true validation is done in the
-     * InjectedManyTimes service
+     * Getter for this cache entry internal value.
+     *
+     * @return Internal value.
      */
-    @Test
-    public void testOptionalAndOptionalButThere() {
-        InjectedManyTimes many = locator.getService(InjectedManyTimes.class);
-        Assert.assertNotNull(many);
+    public V getValue();
 
-        Assert.assertTrue(many.isValid());
-    }
+    /**
+     * Tell the cache if this entry should be dropped
+     * as opposed to being kept in the cache.
+     *
+     * @return true if the entry should not be cached.
+     */
+    public boolean dropMe();
 }
