@@ -186,7 +186,16 @@ public class Cache<K,V> implements Computable<K,V> {
                 throw new RuntimeException(ex);
             } catch (ExecutionException ex) {
                 cache.remove(key);  // otherwise the exception would be remembered
-                throw new RuntimeException(ex);
+                Throwable cause = ex.getCause();
+                if (cause == null) {
+                    throw new RuntimeException(ex);
+                }
+                
+                if (cause instanceof RuntimeException) {
+                    throw (RuntimeException) cause;
+                }
+                
+                throw new RuntimeException(cause);
             }
         }
     }

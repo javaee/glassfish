@@ -43,6 +43,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -117,5 +118,20 @@ public class NegativeProxyTest {
                 build();
                
         dc.addActiveDescriptor(ad);
+    }
+    
+    /**
+     * The UnavailableScopeService is proxied but there is no
+     * context for it.  Ensure that if a method is called the
+     * proper exception is thrown (IllegalStateException)
+     */
+    @Test(expected=IllegalStateException.class)
+    public void testProxiedServiceWithUnavailableContext() {
+        UnavailableScopeService uss = locator.getService(UnavailableScopeService.class);
+        Assert.assertNotNull(uss);
+        Assert.assertTrue(uss instanceof ProxyCtl);
+
+        // Must fail with an IllegalStateException
+        uss.callMe();
     }
 }
