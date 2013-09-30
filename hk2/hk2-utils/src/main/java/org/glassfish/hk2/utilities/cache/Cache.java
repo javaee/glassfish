@@ -57,7 +57,21 @@ import java.util.concurrent.TimeoutException;
  */
 public class Cache<K,V> implements Computable<K,V> {
 
+    /**
+     * Should a cycle be detected during computation of a value
+     * for given key, this interface allows client code to register
+     * a callback that would get invoked in such a case.
+     *
+     * @param <K> Key type.
+     */
     public interface CycleHandler<K> {
+
+        /**
+         * Handle cycle that was detected while computing a cache value
+         * for given key. This method would typically just throw a runtime exception.
+         *
+         * @param key instance that caused the cycle.
+         */
         public void handleCycle(K key);
     }
 
@@ -66,7 +80,7 @@ public class Cache<K,V> implements Computable<K,V> {
     /**
      * Helper class, that remembers the future task origin thread, so that cycles could be detected.
      * If any thread starts computation for given key and the same thread requests the computed value
-     * before the computation stops, a cycle is detected and an exception could be thrown based on provided
+     * before the computation stops, a cycle is detected and registered cycle handler is called.
      */
     private class OriginThreadAwareFuture implements Future<V>{
         long threadId;
@@ -142,6 +156,8 @@ public class Cache<K,V> implements Computable<K,V> {
 
     /**
      * Create new cache with given computable to compute values.
+     * Detected cycles will be ignored as there is a no-op cycle handler registered by default.
+     *
      * @param computable
      */
     public Cache(Computable<K, V> computable) {
@@ -153,7 +169,7 @@ public class Cache<K,V> implements Computable<K,V> {
     }
 
     /**
-     * Create new cache with given computable and cycleHandler.
+     * Create new cache with given computable and cycle handler.
      *
      * @param computable
      * @param cycleHandler
@@ -190,11 +206,11 @@ public class Cache<K,V> implements Computable<K,V> {
                 if (cause == null) {
                     throw new RuntimeException(ex);
                 }
-                
+
                 if (cause instanceof RuntimeException) {
                     throw (RuntimeException) cause;
                 }
-                
+
                 throw new RuntimeException(cause);
             }
         }

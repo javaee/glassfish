@@ -105,17 +105,17 @@ public class LRUCacheCheapRead<K,V> extends LRUCache<K,V> {
     public int getMaxCacheSize() {
         return maxCacheSize;
     }
-    
+
     @Override
     public void releaseMatching(CacheKeyFilter<K> filter) {
         if (filter == null) return;
-        
+
         for (Map.Entry<K, CacheEntryImpl<K,V>> entry : (new HashMap<K, CacheEntryImpl<K,V>>(cache)).entrySet()) {
             if (filter.matches(entry.getKey())) {
                 entry.getValue().removeFromCache();
             }
         }
-        
+
     }
 
     /**
@@ -165,5 +165,5 @@ public class LRUCacheCheapRead<K,V> extends LRUCache<K,V> {
         }
     }
 
-    
+
 }

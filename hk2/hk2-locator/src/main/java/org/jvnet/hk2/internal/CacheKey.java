@@ -51,7 +51,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  * This is the cache key, which encapsulates very specific lookup queries.
  * The point of this is to be useable as the key in a hash map, so that
  * equals and hashCode must work properly
- * 
+ *
  * @author jwells
  *
  */
@@ -60,13 +60,13 @@ public class CacheKey {
     private final Type lookupType;
     private final String name;
     private final Annotation qualifiers[];
-    
+
     /** Pre-calculated in order to improve hashMap lookups */
     private final int hashCode;
-    
+
     /**
      * Key used for LRU cache
-     * 
+     *
      * @param lookupType The type in the lookup call
      * @param name The name in the lookup call
      * @param qualifiers The set of qualifiers being looked up
@@ -89,51 +89,51 @@ public class CacheKey {
         else {
             this.qualifiers = null;
         }
-        
+
         int retVal = 0;
-        
+
         if (lookupType != null) {
             retVal ^= lookupType.hashCode();
         }
-        
+
         if (name != null) {
             retVal ^= name.hashCode();
         }
-        
+
         for (Annotation anno : qualifiers) {
             retVal ^= anno.hashCode();
         }
-        
+
         hashCode = retVal;
     }
-    
+
     private static boolean safeEquals(Object a, Object b) {
         if (a == b) return true;
         if (a == null || b == null) return false;
         return a.equals(b);
     }
-    
+
     @Override
     public int hashCode() {
         return hashCode;
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof CacheKey)) return false;
-        
+
         final CacheKey other = (CacheKey) o;
-        
+
         if (hashCode != other.hashCode) return false;
         if (!safeEquals(lookupType, other.lookupType)) return false;
         if (!safeEquals(name, other.name)) return false;
-        
+
         if (qualifiers != null) {
             if (other.qualifiers == null) return false;
-            
+
             if (qualifiers.length != other.qualifiers.length) return false;
-            
+
             boolean isEqual = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
 
                 @Override
@@ -141,17 +141,17 @@ public class CacheKey {
                     for (int lcv = 0; lcv < qualifiers.length; lcv++) {
                         if (!safeEquals(qualifiers[lcv], other.qualifiers[lcv])) return false;
                     }
-                    
+
                     return true;
                 }
-                
+
             });
-            
+
             if (!isEqual) return false;
-            
+
         }
         else if (other.qualifiers != null) return false;
-        
+
         return true;
     }
     
@@ -173,9 +173,9 @@ public class CacheKey {
     }
     
     public String toString() {
-        return "CacheKey(" + Pretty.type(lookupType) + "," + name + "," + 
+        return "CacheKey(" + Pretty.type(lookupType) + "," + name + "," +
             ((qualifiers == null) ? 0 : qualifiers.length) + "," +
-                System.identityHashCode(this) + ")";
+                System.identityHashCode(this) + "," + hashCode + ")";
     }
 
 }
