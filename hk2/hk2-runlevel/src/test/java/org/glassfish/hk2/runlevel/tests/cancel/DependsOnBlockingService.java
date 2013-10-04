@@ -40,79 +40,32 @@
 package org.glassfish.hk2.runlevel.tests.cancel;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import org.glassfish.hk2.runlevel.RunLevel;
 
 /**
- * The postConstruct method blocks until the test tells it to go
- * (which may be never)
  * @author jwells
  *
  */
 @RunLevel(5)
-public class BlockingService {
-    private final static Object lock = new Object();
-    private static boolean go = false;
+public class DependsOnBlockingService {
+    @Inject
+    private BlockingService blockingService;
     
-    private final static Object postConstructLock = new Object();
     private static boolean postConstructCalled = false;
     
-    /**
-     * Will block until test tells it to go
-     */
+    public static boolean getPostConstructCalled() {
+        return postConstructCalled;
+    }
+    
     @PostConstruct
     public void postConstruct() {
-        synchronized (postConstructLock) {
-            postConstructCalled = true;
-            postConstructLock.notifyAll();
-        }
-        
-        synchronized (lock) {
-            while (!go) {
-                try {
-                   lock.wait();
-                }
-                catch (InterruptedException ie) {
-                    throw new RuntimeException(ie);
-                }
-            }
-        }
-        
+        postConstructCalled = true;
     }
     
-    /**
-     * Done so the test can be sure the postConstruct has been called
-     * 
-     * @throws InterruptedException
-     */
-    public static void waitForPostConstruct() throws InterruptedException {
-        synchronized (postConstructLock) {
-            while (!postConstructCalled) {
-                postConstructLock.wait();
-            }
-        }
-    }
-    
-    /**
-     * Tells service to go ahead
-     */
-    public static void go() {
-        synchronized (lock) {
-            go = true;
-            lock.notifyAll();
-        }
-    }
-    
-    /**
-     * Tells service to stop in the postConstruct
-     */
     public static void clear() {
-        synchronized (lock) {
-            go = false;
-        }
-        
-        synchronized (postConstructLock) {
-            postConstructCalled = false;
-        }
+        postConstructCalled = false;
     }
+
 }
