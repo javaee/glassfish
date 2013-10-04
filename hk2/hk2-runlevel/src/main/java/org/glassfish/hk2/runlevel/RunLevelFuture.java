@@ -112,7 +112,17 @@ public interface RunLevelFuture extends Future<Object> {
      * the job will no longer attempt to go down to level five, but will
      * instead be finished at level nine.
      * <p>
-     * @param mayInterruptIfRunning is currently ignored
+     * If mayInterruptIfRunning is set to true then an interrupt signal will
+     * be sent to every thread that is currently running a run-level service.
+     * Further, in that case the system will NOT wait for running services to
+     * finish before proceeding down to the last level completed (as described
+     * above).
+     * 
+     * @param mayInterruptIfRunning if false the system will wait for services
+     * currently running to stop running.  If true the system will send an
+     * interrupt signal to threads currently running services and will NOT
+     * wait for those services to complete (it will consider those services to
+     * have failed)
      */
     @Override
     public boolean cancel(boolean mayInterruptIfRunning);

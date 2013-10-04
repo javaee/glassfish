@@ -97,5 +97,61 @@ public class CancelTest {
         
         
     }
+    
+    /**
+     * This test has one thread where the DependsOnBlockingService depends
+     * on the BlockingService which will sit around until we tell it to go.
+     * We do a non-force cancel and then let the BlockingService go.  The
+     * DependsOnBlockingService should NOT be postConstructed because the
+     * cancel should have cancelled it
+     * @throws InterruptedException 
+     * @throws TimeoutException 
+     * @throws ExecutionException 
+     */
+    @Test @Ignore
+    public void testThingsDependingOnServicesCaughtByCancelAreNotCreated() throws InterruptedException, ExecutionException, TimeoutException {
+        // NOTE: DependsOnBlockingService MUST come first so that it'll be
+        // on the stack in the one thread
+        ServiceLocator locator = Utilities.getServiceLocator(DependsOnBlockingService.class,
+                BlockingService.class);
+        
+        BlockingService.clear();
+        DependsOnBlockingService.clear();
+        
+        try {
+            RunLevelController rlc = locator.getService(RunLevelController.class);
+            rlc.setThreadingPolicy(ThreadingPolicy.FULLY_THREADED);
+            rlc.setMaximumUseableThreads(1);
+            
+            rlc.proceedToAsync(5);
+            
+            RunLevelFuture future = rlc.getCurrentProceeding();
+            Assert.assertNotNull(future);
+            
+            // Makes sure the postConstruct of the BlockingService has been invoked
+            BlockingService.waitForPostConstruct();
+            
+            Assert.assertFalse(future.isDone());
+        
+            // Do NOT force the issue, let the thing complete
+            future.cancel(false);
+            
+            BlockingService.go();
+            
+            // The DependsOnMeBlocking service should NOT be started/initialized
+            
+            future.get(5, TimeUnit.SECONDS);
+            
+            Assert.assertTrue(future.isDone());
+            
+            Assert.assertFalse(DependsOnBlockingService.getPostConstructCalled());
+            
+        }
+        finally {
+            BlockingService.go();
+            
+        }
+        
+    }
 
 }
