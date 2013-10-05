@@ -160,20 +160,23 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
      */
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
-        synchronized (this) {
-            if (done) return false;
-            if (cancelled) return false;
+        // Not locking in this order can cause deadlocks
+        synchronized (parent) {
+            synchronized (this) {
+                if (done) return false;
+                if (cancelled) return false;
             
-            cancelled = true;
+                cancelled = true;
             
-            if (upAllTheWay != null) {
-                upAllTheWay.cancel();
+                if (upAllTheWay != null) {
+                    upAllTheWay.cancel();
+                }
+                else if (downAllTheWay != null) {
+                    downAllTheWay.cancel();
+                }
+            
+                return true;
             }
-            else if (downAllTheWay != null) {
-                downAllTheWay.cancel();
-            }
-            
-            return true;
         }
     }
 
@@ -437,6 +440,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private void cancel() {
             synchronized (lock) {
                 cancelled = true;
+                parent.levelCancelled();
                 currentJob.cancel();
             }
         }
@@ -943,7 +947,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 synchronized (parentLock) {
                     ok = (!parent.cancelled && (parent.accumulatedExceptions == null));
                 }
-                    
+                
                 if (ok) {
                     fService.getService();
                 }
@@ -954,7 +958,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                     wouldHaveBlocked = fService;
                     completed = false;
                 }
-                else {
+                else if (!isWasCancelled(me)) {
                     parent.fail(me, fService.getActiveDescriptor());
                 }
             }
@@ -971,17 +975,25 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     }
     
     /* package */ final static boolean isWouldBlock(Throwable th) {
+        return isACertainException(th, WouldBlockException.class);
+    }
+    
+    private final static boolean isWasCancelled(Throwable th) {
+        return isACertainException(th, WasCancelledException.class);
+    }
+    
+    private final static boolean isACertainException(Throwable th, Class<? extends Throwable> type) {
         Throwable cause = th;
         while (cause != null) {
             if (cause instanceof MultiException) {
                 MultiException me = (MultiException) cause;
                 for (Throwable innerMulti : me.getErrors()) {
-                    if (isWouldBlock(innerMulti)) {
+                    if (isACertainException(innerMulti, type)) {
                         return true;
                     }
                 }
             }
-            else if (cause instanceof WouldBlockException) {
+            else if (type.isAssignableFrom(cause.getClass())) {
                 return true;
             }
             
