@@ -108,7 +108,7 @@ public class CancelTest {
      * @throws TimeoutException 
      * @throws ExecutionException 
      */
-    @Test @Ignore
+    @Test
     public void testThingsDependingOnServicesCaughtByCancelAreNotCreated() throws InterruptedException, ExecutionException, TimeoutException {
         // NOTE: DependsOnBlockingService MUST come first so that it'll be
         // on the stack in the one thread
@@ -145,6 +145,8 @@ public class CancelTest {
             Assert.assertTrue(future.isDone());
             
             Assert.assertFalse(DependsOnBlockingService.getPostConstructCalled());
+            
+            Assert.assertTrue(BlockingService.getPreDestroyCalled());
             
         }
         finally {

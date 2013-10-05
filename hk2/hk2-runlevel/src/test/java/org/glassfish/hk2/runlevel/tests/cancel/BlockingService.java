@@ -40,6 +40,7 @@
 package org.glassfish.hk2.runlevel.tests.cancel;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.glassfish.hk2.runlevel.RunLevel;
 
@@ -56,6 +57,8 @@ public class BlockingService {
     
     private final static Object postConstructLock = new Object();
     private static boolean postConstructCalled = false;
+    
+    private static boolean preDestroyCalled = false;
     
     /**
      * Will block until test tells it to go
@@ -78,6 +81,18 @@ public class BlockingService {
             }
         }
         
+    }
+    
+    /**
+     * Ensures that if this came up, it also went down
+     */
+    @PreDestroy
+    public void preDestroy() {
+        preDestroyCalled = true;
+    }
+    
+    public static boolean getPreDestroyCalled() {
+        return preDestroyCalled;
     }
     
     /**
@@ -114,5 +129,7 @@ public class BlockingService {
         synchronized (postConstructLock) {
             postConstructCalled = false;
         }
+        
+        preDestroyCalled = false;
     }
 }

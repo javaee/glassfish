@@ -96,6 +96,8 @@ public class AsyncRunLevelContext {
     private final Map<ActiveDescriptor<?>, RuntimeException> levelErrorMap =
             new HashMap<ActiveDescriptor<?>, RuntimeException>();
     
+    private boolean wasCancelled = false;
+    
     /**
      * The set of services currently being created
      */
@@ -225,6 +227,21 @@ public class AsyncRunLevelContext {
                 if (retVal != null) {
                     backingMap.put(activeDescriptor, retVal);
                     orderedCreationList.addFirst(activeDescriptor);
+                    
+                    if (wasCancelled) {
+                        // Even though this service actually ran to completion, we
+                        // are going to pretend it failed.  Putting it in the lists
+                        // above will ensure it gets properly shutdown
+                        
+                        MultiException cancelledException = new MultiException(new WasCancelledException(activeDescriptor));
+                        
+                        levelErrorMap.put(activeDescriptor, cancelledException);
+                        
+                        creatingDescriptors.remove(activeDescriptor);
+                        this.notifyAll();
+                        
+                        throw cancelledException;
+                    }
                 }
                 else if (error != null) {
                     levelErrorMap.put(activeDescriptor, error);
@@ -289,6 +306,10 @@ public class AsyncRunLevelContext {
     
     /* package */ synchronized int getCurrentLevel() {
         return currentLevel;
+    }
+    
+    /* package */ synchronized void levelCancelled() {
+        wasCancelled = true;
     }
     
     /* package */ synchronized void setCurrentLevel(int currentLevel) {
@@ -391,6 +412,7 @@ public class AsyncRunLevelContext {
     
     /* package */ synchronized void clearErrors() {
         levelErrorMap.clear();
+        wasCancelled = false;
     }
     
     private static class RunLevelControllerThread extends Thread {
