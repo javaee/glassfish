@@ -37,31 +37,63 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.guice.bridge.test;
+package org.glassfish.hk2.tests.locator.justintime;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Provider;
+import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.junit.Assert;
 
 /**
  * @author jwells
  *
  */
-public class HK2Service3 {
-    @Inject @Named(GuiceBridgeTest.ALICE)
-    private GuiceService3 alice;
+@Singleton
+public class IterableProviderService {
+    @Inject
+    private IterableProvider<SimpleService4> provider;
     
-    @Inject @Named(GuiceBridgeTest.HATTER)
-    private Provider<GuiceService3> hatter;
+    /* package */ void checkGet() {
+        Assert.assertNotNull(provider.get());
+        
+    }
     
-    /**
-     * Used by the test to check that everything works properly
-     */
-    public void check() {
-        Assert.assertEquals(GuiceBridgeTest.ALICE, alice.getName());
-        Assert.assertEquals(GuiceBridgeTest.HATTER, hatter.get().getName());
+    /* package */ void checkGetHandle() {
+        ServiceHandle<SimpleService4> handle = provider.getHandle();
+        Assert.assertNotNull(handle);
+        Assert.assertNotNull(handle.getService());
+        
+    }
+    
+    /* package */ void checkIterator() {
+        boolean found = false;
+        for (SimpleService4 ss4 : provider) {
+            Assert.assertFalse(found);
+            found = true;
+        }
+        
+        Assert.assertTrue(found);
+        
+    }
+    
+    /* package */ void checkSize() {
+        Assert.assertEquals(1, provider.getSize());
+        
+    }
+    
+    /* package */ void checkHandleIterator() {
+        boolean found = false;
+        for (ServiceHandle<SimpleService4> ss4Handle : provider.handleIterator()) {
+            Assert.assertFalse(found);
+            found = true;
+            Assert.assertNotNull(ss4Handle.getService());
+        }
+        
+        Assert.assertTrue(found);
+        
     }
 
 }

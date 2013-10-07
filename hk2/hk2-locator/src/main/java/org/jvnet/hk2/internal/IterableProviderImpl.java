@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.Unqualified;
@@ -65,16 +67,31 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     private final Type requiredType;
     private final Set<Annotation> requiredQualifiers;
     private final Unqualified unqualified;
+    private final Injectee originalInjectee;
     
     /* package */ IterableProviderImpl(
             ServiceLocatorImpl locator,
             Type requiredType,
             Set<Annotation> requiredQualifiers,
-            Unqualified unqualified) {
+            Unqualified unqualified,
+            Injectee originalInjectee) {
         this.locator = locator;
         this.requiredType = requiredType;
         this.requiredQualifiers = Collections.unmodifiableSet(requiredQualifiers);
         this.unqualified = unqualified;
+        this.originalInjectee = originalInjectee;
+    }
+    
+    private void justInTime() {
+        InjecteeImpl injectee = new InjecteeImpl(originalInjectee);
+        injectee.setRequiredType(requiredType);
+        injectee.setRequiredQualifiers(requiredQualifiers);
+        if (unqualified != null) {
+            injectee.setUnqualified(unqualified);
+        }
+        
+        // This does nothing more than run the JIT resolvers
+        locator.getInjecteeDescriptor(injectee);
     }
 
     /* (non-Javadoc)
@@ -83,6 +100,8 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T get() {
+        justInTime();
+        
         // Must do this in this way to ensure that the generated item is properly associated with the root
         if (unqualified == null) {
             return (T) locator.getService(requiredType,
@@ -99,6 +118,8 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     @SuppressWarnings("unchecked")
     @Override
     public ServiceHandle<T> getHandle() {
+        justInTime();
+        
         if (unqualified == null) {
             return (ServiceHandle<T>) locator.getServiceHandle(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()]));
@@ -114,6 +135,8 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public Iterator<T> iterator() {
+        justInTime();
+        
         List<ServiceHandle<T>> handles;
         if (unqualified == null) {
             handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
@@ -132,6 +155,8 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public int getSize() {
+        justInTime();
+        
         if (unqualified == null) {
             return locator.getAllServiceHandles(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])).size();
@@ -154,7 +179,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public <U> IterableProvider<U> ofType(Type type) {
-        return new IterableProviderImpl<U>(locator, type, requiredQualifiers, unqualified);
+        return new IterableProviderImpl<U>(locator, type, requiredQualifiers, unqualified, originalInjectee);
     }
 
     /* (non-Javadoc)
@@ -167,7 +192,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
             moreAnnotations.add(qualifier);
         }
         
-        return new IterableProviderImpl<T>(locator, requiredType, moreAnnotations, unqualified);
+        return new IterableProviderImpl<T>(locator, requiredType, moreAnnotations, unqualified, originalInjectee);
     }
     
     /* (non-Javadoc)
@@ -175,6 +200,8 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
      */
     @Override
     public Iterable<ServiceHandle<T>> handleIterator() {
+        justInTime();
+        
         List<ServiceHandle<T>> handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
         

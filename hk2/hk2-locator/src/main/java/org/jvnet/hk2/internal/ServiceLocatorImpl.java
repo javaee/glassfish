@@ -488,7 +488,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             IterableProviderImpl<?> value = new IterableProviderImpl<Object>(this,
                     (Utilities.getFirstTypeArgument(requiredType)),
                     injectee.getRequiredQualifiers(),
-                    injectee.getUnqualified());
+                    injectee.getUnqualified(),
+                    injectee);
 
             return new ConstantActiveDescriptor<Object>(value, id);
         }

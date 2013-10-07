@@ -44,6 +44,7 @@ import junit.framework.Assert;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.InjecteeImpl;
@@ -105,6 +106,91 @@ public class JustInTimeTest {
 
         ActiveDescriptor<?> ad = locator.getInjecteeDescriptor(injectee);
         Assert.assertNotNull(ad);
+    }
+    
+    /**
+     * Tests the get method of Provider
+     */
+    @Test
+    public void testProviderGet() {
+        ServiceLocator locator = getProviderLocator();
+        
+        IterableProviderService ips = locator.getService(IterableProviderService.class);
+        Assert.assertNotNull(ips);
+        
+        Assert.assertNull(locator.getService(SimpleService4.class));
+        
+        ips.checkGet();
+    }
+    
+    /**
+     * Tests the getHandle method of Provider
+     */
+    @Test
+    public void testProviderGetHandle() {
+        ServiceLocator locator = getProviderLocator();
+        
+        IterableProviderService ips = locator.getService(IterableProviderService.class);
+        Assert.assertNotNull(ips);
+        
+        Assert.assertNull(locator.getService(SimpleService4.class));
+        
+        ips.checkGetHandle();
+    }
+    
+    /**
+     * Tests the getHandle method of Provider
+     */
+    @Test
+    public void testProviderIterator() {
+        ServiceLocator locator = getProviderLocator();
+        
+        IterableProviderService ips = locator.getService(IterableProviderService.class);
+        Assert.assertNotNull(ips);
+        
+        Assert.assertNull(locator.getService(SimpleService4.class));
+        
+        ips.checkIterator();
+    }
+    
+    /**
+     * Tests the getSize method of Provider
+     */
+    @Test
+    public void testProviderSize() {
+        ServiceLocator locator = getProviderLocator();
+        
+        IterableProviderService ips = locator.getService(IterableProviderService.class);
+        Assert.assertNotNull(ips);
+        
+        Assert.assertNull(locator.getService(SimpleService4.class));
+        
+        ips.checkSize();
+    }
+    
+    /**
+     * Tests the getSize method of Provider
+     */
+    @Test
+    public void testProviderHandleIterator() {
+        ServiceLocator locator = getProviderLocator();
+        
+        IterableProviderService ips = locator.getService(IterableProviderService.class);
+        Assert.assertNotNull(ips);
+        
+        Assert.assertNull(locator.getService(SimpleService4.class));
+        
+        ips.checkHandleIterator();
+    }
+    
+    private static ServiceLocator getProviderLocator() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                IterableProviderService.class,
+                SimpleService4JITResolver.class);
+        
+        return locator;
     }
 
 }
