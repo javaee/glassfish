@@ -379,8 +379,8 @@ public interface ServiceLocator {
      * be reified in ranking order until an ActiveDescriptor matching the Injectee is
      * found.
      * <p>
-     * This method is responsible for using the available {@link JustInTimeResolver}
-     * to add in new descriptors should the descriptor for the given Injectee
+     * This method is responsible for using the available {@link JustInTimeInjectionResolver}
+     * to add in new descriptors should the descriptor for the given injectee
      * not be found initially
      * 
      * @param injectee the injection point for whom to find the ActiveDescriptor

@@ -40,6 +40,7 @@
 package org.jvnet.hk2.guice.bridge.test.utilities;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.testing.junit.HK2TestModule;
 import org.jvnet.hk2.testing.junit.HK2TestUtilities;
@@ -51,6 +52,8 @@ import org.jvnet.hk2.testing.junit.HK2TestUtilities;
 public class Utilities {
     public static ServiceLocator createLocator(String name, HK2TestModule module) {
         ServiceLocator retVal = HK2TestUtilities.create(name, module);
+        
+        ServiceLocatorUtilities.enableLookupExceptions(retVal);
         
         GuiceBridge.getGuiceBridge().initializeGuiceBridge(retVal);
         
