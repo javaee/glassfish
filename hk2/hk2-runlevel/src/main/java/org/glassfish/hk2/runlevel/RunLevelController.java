@@ -192,6 +192,33 @@ public interface RunLevelController {
     public Executor getExecutor();
     
     /**
+     * Returns the amount of time in milliseconds
+     * the run level service will
+     * wait after a cancel call before orphaning
+     * services that have not yet completed execution
+     * 
+     * @return The amount of time in milliseconds that cancel
+     * will wait for running services
+     */
+    public long getCancelTimeoutMilliseconds();
+    
+    /**
+     * Sets the amount of time in milliseconds
+     * the run level service will
+     * wait after a cancel call before orphaning
+     * services that have not yet completed execution
+     * <p>
+     * The default value is 5000 (5 seconds).
+     * In general this value should be set to be longer
+     * than than the running time of the longest service
+     * that may be cancelled
+     * 
+     * @param cancelTimeout The amount of time in milliseconds that cancel
+     * will wait for running services.  Must be greater than 0
+     */
+    public void setCancelTimeoutMilliseconds(long cancelTimeout);
+    
+    /**
      * These are the policies for how the RunLevelController
      * will use threads
      * 

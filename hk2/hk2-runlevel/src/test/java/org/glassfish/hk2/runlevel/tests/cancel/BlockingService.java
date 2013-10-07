@@ -108,6 +108,12 @@ public class BlockingService {
         }
     }
     
+    public static boolean getPostConstructCalled() {
+        synchronized (postConstructLock) {
+            return postConstructCalled;
+        }
+    }
+    
     /**
      * Tells service to go ahead
      */
