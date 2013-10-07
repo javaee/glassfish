@@ -40,6 +40,7 @@
 package org.glassfish.hk2.runlevel.internal;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -103,12 +104,18 @@ public class AsyncRunLevelContext {
      */
     private final HashMap<ActiveDescriptor<?>, Long> creatingDescriptors = new HashMap<ActiveDescriptor<?>, Long>();
     
+    /**
+     * The set of descriptors that have been hard cancelled
+     */
+    private final HashSet<ActiveDescriptor<?>> hardCancelledDescriptors = new HashSet<ActiveDescriptor<?>>();
+    
     private final LinkedList<ActiveDescriptor<?>> orderedCreationList = new LinkedList<ActiveDescriptor<?>>();
     
     private Executor executor;
     private final ServiceLocator locator;
     private int maxThreads = Integer.MAX_VALUE;
     private RunLevelController.ThreadingPolicy policy = RunLevelController.ThreadingPolicy.FULLY_THREADED;
+    private long cancelTimeout = 5 * 1000;
     
     /**
      * Constructor for the guy who does the work
@@ -156,6 +163,10 @@ public class AsyncRunLevelContext {
                 throw previousException;
             }
             
+            if (hardCancelledDescriptors.contains(activeDescriptor)) {
+                throw new MultiException(new WasCancelledException(activeDescriptor));
+            }
+            
             while (creatingDescriptors.containsKey(activeDescriptor)) {
                 long holdingLock = creatingDescriptors.get(activeDescriptor);
                 if (holdingLock == Thread.currentThread().getId()) {
@@ -182,6 +193,10 @@ public class AsyncRunLevelContext {
             previousException = levelErrorMap.get(activeDescriptor);
             if (previousException != null) {
                 throw previousException;
+            }
+            
+            if (hardCancelledDescriptors.contains(activeDescriptor)) {
+                throw new MultiException(new WasCancelledException(activeDescriptor));
             }
             
             creatingDescriptors.put(activeDescriptor, Thread.currentThread().getId());
@@ -224,18 +239,24 @@ public class AsyncRunLevelContext {
         }
         finally {
             synchronized (this) {
+                boolean hardCancelled = hardCancelledDescriptors.remove(activeDescriptor);
+                
                 if (retVal != null) {
-                    backingMap.put(activeDescriptor, retVal);
-                    orderedCreationList.addFirst(activeDescriptor);
+                    if (!hardCancelled) {
+                        backingMap.put(activeDescriptor, retVal);
+                        orderedCreationList.addFirst(activeDescriptor);
+                    }
                     
-                    if (wasCancelled) {
+                    if (wasCancelled || hardCancelled) {
                         // Even though this service actually ran to completion, we
                         // are going to pretend it failed.  Putting it in the lists
                         // above will ensure it gets properly shutdown
                         
                         MultiException cancelledException = new MultiException(new WasCancelledException(activeDescriptor));
                         
-                        levelErrorMap.put(activeDescriptor, cancelledException);
+                        if (!hardCancelled) {
+                            levelErrorMap.put(activeDescriptor, cancelledException);
+                        }
                         
                         creatingDescriptors.remove(activeDescriptor);
                         this.notifyAll();
@@ -244,7 +265,9 @@ public class AsyncRunLevelContext {
                     }
                 }
                 else if (error != null) {
-                    levelErrorMap.put(activeDescriptor, error);
+                    if (!hardCancelled) {
+                        levelErrorMap.put(activeDescriptor, error);
+                    }
                 }
                 
                 creatingDescriptors.remove(activeDescriptor);
@@ -262,6 +285,18 @@ public class AsyncRunLevelContext {
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
         synchronized (this) {
             return backingMap.containsKey(descriptor);
+        }
+    }
+    
+    /**
+     * No need to lock this, it is called with the lock already held
+     * 
+     * @param descriptor the non-null descriptor to hard cancel
+     */
+    /* package */ void hardCancelOne(ActiveDescriptor<?> descriptor) {
+        if (creatingDescriptors.containsKey(descriptor)) {
+            // This guy has been hard-cancelled, mark it down
+            hardCancelledDescriptors.add(descriptor);
         }
     }
     
@@ -372,7 +407,8 @@ public class AsyncRunLevelContext {
                     locator,
                     level,
                     maxThreads,
-                    fullyThreaded));
+                    fullyThreaded,
+                    cancelTimeout));
             
             localTask = currentTask;
         }
@@ -413,6 +449,14 @@ public class AsyncRunLevelContext {
     /* package */ synchronized void clearErrors() {
         levelErrorMap.clear();
         wasCancelled = false;
+    }
+    
+    /* package */ synchronized void setCancelTimeout(long cancelTimeout) {
+        this.cancelTimeout = cancelTimeout;
+    }
+    
+    /* package */ synchronized long getCancelTimeout() {
+        return cancelTimeout;
     }
     
     private static class RunLevelControllerThread extends Thread {

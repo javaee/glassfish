@@ -49,7 +49,6 @@ import org.glassfish.hk2.runlevel.RunLevelController.ThreadingPolicy;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -63,16 +62,19 @@ public class CancelTest {
      * @throws ExecutionException 
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test 
     public void testForcedCancel() throws InterruptedException, ExecutionException, TimeoutException {
         ServiceLocator locator = Utilities.getServiceLocator(BlockingService.class);
         
         BlockingService.clear();
         
-        try {
-            RunLevelController rlc = locator.getService(RunLevelController.class);
-            rlc.setThreadingPolicy(ThreadingPolicy.FULLY_THREADED);
+        RunLevelController rlc = locator.getService(RunLevelController.class);
+        rlc.setThreadingPolicy(ThreadingPolicy.FULLY_THREADED);
+        rlc.setCancelTimeoutMilliseconds(500);
         
+        Assert.assertEquals(500L, rlc.getCancelTimeoutMilliseconds());
+        
+        try {
             rlc.proceedToAsync(5);
         
             RunLevelFuture future = rlc.getCurrentProceeding();
@@ -86,7 +88,7 @@ public class CancelTest {
             // This should force the issue
             future.cancel(true);
         
-            future.get(5, TimeUnit.SECONDS);
+            future.get(10, TimeUnit.SECONDS);
         
             Assert.assertTrue(future.isDone());
         }
@@ -95,7 +97,26 @@ public class CancelTest {
             BlockingService.go();
         }
         
+        // Note that after the blocking service has been told to go, it should
+        // now be possible to go back up to five.  This sleep gives time to
+        // let the BlockingService complete
+        Thread.sleep(100);
         
+        Assert.assertEquals(4, rlc.getCurrentRunLevel());
+        
+        // A hard-cancelled service should NOT be pre-destroyed
+        Assert.assertFalse(BlockingService.getPreDestroyCalled());
+        
+        // Now reset blocking service, but also let it go to ensure
+        // that since it did clear out it CAN be started again
+        
+        BlockingService.clear();
+        BlockingService.go();
+        
+        // Should work
+        rlc.proceedTo(5);
+        
+        Assert.assertTrue(BlockingService.getPostConstructCalled());
     }
     
     /**

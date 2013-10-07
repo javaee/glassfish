@@ -46,7 +46,6 @@ import javax.inject.Inject;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.runlevel.CurrentlyRunningException;
-import org.glassfish.hk2.runlevel.RunLevelContext;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.jvnet.hk2.annotations.ContractsProvided;
@@ -158,6 +157,18 @@ public class RunLevelControllerImpl implements RunLevelController {
     @Override
     public Executor getExecutor() {
         return context.getExecutor();
+    }
+
+    @Override
+    public long getCancelTimeoutMilliseconds() {
+        return context.getCancelTimeout();
+    }
+
+    @Override
+    public void setCancelTimeoutMilliseconds(long cancelTimeout) {
+        if (cancelTimeout < 1L) throw new IllegalArgumentException();
+        
+        context.setCancelTimeout(cancelTimeout);
     }
 
 }
