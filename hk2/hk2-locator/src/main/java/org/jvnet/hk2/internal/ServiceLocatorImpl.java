@@ -100,7 +100,6 @@ import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.InjecteeImpl;
-import org.glassfish.hk2.utilities.cache.CacheEntry;
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUHybridCache;
@@ -177,9 +176,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
             return _resolveContext(a);
         }
     });
-    // Fields needed for caching
-//    private final ConcurrentHashMap<String, List<HybridCacheEntry>> hybridIgdCacheEntries = new ConcurrentHashMap<String, List<HybridCacheEntry>>();
-//    private final ConcurrentHashMap<String, List<HybridCacheEntry>> hybridIgashCacheEntries = new ConcurrentHashMap<String, List<HybridCacheEntry>>();
     private final Map<ServiceLocatorImpl, ServiceLocatorImpl> children =
             new WeakHashMap<ServiceLocatorImpl, ServiceLocatorImpl>(); // Must be Weak for throw away children
 
@@ -931,12 +927,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
 
     private final static class IgdCacheKey {
-
         private final CacheKey cacheKey;
         private final String name;
         private final Injectee onBehalfOf;
         private final Type contractOrImpl;
-        private final Class<?> rawClass;
         private final Annotation[] qualifiers;
         private final Filter filter;
 
@@ -947,16 +941,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
             this.name = name;
             this.onBehalfOf = onBehalfOf;
             this.contractOrImpl = contractOrImpl;
-            this.rawClass = rawClass;
             this.qualifiers = qualifiers;
             this.filter = filter;
 
             int hash = 5;
-            hash = 41 * hash + (this.cacheKey != null ? this.cacheKey.hashCode() : 0);
-            hash = 41 * hash + (this.name != null ? this.name.hashCode() : 0);
-            hash = 41 * hash + (this.onBehalfOf != null ? this.onBehalfOf.hashCode() : 0);
-            hash = 41 * hash + (this.contractOrImpl != null ? this.contractOrImpl.hashCode() : 0);
-            hash = 41 * hash + Arrays.deepHashCode(this.qualifiers);
+            hash = 41 * hash + this.cacheKey.hashCode();
 
             this.hashCode = hash;
         }
@@ -979,18 +968,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 return false;
             }
             if ((this.cacheKey == null) ? (other.cacheKey != null) : !this.cacheKey.equals(other.cacheKey)) {
-                return false;
-            }
-            if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-                return false;
-            }
-            if (this.onBehalfOf != other.onBehalfOf && (this.onBehalfOf == null || !this.onBehalfOf.equals(other.onBehalfOf))) {
-                return false;
-            }
-            if (this.contractOrImpl != other.contractOrImpl && (this.contractOrImpl == null || !this.contractOrImpl.equals(other.contractOrImpl))) {
-                return false;
-            }
-            if (!Arrays.deepEquals(this.qualifiers, other.qualifiers)) {
                 return false;
             }
             return true;
@@ -1029,13 +1006,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 Utilities.handleErrors(results, new LinkedList<ErrorService>(errorHandlers));
                 return igdCache.createCacheEntry(key, new IgdValue(results, immediate), true);
             } else {
-//                final String releaseKey = key.rawClass.getName();
-//                final List<HybridCacheEntry> addToMe = new LinkedList<HybridCacheEntry>();
-//                final List<HybridCacheEntry> prevList = hybridIgdCacheEntries.putIfAbsent(releaseKey, addToMe);
-//                final List<HybridCacheEntry> additionTarget = (prevList == null) ? addToMe : prevList;
-                final HybridCacheEntry<IgdValue> entry = igdCache.createCacheEntry(key, new IgdValue(results, immediate), false);
-//                additionTarget.add(entry);
-                return entry;
+                return igdCache.createCacheEntry(key, new IgdValue(results, immediate), false);
             }
         }
     });
@@ -1231,13 +1202,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 Utilities.handleErrors(results, new LinkedList<ErrorService>(errorHandlers));
                 return igashCache.createCacheEntry(key, new IgdValue(results, immediate), true);
             } else {
-//                final String releaseKey = key.rawClass.getName();
-//                final List<HybridCacheEntry> addToMe = new LinkedList<HybridCacheEntry>();
-//                final List<HybridCacheEntry> prevList = hybridIgashCacheEntries.putIfAbsent(releaseKey, addToMe);
-//                final List<HybridCacheEntry> additionTarget = (prevList == null) ? addToMe : prevList;
-                final HybridCacheEntry<IgdValue> entry = igashCache.createCacheEntry(key, new IgdValue(results, immediate), false);
-//                additionTarget.add(entry);
-                return entry;
+                return igashCache.createCacheEntry(key, new IgdValue(results, immediate), false);
             }
         }
     });
@@ -1745,18 +1710,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
                 igdCache.releaseMatching(cacheKeyFilter);
                 igashCache.releaseMatching(cacheKeyFilter);
-//                List<? extends CacheEntry> hybridIgdEntries = hybridIgdCacheEntries.remove(affectedContract);
-//                List<? extends CacheEntry> hybridIgashEntries = hybridIgashCacheEntries.remove(affectedContract);
-//                if (hybridIgdEntries != null) {
-//                    for (CacheEntry entry : hybridIgdEntries) {
-//                        entry.removeFromCache();
-//                    }
-//                }
-//                if (hybridIgashEntries != null) {
-//                    for (CacheEntry entry : hybridIgashEntries) {
-//                        entry.removeFromCache();
-//                    }
-//                }
             }
         } finally {
             wLock.unlock();
