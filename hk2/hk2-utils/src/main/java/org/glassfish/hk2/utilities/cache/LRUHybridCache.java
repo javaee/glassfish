@@ -364,7 +364,6 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
      */
     public void releaseMatching(CacheKeyFilter<K> filter) {
         if (filter == null) return;
-
         for (K key : cache.keySet()) {
             if (filter.matches(key)) {
                 cache.remove(key);
