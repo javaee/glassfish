@@ -49,6 +49,7 @@ import org.glassfish.hk2.runlevel.RunLevelController.ThreadingPolicy;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -173,6 +174,57 @@ public class CancelTest {
         finally {
             BlockingService.go();
             
+        }
+        
+    }
+    
+    /**
+     * Tests that when going down that a blocked PreDestroy
+     * can be cancelled with a cancel call
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     * @throws TimeoutException 
+     */
+    @Test @Ignore
+    public void testDownCancelWithBlockedService() throws InterruptedException, ExecutionException, TimeoutException {
+        ServiceLocator locator = Utilities.getServiceLocator(BlockingPreDestroyService.class,
+                CountingDestructionService.class,
+                CountingDestructionService2.class);
+        
+        BlockingPreDestroyService.clear();
+        CountingDestructionService.clear();
+        CountingDestructionService2.clear();
+        
+        try {
+            RunLevelController rlc = locator.getService(RunLevelController.class);
+            rlc.setThreadingPolicy(ThreadingPolicy.FULLY_THREADED);
+            rlc.setMaximumUseableThreads(1);
+            rlc.setCancelTimeoutMilliseconds(10);
+            
+            RunLevelFuture future = rlc.proceedToAsync(5);
+            future.get();
+            
+            // Going down, but one service will block
+            future = rlc.proceedToAsync(0);
+            
+            Thread.sleep(100);
+            
+            Assert.assertFalse(future.isDone());
+            
+            rlc.cancel();
+            
+            future.get(5, TimeUnit.SECONDS);
+            
+            BlockingPreDestroyService.go();
+            
+            Assert.assertEquals(1, CountingDestructionService.getDestructionCount());
+            Assert.assertEquals(1, CountingDestructionService2.getDestructionCount());
+            
+            // The cancel would have made it stop at 4
+            Assert.assertEquals(4, rlc.getCurrentRunLevel());
+        }
+        finally {
+            BlockingPreDestroyService.go();
         }
         
     }
