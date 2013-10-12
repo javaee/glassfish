@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -73,6 +74,8 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class AsyncRunLevelContext {
     private static final Logger logger = Logger.getLogger(AsyncRunLevelContext.class.getName());
+    
+    private static final Timer timer = new Timer(true);
     
     private static final ThreadFactory THREAD_FACTORY = new RunLevelThreadFactory();
     
@@ -408,7 +411,8 @@ public class AsyncRunLevelContext {
                     level,
                     maxThreads,
                     fullyThreaded,
-                    cancelTimeout));
+                    cancelTimeout,
+                    timer));
             
             localTask = currentTask;
         }

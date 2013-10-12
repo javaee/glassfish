@@ -79,7 +79,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     private final List<ServiceHandle<RunLevelListener>> allListenerHandles;
     private final List<ServiceHandle<Sorter>> allSorterHandles;
     private final int maxThreads;
-    private final Timer timer = new Timer(true);
+    private final Timer timer;
     private final long cancelTimeout;
     
     private UpAllTheWay upAllTheWay;
@@ -95,7 +95,8 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             int proposedLevel,
             int maxThreads,
             boolean useThreads,
-            long cancelTimeout) {
+            long cancelTimeout,
+            Timer timer) {
         this.asyncContext = asyncContext;
         this.executor = (useThreads) ? executor : null;
         this.locator = locator;
@@ -103,6 +104,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         this.useThreads = useThreads;
         this.maxThreads = maxThreads;
         this.cancelTimeout = cancelTimeout;
+        this.timer = timer;
         
         int currentLevel = asyncContext.getCurrentLevel();
         
@@ -812,7 +814,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
      *
      */
     private class DownAllTheWay implements Runnable, AllTheWay {
-        private volatile int goingTo;
+        private int goingTo;
         private CurrentTaskFuture future;
         private final List<ServiceHandle<RunLevelListener>> listeners;
         
@@ -855,10 +857,16 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
             }
         }
+        
+        private int getGoingTo() {
+            synchronized (this) {
+                return goingTo;
+            }
+        }
 
         @Override
         public void run() {
-            while (workingOn > goingTo) {
+            while (workingOn > getGoingTo()) {
                 boolean runOnCancelled;
                 synchronized (this) {
                     runOnCancelled = cancelled && (future != null);
@@ -904,7 +912,9 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
                 
                 if (errorInfo != null && ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP.equals(errorInfo.getAction())) {
-                    goingTo = workingOn;
+                    synchronized (this) {
+                        goingTo = workingOn;
+                    }
                 }
                 
                 workingOn--;
