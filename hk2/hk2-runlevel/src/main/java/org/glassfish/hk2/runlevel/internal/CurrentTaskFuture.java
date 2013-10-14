@@ -98,7 +98,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             long cancelTimeout,
             Timer timer) {
         this.asyncContext = asyncContext;
-        this.executor = (useThreads) ? executor : null;
+        this.executor = executor;
         this.locator = locator;
         this.proposedLevel = proposedLevel;
         this.useThreads = useThreads;
@@ -824,7 +824,14 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private boolean done = false;
         private boolean repurposed = false;
         
-        // private MultiException serviceDownErrors = null;
+        private Throwable lastError = null;
+        private ActiveDescriptor<?> lastErrorDescriptor = null;
+        
+        private boolean queueWaiter = false;
+        private List<ActiveDescriptor<?>> queue;
+        private boolean downHardCancelled = false;
+        
+        private HardCancelDownTimer hardCancelDownTimer = null;
         
         public DownAllTheWay(int goingTo,
                 CurrentTaskFuture future,
@@ -844,8 +851,35 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         }
         
         private void cancel() {
+            List<ActiveDescriptor<?>> localQueue;
+            
             synchronized (this) {
+                if (cancelled) return; // idempotent
                 cancelled = true;
+                
+                if (queue == null) {
+                    queueWaiter = true;
+                    
+                    while (!done && queue == null) {
+                        try {
+                            this.wait();
+                        }
+                        catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    
+                    if (done) return;
+                }
+                
+                localQueue = queue;
+            }
+                
+            synchronized (localQueue) {
+                if (localQueue.isEmpty()) return;
+                
+                hardCancelDownTimer = new HardCancelDownTimer(this, localQueue, timer, cancelTimeout);
+                timer.schedule(hardCancelDownTimer, cancelTimeout);
             }
         }
         
@@ -868,7 +902,9 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         public void run() {
             while (workingOn > getGoingTo()) {
                 boolean runOnCancelled;
+                boolean localCancelled;
                 synchronized (this) {
+                    localCancelled = cancelled;
                     runOnCancelled = cancelled && (future != null);
                 }
                 
@@ -878,7 +914,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
                 
                 synchronized (this) {
-                    if (cancelled) {
+                    if (localCancelled) {
                         done = true;
                         this.notifyAll();
                         
@@ -896,19 +932,60 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 asyncContext.setCurrentLevel(proceedingTo);
                 
                 // But we don't call the proceedTo until all those services are gone
-                List<ActiveDescriptor<?>> toRemove = asyncContext.getOrderedListOfServicesAtLevel(workingOn);
+                List<ActiveDescriptor<?>> localQueue = asyncContext.getOrderedListOfServicesAtLevel(workingOn);
+                synchronized(this) {
+                    queue = localQueue;
+                    if (queueWaiter) {
+                        this.notifyAll();
+                    }
+                    queueWaiter = false;
+                }
                 
                 ErrorInformation errorInfo = null;
-                for (ActiveDescriptor<?> removeMe : toRemove) {
-                    try {
-                        locator.getServiceHandle(removeMe).destroy();
-                    }
-                    catch (Throwable th) {
-                        if (future != null) {
-                            errorInfo = invokeOnError(future, th, ErrorInformation.ErrorAction.IGNORE, listeners, removeMe);
+                synchronized (queue) {
+                    for (;;) {
+                        DownQueueRunner currentRunner = new DownQueueRunner(queue, queue, this, locator);
+                        executor.execute(currentRunner);
+                    
+                        lastError = null;
+                        for (;;) {
+                            while (!queue.isEmpty() && (lastError == null) && (downHardCancelled == false)) {
+                                try {
+                                    queue.wait();
+                                }
+                                catch (InterruptedException ie) {
+                                    throw new RuntimeException(ie);
+                                }
+                            }
+                            
+                            if (downHardCancelled) {
+                                currentRunner.caput = true;
+                            }
+                        
+                            if ((lastError != null) && (future != null)) {
+                                errorInfo = invokeOnError(future, lastError, ErrorInformation.ErrorAction.IGNORE, listeners, lastErrorDescriptor);
+                            }
+                            lastError = null;
+                            lastErrorDescriptor = null;
+                        
+                            if (queue.isEmpty() || downHardCancelled) {
+                                downHardCancelled = false;
+                                break;
+                            }
+                        }
+                        
+                        if (queue.isEmpty()) {
+                            if (hardCancelDownTimer != null) {
+                                hardCancelDownTimer.cancel();
+                            }
+                            
+                            break;
                         }
                     }
-                    
+                }
+                
+                synchronized(this) {
+                    queue = null;
                 }
                 
                 if (errorInfo != null && ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP.equals(errorInfo.getAction())) {
@@ -962,6 +1039,40 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             }
         }
         
+    }
+    
+    private static class HardCancelDownTimer extends TimerTask {
+        private final DownAllTheWay parent;
+        private final List<ActiveDescriptor<?>> queue;
+        private final Timer timer;
+        private final long cancelTimeout;
+        
+        private int lastQueueSize;
+        
+        private HardCancelDownTimer(DownAllTheWay parent, List<ActiveDescriptor<?>> queue, Timer timer, long cancelTimeout) {
+            this.parent = parent;
+            this.queue = queue;
+            this.timer = timer;
+            this.cancelTimeout = cancelTimeout;
+            lastQueueSize = queue.size();
+        }
+
+        @Override
+        public void run() {
+            synchronized (queue) {
+                int currentSize = queue.size();
+                if (currentSize == 0) return;
+                
+                if (currentSize == lastQueueSize) {
+                    parent.downHardCancelled = true;
+                    queue.notify();
+                }
+                else {
+                    lastQueueSize = currentSize;
+                    timer.schedule(this, cancelTimeout);
+                }
+            }
+        }
     }
     
     private static class QueueRunner implements Runnable {
@@ -1073,6 +1184,53 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
             }
         }
+    }
+    
+    private static class DownQueueRunner implements Runnable {
+        private final Object queueLock;
+        private final List<ActiveDescriptor<?>> queue;
+        private final DownAllTheWay parent;
+        private final ServiceLocator locator;
+        private boolean caput;
+        
+        private DownQueueRunner(Object queueLock,
+                List<ActiveDescriptor<?>> queue,
+                DownAllTheWay parent,
+                ServiceLocator locator) {
+            this.queueLock = queue;
+            this.queue = queue;
+            this.parent = parent;
+            this.locator = locator;
+        }
+
+        @Override
+        public void run() {
+            for (;;) {
+                ActiveDescriptor<?> job = null;
+                synchronized (queueLock) {
+                    if (caput) return;
+                    
+                    if (queue.isEmpty()) {
+                        queueLock.notify();
+                        return;
+                    }
+                    job = queue.remove(0);
+                }
+                
+                try {
+                    locator.getServiceHandle(job).destroy();
+                }
+                catch (Throwable th) {
+                    synchronized (queueLock) {
+                        parent.lastError = th;
+                        parent.lastErrorDescriptor = job;
+                        queueLock.notify();
+                    }
+                }
+            }
+            
+        }
+        
     }
     
     /* package */ final static boolean isWouldBlock(Throwable th) {

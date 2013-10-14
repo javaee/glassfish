@@ -105,5 +105,10 @@ public class CurrentTaskFutureWrapper implements RunLevelFuture {
     /* package */ CurrentTaskFuture getDelegate() {
         return delegate;
     }
+    
+    @Override
+    public String toString() {
+        return "CurrentTaskFutureWrapper(" + delegate.toString() + "," + System.identityHashCode(this ) + ")";
+    }
 
 }

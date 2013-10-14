@@ -63,7 +63,7 @@ public class CancelTest {
      * @throws ExecutionException 
      * @throws InterruptedException 
      */
-    @Test 
+    @Test
     public void testForcedCancel() throws InterruptedException, ExecutionException, TimeoutException {
         ServiceLocator locator = Utilities.getServiceLocator(BlockingService.class);
         
@@ -185,7 +185,7 @@ public class CancelTest {
      * @throws InterruptedException 
      * @throws TimeoutException 
      */
-    @Test @Ignore
+    @Test
     public void testDownCancelWithBlockedService() throws InterruptedException, ExecutionException, TimeoutException {
         ServiceLocator locator = Utilities.getServiceLocator(BlockingPreDestroyService.class,
                 CountingDestructionService.class,
@@ -199,7 +199,7 @@ public class CancelTest {
             RunLevelController rlc = locator.getService(RunLevelController.class);
             rlc.setThreadingPolicy(ThreadingPolicy.FULLY_THREADED);
             rlc.setMaximumUseableThreads(1);
-            rlc.setCancelTimeoutMilliseconds(10);
+            rlc.setCancelTimeoutMilliseconds(1000);
             
             RunLevelFuture future = rlc.proceedToAsync(5);
             future.get();

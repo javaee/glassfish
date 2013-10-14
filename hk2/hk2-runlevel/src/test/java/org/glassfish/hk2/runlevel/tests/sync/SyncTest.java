@@ -63,7 +63,8 @@ public class SyncTest {
     public void testUseNoThreadsPolicy() {
         ServiceLocator locator = Utilities.getServiceLocator(
                 ServiceWithThreadLocal.class,
-                ThreadSensitiveService.class);
+                ThreadSensitiveService.class,
+                ListenerService.class);
         
         ServiceWithThreadLocal threadLocal = locator.getService(ServiceWithThreadLocal.class);
         Assert.assertFalse(threadLocal.wasUpToggled());
