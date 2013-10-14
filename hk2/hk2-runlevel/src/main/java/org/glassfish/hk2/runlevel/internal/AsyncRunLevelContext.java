@@ -114,7 +114,7 @@ public class AsyncRunLevelContext {
     
     private final LinkedList<ActiveDescriptor<?>> orderedCreationList = new LinkedList<ActiveDescriptor<?>>();
     
-    private Executor executor;
+    private Executor executor = DEFAULT_EXECUTOR;
     private final ServiceLocator locator;
     private int maxThreads = Integer.MAX_VALUE;
     private RunLevelController.ThreadingPolicy policy = RunLevelController.ThreadingPolicy.FULLY_THREADED;
@@ -359,11 +359,16 @@ public class AsyncRunLevelContext {
     }
     
     /* package */ synchronized void setExecutor(Executor executor) {
-        this.executor = executor;
+        if (executor == null) {
+            this.executor = DEFAULT_EXECUTOR;
+        }
+        else {
+            this.executor = executor;
+        }
     }
     
     /* package */ synchronized Executor getExecutor() {
-        return (executor != null) ? executor : DEFAULT_EXECUTOR ;
+        return executor;
     }
     
     /* package */ synchronized RunLevelController.ThreadingPolicy getPolicy() {
@@ -406,7 +411,7 @@ public class AsyncRunLevelContext {
             }
             
             currentTask = new CurrentTaskFutureWrapper(new CurrentTaskFuture(this,
-                    (executor != null) ? executor : DEFAULT_EXECUTOR,
+                    executor,
                     locator,
                     level,
                     maxThreads,

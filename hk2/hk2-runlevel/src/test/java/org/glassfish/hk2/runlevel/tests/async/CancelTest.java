@@ -54,6 +54,7 @@ import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.annotations.Service;
 
@@ -213,7 +214,7 @@ public class CancelTest {
             lock.notify();
         }
         
-        future.get(20, TimeUnit.SECONDS);
+        future.get(60, TimeUnit.SECONDS);
         
         Assert.assertEquals(1, controller.getCurrentRunLevel());
         Assert.assertTrue(future.isDone());

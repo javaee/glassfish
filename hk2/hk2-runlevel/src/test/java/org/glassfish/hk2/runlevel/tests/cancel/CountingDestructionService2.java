@@ -42,10 +42,13 @@ package org.glassfish.hk2.runlevel.tests.cancel;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.glassfish.hk2.runlevel.RunLevel;
+
 /**
  * @author jwells
  *
  */
+@RunLevel(5)
 public class CountingDestructionService2 {
     private final static Object lock = new Object();
     private static int destroyedCount;

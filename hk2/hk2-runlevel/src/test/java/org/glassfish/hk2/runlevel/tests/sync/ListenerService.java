@@ -37,52 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel.tests.cancel;
+package org.glassfish.hk2.runlevel.tests.sync;
 
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.runlevel.RunLevel;
+import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
+import org.glassfish.hk2.runlevel.ErrorInformation;
+import org.glassfish.hk2.runlevel.RunLevelFuture;
+import org.glassfish.hk2.runlevel.RunLevelListener;
 
 /**
  * @author jwells
  *
  */
-@RunLevel(5)
-public class BlockingPreDestroyService {
-    private final static Object lock = new Object();
-    private static boolean go = false;
-    
-    @SuppressWarnings("unused")
+@Singleton
+public class ListenerService implements RunLevelListener {
     @Inject
-    private CountingDestructionService dependency;
-    
-    /* package */ static void clear() {
-        synchronized (lock) {
-            go = false;
-        }
-    }
-    
-    @PreDestroy
-    private void preDestroy() {
-        synchronized (lock) {
-            while (!go) {
-                try {
-                    lock.wait();
-                }
-                catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
+    private ServiceWithThreadLocal threadService;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.RunLevelListener#onProgress(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
+     */
+    @Override
+    public void onProgress(ChangeableRunLevelFuture currentJob,
+            int levelAchieved) {
+        if (currentJob.isUp()) return;
+        if (levelAchieved != 0) return;
         
+        threadService.toggleDown();
     }
-    
-    /* package */ static void go() {
-        synchronized (lock) {
-            go = true;
-            lock.notifyAll();
-        }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.RunLevelListener#onCancelled(org.glassfish.hk2.runlevel.RunLevelFuture, int)
+     */
+    @Override
+    public void onCancelled(RunLevelFuture currentJob, int levelAchieved) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.RunLevelListener#onError(org.glassfish.hk2.runlevel.RunLevelFuture, org.glassfish.hk2.runlevel.ErrorInformation)
+     */
+    @Override
+    public void onError(RunLevelFuture currentJob,
+            ErrorInformation errorInformation) {
+        // TODO Auto-generated method stub
+
     }
 
 }

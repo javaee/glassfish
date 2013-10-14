@@ -54,17 +54,9 @@ import org.jvnet.hk2.annotations.Service;
 public class ThreadSensitiveService {
     @Inject
     private ServiceWithThreadLocal threadLocalService;
-    
-    @SuppressWarnings("unused")
+   
     @PostConstruct
     private void postConstruct() {
         threadLocalService.toggleUp();
     }
-    
-    @SuppressWarnings("unused")
-    @PreDestroy
-    private void preDestroy() {
-        threadLocalService.toggleDown();
-    }
-
 }
