@@ -878,8 +878,8 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             synchronized (localQueue) {
                 if (localQueue.isEmpty()) return;
                 
-                hardCancelDownTimer = new HardCancelDownTimer(this, localQueue, timer, cancelTimeout);
-                timer.schedule(hardCancelDownTimer, cancelTimeout);
+                hardCancelDownTimer = new HardCancelDownTimer(this, localQueue);
+                timer.schedule(hardCancelDownTimer, cancelTimeout, cancelTimeout);
             }
         }
         
@@ -1044,16 +1044,12 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     private static class HardCancelDownTimer extends TimerTask {
         private final DownAllTheWay parent;
         private final List<ActiveDescriptor<?>> queue;
-        private final Timer timer;
-        private final long cancelTimeout;
         
         private int lastQueueSize;
         
-        private HardCancelDownTimer(DownAllTheWay parent, List<ActiveDescriptor<?>> queue, Timer timer, long cancelTimeout) {
+        private HardCancelDownTimer(DownAllTheWay parent, List<ActiveDescriptor<?>> queue) {
             this.parent = parent;
             this.queue = queue;
-            this.timer = timer;
-            this.cancelTimeout = cancelTimeout;
             lastQueueSize = queue.size();
         }
 
@@ -1069,7 +1065,6 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
                 else {
                     lastQueueSize = currentSize;
-                    timer.schedule(this, cancelTimeout);
                 }
             }
         }

@@ -39,46 +39,67 @@
  */
 package org.glassfish.hk2.runlevel.tests.cancel;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.runlevel.RunLevel;
-import org.jvnet.hk2.annotations.Optional;
 
 /**
  * @author jwells
  *
  */
 @RunLevel(5)
-public class CountingDestructionService2 {
+public class BlockingPreDestroyService2 {
     private final static Object lock = new Object();
-    private static int destroyedCount;
+    private static boolean inPreDestroy = false;
+    private static boolean go = false;
     
     @SuppressWarnings("unused")
     @Inject
     private BlockingPreDestroyService dependency;
     
-    @Inject @Optional
-    private BlockingPreDestroyService2 dependency2;
-    
     /* package */ static void clear() {
         synchronized (lock) {
-            destroyedCount = 0;
+            inPreDestroy = false;
+            go = false;
+        }
+    }
+    
+    /* package */ static void waitUntilInPreDestroy() throws InterruptedException {
+        synchronized (lock) {
+            while (!inPreDestroy) {
+                lock.wait();
+            }
         }
     }
     
     @PreDestroy
     private void preDestroy() {
         synchronized (lock) {
-            destroyedCount++;
+            inPreDestroy = true;
+            lock.notifyAll();
+        }
+        
+        synchronized (lock) {
+            while (!go) {
+                try {
+                    lock.wait();
+                }
+                catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         
     }
     
-    /* package */ static int getDestructionCount() {
+    /* package */ static void go() {
         synchronized (lock) {
-            return destroyedCount;
+            go = true;
+            lock.notifyAll();
         }
     }
+
 
 }
