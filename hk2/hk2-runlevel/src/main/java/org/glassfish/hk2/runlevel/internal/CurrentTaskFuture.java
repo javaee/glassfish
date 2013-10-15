@@ -915,7 +915,10 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 
                 synchronized (this) {
                     if (localCancelled) {
+                        asyncContext.jobDone();
+                        
                         done = true;
+                        
                         this.notifyAll();
                         
                         return;
