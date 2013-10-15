@@ -291,8 +291,9 @@ public class CancelTest {
      * Tests that a blocked cancelled downward service can
      * be cancelled, waited for and continued downward on
      * a different thread
+     * @throws Throwable Lots of things can fail
      */
-    @Test @Ignore
+    @Test
     public void testRestartStalledDownOnDifferentThread() throws Throwable {
         ServiceLocator locator = Utilities.getServiceLocator(BlockingPreDestroyService.class,
                 CountingDestructionService.class,
