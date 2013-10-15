@@ -49,6 +49,7 @@ import org.glassfish.hk2.runlevel.RunLevelController.ThreadingPolicy;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -284,6 +285,105 @@ public class CancelTest {
             BlockingPreDestroyService2.go();
         }
         
+    }
+    
+    /**
+     * Tests that a blocked cancelled downward service can
+     * be cancelled, waited for and continued downward on
+     * a different thread
+     */
+    @Test @Ignore
+    public void testRestartStalledDownOnDifferentThread() throws Throwable {
+        ServiceLocator locator = Utilities.getServiceLocator(BlockingPreDestroyService.class,
+                CountingDestructionService.class,
+                LevelThreeService.class);
+        
+        CountingDestructionService.clear();
+        BlockingPreDestroyService.clear();
+        
+        try {
+            RunLevelController rlc = locator.getService(RunLevelController.class);
+            rlc.setThreadingPolicy(ThreadingPolicy.FULLY_THREADED);
+            rlc.setMaximumUseableThreads(1);
+            rlc.setCancelTimeoutMilliseconds(1000);
+            
+            rlc.proceedTo(5);
+            
+            LevelThreeService lts = locator.getService(LevelThreeService.class);
+            Assert.assertFalse(lts.isShutdown());
+            
+            RunLevelFuture future = rlc.proceedToAsync(0);
+            
+            // Now start thread that will truly go down
+            GoesTheRestOfTheWayDown downer = new GoesTheRestOfTheWayDown(rlc);
+            Thread th = new Thread(downer);
+            th.start();
+            
+            future.get(20, TimeUnit.SECONDS);
+            
+            downer.waitForCompletion();
+            
+            Assert.assertTrue(lts.isShutdown());
+            
+            Assert.assertEquals(0, rlc.getCurrentRunLevel());
+            
+        }
+        finally {
+            BlockingPreDestroyService.go();
+        }
+        
+    }
+    
+    private static class GoesTheRestOfTheWayDown implements Runnable {
+        private final RunLevelController rlc;
+        private final Object waiterLock = new Object();
+        private boolean done = false;
+        private Throwable exception = null;
+        
+        private GoesTheRestOfTheWayDown(RunLevelController rlc) {
+            this.rlc = rlc;
+        }
+        
+        private void internalRun() throws Throwable {
+            RunLevelFuture currentProceeding = rlc.getCurrentProceeding();
+            Assert.assertNotNull(currentProceeding);
+            
+            currentProceeding.cancel(false);
+            
+            currentProceeding.get(20, TimeUnit.SECONDS);
+            
+            // OK, the rest of the way down is done from *this* thread
+            
+            rlc.proceedTo(0);
+        }
+
+        @Override
+        public void run() {
+            try {
+                internalRun();
+                synchronized (waiterLock) {
+                    done = true;
+                    waiterLock.notify();
+                }
+            }
+            catch (Throwable th) {
+                synchronized (waiterLock) {
+                    exception = th;
+                    waiterLock.notify();
+                }
+            }
+            
+        }
+        
+        private void waitForCompletion() throws Throwable {
+            synchronized (waiterLock) {
+                while((exception == null) && !done) {
+                    waiterLock.wait();
+                }
+                
+                if (exception != null) throw exception;
+            }
+        }
     }
 
 }
