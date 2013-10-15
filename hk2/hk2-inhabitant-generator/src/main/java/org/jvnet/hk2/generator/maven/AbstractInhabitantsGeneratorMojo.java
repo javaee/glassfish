@@ -163,7 +163,7 @@ public abstract class AbstractInhabitantsGeneratorMojo extends AbstractMojo {
         if (isWar()) {
             // For WAR files, the hk2-locator files goes under WEB-INF/classes/hk2-locator, not META-INF/hk2-locator
             
-            File outDir = new File(targetDirectory, project.getArtifactId());
+            File outDir = new File(targetDirectory, project.getBuild().getFinalName());
             outDir = new File(outDir, WEB_INF);
             outDir = new File(outDir, CLASSES);
             outDir = new File(outDir, HabitatGenerator.HK2_LOCATOR);
