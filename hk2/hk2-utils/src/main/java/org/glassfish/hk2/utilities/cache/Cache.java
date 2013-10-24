@@ -54,6 +54,8 @@ import java.util.concurrent.TimeoutException;
  * authored by Brian Goetz and company.
  *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
+ * @param <K> The type of the key of the cache
+ * @param <V> The type of the values in the cache
  */
 public class Cache<K,V> implements Computable<K,V> {
 
@@ -83,8 +85,8 @@ public class Cache<K,V> implements Computable<K,V> {
      * before the computation stops, a cycle is detected and registered cycle handler is called.
      */
     private class OriginThreadAwareFuture implements Future<V>{
-        long threadId;
-        final FutureTask<V> future;
+        private volatile long threadId;
+        private final FutureTask<V> future;
 
         OriginThreadAwareFuture(Cache<K, V> cache, final K key) {
             this.threadId = Thread.currentThread().getId();
@@ -106,6 +108,7 @@ public class Cache<K,V> implements Computable<K,V> {
             return future.hashCode();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean equals(Object obj) {
             if (obj == null) {
@@ -114,6 +117,7 @@ public class Cache<K,V> implements Computable<K,V> {
             if (getClass() != obj.getClass()) {
                 return false;
             }
+            
             final OriginThreadAwareFuture other = (OriginThreadAwareFuture) obj;
             if (this.future != other.future && (this.future == null || !this.future.equals(other.future))) {
                 return false;
@@ -150,6 +154,12 @@ public class Cache<K,V> implements Computable<K,V> {
             future.run();
         }
     }
+    
+    private static final CycleHandler<Object> EMPTY_HANDLER = new CycleHandler<Object>() {
+        @Override
+        public void handleCycle(Object key) {
+        }
+    };
 
     private final ConcurrentHashMap<K, OriginThreadAwareFuture> cache = new ConcurrentHashMap<K, OriginThreadAwareFuture>();
     private final Computable<K, V> computable;
@@ -160,12 +170,9 @@ public class Cache<K,V> implements Computable<K,V> {
      *
      * @param computable
      */
+    @SuppressWarnings("unchecked")
     public Cache(Computable<K, V> computable) {
-        this(computable, new CycleHandler<K>() {
-            @Override
-            public void handleCycle(K key) {
-            }
-        });
+        this(computable, (CycleHandler<K>) EMPTY_HANDLER);
     }
 
     /**
@@ -192,7 +199,9 @@ public class Cache<K,V> implements Computable<K,V> {
                     ft.run();
                 }
             } else {
-                if (Thread.currentThread().getId() == f.threadId) {
+                final long tid = f.threadId;
+                
+                if ((tid != -1) && (Thread.currentThread().getId() == f.threadId)) {
                     cycleHandler.handleCycle(key);
                 }
             }
