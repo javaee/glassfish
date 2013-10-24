@@ -65,6 +65,8 @@ import java.util.concurrent.TimeoutException;
  * authored by Brian Goetz and company.
  *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
+ * @param <K> The type for the keys in the cache
+ * @param <V> The type for the values in the cache
  */
 public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
 
@@ -97,11 +99,11 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
     /**
      * Helper class, that remembers the future task origin thread, so that cycles could be detected.
      */
-    private class OriginThreadAwareFuture implements Future<HybridCacheEntry<V>>{
-        final K key;
-        final FutureTask<HybridCacheEntry<V>> future;
-        long threadId;
-        long lastHit;
+    private class OriginThreadAwareFuture implements Future<HybridCacheEntry<V>> {
+        private final K key;
+        private final FutureTask<HybridCacheEntry<V>> future;
+        private volatile long threadId;
+        private volatile long lastHit;
 
         OriginThreadAwareFuture(LRUHybridCache<K, HybridCacheEntry<V>> cache, final K key) {
             this.key = key;
@@ -126,6 +128,7 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
             return future.hashCode();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean equals(Object obj) {
             if (obj == null) {
@@ -134,7 +137,7 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final LRUHybridCache.OriginThreadAwareFuture other = (LRUHybridCache.OriginThreadAwareFuture) obj;
+            final LRUHybridCache<K,V>.OriginThreadAwareFuture other = (LRUHybridCache<K,V>.OriginThreadAwareFuture) obj;
             if (this.future != other.future && (this.future == null || !this.future.equals(other.future))) {
                 return false;
             }
@@ -170,8 +173,14 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
             future.run();
         }
     }
+    
+    private static final LRUHybridCache.CycleHandler<Object> EMPTY_CYCLE_HANDLER = new LRUHybridCache.CycleHandler<Object>() {
+        @Override
+        public void handleCycle(Object key) {
+        }
+    };
 
-    private final ConcurrentHashMap<K, LRUHybridCache.OriginThreadAwareFuture> cache = new ConcurrentHashMap<K, LRUHybridCache.OriginThreadAwareFuture>();
+    private final ConcurrentHashMap<K, LRUHybridCache<K,V>.OriginThreadAwareFuture> cache = new ConcurrentHashMap<K, LRUHybridCache<K,V>.OriginThreadAwareFuture>();
     private final Computable<K, HybridCacheEntry<V>> computable;
 
     private final Object prunningLock = new Object();
@@ -179,21 +188,20 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
 
     /**
      * Create new cache with given computable to compute values.
-     * @param computable
+     * @param maxCacheSize The maximum number of entries in the cache
+     * @param computable The thing that can create the entry
      */
+    @SuppressWarnings("unchecked")
     public LRUHybridCache(int maxCacheSize, Computable<K, HybridCacheEntry<V>> computable) {
-        this(maxCacheSize, computable, new LRUHybridCache.CycleHandler<K>() {
-            @Override
-            public void handleCycle(K key) {
-            }
-        });
+        this(maxCacheSize, computable, (LRUHybridCache.CycleHandler<K>) EMPTY_CYCLE_HANDLER);
     }
 
     /**
      * Create new cache with given computable and cycleHandler.
      *
-     * @param computable
-     * @param cycleHandler
+     * @param maxCacheSize The maximum number of entries in the cache
+     * @param computable The thing that can create the entry
+     * @param cycleHandler What to do if a cycle is detected
      */
     public LRUHybridCache(int maxCacheSize, Computable<K,HybridCacheEntry<V>> computable, LRUHybridCache.CycleHandler<K> cycleHandler) {
         this.maxCacheSize = maxCacheSize;
@@ -201,21 +209,20 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
         this.cycleHandler = cycleHandler;
     }
 
-
-    private final class HybridCacheEntryImpl<V> implements HybridCacheEntry<V>{
+    private final class HybridCacheEntryImpl<V1> implements HybridCacheEntry<V1> {
 
         private final K key;
-        private final V value;
+        private final V1 value;
         private final boolean dropMe;
 
-        public HybridCacheEntryImpl(K key, V value, boolean dropMe) {
+        public HybridCacheEntryImpl(K key, V1 value, boolean dropMe) {
             this.key = key;
             this.value = value;
             this.dropMe = dropMe;
         }
 
         @Override
-        public V getValue() {
+        public V1 getValue() {
             return value;
         }
 
@@ -236,6 +243,7 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
             return hash;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean equals(Object obj) {
             if (obj == null) {
@@ -244,7 +252,7 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final HybridCacheEntryImpl<V> other = (HybridCacheEntryImpl<V>) obj;
+            final HybridCacheEntryImpl<V1> other = (HybridCacheEntryImpl<V1>) obj;
             if (this.key != other.key && (this.key == null || !this.key.equals(other.key))) {
                 return false;
             }
@@ -267,10 +275,11 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
     @Override
     public HybridCacheEntry<V> compute(final K key) {
         while (true) {
-            LRUHybridCache.OriginThreadAwareFuture f = cache.get(key);
+            LRUHybridCache<K,V>.OriginThreadAwareFuture f = cache.get(key);
 
             if (f == null) {
-                LRUHybridCache.OriginThreadAwareFuture ft = new LRUHybridCache.OriginThreadAwareFuture(this, key);
+                LRUHybridCache<K,V>.OriginThreadAwareFuture ft =
+                        new LRUHybridCache.OriginThreadAwareFuture(this, key);
 
                 synchronized (prunningLock) {
                     if (cache.size() + 1 > maxCacheSize) {
@@ -283,7 +292,9 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
                     ft.run();
                 }
             } else {
-                if (Thread.currentThread().getId() == f.threadId) {
+                long tid = f.threadId;
+                
+                if ((tid != -1) && (Thread.currentThread().getId() == f.threadId)) {
                     cycleHandler.handleCycle(key);
                 }
                 f.lastHit = System.nanoTime();
@@ -339,16 +350,16 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
      * cache item. An exception will be thrown if the cache is empty.
      */
     private void removeLRUItem() {
-        final Collection<LRUHybridCache.OriginThreadAwareFuture> values = cache.values();
+        final Collection<LRUHybridCache<K,V>.OriginThreadAwareFuture> values = cache.values();
         cache.remove((K)Collections.min(values, COMPARATOR).key);
     }
 
     private static final Comparator<LRUHybridCache.OriginThreadAwareFuture> COMPARATOR = new CacheEntryImplComparator();
 
-    private static class CacheEntryImplComparator implements Comparator<LRUHybridCache.OriginThreadAwareFuture> {
+    private static class CacheEntryImplComparator<K,V> implements Comparator<LRUHybridCache<K,V>.OriginThreadAwareFuture> {
 
         @Override
-        public int compare(LRUHybridCache.OriginThreadAwareFuture first, LRUHybridCache.OriginThreadAwareFuture second) {
+        public int compare(LRUHybridCache<K,V>.OriginThreadAwareFuture first, LRUHybridCache<K,V>.OriginThreadAwareFuture second) {
             final long diff = first.lastHit - second.lastHit;
             return diff > 0 ? 1 : diff == 0 ? 0 : -1;
         }
