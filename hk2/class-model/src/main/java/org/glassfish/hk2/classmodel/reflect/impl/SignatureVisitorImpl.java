@@ -40,6 +40,7 @@
 package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.InterfaceModel;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.signature.SignatureVisitor;
 
 import java.util.*;
@@ -49,7 +50,7 @@ import java.util.*;
  *
  * @author Jerome Dochez
  */
-public class SignatureVisitorImpl implements SignatureVisitor {
+public class SignatureVisitorImpl extends SignatureVisitor {
 
     private final TypeBuilder typeBuilder;
     private final Stack<ParameterizedInterfaceModelImpl> stack = new Stack<ParameterizedInterfaceModelImpl>();
@@ -58,6 +59,8 @@ public class SignatureVisitorImpl implements SignatureVisitor {
     private final List<ParameterizedInterfaceModelImpl> parameterizedIntf = new ArrayList<ParameterizedInterfaceModelImpl>();
 
     public SignatureVisitorImpl(TypeBuilder typeBuilder) {
+        super(Opcodes.ASM4);
+        
         this.typeBuilder = typeBuilder;
     }
 
