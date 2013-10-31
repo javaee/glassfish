@@ -169,9 +169,10 @@ public interface RunLevelController {
     public ThreadingPolicy getThreadingPolicy();
     
     /**
-     * Sets the executor to use for the next job.  This
-     * value is ignored if the thread policy is
-     * USE_NO_THREADS
+     * Sets the executor to use for the next job.
+     * This value will be used even if the policy
+     * is USE_NO_THREADS in order to support canceling
+     * hung threads
      * 
      * @param executor The executor to use for the
      * next job.  If null a default executor will
@@ -181,8 +182,9 @@ public interface RunLevelController {
     
     /**
      * Gets the executor that will be used by the system
-     * when executing tasks.  This value is not used
-     * by the system if the thread policy is USE_NO_THREADS
+     * when executing tasks.  This value will be used even if the policy
+     * is USE_NO_THREADS in order to support canceling
+     * hung threads
      * 
      * @return The currently installed executor.  Will
      * not return null (the default executor implementation
@@ -234,8 +236,12 @@ public interface RunLevelController {
         FULLY_THREADED,
         
         /**
-         * The RunLevelController will use no threads at all.
-         * The MaximumUsealbeThreads value will be ignored
+         * The RunLevelController will use a minimal number
+         * of threads.  However, some threads will still be
+         * used to support canceling jobs that have hung
+         * The MaximumUsealbeThreads value will be ignored,
+         * and only one extra thread will be used per non-hung
+         * proceedTo
          */
         USE_NO_THREADS
     }
