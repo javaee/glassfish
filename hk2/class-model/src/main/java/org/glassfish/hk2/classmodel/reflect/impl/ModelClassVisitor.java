@@ -42,7 +42,6 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.glassfish.hk2.classmodel.reflect.Type;
 import org.objectweb.asm.*;
-import org.objectweb.asm.commons.EmptyVisitor;
 import org.objectweb.asm.signature.SignatureReader;
 
 import java.net.URI;
@@ -56,7 +55,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @SuppressWarnings("unchecked")
-public class ModelClassVisitor implements ClassVisitor {
+public class ModelClassVisitor extends ClassVisitor {
 
     private static Logger logger = Logger.getLogger(ModelClassVisitor.class.getName());
   
@@ -78,6 +77,8 @@ public class ModelClassVisitor implements ClassVisitor {
 
     public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName,
                              boolean isApplicationClass) {
+        super(Opcodes.ASM4);
+        
         this.ctx = ctx;
         this.definingURI = definingURI;
         this.entryName = entryName;
@@ -319,11 +320,13 @@ public class ModelClassVisitor implements ClassVisitor {
         AnnotationModelImpl annotation;
     }
 
-    private class ModelMethodVisitor extends EmptyVisitor implements MethodVisitor {
+    private class ModelMethodVisitor extends MethodVisitor {
 
         private final MethodVisitingContext context;
 
         private ModelMethodVisitor(MemberVisitingContext context) {
+            super(Opcodes.ASM4);
+            
             this.context = new MethodVisitingContext(context.modelUnAnnotatedMembers);
         }
 
@@ -366,11 +369,12 @@ public class ModelClassVisitor implements ClassVisitor {
     }
     
     
-    private class ModelDefaultAnnotationVisitor extends EmptyVisitor implements AnnotationVisitor {
+    private class ModelDefaultAnnotationVisitor extends AnnotationVisitor {
 
       private final MethodVisitingContext context;
       
       public ModelDefaultAnnotationVisitor(MethodVisitingContext visitingContext) {
+          super(Opcodes.ASM4);
         this.context = visitingContext;
       }
 
@@ -381,11 +385,13 @@ public class ModelClassVisitor implements ClassVisitor {
     }
 
     
-    private class ModelFieldVisitor extends EmptyVisitor implements FieldVisitor {
+    private class ModelFieldVisitor extends FieldVisitor {
 
         private final FieldVisitingContext context;
 
         private ModelFieldVisitor(MemberVisitingContext context) {
+            super(Opcodes.ASM4);
+            
             this.context = new FieldVisitingContext(context.modelUnAnnotatedMembers);
         }
 
@@ -430,10 +436,12 @@ public class ModelClassVisitor implements ClassVisitor {
         }
     }
 
-    private class ModelAnnotationVisitor extends EmptyVisitor implements AnnotationVisitor {
+    private class ModelAnnotationVisitor extends AnnotationVisitor {
         private final AnnotationVisitingContext context;
 
         private ModelAnnotationVisitor() {
+            super(Opcodes.ASM4);
+            
             this.context = new AnnotationVisitingContext();
         }
 
@@ -445,6 +453,14 @@ public class ModelClassVisitor implements ClassVisitor {
         public void visit(String name, Object value) {
             if (context.annotation==null) return;
             context.annotation.addValue(name, value);
+        }
+        
+        @Override
+        public AnnotationVisitor visitArray(String name) {
+            if (context.annotation == null) return null;
+            context.annotation.addValue(name, null);
+            return null;
+            
         }
 
         @Override

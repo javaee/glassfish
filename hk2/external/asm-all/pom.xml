@@ -67,7 +67,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>asm</groupId>
+                                    <groupId>org.ow2.asm</groupId>
                                     <artifactId>asm-debug-all</artifactId>
                                     <version>${asm.version}</version>
                                     <classifier>sources</classifier>
@@ -147,7 +147,7 @@
     
     <dependencies>
         <dependency>
-            <groupId>asm</groupId>
+            <groupId>org.ow2.asm</groupId>
             <artifactId>asm-debug-all</artifactId>
             <version>${asm.version}</version>
             <optional>true</optional>

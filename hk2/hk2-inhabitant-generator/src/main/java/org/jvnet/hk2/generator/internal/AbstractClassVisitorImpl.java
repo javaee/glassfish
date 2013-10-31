@@ -44,12 +44,19 @@ import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * @author jwells
  *
  */
-public abstract class AbstractClassVisitorImpl implements ClassVisitor {
+public abstract class AbstractClassVisitorImpl extends ClassVisitor {
+    /**
+     * The constructor that gives the version we are implementing to the superclass
+     */
+    public AbstractClassVisitorImpl() {
+        super(Opcodes.ASM4);
+    }
 
     /* (non-Javadoc)
      * @see org.objectweb.asm.ClassVisitor#visit(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
