@@ -19,7 +19,7 @@ normally have a @PostConstruct or @PreDestroy method to be called when the servi
 stopped (but this is not required).Here is an example of a RunLevel service:
  
 ```java
-  @RunLevel(value=5)
+  @Service @RunLevel(value=5)
   public class LoggingRunLevelService {
     @PostConstruct
     private void startMe() {}
@@ -35,7 +35,7 @@ if the run level is dropped to 4 or lower.
 The following service is started at level 10:
 
 ```java
-  @RunLevel(value=10)
+  @Service @RunLevel(value=10)
   public class SecurityRunLevelService {
     @PostConstruct
     private void startMe() {}
@@ -156,12 +156,14 @@ the [RunLevelController][runlevelcontroller] will use as many threads as there a
 in the level.  This can be controlled with the setMaximumUseableThreads method of
 [RunLevelController][runlevelcontroller].
 
-Multi-threading can be turned off completely by using the setThreadingPolicy method to set
+Multi-threading can be turned off by using the setThreadingPolicy method to set
 the policy to RunLevelController.ThreadingPolicy.USE_NO_THREADS.
 If this is done then an IllegalStateException will be thrown from the proceedToAsync
 method, since in order to do asynchronous processing at least one thread must be used.  When
-the policy is USE_NO_THREADS all services will be started or stopped on the thread
-that calls the proceedTo method.
+the policy is USE_NO_THREADS all services will be started on the thread
+that calls the proceedTo method.  However, even in the USE_NO_THREADS mode a thread will
+be used when bringing services down in order to ensure that they can be canceled in
+the case of a hung service.
 
 In some cases it is necessary to use specialized threads on which to run the run-level
 services.  The [Executor][executor] that is used by the run level feature can be replaced
