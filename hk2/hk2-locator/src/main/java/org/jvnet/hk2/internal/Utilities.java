@@ -39,6 +39,9 @@
  */
 package org.jvnet.hk2.internal;
 
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
 import org.glassfish.hk2.utilities.cache.Cache;
 import org.glassfish.hk2.utilities.cache.Computable;
 import java.lang.annotation.Annotation;
@@ -73,9 +76,6 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 import javax.inject.Singleton;
-
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ClassAnalyzer;
@@ -2203,11 +2203,11 @@ public class Utilities {
 
     private static <T> T secureCreate(final Class<?> superclass,
             final Class<?>[] interfaces,
-            final MethodInterceptor callback,
+            final MethodHandler callback,
             boolean useJDKProxy) {
 
         /* construct the classloader where the generated proxy will be created --
-         * this classloader must have visibility into the cglib classloader as well as
+         * this classloader must have visibility into the javaassist classloader as well as
          * the superclass' classloader
          */
         final ClassLoader delegatingLoader = (ClassLoader) AccessController
@@ -2219,7 +2219,7 @@ public class Utilities {
                         // load from the superclass' classloader first,
                         // then hk2-locator's classloader second.
                         return new DelegatingClassLoader<T>(
-                                Enhancer.class.getClassLoader(), superclass.getClassLoader());
+                                ProxyFactory.class.getClassLoader(), superclass.getClassLoader());
                     }
                 });
 
@@ -2243,13 +2243,21 @@ public class Utilities {
             @SuppressWarnings("unchecked")
             @Override
             public T run() {
-                EnhancerWithClassLoader<T> e = new EnhancerWithClassLoader<T>(delegatingLoader);
+                ProxyFactory proxyFactory = new ProxyFactory();
+                proxyFactory.setInterfaces(interfaces);
+                proxyFactory.setSuperclass(superclass);
 
-                e.setSuperclass(superclass);
-                e.setInterfaces(interfaces);
-                e.setCallback(callback);
+                Class<?> proxyClass = proxyFactory.createClass();
 
-                return (T) e.create();
+                try {
+                    T proxy = (T) proxyClass.newInstance();
+
+                    ((ProxyObject) proxy).setHandler(callback);
+
+                    return proxy;
+                } catch (Exception e1) {
+                    throw new RuntimeException(e1);
+                }
             }
 
         });
@@ -2496,16 +2504,16 @@ public class Utilities {
     }
 
     private static class MethodInterceptorInvocationHandler implements InvocationHandler {
-        private final MethodInterceptor interceptor;
+        private final MethodHandler interceptor;
 
-        private MethodInterceptorInvocationHandler(MethodInterceptor interceptor) {
+        private MethodInterceptorInvocationHandler(MethodHandler interceptor) {
             this.interceptor = interceptor;
         }
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args)
                 throws Throwable {
-            return interceptor.intercept(proxy, method, args, null);
+            return interceptor.invoke (proxy, method, null, args);
         }
 
     }

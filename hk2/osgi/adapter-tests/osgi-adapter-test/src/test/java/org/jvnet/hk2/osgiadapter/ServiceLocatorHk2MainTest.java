@@ -71,8 +71,8 @@ public class ServiceLocatorHk2MainTest {
 						"javax.inject").version(projectVersion).startLevel(4)),
  				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
                                                 "bean-validator").version(projectVersion).startLevel(4)),
-				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
-						"cglib").version(projectVersion).startLevel(4)),
+				provision(mavenBundle().groupId("org.javassist").artifactId(
+						"javassist").version("3.18.1-GA").startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
 						"asm-all-repackaged").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID)

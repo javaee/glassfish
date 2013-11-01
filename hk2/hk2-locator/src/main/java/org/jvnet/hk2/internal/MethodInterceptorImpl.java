@@ -41,20 +41,18 @@ package org.jvnet.hk2.internal;
 
 import java.lang.reflect.Method;
 
+import javassist.util.proxy.MethodHandler;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-
 /**
  * @author jwells
- *
+ * @author mtaube
  */
-public class MethodInterceptorImpl implements MethodInterceptor {
+public class MethodInterceptorImpl implements MethodHandler {
     private final static String PROXY_MORE_METHOD_NAME = "__make";
     
     private final ServiceLocatorImpl locator;
@@ -67,30 +65,26 @@ public class MethodInterceptorImpl implements MethodInterceptor {
         this.root = root;
     }
 
-    /* (non-Javadoc)
-     * @see net.sf.cglib.proxy.MethodInterceptor#intercept(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], net.sf.cglib.proxy.MethodProxy)
-     */
     @Override
-    public Object intercept(Object target, Method method, Object[] params,
-            MethodProxy proxy) throws Throwable {
+    public Object invoke(Object target, Method method, Method proceed, Object[] params) throws Throwable {
         Context<?> context;
         Object service;
-        
+
         context = locator.resolveContext(descriptor.getScopeAnnotation());
         service = context.findOrCreate(descriptor, root);
-        
+
         if (service == null) {
             throw new MultiException(new IllegalStateException("Proxiable context " +
                     context + " findOrCreate returned a null for descriptor " + descriptor +
                     " and handle " + root));
         }
-        
+
         if (method.getName().equals(PROXY_MORE_METHOD_NAME)) {
             // We did what we came here to do
             return service;
         }
-        
-        return ReflectionHelper.invoke(service, method, params, locator.getNeutralContextClassLoader());
-    }
 
+        return ReflectionHelper.invoke(service, method, params, locator.getNeutralContextClassLoader());
+
+    }
 }
