@@ -95,7 +95,7 @@ grant codeBase "file:${user.dir}/bin/-" {
   permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
   permission java.lang.RuntimePermission "accessDeclaredMembers";
   permission java.lang.RuntimePermission "setContextClassLoader";
-  permission java.util.PropertyPermission "cglib.*", "read";
+  permission java.util.PropertyPermission "javassist.*", "read";
   permission java.util.PropertyPermission "org.jvnet.*", "read";
   
   // For the test
@@ -109,8 +109,9 @@ grant codeBase "file:${build.dir}/classes/-" {
   permission java.lang.RuntimePermission "accessDeclaredMembers";
   permission java.lang.RuntimePermission "setContextClassLoader";
   permission java.lang.RuntimePermission "createClassLoader";
-  permission java.util.PropertyPermission "cglib.*", "read";
+  permission java.util.PropertyPermission "javassist.*", "read";
   permission java.util.PropertyPermission "org.jvnet.*", "read";
+  permission java.lang.RuntimePermission "getProtectionDomain";
 };
 
 // This is the grant that should contain the minimal grants necessary

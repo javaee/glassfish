@@ -60,6 +60,7 @@
         <hibernate-validator.version>5.0.0.Final</hibernate-validator.version>
         <testng.version>6.8.7</testng.version>
         <assertj.version>1.4.0</assertj.version>
+        <javassist.version>3.18.1-GA</javassist.version>
     </properties>
     
     <name>HK2 Bom Pom</name>
@@ -172,11 +173,6 @@
             <dependency>
                 <groupId>org.glassfish.hk2.external</groupId>
                 <artifactId>bean-validator-cdi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.hk2.external</groupId>
-                <artifactId>cglib</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -334,6 +330,11 @@
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>guice-bridge</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
