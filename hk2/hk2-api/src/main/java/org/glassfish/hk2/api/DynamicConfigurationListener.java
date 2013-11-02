@@ -39,53 +39,27 @@
  */
 package org.glassfish.hk2.api;
 
-import java.util.Set;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This is added to {@link ServiceLocatorFactory} in order to listen on service locators
- * coming and going.  This listener will only be notified about named ServiceLocators.
- * ServiceLocators that are created with a generated name are not tracked by the
- * system.  Implementations of this interface must be able to be stored in a HashMap
- * 
+ * A service that listens for dynamic configuration changes.
+ * Implementations of this service must be in the Singleton
+ * scope.
  * @author jwells
  *
  */
-public interface ServiceLocatorListener {
+@Contract
+public interface DynamicConfigurationListener {
     /**
-     * This method returns the complete list of named service
-     * locators at the time that this listener is registered.  The list
-     * may be empty.  
-     * <p>
-     * Any exceptions thrown from this method will be logged
-     * and ignored.  If an exception is thrown from
-     * this method then this listener will NOT be added
-     * to the set of listeners notified by the system
-     * 
-     * @param initialLocators The set of locators available when
-     * the listener is registered
+     * This method is called when the set of descriptors
+     * in this service locator has been changed.  Changes to
+     * parent service locators descriptors will not be reported.
+     * These services are called back on the thread doing the
+     * {@link DynamicConfiguration#commit()} so care should be taken
+     * to do any work quickly.  Any exception thrown from this method
+     * will be ignored.  A commit that failed will not be reported to
+     * this method
      */
-    public void initialize(Set<ServiceLocator> initialLocators);
-    
-    /**
-     * This method is called whenever a named ServiceLocator has been
-     * added to the set of ServiceLocators
-     * <p>
-     * Any exceptions thrown from this method will be logged
-     * and ignored
-     * 
-     * @param added The non-null ServiceLocator that is to be added
-     */
-    public void listenerAdded(ServiceLocator added);
-    
-    /**
-     * This method is called whenever a named ServiceLocator will be
-     * removed from the set of ServiceLocators
-     * <p>
-     * Any exceptions thrown from this method will be logged
-     * and ignored
-     * 
-     * @param destroyed The non-null ServiceLocator that is to be destroyed
-     */
-    public void listenerDestroyed(ServiceLocator destroyed);
+    public void configurationChanged();
 
 }

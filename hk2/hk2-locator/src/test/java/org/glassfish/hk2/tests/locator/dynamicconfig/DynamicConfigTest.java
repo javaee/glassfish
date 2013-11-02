@@ -60,6 +60,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
 /**
@@ -391,5 +392,220 @@ public class DynamicConfigTest {
         
         Assert.assertEquals(DescriptorVisibility.LOCAL, ad.getDescriptorVisibility());
         
+    }
+    
+    /**
+     * Tests that a dynamic configuration listener is invoked when a change
+     * is made (including the one that added it)!
+     */
+    @Test
+    public void testBasicConfigurationListener() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        // Just add in the listener
+        List<ActiveDescriptor<?>> listenerDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                DynamicConfigurationListenerImpl.class);
+        
+        DynamicConfigurationListenerImpl listener = locator.getService(DynamicConfigurationListenerImpl.class);
+        
+        Assert.assertEquals(1, listener.getConfigurationChanges());
+        
+        List<ActiveDescriptor<?>> serviceDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                SimpleService.class);
+        
+        Assert.assertEquals(2, listener.getConfigurationChanges());
+        
+        // Make sure remove also shows up
+        ServiceLocatorUtilities.removeOneDescriptor(locator, serviceDescriptors.get(0));
+        
+        Assert.assertEquals(3, listener.getConfigurationChanges());
+        
+        // Put it back so we can remove it after we take the listener away
+        serviceDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                SimpleService.class);
+        
+        Assert.assertEquals(4, listener.getConfigurationChanges());
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, listenerDescriptors.get(0));
+        
+        // Because it is now gone, it is never notified of its own demise
+        Assert.assertEquals(4, listener.getConfigurationChanges());
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, serviceDescriptors.get(0));
+        
+        // And because it is still gone it will continue to not get notifications
+        Assert.assertEquals(4, listener.getConfigurationChanges());
+    }
+    
+    /**
+     * Tests that a multiple dynamic configuration listeners are invoked when a change
+     * is made (including the one that added it)!
+     */
+    @Test
+    public void testMultipleConfigurationListeners() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        // Just add in the listener
+        List<ActiveDescriptor<?>> listenerDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                DynamicConfigurationListenerImpl.class,
+                DynamicConfigurationListenerImpl.class,
+                DynamicConfigurationListenerImpl.class);
+        
+        List<DynamicConfigurationListenerImpl> listeners = locator.getAllServices(DynamicConfigurationListenerImpl.class);
+        Assert.assertEquals(3, listeners.size());
+        
+        DynamicConfigurationListenerImpl listener0 = listeners.get(0);
+        DynamicConfigurationListenerImpl listener1 = listeners.get(1);
+        DynamicConfigurationListenerImpl listener2 = listeners.get(2);
+        
+        Assert.assertEquals(1, listener0.getConfigurationChanges());
+        Assert.assertEquals(1, listener1.getConfigurationChanges());
+        Assert.assertEquals(1, listener2.getConfigurationChanges());
+        
+        List<ActiveDescriptor<?>> serviceDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                SimpleService.class);
+        
+        Assert.assertEquals(2, listener0.getConfigurationChanges());
+        Assert.assertEquals(2, listener1.getConfigurationChanges());
+        Assert.assertEquals(2, listener2.getConfigurationChanges());
+        
+        // Make sure remove also shows up
+        ServiceLocatorUtilities.removeOneDescriptor(locator, serviceDescriptors.get(0));
+        
+        Assert.assertEquals(3, listener0.getConfigurationChanges());
+        Assert.assertEquals(3, listener1.getConfigurationChanges());
+        Assert.assertEquals(3, listener2.getConfigurationChanges());
+        
+        // Put it back so we can remove it after we take the listener away
+        serviceDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                SimpleService.class);
+        
+        Assert.assertEquals(4, listener0.getConfigurationChanges());
+        Assert.assertEquals(4, listener1.getConfigurationChanges());
+        Assert.assertEquals(4, listener2.getConfigurationChanges());
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, listenerDescriptors.get(0));
+        
+        // Because it is now gone, it is never notified of its own demise
+        Assert.assertEquals(4, listener0.getConfigurationChanges());
+        
+        // But the other two will still hear it!
+        Assert.assertEquals(5, listener1.getConfigurationChanges());
+        Assert.assertEquals(5, listener2.getConfigurationChanges());
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, serviceDescriptors.get(0));
+        
+        // And because it is still gone it will continue to not get notifications
+        Assert.assertEquals(4, listener0.getConfigurationChanges());
+        
+        // But the other two are still there!
+        Assert.assertEquals(6, listener1.getConfigurationChanges());
+        Assert.assertEquals(6, listener2.getConfigurationChanges());
+    }
+    
+    /**
+     * Tests that only the descriptors for a specific service locator
+     * are called, not the ones for the parent and/or child
+     */
+    @Test
+    public void testParentedConfigurationListener() {
+        ServiceLocator parent = LocatorHelper.create();
+        ServiceLocator child = LocatorHelper.create(parent);
+        
+        // Just add in the listeners
+        ServiceLocatorUtilities.addClasses(parent,
+                DynamicConfigurationListenerImpl.class);
+        
+        ServiceLocatorUtilities.addClasses(child,
+                DynamicConfigurationListenerImpl.class);
+        
+        DynamicConfigurationListenerImpl parentListener = parent.getService(DynamicConfigurationListenerImpl.class);
+        DynamicConfigurationListenerImpl childListener = child.getService(DynamicConfigurationListenerImpl.class);
+        
+        // Both only one, because they both only recorded the changes made directly to its locator
+        Assert.assertEquals(1, parentListener.getConfigurationChanges());
+        Assert.assertEquals(1, childListener.getConfigurationChanges());
+        
+        List<ActiveDescriptor<?>> parentServiceDescriptors = ServiceLocatorUtilities.addClasses(parent,
+                SimpleService.class);
+        
+        Assert.assertEquals(2, parentListener.getConfigurationChanges());
+        Assert.assertEquals(1, childListener.getConfigurationChanges());
+        
+        List<ActiveDescriptor<?>> childServiceDescriptors = ServiceLocatorUtilities.addClasses(child,
+                SimpleService.class);
+        
+        Assert.assertEquals(2, parentListener.getConfigurationChanges());
+        Assert.assertEquals(2, childListener.getConfigurationChanges());
+        
+        // Make sure remove also shows up
+        ServiceLocatorUtilities.removeOneDescriptor(child, childServiceDescriptors.get(0));
+        
+        Assert.assertEquals(2, parentListener.getConfigurationChanges());
+        Assert.assertEquals(3, childListener.getConfigurationChanges());
+        
+        ServiceLocatorUtilities.removeOneDescriptor(parent, parentServiceDescriptors.get(0));
+        
+        Assert.assertEquals(3, parentListener.getConfigurationChanges());
+        Assert.assertEquals(3, childListener.getConfigurationChanges());
+    }
+    
+    /**
+     * Tests that a configuration listener that throws does not stop listeners
+     * from getting called
+     */
+    @Test
+    public void testThrowingConfigurationListener() {
+ServiceLocator locator = LocatorHelper.create();
+        
+        // Just add in the listener
+        List<ActiveDescriptor<?>> listenerDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                DynamicConfigurationListenerImpl.class,
+                ThrowyDynamicConfigurationListener.class,
+                DynamicConfigurationListenerImpl.class);
+        
+        List<DynamicConfigurationListenerImpl> listeners = locator.getAllServices(DynamicConfigurationListenerImpl.class);
+        Assert.assertEquals(2, listeners.size());
+        
+        DynamicConfigurationListenerImpl listener0 = listeners.get(0);
+        DynamicConfigurationListenerImpl listener1 = listeners.get(1);
+        
+        Assert.assertEquals(1, listener0.getConfigurationChanges());
+        Assert.assertEquals(1, listener1.getConfigurationChanges());
+        
+        List<ActiveDescriptor<?>> serviceDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                SimpleService.class);
+        
+        Assert.assertEquals(2, listener0.getConfigurationChanges());
+        Assert.assertEquals(2, listener1.getConfigurationChanges());
+        
+        // Make sure remove also shows up
+        ServiceLocatorUtilities.removeOneDescriptor(locator, serviceDescriptors.get(0));
+        
+        Assert.assertEquals(3, listener0.getConfigurationChanges());
+        Assert.assertEquals(3, listener1.getConfigurationChanges());
+        
+        // Put it back so we can remove it after we take the listener away
+        serviceDescriptors = ServiceLocatorUtilities.addClasses(locator,
+                SimpleService.class);
+        
+        Assert.assertEquals(4, listener0.getConfigurationChanges());
+        Assert.assertEquals(4, listener1.getConfigurationChanges());
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, listenerDescriptors.get(0));
+        
+        // Because it is now gone, it is never notified of its own demise
+        Assert.assertEquals(4, listener0.getConfigurationChanges());
+        
+        // But the other one will still hear it!
+        Assert.assertEquals(5, listener1.getConfigurationChanges());
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, serviceDescriptors.get(0));
+        
+        // And because it is still gone it will continue to not get notifications
+        Assert.assertEquals(4, listener0.getConfigurationChanges());
+        
+        // But the other one is still there!
+        Assert.assertEquals(6, listener1.getConfigurationChanges());
     }
 }

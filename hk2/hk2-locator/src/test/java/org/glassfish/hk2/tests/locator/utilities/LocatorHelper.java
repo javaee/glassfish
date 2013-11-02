@@ -57,6 +57,23 @@ public class LocatorHelper {
     private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
     
     /**
+     * Creates an unnamed, untracked service locator
+     * @return An unnamed, untracked service locator
+     */
+    public static ServiceLocator create() {
+        return factory.create(null);
+    }
+    
+    /**
+     * Creates an unnamed, untracked service locator with the given parent
+     * @param parent The non-null parent to be associated with this locator
+     * @return An unnamed, untracked service locator with the given parent
+     */
+    public static ServiceLocator create(ServiceLocator parent) {
+        return factory.create(null, parent);
+    }
+    
+    /**
      * Will create a ServiceLocator after doing test-specific bindings from the TestModule
      * 
      * @param name The name of the service locator to create.  Should be unique per test, otherwise

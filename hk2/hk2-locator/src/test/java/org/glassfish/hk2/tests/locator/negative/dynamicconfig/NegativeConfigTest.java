@@ -41,6 +41,7 @@ package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
 
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.InjectionResolver;
@@ -146,6 +147,29 @@ public class NegativeConfigTest {
         try {
             dc.commit();
             Assert.fail("Commit should have failed with PerLookup ErrorService");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(
+                    " must be in the Singleton scope"));
+        }
+        
+    }
+    
+    /**
+     * A dynamic configuration listener must be in Singleton scope
+     */
+    @Test
+    public void testPerLookupDynamicConfigurationListener() {
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        dc.bind(BuilderHelper.link(BadDynamicConfigurationListener.class).
+                to(DynamicConfigurationListener.class).
+                build());
+        
+        try {
+            dc.commit();
+            Assert.fail("Commit should have failed with PerLookup DynamicConfigurationListener");
         }
         catch (MultiException me) {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(

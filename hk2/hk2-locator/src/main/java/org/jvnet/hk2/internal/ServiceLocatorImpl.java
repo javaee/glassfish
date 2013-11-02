@@ -76,6 +76,7 @@ import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
@@ -1451,7 +1452,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             if (sd.getAdvertisedContracts().contains(ValidationService.class.getName()) ||
                 sd.getAdvertisedContracts().contains(ErrorService.class.getName()) ||
                 sd.getAdvertisedContracts().contains(InstanceLifecycleListener.class.getName())) {
-                // These gets reified right away
+                // These get reified right away
                 reifyDescriptor(sd);
 
                 checkScope = true;
@@ -1477,6 +1478,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
 
                 addOrRemoveOfInjectionResolver = true;
+            }
+            
+            if (sd.getAdvertisedContracts().contains(DynamicConfigurationListener.class.getName())) {
+                // This gets reified right away
+                reifyDescriptor(sd);
+                
+                checkScope = true;
             }
 
             if (sd.getAdvertisedContracts().contains(Context.class.getName())) {
@@ -1760,9 +1768,27 @@ public class ServiceLocatorImpl implements ServiceLocator {
             sli.getAllChildren(allMyChildren);
         }
     }
+    
+    private void callAllConfigurationListeners(List<ServiceHandle<DynamicConfigurationListener>> allListeners) {
+        if (allListeners == null) return;
+        
+        for (ServiceHandle<DynamicConfigurationListener> listener : allListeners) {
+            ActiveDescriptor<?> listenerDescriptor = listener.getActiveDescriptor();
+            if (listenerDescriptor.getLocatorId() != id) continue;
+            
+            try {
+                listener.getService().configurationChanged();
+            }
+            catch (Throwable th) {
+                // Intentionally ignore
+            }
+        }
+    }
 
     /* package */ void addConfiguration(DynamicConfigurationImpl dci) {
         CheckConfigurationData checkData;
+        
+        List<ServiceHandle<DynamicConfigurationListener>> allConfigurationListeners = null;
 
         wLock.lock();
         try {
@@ -1778,6 +1804,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     checkData.getErrorHandlerModificationMade(),
                     checkData.getClassAnalyzerModificationMade(),
                     checkData.getAffectedContracts());
+            
+            try {
+              allConfigurationListeners = getAllServiceHandles(DynamicConfigurationListener.class);
+            }
+            catch (Throwable th) {
+                // Intentionally ignore
+            }
         } finally {
             wLock.unlock();
         }
@@ -1788,6 +1821,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         for (ServiceLocatorImpl sli : allMyChildren) {
             sli.reupCache(checkData.getAffectedContracts());
         }
+        
+        callAllConfigurationListeners(allConfigurationListeners);
     }
 
     /* package */ boolean isInjectAnnotation(Annotation annotation) {
