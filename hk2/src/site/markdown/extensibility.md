@@ -20,6 +20,7 @@ users can customize thier HK2 environment.  Among the set of things which can be
 + [Custom Injection Resolvers](extensibility.html#aCustom_Injection_Resolvers)
 + [Validation](extensibility.html#Validation)
 + [Instance Lifecycle](extensibility.html#Instance_Lifecycle)
++ [Dynamic Configuration Listeners](extensibility.html#Dynamic_Configuration_Listeners)
 + [Class Analysis](extensibility.html#Class_Analysis)
 + [Run Level Services](extensibility.html#Run_Level_Services)
 
@@ -188,11 +189,17 @@ The example can be seen [here][security-lockdown-example-runner].
 
 ### Instance Lifecycle
 
-A user may register an implementation of [InstanceLifecycleListener][instancelifecyclelistener] to be notified whenver an instance of a service is created.
+A user may register an implementation of [InstanceLifecycleListener][instancelifecyclelistener] to be notified whenever an instance of a service is created.
 Unlike the [ValidationService][validationservice], which deals only with the metadata of a service, 
 the [InstanceLifecycleListener][instancelifecyclelistener] is notified whenever an instance
 of a service is created or destroyed.  This is a useful facility for tracing or for scenarios where a service wishes to become
 an automatic listener for anything that it is injected into.
+
+### Dynamic Configuration Listeners
+
+A user may register an implementation of [DynamicConfigurationListener][dynamicconfigurationlistener] to be notified  whenever
+the set of [ActiveDescriptors][activedescriptor] in a [ServiceLocator][servicelocator] has changed.  The
+[DynamicConfigurationListener][dynamicconfigurationlistener] must be in the [Singleton][singleton] scope.
 
 ### Class Analysis
 
@@ -249,3 +256,5 @@ Learn more about Run Level Services [here][runlevelservices].
 [classanalyzer]: apidocs/org/glassfish/hk2/api/ClassAnalyzer.html
 [custom-resolver-example]: custom-resolver-example.html
 [runlevelservices]: runlevel.html
+[activedescriptor]: apidocs/org/glassfish/hk2/api/ActiveDescriptor.html
+[dynamicconfigurationlistener]: apidocs/org/glassfish/hk2/api/DynamicConfigurationListener.html
