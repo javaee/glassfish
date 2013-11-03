@@ -59,7 +59,7 @@ import java.lang.annotation.Target;
  * the analyzed class itself, and not superclasses or interfaces
  * of the analyzed class
  * <p>
- * @see {@link Proxiable}, {@link Unproxiable}, {@link UseProxy}
+ * @see Proxiable Unproxiable UseProxy
  * 
  * @author jwells
  */

@@ -48,7 +48,7 @@ import java.lang.annotation.Target;
 
 /**
  * Meta-annotation indicating that the annotation designates
- * a resident service of a {@link org.glassfish.hk2.Services}.
+ * a resident service of a {@link org.glassfish.hk2.api.ServiceLocator}.
  *
  * @author Kohsuke Kawaguchi
  */

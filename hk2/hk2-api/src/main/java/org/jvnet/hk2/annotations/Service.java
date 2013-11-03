@@ -48,14 +48,24 @@ import java.lang.annotation.Documented;
 import org.glassfish.hk2.api.ClassAnalyzer;
 
 /**
- * Marker interface for service implementation. A service is defined by 
- * an interface marked with the {@link Contract} annotation. Each service
- * implementation must be marked with the @Service interface and 
- * implement the service interface. 
+ * Annotation placed on classes that are to be automatically added
+ * to an hk2 {@link org.glassfish.hk2.api.ServiceLocator}.  A service
+ * marked with this annotation has the default scope of {@link javax.inject.Singleton},
+ * but any other scope annotation placed on the class will override that default.
+ * <p>
+ * This annotation is read at build time using the hk2-inhabitant-generator
+ * and information about the service is placed into a file in the
+ * associated jar.  The usual way to get these services into
+ * a {@link org.glassfish.hk2.api.ServiceLocator} is to use a
+ * {@link org.glassfish.hk2.api.Populator} as provided by the
+ * {@link org.glassfish.hk2.api.DynamicConfigurationService#getPopulator()}
+ * method.  An easier way to do that is with the
+ * {@link org.glassfish.hk2.utilities.ServiceLocatorUtilities#createAndPopulateServiceLocator()}
+ * utility.
  *
  * @author Jerome Dochez
  * @author Kohsuke Kawaguchi
- * @see Factory
+ * @see org.glassfish.hk2.api.Factory org.glassfish.hk2.api.ClassAnalyzer
  */
 @Retention(RUNTIME)
 @Target(TYPE)
@@ -67,12 +77,11 @@ public @interface Service {
      * Name of the service.
      *
      * <p>
-     * {@link org.glassfish.hk2.ContractLocator#named(String)} and similar methods can be used
-     * to obtain a service with a particular name. All the named services
-     * are still available through {@link org.glassfish.hk2.Services#byType(Class)}.
+     * {@link org.glassfish.hk2.api.ServiceLocator#getService(Class, String, java.lang.annotation.Annotation...)} and
+     * similar methods can be used to obtain a service with a particular name.
      *
      * <p>
-     * The default value "" indicates that the inhabitant is anonymous.
+     * The default value "" indicates that the inhabitant has no name.
      */
     String name() default "";
 
@@ -80,7 +89,7 @@ public @interface Service {
      * Additional metadata that goes into the inhabitants file.
      * The value is "key=value,key=value,..." format.
      *
-     * This information is accessible from {@link org.glassfish.hk2.Descriptor#metadata()}.
+     * This information is accessible from {@link org.glassfish.hk2.api.Descriptor#getMetadata()}.
      *
      * <p>
      * While this is limited in expressiveness, metadata has a performance advantage

@@ -139,7 +139,7 @@ public abstract class ServiceLocatorFactory {
    * <p>
    * All services associated with this ServiceLocator will be shutdown
    * 
-   * @param name The ServiceLocator to destroy.  If null this will do nothing.
+   * @param locator The ServiceLocator to destroy.  If null this will do nothing.
    * If the ServiceLocator given was already destroyed this will do nothing
    */
   public abstract void destroy(ServiceLocator locator);

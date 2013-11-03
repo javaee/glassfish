@@ -63,6 +63,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface ClassAnalyzer {
+    /** The name of the default ClassAnalyzer service */
     public final static String DEFAULT_IMPLEMENTATION_NAME = "default";
     
     /**

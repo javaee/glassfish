@@ -53,8 +53,8 @@ import org.glassfish.hk2.api.HK2Loader;
  * analysis of the associated class file, assuming instead that
  * all the information from the ActiveDescriptor is what the
  * user intended.  This can be used to supply qualifiers that are
- * not marked with {@link Qualifier} or contracts that are not
- * marked with {@link Contract}.  An unreified ActiveDescriptor given
+ * not marked with {@link javax.inject.Qualifier} or contracts that are not
+ * marked with {@link org.jvnet.hk2.annotations.Contract}.  An unreified ActiveDescriptor given
  * to a bind method need not implement the create or destroy method,
  * as they are automatically created and destroyed by the system.
  * 
@@ -205,9 +205,9 @@ public interface ActiveDescriptorBuilder {
     
     /**
      * Call this if the descriptor should be analyzed with the
-     * {@link ClassAnalyzer} service of the given name
+     * {@link org.glassfish.hk2.api.ClassAnalyzer} service of the given name
      * 
-     * @param serviceName the name of the {@link ClassAnalyzer} service
+     * @param serviceName the name of the {@link org.glassfish.hk2.api.ClassAnalyzer} service
      * that should be used to analyze this service
      * @return A DescriptorBuilder with the given analysis service
      */

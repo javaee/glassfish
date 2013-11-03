@@ -228,9 +228,9 @@ public interface DescriptorBuilder {
     
     /**
      * Call this if the descriptor should be analyzed with the
-     * {@link ClassAnalyzer} service of the given name
+     * {@link org.glassfish.hk2.api.ClassAnalyzer} service of the given name
      * 
-     * @param serviceName the name of the {@link ClassAnalyzer} service
+     * @param serviceName the name of the {@link org.glassfish.hk2.api.ClassAnalyzer} service
      * that should be used to analyze this service
      * @return A DescriptorBuilder with the given analysis service
      */
