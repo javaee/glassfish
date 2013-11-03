@@ -48,12 +48,38 @@ To make this more clear, we have two examples of user scope/context pairs:
 
 ### PerThread Scope
 
-There is also a per-thread scope/context pair optionally supported in HK2.  
+There is a per-thread scope/context pair optionally supported in HK2.  
 Services marked with [PerThread][perthread] have their life cycle defined by the thread they are on.
 Two different threads injecting a service from the [PerThread][perthread] scope will get different objects.
 Two objects on the same thread injecting a [PerThread][perthread] scope service will get the same object.
  
 The [PerThread][perthread] scope can be added to any [ServiceLocator][servicelocator] by using the method [enablePerThreadScope][enableperthreadscope]
+
+### Immediate Scope
+
+There is an Immediate scope/context pair optionally supported in HK2.  
+Services marked with [Immediate][immediate] will be started as soon as their
+[ActiveDescriptors][activedescriptor] are added to the [ServiceLocator][servicelocator].  They are destroyed when
+their [ActiveDescriptors][activedescriptor] are removed from the [ServiceLocator][servicelocator].
+[Immediate][immediate] services are started and stopped on an independent thread.  Users of this
+feature can also register implementations of [ImmediateErrorHandler][immediateerrorhandler] in order
+to catch errors thrown by [Immediate][immediate] services.
+
+Care should be taken with the Injection points of an [Immediate][immediate] service, as they will implicitly
+get created immediately in order to satisfy the dependencies.  Since [Immediate][immediate] services
+are created using an independent thread there is no guarantee that [Immediate][immediate] services
+will be started before or after any other service.  The only guarantee is that [Immediate][immediate]
+services will eventually get started.  Normally they get started very quickly after being added to
+the [ServiceLocator][servicelocator].
+ 
+The [Immediate][immediate] scope can be added to any [ServiceLocator][servicelocator] by using
+the method [enableImmediateScope][enableimmediatescope].  It is important to notice that
+[enableImmediateScope][enableimmediatescope] must be called on all [ServiceLocators][servicelocator]
+who will have [Immediate][immediate] services bound in them.  In particular it is NOT sufficient to
+call [enableImmediateScope][enableimmediatescope] on the parent of a [ServiceLocators][servicelocator],
+since this implementation will only automatically detect [Immediate][immediate] services directly added
+to the [ServiceLocators][servicelocator] given to the [enableImmediateScope][enableimmediatescope]
+method.
  
 ### Proxies
 
@@ -235,6 +261,8 @@ Learn more about Run Level Services [here][runlevelservices].
 [perlookup]: apidocs/org/glassfish/hk2/api/PerLookup.html
 [perthread]: apidocs/org/glassfish/hk2/api/PerThread.html
 [enableperthreadscope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enablePerThreadScope
+[enableimmediatescope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enableImmediateScope
+[immediateerrorhandler]: apidocs/org/glassfish/hk2/utilities/ImmediateErrorHandler.html
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
 [dynamicconfiguration]: apidocs/org/glassfish/hk2/api/DynamicConfiguration.html
 [scope]: http://docs.oracle.com/javaee/6/api/javax/inject/Scope.html
@@ -258,3 +286,4 @@ Learn more about Run Level Services [here][runlevelservices].
 [runlevelservices]: runlevel.html
 [activedescriptor]: apidocs/org/glassfish/hk2/api/ActiveDescriptor.html
 [dynamicconfigurationlistener]: apidocs/org/glassfish/hk2/api/DynamicConfigurationListener.html
+[immediate]: apidocs/org/glassfish/hk2/api/Immediate.html

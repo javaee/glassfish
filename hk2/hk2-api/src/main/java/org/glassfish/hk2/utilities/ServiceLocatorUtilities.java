@@ -57,6 +57,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerThread;
@@ -65,6 +66,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.internal.ImmediateContext;
 import org.glassfish.hk2.internal.PerThreadContext;
 
 /**
@@ -110,6 +112,28 @@ public abstract class ServiceLocatorUtilities {
 
         config.bind(descriptor, false);
         config.commit();
+    }
+    
+    /**
+     * This method will add the ability to use the {@link Immediate} scope to
+     * the given locator.  If the locator already has a {@link Context} implementation
+     * that handles the {@link Immediate} scope this method does nothing.
+     * <p>
+     * This implementation of {@link Immediate} scope will use a separate thread for
+     * instantiating services.  Any failures from {@link Immediate} scoped services
+     * will be given to the current set of {@link ImmediateErrorHandler} implementations
+     *
+     * @param locator The non-null locator to enable the Immediate scope on
+     * @throws MultiException if there were errors when committing the service
+     */
+    public static void enableImmediateScope(ServiceLocator locator) {
+        List<ServiceHandle<?>> immediateContexts = locator.getAllServiceHandles((new TypeLiteral<Context<Immediate>>() {}).getType());
+        for (ServiceHandle<?> immediateContext : immediateContexts) {
+            ActiveDescriptor<?> contextDescriptor = immediateContext.getActiveDescriptor();
+            if (contextDescriptor.getLocatorId() == locator.getLocatorId()) return;
+        }
+        
+        addClasses(locator, ImmediateContext.class);
     }
 
     /**
