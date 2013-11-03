@@ -43,6 +43,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ErrorInformation;
 import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.MultiException;
 
 /**
@@ -69,10 +70,12 @@ public class RethrowErrorService implements ErrorService {
     @Override
     public void onFailure(ErrorInformation errorInformation)
             throws MultiException {
-        MultiException me = errorInformation.getAssociatedException();
-        if (me == null) return;
+        if (ErrorType.FAILURE_TO_REIFY.equals(errorInformation.getErrorType())) {
+            MultiException me = errorInformation.getAssociatedException();
+            if (me == null) return;
         
-        throw me;
+            throw me;
+        }
     }
 
 }

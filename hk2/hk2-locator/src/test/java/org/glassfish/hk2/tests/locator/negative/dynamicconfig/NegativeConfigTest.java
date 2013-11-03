@@ -51,6 +51,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -59,14 +60,17 @@ import org.junit.Test;
  *
  */
 public class NegativeConfigTest {
-    private final static String TEST_NAME = "NegativeConfigTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, null, null);
-    
     /**
      * An injection resolver must be in Singleton scope
      */
     @Test
     public void testPerLookupInjectionResolver() {
+        ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.addClasses(locator, DynamicConfigErrorService.class);
+        
+        DynamicConfigErrorService errorService = locator.getService(DynamicConfigErrorService.class);
+        Assert.assertNull(errorService.getConfigException());
+        
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
         
@@ -80,6 +84,8 @@ public class NegativeConfigTest {
         catch (MultiException me) {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(
                     " must be in the Singleton scope"));
+            
+            Assert.assertEquals(errorService.getConfigException(), me);
         }
         
     }
@@ -89,6 +95,12 @@ public class NegativeConfigTest {
      */
     @Test
     public void testPerLookupContext() {
+        ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.addClasses(locator, DynamicConfigErrorService.class);
+        
+        DynamicConfigErrorService errorService = locator.getService(DynamicConfigErrorService.class);
+        Assert.assertNull(errorService.getConfigException());
+        
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
         
@@ -104,6 +116,8 @@ public class NegativeConfigTest {
         catch (MultiException me) {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(
                     " must be in the Singleton scope"));
+            
+            Assert.assertEquals(errorService.getConfigException(), me);
         }
         
     }
@@ -113,6 +127,12 @@ public class NegativeConfigTest {
      */
     @Test
     public void testPerLookupValidationService() {
+        ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.addClasses(locator, DynamicConfigErrorService.class);
+        
+        DynamicConfigErrorService errorService = locator.getService(DynamicConfigErrorService.class);
+        Assert.assertNull(errorService.getConfigException());
+        
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
         
@@ -128,6 +148,8 @@ public class NegativeConfigTest {
         catch (MultiException me) {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(
                     " must be in the Singleton scope"));
+            
+            Assert.assertEquals(errorService.getConfigException(), me);
         }
         
     }
@@ -137,6 +159,12 @@ public class NegativeConfigTest {
      */
     @Test
     public void testPerLookupErrorService() {
+        ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.addClasses(locator, DynamicConfigErrorService.class);
+        
+        DynamicConfigErrorService errorService = locator.getService(DynamicConfigErrorService.class);
+        Assert.assertNull(errorService.getConfigException());
+        
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
         
@@ -151,6 +179,8 @@ public class NegativeConfigTest {
         catch (MultiException me) {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(
                     " must be in the Singleton scope"));
+            
+            Assert.assertEquals(errorService.getConfigException(), me);
         }
         
     }
@@ -160,6 +190,12 @@ public class NegativeConfigTest {
      */
     @Test
     public void testPerLookupDynamicConfigurationListener() {
+        ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.addClasses(locator, DynamicConfigErrorService.class);
+        
+        DynamicConfigErrorService errorService = locator.getService(DynamicConfigErrorService.class);
+        Assert.assertNull(errorService.getConfigException());
+        
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration dc = dcs.createDynamicConfiguration();
         
@@ -174,6 +210,8 @@ public class NegativeConfigTest {
         catch (MultiException me) {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(
                     " must be in the Singleton scope"));
+            
+            Assert.assertEquals(errorService.getConfigException(), me);
         }
         
     }
