@@ -51,14 +51,18 @@ public interface ErrorInformation {
      * Gets the type of error that has occurred.  Code should be
      * written such that future error types are handled appropriately.
      * 
-     * @return At this time this will always be FAILURE_TO_REIFY
+     * @return <UL>
+     * <LI>{@link ErrorType#FAILURE_TO_REIFY}</LI>
+     * <LI>{@link ErrorType#DYNAMIC_CONFIGURATION_FAILURE}</LI>
+     * </UL>
      */
     public ErrorType getErrorType();
     
     /**
      * This will contain the active descriptor that is associated
      * with this failure.  In the case of FAILURE_TO_REIFY it will
-     * contain the descriptor that failed to reify.
+     * contain the descriptor that failed to reify.  In the
+     * DYNAMIC_CONFIGURATION_FAILURE case this will return null
      * 
      * @return The descriptor associated with this failure
      */
@@ -70,7 +74,9 @@ public interface ErrorInformation {
      * <p>
      * In the case of FAILURE_TO_REIFY this will be the injectee that was
      * being looked up to satisfy the injection point, or null if this lookup
-     * was due to an API call
+     * was due to an API call.
+     * <p>
+     * In the case of DYNAMIC_CONFIGURATION_FAILURE this will return null.
      * 
      * @return The injectee associated with this failure
      */
@@ -82,6 +88,9 @@ public interface ErrorInformation {
      * <p>
      * In the case of FAILURE_TO_REIFY this will contain the exception that caused
      * the reification process to fail
+     * <p>
+     * In the case of DYNAMIC_CONFIGURATION_FAILURE this will contain the exception
+     * that cause the configuration operation to fail
      * 
      * @return The exception associated with this failure
      */

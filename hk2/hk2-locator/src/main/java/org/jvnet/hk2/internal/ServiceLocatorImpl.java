@@ -78,6 +78,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
@@ -1810,6 +1811,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         CheckConfigurationData checkData;
         
         List<ServiceHandle<?>> allConfigurationListeners = null;
+        MultiException configurationError = null;
 
         wLock.lock();
         try {
@@ -1828,8 +1830,32 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     checkData.getAffectedContracts());
             
             allConfigurationListeners = new LinkedList<ServiceHandle<?>>(configListeners);
+        } catch (MultiException me) {
+            configurationError = me;
+            throw me;
         } finally {
+            List<ErrorService> errorServices = null;
+            if (configurationError != null) {
+                errorServices = new LinkedList<ErrorService>(errorHandlers);
+            }
+            
             wLock.unlock();
+            
+            if (errorServices != null && !errorServices.isEmpty()) {
+                for (ErrorService errorService : errorServices) {
+                    try {
+                        errorService.onFailure(new ErrorInformationImpl(
+                            ErrorType.DYNAMIC_CONFIGURATION_FAILURE,
+                            null,
+                            null,
+                            configurationError));
+                    }
+                    catch (Throwable th) {
+                        // Ignore
+                    }
+                }
+                
+            }
         }
 
         LinkedList<ServiceLocatorImpl> allMyChildren = new LinkedList<ServiceLocatorImpl>();

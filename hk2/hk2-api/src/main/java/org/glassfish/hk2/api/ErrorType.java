@@ -48,10 +48,13 @@ package org.glassfish.hk2.api;
  */
 public enum ErrorType {
     /**
-     * This method is called if an ActiveDescriptor fails to reify properly during a lookup operation.
-     * To the caller of the lookup operation it will appear as though the passed descriptor does not
-     * exist.  The descriptor will not be automatically removed from the system.
+     * This type is set if an ActiveDescriptor fails to reify during a lookup operation
      */
-    FAILURE_TO_REIFY
+    FAILURE_TO_REIFY,
+    
+    /**
+     * This type is set if a dynamic configuration operation fails
+     */
+    DYNAMIC_CONFIGURATION_FAILURE
 
 }

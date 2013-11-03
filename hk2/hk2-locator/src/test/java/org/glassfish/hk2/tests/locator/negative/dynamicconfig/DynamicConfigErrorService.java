@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,37 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.negative.dynamicconfig;
 
-import org.jvnet.hk2.annotations.Contract;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ErrorInformation;
+import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
+import org.glassfish.hk2.api.MultiException;
 
 /**
- * This interface should be implemented by those who wish to be
- * notified of error conditions that occur within HK2.  These
- * errors are those that might happen during normal processing of
- * HK2 requests but which are not otherwise reported up the
- * calling stack frame.
- * <p>
- * An implementation of ErrorService must be in the Singleton scope
- * 
  * @author jwells
  *
  */
-@Contract
-public interface ErrorService {
-    /**
-     * This method is called when a failure occurs in the system.  This method may
-     * use any {@link ServiceLocator} api.  For example, an implementation of this method might want
-     * to remove a descriptor from the registry if the error can be determined to be a
-     * permanent failure.
-     * 
-     * @param errorInformation Information about the error that occurred
-     * @throws MultiException if this method throws an exception that exception will be thrown back to
-     * the caller wrapped in another MultiException if the error is of type {@link ErrorType#FAILURE_TO_REIFY}.
-     * If the error is of type {@link ErrorType#DYNAMIC_CONFIGURATION_FAILURE} then any exception thrown from this
-     * method is ignored and the original exception is thrown back to the {@link DynamicConfiguration#commit()} method
-     */
-    public void onFailure(ErrorInformation errorInformation)
-        throws MultiException;
+@Singleton
+public class DynamicConfigErrorService implements ErrorService {
+    private MultiException configException;
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ErrorService#onFailure(org.glassfish.hk2.api.ErrorInformation)
+     */
+    @Override
+    public void onFailure(ErrorInformation errorInformation)
+            throws MultiException {
+        if (ErrorType.DYNAMIC_CONFIGURATION_FAILURE.equals(errorInformation.getErrorType())) {
+            configException = errorInformation.getAssociatedException();
+        }
+    }
+    
+    public MultiException getConfigException() {
+        return configException;
+    }
 }
