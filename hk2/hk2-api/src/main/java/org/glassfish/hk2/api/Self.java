@@ -54,12 +54,12 @@ import java.lang.annotation.Target;
  * The following things must be true of injection points annotated with {@link Self}<UL>
  * <LI>The injection point must have the type {@link ActiveDescriptor}.  The generic type is ignored</LI>
  * <LI>The injection point must have no qualifiers</LI>
- * <LI>The injection point must not be annotated {@link Optional}</LI>
+ * <LI>The injection point must not be annotated {@link org.jvnet.hk2.annotations.Optional}</LI>
  * <LI>The class must not be getting injected with the {@link ServiceLocator#inject(Object)} method</LI>
  * </UL>
  * Furthermore, the {@link ActiveDescriptor} that can be injected have the following restrictions:<UL>
  * <LI>The {@link ActiveDescriptor} was not pre-reified prior to being bound (i.e. third-party ActiveDescriptors)</LI>
- * <LI>The {@link ActiveDescriptor} is not a {@link DescriptorType#FACTORY}</LI>
+ * <LI>The {@link ActiveDescriptor} is not a {@link DescriptorType#PROVIDE_METHOD}</LI>
  * </UL>
  * A valid injection point that is annotated with {@link Self} will not go through the normal resolution process, and
  * hence cannot be customized.

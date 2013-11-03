@@ -163,11 +163,11 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	 * @param metadatas The metadata associated with this descriptor (should not be null)
 	 * @param qualifiers The set of qualifiers associated with this descriptor (should not be null)
 	 * @param descriptorType The type of this descriptor (should not be null)
+	 * @param descriptorVisibility The visibility this descriptor should have
 	 * @param loader The HK2Loader to associated with this descriptor (may be null)
 	 * @param rank The rank to initially associate with this descriptor
 	 * @param proxiable The proxiable value to associate with this descriptor (may be null)
 	 * @param proxyForSameScope The proxyForSameScope value to associate with this descriptor (may be null)
-	 * @param baseDescriptor The base descriptor to associated with this descriptor
 	 * @param analysisName The name of the ClassAnalysis service to use
 	 * @param id The ID this descriptor should take (may be null)
 	 * @param locatorId The locator ID this descriptor should take (may be null)
@@ -332,7 +332,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
     
     /**
      * Sets the descriptor visilibity
-     * @param descriptorType The descriptor type.  May not be null
+     * @param descriptorVisibility The visibility this descriptor should have
      */
     public synchronized void setDescriptorVisibility(DescriptorVisibility descriptorVisibility) {
         if (descriptorVisibility == null) throw new IllegalArgumentException();
@@ -416,9 +416,6 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	
 	/**
      * Removes all metadata values
-     * 
-     * @param key The key of the metadata values to remove
-     * @return true if any value was removed
      */
     public synchronized void clearMetadata() {
         metadatas = null;
@@ -473,6 +470,12 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    return proxiable;
 	}
 	
+	/**
+	 * Sets whether or not this descriptor should be proxied
+	 * @param proxiable if true then this descriptor will be proxied.
+	 * If false then this descriptor will not be proxied.  If null
+	 * this descriptor will follow the rules of the scope it is in
+	 */
 	public void setProxiable(Boolean proxiable) {
 	    this.proxiable = proxiable;
 	}
@@ -482,6 +485,15 @@ public class DescriptorImpl implements Descriptor, Externalizable {
         return proxyForSameScope;
     }
 	
+	/**
+	 * Sets whether or not to proxy this descriptor for other
+	 * services in the same scope
+	 * 
+	 * @param proxyForSameScope if true then this descriptor will be proxied
+	 * for services in the same scope.  If false then this descriptor will not
+	 * be proxied for services in the same scope.  If null
+     * this descriptor will follow the rules of the scope it is in
+	 */
 	public void setProxyForSameScope(Boolean proxyForSameScope) {
         this.proxyForSameScope = proxyForSameScope;
     }
@@ -491,6 +503,14 @@ public class DescriptorImpl implements Descriptor, Externalizable {
         return analysisName;
     }
 	
+	/**
+	 * Sets the name of the service that will be used
+	 * to analyze this class
+	 * 
+	 * @param name The name of the {@link ClassAnalyzer}
+	 * service that should be used to analyze this
+	 * descriptor
+	 */
 	public void setClassAnalysisName(String name) {
 	    analysisName = name;
 	}

@@ -54,8 +54,16 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface DescriptorFileFinder {
+    /** The name of the default location for hk2 inhabitant files */
     public static final String RESOURCE_BASE="META-INF/hk2-locator/";
     
+    /**
+     * Returns a list of input streams for hk2 locator files
+     * 
+     * @return A non-null (but possibly empty) list of InputStreams
+     * for hk2 inhabitant files
+     * @throws IOException If there was an error finding the hk2 inhabitant files
+     */
     List<InputStream> findDescriptorFiles() throws IOException;
 
 }

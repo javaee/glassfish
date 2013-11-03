@@ -57,7 +57,7 @@ import java.lang.annotation.Target;
  * <p>
  * A scope must not be marked with both {@link Proxiable} and {@link Unproxiable}
  * <p>
- * @see {@link Proxiable}, {@link Unproxiable}, {@link UseProxy}, {@link ProxyCtl}
+ * @see Proxiable Unproxiable UseProxy ProxyCtl
  * 
  * @author jwells
  *

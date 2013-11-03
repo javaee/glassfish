@@ -49,7 +49,7 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is used to provide the initial rank of
- * a service marked with {@link Service}.
+ * a service marked with {@link org.jvnet.hk2.annotations.Service}.
  * 
  * @author jwells
  *

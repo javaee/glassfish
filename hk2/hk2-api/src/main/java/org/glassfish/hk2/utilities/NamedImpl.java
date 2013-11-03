@@ -56,6 +56,10 @@ public class NamedImpl extends AnnotationLiteral<Named> implements Named {
     
     private final String name;
     
+    /**
+     * Creates a {@link Named} annotation with the given name
+     * @param name The non-null name to give the annotation
+     */
     public NamedImpl(String name) {
         this.name = name;
     }

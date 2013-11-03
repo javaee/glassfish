@@ -92,6 +92,10 @@ public abstract class TypeLiteral<T> {
         return type;
     }
 
+    /**
+     * Gets the types associated with this literal
+     * @return A non-null (but possibly empty) array of types associated with this literal
+     */
     public final Type[] getParameterTypes() {
         type = getType();
         if (type instanceof ParameterizedType) {
@@ -118,6 +122,12 @@ public abstract class TypeLiteral<T> {
         return rawType;
     }
 
+    /**
+     * Gets the base associated class from this type
+     * @param type The non-null type to analyze
+     * @return The base class for the type, or null if there is
+     * none (e.g., Wildcard)
+     */
     public static Class<?> getRawType(Type type) {
         if (type instanceof Class) {
 

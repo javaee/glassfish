@@ -50,13 +50,13 @@ import java.lang.annotation.Target;
 import javax.inject.Scope;
 
 /**
- * PerThread is a scope that operates like {@link Singleton} scope, except on a per-thread basis.  The lifecycle of the
+ * PerThread is a scope that operates like {@link javax.inject.Singleton} scope, except on a per-thread basis.  The lifecycle of the
  * service is determined by the thread it is on.  On a single thread only one of the service will be created, but a new
  * service will be created for each thread.
  * <p>
  * The PerThread scope is not automatically handled by a new ServiceLocator.  In order to enable the PerThread scope
  * the user can either add an implementation of {@link Context} which handles it or it can use the
- * {@link ServiceLocatorUtilities#enablePerThreadScope} method.
+ * {@link org.glassfish.hk2.utilities.ServiceLocatorUtilities#enablePerThreadScope} method.
  * 
  * @author jwells
  *

@@ -61,7 +61,7 @@ public interface DynamicConfigurationService {
      * Returns a populator for this service locator that can be used to
      * automatically read in hk2 inhabitant files (or some other external
      * source)
-     * @return
+     * @return A non-null populator that can be used to fill in a {@link ServiceLocator}
      */
     public Populator getPopulator();
 
