@@ -57,22 +57,52 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
+import org.glassfish.hk2.api.ErrorInformation;
+import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.Operation;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ValidationInformation;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.ImmediateErrorHandler;
 
 /**
  * The implementation of the immediate context.  This should NOT be added
  * automatically, and hence is not annotated with {@link org.jvnet.hk2.annotations.Service}
+ * <p>
+ * This implementation uses a lot of facilities of hk2, so lets explain each one.
+ * <p>
+ * The main function of this class is as a Context for the Immediate scope.  These services
+ * act most like singletons.
+ * <p>
+ * The thing that makes Immediate services immediate is that they are started as soon as
+ * they are noticed.  This is done by implementing the DynamicConfigurationListener, as it
+ * will get notified when a configuration has changed.  However, since the creation of user
+ * services can take an arbitrarily long time it is better to do that work on a separate
+ * thread, which is why we implement Runnable.  The run method is the method that will pull
+ * from the queue of work and instantiate (and destroy) the immediate services.
+ * <p>
+ * However, there is also a desire to be highly efficient.  This means we should not be
+ * creating this thread if there is no work for the thread to do.  For this to work
+ * we need to know which configuration changes have added or removed an Immediate service.
+ * To know this we have implemented the Validation service and Validator.  The validation
+ * service records the thread id of a configuration operation that is adding or removing
+ * services.  This thread id goes into a map.  But we have to be sure that the map does not
+ * grow without bound. To do this we clear the map both when the configuration service has
+ * succeeded (in the DynamicConfigurationListener) and when the configuration service has failed
+ * (in the ErrorService).  This is why we have implemented the ErrorService.
  * 
  * @author jwells
  */
 @Singleton @Visibility(DescriptorVisibility.LOCAL)
-public class ImmediateContext implements Context<Immediate>, DynamicConfigurationListener, Runnable {
+public class ImmediateContext implements Context<Immediate>, DynamicConfigurationListener, Runnable,
+    ValidationService, ErrorService, Validator {
     private static final ThreadFactory THREAD_FACTORY = new ImmediateThreadFactory();
     
     private static final Executor DEFAULT_EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
@@ -80,16 +110,24 @@ public class ImmediateContext implements Context<Immediate>, DynamicConfiguratio
             new SynchronousQueue<Runnable>(true),
             THREAD_FACTORY);
     
+    private final Filter validationFilter;
+    private final ServiceLocator locator;
+    
     private final HashMap<ActiveDescriptor<?>, Object> currentImmediateServices = new HashMap<ActiveDescriptor<?>, Object>();
     private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
+    private final HashSet<Long> tidsWithWork = new HashSet<Long>();
     
     private final Object queueLock = new Object();
     private boolean threadAvailable;
     private boolean outstandingJob;
     private boolean waitingForWork;
+    private boolean firstTime = true;
     
     @Inject
-    private ServiceLocator locator;
+    private ImmediateContext(ServiceLocator serviceLocator) {
+        this.locator = serviceLocator;
+        this.validationFilter = new ImmediateLocalLocatorFilter(serviceLocator.getLocatorId());
+    }
 
     @Override
     public Class<? extends Annotation> getScope() {
@@ -169,34 +207,26 @@ public class ImmediateContext implements Context<Immediate>, DynamicConfiguratio
     }
     
     private boolean hasWork() {
-        synchronized (queueLock) {
-            // The point of hasWork is to avoid creating a thread
-            // if there is no work for the thread to do.  So if
-            // there is already a thread it doesn't hurt to just
-            // have the thread check to see if there is work
-            if (threadAvailable) return true;
+        long tid = Thread.currentThread().getId();
+        
+        boolean wasFirst;
+        synchronized (this) {
+            wasFirst = firstTime;
+            firstTime = false;
+            
+            boolean retVal = tidsWithWork.contains(tid);
+            tidsWithWork.remove(tid);
+        
+            if (retVal || !wasFirst) return retVal;
         }
         
-        List<ActiveDescriptor<?>> inScopeAndInThisLocator = getImmediateServices();
+        // OK, we added no Immediate services BUT this is the
+        // first DynamicConfigurationService callback, which means
+        // that there may already be immediate services in the
+        // service locator
         
-        HashSet<ActiveDescriptor<?>> oldSet;
-        HashSet<ActiveDescriptor<?>> newFullSet = new HashSet<ActiveDescriptor<?>>(inScopeAndInThisLocator);
-        
-        synchronized(this) {
-            oldSet = new HashSet<ActiveDescriptor<?>>(currentImmediateServices.keySet());
-            oldSet.addAll(creating);
-        }
-        
-        for (ActiveDescriptor<?> ad : inScopeAndInThisLocator) {
-            if (!oldSet.contains(ad)) {
-                // New guy to add
-                return true;
-            }
-        }
-                
-        oldSet.removeAll(newFullSet);
-        
-        return !oldSet.isEmpty();
+        List<ActiveDescriptor<?>> immediates = getImmediateServices();
+        return !immediates.isEmpty();
     }
     
     @Override
@@ -217,6 +247,46 @@ public class ImmediateContext implements Context<Immediate>, DynamicConfiguratio
                 queueLock.notify();
             }
         }
+    }
+    
+    @Override
+    public Filter getLookupFilter() {
+        return validationFilter;
+    }
+
+    @Override
+    public Validator getValidator() {
+        return this;
+    }
+
+    @Override
+    public void onFailure(ErrorInformation errorInformation)
+            throws MultiException {
+        if (!(ErrorType.DYNAMIC_CONFIGURATION_FAILURE.equals(errorInformation.getErrorType()))) {
+            // Only interested in dynamic configuration failures
+            long tid = Thread.currentThread().getId();
+            
+            synchronized (this) {
+                tidsWithWork.remove(tid);
+            }
+            
+            return;
+        }
+        
+    }
+
+    @Override
+    public boolean validate(ValidationInformation info) {
+        if (info.getOperation().equals(Operation.BIND) ||
+                info.getOperation().equals(Operation.UNBIND)) {
+            long tid = Thread.currentThread().getId();
+            
+            synchronized (this) {
+                tidsWithWork.add(tid);
+            }
+        }
+        
+        return true;
     }
     
     /**
@@ -260,19 +330,7 @@ public class ImmediateContext implements Context<Immediate>, DynamicConfiguratio
     }
     
     private List<ActiveDescriptor<?>> getImmediateServices() {
-        final long locatorId = locator.getLocatorId();
-        
-        List<ActiveDescriptor<?>> inScopeAndInThisLocator = locator.getDescriptors(new Filter() {
-
-            @Override
-            public boolean matches(Descriptor d) {
-                if (d.getScope() == null) return false;
-                if (locatorId != d.getLocatorId()) return false;
-                
-                return d.getScope().equals(Immediate.class.getName());
-            }
-            
-        });
+        List<ActiveDescriptor<?>> inScopeAndInThisLocator = locator.getDescriptors(validationFilter);
         
         return inScopeAndInThisLocator;
     }
@@ -362,6 +420,23 @@ public class ImmediateContext implements Context<Immediate>, DynamicConfiguratio
             Thread activeThread = new ImmediateThread(runnable);
                 
             return activeThread;
+        }
+    }
+
+    private static class ImmediateLocalLocatorFilter implements Filter {
+        private final long locatorId;
+        
+        private ImmediateLocalLocatorFilter(long locatorId) {
+            this.locatorId = locatorId;
+        }
+
+        @Override
+        public boolean matches(Descriptor d) {
+            String scope = d.getScope();
+            if (scope == null) return false;
+            if (d.getLocatorId() != locatorId) return false;
+            
+            return Immediate.class.getName().equals(scope);
         }
     }
 

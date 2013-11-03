@@ -224,5 +224,80 @@ public class ImmediateTest {
         
         Assert.assertTrue(factory.waitToDestroy(5 * 1000));
     }
+    
+    /**
+     * This test is a little non-black-boxy.  In the current implementation the
+     * one thread that does the work has a decay time, which means that if it has
+     * no work for 20 seconds or so, it will then go away.  This is meant to keep
+     * the system from spawning a lot of threads during a flurry of configuration
+     * events such as what happens at the boot or shutdown of a system.
+     * 
+     * This test makes sure that is nominally working by adding an immediate service,
+     * waiting a second, and then adding another and making sure they were
+     * both created on the same thread
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testThreadDecay() throws InterruptedException {
+        clearTid();
+        
+        ServiceLocator locator = LocatorHelper.create();
+        
+        ServiceLocatorUtilities.enableImmediateScope(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                ImmediateTidRecorder.class);
+        
+        long firstTid = waitForTid(5 * 1000);
+        Assert.assertTrue(firstTid > 0);
+        
+        clearTid();
+        
+        long dummyTid = waitForTid(500);
+        
+        // This is a good test that perhaps the first
+        // service is not created twice
+        Assert.assertEquals(-1, dummyTid);
+        
+        // Add a second, should happen on that old idling thread
+        ServiceLocatorUtilities.addClasses(locator,
+                ImmediateTidRecorder.class);
+        
+        long secondTid = waitForTid(5 * 1000);
+        Assert.assertTrue(secondTid > 0);
+        
+        Assert.assertEquals(firstTid, secondTid);
+    }
+    
+    private final static Object sLock = new Object();
+    private static long immediateTid = -1;
+    
+    /* package */ static void registerTid(long tid) {
+        synchronized (sLock) {
+            immediateTid = tid;
+            sLock.notifyAll();
+        }
+    }
+    
+    private static long waitForTid(long waitTime) throws InterruptedException {
+        synchronized (sLock) {
+            while (immediateTid == -1 && waitTime > 0) {
+                long elapsedTime = System.currentTimeMillis();
+                sLock.wait(waitTime);
+                elapsedTime = System.currentTimeMillis() - elapsedTime;
+                waitTime -= elapsedTime;
+            }
+            
+            return immediateTid;
+        }
+        
+        
+    }
+    
+    private static void clearTid() {
+        synchronized (sLock) {
+            immediateTid = -1;
+        }
+    }
 
 }
