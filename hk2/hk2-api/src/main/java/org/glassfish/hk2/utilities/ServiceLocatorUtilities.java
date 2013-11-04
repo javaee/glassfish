@@ -66,7 +66,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
-import org.glassfish.hk2.internal.ImmediateContext;
+import org.glassfish.hk2.internal.ImmediateHelper;
 import org.glassfish.hk2.internal.PerThreadContext;
 
 /**
@@ -133,7 +133,7 @@ public abstract class ServiceLocatorUtilities {
             if (contextDescriptor.getLocatorId() == locator.getLocatorId()) return;
         }
         
-        addClasses(locator, ImmediateContext.class);
+        addClasses(locator, ImmediateContext.class, ImmediateHelper.class);
     }
 
     /**
