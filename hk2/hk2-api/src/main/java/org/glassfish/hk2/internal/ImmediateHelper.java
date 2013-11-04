@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.internal;
 
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +52,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
@@ -78,9 +76,6 @@ import org.glassfish.hk2.utilities.ImmediateErrorHandler;
  * <p>
  * This implementation uses a lot of facilities of hk2, so lets explain each one.
  * <p>
- * The main function of this class is as a Context for the Immediate scope.  These services
- * act most like singletons.
- * <p>
  * The thing that makes Immediate services immediate is that they are started as soon as
  * they are noticed.  This is done by implementing the DynamicConfigurationListener, as it
  * will get notified when a configuration has changed.  However, since the creation of user
@@ -101,7 +96,7 @@ import org.glassfish.hk2.utilities.ImmediateErrorHandler;
  * @author jwells
  */
 @Singleton @Visibility(DescriptorVisibility.LOCAL)
-public class ImmediateContext implements Context<Immediate>, DynamicConfigurationListener, Runnable,
+public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     ValidationService, ErrorService, Validator {
     private static final ThreadFactory THREAD_FACTORY = new ImmediateThreadFactory();
     
@@ -124,18 +119,18 @@ public class ImmediateContext implements Context<Immediate>, DynamicConfiguratio
     private boolean firstTime = true;
     
     @Inject
-    private ImmediateContext(ServiceLocator serviceLocator) {
+    private ImmediateHelper(ServiceLocator serviceLocator) {
         this.locator = serviceLocator;
         this.validationFilter = new ImmediateLocalLocatorFilter(serviceLocator.getLocatorId());
     }
 
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return Immediate.class;
-    }
-
+    /**
+     * Delegated to from the Context
+     * @param activeDescriptor The descriptor to create
+     * @param root The root handle
+     * @return The service
+     */
     @SuppressWarnings("unchecked")
-    @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
         U retVal;
@@ -178,32 +173,15 @@ public class ImmediateContext implements Context<Immediate>, DynamicConfiguratio
         return retVal;
     }
 
-    @Override
+    /**
+     * Delegated to from the Context
+     * @param descriptor The descriptor to find
+     * @return true if this service has been created
+     */
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
         synchronized (this) {
             return currentImmediateServices.containsKey(descriptor);
         }
-    }
-
-    @Override
-    public void destroyOne(ActiveDescriptor<?> descriptor) {
-        // Do nothing, Immediate services are not destroyed this way
-        
-    }
-
-    @Override
-    public boolean supportsNullCreation() {
-        return false;
-    }
-
-    @Override
-    public boolean isActive() {
-        return true;
-    }
-
-    @Override
-    public void shutdown() {
-        // Do nothing
     }
     
     private boolean hasWork() {
