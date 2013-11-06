@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>examples</artifactId>
-        <version>2.2.0-b24-SNAPSHOT</version>
+        <version>2.2.0-b24</version>
     </parent>
 
     <artifactId>custom-resolver-example</artifactId>
