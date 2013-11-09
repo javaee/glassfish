@@ -755,6 +755,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void shutdown() {
+        
+        
         wLock.lock();
         try {
             if (state.equals(ServiceLocatorState.SHUTDOWN)) return;
@@ -762,17 +764,24 @@ public class ServiceLocatorImpl implements ServiceLocator {
             if (parent != null) {
                 parent.removeChild(this);
             }
+        }
+        finally {
+            wLock.unlock();
+        }
+        
+        // These things must be done OUTSIDE the lock
+        List<ServiceHandle<?>> handles = getAllServiceHandles(BuilderHelper.createContractFilter(Context.class.getName()));
 
-            List<ServiceHandle<?>> handles = getAllServiceHandles(BuilderHelper.createContractFilter(Context.class.getName()));
-
-            for (ServiceHandle<?> handle : handles){
-                if (handle.isActive()) {
-                    Context<?> context = (Context<?>) handle.getService();
-                    context.shutdown();
-                }
+        for (ServiceHandle<?> handle : handles) {
+            if (handle.isActive()) {
+                Context<?> context = (Context<?>) handle.getService();
+                context.shutdown();
             }
+        }
 
-            singletonContext.shutdown();
+        singletonContext.shutdown();
+        wLock.lock();
+        try {
 
             state = ServiceLocatorState.SHUTDOWN;
 
