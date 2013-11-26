@@ -13,5 +13,8 @@
 		<ant dir="ejblite" target="private-all">
 			<property name="build" value="${build}/ejblite"/>
 		</ant>
+		<ant dir="jndivalidation" target="private-all">
+			<property name="build" value="${build}/jndivalidation"/>
+		</ant>
 	</target>
 </project>

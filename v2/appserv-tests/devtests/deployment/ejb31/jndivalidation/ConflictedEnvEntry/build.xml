@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+
+<project name="deployment-ejb31-jndivalidation-ConflitedEnvEntry-App" default="all" basedir=".">
+
+    &commonBuild;
+
+    <property name="testName" value="deployment-ejb31-jndivalidation-ConflitedEnvEntry"/>
+    <property name="archivedir" value="${build}/archives"/>
+
+    <target name="prepare" depends="init">
+        <mkdir dir="${build}"/>
+        <mkdir dir="${archivedir}"/>
+        <property name="ejb.jar" value="${archivedir}/${testName}-ejb.jar"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="ejbModule" destdir="${build}" debug="on" failonerror="true">
+         <classpath refid="gfv3.classpath"/>
+         </javac>
+    </target>
+
+    <target name="assemble" depends="compile">
+        <jar destfile="${ejb.jar}">
+            <metainf dir="ejbModule/META-INF" />
+            <fileset dir="${build}" excludes="**/*.jar"/>
+        </jar>
+    </target>
+
+    <target name="deploy.asadmin" depends="assemble">
+        <property name="arg.list" value="deploy ${ASADMIN-ARGS} --retrieve ${archivedir} --name ${testName}-ejb ${ejb.jar}"/>
+        <echo message="${ASADMIN} ${arg.list}"/>
+        <exec executable="${ASADMIN}" resultproperty="return.code" failonerror="false">
+           <arg line="${arg.list}"/>
+        </exec>
+        <condition property="deploy.failed" value="1">
+            <equals arg1="0" arg2="${return.code}" />
+        </condition>
+        <condition property="deploy.failed" value="0">
+            <not>
+                <equals arg1="0" arg2="${return.code}" />
+            </not>
+        </condition>
+        <antcall target="processResult">
+            <param name="result" value="${deploy.failed}"/>
+        </antcall>
+    </target>
+
+    <target name="private-all">
+        <antcall target="declare-test">
+            <param name="description" value="ejb31/jndivalidation/ConflitedEnvEntry Test asadmin deploy"/>
+        </antcall>
+        <antcall target="deploy.asadmin"/>
+    </target>
+
+</project>
