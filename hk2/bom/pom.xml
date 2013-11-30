@@ -162,6 +162,11 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2.external</groupId>
+                <artifactId>aopalliance-repackaged</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.hk2.external</groupId>
                 <artifactId>asm-all-repackaged</artifactId>
                 <version>${project.version}</version>
             </dependency>

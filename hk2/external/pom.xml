@@ -54,6 +54,7 @@
     <packaging>pom</packaging>
     <name>OSGi repackaging of HK2 dependencies</name>
     <modules>
+	    <module>aopalliance</module>
 	    <module>asm-all</module>
 	    <module>bean-validator</module>
             <module>bean-validator-cdi</module>
