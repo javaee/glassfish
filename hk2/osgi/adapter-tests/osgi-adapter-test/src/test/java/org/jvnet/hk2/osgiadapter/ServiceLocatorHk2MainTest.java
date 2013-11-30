@@ -75,6 +75,8 @@ public class ServiceLocatorHk2MainTest {
 						"javassist").version("3.18.1-GA").startLevel(4)),
 				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
 						"asm-all-repackaged").version(projectVersion).startLevel(4)),
+				provision(mavenBundle().groupId(EXT_GROUP_ID).artifactId(
+						"aopalliance-repackaged").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID)
 						.artifactId("osgi-resource-locator").version("1.0.1").startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
