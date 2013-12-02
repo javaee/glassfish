@@ -55,7 +55,7 @@ import org.jvnet.hk2.annotations.Contract;
 public interface InterceptionService {
     /**
      * If the given filter returns true then the methods
-     * of the service will be passed to {@link getMethodFilter}
+     * of the service will be passed to {@link #getMethodInterceptors}
      * to determine if a method will be intercepted.  It may
      * be the case that the descriptor is NOT yet reified, and
      * this method should not reify it
@@ -67,7 +67,7 @@ public interface InterceptionService {
     
     /**
      * Each non-final method of a class that passes the
-     * {@link getDescriptorFilter} method will be passed
+     * {@link #getDescriptorFilter} method will be passed
      * to this method to determine if it will intercepted
      * 
      * @param method A non-final method that may
