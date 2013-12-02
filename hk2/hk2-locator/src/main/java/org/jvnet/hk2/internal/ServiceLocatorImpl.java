@@ -114,6 +114,9 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  *
  */
 public class ServiceLocatorImpl implements ServiceLocator {
+    private final static List<InterceptionService> EMTPY_INTERCEPTION_LIST =
+            Collections.emptyList();
+    
     private final static String BIND_TRACING_PATTERN_PROPERTY = "org.jvnet.hk2.properties.bind.tracing.pattern";
     private final static String BIND_TRACING_PATTERN;
     private final static String BIND_TRACING_STACKS_PROPERTY = "org.jvnet.hk2.properties.bind.tracing.stacks";
@@ -172,6 +175,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new LinkedList<ErrorService>();
     private final LinkedList<ServiceHandle<?>> configListeners =
             new LinkedList<ServiceHandle<?>>();
+    
+    private volatile boolean hasInterceptionServices = false;
     private final LinkedList<InterceptionService> interceptionServices =
             new LinkedList<InterceptionService>();
 
@@ -1414,6 +1419,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     /* package */ List<InterceptionService> getInterceptionServices() {
+        if (!hasInterceptionServices) return EMTPY_INTERCEPTION_LIST;
+        
         rLock.lock();
         try {
             return new LinkedList<InterceptionService>(interceptionServices);
@@ -1713,6 +1720,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         interceptionServices.clear();
         interceptionServices.addAll(allInterceptionServices);
+        
+        hasInterceptionServices = !interceptionServices.isEmpty();
     }
 
     private void reupErrorHandlers() {
