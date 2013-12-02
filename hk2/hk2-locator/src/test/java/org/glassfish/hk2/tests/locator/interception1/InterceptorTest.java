@@ -183,4 +183,26 @@ public class InterceptorTest {
         Assert.assertEquals(recorder, invocation.getThis());
         Assert.assertEquals(rawInput, invocation.getArguments()[0]);
     }
+    
+    /**
+     * Ensures that multiple interceptors are called
+     */
+    @Test
+    public void testMultipleInterceptors() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                AddingService.class,
+                AddThreeInterceptorService.class);
+        
+        AddingService adder = locator.getService(AddingService.class);
+        
+        int result = adder.addOne(0);
+        
+        /**
+         * +2 for one of the interceptors (before and after)
+         * +2 for the second interceptor (before and after)
+         * +2 for the third interceptor (before and after)
+         * +1 for the service itself
+         */
+        Assert.assertEquals(7, result);
+    }
 }

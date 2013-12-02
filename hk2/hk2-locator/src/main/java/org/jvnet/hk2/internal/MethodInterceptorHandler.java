@@ -135,7 +135,7 @@ public class MethodInterceptorHandler implements MethodHandler {
         @Override
         public Object proceed() throws Throwable {
             int newIndex = index + 1;
-            if (interceptors.size() >= newIndex) {
+            if (newIndex >= interceptors.size()) {
                 // Call the actual method
                 return ReflectionHelper.invoke(myself, proceed, arguments, locator.getNeutralContextClassLoader());
             }
