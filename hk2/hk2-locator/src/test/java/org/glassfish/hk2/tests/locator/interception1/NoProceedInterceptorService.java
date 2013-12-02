@@ -39,74 +39,53 @@
  */
 package org.glassfish.hk2.tests.locator.interception1;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Assert;
-import org.junit.Test;
+import javax.inject.Singleton;
+
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.InterceptionService;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class InterceptorTest {
-    /**
-     * Very simple intercepted service
+@Singleton
+public class NoProceedInterceptorService implements InterceptionService {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getDescriptorFilter()
      */
-    @Test
-    public void testMostBasicInterceptor() {
-        ServiceLocator locator = LocatorHelper.create(null, new InterceptorModule());
-        
-        SimpleInterceptedService sis = locator.getService(SimpleInterceptedService.class);
-        
-        sis.callMe();
-        
-        RecordingInterceptor ri = locator.getService(RecordingInterceptor.class);
-        
-        List<String> cim = ri.getCalledInMethod();
-        Assert.assertEquals(1, cim.size());
-        Assert.assertEquals("callMe", cim.get(0));
-        
-        Map<String, Object> com = ri.getCalledOutMethod();
-        Assert.assertEquals(1, com.size());
-        
-        Object value = com.get("callMe");
-        Assert.assertEquals(new Integer(0), value);
+    @Override
+    public Filter getDescriptorFilter() {
+        return BuilderHelper.allFilter();
     }
-    
-    /**
-     * Tests an interceptor that does not proceed
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getMethodInterceptors(java.lang.reflect.Method)
      */
-    @Test
-    public void testNoProceedInterceptor() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator(
-                CountingService.class,
-                NoProceedInterceptorService.class);
+    @Override
+    public List<MethodInterceptor> getMethodInterceptors(Method method) {
+        if (method.getName().equals("callMe")) {
+            return Collections.singletonList((MethodInterceptor) new MethodInterceptor() {
+
+                /**
+                 * The entire point of this interceptor is that it does NOT proceed
+                 */
+                @Override
+                public Object invoke(MethodInvocation arg0) throws Throwable {
+                    return null;
+                }
+                
+            });
+        }
         
-        CountingService counter = locator.getService(CountingService.class);
-        
-        counter.callMe();
-        
-        // Should be zero because the interceptor short-circuited it
-        Assert.assertEquals(0, counter.gotCalled());
+        return null;
     }
-    
-    /**
-     * Tests an interceptor that changes the input parameter
-     */
-    @Test
-    public void testChangeInputInterceptor() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator(
-                RecordInputService.class,
-                NegateTheInputInterceptorService.class);
-        
-        RecordInputService recorder = locator.getService(RecordInputService.class);
-        
-        recorder.recordInput(1);
-        
-        // Should be negative one because the interceptor negated the input
-        Assert.assertEquals(-1, recorder.getLastInput());
-    }
+
 }

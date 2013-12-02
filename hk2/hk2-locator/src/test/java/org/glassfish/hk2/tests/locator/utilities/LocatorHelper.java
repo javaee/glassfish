@@ -114,5 +114,26 @@ public class LocatorHelper {
         
         return retVal;
     }
+    
+    /**
+     * Creates a ServiceLocator equipped with a RunLevelService and the set of classes given
+     * 
+     * @param classes The set of classes to also add to the descriptor (should probably contain some run level services, right?)
+     * @return The ServiceLocator to use
+     */
+    public static ServiceLocator getServiceLocator(Class<?>... classes) {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        for (Class<?> clazz : classes) {
+            config.addActiveDescriptor(clazz);
+        }
+        
+        config.commit();
+        
+        return locator;
+    }
 
 }
