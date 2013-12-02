@@ -44,8 +44,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.aopalliance.intercept.MethodInvocation;
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -227,5 +229,43 @@ public class InterceptorTest {
         
         // Should be null because the middle interceptor did not proceed
         Assert.assertEquals(null, recorder.getLastObjectInput());
+    }
+    
+    /**
+     * Tests an dynamically adding and removing interception
+     * service works
+     */
+    @Test
+    public void testDynamicInterceptionService() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                EchoService.class);
+        
+        EchoService echo = locator.getService(EchoService.class);
+        
+        boolean echoReturn = echo.echo(false);
+        
+        // Should be false because there is no interceptor yet
+        Assert.assertFalse(echoReturn);
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator,
+                ReverseBooleanInterceptorService.class);
+        
+        // Because EchoService is perLookup, this one should be intercepted
+        echo = locator.getService(EchoService.class);
+        
+        echoReturn = echo.echo(false);
+        
+        // Should be true because of the interceptor
+        Assert.assertTrue(echoReturn);
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, added.get(0));
+        
+        // Because EchoService is perLookup, this one should NOT be intercepted
+        echo = locator.getService(EchoService.class);
+        
+        echoReturn = echo.echo(false);
+        
+        // Should be false because of there is no interceptor
+        Assert.assertFalse(echoReturn);
     }
 }
