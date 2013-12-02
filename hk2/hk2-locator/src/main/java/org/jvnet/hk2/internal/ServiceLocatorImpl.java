@@ -84,6 +84,7 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
+import org.glassfish.hk2.api.InterceptionService;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.Operation;
 import org.glassfish.hk2.api.InjectionResolver;
@@ -171,6 +172,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new LinkedList<ErrorService>();
     private final LinkedList<ServiceHandle<?>> configListeners =
             new LinkedList<ServiceHandle<?>>();
+    private final LinkedList<InterceptionService> interceptionServices =
+            new LinkedList<InterceptionService>();
 
     private final Cache<Class<? extends Annotation>, Context<?>> contextCache = new Cache<Class<? extends Annotation>, Context<?>>(new Computable<Class<? extends Annotation>, Context<?>>() {
 
@@ -1409,6 +1412,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         });
     }
+    
+    /* package */ List<InterceptionService> getInterceptionServices() {
+        rLock.lock();
+        try {
+            return new LinkedList<InterceptionService>(interceptionServices);
+        }
+        finally {
+            rLock.unlock();
+        }
+    }
 
     /**
      * Checks the configuration operation before anything happens to the internal data structures.
@@ -1423,6 +1436,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         boolean addOrRemoveOfErrorHandler = false;
         boolean addOrRemoveOfClazzAnalyzer = false;
         boolean addOrRemoveOfConfigListener = false;
+        boolean addOrRemoveOfInterceptionService = false;
         HashSet<String> affectedContracts = new HashSet<String>();
 
         for (Filter unbindFilter : dci.getUnbindFilters()) {
@@ -1456,6 +1470,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 if (candidate.getAdvertisedContracts().contains(DynamicConfigurationListener.class.getName())) {
                     addOrRemoveOfConfigListener = true;
                 }
+                if (candidate.getAdvertisedContracts().contains(InterceptionService.class.getName())) {
+                    addOrRemoveOfInterceptionService = true;
+                }
 
                 retVal.add(candidate);
             }
@@ -1467,6 +1484,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             boolean checkScope = false;
             if (sd.getAdvertisedContracts().contains(ValidationService.class.getName()) ||
                 sd.getAdvertisedContracts().contains(ErrorService.class.getName()) ||
+                sd.getAdvertisedContracts().contains(InterceptionService.class.getName()) ||
                 sd.getAdvertisedContracts().contains(InstanceLifecycleListener.class.getName())) {
                 // These get reified right away
                 reifyDescriptor(sd);
@@ -1478,6 +1496,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
                 if (sd.getAdvertisedContracts().contains(InstanceLifecycleListener.class.getName())) {
                     addOrRemoveOfInstanceListener = true;
+                }
+                if (sd.getAdvertisedContracts().contains(InterceptionService.class.getName())) {
+                    addOrRemoveOfInterceptionService = true;
                 }
             }
 
@@ -1542,7 +1563,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 addOrRemoveOfErrorHandler,
                 addOrRemoveOfClazzAnalyzer,
                 addOrRemoveOfConfigListener,
-                affectedContracts);
+                affectedContracts,
+                addOrRemoveOfInterceptionService);
     }
 
     private static List<String> getAllContracts(ActiveDescriptor<?> desc) {
@@ -1685,6 +1707,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         allResolvers.putAll(newResolvers);
     }
+    
+    private void reupInterceptionServices() {
+        List<InterceptionService> allInterceptionServices = protectedGetAllServices(InterceptionService.class);
+
+        interceptionServices.clear();
+        interceptionServices.addAll(allInterceptionServices);
+    }
 
     private void reupErrorHandlers() {
         List<ErrorService> allErrorServices = protectedGetAllServices(ErrorService.class);
@@ -1755,7 +1784,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             boolean errorHandlersModified,
             boolean classAnalyzersModified,
             boolean dynamicConfigurationListenersModified,
-            HashSet<String> affectedContracts) {
+            HashSet<String> affectedContracts,
+            boolean interceptionServicesModified) {
 
         // This MUST come before the other re-ups, in case the other re-ups look for
         // items that may have previously been cached
@@ -1782,6 +1812,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         if (classAnalyzersModified) {
             reupClassAnalyzers();
+        }
+        
+        // Should be last in order to ensure none of the
+        // things added in this update are intercepted
+        if (interceptionServicesModified) {
+            reupInterceptionServices();
         }
 
         contextCache.clear();
@@ -1836,7 +1872,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     checkData.getErrorHandlerModificationMade(),
                     checkData.getClassAnalyzerModificationMade(),
                     checkData.getDynamicConfigurationListenerModificationMade(),
-                    checkData.getAffectedContracts());
+                    checkData.getAffectedContracts(),
+                    checkData.getInterceptionServiceModificationMade());
             
             allConfigurationListeners = new LinkedList<ServiceHandle<?>>(configListeners);
         } catch (MultiException me) {
@@ -2146,6 +2183,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         private final boolean classAnalyzerModificationMade;
         private final boolean dynamicConfigurationListenerModificationMade;
         private final HashSet<String> affectedContracts;
+        private final boolean interceptionServiceModificationMade;
 
         private CheckConfigurationData(List<SystemDescriptor<?>> unbinds,
                 boolean instanceLifecycleModificationMade,
@@ -2153,7 +2191,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 boolean errorHandlerModificationMade,
                 boolean classAnalyzerModificationMade,
                 boolean dynamicConfigurationListenerModificationMade,
-                HashSet<String> affectedContracts) {
+                HashSet<String> affectedContracts,
+                boolean interceptionServiceModificationMade) {
             this.unbinds = unbinds;
             this.instanceLifeycleModificationMade = instanceLifecycleModificationMade;
             this.injectionResolverModificationMade = injectionResolverModificationMade;
@@ -2161,6 +2200,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             this.classAnalyzerModificationMade = classAnalyzerModificationMade;
             this.dynamicConfigurationListenerModificationMade = dynamicConfigurationListenerModificationMade;
             this.affectedContracts = affectedContracts;
+            this.interceptionServiceModificationMade = interceptionServiceModificationMade;
         }
 
         private List<SystemDescriptor<?>> getUnbinds() {
@@ -2189,6 +2229,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         private HashSet<String> getAffectedContracts() {
             return affectedContracts;
+        }
+        
+        private boolean getInterceptionServiceModificationMade() {
+            return interceptionServiceModificationMade;
         }
     }
 

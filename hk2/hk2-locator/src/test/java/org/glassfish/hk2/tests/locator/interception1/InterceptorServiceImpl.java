@@ -66,7 +66,7 @@ public class InterceptorServiceImpl implements InterceptionService {
 
             @Override
             public boolean matches(Descriptor d) {
-                return SimpleInterceptedService.class.equals(d.getImplementation());
+                return SimpleInterceptedService.class.getName().equals(d.getImplementation());
             }
         };
     }

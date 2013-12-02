@@ -42,10 +42,14 @@ package org.jvnet.hk2.internal;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+
+import org.aopalliance.intercept.MethodInterceptor;
 import org.glassfish.hk2.utilities.cache.Cache;
 import org.glassfish.hk2.utilities.cache.Computable;
+
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -62,6 +66,7 @@ import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -83,12 +88,18 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.DynamicConfigurationListener;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.InstanceLifecycleListener;
+import org.glassfish.hk2.api.InterceptionService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
@@ -100,13 +111,13 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.Unproxiable;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.UseProxy;
+import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
-
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
@@ -1588,6 +1599,12 @@ public class Utilities {
 
         return ((modifiers & Modifier.FINAL) != 0);
     }
+    
+    private static boolean isFinal(Class<?> clazz) {
+        int modifiers = clazz.getModifiers();
+
+        return ((modifiers & Modifier.FINAL) != 0);
+    }
 
     private static final Cache<Class<?>, String> autoAnalyzerNameCache = new Cache<Class<?>, String>(new Computable<Class<?>, String>() {
 
@@ -2516,5 +2533,67 @@ public class Utilities {
             return interceptor.invoke (proxy, method, null, args);
         }
 
+    }
+    
+    private static final HashSet<String> NOT_INTERCEPTED = new HashSet<String>();
+    
+    static {
+        NOT_INTERCEPTED.add(ServiceLocator.class.getName());
+        NOT_INTERCEPTED.add(InstanceLifecycleListener.class.getName());
+        NOT_INTERCEPTED.add(InjectionResolver.class.getName());
+        NOT_INTERCEPTED.add(ErrorService.class.getName());
+        NOT_INTERCEPTED.add(ClassAnalyzer.class.getName());
+        NOT_INTERCEPTED.add(DynamicConfigurationListener.class.getName());
+        NOT_INTERCEPTED.add(DynamicConfigurationService.class.getName());
+        NOT_INTERCEPTED.add(InterceptionService.class.getName());
+        NOT_INTERCEPTED.add(ValidationService.class.getName());
+        NOT_INTERCEPTED.add(Context.class.getName());
+    }
+    
+    /* package */ static Map<Method, List<MethodInterceptor>> getAllInterceptedMethods(
+            ServiceLocatorImpl impl,
+            ActiveDescriptor<?> descriptor,
+            Class<?> clazz) {
+        LinkedHashMap<Method, List<MethodInterceptor>> retVal =
+          new LinkedHashMap<Method, List<MethodInterceptor>>();
+        if (descriptor == null || clazz == null || isFinal(clazz)) return retVal;
+        
+        // Make sure it is not one of the special services
+        for (String contract : descriptor.getAdvertisedContracts()) {
+            if (NOT_INTERCEPTED.contains(contract)) return retVal;
+        }
+        
+        List<InterceptionService> interceptionServices = impl.getInterceptionServices();
+        if (interceptionServices.isEmpty()) return retVal;
+        
+        for (InterceptionService interceptionService : interceptionServices) {
+            Filter filter = interceptionService.getDescriptorFilter();
+            if (filter instanceof IndexedFilter) {
+                IndexedFilter indexedFilter = (IndexedFilter) filter;
+                
+                String indexedContract = indexedFilter.getAdvertisedContract();
+                if (indexedContract != null) {
+                    if (!descriptor.getAdvertisedContracts().contains(indexedContract)) continue;
+                }
+                String name = indexedFilter.getName();
+                if (name != null) {
+                    if (descriptor.getName() == null) continue;
+                    if (!descriptor.getName().equals(name)) continue;
+                }
+            }
+            
+            if (filter.matches(descriptor)) {
+                for (Method method : getAllMethods(clazz)) {
+                    if (isFinal(method)) continue;
+                    
+                    List<MethodInterceptor> interceptors = interceptionService.getMethodInterceptors(method);
+                    if (interceptors != null && !interceptors.isEmpty()) {
+                        retVal.put(method, interceptors);
+                    }
+                }
+            }
+        }
+        
+        return retVal;
     }
 }

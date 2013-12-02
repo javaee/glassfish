@@ -1227,6 +1227,11 @@ public final class ReflectionHelper {
         return null;
     }
 
+    /**
+     * Gets the current context class loader with privs
+     * 
+     * @return The current context class loader
+     */
     private static ClassLoader getCurrentContextClassLoader() {
         return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
             @Override

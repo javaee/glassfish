@@ -45,7 +45,6 @@ import java.util.Map;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -56,7 +55,7 @@ public class InterceptorTest {
     /**
      * Very simple intercepted service
      */
-    @Test @Ignore
+    @Test
     public void testMostBasicInterceptor() {
         ServiceLocator locator = LocatorHelper.create(null, new InterceptorModule());
         

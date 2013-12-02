@@ -42,8 +42,12 @@ package org.jvnet.hk2.internal;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -51,6 +55,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javassist.util.proxy.MethodFilter;
+import javassist.util.proxy.ProxyFactory;
+
+import org.aopalliance.intercept.MethodInterceptor;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Injectee;
@@ -60,6 +68,9 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.cache.Cache;
+import org.glassfish.hk2.utilities.cache.Computable;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
@@ -68,6 +79,30 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  *
  */
 public class ClazzCreator<T> implements Creator<T> {
+    private final static Cache<Class<?>, ProxyFactory> PFACTORIES = new Cache<Class<?>, ProxyFactory>(
+            new Computable<Class<?>, ProxyFactory>() {
+
+                @Override
+                public ProxyFactory compute(Class<?> key) {
+                    ProxyFactory proxyFactory = new ProxyFactory();
+                    proxyFactory.setSuperclass(key);
+                    proxyFactory.setFilter(new MethodFilter() {
+
+                        @Override
+                        public boolean isHandled(Method method) {
+                            // We do not allow interception of finalize
+                            if (method.getName().equals("finalize")) return false;
+                            
+                            return true;
+                        }
+                        
+                    });
+                    
+                    return proxyFactory;
+                }
+                
+            });
+    
     private final ServiceLocatorImpl locator;
     private final Class<?> implClass;
     private final Set<ResolutionInfo> myInitializers = new LinkedHashSet<ResolutionInfo>();
@@ -168,6 +203,8 @@ public class ClazzCreator<T> implements Creator<T> {
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
 
         Utilities.validateSelfInjectees(selfDescriptor, allInjectees, collector);
+        
+        
     }
 
     /* package */ void initialize(
@@ -250,14 +287,60 @@ public class ClazzCreator<T> implements Creator<T> {
     }
 
     private Object createMe(Map<Injectee, Object> resolved) throws Throwable {
-        Constructor<?> c = (Constructor<?>) myConstructor.baseElement;
+        final Constructor<?> c = (Constructor<?>) myConstructor.baseElement;
         List<Injectee> injectees = myConstructor.injectees;
 
-        Object args[] = new Object[injectees.size()];
+        final Object args[] = new Object[injectees.size()];
         for (Injectee injectee : injectees) {
             args[injectee.getPosition()] = resolved.get(injectee);
         }
+        
+        final Map<Method, List<MethodInterceptor>> methodInterceptors = Utilities.getAllInterceptedMethods(locator, selfDescriptor, implClass);
+        if (!methodInterceptors.isEmpty()) {
+            
+            final MethodInterceptorHandler methodInterceptor = new MethodInterceptorHandler(locator, methodInterceptors);
+            
+            final Set<String> methodNames = new HashSet<String>();
+            for (Method m : methodInterceptors.keySet()) {
+                methodNames.add(m.getName());
+            }
+            
+            final ProxyFactory proxyFactory = PFACTORIES.compute(implClass);
+            
+            final boolean neutral = locator.getNeutralContextClassLoader();
+            
+            return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 
+                @Override
+                public Object run() throws Exception {
+                    ClassLoader currentCCL = null;
+                    if (neutral) {
+                        currentCCL = Thread.currentThread().getContextClassLoader();
+                    }
+          
+                    try {
+                      return proxyFactory.create(c.getParameterTypes(), args, methodInterceptor);
+                    }
+                    catch (InvocationTargetException ite) {
+                        Throwable targetException = ite.getTargetException();
+                        Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), targetException);
+                        if (targetException instanceof Exception) {
+                            throw (Exception) targetException;
+                        }
+                        throw new RuntimeException(targetException);
+                    }
+                    finally {
+                        if (neutral) {
+                            Thread.currentThread().setContextClassLoader(currentCCL);
+                        }
+                    }
+                }
+                
+            });
+            
+            
+        }
+        
         return ReflectionHelper.makeMe(c, args, locator.getNeutralContextClassLoader());
     }
 
