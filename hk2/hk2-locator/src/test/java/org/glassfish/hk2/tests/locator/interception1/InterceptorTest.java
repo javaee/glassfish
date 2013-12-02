@@ -205,4 +205,27 @@ public class InterceptorTest {
          */
         Assert.assertEquals(7, result);
     }
+    
+    /**
+     * Ensures that multiple interceptors can shortcut others
+     * in the chain
+     */
+    @Test
+    public void testMiddleInterceptorDoesNotProceed() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                RecordInputService.class,
+                MiddleInterceptorNoProceedService.class);
+        
+        RecordInputService recorder = locator.getService(RecordInputService.class);
+        
+        recorder.recordInput(1000);
+        
+        // Should be zero because the middle interceptor did not proceed
+        Assert.assertEquals(0, recorder.getLastInput());
+        
+        recorder.recordInput(new Object());
+        
+        // Should be null because the middle interceptor did not proceed
+        Assert.assertEquals(null, recorder.getLastObjectInput());
+    }
 }
