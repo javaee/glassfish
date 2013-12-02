@@ -39,9 +39,11 @@
  */
 package org.glassfish.hk2.tests.locator.interception1;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
+import org.aopalliance.intercept.MethodInvocation;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Assert;
@@ -150,5 +152,35 @@ public class InterceptorTest {
         catch (ExceptionB b) {
             // Success, because the interceptor changed from A to B
         }
+    }
+    
+    /**
+     * Tests all fields of the MethodInvocation passed to the interceptor
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     */
+    @Test
+    public void testAllFieldsOfMethodInvocation() throws NoSuchMethodException, SecurityException {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                RecordInputService.class,
+                CheckInvocationInterceptorService.class);
+        
+        RecordInputService recorder = locator.getService(RecordInputService.class);
+        
+        recorder.recordInput(null);
+        
+        Object rawInput = recorder.getLastObjectInput();
+        Assert.assertNotNull(rawInput);
+        
+        Assert.assertTrue(rawInput instanceof MethodInvocation);
+        
+        MethodInvocation invocation = (MethodInvocation) rawInput;
+        
+        Method expectedMethod = RecordInputService.class.getMethod("recordInput", Object.class);
+        
+        Assert.assertEquals(expectedMethod, invocation.getMethod());
+        Assert.assertEquals(expectedMethod, invocation.getStaticPart());
+        Assert.assertEquals(recorder, invocation.getThis());
+        Assert.assertEquals(rawInput, invocation.getArguments()[0]);
     }
 }
