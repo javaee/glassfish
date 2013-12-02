@@ -39,31 +39,51 @@
  */
 package org.glassfish.hk2.tests.locator.interception1;
 
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+
 import javax.inject.Singleton;
+
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.InterceptionService;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
 @Singleton
-public class RecordInputService {
-    private int lastInput = 0;
-    private Object lastObjectInput;
-    
-    public void recordInput(int lastInput) {
-        this.lastInput = lastInput;
+public class CheckInvocationInterceptorService implements InterceptionService {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getDescriptorFilter()
+     */
+    @Override
+    public Filter getDescriptorFilter() {
+        return BuilderHelper.allFilter();
     }
-    
-    public void recordInput(Object lastObjectInput) {
-        this.lastObjectInput = lastObjectInput;
-    }
-    
-    public int getLastInput() {
-        return lastInput;
-    }
-    
-    public Object getLastObjectInput() {
-        return lastObjectInput;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getMethodInterceptors(java.lang.reflect.Method)
+     */
+    @Override
+    public List<MethodInterceptor> getMethodInterceptors(Method method) {
+        if (method.getName().equals("recordInput")) {
+            return Collections.singletonList((MethodInterceptor) new MethodInterceptor() {
+
+                @Override
+                public Object invoke(MethodInvocation invocation) throws Throwable {
+                    invocation.getArguments()[0] = invocation;
+                    
+                    return invocation.proceed();
+                }
+                
+            });
+        }
+        return null;
     }
 
 }
