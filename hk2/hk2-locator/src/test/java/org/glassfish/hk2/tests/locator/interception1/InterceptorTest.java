@@ -109,4 +109,46 @@ public class InterceptorTest {
         // Should be negative one because the interceptor negated the input
         Assert.assertEquals(-1, recorder.getLastInput());
     }
+    
+    /**
+     * Tests an interceptor that changes the output parameter
+     */
+    @Test
+    public void testChangeOutputInterceptor() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                EchoService.class,
+                ReverseBooleanInterceptorService.class);
+        
+        EchoService echo = locator.getService(EchoService.class);
+        
+        boolean echoReturn = echo.echo(false);
+        
+        // Should be true because the interceptor modified the output
+        Assert.assertTrue(echoReturn);
+        
+        echoReturn = echo.echo(true);
+        
+        // Should be false because the interceptor modified the output
+        Assert.assertFalse(echoReturn);
+    }
+    
+    /**
+     * Tests an interceptor that changes the exception
+     */
+    @Test
+    public void testChangeExceptionInterceptor() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                ThrowingService.class,
+                ChangeExceptionInterceptorService.class);
+        
+        ThrowingService thrower = locator.getService(ThrowingService.class);
+        
+        try {
+          thrower.throwy();
+          Assert.fail("Should have thrown an exception");
+        }
+        catch (ExceptionB b) {
+            // Success, because the interceptor changed from A to B
+        }
+    }
 }
