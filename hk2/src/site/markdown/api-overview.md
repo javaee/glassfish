@@ -186,7 +186,7 @@ There are several mechanisms for looking up services in HK2.  The simplest is to
 
 The type passed in can be any implementation class or interface with which the service was bound with as an advertisable
 contract.  If there is no Widget that can be found in the system then the getService method will return null.  If there
-are more than one Widge (e.g. Widget is an interface that can have many implementations) then the best Widget will
+are more than one Widget (e.g. Widget is an interface that can have many implementations) then the best Widget will
 be returned from the getService method.
  
 The best instance of a service is a service with the highest ranking or the lowest service id.
@@ -248,7 +248,7 @@ You may also want to get all of the services that have advertised a certain cont
 ``` java
 
 The list returned will have as many Widgets that could be found in the system.  It is important to note in this case that all
-of the Widges will have been classloaded when you use this call, so if classloading performance is important to you be careful
+of the Widgets will have been classloaded when you use this call, so if classloading performance is important to you be careful
 of using the getAllServices method.  Instead, consider using the getAllServiceHandles or getDescriptors method.
  
 ### Getting service descriptors
