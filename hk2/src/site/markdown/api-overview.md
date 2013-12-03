@@ -274,7 +274,7 @@ Using an [IndexedFilter][indexedfilter] can greatly improve the search time for 
 
 There are times when you would like to have an object created, injected or have its lifecycle methods called by HK2, but
 not have that Object be explicitly managed by HK2.  The [ServiceLocator][serviceLocator] has methods that suit this case.
-These methods will inspect the class or object given and will attempt to perform the requested operations, without keeping track or managaging
+These methods will inspect the class or object given and will attempt to perform the requested operations, without keeping track or managing
 those objects in any way.
  
 The first method is the create method, which will attempt to create an instance of the given class using the dependency injection
