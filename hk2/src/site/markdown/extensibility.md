@@ -6,7 +6,7 @@
 This page describes extensibility with the HK2 2.0 API, which is based on the
 JSR-330 standard annotations.  Also, Habitat has been replaced with a new
 interface called [ServiceLocator][servicelocator].
-More information can be found [here][index].
+More information can be found [here][apioverview].
     
 ###Extensibility of HK2
 
@@ -187,7 +187,7 @@ Failing this, the class will fail to be loaded and an exception will be thrown.
 
 Note that since the user is providing an implementation of [HK2Loader][hk2loader] 
 rather than a java.lang.ClassLoader that it is possible to delay the instantiation of the underlying ClassLoader until
-the [Descriptor][descriptor] is being reified.  It might also be possible to have the implementation of [HK2Loader][hk2loadear] consult several underlying ClassLoaders,
+the [Descriptor][descriptor] is being reified.  It might also be possible to have the implementation of [HK2Loader][hk2loader] consult several underlying ClassLoaders,
 or construct the class dynamically using weaving or some other class building technology.
 The mind boggles at all the ways [HK2Loader][hk2loader] can be implemented.
 
@@ -238,7 +238,7 @@ requires the system to choose the constructor with the largest number of paramet
 while the JSR-299 specification requires the system to choose the zero-argument constructor
 or else fail.
 
-The HK2 system allows the user to register named implementation of the [ClassAmalyzer][classanalyzer] 
+The HK2 system allows the user to register named implementation of the [ClassAnalyzer][classanalyzer]
 in order to modify or completely replace the constructors, fields and methods HK2 would choose.
 Individual HK2 [Descriptors][descriptor] can set the name of the [ClassAnalyzer][classanalyzer] 
 that should be used to analyze the implementation class.
@@ -255,13 +255,14 @@ has changed.
 
 Learn more about Run Level Services [here][runlevelservices].
 
+[apioverview]: api-overview.html
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [context]: apidocs/org/glassfish/hk2/api/Context.html
 [servicehandle]: apidocs/org/glassfish/hk2/api/ServiceHandle.html
 [perlookup]: apidocs/org/glassfish/hk2/api/PerLookup.html
 [perthread]: apidocs/org/glassfish/hk2/api/PerThread.html
-[enableperthreadscope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enablePerThreadScope
-[enableimmediatescope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enableImmediateScope
+[enableperthreadscope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enablePerThreadScope(org.glassfish.hk2.api.ServiceLocator)
+[enableimmediatescope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enableImmediateScope(org.glassfish.hk2.api.ServiceLocator)
 [immediateerrorhandler]: apidocs/org/glassfish/hk2/utilities/ImmediateErrorHandler.html
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
 [dynamicconfiguration]: apidocs/org/glassfish/hk2/api/DynamicConfiguration.html
@@ -273,7 +274,7 @@ Learn more about Run Level Services [here][runlevelservices].
 [isproxiable]: apidocs/org/glassfish/hk2/api/Descriptor.html#isProxiable()
 [useproxy]: apidocs/org/glassfish/hk2/api/UseProxy.html
 [isproxyforsamescope]: apidocs/org/glassfish/hk2/api/Descriptor.html#isProxyForSameScope()
-[proxyforsamescope]: apidocs/org/glassfish/hk2/api/ProxyForSameScope.html}ProxyForSameScope
+[proxyforsamescope]: apidocs/org/glassfish/hk2/api/ProxyForSameScope.html
 [descriptor]: apidocs/org/glassfish/hk2/api/Descriptor.html
 [hk2loader]: apidocs/org/glassfish/hk2/api/HK2Loader.html
 [javaxinject]: http://docs.oracle.com/javaee/6/api/javax/inject/Inject.html
