@@ -213,7 +213,7 @@ The given name is used to further qualify the specific Widget that was bound int
 
 If your services have qualifiers you can look them up via the qualifiers.  In order to do this you can use 
 the [AnnotationLiteral][annotationliteral] in order to create concrete implementations of your annotations. 
-Lets see how this would be done.  Suppose you have a qualifer called Blue, defined like this:
+Lets see how this would be done.  Suppose you have a qualifier called Blue, defined like this:
 
 ``` java
 @Qualifier
