@@ -125,7 +125,7 @@
             <name>users</name>
             <subscribe>http://java.net/projects/hk2/lists</subscribe>
             <post>users@hk2.java.net</post>
-            <archive>http://java.net/projects/hk2/lists/dev/archive</archive>
+            <archive>http://java.net/projects/hk2/lists/users/archive</archive>
         </mailingList>
         <mailingList>
             <name>issues</name>
