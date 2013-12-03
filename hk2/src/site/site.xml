@@ -27,7 +27,7 @@
 
             <!-- Make this to 'false' for local development, i.e. file:// URLs -->
             <!-- TODO change to 'true' before final site generation, set to 'false' for local testing -->
-            <protocolRelativeURLs>true</protocolRelativeURLs>
+            <protocolRelativeURLs>false</protocolRelativeURLs>
 
             <!-- Comment this out for local development. -->
             <!-- TODO uncomment before final site generation, comment our for local testing -->
@@ -50,6 +50,9 @@
             <!-- Syntax highlighting Configuration -->
             <highlightJs>true</highlightJs>
             <highlightJsTheme>solarized_dark</highlightJsTheme>
+
+            <!-- not available yet -->
+            <!--<highlightJsVersion>7.5</highlightJsVersion>-->
 
             <!-- Skin theme -->
             <theme>default</theme>
