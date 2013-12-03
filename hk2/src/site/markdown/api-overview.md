@@ -258,7 +258,7 @@ getBestDescriptor methods on [ServiceLocator][servicelocator].  The getDescripto
 and getBestDescriptor methods will never cause classloading to occur, so it is safe to use in environments where
 classloading can be an issue.
  
-The getDescriptor methods on [ServiceLocator][servicelocator] use a [Filer][filter] to determine which [Descriptors][descriptor] to return.
+The getDescriptor methods on [ServiceLocator][servicelocator] use a [Fitler][filter] to determine which [Descriptors][descriptor] to return.
 You can implement your own [Filter][filter] or you can use one of the [Filter][filter] implementations provided by [BuilderHelper][buildhelper].
 The most common case is to use an [IndexedFilter][indexedfilter] provided by [BuildHelper][buildhelper], like this:
  
