@@ -321,7 +321,7 @@ The majority of usages of HK2 should use standard JSR-330 annotations along with
 [@Service][service] and [@Contract][contract].
 In some cases code will also use [IterableProvider][iterableprovider] as outlined above.
 In even rarer cases the code may need extremely specialized control over HK2 by using the
-progrommatic API, as described [here][api-overview].
+programmatic API, as described [here][api-overview].
 
 We have gone through many simple examples which have shown the basic functionality of HK2 and JSR-330 in your
 applications.  Hopefully they have provided you with knowledge about how these annotations work and how they
