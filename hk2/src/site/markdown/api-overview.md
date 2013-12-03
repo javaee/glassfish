@@ -327,3 +327,4 @@ the objects themselves.
 [descriptorbuilder]: apidocs/org/glassfish/hk2/utilities/DescriptorBuilder.html
 [contract]: apidocs/org/jvnet/hk2/annotations/Contract.html
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
+[annotationliteral]: apidocs/org/glassfish/hk2/api/AnnotationLiteral.html
