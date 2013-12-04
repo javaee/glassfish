@@ -46,11 +46,11 @@ import java.net.URL;
  */
 class DelegatingClassLoader<T> extends ClassLoader {
 	
-	private final ClassLoader delegate;
+	private final ClassLoader delegates[];
 
-	DelegatingClassLoader(ClassLoader classLoaderDelegate, ClassLoader parent) {
+	DelegatingClassLoader(ClassLoader parent, ClassLoader... classLoaderDelegates) {
 		super(parent);
-        delegate=classLoaderDelegate;
+        delegates=classLoaderDelegates;
     }
 	
 	@Override
@@ -63,7 +63,18 @@ class DelegatingClassLoader<T> extends ClassLoader {
 			} catch (ClassNotFoundException cnfe) {}
 		}
 
-		return delegate.loadClass(clazz);
+		ClassNotFoundException firstFail = null;
+		for (ClassLoader delegate : delegates) {
+		    try {
+		      return delegate.loadClass(clazz);
+		    }
+		    catch (ClassNotFoundException ncfe) {
+		        if (firstFail == null) firstFail = ncfe;
+		    }
+		}
+		
+		if (firstFail != null) throw firstFail;
+		throw new ClassNotFoundException("Could not find " + clazz);
 	}
 
 	@Override
@@ -76,6 +87,12 @@ class DelegatingClassLoader<T> extends ClassLoader {
 			}
 		}
 		
-		return delegate.getResource(resource);
+		for (ClassLoader delegate : delegates) {
+		    URL u = delegate.getResource(resource);
+		    
+		    if (u != null) return u;
+		}
+		
+		return null;
 	}		
 }
