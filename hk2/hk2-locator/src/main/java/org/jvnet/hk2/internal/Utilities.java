@@ -2473,7 +2473,6 @@ public class Utilities {
         }
 
         public boolean equals(Object o) {
-            System.out.println("JRW(10) Ut comparing " + this + " to " + o);
             if (o == null) return false;
             if (!(o instanceof MemberKey)) return false;
             
