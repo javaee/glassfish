@@ -49,7 +49,7 @@ import org.glassfish.hk2.utilities.cache.Computable;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
-import java.lang.ref.WeakReference;
+import java.lang.ref.SoftReference;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -135,8 +135,8 @@ public class Utilities {
     // We don't want to hold onto these classes if they are released by others
     private static final Map<Class<?>, LinkedHashSet<MemberKey>> methodKeyCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
     private static Map<Class<?>, LinkedHashSet<MemberKey>> fieldCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
-    private final static Map<Class<?>, WeakReference<Method>> postConstructCache = new WeakHashMap<Class<?>, WeakReference<Method>>();
-    private final static Map<Class<?>, WeakReference<Method>> preDestroyCache = new WeakHashMap<Class<?>, WeakReference<Method>>();
+    private final static Map<Class<?>, SoftReference<Method>> postConstructCache = new WeakHashMap<Class<?>, SoftReference<Method>>();
+    private final static Map<Class<?>, SoftReference<Method>> preDestroyCache = new WeakHashMap<Class<?>, SoftReference<Method>>();
 
     private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
     private final static String CONVENTION_PRE_DESTROY = "preDestroy";
@@ -1308,10 +1308,10 @@ public class Utilities {
 
         synchronized (lock) {
             // It is ok for postConstructMethod to be null
-            postConstructCache.put(clazz, new WeakReference<Method>(postConstructMethod));
+            postConstructCache.put(clazz, new SoftReference<Method>(postConstructMethod));
 
             // It is ok for preDestroyMethod to be null
-            preDestroyCache.put(clazz, new WeakReference<Method>(preDestroyMethod));
+            preDestroyCache.put(clazz, new SoftReference<Method>(preDestroyMethod));
         }
 
         return retVal;
@@ -2097,7 +2097,7 @@ public class Utilities {
         Method retVal;
         synchronized (lock) {
             containsKey = postConstructCache.containsKey(clazz);
-            WeakReference<Method> ref = postConstructCache.get(clazz);
+            SoftReference<Method> ref = postConstructCache.get(clazz);
             retVal = (ref == null) ? null : ref.get();
         }
 
@@ -2105,7 +2105,7 @@ public class Utilities {
             getAllMethods(clazz);  // Fills in the cache
 
             synchronized (lock) {
-                WeakReference<Method> ref = postConstructCache.get(clazz);
+                SoftReference<Method> ref = postConstructCache.get(clazz);
                 retVal = (ref == null) ? null : ref.get();
             }
         }
@@ -2142,7 +2142,7 @@ public class Utilities {
         Method retVal;
         synchronized (lock) {
             containsKey = preDestroyCache.containsKey(clazz);
-            WeakReference<Method> ref = preDestroyCache.get(clazz);
+            SoftReference<Method> ref = preDestroyCache.get(clazz);
             retVal = (ref == null) ? null : ref.get();
         }
 
@@ -2150,7 +2150,7 @@ public class Utilities {
             getAllMethods(clazz);  // Fills in the cache
 
             synchronized (lock) {
-                WeakReference<Method> ref = preDestroyCache.get(clazz);
+                SoftReference<Method> ref = preDestroyCache.get(clazz);
                 retVal = (ref == null) ? null : ref.get();
             }
         }
@@ -2416,20 +2416,20 @@ public class Utilities {
     }
 
     private static class MemberKey {
-        private final Member backingMember;
+        private final SoftReference<Member> weakBackingMember;
         private final int hashCode;
         private final boolean postConstruct;
         private final boolean preDestroy;
 
         private MemberKey(Member method, boolean isPostConstruct, boolean isPreDestroy) {
-            backingMember = method;
+            weakBackingMember = new SoftReference<Member>(method);
             hashCode = calculateHashCode();
             postConstruct = isPostConstruct;
             preDestroy = isPreDestroy;
         }
 
         private Member getBackingMember() {
-            return backingMember;
+            return weakBackingMember.get();
         }
 
         private boolean isPostConstruct() {
@@ -2441,6 +2441,8 @@ public class Utilities {
         }
 
         private int calculateHashCode() {
+            Member backingMember = weakBackingMember.get();
+            
             int startCode = 0;
             if (backingMember instanceof Method) {
                 startCode = 1;
@@ -2471,13 +2473,16 @@ public class Utilities {
         }
 
         public boolean equals(Object o) {
+            System.out.println("JRW(10) Ut comparing " + this + " to " + o);
             if (o == null) return false;
             if (!(o instanceof MemberKey)) return false;
+            
+            Member backingMember = weakBackingMember.get();
 
             MemberKey omk = (MemberKey) o;
             if (hashCode != omk.hashCode) return false;
 
-            Member oMember = omk.backingMember;
+            Member oMember = omk.getBackingMember();
 
             if (oMember.equals(backingMember)) {
                 // If they are the same, they are the same!
