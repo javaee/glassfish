@@ -86,6 +86,11 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
+            <artifactId>no-hk2-bundle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
             <artifactId>sdp-management-bundle</artifactId>
             <version>${project.version}</version>
         </dependency>
