@@ -49,6 +49,7 @@ import org.glassfish.hk2.utilities.cache.Computable;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -134,8 +135,8 @@ public class Utilities {
     // We don't want to hold onto these classes if they are released by others
     private static final Map<Class<?>, LinkedHashSet<MemberKey>> methodKeyCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
     private static Map<Class<?>, LinkedHashSet<MemberKey>> fieldCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
-    private final static Map<Class<?>, Method> postConstructCache = new WeakHashMap<Class<?>, Method>();
-    private final static Map<Class<?>, Method> preDestroyCache = new WeakHashMap<Class<?>, Method>();
+    private final static Map<Class<?>, WeakReference<Method>> postConstructCache = new WeakHashMap<Class<?>, WeakReference<Method>>();
+    private final static Map<Class<?>, WeakReference<Method>> preDestroyCache = new WeakHashMap<Class<?>, WeakReference<Method>>();
 
     private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
     private final static String CONVENTION_PRE_DESTROY = "preDestroy";
@@ -1307,10 +1308,10 @@ public class Utilities {
 
         synchronized (lock) {
             // It is ok for postConstructMethod to be null
-            postConstructCache.put(clazz, postConstructMethod);
+            postConstructCache.put(clazz, new WeakReference<Method>(postConstructMethod));
 
             // It is ok for preDestroyMethod to be null
-            preDestroyCache.put(clazz, preDestroyMethod);
+            preDestroyCache.put(clazz, new WeakReference<Method>(preDestroyMethod));
         }
 
         return retVal;
@@ -2096,14 +2097,16 @@ public class Utilities {
         Method retVal;
         synchronized (lock) {
             containsKey = postConstructCache.containsKey(clazz);
-            retVal = postConstructCache.get(clazz);
+            WeakReference<Method> ref = postConstructCache.get(clazz);
+            retVal = (ref == null) ? null : ref.get();
         }
 
         if (!containsKey) {
             getAllMethods(clazz);  // Fills in the cache
 
             synchronized (lock) {
-                retVal = postConstructCache.get(clazz);
+                WeakReference<Method> ref = postConstructCache.get(clazz);
+                retVal = (ref == null) ? null : ref.get();
             }
         }
 
@@ -2139,14 +2142,16 @@ public class Utilities {
         Method retVal;
         synchronized (lock) {
             containsKey = preDestroyCache.containsKey(clazz);
-            retVal = preDestroyCache.get(clazz);
+            WeakReference<Method> ref = preDestroyCache.get(clazz);
+            retVal = (ref == null) ? null : ref.get();
         }
 
         if (!containsKey) {
             getAllMethods(clazz);  // Fills in the cache
 
             synchronized (lock) {
-                retVal = preDestroyCache.get(clazz);
+                WeakReference<Method> ref = preDestroyCache.get(clazz);
+                retVal = (ref == null) ? null : ref.get();
             }
         }
 
