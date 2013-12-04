@@ -49,7 +49,6 @@ import org.glassfish.hk2.utilities.cache.Computable;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
-import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -2218,6 +2217,8 @@ public class Utilities {
         return (T) o;
     }
 
+    private final static Object proxyCreationLock = new Object();
+    
     private static <T> T secureCreate(final Class<?> superclass,
             final Class<?>[] interfaces,
             final MethodHandler callback,
@@ -2236,7 +2237,9 @@ public class Utilities {
                         // load from the superclass' classloader first,
                         // then hk2-locator's classloader second.
                         return new DelegatingClassLoader<T>(
-                                ProxyFactory.class.getClassLoader(), superclass.getClassLoader());
+                                superclass.getClassLoader(),
+                                ProxyFactory.class.getClassLoader(),
+                                ProxyCtl.class.getClassLoader());
                     }
                 });
 
@@ -2260,20 +2263,37 @@ public class Utilities {
             @SuppressWarnings("unchecked")
             @Override
             public T run() {
-                ProxyFactory proxyFactory = new ProxyFactory();
-                proxyFactory.setInterfaces(interfaces);
-                proxyFactory.setSuperclass(superclass);
+                synchronized (proxyCreationLock) {
+                    ProxyFactory.ClassLoaderProvider originalProvider = ProxyFactory.classLoaderProvider;
+                    ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider() {
+                        
+                        @Override
+                        public ClassLoader get(ProxyFactory arg0) {
+                            return delegatingLoader;
+                        }
+                    };
+                    
+                    try {
+                        ProxyFactory proxyFactory = new ProxyFactory();
+                        proxyFactory.setInterfaces(interfaces);
+                        proxyFactory.setSuperclass(superclass);
 
-                Class<?> proxyClass = proxyFactory.createClass();
+                        Class<?> proxyClass = proxyFactory.createClass();
 
-                try {
-                    T proxy = (T) proxyClass.newInstance();
+                        try {
+                            T proxy = (T) proxyClass.newInstance();
 
-                    ((ProxyObject) proxy).setHandler(callback);
+                            ((ProxyObject) proxy).setHandler(callback);
 
-                    return proxy;
-                } catch (Exception e1) {
-                    throw new RuntimeException(e1);
+                            return proxy;
+                        } catch (Exception e1) {
+                            throw new RuntimeException(e1);
+                        }
+                    }
+                    finally {
+                        ProxyFactory.classLoaderProvider = originalProvider;
+                        
+                    }
                 }
             }
 
