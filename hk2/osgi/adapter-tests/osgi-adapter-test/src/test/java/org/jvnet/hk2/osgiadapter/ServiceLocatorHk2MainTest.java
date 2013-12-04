@@ -325,6 +325,37 @@ public class ServiceLocatorHk2MainTest {
             ServiceLocatorUtilities.removeOneDescriptor(serviceLocator, added);
         }
     }
+    
+    /**
+     * See https://java.net/jira/browse/HK2-163
+     * 
+     * The problem was that the interface had no access to hk2 at
+     * all, which caused classloading problems
+     * 
+     * @throws Throwable
+     */
+    @Test
+    public void testProxyClassWithNoAccessToHK2() throws Throwable {
+        ServiceLocator serviceLocator = getMainServiceLocator();
+        
+        // This time the interface is NOT in the set of contracts
+        Descriptor addMe = BuilderHelper.link(Bar.class.getName()).
+                in(Singleton.class.getName()).
+                proxy().
+                andLoadWith(new HK2LoaderImpl(Bar.class.getClassLoader())).
+                build();
+        
+        ActiveDescriptor<?> added = ServiceLocatorUtilities.addOneDescriptor(serviceLocator, addMe);
+        try {
+            Bar bar = serviceLocator.getService(Bar.class);
+            
+            Assert.assertNotNull(bar);
+            Assert.assertTrue(bar instanceof ProxyCtl);
+        }
+        finally {
+            ServiceLocatorUtilities.removeOneDescriptor(serviceLocator, added);
+        }
+    }
 
 
 	private void checkServiceLocatorOSGiRegistration(
