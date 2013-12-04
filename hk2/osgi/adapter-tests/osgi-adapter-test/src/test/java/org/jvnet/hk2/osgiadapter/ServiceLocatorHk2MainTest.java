@@ -9,17 +9,20 @@ import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.cleanCaches;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.logProfile;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.repositories;
 
 import java.io.File;
 import java.util.List;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.HK2LoaderImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -32,12 +35,19 @@ import org.osgi.util.tracker.ServiceTracker;
 import test.TestModuleStartup;
 
 import com.oracle.sdp.management.InstallSDPService;
+import com.oracle.test.bar.Bar;
+import com.oracle.test.bar.BarContract;
 import com.oracle.test.contracts.FooContract;
 import com.sun.enterprise.module.ModulesRegistry;
 import com.sun.enterprise.module.bootstrap.Main;
 import com.sun.enterprise.module.bootstrap.ModuleStartup;
 import com.sun.enterprise.module.bootstrap.StartupContext;
 
+/**
+ * Tests to be run under OSGi
+ * 
+ * @author jwells
+ */
 @RunWith(org.ops4j.pax.exam.junit.JUnit4TestRunner.class)
 public class ServiceLocatorHk2MainTest {
 
@@ -87,6 +97,8 @@ public class ServiceLocatorHk2MainTest {
 						"test-module-startup").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId(
 		                        "contract-bundle").version(projectVersion).startLevel(4)),
+		        provision(mavenBundle().groupId(GROUP_ID).artifactId(
+		                        "no-hk2-bundle").version(projectVersion).startLevel(4)),
 		        provision(mavenBundle().groupId(GROUP_ID).artifactId(
 		                        "sdp-management-bundle").version(projectVersion).startLevel(4)),
 
@@ -175,6 +187,8 @@ public class ServiceLocatorHk2MainTest {
 
         ServiceLocator serviceLocator = main.createServiceLocator(
                 mr, startupContext,null,null);
+        
+        ServiceLocatorUtilities.enableLookupExceptions(serviceLocator);
         
         return serviceLocator;
 	    
@@ -280,6 +294,37 @@ public class ServiceLocatorHk2MainTest {
         fooC = serviceLocator.getService(FooContract.class);
         Assert.assertNotNull(fooC);
 	}
+	
+	/**
+     * See https://java.net/jira/browse/HK2-163
+     * 
+     * The problem was that the interface had no access to hk2 at
+     * all, which caused classloading problems
+     * 
+     * @throws Throwable
+     */
+    @Test
+    public void testProxyInterfaceWithNoAccessToHK2() throws Throwable {
+        ServiceLocator serviceLocator = getMainServiceLocator();
+        
+        Descriptor addMe = BuilderHelper.link(Bar.class.getName()).
+                to(BarContract.class.getName()).
+                in(Singleton.class.getName()).
+                proxy().
+                andLoadWith(new HK2LoaderImpl(Bar.class.getClassLoader())).
+                build();
+        
+        ActiveDescriptor<?> added = ServiceLocatorUtilities.addOneDescriptor(serviceLocator, addMe);
+        try {
+            BarContract contract = serviceLocator.getService(BarContract.class);
+            
+            Assert.assertNotNull(contract);
+            Assert.assertTrue(contract instanceof ProxyCtl);
+        }
+        finally {
+            ServiceLocatorUtilities.removeOneDescriptor(serviceLocator, added);
+        }
+    }
 
 
 	private void checkServiceLocatorOSGiRegistration(

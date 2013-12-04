@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -40,27 +40,55 @@
     holder.
 
 -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>org.glassfish.hk2</groupId>
-        <artifactId>osgi</artifactId>
+        <artifactId>osgi-adapter-tests-parent</artifactId>
         <version>2.2.0-b25-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.glassfish.hk2</groupId>
-    <artifactId>osgi-adapter-tests-parent</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>no-hk2-bundle</artifactId>
+    <packaging>jar</packaging>
+    <name>A bundle with no hk2 dependencies</name>
+    <description>${project.name}</description>
 
-    <modules>
-        <module>contract-bundle</module>
-        <module>faux-sdp-bundle</module>
-        <module>sdp-management-bundle</module>
-        <module>test-module-startup</module>
-        <module>osgi-adapter-test</module>
-        <module>no-hk2-bundle</module>
-    </modules>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>osgiversion-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <useDefaultManifestFile>true</useDefaultManifestFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <executions>
+                   <execution>
+                      <id>bundle-manifest</id>
+                      <phase>process-classes</phase>
+                      <goals>
+                         <goal>manifest</goal>
+                      </goals>
+                   </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+      <dependency>
+        <groupId>org.glassfish.hk2.external</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
 
 </project>
+
