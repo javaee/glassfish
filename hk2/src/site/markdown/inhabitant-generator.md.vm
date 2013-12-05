@@ -48,7 +48,7 @@ The --outjar option allows the user to pick the output JAR file that the generat
 with the inhabitants file in it.
 
 The --locator option allows the user to name the locator that these services should go into.  This
-value is "default" by default.
+value is \"default\" by default.
 
 The --verbose option make the generator print extra information as it does its work.
 
@@ -93,11 +93,11 @@ be analyzed for classes marked with [@Service][service].
 
  The plugin has the following configuration options:
  
-+ outputDirectory (the place the output file will go, defaults to \$\{project.build.outputDirectory\})
-+ testOutputDirectory (the place the output will go if test is true, defaults to \$\{project.build.testOutputDirectory\})
++ outputDirectory (the place the output file will go, defaults to $\{project.build.outputDirectory\})
++ testOutputDirectory (the place the output will go if test is true, defaults to $\{project.build.testOutputDirectory\})
 + verbose (true or false)
 + test Set to true if this execution should be for the tests rather than main
-+ locator The name of the locator file (which is "default" by default)
++ locator The name of the locator file (which is \"default\" by default)
 + noswap (true or false) if set to true the generator will overwrite files in place which is riskier but faster
   
 <h3>Ant Task</h3>
@@ -130,7 +130,7 @@ The ant plugin has the following options:
 + targetDirectory (the directory to find the classes, defaults to target/classes)
 + outputDirectory (the place the output file will go, defaults to target/classes)
 + verbose (true or false)
-+ locator The name of the locator file (which is "default" by default)
++ locator The name of the locator file (which is \"default\" by default)
 + noswap (true or false) if set to true the generator will overwrite files in place which is riskier but faster
 
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html

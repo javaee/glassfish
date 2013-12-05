@@ -55,7 +55,12 @@ import org.jvnet.hk2.annotations.Contract;
  * resolution failure.
  * <p>
  * Implementations of this interface are placed into the registry like
- * any other service.
+ * any other service.  One use-case would be to inject the
+ * {@link DynamicConfigurationService} into the implementation in order
+ * to add services if this resolver can do so.  Another option would
+ * be to inject a {@link ServiceLocator} and use one of the methods
+ * in {@link org.glassfish.hk2.utilities.ServiceLocatorUtilities} in order
+ * to add services to the registry
  * <p>
  * If any of the registered injection resolvers commits a dynamic change
  * then the system will try one more time to resolve the injection before
@@ -75,8 +80,10 @@ public interface JustInTimeInjectionResolver {
      * exceptions in the MultiException that may be thrown from the injection resolver
      *
      * @param failedInjectionPoint The injection point that failed to resolve
-     * @return true if the system should commit this configuration and retry the injection
-     * point
+     * @return true if this method has added a descriptor to the {@link ServiceLocator}
+     * which may be used to resolve the {@link Injectee}.  False if this method
+     * did not add a descriptor to the {@link ServiceLocator} that might help
+     * resolve the injection point
      */
     public boolean justInTimeResolution(Injectee failedInjectionPoint);
 

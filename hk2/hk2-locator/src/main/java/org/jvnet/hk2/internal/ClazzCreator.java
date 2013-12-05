@@ -296,52 +296,49 @@ public class ClazzCreator<T> implements Creator<T> {
         }
         
         final Map<Method, List<MethodInterceptor>> methodInterceptors = Utilities.getAllInterceptedMethods(locator, selfDescriptor, implClass);
-        if (!methodInterceptors.isEmpty()) {
+        if (methodInterceptors == null || methodInterceptors.isEmpty()) {
+            return ReflectionHelper.makeMe(c, args, locator.getNeutralContextClassLoader()); 
+        }
             
-            final MethodInterceptorHandler methodInterceptor = new MethodInterceptorHandler(locator, methodInterceptors);
+        final MethodInterceptorHandler methodInterceptor = new MethodInterceptorHandler(locator, methodInterceptors);
             
-            final Set<String> methodNames = new HashSet<String>();
-            for (Method m : methodInterceptors.keySet()) {
-                methodNames.add(m.getName());
-            }
+        final Set<String> methodNames = new HashSet<String>();
+        for (Method m : methodInterceptors.keySet()) {
+            methodNames.add(m.getName());
+        }
             
-            final ProxyFactory proxyFactory = PFACTORIES.compute(implClass);
+        final ProxyFactory proxyFactory = PFACTORIES.compute(implClass);
             
-            final boolean neutral = locator.getNeutralContextClassLoader();
+        final boolean neutral = locator.getNeutralContextClassLoader();
             
-            return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+        return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 
-                @Override
-                public Object run() throws Exception {
-                    ClassLoader currentCCL = null;
-                    if (neutral) {
-                        currentCCL = Thread.currentThread().getContextClassLoader();
-                    }
+            @Override
+            public Object run() throws Exception {
+                ClassLoader currentCCL = null;
+                if (neutral) {
+                    currentCCL = Thread.currentThread().getContextClassLoader();
+                }
           
-                    try {
-                      return proxyFactory.create(c.getParameterTypes(), args, methodInterceptor);
+                try {
+                  return proxyFactory.create(c.getParameterTypes(), args, methodInterceptor);
+                }
+                catch (InvocationTargetException ite) {
+                    Throwable targetException = ite.getTargetException();
+                    Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), targetException);
+                    if (targetException instanceof Exception) {
+                        throw (Exception) targetException;
                     }
-                    catch (InvocationTargetException ite) {
-                        Throwable targetException = ite.getTargetException();
-                        Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), targetException);
-                        if (targetException instanceof Exception) {
-                            throw (Exception) targetException;
-                        }
-                        throw new RuntimeException(targetException);
-                    }
-                    finally {
-                        if (neutral) {
-                            Thread.currentThread().setContextClassLoader(currentCCL);
-                        }
+                    throw new RuntimeException(targetException);
+                }
+                finally {
+                    if (neutral) {
+                        Thread.currentThread().setContextClassLoader(currentCCL);
                     }
                 }
+            }
                 
-            });
-            
-            
-        }
-        
-        return ReflectionHelper.makeMe(c, args, locator.getNeutralContextClassLoader());
+        });
     }
 
     private void fieldMe(Map<Injectee, Object> resolved, T t) throws Throwable {
