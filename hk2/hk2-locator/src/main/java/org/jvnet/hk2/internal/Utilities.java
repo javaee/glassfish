@@ -49,7 +49,6 @@ import org.glassfish.hk2.utilities.cache.Computable;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
-import java.lang.ref.SoftReference;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -135,8 +134,8 @@ public class Utilities {
     // We don't want to hold onto these classes if they are released by others
     private static final Map<Class<?>, LinkedHashSet<MemberKey>> methodKeyCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
     private static Map<Class<?>, LinkedHashSet<MemberKey>> fieldCache = new WeakHashMap<Class<?>, LinkedHashSet<MemberKey>>();
-    private final static Map<Class<?>, SoftReference<Method>> postConstructCache = new WeakHashMap<Class<?>, SoftReference<Method>>();
-    private final static Map<Class<?>, SoftReference<Method>> preDestroyCache = new WeakHashMap<Class<?>, SoftReference<Method>>();
+    private final static Map<Class<?>, Method> postConstructCache = new WeakHashMap<Class<?>, Method>();
+    private final static Map<Class<?>, Method> preDestroyCache = new WeakHashMap<Class<?>, Method>();
 
     private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
     private final static String CONVENTION_PRE_DESTROY = "preDestroy";
@@ -1308,10 +1307,10 @@ public class Utilities {
 
         synchronized (lock) {
             // It is ok for postConstructMethod to be null
-            postConstructCache.put(clazz, new SoftReference<Method>(postConstructMethod));
+            postConstructCache.put(clazz, postConstructMethod);
 
             // It is ok for preDestroyMethod to be null
-            preDestroyCache.put(clazz, new SoftReference<Method>(preDestroyMethod));
+            preDestroyCache.put(clazz, preDestroyMethod);
         }
 
         return retVal;
@@ -2097,16 +2096,14 @@ public class Utilities {
         Method retVal;
         synchronized (lock) {
             containsKey = postConstructCache.containsKey(clazz);
-            SoftReference<Method> ref = postConstructCache.get(clazz);
-            retVal = (ref == null) ? null : ref.get();
+            retVal = postConstructCache.get(clazz);
         }
 
         if (!containsKey) {
             getAllMethods(clazz);  // Fills in the cache
 
             synchronized (lock) {
-                SoftReference<Method> ref = postConstructCache.get(clazz);
-                retVal = (ref == null) ? null : ref.get();
+                retVal = postConstructCache.get(clazz);
             }
         }
 
@@ -2142,16 +2139,14 @@ public class Utilities {
         Method retVal;
         synchronized (lock) {
             containsKey = preDestroyCache.containsKey(clazz);
-            SoftReference<Method> ref = preDestroyCache.get(clazz);
-            retVal = (ref == null) ? null : ref.get();
+            retVal = preDestroyCache.get(clazz);
         }
 
         if (!containsKey) {
             getAllMethods(clazz);  // Fills in the cache
 
             synchronized (lock) {
-                SoftReference<Method> ref = preDestroyCache.get(clazz);
-                retVal = (ref == null) ? null : ref.get();
+                retVal = preDestroyCache.get(clazz);
             }
         }
 
@@ -2416,20 +2411,20 @@ public class Utilities {
     }
 
     private static class MemberKey {
-        private final SoftReference<Member> weakBackingMember;
+        private final Member backingMember;
         private final int hashCode;
         private final boolean postConstruct;
         private final boolean preDestroy;
 
         private MemberKey(Member method, boolean isPostConstruct, boolean isPreDestroy) {
-            weakBackingMember = new SoftReference<Member>(method);
+            backingMember = method;
             hashCode = calculateHashCode();
             postConstruct = isPostConstruct;
             preDestroy = isPreDestroy;
         }
 
         private Member getBackingMember() {
-            return weakBackingMember.get();
+            return backingMember;
         }
 
         private boolean isPostConstruct() {
@@ -2441,8 +2436,6 @@ public class Utilities {
         }
 
         private int calculateHashCode() {
-            Member backingMember = weakBackingMember.get();
-            
             int startCode = 0;
             if (backingMember instanceof Method) {
                 startCode = 1;
@@ -2475,8 +2468,6 @@ public class Utilities {
         public boolean equals(Object o) {
             if (o == null) return false;
             if (!(o instanceof MemberKey)) return false;
-            
-            Member backingMember = weakBackingMember.get();
 
             MemberKey omk = (MemberKey) o;
             if (hashCode != omk.hashCode) return false;
@@ -2583,17 +2574,18 @@ public class Utilities {
             ServiceLocatorImpl impl,
             ActiveDescriptor<?> descriptor,
             Class<?> clazz) {
-        LinkedHashMap<Method, List<MethodInterceptor>> retVal =
-          new LinkedHashMap<Method, List<MethodInterceptor>>();
-        if (descriptor == null || clazz == null || isFinal(clazz)) return retVal;
+        if (descriptor == null || clazz == null || isFinal(clazz)) return null;
+        
+        List<InterceptionService> interceptionServices = impl.getInterceptionServices();
+        if (interceptionServices == null || interceptionServices.isEmpty()) return null;
         
         // Make sure it is not one of the special services
         for (String contract : descriptor.getAdvertisedContracts()) {
-            if (NOT_INTERCEPTED.contains(contract)) return retVal;
+            if (NOT_INTERCEPTED.contains(contract)) return null;
         }
         
-        List<InterceptionService> interceptionServices = impl.getInterceptionServices();
-        if (interceptionServices.isEmpty()) return retVal;
+        LinkedHashMap<Method, List<MethodInterceptor>> retVal =
+                new LinkedHashMap<Method, List<MethodInterceptor>>();
         
         for (InterceptionService interceptionService : interceptionServices) {
             Filter filter = interceptionService.getDescriptorFilter();
