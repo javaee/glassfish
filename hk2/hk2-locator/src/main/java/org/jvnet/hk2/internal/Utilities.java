@@ -1110,8 +1110,6 @@ public class Utilities {
             }
 
             synchronized (lock) {
-                cleanCache();
-                
                 fieldCache.put(clazz.getName(), new LinkedHashSet<MemberKey>(currentFields));
             }
         } catch (Throwable th) {
@@ -1325,8 +1323,6 @@ public class Utilities {
         }
 
         synchronized (lock) {
-            cleanCache();
-            
             // It is ok for postConstructMethod to be null
             postConstructCache.put(clazz.getName(), new MemberDescriptor(postConstructMethod));
 
@@ -1376,8 +1372,6 @@ public class Utilities {
         }
 
         synchronized (lock) {
-            cleanCache();
-            
             methodKeyCache.put(clazz.getName(), new LinkedHashSet<MemberKey>(currentMethods));
         }
     }
@@ -2576,20 +2570,19 @@ public class Utilities {
         return retVal;
     }
     
-    /**
-     * Lock must be held
-     */
     private static void cleanCache() {
-        Reference<? extends Class<?>> ref;
-        while ((ref = deadClasses.poll()) != null) {
+        synchronized (lock) {
+            Reference<? extends Class<?>> ref;
+            while ((ref = deadClasses.poll()) != null) {
             
-            ClazzPhantomReference cpr = (ClazzPhantomReference) ref;
+                ClazzPhantomReference cpr = (ClazzPhantomReference) ref;
             
-            phantoms.remove(cpr.clazzName);
-            postConstructCache.remove(cpr.clazzName);
-            preDestroyCache.remove(cpr.clazzName);
-            methodKeyCache.remove(cpr.clazzName);
-            fieldCache.remove(cpr.clazzName);
+                phantoms.remove(cpr.clazzName);
+                postConstructCache.remove(cpr.clazzName);
+                preDestroyCache.remove(cpr.clazzName);
+                methodKeyCache.remove(cpr.clazzName);
+                fieldCache.remove(cpr.clazzName);
+            }
         }
     }
     
@@ -2626,6 +2619,10 @@ public class Utilities {
      * declaring class, so that we can quickly find the true
      * class where the method or field is defined quickly without
      * searching the entire class hierarchy
+     * 
+     * Note that when the SoftReference returns null then it is time
+     * to clean the cache, as some class or another we had in the cache
+     * is now gone
      * 
      * @author jwells
      *
@@ -2740,6 +2737,10 @@ public class Utilities {
         private Field internalGetField(Class<?> clazz) {
             if (name == null || isMethod) return null;
             Field retVal = (Field) soft.get();
+            if (retVal == null) {
+                cleanCache();
+            }
+            
             if (USE_SOFT_REFERENCE && retVal != null) return retVal;
             
             while (clazz != null) {
@@ -2777,6 +2778,9 @@ public class Utilities {
         private Method internalGetMethod(Class<?> clazz) {
             if (name == null || !isMethod) return null;
             Method retVal = (Method) soft.get();
+            if (retVal == null) {
+                cleanCache();
+            }
             if (USE_SOFT_REFERENCE && retVal != null) return retVal;
             
             while (clazz != null) {
