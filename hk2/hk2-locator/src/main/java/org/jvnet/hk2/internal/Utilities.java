@@ -1079,7 +1079,7 @@ public class Utilities {
         getAllFieldKeys(clazz, keys, collector);
 
         for (MemberKey key : keys) {
-            retVal.add((Field) key.getBackingField(clazz));
+            retVal.add(key.getBackingField(clazz));
         }
 
         return retVal;
@@ -1092,8 +1092,6 @@ public class Utilities {
 
         Set<MemberKey> discovered;
         synchronized (lock) {
-            cleanCache();
-            
             discovered = fieldCache.get(clazz.getName());
         }
 
@@ -1112,6 +1110,8 @@ public class Utilities {
             }
 
             synchronized (lock) {
+                cleanCache();
+                
                 fieldCache.put(clazz.getName(), new LinkedHashSet<MemberKey>(currentFields));
             }
         } catch (Throwable th) {
@@ -1315,12 +1315,12 @@ public class Utilities {
         Method postConstructMethod = null;
         Method preDestroyMethod = null;
         for (MemberKey key : keys) {
-            retVal.add((Method) key.getBackingMethod(clazz));
+            retVal.add(key.getBackingMethod(clazz));
             if (key.isPostConstruct()) {
-                postConstructMethod = (Method) key.getBackingMethod(clazz);
+                postConstructMethod = key.getBackingMethod(clazz);
             }
             if (key.isPreDestroy()) {
-                preDestroyMethod = (Method) key.getBackingMethod(clazz);
+                preDestroyMethod = key.getBackingMethod(clazz);
             }
         }
 
@@ -1667,15 +1667,15 @@ public class Utilities {
                     // We found a winner, no matter the inherited state
                     winnerScope = current;
                     break;
-                } else {
-                    if (current.annotationType().isAnnotationPresent(Inherited.class)) {
-                        winnerScope = current;
-                        break;
-                    }
-
-                    // This non-inherited annotation wipes out all scopes above it
+                }
+                
+                if (current.annotationType().isAnnotationPresent(Inherited.class)) {
+                    winnerScope = current;
                     break;
                 }
+
+                // This non-inherited annotation wipes out all scopes above it
+                break;
             }
 
             if (annotatedGuy instanceof Class) {
