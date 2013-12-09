@@ -65,13 +65,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
-
-import org.glassfish.hk2.utilities.cache.Cache;
-import org.glassfish.hk2.utilities.cache.Computable;
 
 /**
  * @author jwells
@@ -992,18 +990,6 @@ public final class ReflectionHelper {
     }
 
     /**
-     * Make sure setAccessible is only invoked once per method.
-     */
-    private static final Cache<Method, Object> accessibleMethodCache = new Cache<Method, Object>(new Computable<Method, Object>(){
-
-        @Override
-        public Object compute(Method m) {
-            setAccessible(m);
-            return this;
-        }
-    });
-
-    /**
      * This version of invoke is CCL neutral (it will return with the
      * same CCL as what it went in with)
      *
@@ -1019,8 +1005,8 @@ public final class ReflectionHelper {
         if (isStatic(m)) {
             o = null;
         }
-
-        accessibleMethodCache.compute(m);
+        
+        setAccessible(m);
         
         ClassLoader currentCCL = null;
         if (neutralCCL) {
@@ -1083,6 +1069,8 @@ public final class ReflectionHelper {
      * @param ao The object to change
      */
     private static void setAccessible(final AccessibleObject ao) {
+        if (ao.isAccessible()) return;
+        
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
 
             @Override
@@ -1239,5 +1227,24 @@ public final class ReflectionHelper {
                 return Thread.currentThread().getContextClassLoader();
             }
         });
+    }
+    
+    private static class IdentityMethod {
+        private final Method method;
+        
+        private IdentityMethod(Method m) {
+            method = m;
+        }
+        
+        public int hashCode() {
+            return System.identityHashCode(method);
+        }
+        
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof IdentityMethod)) return false;
+            
+            return (method == ((IdentityMethod) o).method);
+        }
     }
 }
