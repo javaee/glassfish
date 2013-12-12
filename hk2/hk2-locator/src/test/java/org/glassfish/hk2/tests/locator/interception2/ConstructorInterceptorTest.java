@@ -37,60 +37,38 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.interception2;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.List;
 
-import org.aopalliance.intercept.ConstructorInterceptor;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
- * This service is implemented in order to configure
- * interceptors on methods provided by hk2 services
- * 
  * @author jwells
+ *
  */
-@Contract
-public interface InterceptionService {
+public class ConstructorInterceptorTest {
     /**
-     * If the given filter returns true then the methods
-     * of the service will be passed to {@link #getMethodInterceptors}
-     * to determine if a method will be intercepted.  It may
-     * be the case that the descriptor is NOT yet reified, and
-     * this method should not reify it
-     * 
-     * @return The filter that will be applied to a descriptor
-     * to determine if it is to be intercepted
+     * Tests that an interceptor is called on a very basic service
      */
-    public Filter getDescriptorFilter();
-    
-    /**
-     * Each non-final method of a service that passes the
-     * {@link #getDescriptorFilter} method will be passed
-     * to this method to determine if it will intercepted
-     * 
-     * @param method A non-final method that may
-     * be intercepted
-     * @return if null (or an empty list) then this method should
-     * NOT be intercepted.  Otherwise the list of interceptors to
-     * apply to this method
-     */
-    public List<MethodInterceptor> getMethodInterceptors(Method method);
-    
-    /**
-     * The single chosen constructor of a service that passes the
-     * {@link #getDescriptorFilter} method will be passed
-     * to this method to determine if it will intercepted
-     * 
-     * @param constructor A constructor that may
-     * be intercepted
-     * @return if null (or an empty list) then this constructor should
-     * NOT be intercepted.  Otherwise the list of interceptors to
-     * apply to this method
-     */
-    public List<ConstructorInterceptor> getConstructorInterceptors(Constructor<?> constructor);
+    @Test @Ignore
+    public void testBasicConstructorInterception() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService.class,
+                RecordingInterceptorService.class,
+                RecordingInterceptor.class);
+        
+        SimpleService service = locator.getService(SimpleService.class);
+        
+        RecordingInterceptor recorder = locator.getService(RecordingInterceptor.class);
+        
+        List<Constructor<?>> cCalled = recorder.getConstructorsCalled();
+        Assert.assertEquals(1, cCalled.size());
+        
+    }
 
 }

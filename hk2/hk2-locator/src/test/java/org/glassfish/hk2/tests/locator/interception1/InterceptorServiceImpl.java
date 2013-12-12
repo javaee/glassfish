@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.interception1;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
@@ -77,6 +79,13 @@ public class InterceptorServiceImpl implements InterceptionService {
             return Collections.singletonList((MethodInterceptor) interceptor);
         }
         
+        return null;
+    }
+
+    @Override
+    public List<ConstructorInterceptor> getConstructorInterceptors(
+            Constructor<?> constructor) {
+        // TODO Auto-generated method stub
         return null;
     }
 

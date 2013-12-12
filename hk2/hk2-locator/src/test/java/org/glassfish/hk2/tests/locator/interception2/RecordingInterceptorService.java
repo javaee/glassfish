@@ -37,60 +37,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.interception2;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.InterceptionService;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
- * This service is implemented in order to configure
- * interceptors on methods provided by hk2 services
- * 
  * @author jwells
+ *
  */
-@Contract
-public interface InterceptionService {
-    /**
-     * If the given filter returns true then the methods
-     * of the service will be passed to {@link #getMethodInterceptors}
-     * to determine if a method will be intercepted.  It may
-     * be the case that the descriptor is NOT yet reified, and
-     * this method should not reify it
-     * 
-     * @return The filter that will be applied to a descriptor
-     * to determine if it is to be intercepted
+@Singleton
+public class RecordingInterceptorService implements InterceptionService {
+    @Inject
+    private Provider<RecordingInterceptor> interceptor;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getDescriptorFilter()
      */
-    public Filter getDescriptorFilter();
-    
-    /**
-     * Each non-final method of a service that passes the
-     * {@link #getDescriptorFilter} method will be passed
-     * to this method to determine if it will intercepted
-     * 
-     * @param method A non-final method that may
-     * be intercepted
-     * @return if null (or an empty list) then this method should
-     * NOT be intercepted.  Otherwise the list of interceptors to
-     * apply to this method
+    @Override
+    public Filter getDescriptorFilter() {
+        return BuilderHelper.allFilter();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getMethodInterceptors(java.lang.reflect.Method)
      */
-    public List<MethodInterceptor> getMethodInterceptors(Method method);
-    
-    /**
-     * The single chosen constructor of a service that passes the
-     * {@link #getDescriptorFilter} method will be passed
-     * to this method to determine if it will intercepted
-     * 
-     * @param constructor A constructor that may
-     * be intercepted
-     * @return if null (or an empty list) then this constructor should
-     * NOT be intercepted.  Otherwise the list of interceptors to
-     * apply to this method
+    @Override
+    public List<MethodInterceptor> getMethodInterceptors(Method method) {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getConstructorInterceptors(java.lang.reflect.Constructor)
      */
-    public List<ConstructorInterceptor> getConstructorInterceptors(Constructor<?> constructor);
+    @Override
+    public List<ConstructorInterceptor> getConstructorInterceptors(
+            Constructor<?> constructor) {
+        return Collections.singletonList((ConstructorInterceptor) interceptor.get());
+    }
 
 }
