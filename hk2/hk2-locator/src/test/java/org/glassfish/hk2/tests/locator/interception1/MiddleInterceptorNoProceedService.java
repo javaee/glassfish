@@ -39,12 +39,14 @@
  */
 package org.glassfish.hk2.tests.locator.interception1;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Singleton;
 
+import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.glassfish.hk2.api.Filter;
@@ -125,6 +127,12 @@ public class MiddleInterceptorNoProceedService implements InterceptionService {
             throw new AssertionError("Should not get called");
         }
         
+    }
+
+    @Override
+    public List<ConstructorInterceptor> getConstructorInterceptors(
+            Constructor<?> constructor) {
+        return null;
     }
 
 }

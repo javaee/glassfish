@@ -68,8 +68,6 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PostConstruct;
 import org.glassfish.hk2.api.PreDestroy;
 import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.cache.Cache;
-import org.glassfish.hk2.utilities.cache.Computable;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -79,29 +77,17 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  *
  */
 public class ClazzCreator<T> implements Creator<T> {
-    private final static Cache<Class<?>, ProxyFactory> PFACTORIES = new Cache<Class<?>, ProxyFactory>(
-            new Computable<Class<?>, ProxyFactory>() {
+    private final static MethodFilter METHOD_FILTER = new MethodFilter() {
 
-                @Override
-                public ProxyFactory compute(Class<?> key) {
-                    ProxyFactory proxyFactory = new ProxyFactory();
-                    proxyFactory.setSuperclass(key);
-                    proxyFactory.setFilter(new MethodFilter() {
-
-                        @Override
-                        public boolean isHandled(Method method) {
-                            // We do not allow interception of finalize
-                            if (method.getName().equals("finalize")) return false;
-                            
-                            return true;
-                        }
-                        
-                    });
-                    
-                    return proxyFactory;
-                }
-                
-            });
+        @Override
+        public boolean isHandled(Method method) {
+            // We do not allow interception of finalize
+            if (method.getName().equals("finalize")) return false;
+            
+            return true;
+        }
+        
+    };
     
     private final ServiceLocatorImpl locator;
     private final Class<?> implClass;
@@ -307,7 +293,9 @@ public class ClazzCreator<T> implements Creator<T> {
             methodNames.add(m.getName());
         }
             
-        final ProxyFactory proxyFactory = PFACTORIES.compute(implClass);
+        final ProxyFactory proxyFactory = new ProxyFactory();
+        proxyFactory.setSuperclass(implClass);
+        proxyFactory.setFilter(METHOD_FILTER);
             
         final boolean neutral = locator.getNeutralContextClassLoader();
             
