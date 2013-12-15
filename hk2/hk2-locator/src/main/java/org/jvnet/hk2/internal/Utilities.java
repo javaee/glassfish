@@ -43,6 +43,7 @@ import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
+import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.glassfish.hk2.utilities.cache.Cache;
 import org.glassfish.hk2.utilities.cache.Computable;
@@ -66,6 +67,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2522,22 +2524,38 @@ public class Utilities {
         NOT_INTERCEPTED.add(Context.class.getName());
     }
     
-    /* package */ static Map<Method, List<MethodInterceptor>> getAllInterceptedMethods(
+    private final static Interceptors EMTPY_INTERCEPTORS = new Interceptors() {
+
+        @Override
+        public Map<Method, List<MethodInterceptor>> getMethodInterceptors() {
+            return null;
+        }
+
+        @Override
+        public List<ConstructorInterceptor> getConstructorInterceptors() {
+            return null;
+        }
+        
+    };
+    
+    /* package */ static Interceptors getAllInterceptors(
             ServiceLocatorImpl impl,
             ActiveDescriptor<?> descriptor,
-            Class<?> clazz) {
-        if (descriptor == null || clazz == null || isFinal(clazz)) return null;
+            Class<?> clazz,
+            Constructor<?> c) {
+        if (descriptor == null || clazz == null || isFinal(clazz)) return EMTPY_INTERCEPTORS;
         
         List<InterceptionService> interceptionServices = impl.getInterceptionServices();
-        if (interceptionServices == null || interceptionServices.isEmpty()) return null;
+        if (interceptionServices == null || interceptionServices.isEmpty()) return EMTPY_INTERCEPTORS;
         
         // Make sure it is not one of the special services
         for (String contract : descriptor.getAdvertisedContracts()) {
-            if (NOT_INTERCEPTED.contains(contract)) return null;
+            if (NOT_INTERCEPTED.contains(contract)) return EMTPY_INTERCEPTORS;
         }
         
-        LinkedHashMap<Method, List<MethodInterceptor>> retVal =
+        final LinkedHashMap<Method, List<MethodInterceptor>> retVal =
                 new LinkedHashMap<Method, List<MethodInterceptor>>();
+        final ArrayList<ConstructorInterceptor> cRetVal = new ArrayList<ConstructorInterceptor>();
         
         for (InterceptionService interceptionService : interceptionServices) {
             Filter filter = interceptionService.getDescriptorFilter();
@@ -2561,13 +2579,36 @@ public class Utilities {
                     
                     List<MethodInterceptor> interceptors = interceptionService.getMethodInterceptors(method);
                     if (interceptors != null && !interceptors.isEmpty()) {
-                        retVal.put(method, interceptors);
+                        List<MethodInterceptor> addToMe = retVal.get(method);
+                        if (addToMe == null) {
+                            addToMe = new ArrayList<MethodInterceptor>();
+                            retVal.put(method, addToMe);
+                        }
+                        
+                        addToMe.addAll(interceptors);
                     }
+                }
+                
+                List<ConstructorInterceptor> cInterceptors = interceptionService.getConstructorInterceptors(c);
+                if (cInterceptors != null && !cInterceptors.isEmpty()) {
+                    cRetVal.addAll(cInterceptors);
                 }
             }
         }
         
-        return retVal;
+        return new Interceptors() {
+
+            @Override
+            public Map<Method, List<MethodInterceptor>> getMethodInterceptors() {
+                return retVal;
+            }
+
+            @Override
+            public List<ConstructorInterceptor> getConstructorInterceptors() {
+                return cRetVal;
+            }
+            
+        };
     }
     
     private static void cleanCache() {
@@ -2863,5 +2904,25 @@ public class Utilities {
                     declaringClass + "," +
                     sb.toString() + ")";
         }
+    }
+    
+    /**
+     * The return type from getAllInterceptors
+     * 
+     * @author jwells
+     *
+     */
+    public interface Interceptors {
+        /**
+         * Gets the method interceptors
+         * @return The possibly null set of method interceptors
+         */
+        public Map<Method, List<MethodInterceptor>> getMethodInterceptors();
+        
+        /**
+         * Gets the constructor interceptors
+         * @return The possibly null set of constructor interceptors
+         */
+        public List<ConstructorInterceptor> getConstructorInterceptors();
     }
 }

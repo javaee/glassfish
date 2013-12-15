@@ -268,4 +268,28 @@ public class InterceptorTest {
         // Should be false because of there is no interceptor
         Assert.assertFalse(echoReturn);
     }
+    
+    /**
+     * Tests that interceptors from *multiple* intercepted services are all called
+     */
+    @Test
+    public void testInterceptorsFromMultipleInterceptionServices() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                RecordingInterceptor.class,
+                InterceptorServiceImpl.class,
+                InterceptorServiceImpl.class, // twice!
+                SimpleInterceptedService.class);
+        
+        SimpleInterceptedService sis = locator.getService(SimpleInterceptedService.class);
+        
+        sis.callMe();
+        
+        RecordingInterceptor ri = locator.getService(RecordingInterceptor.class);
+        
+        List<String> inMethods = ri.getCalledInMethod();
+        Assert.assertEquals(2,inMethods.size() );
+        
+        Assert.assertEquals("callMe", inMethods.get(0));
+        Assert.assertEquals("callMe", inMethods.get(1));
+    }
 }

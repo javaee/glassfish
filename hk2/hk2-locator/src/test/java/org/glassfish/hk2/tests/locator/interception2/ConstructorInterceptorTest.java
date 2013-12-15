@@ -56,7 +56,7 @@ public class ConstructorInterceptorTest {
     /**
      * Tests that an interceptor is called on a very basic service
      */
-    @Test @Ignore
+    @Test
     public void testBasicConstructorInterception() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService.class,
                 RecordingInterceptorService.class,

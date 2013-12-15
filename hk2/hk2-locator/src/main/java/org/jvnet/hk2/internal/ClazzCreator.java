@@ -58,6 +58,7 @@ import java.util.Set;
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyFactory;
 
+import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ClassAnalyzer;
@@ -281,51 +282,67 @@ public class ClazzCreator<T> implements Creator<T> {
             args[injectee.getPosition()] = resolved.get(injectee);
         }
         
-        final Map<Method, List<MethodInterceptor>> methodInterceptors = Utilities.getAllInterceptedMethods(locator, selfDescriptor, implClass);
-        if (methodInterceptors == null || methodInterceptors.isEmpty()) {
+        Utilities.Interceptors interceptors = Utilities.getAllInterceptors(locator, selfDescriptor, implClass, c);
+        final Map<Method, List<MethodInterceptor>> methodInterceptors = interceptors.getMethodInterceptors();
+        List<ConstructorInterceptor> constructorInterceptors = interceptors.getConstructorInterceptors();
+        
+        if ((methodInterceptors == null || methodInterceptors.isEmpty()) &&
+            ((constructorInterceptors == null) || constructorInterceptors.isEmpty())) {
+            // No need for any kind of interception
             return ReflectionHelper.makeMe(c, args, locator.getNeutralContextClassLoader()); 
         }
-            
-        final MethodInterceptorHandler methodInterceptor = new MethodInterceptorHandler(locator, methodInterceptors);
-            
-        final Set<String> methodNames = new HashSet<String>();
-        for (Method m : methodInterceptors.keySet()) {
-            methodNames.add(m.getName());
-        }
-            
-        final ProxyFactory proxyFactory = new ProxyFactory();
-        proxyFactory.setSuperclass(implClass);
-        proxyFactory.setFilter(METHOD_FILTER);
-            
+        
         final boolean neutral = locator.getNeutralContextClassLoader();
+        
+        if (methodInterceptors == null || methodInterceptors.isEmpty()) {
+            // No method interceptors means no need for proxy at all
+            return ConstructorInterceptorHandler.construct(c, args, neutral, constructorInterceptors);
+        }
+        
+        return ConstructorInterceptorHandler.construct(c,
+                args,
+                neutral,
+                constructorInterceptors,
+                new ConstructorInterceptorHandler.ConstructorAction() {
             
-        return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
-
             @Override
-            public Object run() throws Exception {
-                ClassLoader currentCCL = null;
-                if (neutral) {
-                    currentCCL = Thread.currentThread().getContextClassLoader();
-                }
-          
-                try {
-                  return proxyFactory.create(c.getParameterTypes(), args, methodInterceptor);
-                }
-                catch (InvocationTargetException ite) {
-                    Throwable targetException = ite.getTargetException();
-                    Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), targetException);
-                    if (targetException instanceof Exception) {
-                        throw (Exception) targetException;
-                    }
-                    throw new RuntimeException(targetException);
-                }
-                finally {
-                    if (neutral) {
-                        Thread.currentThread().setContextClassLoader(currentCCL);
-                    }
-                }
-            }
+            public Object makeMe(final Constructor<?> c, final Object[] args, final boolean neutralCCL)
+                    throws Throwable {
+                final MethodInterceptorHandler methodInterceptor = new MethodInterceptorHandler(locator, methodInterceptors);
+                    
+                final ProxyFactory proxyFactory = new ProxyFactory();
+                proxyFactory.setSuperclass(implClass);
+                proxyFactory.setFilter(METHOD_FILTER);
                 
+                return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
+
+                    @Override
+                    public Object run() throws Exception {
+                        ClassLoader currentCCL = null;
+                        if (neutralCCL) {
+                            currentCCL = Thread.currentThread().getContextClassLoader();
+                        }
+                  
+                        try {
+                          return proxyFactory.create(c.getParameterTypes(), args, methodInterceptor);
+                        }
+                        catch (InvocationTargetException ite) {
+                            Throwable targetException = ite.getTargetException();
+                            Logger.getLogger().debug(c.getDeclaringClass().getName(), c.getName(), targetException);
+                            if (targetException instanceof Exception) {
+                                throw (Exception) targetException;
+                            }
+                            throw new RuntimeException(targetException);
+                        }
+                        finally {
+                            if (neutralCCL) {
+                                Thread.currentThread().setContextClassLoader(currentCCL);
+                            }
+                        }
+                    }
+                        
+                });
+            }
         });
     }
 
