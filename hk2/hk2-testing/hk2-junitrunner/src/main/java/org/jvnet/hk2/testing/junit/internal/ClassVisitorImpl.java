@@ -54,12 +54,13 @@ import org.objectweb.asm.Attribute;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * @author jwells
  *
  */
-public class ClassVisitorImpl implements ClassVisitor {
+public class ClassVisitorImpl extends ClassVisitor {
     private final static String SERVICE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Service;";
     private final static String NAME = "name";
     private final static String VALUE = "value";
@@ -80,6 +81,8 @@ public class ClassVisitorImpl implements ClassVisitor {
      * @param verbose true if we should print out any service we are binding
      */
     public ClassVisitorImpl(DynamicConfiguration config, boolean verbose) {
+        super(Opcodes.ASM5);
+        
         this.config = config;
         this.verbose = verbose;
     }
@@ -245,7 +248,10 @@ public class ClassVisitorImpl implements ClassVisitor {
         
     }
     
-    private class ServiceAnnotationVisitor implements AnnotationVisitor {
+    private class ServiceAnnotationVisitor extends AnnotationVisitor {
+        public ServiceAnnotationVisitor() {
+            super(Opcodes.ASM5);
+        }
 
         /* (non-Javadoc)
          * @see org.objectweb.asm.AnnotationVisitor#visit(java.lang.String, java.lang.Object)
@@ -293,11 +299,13 @@ public class ClassVisitorImpl implements ClassVisitor {
         
     }
     
-    private class NamedAnnotationVisitor implements AnnotationVisitor {
+    private class NamedAnnotationVisitor extends AnnotationVisitor {
         private final String defaultName;
         private boolean nameSet = false;
         
         public NamedAnnotationVisitor(String defaultName) {
+            super(Opcodes.ASM5);
+            
             this.defaultName = defaultName;
         }
 

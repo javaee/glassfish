@@ -40,6 +40,7 @@
 package org.jvnet.hk2.generator.internal;
 
 import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * This just makes the main-line code less messy
@@ -47,7 +48,14 @@ import org.objectweb.asm.AnnotationVisitor;
  * @author jwells
  *
  */
-public abstract class AbstractAnnotationVisitorImpl implements AnnotationVisitor {
+public abstract class AbstractAnnotationVisitorImpl extends AnnotationVisitor {
+    /**
+     * Gives the version implemented to the superclass
+     */
+    public AbstractAnnotationVisitorImpl() {
+        super(Opcodes.ASM5);
+    }
+    
     /* (non-Javadoc)
      * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
      */

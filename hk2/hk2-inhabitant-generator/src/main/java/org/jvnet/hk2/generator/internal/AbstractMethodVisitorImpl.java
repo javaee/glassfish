@@ -43,6 +43,7 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
 /**
  * This in only here to keep the main-line code less messy
@@ -50,7 +51,13 @@ import org.objectweb.asm.MethodVisitor;
  * @author jwells
  *
  */
-public abstract class AbstractMethodVisitorImpl implements MethodVisitor {
+public abstract class AbstractMethodVisitorImpl extends MethodVisitor {
+    /**
+     * The constructor that gives the implemented version to the superclass
+     */
+    public AbstractMethodVisitorImpl() {
+        super(Opcodes.ASM5);
+    }
 
     /* (non-Javadoc)
      * @see org.objectweb.asm.MethodVisitor#visitAnnotationDefault()
