@@ -185,7 +185,7 @@
 
     <properties>
         <java.net.username>${user.name}</java.net.username>
-        <asm.version>3.3</asm.version>
+        <asm.version>5.0_BETA</asm.version>
         <aopalliance.version>1.0</aopalliance.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
