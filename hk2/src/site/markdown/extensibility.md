@@ -23,6 +23,7 @@ users can customize thier HK2 environment.  Among the set of things which can be
 + [Dynamic Configuration Listeners](extensibility.html#Dynamic_Configuration_Listeners)
 + [Class Analysis](extensibility.html#Class_Analysis)
 + [Run Level Services](extensibility.html#Run_Level_Services)
++ [Self Descriptor Injection](extensibility.html#Self_Descriptor_Injection)
 
 ### Adding a Scope and Context to the system
 
@@ -206,7 +207,15 @@ This [example][custom-resolver-example] adds a custom injection resolver that cu
 
 ### Validation
 
-In this example we show how the [ValidationService][validationservice] can be used to do a complete
+Certain operations that are performed by the users of HK2 can be validated.  Validation can either
+allow or deny the operation in question.  The operations that can be validated are adding a
+service to the [ServiceLocator][servicelocator], removing a service from the [ServiceLocator][servicelocator],
+injecting a service into another service or looking up a service from the [ServiceLocator][servicelocator].
+This feature is most often used in secure use-cases, but has applicability for other use-cases
+as well.  To use validation the user registers an implementation of [ValidationService][validationservice]
+with the [ServiceLocator][servicelocator] whose operations are to be validated.
+
+There is an example example of how the [ValidationService][validationservice] can be used to do a complete
 security lockdown of the system.  This example runs with the J2SE security manager turned on and
 grants some privileges to some projects and other privileges to other projects to ensure that 
 the [ValidationService][ValidationService] can be used to define the security of the system.
@@ -255,6 +264,21 @@ has changed.
 
 Learn more about Run Level Services [here][runlevelservices].
 
+### Self Descriptor Injection
+
+Any service can have its own [ActiveDescriptor][activedescriptor] injected into itself.  One use case for
+this is when you have a common set of services that all share the same super class.  The super class can
+self inject the [ActiveDescriptor][activedescriptor] and then use that to do further generic processing
+of the service.  To self inject the [ActiveDescriptor][activedescriptor] for your service use the
+[Self][self] annotation on a field or on a parameter of your constructor or initializer method.  Here is an example:
+
+```java
+public abstract class GenericService {
+  @Inject @Self
+  private ActiveDescriptor<?> myOwnDescriptor;
+}
+```java
+
 [apioverview]: api-overview.html
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [context]: apidocs/org/glassfish/hk2/api/Context.html
@@ -288,3 +312,4 @@ Learn more about Run Level Services [here][runlevelservices].
 [activedescriptor]: apidocs/org/glassfish/hk2/api/ActiveDescriptor.html
 [dynamicconfigurationlistener]: apidocs/org/glassfish/hk2/api/DynamicConfigurationListener.html
 [immediate]: apidocs/org/glassfish/hk2/api/Immediate.html
+[self]: apidocs/org/glassfish/hk2/api/Self.html
