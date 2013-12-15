@@ -50,9 +50,10 @@ import javax.inject.Singleton;
 
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.InterceptionService;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
@@ -68,7 +69,24 @@ public class RecordingInterceptorService implements InterceptionService {
      */
     @Override
     public Filter getDescriptorFilter() {
-        return BuilderHelper.allFilter();
+        return new IndexedFilter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                return true;
+            }
+
+            @Override
+            public String getAdvertisedContract() {
+                return SimpleService.class.getName();
+            }
+
+            @Override
+            public String getName() {
+                return null;
+            }
+            
+        };
     }
 
     /* (non-Javadoc)
