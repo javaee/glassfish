@@ -2782,7 +2782,10 @@ public class Utilities {
                 cleanCache();
             }
             
-            if (USE_SOFT_REFERENCE && retVal != null) return retVal;
+            if (USE_SOFT_REFERENCE && (retVal != null) &&
+                retVal.getDeclaringClass().isAssignableFrom(clazz)) {
+                return retVal;
+            }
             
             while (clazz != null) {
                 if (clazz.getName().equals(declaringClass)) break;
@@ -2822,7 +2825,11 @@ public class Utilities {
             if (retVal == null) {
                 cleanCache();
             }
-            if (USE_SOFT_REFERENCE && retVal != null) return retVal;
+            
+            if (USE_SOFT_REFERENCE && (retVal != null) &&
+                retVal.getDeclaringClass().isAssignableFrom(clazz)) {
+                return retVal;
+            }
             
             while (clazz != null) {
                 if (clazz.getName().equals(declaringClass)) break;
