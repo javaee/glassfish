@@ -53,7 +53,6 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -276,17 +275,30 @@ public class ImmediateTest {
      * 
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDestroyedWhenLocatorShutdown() throws InterruptedException {
-        ServiceLocator locator = LocatorHelper.getServiceLocator(GetsDestroyedService.class);
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                AnotherGetsDestroyedService.class,
+                GetsDestroyedService.class,
+                GetsDestroyedPerLookupService.class);
         
+        ServiceLocatorUtilities.enableImmediateScope(locator);
+        
+        Thread.sleep(200);
+        
+        AnotherGetsDestroyedService agds = locator.getService(AnotherGetsDestroyedService.class);
         GetsDestroyedService gds = locator.getService(GetsDestroyedService.class);
+        GetsDestroyedPerLookupService gdpls = gds.getPerLookupService();
         
+        Assert.assertFalse(agds.isDestroyed());
         Assert.assertFalse(gds.isDestroyed());
+        Assert.assertFalse(gdpls.isDestroyed());
         
         locator.shutdown();
         
+        Assert.assertTrue(agds.isDestroyed());
         Assert.assertTrue(gds.isDestroyed());
+        Assert.assertTrue(gdpls.isDestroyed());
     }
     
     private final static Object sLock = new Object();

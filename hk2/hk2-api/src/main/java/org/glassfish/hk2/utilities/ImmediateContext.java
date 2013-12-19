@@ -80,8 +80,7 @@ public class ImmediateContext implements Context<Immediate>{
 
     @Override
     public void destroyOne(ActiveDescriptor<?> descriptor) {
-        // Do nothing
-        
+        delegate.destroyOne(descriptor, null);
     }
 
     @Override
@@ -96,7 +95,7 @@ public class ImmediateContext implements Context<Immediate>{
 
     @Override
     public void shutdown() {
-        // Do nothing
+        delegate.shutdown();
         
     }
 

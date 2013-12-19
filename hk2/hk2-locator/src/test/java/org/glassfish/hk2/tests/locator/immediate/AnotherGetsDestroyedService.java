@@ -45,13 +45,17 @@ import javax.inject.Inject;
 import org.glassfish.hk2.api.Immediate;
 
 /**
- * @author jwells
+ * This is an immediate service which injects an immediate service.
+ * This immediate service will be added to the service locator prior
+ * to the GetsDestroyedService to force the GetsDestroyedService to
+ * not be the root ServiceHandle
  *
+ * @author jwells
  */
 @Immediate
-public class GetsDestroyedService {
+public class AnotherGetsDestroyedService {
     @Inject
-    private GetsDestroyedPerLookupService perLookup;
+    private GetsDestroyedService gds;
     
     private boolean isDestroyed;
     
@@ -63,9 +67,4 @@ public class GetsDestroyedService {
     public boolean isDestroyed() {
         return isDestroyed;
     }
-    
-    public GetsDestroyedPerLookupService getPerLookupService() {
-        return perLookup;
-    }
-
 }
