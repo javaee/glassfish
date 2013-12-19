@@ -53,6 +53,7 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -267,6 +268,25 @@ public class ImmediateTest {
         Assert.assertTrue(secondTid > 0);
         
         Assert.assertEquals(firstTid, secondTid);
+    }
+    
+    /**
+     * Tests that an immediate service is started and stopped when
+     * added and removed and the service is created by a Factory
+     * 
+     * @throws InterruptedException 
+     */
+    @Test @Ignore
+    public void testDestroyedWhenLocatorShutdown() throws InterruptedException {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(GetsDestroyedService.class);
+        
+        GetsDestroyedService gds = locator.getService(GetsDestroyedService.class);
+        
+        Assert.assertFalse(gds.isDestroyed());
+        
+        locator.shutdown();
+        
+        Assert.assertTrue(gds.isDestroyed());
     }
     
     private final static Object sLock = new Object();
