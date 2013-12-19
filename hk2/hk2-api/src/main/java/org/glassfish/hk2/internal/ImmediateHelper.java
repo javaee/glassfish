@@ -42,6 +42,7 @@ package org.glassfish.hk2.internal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -108,7 +109,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     private final Filter validationFilter;
     private final ServiceLocator locator;
     
-    private final HashMap<ActiveDescriptor<?>, Object> currentImmediateServices = new HashMap<ActiveDescriptor<?>, Object>();
+    private final HashMap<ActiveDescriptor<?>, HandleAndService> currentImmediateServices = new HashMap<ActiveDescriptor<?>, HandleAndService>();
     private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
     private final HashSet<Long> tidsWithWork = new HashSet<Long>();
     
@@ -133,11 +134,13 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     @SuppressWarnings("unchecked")
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
-        U retVal;
+        U retVal = null;
         
         synchronized (this) {
-            retVal = (U) currentImmediateServices.get(activeDescriptor);
-            if (retVal != null) return retVal;
+            HandleAndService has = currentImmediateServices.get(activeDescriptor);
+            if (has != null) {
+                return (U) has.getService();
+            }
             
             while (creating.contains(activeDescriptor)) {
                 try {
@@ -149,19 +152,28 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
                 
             }
             
-            retVal = (U) currentImmediateServices.get(activeDescriptor);
-            if (retVal != null) return retVal;
+            has = currentImmediateServices.get(activeDescriptor);
+            if (has != null) {
+                return (U) has.getService();
+            }
             
             creating.add(activeDescriptor);
         }
         
         try {
-            retVal = (U) activeDescriptor.create(root);
+            retVal = activeDescriptor.create(root);
         }
         finally {
             synchronized (this) {
+                ServiceHandle<?> discoveredRoot = null;
+                if (root != null) {
+                    if (root.getActiveDescriptor().equals(activeDescriptor)) {
+                        discoveredRoot = root;
+                    }
+                }
+                
                 if (retVal != null) {
-                    currentImmediateServices.put(activeDescriptor, retVal);
+                    currentImmediateServices.put(activeDescriptor, new HandleAndService(discoveredRoot, retVal));
                 }
                 
                 creating.remove(activeDescriptor);
@@ -313,7 +325,66 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
         return inScopeAndInThisLocator;
     }
     
+    /**
+     * Destroys a single descriptor
+     * 
+     * @param descriptor The descriptor to destroy
+     * @param errorHandlers The handlers for exceptions (if null will get from service locator)
+     */
     @SuppressWarnings("unchecked")
+    public void destroyOne(ActiveDescriptor<?> descriptor, List<ImmediateErrorHandler> errorHandlers) {
+        if (errorHandlers == null) {
+            errorHandlers = locator.getAllServices(ImmediateErrorHandler.class);
+        }
+        
+        synchronized (this) {
+            HandleAndService has = currentImmediateServices.remove(descriptor);
+            Object instance = has.getService();
+        
+            try {
+                ((ActiveDescriptor<Object>) descriptor).dispose(instance);
+            }
+            catch (Throwable th) {
+                for (ImmediateErrorHandler ieh : errorHandlers) {
+                    try {
+                        ieh.preDestroyFailed(descriptor, th);
+                    }
+                    catch (Throwable th2) {
+                        // ignore
+                    }
+                }
+            }
+            
+        }
+        
+    }
+    
+    /**
+     * For when the server shuts down
+     */
+    public void shutdown() {
+        List<ImmediateErrorHandler> errorHandlers = locator.getAllServices(ImmediateErrorHandler.class);
+        
+        synchronized (this) {
+            for (Map.Entry<ActiveDescriptor<?>, HandleAndService> entry :
+                new HashSet<Map.Entry<ActiveDescriptor<?>, HandleAndService>>(currentImmediateServices.entrySet())) {
+                HandleAndService has = entry.getValue();
+                
+                ServiceHandle<?> handle = has.getHandle();
+                
+                if (handle != null) {
+                    handle.destroy();
+                }
+                else {
+                    destroyOne(entry.getKey(), errorHandlers);
+                }
+                
+            }
+            
+            
+        }
+    }
+    
     private void doWork() {
         List<ActiveDescriptor<?>> inScopeAndInThisLocator = getImmediateServices();
         
@@ -345,20 +416,14 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
             oldSet.removeAll(newFullSet);
             
             for (ActiveDescriptor<?> gone : oldSet) {
-                Object instance = currentImmediateServices.remove(gone);
+                HandleAndService has = currentImmediateServices.get(gone);
+                ServiceHandle<?> handle = has.getHandle();
                 
-                try {
-                    ((ActiveDescriptor<Object>) gone).dispose(instance);
+                if (handle != null) {
+                    handle.destroy();
                 }
-                catch (Throwable th) {
-                    for (ImmediateErrorHandler ieh : errorHandlers) {
-                        try {
-                            ieh.preDestroyFailed(gone, th);
-                        }
-                        catch (Throwable th2) {
-                            // ignore
-                        }
-                    }
+                else {
+                    destroyOne(gone, errorHandlers);
                 }
             }
         }
@@ -416,6 +481,25 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
             
             return Immediate.class.getName().equals(scope);
         }
+    }
+    
+    private static class HandleAndService {
+        private final ServiceHandle<?> handle;
+        private final Object service;
+        
+        private HandleAndService(ServiceHandle<?> handle, Object service) {
+            this.handle = handle;
+            this.service = service;
+        }
+        
+        private ServiceHandle<?> getHandle() {
+            return handle;
+        }
+        
+        private Object getService() {
+            return service;
+        }
+        
     }
 
 }

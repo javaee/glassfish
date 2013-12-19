@@ -40,19 +40,12 @@
 package org.glassfish.hk2.tests.locator.immediate;
 
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.Immediate;
 
 /**
  * @author jwells
  *
  */
-@Immediate
-public class GetsDestroyedService {
-    @Inject
-    private GetsDestroyedPerLookupService perLookup;
-    
+public class GetsDestroyedPerLookupService {
     private boolean isDestroyed;
     
     @PreDestroy
@@ -62,10 +55,6 @@ public class GetsDestroyedService {
     
     public boolean isDestroyed() {
         return isDestroyed;
-    }
-    
-    public GetsDestroyedPerLookupService getPerLookupService() {
-        return perLookup;
     }
 
 }
