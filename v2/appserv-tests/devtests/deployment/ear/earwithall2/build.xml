@@ -486,7 +486,7 @@
         <antcall target="all"/>
     </target>
 
-    <target name="depl-order" depends="assemble" unless="doCluster">
+    <target name="depl-order" depends="assemble" unless="EE">
         <echo message="depl-order"/>
         <antcall target="declare-test">
             <param name="description" value="test deployment order"/>

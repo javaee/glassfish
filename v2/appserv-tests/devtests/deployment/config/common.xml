@@ -1165,14 +1165,18 @@ AS_ADMIN_MASTERPASSWORD=changeit
     <copy todir="server-logs/${testServer}/logs">
        <fileset dir="${testServer.dir}/logs" includes="*.log *.log.*"/>
     </copy>
-    <mkdir dir="server-logs/${testClusterServer1}/logs"/>
-    <copy todir="server-logs/${testClusterServer1}/logs">
-       <fileset dir="${testClusterServer1.dir}/logs" includes="*.log *.log.*"/>
-    </copy>
+	<antcall target="copyClusterLog"/>
     <antcall target="deleteInstance"/>
     <antcall target="deleteCluster"/>
     <delete dir="${s1as.home}/nodeagents"/>
     <antcall target="unsetupDomain"/>
+</target>
+
+<target name="copyClusterLog" if="doCluster">
+    <mkdir dir="server-logs/${testClusterServer1}/logs"/>
+    <copy todir="server-logs/${testClusterServer1}/logs">
+       <fileset dir="${testClusterServer1.dir}/logs" includes="*.log *.log.*"/>
+    </copy>
 </target>
 
 <target name="postTestsRun">
