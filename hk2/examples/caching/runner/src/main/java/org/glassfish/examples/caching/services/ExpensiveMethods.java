@@ -37,29 +37,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.caching.hk2;
+package org.glassfish.examples.caching.services;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.glassfish.examples.caching.hk2.Cache;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This annotation should be put on methods that
- * take one input parameter and return a value.  It
- * can also be put on constructors that take one input
- * parameter.  Methods marked with this annotation will
- * not be called with the same input, instead returning
- * the previously returned value.  Constructors marked
- * with this annotation will not be called with the same
- * input, instead returning the object returned given the
- * same input
- *  
+ * This class has very expensive method calls
+ * whose answers can be cached.  We will cache
+ * them by using interception and using the
+ * {@link Cache} annotation
+ * 
  * @author jwells
+ *
  */
-@Retention(RUNTIME)
-@Target( { METHOD, CONSTRUCTOR })
-public @interface Cache {
+@Service
+public class ExpensiveMethods {
+    private int timesCalled = 0;
+    
+    /**
+     * This method is extremely expensive.  Extremely.
+     * Adding one takes a lot 
+     * @param input An input parameter
+     * @return The results of an expensive calculation
+     */
+    @Cache
+    public int veryExpensiveCalculation(int input) {
+        timesCalled++;
+        return input + 1;
+    }
+    
+    /**
+     * Returns the number of times the expensive method
+     * was called
+     * 
+     * @return The number of times the expensive method was called
+     */
+    public int getNumTimesCalled() {
+        return timesCalled;
+    }
+    
+    /**
+     * Sets the number of times the expensive method was called to zero
+     */
+    public void clear() {
+        timesCalled = 0;
+    }
+    
 }

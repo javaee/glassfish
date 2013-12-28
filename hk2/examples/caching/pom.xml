@@ -54,5 +54,6 @@
     <name>Security Lockdown Example</name>
     <modules>
             <module>system</module>
+            <module>runner</module>
     </modules>
 </project>

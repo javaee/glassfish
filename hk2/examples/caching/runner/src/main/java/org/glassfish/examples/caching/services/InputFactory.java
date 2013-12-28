@@ -37,29 +37,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.caching.hk2;
+package org.glassfish.examples.caching.services;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.PerLookup;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This annotation should be put on methods that
- * take one input parameter and return a value.  It
- * can also be put on constructors that take one input
- * parameter.  Methods marked with this annotation will
- * not be called with the same input, instead returning
- * the previously returned value.  Constructors marked
- * with this annotation will not be called with the same
- * input, instead returning the object returned given the
- * same input
- *  
+ * This is a factory that can be used to change the
+ * input parameters of the {@link ExpensiveConstructor}
+ * class
+ * 
  * @author jwells
+ *
  */
-@Retention(RUNTIME)
-@Target( { METHOD, CONSTRUCTOR })
-public @interface Cache {
+@Service
+public class InputFactory implements Factory<Integer> {
+    private int input;
+
+    @Override @PerLookup
+    public Integer provide() {
+        return input;
+    }
+
+    @Override
+    public void dispose(Integer instance) {
+        // Do nothing
+        
+    }
+    
+    /**
+     * Changes the value the provide method will
+     * return
+     * 
+     * @param input The new value the provide method
+     * should return
+     */
+    public void setInput(int input) {
+        this.input = input;
+    }
+
 }
