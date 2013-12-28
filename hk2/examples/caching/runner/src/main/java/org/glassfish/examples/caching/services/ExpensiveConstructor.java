@@ -37,29 +37,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.caching.hk2;
+package org.glassfish.examples.caching.services;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.inject.Inject;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.glassfish.examples.caching.hk2.Cache;
+import org.glassfish.hk2.api.PerLookup;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This annotation should be put on methods that
- * take one input parameter and return a value.  It
- * can also be put on constructors that take one input
- * parameter.  Methods marked with this annotation will
- * not be called with the same input, instead returning
- * the previously returned value.  Constructors marked
- * with this annotation will not be called with the same
- * input, instead returning the object returned given the
- * same input
- *  
+ * This is a service that has a very expensive constructor.  Luckily
+ * this service can be cached with the constructor input
+ * parameter as a key, and so we will use constructor interception with
+ * it
+ * 
  * @author jwells
+ *
  */
-@Retention(RUNTIME)
-@Target( { METHOD, CONSTRUCTOR })
-public @interface Cache {
+@Service @PerLookup
+public class ExpensiveConstructor {
+    private static int numTimesConstructed;
+    private final int multiplier;
+    
+    /**
+     * This is the extremely expensive constructor
+     * 
+     * @param multiplier The number to multiply by
+     */
+    @Inject @Cache
+    public ExpensiveConstructor(int multiplier) {
+        // Very expensive operation
+        this.multiplier = multiplier * 2;
+        numTimesConstructed++;
+    }
+    
+    /**
+     * This method ensures that we can get at the
+     * results of the expensive operation performed
+     * in the constructor
+     * 
+     * @return The result of the expensive operation
+     * done in the constructor
+     */
+    public int getComputation() {
+        return multiplier;
+    }
+    
+    /**
+     * Clears the number of times this was constructed
+     */
+    public static void clear() {
+        numTimesConstructed = 0;
+    }
+    
+    /**
+     * Gets the number of times this class has been
+     * constructed since the last call to {@link #clear()}
+     * 
+     * @return The number of times this class has been constructed
+     */
+    public static int getNumTimesConstructed() {
+        return numTimesConstructed;
+    }
 }
