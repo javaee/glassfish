@@ -56,7 +56,7 @@ public class CachingMethodInterceptor implements MethodInterceptor {
 
 The cache is the HashMap field named cache.  After some defensive checking (and a check for null, as we
 don't cache the null input parameter) we create a CacheKey from the input invocation parameters.  We then
-check to see if the cache contains the cooresponding key.  If the cache does not contain the cooresponding
+check to see if the cache contains the corresponding key.  If the cache does not contain the corresponding
 key then we go ahead and call the underlying method with the call to proceed, saving the output.  We
 then put that key and the result into the cache.  However if we do find the CacheKey in the cache then
 we just return the result *without* calling the proceed method, implying that the underlying method on
@@ -95,7 +95,7 @@ public class CacheKey {
 
 The above CacheKey has an appropriate hashCode and equals method for objects that will be used as
 a key in a HashMap.  We will also use the CacheKey in our constructor interceptor, except that the
-methodName in that case will always be <init>.
+methodName in that case will always be &lt;init&rt;.
 
 The constructor interceptor works exactly the same as the method interceptor, although the effect
 it has on the service is somewhat different than the effect it would have on the method, since
