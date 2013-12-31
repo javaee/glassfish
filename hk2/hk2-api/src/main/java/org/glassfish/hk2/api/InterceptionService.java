@@ -49,21 +49,28 @@ import org.jvnet.hk2.annotations.Contract;
 
 /**
  * This service is implemented in order to configure
- * interceptors on methods provided by hk2 services
+ * interceptors on methods or constructors provided by
+ * hk2 services.  All implementations must be in the 
+ * {@link javax.inject.Singleton} scope.  Only services
+ * that are created by HK2 are candidates for interception.
+ * In particular services created by the provide method of
+ * the {@link Factory} interface can not be intercented.  
  * 
  * @author jwells
  */
 @Contract
 public interface InterceptionService {
     /**
-     * If the given filter returns true then the methods
-     * of the service will be passed to {@link #getMethodInterceptors}
-     * to determine if a method will be intercepted.  It may
-     * be the case that the descriptor is NOT yet reified, and
-     * this method should not reify it
+     * If the returned filter returns true then the methods
+     * of the service will be passed to {@link #getMethodInterceptors(Method)}
+     * to determine if a method should be intercepted and the
+     * constructor of the service will be passed to
+     * {@link #getConstructorInterceptors(Constructor)} to
+     * determine if the constructor should be intercepted
      * 
      * @return The filter that will be applied to a descriptor
-     * to determine if it is to be intercepted
+     * to determine if it is to be intercepted.  Should not
+     * return null
      */
     public Filter getDescriptorFilter();
     

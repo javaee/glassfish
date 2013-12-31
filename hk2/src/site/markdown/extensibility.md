@@ -20,6 +20,7 @@ users can customize thier HK2 environment.  Among the set of things which can be
 + [Custom Injection Resolvers](extensibility.html#aCustom_Injection_Resolvers)
 + [Validation](extensibility.html#Validation)
 + [Instance Lifecycle](extensibility.html#Instance_Lifecycle)
++ [Interception](extensibility.html#Interception)
 + [Dynamic Configuration Listeners](extensibility.html#Dynamic_Configuration_Listeners)
 + [Class Analysis](extensibility.html#Class_Analysis)
 + [Run Level Services](extensibility.html#Run_Level_Services)
@@ -84,7 +85,7 @@ method.
  
 ### Proxies
 
-Rather than injecting an instance of a service itself, HK2 can also inject a Proxy to that service.  There are a few
+Rather than injecting an instance of a service itself, HK2 can also inject a proxy to that service.  There are a few
 reasons that you might want to use proxies.  One reason is because the lifeycle of two different scopes may be
 different.  For example, you might have something like a RequestScoped scope, and you would like to inject it
 into a Singleton scoped object.  But the Singleton scoped object is only injected once, and the RequestScoped service
@@ -230,6 +231,12 @@ the [InstanceLifecycleListener][instancelifecyclelistener] is notified whenever 
 of a service is created or destroyed.  This is a useful facility for tracing or for scenarios where a service wishes to become
 an automatic listener for anything that it is injected into.
 
+### Interception
+
+[AOP Alliance][aopalliance] method and constructor interception is supported by HK2.  Methods and constructors that are to be
+intercepted are identified using instances of the HK2 [InterceptionService][interceptionservice].  An example of
+how to use the [InterceptionService][interceptionservice] can be found [here][aopexample].
+
 ### Dynamic Configuration Listeners
 
 A user may register an implementation of [DynamicConfigurationListener][dynamicconfigurationlistener] to be notified  whenever
@@ -313,3 +320,6 @@ public abstract class GenericService {
 [dynamicconfigurationlistener]: apidocs/org/glassfish/hk2/api/DynamicConfigurationListener.html
 [immediate]: apidocs/org/glassfish/hk2/api/Immediate.html
 [self]: apidocs/org/glassfish/hk2/api/Self.html
+[aopalliance]: http://aopalliance.sourceforge.net/
+[interceptionservice]: apidocs/org/glassfish/hk2/api/InterceptionService.html
+[aopexample]: aop-example.html
