@@ -105,6 +105,12 @@ public class CachingTest extends HK2Runner {
         
     }
     
+    /**
+     * Tests that the ExpensiveConstructor class is only created
+     * when the input parameter changes, even though it is in the
+     * PerLookup scope.  The InputFactory is used to modify
+     * the input parameter of ExpensiveConstructor
+     */
     @Test
     public void testConstructorsAreIntercepted() {
         // Clears out the class so we can see how many times it is created
