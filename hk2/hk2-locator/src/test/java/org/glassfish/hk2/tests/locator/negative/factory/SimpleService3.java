@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,49 +39,10 @@
  */
 package org.glassfish.hk2.tests.locator.negative.factory;
 
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.Immediate;
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.PerThread;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
-
 /**
  * @author jwells
  *
  */
-public class NegativeFactoryModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.locator.utilities.TestModule#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(BadlyNamedFactory.class).
-                to(SimpleService2.class).
-                buildFactory());
-        
-        config.bind(BuilderHelper.link(ThrowyFactory.class).
-                to(SimpleService.class).
-                in(Singleton.class.getName()).
-                buildFactory(Singleton.class));
-        
-        config.bind(BuilderHelper.link(ThrowyPerLookupFactory.class).
-                to(SimpleService3.class).
-                in(PerLookup.class.getName()).
-                buildFactory(Singleton.class));
-        
-        config.bind(BuilderHelper.link(ThrowyPerThreadFactory.class).
-                to(SimpleService4.class).
-                in(PerThread.class.getName()).
-                buildFactory(Singleton.class));
-        
-        config.bind(BuilderHelper.link(ThrowyImmediateFactory.class).
-                to(SimpleService5.class).
-                in(Immediate.class.getName()).
-                buildFactory(Singleton.class));
-    }
+public class SimpleService3 {
 
 }
