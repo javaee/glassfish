@@ -73,8 +73,9 @@ public class DynamicConfigTest {
     
     /** The name of the named service */
     public final static String SERVICE_NAME = "Fred";
-    
+    /** Key used in test */
     public final static String METADATA_KEY1 = "key1";
+    /** Another key used in test */
     public final static String METADATA_KEY2 = "key2";
     
     /**
@@ -556,7 +557,7 @@ public class DynamicConfigTest {
      */
     @Test
     public void testThrowingConfigurationListener() {
-ServiceLocator locator = LocatorHelper.create();
+        ServiceLocator locator = LocatorHelper.create();
         
         // Just add in the listener
         List<ActiveDescriptor<?>> listenerDescriptors = ServiceLocatorUtilities.addClasses(locator,
@@ -607,5 +608,36 @@ ServiceLocator locator = LocatorHelper.create();
         
         // But the other one is still there!
         Assert.assertEquals(6, listener1.getConfigurationChanges());
+    }
+    
+    /**
+     * Tests that class analysis honors ContractsProvided
+     */
+    @Test
+    public void testContractsProvidedWorks() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        ServiceLocatorUtilities.addClasses(locator, ContractsProvidedService.class);
+        
+        Assert.assertNotNull(locator.getService(ContractsProvidedService.class));
+        Assert.assertNotNull(locator.getService(IsNotAContract.class));
+        Assert.assertNull(locator.getService(IsAContract.class));
+        
+    }
+    
+    /**
+     * Tests that class analysis honors ContractsProvided, even if ContractsProvided does
+     * not include the class itself
+     */
+    @Test
+    public void testContractsProvidedWorksNoClass() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        ServiceLocatorUtilities.addClasses(locator, ContractsProvidedService2.class);
+        
+        Assert.assertNull(locator.getService(ContractsProvidedService2.class));
+        Assert.assertNotNull(locator.getService(IsNotAContract.class));
+        Assert.assertNull(locator.getService(IsAContract.class));
+        
     }
 }
