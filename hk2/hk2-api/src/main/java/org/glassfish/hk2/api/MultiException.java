@@ -74,12 +74,21 @@ public class MultiException extends HK2RuntimeException {
      * cause of this exception, and its message will become
      * the message of this exception
      *
-     * @param th A non-null, non-empty list of exceptions
+     * @param ths A non-null, non-empty list of exceptions
      */
-    public MultiException(List<Throwable> th) {
-        super(th.get(0).getMessage(), th.get(0));
+    public MultiException(List<Throwable> ths) {
+        super(ths.get(0).getMessage(), ths.get(0));
 
-        throwables.addAll(th);
+        for (Throwable th : ths) {
+            if (th instanceof MultiException) {
+                MultiException me = (MultiException) th;
+                
+                throwables.addAll(me.throwables);
+            }
+            else {
+                throwables.add(th);
+            }
+        }
     }
 
     /**
@@ -91,7 +100,14 @@ public class MultiException extends HK2RuntimeException {
     public MultiException(Throwable th) {
         super(th.getMessage(), th);
 
-        throwables.add(th);
+        if (th instanceof MultiException) {
+            MultiException me = (MultiException) th;
+            
+            throwables.addAll(me.throwables);
+        }
+        else {
+            throwables.add(th);
+        }
     }
 
     /**

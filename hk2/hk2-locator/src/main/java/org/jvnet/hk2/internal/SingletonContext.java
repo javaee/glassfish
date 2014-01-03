@@ -81,6 +81,7 @@ public class SingletonContext implements Context<Singleton> {
             return hash;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean equals(Object obj) {
             if (obj == null) {
@@ -89,7 +90,7 @@ public class SingletonContext implements Context<Singleton> {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final ActiveDescriptorAndRoot other = (ActiveDescriptorAndRoot) obj;
+            final ActiveDescriptorAndRoot<?> other = (ActiveDescriptorAndRoot<Object>) obj;
             if (this.desc != other.desc && (this.desc == null || !this.desc.equals(other.desc))) {
                 return false;
             }
@@ -97,12 +98,13 @@ public class SingletonContext implements Context<Singleton> {
         }
     }
 
-    private final Cache<ActiveDescriptorAndRoot, Object> valueCache = new Cache<ActiveDescriptorAndRoot, Object>(new Computable<ActiveDescriptorAndRoot, Object>() {
+    private final Cache<ActiveDescriptorAndRoot<Object>, Object> valueCache =
+            new Cache<ActiveDescriptorAndRoot<Object>, Object>(new Computable<ActiveDescriptorAndRoot<Object>, Object>() {
 
         @Override
-        public Object compute(ActiveDescriptorAndRoot a) {
+        public Object compute(ActiveDescriptorAndRoot<Object> a) {
 
-            final ActiveDescriptor activeDescriptor = a.desc;
+            final ActiveDescriptor<Object> activeDescriptor = a.desc;
 
             final Object cachedVal = activeDescriptor.getCache();
             if (cachedVal != null) {
@@ -112,15 +114,15 @@ public class SingletonContext implements Context<Singleton> {
             final Object createdVal = activeDescriptor.create(a.root);
             activeDescriptor.setCache(createdVal);
             if (activeDescriptor instanceof SystemDescriptor) {
-                ((SystemDescriptor) activeDescriptor).setSingletonGeneration(generationNumber++);
+                ((SystemDescriptor<?>) activeDescriptor).setSingletonGeneration(generationNumber++);
             }
 
             return createdVal;
         }
-    }, new Cache.CycleHandler<ActiveDescriptorAndRoot>(){
+    }, new Cache.CycleHandler<ActiveDescriptorAndRoot<Object>>(){
 
         @Override
-        public void handleCycle(ActiveDescriptorAndRoot key) {
+        public void handleCycle(ActiveDescriptorAndRoot<Object> key) {
             throw new MultiException(new IllegalStateException(
                             "A circular dependency involving Singleton service " + key.desc.getImplementation() +
                             " was found.  Full descriptor is " + key.desc));
@@ -142,26 +144,28 @@ public class SingletonContext implements Context<Singleton> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T findOrCreate(ActiveDescriptor<T> activeDescriptor,
             ServiceHandle<?> root) {
 
         try {
-            return (T)valueCache.compute(new ActiveDescriptorAndRoot(activeDescriptor, root));
-        } catch (RuntimeException re) {
-            if (re instanceof MultiException) {
-                throw re;
+            return (T)valueCache.compute(new ActiveDescriptorAndRoot<Object>((ActiveDescriptor<Object>) activeDescriptor, root));
+        } catch (Throwable th) {
+            if (th instanceof MultiException) {
+                throw (MultiException) th;
             }
-            throw new MultiException(re.getCause());
+            throw new MultiException(th);
         }
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#find(org.glassfish.hk2.api.Descriptor)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        return valueCache.containsKey(new ActiveDescriptorAndRoot(descriptor, null));
+        return valueCache.containsKey(new ActiveDescriptorAndRoot<Object>((ActiveDescriptor<Object>) descriptor, null));
     }
 
     /* (non-Javadoc)
@@ -220,7 +224,7 @@ public class SingletonContext implements Context<Singleton> {
     @Override
     public void destroyOne(ActiveDescriptor<?> one) {
         Object value;
-        valueCache.remove(new ActiveDescriptorAndRoot(one, null));
+        valueCache.remove(new ActiveDescriptorAndRoot<Object>((ActiveDescriptor<Object>) one, null));
         value = one.getCache();
         one.releaseCache();
 

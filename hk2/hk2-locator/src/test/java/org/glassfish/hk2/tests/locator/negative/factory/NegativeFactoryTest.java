@@ -56,29 +56,10 @@ public class NegativeFactoryTest {
     private final static String TEST_NAME = "NegativeFactoryTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new NegativeFactoryModule());
     
-    private final static String TV_EXPECTED = "has a TypeVariable as its type";
+    /* package */ final static String THROW_STRING = "Expected thrown exception";
     
     /**
-     * Factories cannot have type variables
-     */
-    // TODO : remove this test after review...
-    // This is required for Jersey and should work now with changes to ReflectionHelper.getTypeClosure()
-    //
-    @Test @Ignore
-    public void testFactoryWithTypeVariableType() {
-        try {
-            locator.reifyDescriptor(locator.getBestDescriptor(BuilderHelper.createContractFilter(
-                    SimpleService.class.getName())));
-            Assert.fail("The SimpleService factory has a TypeVariable and so is invalid");
-        }
-        catch (MultiException me) {
-            Assert.assertTrue(me.getMessage().contains(TV_EXPECTED));
-        }
-        
-    }
-    
-    /**
-     * Factories cannot have type variables
+     * Factories cannot have a Named annation with no value
      */
     @Test
     public void testFactoryWithBadName() {
@@ -92,6 +73,20 @@ public class NegativeFactoryTest {
                     "@Named on the provide method of a factory must have an explicit value"));
         }
         
+    }
+    
+    /**
+     * Ensures that a factory producing for the singleton scope works properly
+     */
+    @Test
+    public void testFactoryThatThrowsInSingletonScope() {
+        try {
+            locator.getService(SimpleService.class);
+            Assert.fail("The factory throws an exception, so should not have gotten here");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(THROW_STRING));
+        }
     }
 
 }

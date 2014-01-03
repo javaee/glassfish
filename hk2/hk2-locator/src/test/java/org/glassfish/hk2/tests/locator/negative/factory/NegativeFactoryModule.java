@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.locator.negative.factory;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -54,13 +56,14 @@ public class NegativeFactoryModule implements TestModule {
      */
     @Override
     public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.link(TypeVariableFactory.class).
-                to(SimpleService.class).
-                buildFactory());
-        
         config.bind(BuilderHelper.link(BadlyNamedFactory.class).
                 to(SimpleService2.class).
                 buildFactory());
+        
+        config.bind(BuilderHelper.link(ThrowyFactory.class).
+                to(SimpleService.class).
+                in(Singleton.class.getName()).
+                buildFactory(Singleton.class));
     }
 
 }

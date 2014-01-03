@@ -39,15 +39,15 @@
  */
 package org.glassfish.hk2.tests.locator.negative.factory;
 
-import java.util.List;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.ServiceLocator;
 
 /**
+ * This factory has a provide method with a {@link Named}
+ * annotation with no value, which is illegal
+ * 
  * @author jwells
  *
  */
