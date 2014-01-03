@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,30 +39,25 @@
  */
 package org.glassfish.hk2.tests.locator.negative.factory;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.Factory;
 
 /**
  * @author jwells
- * @param <T> Bad factory variable
  *
  */
-public class TypeVariableFactory<T> implements Factory<T> {
+@Singleton
+public class ThrowyFactory implements Factory<SimpleService> {
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
-     */
-    @Override
-    public T provide() {
-        throw new AssertionError("not called");
+    @Override @Singleton
+    public SimpleService provide() {
+        throw new RuntimeException(NegativeFactoryTest.THROW_STRING);
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
     @Override
-    public void dispose(T instance) {
-        throw new AssertionError("not called");
-        
+    public void dispose(SimpleService instance) {
+        // Do nothing
     }
 
 }
