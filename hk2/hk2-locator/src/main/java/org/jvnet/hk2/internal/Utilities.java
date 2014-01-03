@@ -123,6 +123,7 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 
@@ -637,6 +638,19 @@ public class Utilities {
 
         Class<?> rawClass = ReflectionHelper.getRawClass(t);
         if (rawClass == null) return retVal;
+        
+        ContractsProvided provided = rawClass.getAnnotation(ContractsProvided.class);
+        if (provided != null) {
+            // Need to clear the retVal, since even the parent class may not be
+            // in the provided set
+            retVal.clear();
+            
+            for (Class<?> providedContract : provided.value()) {
+                retVal.add(providedContract);
+            }
+            
+            return retVal;
+        }
 
         Type genericSuperclass = rawClass.getGenericSuperclass();
         while (genericSuperclass != null) {
