@@ -45,6 +45,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -82,6 +83,52 @@ public class NegativeFactoryTest {
     public void testFactoryThatThrowsInSingletonScope() {
         try {
             locator.getService(SimpleService.class);
+            Assert.fail("The factory throws an exception, so should not have gotten here");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(THROW_STRING));
+        }
+    }
+    
+    /**
+     * Ensures that a factory producing for the per lookup scope works properly
+     */
+    @Test
+    public void testFactoryThatThrowsInPerLookupScope() {
+        try {
+            locator.getService(SimpleService3.class);
+            Assert.fail("The factory throws an exception, so should not have gotten here");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(THROW_STRING));
+        }
+    }
+    
+    /**
+     * Ensures that a factory producing for the per thread scope works properly
+     */
+    @Test
+    public void testFactoryThatThrowsInPerThreadScope() {
+        ServiceLocatorUtilities.enablePerThreadScope(locator);
+        
+        try {
+            locator.getService(SimpleService4.class);
+            Assert.fail("The factory throws an exception, so should not have gotten here");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(THROW_STRING));
+        }
+    }
+    
+    /**
+     * Ensures that a factory producing for the immediate scope works properly
+     */
+    @Test
+    public void testFactoryThatThrowsInImmediateScope() {
+        ServiceLocatorUtilities.enableImmediateScope(locator);
+        
+        try {
+            locator.getService(SimpleService5.class);
             Assert.fail("The factory throws an exception, so should not have gotten here");
         }
         catch (MultiException me) {
