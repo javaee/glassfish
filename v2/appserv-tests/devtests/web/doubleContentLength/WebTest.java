@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -88,11 +88,11 @@ public class WebTest {
         System.out.println(("POST " + contextPath + " HTTP/1.1\n"));
         try {
             os.write(("POST " + contextPath + " HTTP/1.1\n").getBytes());
-            os.write(("Host: localhost\r").getBytes());
-            os.write("content-length: 0\r".getBytes());
-            os.write("content-length: 10\r".getBytes());
-            os.write("content-type: application/x-www-form-urlencoded\r".getBytes());
-            os.write("\n\r\n".getBytes());
+            os.write(("Host: localhost\r\n").getBytes());
+            os.write("content-length: 0\r\n".getBytes());
+            os.write("content-length: 10\r\n".getBytes());
+            os.write("content-type: application/x-www-form-urlencoded\r\n".getBytes());
+            os.write("\r\n".getBytes());
             os.write("a\r\n".getBytes());
         } catch (Exception e) {
             // Web server sometimes sends the response with 400 status
