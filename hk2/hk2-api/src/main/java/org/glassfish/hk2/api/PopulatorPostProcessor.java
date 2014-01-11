@@ -59,7 +59,7 @@ public interface PopulatorPostProcessor {
      * @param descriptorImpl The descriptorImpl read from some external source.  This
      * processor can modify this descriptor fully
      * 
-     * @return The descriptors to be added to the system.  If this returns null
+     * @return The descriptor to be added to the system.  If this returns null
      * then the descriptorImpl passed in will NOT be added to the system.  Implementations
      * may return the descriptor passed in, but do not have to.  The descriptor added to
      * the system will be the one returned from this method

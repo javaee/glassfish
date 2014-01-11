@@ -52,11 +52,15 @@ import org.jvnet.hk2.annotations.Contract;
  * service to analyze the class.  This analyzer is only used for descriptors
  * that are not pre-reified and which are not provided by factories.
  * <p>
- * HK2 will provided a default implementation of this service (with the name
- * default).  However, individual descriptors may choose a different class
+ * HK2 will provide a default implementation of this service (with the name
+ * &quot;default&quot;).  However, individual descriptors may choose a different class
  * analyzer should they so choose.  All user supplied implementations of this
  * service must have a name.  Implementations of this service must not be ClassAnalyzers
  * for themselves.
+ * <p>
+ * The method {@link ServiceLocator#setDefaultClassAnalyzerName(String)} can be used
+ * to set the global ClassAnalyzer name that will be the name of the ClassAnalyzer used
+ * when the method {@link Descriptor#getClassAnalysisName()} returns null
  * 
  * @author jwells
  *
