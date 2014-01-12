@@ -201,12 +201,17 @@ public class NegativeInjectorTest {
             handle.getService();
         }
         catch (MultiException me) {
+            // Two exceptions, one from the HK2 classloader, one from the CCL
             List<Throwable> thList = me.getErrors();
-            Assert.assertEquals(1, thList.size());
+            Assert.assertEquals(2, thList.size());
             
             Throwable th = thList.get(0);
             
             Assert.assertTrue(th instanceof ClassNotFoundException);
+            
+            Throwable th2 = thList.get(1);
+            
+            Assert.assertTrue(th2 instanceof ClassNotFoundException);
         }
     }
     
