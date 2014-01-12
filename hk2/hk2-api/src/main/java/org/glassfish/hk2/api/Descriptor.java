@@ -172,10 +172,12 @@ public interface Descriptor {
 	
 	/**
 	 * This returns the loader that should be used when
-	 * classloading this descriptor.  If this returns
-	 * null then class will either be loaded with the
+	 * classloading this descriptor.  If this method
+	 * returns null then the class will be loaded with the
 	 * classloader of the Injectee if there is one, or
-	 * with the classloader that loaded HK2 itself.
+	 * with the classloader that loaded HK2 itself;  failing
+	 * that the context class loader on the thread
+	 * will be tried.
 	 * 
 	 * @return An HK2Loader that can be used to load
 	 * this descriptor, or null if the default classloading
