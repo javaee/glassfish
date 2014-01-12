@@ -531,6 +531,19 @@ public class Utilities {
         try {
             return loader.loadClass(implementation);
         } catch (Throwable th) {
+            ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+            if (ccl != null) {
+                try {
+                    return ccl.loadClass(implementation);
+                }
+                catch (Throwable th2) {
+                    MultiException me = new MultiException(th);
+                    me.addError(th2);
+                    
+                    throw me;
+                }
+            }
+            
             throw new MultiException(th);
         }
     }
