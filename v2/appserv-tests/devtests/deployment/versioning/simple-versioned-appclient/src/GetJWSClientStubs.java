@@ -30,13 +30,23 @@ import org.xml.sax.SAXException;
  * "asadmin get-client-stubs" command is not aware of the enabled state.
  *
  * This class retrieve the stubs from the JWS URL of the application.
+ * 
+ * The GlassFish server now uses http sessions to maintain
+ * some important information during Java Web Start launches.
+ * For this test to work it now saves the session that is set
+ * on the first response and sends it back on the later request which
+ * retrieves the JAR.
  *
  * @author Romain GRECOURT - SERLI (romain.grecourt@serli.com)
  */
 public class GetJWSClientStubs {
 
+    private static final String SESSION_PROPERTY_NAME = "JSESSIONID";
+    
     String javaWebStartUrl;
     String stubsPath;
+    
+    String session = null;
 
     public GetJWSClientStubs(String[] args) {
         if (args.length != 2) {
@@ -109,9 +119,17 @@ public class GetJWSClientStubs {
                 URL u = new URI(url).normalize().toURL();
 
                 HttpURLConnection c1 = (HttpURLConnection) u.openConnection();
+                if (session != null) {
+                    c1.setRequestProperty(
+                        "Cookie",SESSION_PROPERTY_NAME + "=" + session);
+                }
                 int code = c1.getResponseCode();
 
                 if (code == 200) {
+                    final String s = getSession(c1);
+                    if (s != null) {
+                        session = s;
+                    }
                     if (workingDir != null) {
                         File wd = new File(workingDir);
                         if (!wd.isDirectory()) {
@@ -153,6 +171,20 @@ public class GetJWSClientStubs {
             }
         }
         return result;
+    }
+    
+    private String getSession(final HttpURLConnection c) {
+        final String s = c.getHeaderField("Set-Cookie");
+        log("Set-Cookie from server is " + s);
+        if (s == null) {
+            return null;
+        }
+        for (String cookie : s.split(";")) {
+            final int equalsSlot = cookie.indexOf("=");
+            if (equalsSlot != -1) {
+                return cookie.substring(equalsSlot + 1);
+            }
+        } return null;
     }
 
     private String makeJWSAppURLFromStubsURL(String stubsURL) {
