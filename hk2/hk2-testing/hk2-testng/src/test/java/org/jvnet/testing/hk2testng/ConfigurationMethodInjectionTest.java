@@ -39,9 +39,17 @@
  */
 package org.jvnet.testing.hk2testng;
 
+import java.util.List;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.testing.hk2testng.service.PrimaryService;
+
 import javax.inject.Inject;
+
 import static org.assertj.core.api.Assertions.assertThat;
+
 import org.testng.annotations.BeforeGroups;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
@@ -52,11 +60,14 @@ import org.testng.annotations.Test;
  *
  * @author saden
  */
-@HK2
+@HK2(PrimaryInjectionTest.SAME_LOCATOR_NAME)
 public class ConfigurationMethodInjectionTest {
 
     @Inject
     PrimaryService primaryService;
+    
+    @Inject
+    ServiceLocator serviceLocator;
 
     @BeforeSuite
     public void assertBeforeSuiteInjection() {
@@ -86,6 +97,24 @@ public class ConfigurationMethodInjectionTest {
     public void assertTestInjection() {
         assertThat(primaryService).isNotNull();
         assertThat(primaryService.getSecondaryService()).isNotNull();
+    }
+    
+    /**
+     * The exact same test is found in PrimaryInjectionTest.  The
+     * intent of the test is to ensure that there are not multiple
+     * descriptors for PrimaryService due to the fact that multiple
+     * test classes are using the same service locator.  If the
+     * service locator was being populated by both test classes then
+     * one of these two identical tests would see multiple instances
+     * of the primaryService in the IterableProvider
+     */
+    @Test
+    public void assertNoMultiplePrimaries() {
+        List<ActiveDescriptor<?>> allPrimaryServices = serviceLocator.getDescriptors(
+                BuilderHelper.createContractFilter(PrimaryService.class.getName()));
+        
+        assertThat(allPrimaryServices.size()).isEqualTo(1);
+        
     }
 
 }
