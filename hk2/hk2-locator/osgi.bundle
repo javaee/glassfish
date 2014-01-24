@@ -42,7 +42,3 @@
                org.jvnet.hk2.external.generator; \
                version=${project.osgi.version}
 
-Import-Package: \
-               org.objectweb.asm;password=GlassFish, \
-               org.objectweb.asm.commons;password=GlassFish, \
-               *
