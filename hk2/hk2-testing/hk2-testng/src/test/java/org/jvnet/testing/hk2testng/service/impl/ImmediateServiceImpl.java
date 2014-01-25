@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,72 +37,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2testng;
+package org.jvnet.testing.hk2testng.service.impl;
 
-import java.lang.annotation.Documented;
-import static java.lang.annotation.ElementType.TYPE;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-import org.glassfish.hk2.utilities.Binder;
+import org.glassfish.hk2.api.Immediate;
 
 /**
- * This annotation specifies what HK2 service locator and binders should be used
- * to instantiate and inject the test class it is annotated with.
  *
- * @author saden
+ * @author jwells
  */
-@Documented
-@Inherited
-@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-@Target(TYPE)
-public @interface HK2 {
-
-    /**
-     * The name of the service locator that will be used.
-     *
-     * @return the name of the service locator
-     */
-    String value() default "hk2-testng-locator";
-
-    /**
-     * Create a service locator and populate it with services defined in
-     * "META-INF/hk2-locator/default" inhabitant files found in the classpath.
-     *
-     * @return true if the classpath should be scanned for inhabitant files.
-     */
-    boolean populate() default true;
-
-    /**
-     * A list of binders that should be loaded.
-     *
-     * @return a list of binders classes
-     */
-    Class<? extends Binder>[] binders() default {};
+@Immediate
+public class ImmediateServiceImpl {
+    private final static Object sLock = new Object();
+    private static boolean started = false;
+    
+    private ImmediateServiceImpl() {
+        synchronized (sLock) {
+            started = true;
+            sLock.notifyAll();
+        }
+    }
     
     /**
-     * If true then the PerThread scope will be enabled
-     * in the associated service locator
+     * Waits for this service to start, which should not take long as long as the
+     * immediate scope is available
      * 
-     * @return true if PerThread scope should be enabled
+     * @param waitTimeMillis The amount of time to wait for this service
+     * @return true if the service was started
+     * @throws InterruptedException if the thread was interrupted
      */
-    boolean enablePerThread() default true;
-    
-    /**
-     * If true then the Immediate scope will be enabled
-     * in the associated service locator
-     * 
-     * @return true if Immediate scope should be enabled
-     */
-    boolean enableImmediate() default true;
-    
-    /**
-     * If true then the lookup exceptions will be thrown
-     * back to the caller
-     * 
-     * @return true if lookup exceptions should be thrown
-     * back to the caller
-     */
-    boolean enableLookupExceptions() default true;
-
+    public static boolean waitForStart(long waitTimeMillis) throws InterruptedException {
+        synchronized (sLock) {
+            long currentTime;
+            long elapsedTime;
+            
+            while (!started && (waitTimeMillis > 0)) {
+                currentTime = System.currentTimeMillis();
+                sLock.wait(waitTimeMillis);
+                
+                elapsedTime = System.currentTimeMillis() - currentTime;
+                
+                waitTimeMillis -= elapsedTime;
+            }
+            
+            return started;
+        }
+    }
 }
