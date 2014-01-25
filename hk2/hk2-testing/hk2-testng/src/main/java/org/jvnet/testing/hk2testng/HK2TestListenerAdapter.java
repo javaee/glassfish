@@ -101,6 +101,21 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
             testResult.setThrowable(e);
         }
     }
+    
+    private static void initializeServiceLocator(ServiceLocator locator, HK2 hk2) {
+      if (hk2.enableImmediate()) {
+        ServiceLocatorUtilities.enableImmediateScope(locator);
+      }
+      
+      if (hk2.enablePerThread()) {
+        ServiceLocatorUtilities.enablePerThreadScope(locator);
+      }
+      
+      if (hk2.enableLookupExceptions()) {
+        ServiceLocatorUtilities.enableLookupExceptions(locator);
+      }
+      
+    }
 
     private void injectTestInstance(ITestResult testResult) throws InstantiationException, IllegalAccessException {
         ServiceLocator locator = null;
@@ -123,6 +138,8 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
                     if (hk2.populate()) {
                         if (existingLocator == null) {
                             locator = ServiceLocatorUtilities.createAndPopulateServiceLocator(locatorName);
+                            initializeServiceLocator(locator, hk2);
+                            
                             serviceLocators.put(locator.getName(), locator);
                         }
                         else {
@@ -147,6 +164,8 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
                         if (locator == null) {
                             if (existingLocator == null) {
                                 locator = ServiceLocatorUtilities.bind(locatorName, binders);
+                                initializeServiceLocator(locator, hk2);
+                                
                                 serviceLocators.put(locator.getName(), locator);
                             }
                             else {
