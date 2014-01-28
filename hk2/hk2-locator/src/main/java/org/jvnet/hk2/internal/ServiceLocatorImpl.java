@@ -1709,7 +1709,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
         }
 
-        allResolvers.putAll(newResolvers);
+        synchronized (allResolvers) {
+            allResolvers.clear();
+            allResolvers.putAll(newResolvers);
+        }
     }
     
     private void reupInterceptionServices() {
