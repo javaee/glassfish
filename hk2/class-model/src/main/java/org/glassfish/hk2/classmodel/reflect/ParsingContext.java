@@ -46,7 +46,7 @@ import org.glassfish.hk2.classmodel.reflect.impl.TypesImpl;
 import org.glassfish.hk2.classmodel.reflect.util.CommonModelRegistry;
 import org.glassfish.hk2.classmodel.reflect.util.ParsingConfig;
 import org.glassfish.hk2.classmodel.reflect.util.ResourceLocator;
-import org.objectweb.asm.ClassVisitor;
+import org.glassfish.hk2.external.org.objectweb.asm.ClassVisitor;
 
 import java.util.Collections;
 import java.util.HashMap;

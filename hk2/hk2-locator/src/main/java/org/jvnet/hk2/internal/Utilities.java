@@ -163,8 +163,8 @@ public class Utilities {
      * class has no more references the PhantomReference will be enqueued in the deadClasses
      * ReferenceQueue and be cleaned the next time we touch this cache
      */
-    private static final Map<String, LinkedHashSet<MemberKey>> methodKeyCache = new HashMap<String, LinkedHashSet<MemberKey>>();
-    private static Map<String, LinkedHashSet<MemberKey>> fieldCache = new HashMap<String, LinkedHashSet<MemberKey>>();
+    private final static Map<String, LinkedHashSet<MemberKey>> methodKeyCache = new HashMap<String, LinkedHashSet<MemberKey>>();
+    private final static Map<String, LinkedHashSet<MemberKey>> fieldCache = new HashMap<String, LinkedHashSet<MemberKey>>();
     private final static Map<String, MemberDescriptor> postConstructCache = new HashMap<String, MemberDescriptor>();
     private final static Map<String, MemberDescriptor> preDestroyCache = new HashMap<String, MemberDescriptor>();
     
@@ -981,7 +981,7 @@ public class Utilities {
         return false;
     }
 
-    static Cache<Class<? extends Annotation>, Boolean> proxiableAnnotationCache =
+    private final static Cache<Class<? extends Annotation>, Boolean> proxiableAnnotationCache =
             new Cache<Class<? extends Annotation>, Boolean>(new Computable<Class<? extends Annotation>, Boolean>(){
 
         @Override

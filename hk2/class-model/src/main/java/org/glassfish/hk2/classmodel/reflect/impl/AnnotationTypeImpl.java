@@ -61,8 +61,8 @@ public class AnnotationTypeImpl extends InterfaceModelImpl implements Annotation
     }
 
     public void addDefaultValue(String name, Object value) {
-      if (org.objectweb.asm.Type.class.isInstance(value)) {
-        defValues.put(name, org.objectweb.asm.Type.class.cast(value).getClassName());
+      if (org.glassfish.hk2.external.org.objectweb.asm.Type.class.isInstance(value)) {
+        defValues.put(name, org.glassfish.hk2.external.org.objectweb.asm.Type.class.cast(value).getClassName());
       } else {
         defValues.put(name, value);
       }

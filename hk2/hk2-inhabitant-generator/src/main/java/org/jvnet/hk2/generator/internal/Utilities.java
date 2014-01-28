@@ -74,9 +74,9 @@ import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.Rank;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractsProvided;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.MethodVisitor;
+import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
+import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
+import org.glassfish.hk2.external.org.objectweb.asm.MethodVisitor;
 
 /**
  * @author jwells

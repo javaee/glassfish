@@ -43,9 +43,3 @@ Bundle-Activator: org.glassfish.hk2.classmodel.reflect.util.ClassModelActivator
                             org.glassfish.hk2.classmodel.reflect; \
                             org.glassfish.hk2.classmodel.reflect.util; version=${project.osgi.version}
 
-
-Import-Package: \
-                        org.objectweb.asm;password=GlassFish;resolution:=optional, \
-                        org.objectweb.asm.signature;password=GlassFish;resolution:=optional, \
-                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional, \
-                        *

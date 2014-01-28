@@ -76,12 +76,12 @@ public class MethodModelImpl extends AnnotatedElementImpl implements MethodModel
 
     @Override
     public String getReturnType() {
-        return org.objectweb.asm.Type.getReturnType(signature).getClassName(); 
+        return org.glassfish.hk2.external.org.objectweb.asm.Type.getReturnType(signature).getClassName(); 
     }
 
     @Override
     public String[] getArgumentTypes() {
-        org.objectweb.asm.Type[] types = org.objectweb.asm.Type.getArgumentTypes(signature);
+        org.glassfish.hk2.external.org.objectweb.asm.Type[] types = org.glassfish.hk2.external.org.objectweb.asm.Type.getArgumentTypes(signature);
         String[] stringTypes = new String[types.length];
         for (int i=0;i<types.length;i++) {
             stringTypes[i] = types[i].getClassName();
