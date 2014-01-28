@@ -61,6 +61,7 @@
         <testng.version>6.8.7</testng.version>
         <assertj.version>1.4.0</assertj.version>
         <javassist.version>3.18.1-GA</javassist.version>
+        <shade.version>2.2</shade.version>
     </properties>
     
     <name>HK2 Bom Pom</name>
@@ -369,6 +370,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>${shade.version}</version>                     
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>

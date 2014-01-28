@@ -55,7 +55,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.objectweb.asm.ClassReader;
+import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
 
 /**
  * @author jwells

@@ -39,8 +39,8 @@
  */
 package org.jvnet.hk2.generator.internal;
 
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Opcodes;
+import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
+import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
 
 /**
  * This just makes the main-line code less messy

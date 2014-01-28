@@ -41,8 +41,8 @@ package org.glassfish.hk2.classmodel.reflect.impl;
 
 import org.glassfish.hk2.classmodel.reflect.*;
 import org.glassfish.hk2.classmodel.reflect.Type;
-import org.objectweb.asm.*;
-import org.objectweb.asm.signature.SignatureReader;
+import org.glassfish.hk2.external.org.objectweb.asm.*;
+import org.glassfish.hk2.external.org.objectweb.asm.signature.SignatureReader;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -94,7 +94,7 @@ public class ModelClassVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        String parentName = (superName!=null?org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
+        String parentName = (superName!=null?org.glassfish.hk2.external.org.objectweb.asm.Type.getObjectType(superName).getClassName():null);
         TypeProxy parent = null;
         Class<? extends Type> typeType = typeBuilder.getType(access);
         if (!typeType.equals(AnnotationType.class)) {
@@ -105,7 +105,7 @@ public class ModelClassVisitor extends ClassVisitor {
             TypeImpl parentType = typeBuilder.getType(access, parentName, null);
             parent.set(parentType);
         }
-        String className = org.objectweb.asm.Type.getObjectType(name).getClassName();
+        String className = org.glassfish.hk2.external.org.objectweb.asm.Type.getObjectType(name).getClassName();
         URI classDefURI=null;
         try {
             int index = entryName.length() - name.length() - 6;
@@ -162,7 +162,7 @@ public class ModelClassVisitor extends ClassVisitor {
             } else {
                 if (!typeType.equals(AnnotationType.class)) {
                     for (String intf : interfaces) {
-                        String interfaceName = org.objectweb.asm.Type.getObjectType(intf).getClassName();
+                        String interfaceName = org.glassfish.hk2.external.org.objectweb.asm.Type.getObjectType(intf).getClassName();
                         TypeImpl interfaceModel = typeBuilder.getType(Opcodes.ACC_INTERFACE, interfaceName, null);
                         TypeProxy<InterfaceModel> typeProxy = typeBuilder.getHolder(interfaceName, InterfaceModel.class);
                         if (typeProxy.get() == null) {
@@ -241,7 +241,7 @@ public class ModelClassVisitor extends ClassVisitor {
         }
         cm = (ExtensibleTypeImpl) type;
 
-        org.objectweb.asm.Type asmType = org.objectweb.asm.Type.getType(desc);
+        org.glassfish.hk2.external.org.objectweb.asm.Type asmType = org.glassfish.hk2.external.org.objectweb.asm.Type.getType(desc);
 
         TypeProxy<?> fieldType =  typeBuilder.getHolder(asmType.getClassName());
         if (fieldType==null) return null;
@@ -280,7 +280,7 @@ public class ModelClassVisitor extends ClassVisitor {
     }                                                            
 
     private String unwrap(String desc) {
-        return org.objectweb.asm.Type.getType(desc).getClassName();
+        return org.glassfish.hk2.external.org.objectweb.asm.Type.getType(desc).getClassName();
     }
 
     private static class ClassVisitingContext {

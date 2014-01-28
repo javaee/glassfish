@@ -3,3 +3,4 @@
 .settings/
 target/
 eclipse/
+external/asm-all/dependency-reduced-pom.xml
