@@ -45,8 +45,6 @@ import javassist.util.proxy.ProxyObject;
 
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
-import org.glassfish.hk2.utilities.cache.Cache;
-import org.glassfish.hk2.utilities.cache.Computable;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
@@ -77,6 +75,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -173,6 +172,10 @@ public class Utilities {
 
     private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
     private final static String CONVENTION_PRE_DESTROY = "preDestroy";
+    
+    private final static WeakHashMap<Class<?>, String> autoAnalyzerNameCache = new WeakHashMap<Class<?>, String>();
+    private final static WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> annotationCache =
+            new WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>();
 
     /**
      * Returns the class analyzer with the given name
@@ -981,15 +984,6 @@ public class Utilities {
         return false;
     }
 
-    private final static Cache<Class<? extends Annotation>, Boolean> proxiableAnnotationCache =
-            new Cache<Class<? extends Annotation>, Boolean>(new Computable<Class<? extends Annotation>, Boolean>(){
-
-        @Override
-        public Boolean compute(Class<? extends Annotation> a) {
-            return a.isAnnotationPresent(Proxiable.class);
-        }
-    });
-
     /**
      * This method determines whether or not the descriptor should be proxied.
      * The given descriptor must be reified and valid.
@@ -1039,7 +1033,7 @@ public class Utilities {
         }
 
         final Class<? extends Annotation> scopeAnnotation = desc.getScopeAnnotation();
-        if (!proxiableAnnotationCache.compute(scopeAnnotation)) return false;
+        if (!scopeAnnotation.isAnnotationPresent(Proxiable.class)) return false;
 
 
         if (injectee == null) {
@@ -1517,40 +1511,90 @@ public class Utilities {
     }
 
     private static class AnnotatedElementAnnotationInfo {
-        final Annotation[] elementAnnotations;
-        final Annotation[][] paramAnnotations;
-        final boolean hasParams;
-        final boolean isConstructor;
+        private final Annotation[] elementAnnotations;
+        private final Annotation[][] paramAnnotations;
+        private final boolean hasParams;
+        private final boolean isConstructor;
 
-        AnnotatedElementAnnotationInfo(Annotation[] elementAnnotation, boolean hasParams, Annotation[][] paramAnnotation, boolean isConstructor) {
+        private AnnotatedElementAnnotationInfo(Annotation[] elementAnnotation, boolean hasParams, Annotation[][] paramAnnotation, boolean isConstructor) {
             this.elementAnnotations = elementAnnotation;
             this.hasParams = hasParams;
             this.paramAnnotations = paramAnnotation;
             this.isConstructor = isConstructor;
         }
-    }
-
-    private static final Cache<AnnotatedElement, AnnotatedElementAnnotationInfo> AnnotationCache =
-            new Cache<AnnotatedElement, AnnotatedElementAnnotationInfo>(new Computable<AnnotatedElement, AnnotatedElementAnnotationInfo>() {
-
-        @Override
-        public AnnotatedElementAnnotationInfo compute(AnnotatedElement annotatedElement) {
-
-            if (annotatedElement instanceof Method) {
-
-                final Method m = (Method) annotatedElement;
-                return new AnnotatedElementAnnotationInfo(m.getAnnotations(), true, m.getParameterAnnotations(), false);
-
-            } else if (annotatedElement instanceof Constructor) {
-
-                final Constructor<?> c = (Constructor<?>) annotatedElement;
-                return new AnnotatedElementAnnotationInfo(c.getAnnotations(), true, c.getParameterAnnotations(), true);
-
-            } else {
-                return new AnnotatedElementAnnotationInfo(annotatedElement.getAnnotations(), false, null, false);
-            }
+        
+        private SoftAnnotatedElementAnnotationInfo soften() {
+            return new SoftAnnotatedElementAnnotationInfo(elementAnnotations, hasParams, paramAnnotations, isConstructor);
         }
-    });
+    }
+    
+    private static class SoftAnnotatedElementAnnotationInfo {
+        private final SoftReference<Annotation[]> elementAnnotationsReference;
+        private final SoftReference<Annotation[][]> paramAnnotationsReference;
+        private final boolean hasParams;
+        private final boolean isConstructor;
+
+        private SoftAnnotatedElementAnnotationInfo(Annotation[] elementAnnotation, boolean hasParams, Annotation[][] paramAnnotation, boolean isConstructor) {
+            this.elementAnnotationsReference = new SoftReference<Annotation[]>(elementAnnotation);
+            this.hasParams = hasParams;
+            this.paramAnnotationsReference = new SoftReference<Annotation[][]>(paramAnnotation);
+            this.isConstructor = isConstructor;
+        }
+        
+        private AnnotatedElementAnnotationInfo harden(AnnotatedElement ae) {
+            Annotation[] hardenedElementAnnotations = elementAnnotationsReference.get();
+            Annotation[][] hardenedParamAnnotations = paramAnnotationsReference.get();
+            
+            if (!USE_SOFT_REFERENCE || (hardenedElementAnnotations == null) || (hardenedParamAnnotations == null)) {
+                return computeAEAI(ae);
+            }
+            
+            return new AnnotatedElementAnnotationInfo(hardenedElementAnnotations, hasParams, hardenedParamAnnotations, isConstructor);
+        }
+    }
+    
+    /**
+     * Represents a cache miss, and will fetch all of the information needed about the
+     * AnnotatedElement in order to quickly determine what its resolver would be
+     * 
+     * @param annotatedElement The raw annotated element that can be used to
+     * calculate the information needed to determine the resolver
+     * @return An annotated element constructed from the information in the annotatedElement
+     */
+    private static AnnotatedElementAnnotationInfo computeAEAI(AnnotatedElement annotatedElement) {
+
+        if (annotatedElement instanceof Method) {
+
+            final Method m = (Method) annotatedElement;
+            return new AnnotatedElementAnnotationInfo(m.getAnnotations(), true, m.getParameterAnnotations(), false);
+
+        } else if (annotatedElement instanceof Constructor) {
+
+            final Constructor<?> c = (Constructor<?>) annotatedElement;
+            return new AnnotatedElementAnnotationInfo(c.getAnnotations(), true, c.getParameterAnnotations(), true);
+
+        } else {
+            return new AnnotatedElementAnnotationInfo(annotatedElement.getAnnotations(), false, new Annotation[0][], false);
+        }
+    }
+    
+    private static AnnotatedElementAnnotationInfo computeElementAnnotationInfo(AnnotatedElement ae) {
+        synchronized (lock) {
+            AnnotatedElementAnnotationInfo hard;
+            SoftAnnotatedElementAnnotationInfo soft = annotationCache.get(ae);
+            if (soft != null) {
+                hard = soft.harden(ae);
+            }
+            else {
+                hard = computeAEAI(ae);
+                
+                soft = hard.soften();
+                annotationCache.put(ae, soft);
+            }
+            
+            return hard;
+        }
+    }
 
     /**
      * Gets the annotation that was used for the injection
@@ -1568,7 +1612,7 @@ public class Utilities {
     private static Annotation getInjectAnnotation(final ServiceLocatorImpl locator, final AnnotatedElement annotated,
             final boolean checkParams, final int position) {
 
-        final AnnotatedElementAnnotationInfo annotationInfo = AnnotationCache.compute(annotated);
+        final AnnotatedElementAnnotationInfo annotationInfo = computeElementAnnotationInfo(annotated);
 
         if (checkParams) {
 
@@ -1651,18 +1695,6 @@ public class Utilities {
         return ((modifiers & Modifier.FINAL) != 0);
     }
 
-    private static final Cache<Class<?>, String> autoAnalyzerNameCache = new Cache<Class<?>, String>(new Computable<Class<?>, String>() {
-
-        @Override
-        public String compute(final Class<?> c) {
-
-            Service s = c.getAnnotation(Service.class);
-            if (s == null) return null;
-
-            return s.analyzer();
-        }
-    });
-
     /**
      * Gets the analyzer name from the Service annotation
      *
@@ -1670,7 +1702,18 @@ public class Utilities {
      * @return The name of the analyzer (null for default)
      */
     public static String getAutoAnalyzerName(Class<?> c) {
-        return autoAnalyzerNameCache.compute(c);
+        synchronized (lock) {
+            String retVal = autoAnalyzerNameCache.get(c);
+            if (retVal != null) return retVal;
+            
+            Service s = c.getAnnotation(Service.class);
+            if (s == null) return null;
+            
+            retVal = s.analyzer();
+            autoAnalyzerNameCache.put(c, retVal);
+
+            return retVal;
+        }
     }
 
     @SuppressWarnings("unchecked")
