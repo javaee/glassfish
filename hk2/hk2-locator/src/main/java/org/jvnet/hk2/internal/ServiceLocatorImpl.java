@@ -194,6 +194,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     private ConcurrentHashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
             new ConcurrentHashMap<Class<? extends Annotation>, InjectionResolver<?>>();
+    private final Cache<Injectee, InjectionResolver<?>> injecteeToResolverCache = new Cache<Injectee, InjectionResolver<?>>(new Computable<Injectee, InjectionResolver<?>>() {
+
+        @Override
+        public InjectionResolver<?> compute(Injectee key) {
+            return Utilities.getInjectionResolver(getMe(), key);
+        }
+        
+    });
 
     private ServiceLocatorState state = ServiceLocatorState.RUNNING;
 
@@ -794,6 +802,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             descriptorsByAdvertisedContract.clear();
             descriptorsByName.clear();
             allResolvers.clear();
+            injecteeToResolverCache.clear();
             allValidators.clear();
             errorHandlers.clear();
             igdCache.clear();
@@ -1616,6 +1625,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 ValidationService vs = handle.getService();
                 allValidators.remove(vs);
             }
+            
+            if (unbind.isReified()) {
+                for (Injectee injectee : unbind.getInjectees()) {
+                    injecteeToResolverCache.remove(injectee);
+                }
+            }
         }
     }
 
@@ -1713,6 +1728,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             allResolvers.clear();
             allResolvers.putAll(newResolvers);
         }
+        injecteeToResolverCache.clear();
     }
     
     private void reupInterceptionServices() {
@@ -2308,6 +2324,20 @@ public class ServiceLocatorImpl implements ServiceLocator {
             wLock.unlock();
         }
 
+    }
+    
+    /**
+     * Used to get the ServiceLocatorImpl in inner classes
+     * 
+     * @return This current object
+     */
+    private ServiceLocatorImpl getMe() {
+        return this;
+    }
+    
+    /* package */ InjectionResolver<?> getInjectionResolverForInjectee(Injectee injectee) {
+        return injecteeToResolverCache.compute(injectee);
+        
     }
 
     public String toString() {

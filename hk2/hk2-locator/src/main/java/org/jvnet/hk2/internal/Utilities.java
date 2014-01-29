@@ -1611,7 +1611,7 @@ public class Utilities {
      */
     private static Annotation getInjectAnnotation(final ServiceLocatorImpl locator, final AnnotatedElement annotated,
             final boolean checkParams, final int position) {
-
+        
         final AnnotatedElementAnnotationInfo annotationInfo = computeElementAnnotationInfo(annotated);
 
         if (checkParams) {
@@ -1894,10 +1894,10 @@ public class Utilities {
      * found will return the dependent scope
      * @throws IllegalStateException If we could not find a valid resolver
      */
-    public static InjectionResolver<?> getInjectionResolver(
+    private static InjectionResolver<?> getInjectionResolver(
             ServiceLocatorImpl locator, AnnotatedElement annotatedGuy) throws IllegalStateException {
         if (annotatedGuy instanceof Method || annotatedGuy instanceof Constructor<?>) {
-            throw new IllegalArgumentException("Annotated element '" + annotatedGuy + "' cannot be Method neither Constructor.");
+            throw new IllegalArgumentException("Annotated element '" + annotatedGuy + "' can be neither a Method nor a Constructor.");
         }
         return getInjectionResolver(locator, annotatedGuy, -1);
     }
