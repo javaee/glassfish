@@ -250,4 +250,12 @@ public class Cache<K,V> implements Computable<K,V> {
     public void remove(final K key) {
         cache.remove(key);
     }
+    
+    /**
+     * Returns the size of the cache
+     * @return The number of elements in the cache
+     */
+    public int size() {
+        return cache.size();
+    }
 }

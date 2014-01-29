@@ -47,7 +47,6 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -245,20 +244,20 @@ public class ClazzCreator<T> implements Creator<T> {
         final Map<Injectee, Object> retVal = new LinkedHashMap<Injectee, Object>();
 
         for (Injectee injectee : myConstructor.injectees) {
-            InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, injectee);
+            InjectionResolver<?> resolver = locator.getInjectionResolverForInjectee(injectee);
             resolve(retVal, resolver, injectee, root, errorCollector);
         }
 
         for (ResolutionInfo fieldRI : myFields) {
-            InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, fieldRI.baseElement);
             for (Injectee injectee : fieldRI.injectees) {
+                InjectionResolver<?> resolver = locator.getInjectionResolverForInjectee(injectee);
                 resolve(retVal, resolver, injectee, root, errorCollector);
             }
         }
 
         for (ResolutionInfo methodRI : myInitializers) {
             for (Injectee injectee : methodRI.injectees) {
-                InjectionResolver<?> resolver = Utilities.getInjectionResolver(locator, injectee);
+                InjectionResolver<?> resolver = locator.getInjectionResolverForInjectee(injectee);
                 resolve(retVal, resolver, injectee, root, errorCollector);
             }
         }
