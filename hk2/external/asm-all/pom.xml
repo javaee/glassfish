@@ -55,42 +55,87 @@
     <build>
         <plugins>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-shade-plugin</artifactId>
-              <executions>
-                <execution>
-                  <phase>package</phase>
-                  <goals>
-                    <goal>shade</goal>
-                  </goals>
-                  <configuration>
-                    <relocations>
-                      <relocation>
-                        <pattern>org.objectweb.asm</pattern>
-                        <shadedPattern>org.glassfish.hk2.external.org.objectweb.asm</shadedPattern>
-                      </relocation>
-                    </relocations>
-                    <transformers>
-                      <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                        <manifestEntries>
-                          <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                          <Bundle-SymbolicName>org.glassfish.hk2.external.asm-all-repackaged</Bundle-SymbolicName>
-                          <Export-Package>
-  org.glassfish.hk2.external.org.objectweb.asm.signature;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.commons;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.attrs;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.util;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.tree.analysis;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.xml;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.tree;version="5.0.0.BETA"
-                          </Export-Package>
-                          <Import-Package>
-                            javax.xml.transform;resolution:=optional,javax.xml.transform.sax;resolution:=optional,javax.xml.transform.stream;resolution:=optional,org.xml.sax;resolution:=optional,org.xml.sax.ext;resolution:=optional,org.xml.sax.helpers;resolution:=optional
-                          </Import-Package>
-                        </manifestEntries>
-                      </transformer>
-                    </transformers>
-                  </configuration>
-                </execution>
-              </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>step1-shade</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createSourcesJar>true</createSourcesJar>
+                            <shadeSourcesContent>true</shadeSourcesContent>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.objectweb.asm</pattern>
+                                    <shadedPattern>org.glassfish.hk2.external.org.objectweb.asm</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                                        <Bundle-SymbolicName>org.glassfish.hk2.external.asm-all-repackaged</Bundle-SymbolicName>
+                                        <Export-Package>
+                                            org.glassfish.hk2.external.org.objectweb.asm.signature;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.commons;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.attrs;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.util;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.tree.analysis;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.xml;version="5.0.0.BETA",org.glassfish.hk2.external.org.objectweb.asm.tree;version="5.0.0.BETA"
+                                        </Export-Package>
+                                        <Import-Package>
+                                            javax.xml.transform;resolution:=optional,javax.xml.transform.sax;resolution:=optional,javax.xml.transform.stream;resolution:=optional,org.xml.sax;resolution:=optional,org.xml.sax.ext;resolution:=optional,org.xml.sax.helpers;resolution:=optional
+                                        </Import-Package>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>step2-unpack-sources-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <unjar src="${project.build.directory}/${project.build.finalName}-sources.jar" dest="${project.build.directory}/alternateLocation"/>
+                            </target>
+                        </configuration>                        
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>step3-add-source</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/alternateLocation</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <configuration>
+                    <skipSource>true</skipSource>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-    
     <dependencies>
         <dependency>
             <groupId>org.ow2.asm</groupId>
