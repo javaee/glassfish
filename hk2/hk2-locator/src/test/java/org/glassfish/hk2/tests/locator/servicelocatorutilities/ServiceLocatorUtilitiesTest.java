@@ -56,7 +56,6 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -271,6 +270,9 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNull(locator.getService(SimpleContract.class, ALICE));
     }
 
+    /**
+     * Tests the findOneDescriptor method
+     */
     @Test
     public void testFindOneDescriptor() {
         ServiceLocator locator = uniqueCreate();
@@ -305,6 +307,9 @@ public class ServiceLocatorUtilitiesTest {
 
     }
 
+    /**
+     * Tests the ServiceLocatorUtilities getService method with a string
+     */
     @Test
     public void testGetServiceWithString() {
         ServiceLocator locator = uniqueCreate();
@@ -316,6 +321,9 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNull(ServiceLocatorUtilities.getService(locator, "not.really.There"));
     }
 
+    /**
+     * Tests the ServiceLocatorUtilities getService method with a descriptor
+     */
     @Test
     public void testGetServiceWithDescriptor() {
         ServiceLocator locator = uniqueCreate();
@@ -600,7 +608,7 @@ public class ServiceLocatorUtilitiesTest {
      * misses the ones it should not see.
      * In parcticular D, F and B are contracts, A, E and C are not
      */
-    @Test @Ignore
+    @Test
     public void testComplexContractHeirarchyAdds() {
         ServiceLocator locator = uniqueCreate();
         
