@@ -11,6 +11,7 @@ Also, Habitat has been replaced with a new interface called [ServiceLocator][ser
 + [BuilderHelper Binding EDSL](api-overview.html#BuilderHelper_Binding_EDSL)
 + [DescriptorImpl](api-overview.html#DescriptorImpl)
 + [Binding a Descriptor into a ServiceLocator](api-overview.html#Binding_a_Descriptor_into_a_ServiceLocator)
++ [Convenience methods for adding services](api-overview#Convenience_methods_for_adding_services)
 + [Looking up services](api-overview.html#Looking_up_services)
 + [Looking up services by name](api-overview.html#Looking_up_services_by_name)
 + [Looking up services with qualifiers](api-overview.html#Looking_up_services_with_qualifiers)
@@ -165,7 +166,7 @@ Here is an example:
     }
 ``` java
 
-The method createWidgetDescriptor is from the preceeding examples.
+The method createWidgetDescriptor is from the preceding examples.
 In the above code we call the createDynamicConfiguration method of [DynamicConfigurationService][dynamicconfigurationservice].
 This creates an instance of [DynamicConfiguration][dynamicconfiguration].
 To use a [DynamicConfiguration][dynamiccondfiguration] you call the bind or unbind methods until you
@@ -174,6 +175,20 @@ commit none of the changes you added to the [DynamicConfiguration][dynamicconfig
  
 That is all there is to it!  The services you add in this manner can now be looked up or injected into other services or
 generally manipulated through all of the other methods in [ServiceLocator][servicelocator].
+
+### Convenience methods for adding services
+
+There are several convenience methods that we have added to simplify the task of adding descriptors to a service
+locator.  These are encapsulated in the [ServiceLocatorUtilities][servicelocatorutilities] class.
+
+If you already have a service class and you would like for hk2 to automatically analyze the class and add
+it to a locator then you can use the [addClasses][sluaddclasses] method.
+
+If you already have an instance of a service and you would like hk2 to automatically analyze the class of the
+service and add it to a locator then you can use the [addOneConstant][sluaddoneconstant] method
+
+If you already have a descriptor for a service and you would like hk2 to add it to a locator then you can use
+the [addOneDescriptor][sluaddonedescriptor] addOneDescriptor method
  
 ### Looking up services
 
@@ -328,3 +343,7 @@ the objects themselves.
 [contract]: apidocs/org/jvnet/hk2/annotations/Contract.html
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
 [annotationliteral]: apidocs/org/glassfish/hk2/api/AnnotationLiteral.html
+[servicelocatorutilities]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html
+[sluaddclasses]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addClasses(org.glassfish.hk2.api.ServiceLocator, java.lang.Class...)
+[sluaddoneconstant]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addOneConstant(org.glassfish.hk2.api.ServiceLocator, java.lang.Object)
+[sluaddonedescriptor]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addOneDescriptor(org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.api.Descriptor)
