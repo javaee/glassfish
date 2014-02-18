@@ -59,7 +59,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * This tests {@link ServiceLocatorUtility} methods that are not tested
+ * This tests {@link ServiceLocatorUtilities} methods that are not tested
  * in other suites
  *
  * @author jwells
@@ -87,6 +87,9 @@ public class ServiceLocatorUtilitiesTest {
         return ServiceLocatorFactory.getInstance().create(null);
     }
 
+    /**
+     * Tests using addSimpleService
+     */
     @Test
     public void testAddActiveDescriptor() {
         ServiceLocator locator = uniqueCreate();
@@ -99,6 +102,9 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertSame(ss, ss1);
     }
 
+    /**
+     * Tests addOneDescriptor
+     */
     @Test
     public void testAddDescriptor() {
         ServiceLocator locator = uniqueCreate();
@@ -111,6 +117,9 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNotNull(ss1);
     }
 
+    /**
+     * Tests adding non-reified active descriptor
+     */
     @Test
     public void testAddNonReifiedActiveDescriptor() {
         ServiceLocator locator = uniqueCreate();
@@ -261,6 +270,9 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNull(locator.getService(SimpleContract.class, ALICE));
     }
 
+    /**
+     * Tests the findOneDescriptor method
+     */
     @Test
     public void testFindOneDescriptor() {
         ServiceLocator locator = uniqueCreate();
@@ -295,6 +307,9 @@ public class ServiceLocatorUtilitiesTest {
 
     }
 
+    /**
+     * Tests the ServiceLocatorUtilities getService method with a string
+     */
     @Test
     public void testGetServiceWithString() {
         ServiceLocator locator = uniqueCreate();
@@ -306,6 +321,9 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertNull(ServiceLocatorUtilities.getService(locator, "not.really.There"));
     }
 
+    /**
+     * Tests the ServiceLocatorUtilities getService method with a descriptor
+     */
     @Test
     public void testGetServiceWithDescriptor() {
         ServiceLocator locator = uniqueCreate();
@@ -434,6 +452,13 @@ public class ServiceLocatorUtilitiesTest {
         ServiceLocatorUtilities.findOrCreateService(locator, null);
     }
 
+    /**
+     * A non-standard non-reified ActiveDescriptor for use in testing
+     * 
+     * @author jwells
+     *
+     * @param <T> The type of this class
+     */
     public static class NonReifiedActiveDescriptor<T> extends AbstractActiveDescriptor<T> implements ActiveDescriptor<T> {
         /**
          *
@@ -534,6 +559,9 @@ public class ServiceLocatorUtilitiesTest {
 
     }
 
+    /**
+     * Tests enableLookupExceptions
+     */
     @Test
     public void testErrorRethrower() {
         ServiceLocator locator = uniqueCreate();
@@ -572,5 +600,36 @@ public class ServiceLocatorUtilitiesTest {
             // expected
         }
 
+    }
+    
+    /**
+     * AlphabetService.class has a complex set of interfaces.
+     * This test ensures addClasses gets all of them, and
+     * misses the ones it should not see.
+     * In parcticular D, F and B are contracts, A, E and C are not
+     */
+    @Test
+    public void testComplexContractHeirarchyAdds() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, AlphabetService.class);
+        
+        AlphabetService alphabet = locator.getService(AlphabetService.class);
+        
+        InterfaceA a = locator.getService(InterfaceA.class);
+        InterfaceB b = locator.getService(InterfaceB.class);
+        InterfaceC c = locator.getService(InterfaceC.class);
+        InterfaceD d = locator.getService(InterfaceD.class);
+        InterfaceE e = locator.getService(InterfaceE.class);
+        InterfaceF f = locator.getService(InterfaceF.class);
+        
+        Assert.assertNull(a);
+        Assert.assertNull(c);
+        Assert.assertNull(e);
+        
+        Assert.assertEquals(alphabet, b);
+        Assert.assertEquals(alphabet, d);
+        Assert.assertEquals(alphabet, f);
+        
     }
 }
