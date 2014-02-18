@@ -647,6 +647,20 @@ public class Utilities {
         }
 
     }
+    
+    private static void addAllInterfaceContracts(Type interfaceType, LinkedHashSet<Type> addToMe) {
+        Class<?> interfaceClass = ReflectionHelper.getRawClass(interfaceType);
+        if (interfaceClass == null) return;
+        if (addToMe.contains(interfaceType)) return;
+        
+        if (interfaceClass.isAnnotationPresent(Contract.class)) {
+            addToMe.add(interfaceType);
+        }
+        
+        for (Type extendedInterfaces : interfaceClass.getGenericInterfaces()) {
+            addAllInterfaceContracts(extendedInterfaces, addToMe);
+        }
+    }
 
     private static Set<Type> getAutoAdvertisedTypes(Type t) {
         LinkedHashSet<Type> retVal = new LinkedHashSet<Type>();
@@ -682,10 +696,7 @@ public class Utilities {
 
         while (rawClass != null) {
             for (Type iface : rawClass.getGenericInterfaces()) {
-                Class<?> ifaceClass = ReflectionHelper.getRawClass(iface);
-                if (ifaceClass.isAnnotationPresent(Contract.class)) {
-                    retVal.add(iface);
-                }
+                addAllInterfaceContracts(iface, retVal);
             }
 
             rawClass = rawClass.getSuperclass();
