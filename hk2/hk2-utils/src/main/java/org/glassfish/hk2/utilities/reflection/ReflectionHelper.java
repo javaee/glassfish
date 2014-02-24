@@ -65,7 +65,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import javax.inject.Named;
 import javax.inject.Qualifier;
@@ -1229,22 +1228,35 @@ public final class ReflectionHelper {
         });
     }
     
-    private static class IdentityMethod {
-        private final Method method;
-        
-        private IdentityMethod(Method m) {
-            method = m;
-        }
-        
-        public int hashCode() {
-            return System.identityHashCode(method);
-        }
-        
-        public boolean equals(Object o) {
-            if (o == null) return false;
-            if (!(o instanceof IdentityMethod)) return false;
-            
-            return (method == ((IdentityMethod) o).method);
-        }
+    /**
+     * This is used to check on the annotation set.  It must be done under protection because the annotations may
+     * attempt to discover if they are equal using getDeclaredMembers permission
+     *
+     * @param candidateAnnotations The candidate annotations
+     * @param requiredAnnotations The required annotations
+     * @return true if the candidate set contains the entire required set
+     */
+    public static boolean annotationContainsAll(final Set<Annotation> candidateAnnotations, final Set<Annotation> requiredAnnotations) {
+        return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+
+            @Override
+            public Boolean run() {
+                return candidateAnnotations.containsAll(requiredAnnotations);
+            }
+
+        });
+
+    }
+    
+    /**
+     * Converts the type to its java form, or returns the original
+     *
+     * @param type The type to convert
+     * @return The translated type or the type itself
+     */
+    public static Class<?> translatePrimitiveType(Class<?> type) {
+        Class<?> translation = Constants.PRIMITIVE_MAP.get(type);
+        if (translation == null) return type;
+        return translation;
     }
 }

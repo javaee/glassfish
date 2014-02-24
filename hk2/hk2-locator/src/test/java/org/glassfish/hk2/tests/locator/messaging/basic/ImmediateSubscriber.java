@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.tests.locator.messaging.basic;
 
-import java.util.HashMap;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.Immediate;
+import org.glassfish.hk2.api.messaging.SubscribeTo;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-public class Constants {
-    /** The name of the system class loader */
-    public final static String SYSTEM_LOADER_NAME = "SystemLoader";
+@Service @Immediate
+public class ImmediateSubscriber {
+    @Inject
+    private PerLookupSubscriber dependent;
     
-    /** Map from primitive type to java type */
-    public final static HashMap<Class<?>, Class<?>> PRIMITIVE_MAP = new HashMap<Class<?>, Class<?>>();
+    private Foo lastEvent;
     
-    static {
-        PRIMITIVE_MAP.put(char.class, Character.class);
-        PRIMITIVE_MAP.put(byte.class, Byte.class);
-        PRIMITIVE_MAP.put(short.class, Short.class);
-        PRIMITIVE_MAP.put(int.class, Integer.class);
-        PRIMITIVE_MAP.put(long.class, Long.class);
-        PRIMITIVE_MAP.put(float.class, Float.class);
-        PRIMITIVE_MAP.put(double.class, Double.class);
+    @SuppressWarnings("unused")
+    private synchronized void subscribe(@SubscribeTo Foo event) {
+        lastEvent = event;
+    }
+    
+    public synchronized Foo getAndClearLastEvent() {
+        Foo retVal = lastEvent;
+        lastEvent = null;
+        
+        return retVal;
+    }
+    
+    public Foo getAndClearDependentLastEvent() {
+        return dependent.getAndClearLastEvent();
     }
 
 }

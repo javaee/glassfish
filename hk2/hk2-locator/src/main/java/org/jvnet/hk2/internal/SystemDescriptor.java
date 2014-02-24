@@ -557,7 +557,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
                             Utilities.getDefaultNameFromMethod(candidateMethod, collector),
                             collector);
 
-            if (Utilities.annotationContainsAll(candidateQualifiers, qualifiers)) {
+            if (ReflectionHelper.annotationContainsAll(candidateQualifiers, qualifiers)) {
                 factoryHandle = candidate;
                 break;
             }

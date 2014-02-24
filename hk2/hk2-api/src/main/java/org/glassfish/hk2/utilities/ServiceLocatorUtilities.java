@@ -694,7 +694,7 @@ public abstract class ServiceLocatorUtilities {
      * should not be given the information that they do NOT have access
      * to a service
      * 
-     * @param locator The service locator to
+     * @param locator The service locator to enable lookup exceptions on.  May not be null
      */
     public static void enableLookupExceptions(ServiceLocator locator) {
         if (locator == null) throw new IllegalArgumentException();
@@ -702,5 +702,26 @@ public abstract class ServiceLocatorUtilities {
         if (locator.getService(RethrowErrorService.class) != null) return;
         
         addClasses(locator, RethrowErrorService.class);
+    }
+    
+    /**
+     * This method will enable the default topic distribution service.
+     * <p>
+     * The default distribution service distributes messages on the
+     * same thread as the caller of {@link org.glassfish.hk2.api.messaging.Topic#publish(Object)}
+     * and (TBD security policy).  Objects to be distributed to will be
+     * held with SoftReferences, and hence if they go out of scope they
+     * will not be distributed to.  Only services created AFTER the topic
+     * distribution service is enabled will be distributed to.
+     * <p>
+     * This method is idempotent, so that if there is already a
+     * TopicDistributionService with the default name is available this method
+     * will do nothing
+     * 
+     * @param locator The service locator to enable topic distribution on.  May not be null
+     */
+    public static void enableTopicDistribution(ServiceLocator locator) {
+        throw new AssertionError("not yet implemented");
+        
     }
 }

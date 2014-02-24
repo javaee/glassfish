@@ -118,9 +118,12 @@ import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
+import org.glassfish.hk2.utilities.reflection.Constants;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.ScopeInfo;
+import org.glassfish.hk2.utilities.reflection.TypeChecker;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Optional;
@@ -369,27 +372,6 @@ public class Utilities {
         if (checkMe.isAnnotationPresent(Qualifier.class)) return;
 
         throw new IllegalArgumentException("Lookup type " + checkMe + " must be a scope or annotation");
-    }
-
-    /**
-     * This is used to check on the annotation set.  It must be done under protection because the annotations may
-     * attempt to discover if they are equal using getDeclaredMembers permission
-     *
-     * @param candidateAnnotations The candidate annotations
-     * @param requiredAnnotations The required annotations
-     * @return true if the candidate set contains the entire required set
-     */
-    /* package */
-    static boolean annotationContainsAll(final Set<Annotation> candidateAnnotations, final Set<Annotation> requiredAnnotations) {
-        return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-
-            @Override
-            public Boolean run() {
-                return candidateAnnotations.containsAll(requiredAnnotations);
-            }
-
-        });
-
     }
 
     private static Field[] getDeclaredFields(final Class<?> clazz) {
@@ -2557,24 +2539,6 @@ public class Utilities {
         }
     }
 
-    private static class ScopeInfo {
-        private final Annotation scope;
-        private final Class<? extends Annotation> annoType;
-
-        private ScopeInfo(Annotation scope, Class<? extends Annotation> annoType) {
-            this.scope = scope;
-            this.annoType = annoType;
-        }
-
-        private Annotation getScope() {
-            return scope;
-        }
-
-        private Class<? extends Annotation> getAnnoType() {
-            return annoType;
-        }
-    }
-
     private static class MethodInterceptorInvocationHandler implements InvocationHandler {
         private final MethodHandler interceptor;
 
@@ -2992,6 +2956,43 @@ public class Utilities {
                     declaringClass + "," +
                     sb.toString() + ")";
         }
+    }
+    
+    /**
+     * This code uses the TypeChecker but does some extra checking if
+     * the types are annotations
+     * 
+     * @param requiredType The type this must conform to
+     * @param beanType The type of the bean we are checking
+     * @return true if beanType is safely assignable to requiredType
+     */
+    @SuppressWarnings("unchecked")
+    public static boolean isTypeSafe(Type requiredType, Type beanType) {
+        if (TypeChecker.isRawTypeSafe(requiredType, beanType)) return true;
+        
+        Class<?> requiredClass = ReflectionHelper.getRawClass(requiredType);
+        if (requiredClass == null) {
+            return false;
+        }
+        
+        // We do some extra checking if we are looking at annotations
+        if (!requiredClass.isAnnotation()) return false;
+        
+        Class<?> beanClass = ReflectionHelper.getRawClass(beanType);
+        if (beanClass == null) {
+            return false;
+        }
+        
+        if (beanClass.isAnnotationPresent((Class<? extends Annotation>) requiredClass)) {
+            return true;
+        }
+                
+         Class<? extends Annotation> trueScope = Utilities.getScopeAnnotationType(beanClass, null);
+         if (trueScope.equals((Class<? extends Annotation>) requiredClass)) {
+             return true;
+         }
+         
+         return false;
     }
     
     /**

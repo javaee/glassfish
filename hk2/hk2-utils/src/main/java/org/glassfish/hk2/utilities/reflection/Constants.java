@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,15 +37,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.utilities.reflection;
 
--exportcontents: \
-               com.sun.hk2.component; \
-               org.glassfish.hk2.api; \
-               org.glassfish.hk2.api.messaging; \
-               org.glassfish.hk2.extension; \
-               org.glassfish.hk2.utilities; \
-               org.glassfish.hk2.utilities.binding; \
-               org.jvnet.hk2.annotations; \
-               version=${project.osgi.version}
+import java.util.HashMap;
 
+/**
+ * @author jwells
+ *
+ */
+public class Constants {
+    /** The name of the system class loader */
+    public final static String SYSTEM_LOADER_NAME = "SystemLoader";
+    
+    /** Map from primitive type to java type */
+    public final static HashMap<Class<?>, Class<?>> PRIMITIVE_MAP = new HashMap<Class<?>, Class<?>>();
+    
+    static {
+        PRIMITIVE_MAP.put(char.class, Character.class);
+        PRIMITIVE_MAP.put(byte.class, Byte.class);
+        PRIMITIVE_MAP.put(short.class, Short.class);
+        PRIMITIVE_MAP.put(int.class, Integer.class);
+        PRIMITIVE_MAP.put(long.class, Long.class);
+        PRIMITIVE_MAP.put(float.class, Float.class);
+        PRIMITIVE_MAP.put(double.class, Double.class);
+    }
 
+}
