@@ -37,16 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.internal;
+package org.glassfish.hk2.utilities.reflection;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * This class contains various utilities for ensuring
@@ -67,31 +64,20 @@ public class TypeChecker {
      * @param beanType the type being assigned
      * @return true if things are type safe
      */
-    @SuppressWarnings("unchecked")
-    public static boolean isTypeSafe(Type requiredType, Type beanType) {
+    public static boolean isRawTypeSafe(Type requiredType, Type beanType) {
         Class<?> requiredClass = ReflectionHelper.getRawClass(requiredType);
         if (requiredClass == null) {
             return false;
         }
-        requiredClass = Utilities.translatePrimitiveType(requiredClass);
+        requiredClass = ReflectionHelper.translatePrimitiveType(requiredClass);
         
         Class<?> beanClass = ReflectionHelper.getRawClass(beanType);
         if (beanClass == null) {
             return false;
         }
-        beanClass = Utilities.translatePrimitiveType(beanClass);
+        beanClass = ReflectionHelper.translatePrimitiveType(beanClass);
         
         if (!requiredClass.isAssignableFrom(beanClass)) {
-            if (requiredClass.isAnnotation()) {
-                if (beanClass.isAnnotationPresent((Class<? extends Annotation>) requiredClass)) {
-                    return true;
-                }
-                
-                Class<? extends Annotation> trueScope = Utilities.getScopeAnnotationType(beanClass, null);
-                if (trueScope.equals((Class<? extends Annotation>) requiredClass)) {
-                    return true;
-                }
-            }
             return false;
         }
         
@@ -131,13 +117,13 @@ public class TypeChecker {
             Type beanTypeVariable = beanTypeVariables[lcv];
             
             if (isActualType(requiredTypeVariable) && isActualType(beanTypeVariable)) {
-                if (!isTypeSafe(requiredTypeVariable, beanTypeVariable)) return false;
+                if (!isRawTypeSafe(requiredTypeVariable, beanTypeVariable)) return false;
             }
             else if (isArrayType(requiredTypeVariable) && isArrayType(beanTypeVariable)) {
                 Type requiredArrayType = getArrayType(requiredTypeVariable);
                 Type beanArrayType = getArrayType(beanTypeVariable);
                 
-                if (!isTypeSafe(requiredArrayType, beanArrayType)) return false;
+                if (!isRawTypeSafe(requiredArrayType, beanArrayType)) return false;
             }
             else if (isWildcard(requiredTypeVariable) && isActualType(beanTypeVariable)) {
                 WildcardType wt = getWildcard(requiredTypeVariable);

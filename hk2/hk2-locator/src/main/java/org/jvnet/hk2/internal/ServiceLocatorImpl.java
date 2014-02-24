@@ -100,6 +100,7 @@ import org.glassfish.hk2.api.ServiceLocatorState;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
+import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
@@ -508,6 +509,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     injectee.getUnqualified(),
                     injectee);
 
+            return new ConstantActiveDescriptor<Object>(value, id);
+        }
+        
+        if (Topic.class.equals(rawType)) {
+            TopicImpl<?> value = new TopicImpl<Object>(this,
+                    Utilities.getFirstTypeArgument(requiredType),
+                    injectee.getRequiredQualifiers());
+            
             return new ConstantActiveDescriptor<Object>(value, id);
         }
 
@@ -2078,7 +2087,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             if (requiredType != null) {
                 boolean safe = false;
                 for (Type candidateType : candidate.getContractTypes()) {
-                    if (TypeChecker.isTypeSafe(requiredType, candidateType)) {
+                    if (Utilities.isTypeSafe(requiredType, candidateType)) {
                         safe = true;
                         break;
                     }
@@ -2097,7 +2106,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             if (!requiredAnnotations.isEmpty()) {
                 Set<Annotation> candidateAnnotations = candidate.getQualifierAnnotations();
 
-                if (!Utilities.annotationContainsAll(candidateAnnotations, requiredAnnotations)) {
+                if (!ReflectionHelper.annotationContainsAll(candidateAnnotations, requiredAnnotations)) {
                     // The qualifiers do not match
                     continue;
                 }

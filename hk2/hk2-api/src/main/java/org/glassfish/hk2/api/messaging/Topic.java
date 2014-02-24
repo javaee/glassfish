@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,15 +37,52 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.api.messaging;
 
--exportcontents: \
-               com.sun.hk2.component; \
-               org.glassfish.hk2.api; \
-               org.glassfish.hk2.api.messaging; \
-               org.glassfish.hk2.extension; \
-               org.glassfish.hk2.utilities; \
-               org.glassfish.hk2.utilities.binding; \
-               org.jvnet.hk2.annotations; \
-               version=${project.osgi.version}
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
+import java.util.Set;
 
-
+/**
+ * @author jwells
+ *
+ */
+public interface Topic<T> {
+    /**
+     * Publishes a message to all subscribers
+     * 
+     * @param message The non-null message to send to all current subscribers
+     */
+    public void publish(T message);
+    
+    /**
+     * Returns an Topic that is further qualified
+     * with the given name
+     * 
+     * @param name The value field of the Named annotation parameter.  Must
+     * not be null
+     * @return A topic further qualified with the given name
+     */
+    public Topic<T> named(String name);
+    
+    /**
+     * Returns an Topic that is of the given type.  This type
+     * must be more specific than the type of this Topic
+     * 
+     * @param type The type to restrict the returned Topic to
+     * @return A Topic restricted to only producing messages of the given type
+     */
+    public <U> Topic<U> ofType(Type type);
+    
+    /**
+     * A set of qualifiers to further restrict this Topic to.
+     * 
+     * @param qualifiers The qualifiers to further restrict this Topic to
+     * @return An Topic restricted with the given qualifiers
+     */
+    public Topic<T> qualifiedWith(Annotation... qualifiers);
+    
+    public Type getTopicType();
+    
+    public Set<Annotation> getTopicQualifiers();
+}

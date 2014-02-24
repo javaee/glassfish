@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,15 +37,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.utilities.reflection;
 
--exportcontents: \
-               com.sun.hk2.component; \
-               org.glassfish.hk2.api; \
-               org.glassfish.hk2.api.messaging; \
-               org.glassfish.hk2.extension; \
-               org.glassfish.hk2.utilities; \
-               org.glassfish.hk2.utilities.binding; \
-               org.jvnet.hk2.annotations; \
-               version=${project.osgi.version}
+import java.lang.annotation.Annotation;
 
+/**
+ * Data structure concerning scope annotations
+ * 
+ * @author jwells
+ *
+ */
+public class ScopeInfo {
+    private final Annotation scope;
+    private final Class<? extends Annotation> annoType;
 
+    /**
+     * Constructor of the data structure concerning the scope annotation
+     * 
+     * @param scope The scope annotation
+     * @param annoType The type of annotation
+     */
+    public ScopeInfo(Annotation scope, Class<? extends Annotation> annoType) {
+        this.scope = scope;
+        this.annoType = annoType;
+    }
+    
+    /**
+     * Returns the scope for this data structure
+     * @return The non-null scope for this data structure
+     */
+    public Annotation getScope() {
+        return scope;
+    }
+
+    /**
+     * Returns the annotation class for this annotation type
+     * 
+     * @return the annotation type for this scope
+     */
+    public Class<? extends Annotation> getAnnoType() {
+        return annoType;
+    }
+
+}

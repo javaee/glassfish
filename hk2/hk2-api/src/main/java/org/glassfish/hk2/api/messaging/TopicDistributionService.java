@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,15 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.api.messaging;
 
--exportcontents: \
-               com.sun.hk2.component; \
-               org.glassfish.hk2.api; \
-               org.glassfish.hk2.api.messaging; \
-               org.glassfish.hk2.extension; \
-               org.glassfish.hk2.utilities; \
-               org.glassfish.hk2.utilities.binding; \
-               org.jvnet.hk2.annotations; \
-               version=${project.osgi.version}
+import org.glassfish.hk2.api.MultiException;
+import org.jvnet.hk2.annotations.Contract;
 
+/**
+ * This service is responsible for distributing messages to Topic subscribers.
+ * The implementation of this service must be in the Singleton scope.
+ * <p>
+ * A default implementation of this service 
+ * @author jwells
+ *
+ */
+@Contract
+public interface TopicDistributionService {
+    /** The name of the default TopicDistributionService that is added by {@link ServiceLocatorUtilities} */
+    public final static String HK2_DEFAULT_TOPIC_DISTRIBUTOR = "HK2TopicDistributionService";
+    
+    /**
+     * Must distribute the message to all of the matching topic subscribers
+     * 
+     * @param topic The topic to which to distribute the message.  Must not be null
+     * @param message The message to send to the topic.  Must not be null
+     * @throws MultiException This method may collect the exceptions thrown by the
+     * Topic subscribers and rethrow them in a MultiException
+     */
+    public void distributeMessage(Topic<?> topic, Object message) throws MultiException;
 
+}
