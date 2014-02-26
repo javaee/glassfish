@@ -66,6 +66,8 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.api.messaging.TopicDistributionService;
+import org.glassfish.hk2.internal.DefaultTopicDistributionService;
 import org.glassfish.hk2.internal.ImmediateHelper;
 import org.glassfish.hk2.internal.PerThreadContext;
 
@@ -721,7 +723,13 @@ public abstract class ServiceLocatorUtilities {
      * @param locator The service locator to enable topic distribution on.  May not be null
      */
     public static void enableTopicDistribution(ServiceLocator locator) {
-        throw new AssertionError("not yet implemented");
+        if (locator == null) throw new IllegalArgumentException();
         
+        if (locator.getService(TopicDistributionService.class, TopicDistributionService.HK2_DEFAULT_TOPIC_DISTRIBUTOR) != null) {
+            // Will not add it a second time
+            return;
+        }
+        
+        addClasses(locator, DefaultTopicDistributionService.class);
     }
 }
