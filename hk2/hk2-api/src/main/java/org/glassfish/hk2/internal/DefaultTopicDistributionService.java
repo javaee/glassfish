@@ -191,11 +191,23 @@ public class DefaultTopicDistributionService implements
     public Filter getFilter() {
         return BuilderHelper.allFilter();
     }
+    
+    private void postProduction(InstanceLifecycleEvent lifecycleEvent) {
+        ActiveDescriptor<?> descriptor = lifecycleEvent.getActiveDescriptor();
+        Object target = lifecycleEvent.getLifecycleObject();
+        
+    }
 
     @Override
     public void lifecycleEvent(InstanceLifecycleEvent lifecycleEvent) {
-        
-        
+        switch (lifecycleEvent.getEventType()) {
+        case  POST_PRODUCTION:
+            break;
+        case PRE_DESTRUCTION:
+            break;
+        default:
+            return;
+        }
     }
     
     private static class SubscriberInfo {
