@@ -1259,4 +1259,16 @@ public final class ReflectionHelper {
         if (translation == null) return type;
         return translation;
     }
+    
+    /**
+     * Returns true if the underlying member is private
+     *
+     * @param member The non-null member to test
+     * @return true if the member is private
+     */
+    public static boolean isPrivate(Member member) {
+        int modifiers = member.getModifiers();
+
+        return ((modifiers & Modifier.PRIVATE) != 0);
+    }
 }

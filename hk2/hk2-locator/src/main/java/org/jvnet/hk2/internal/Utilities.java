@@ -48,9 +48,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
-import java.lang.ref.PhantomReference;
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -77,8 +74,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Qualifier;
@@ -118,6 +113,7 @@ import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionModel;
 import org.glassfish.hk2.utilities.reflection.Constants;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
@@ -137,44 +133,11 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
-    private final static String USE_SOFT_REFERENCE_PROPERTY = "org.jvnet.hk2.properties.useSoftReference";
-    private final static boolean USE_SOFT_REFERENCE;
-    static {
-        USE_SOFT_REFERENCE = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-
-            @Override
-            public Boolean run() {
-                return Boolean.parseBoolean(System.getProperty(USE_SOFT_REFERENCE_PROPERTY, "true"));
-            }
-            
-        });
-    }
+    
     
     private final static Object lock = new Object();
     
-    /*
-     * These caches must not hold any reference to a class (or even a Field or Method which has
-     * backpointers to their host classes) because in OSGi-like scenarios when a classloader
-     * is removed from the system these caches will keep that classloader referenced.
-     * 
-     * So instead we keep Strings for class names and MemberDescriptors (which do not hold onto
-     * classes) for Fields and Methods.  However, that represents a memory leak by itself, since
-     * the classes that are now gone would still forever be represented in these caches.
-     * 
-     * In order to fix that problem we keep PhantomReferences to the classes.  When the
-     * class has no more references the PhantomReference will be enqueued in the deadClasses
-     * ReferenceQueue and be cleaned the next time we touch this cache
-     */
-    private final static Map<String, LinkedHashSet<MemberKey>> methodKeyCache = new HashMap<String, LinkedHashSet<MemberKey>>();
-    private final static Map<String, LinkedHashSet<MemberKey>> fieldCache = new HashMap<String, LinkedHashSet<MemberKey>>();
-    private final static Map<String, MemberDescriptor> postConstructCache = new HashMap<String, MemberDescriptor>();
-    private final static Map<String, MemberDescriptor> preDestroyCache = new HashMap<String, MemberDescriptor>();
-    
-    private final static Map<String, ClazzPhantomReference> phantoms = new HashMap<String, ClazzPhantomReference>();
-    private final static ReferenceQueue<Class<?>> deadClasses = new ReferenceQueue<Class<?>>();
-
-    private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
-    private final static String CONVENTION_PRE_DESTROY = "preDestroy";
+    private final static ClassReflectionModel classModel = new ClassReflectionModel();
     
     private final static WeakHashMap<Class<?>, String> autoAnalyzerNameCache = new WeakHashMap<Class<?>, String>();
     private final static WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> annotationCache =
@@ -372,35 +335,6 @@ public class Utilities {
         if (checkMe.isAnnotationPresent(Qualifier.class)) return;
 
         throw new IllegalArgumentException("Lookup type " + checkMe + " must be a scope or annotation");
-    }
-
-    private static Field[] getDeclaredFields(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
-
-            @Override
-            public Field[] run() {
-                return clazz.getDeclaredFields();
-            }
-
-        });
-
-    }
-
-    /**
-     * Get the declared methods of the given class.
-     *
-     * @param clazz  the class
-     */
-    private static Method[] getDeclaredMethods(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
-
-            @Override
-            public Method[] run() {
-                return clazz.getDeclaredMethods();
-            }
-
-        });
-
     }
 
     /**
@@ -1081,58 +1015,11 @@ public class Utilities {
         return null;
     }
 
-    /**
-     * Get all fields on this class and all subclasses
-     *
-     * @param clazz The class to inspect
-     * @return A set of all the fields on this class
-     */
-    private static Set<Field> getAllFields(Class<?> clazz, Collector collector) {
-        LinkedHashSet<Field> retVal = new LinkedHashSet<Field>();
-
-        LinkedHashSet<MemberKey> keys = new LinkedHashSet<MemberKey>();
-
-        getAllFieldKeys(clazz, keys, collector);
-
-        for (MemberKey key : keys) {
-            retVal.add(key.getBackingField(clazz));
-        }
-
-        return retVal;
-    }
+    
 
 
 
-    private static void getAllFieldKeys(Class<?> clazz, LinkedHashSet<MemberKey> currentFields, Collector collector) {
-        if (clazz == null) return;
-
-        Set<MemberKey> discovered;
-        synchronized (lock) {
-            discovered = fieldCache.get(clazz.getName());
-        }
-
-        if (discovered != null) {
-            currentFields.addAll(discovered);
-            return;
-        }
-
-        // Do superclasses first, so that inherited methods are
-        // overriden in the set
-        getAllFieldKeys(clazz.getSuperclass(), currentFields, collector);
-
-        try {
-            for (Field field : getDeclaredFields(clazz)) {
-                currentFields.add(new MemberKey(field, false, false));
-            }
-
-            synchronized (lock) {
-                fieldCache.put(clazz.getName(), new LinkedHashSet<MemberKey>(currentFields));
-            }
-        } catch (Throwable th) {
-            collector.addThrowable(new IllegalStateException("Error while getting fields of class " + clazz.getName(), th));
-        }
-
-    }
+    
 
     /**
      * Returns a constant ActiveDescriptor for the basic ServiceLocator
@@ -1312,85 +1199,9 @@ public class Utilities {
         return retVal;
     }
 
-    /**
-     * Gets all methods, public, private etc on this class and on all
-     * subclasses
-     *
-     * @param clazz The class to check out
-     * @return A set of all methods on this class
-     */
-    private static Set<Method> getAllMethods(Class<?> clazz) {
-        LinkedHashSet<Method> retVal = new LinkedHashSet<Method>();
+    
 
-        LinkedHashSet<MemberKey> keys = new LinkedHashSet<MemberKey>();
-
-        getAllMethodKeys(clazz, keys);
-
-        Method postConstructMethod = null;
-        Method preDestroyMethod = null;
-        for (MemberKey key : keys) {
-            retVal.add(key.getBackingMethod(clazz));
-            if (key.isPostConstruct()) {
-                postConstructMethod = key.getBackingMethod(clazz);
-            }
-            if (key.isPreDestroy()) {
-                preDestroyMethod = key.getBackingMethod(clazz);
-            }
-        }
-
-        synchronized (lock) {
-            // It is ok for postConstructMethod to be null
-            postConstructCache.put(clazz.getName(), new MemberDescriptor(postConstructMethod));
-
-            // It is ok for preDestroyMethod to be null
-            preDestroyCache.put(clazz.getName(), new MemberDescriptor(preDestroyMethod));
-        }
-
-        return retVal;
-    }
-
-    private static boolean isPostConstruct(Method m) {
-        if (m.isAnnotationPresent(PostConstruct.class)) return true;
-
-        if (m.getParameterTypes().length != 0) return false;
-        return CONVENTION_POST_CONSTRUCT.equals(m.getName());
-    }
-
-    private static boolean isPreDestroy(Method m) {
-        if (m.isAnnotationPresent(PreDestroy.class)) return true;
-
-        if (m.getParameterTypes().length != 0) return false;
-        return CONVENTION_PRE_DESTROY.equals(m.getName());
-    }
-
-    private static void getAllMethodKeys(Class<?> clazz, LinkedHashSet<MemberKey> currentMethods) {
-        if (clazz == null) return;
-
-        Set<MemberKey> discoveredMethods;
-        synchronized (lock) {
-            discoveredMethods = methodKeyCache.get(clazz.getName());
-        }
-
-        if (discoveredMethods != null) {
-            currentMethods.addAll(discoveredMethods);
-            return;
-        }
-
-        // Do superclasses first, so that inherited methods are
-        // overriden in the set
-        getAllMethodKeys(clazz.getSuperclass(), currentMethods);
-
-        for (Method method : getDeclaredMethods(clazz)) {
-            boolean isPostConstruct = isPostConstruct(method);
-            boolean isPreDestroy = isPreDestroy(method);
-
-            currentMethods.add(new MemberKey(method, isPostConstruct, isPreDestroy));
-        }
-
-        synchronized (lock) {
-            methodKeyCache.put(clazz.getName(), new LinkedHashSet<MemberKey>(currentMethods));
-        }
-    }
+    
 
     /**
      * Get all the initializer methods of the annotatedType.  If there are definitional
@@ -1408,7 +1219,7 @@ public class Utilities {
             Collector errorCollector) {
         LinkedHashSet<Method> retVal = new LinkedHashSet<Method>();
 
-        for (Method method : getAllMethods(annotatedType)) {
+        for (Method method : classModel.getAllMethods(annotatedType)) {
             if (!hasInjectAnnotation(locator, method, true)) {
                 // Not an initializer method
                 continue;
@@ -1426,6 +1237,38 @@ public class Utilities {
 
         return retVal;
     }
+    
+    /**
+     * Finds the post construct method on this class
+     * @param clazz The class to search for the post construct
+     * @param collector An error collector
+     * @return The post construct method or null
+     */
+    public static Method findPostConstruct(Class<?> clazz, Collector collector) {
+        try {
+            return classModel.findPostConstruct(clazz, org.glassfish.hk2.api.PostConstruct.class);
+        }
+        catch (IllegalArgumentException iae) {
+            collector.addThrowable(iae);
+            return null;
+        }
+    }
+    
+    /**
+     * Finds the pre destroy method on this class
+     * @param clazz The class to search for the pre destroy method
+     * @param collector An error collector
+     * @return The pre destroy method or null
+     */
+    public static Method findPreDestroy(Class<?> clazz, Collector collector)  {
+        try {
+            return classModel.findPreDestroy(clazz, org.glassfish.hk2.api.PreDestroy.class);
+        }
+        catch (IllegalArgumentException iae) {
+            collector.addThrowable(iae);
+            return null;
+        }
+    }
 
     /**
      * Will find all the initialize fields in the class
@@ -1439,8 +1282,16 @@ public class Utilities {
                                                    ServiceLocatorImpl locator,
                                                    Collector errorCollector) {
         LinkedHashSet<Field> retVal = new LinkedHashSet<Field>();
+        
+        LinkedList<Throwable> exceptions = new LinkedList<Throwable>();
+        Set<Field> fields = classModel.getAllFields(annotatedType, exceptions);
+        if (!exceptions.isEmpty()) {
+            for (Throwable th : exceptions) {
+                errorCollector.addThrowable(th);
+            }
+        }
 
-        for (Field field : getAllFields(annotatedType, errorCollector)) {
+        for (Field field : fields) {
             if (!hasInjectAnnotation(locator, field, false)) {
                 // Not an initializer field
                 continue;
@@ -1538,7 +1389,7 @@ public class Utilities {
             Annotation[] hardenedElementAnnotations = elementAnnotationsReference.get();
             Annotation[][] hardenedParamAnnotations = paramAnnotationsReference.get();
             
-            if (!USE_SOFT_REFERENCE || (hardenedElementAnnotations == null) || (hardenedParamAnnotations == null)) {
+            if (!ClassReflectionModel.USE_SOFT_REFERENCE || (hardenedElementAnnotations == null) || (hardenedParamAnnotations == null)) {
                 return computeAEAI(ae);
             }
             
@@ -1646,17 +1497,7 @@ public class Utilities {
         return !type.isAnnotation();
     }
 
-    /**
-     * Returns true if the underlying member is private
-     *
-     * @param member The non-null member to test
-     * @return true if the member is private
-     */
-    public static boolean isPrivate(Member member) {
-        int modifiers = member.getModifiers();
-
-        return ((modifiers & Modifier.PRIVATE) != 0);
-    }
+    
 
     /**
      * Returns true if the underlying member is abstract
@@ -2157,96 +1998,7 @@ public class Utilities {
 
 
 
-    /**
-     * Finds the post construct method on this class
-     * @param clazz The class to search for the post construct
-     * @param collector An error collector
-     * @return The post construct method or null
-     */
-    public static Method findPostConstruct(Class<?> clazz, Collector collector) {
-        if (org.glassfish.hk2.api.PostConstruct.class.isAssignableFrom(clazz)) {
-            // A little performance optimization
-            try {
-                return clazz.getMethod(CONVENTION_POST_CONSTRUCT, new Class<?>[0]);
-            }
-            catch (NoSuchMethodException e) {
-                return null;
-            }
-        }
-
-        boolean containsKey;
-        Method retVal;
-        synchronized (lock) {
-            containsKey = postConstructCache.containsKey(clazz.getName());
-            MemberDescriptor md = postConstructCache.get(clazz.getName());
-            retVal = (md == null) ? null : md.getMethod(clazz);
-        }
-
-        if (!containsKey) {
-            getAllMethods(clazz);  // Fills in the cache
-
-            synchronized (lock) {
-                MemberDescriptor md = postConstructCache.get(clazz.getName());
-                retVal = (md == null) ? null : md.getMethod(clazz);
-            }
-        }
-
-        if (retVal == null) return null;
-
-        if (retVal.isAnnotationPresent(PostConstruct.class) &&
-                (retVal.getParameterTypes().length != 0)) {
-            collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(retVal) +
-                        " annotated with @PostConstruct must not have any arguments"));
-            return null;
-        }
-
-        return retVal;
-    }
-
-    /**
-     * Finds the pre destroy method on this class
-     * @param clazz The class to search for the pre destroy method
-     * @param collector An error collector
-     * @return The pre destroy method or null
-     */
-    public static Method findPreDestroy(Class<?> clazz, Collector collector) {
-        if (org.glassfish.hk2.api.PreDestroy.class.isAssignableFrom(clazz)) {
-            try {
-                return clazz.getMethod(CONVENTION_PRE_DESTROY, new Class<?>[0]);
-            }
-            catch (NoSuchMethodException e) {
-                return null;
-            }
-        }
-
-        boolean containsKey;
-        Method retVal;
-        synchronized (lock) {
-            containsKey = preDestroyCache.containsKey(clazz.getName());
-            MemberDescriptor md = preDestroyCache.get(clazz.getName());
-            retVal = (md == null) ? null : md.getMethod(clazz);
-        }
-
-        if (!containsKey) {
-            getAllMethods(clazz);  // Fills in the cache
-
-            synchronized (lock) {
-                MemberDescriptor md = preDestroyCache.get(clazz.getName());
-                retVal = (md == null) ? null : md.getMethod(clazz);
-            }
-        }
-
-        if (retVal == null) return null;
-
-        if (retVal.isAnnotationPresent(PreDestroy.class) &&
-                (retVal.getParameterTypes().length != 0)) {
-            collector.addThrowable(new IllegalArgumentException("The method " + Pretty.method(retVal) +
-                    " annotated with @PreDestroy must not have any arguments"));
-            return null;
-        }
-
-        return retVal;
-    }
+    
 
     /**
      * This method returns a set of qualifiers from an array of qualifiers.
@@ -2496,48 +2248,7 @@ public class Utilities {
         return service;
     }
 
-    private static class MemberKey {
-        private final MemberDescriptor backingMember;
-        private final int hashCode;
-        private final boolean postConstruct;
-        private final boolean preDestroy;
-
-        private MemberKey(Member method, boolean isPostConstruct, boolean isPreDestroy) {
-            backingMember = new MemberDescriptor(method);
-            hashCode = backingMember.hashCode();
-            postConstruct = isPostConstruct;
-            preDestroy = isPreDestroy;
-        }
-        
-        private Method getBackingMethod(Class<?> clazz) {
-            return backingMember.getMethod(clazz);
-        }
-        
-        private Field getBackingField(Class<?> clazz) {
-            return backingMember.getField(clazz);
-        }
-
-        private boolean isPostConstruct() {
-            return postConstruct;
-        }
-
-        private boolean isPreDestroy() {
-            return preDestroy;
-        }
-
-        public int hashCode() {
-            return hashCode;
-        }
-
-        public boolean equals(Object o) {
-            if (o == null) return false;
-            if (!(o instanceof MemberKey)) return false;
-
-            MemberKey omk = (MemberKey) o;
-            
-            return (backingMember.equals(omk.backingMember));
-        }
-    }
+    
 
     private static class MethodInterceptorInvocationHandler implements InvocationHandler {
         private final MethodHandler interceptor;
@@ -2619,7 +2330,7 @@ public class Utilities {
             }
             
             if (filter.matches(descriptor)) {
-                for (Method method : getAllMethods(clazz)) {
+                for (Method method : classModel.getAllMethods(clazz)) {
                     if (isFinal(method)) continue;
                     
                     List<MethodInterceptor> interceptors = interceptionService.getMethodInterceptors(method);
@@ -2654,308 +2365,6 @@ public class Utilities {
             }
             
         };
-    }
-    
-    private static void cleanCache() {
-        synchronized (lock) {
-            Reference<? extends Class<?>> ref;
-            while ((ref = deadClasses.poll()) != null) {
-            
-                ClazzPhantomReference cpr = (ClazzPhantomReference) ref;
-            
-                phantoms.remove(cpr.clazzName);
-                postConstructCache.remove(cpr.clazzName);
-                preDestroyCache.remove(cpr.clazzName);
-                methodKeyCache.remove(cpr.clazzName);
-                fieldCache.remove(cpr.clazzName);
-            }
-        }
-    }
-    
-    private static class ClazzPhantomReference extends PhantomReference<Class<?>> {
-        private final String clazzName;
-        
-        private ClazzPhantomReference(Class<?> reference) {
-            super(reference, deadClasses);
-            clazzName = reference.getName();
-        }
-    }
-    
-    private static final Map<String, Class<?>> scalarClasses = new HashMap<String, Class<?>>();
-    static {
-        scalarClasses.put(boolean.class.getName(), boolean.class);
-        scalarClasses.put(short.class.getName(), short.class);
-        scalarClasses.put(int.class.getName(), int.class);
-        scalarClasses.put(long.class.getName(), long.class);
-        scalarClasses.put(float.class.getName(), float.class);
-        scalarClasses.put(double.class.getName(), double.class);
-        scalarClasses.put(byte.class.getName(), byte.class);
-        scalarClasses.put(char.class.getName(), char.class);
-    }
-    
-    /**
-     * This member descriptor must have the same equals
-     * and hashCode even if the declaringClass is *different*.
-     * This allows us to override a super-classes definition
-     * 
-     * The other point of this class is to have a scalar only
-     * representation of a Field or Method so that this will
-     * not keep references to classes that may go away.  However, it
-     * must also be highly performant, which is why we keep the
-     * declaring class, so that we can quickly find the true
-     * class where the method or field is defined quickly without
-     * searching the entire class hierarchy
-     * 
-     * Note that when the SoftReference returns null then it is time
-     * to clean the cache, as some class or another we had in the cache
-     * is now gone
-     * 
-     * @author jwells
-     *
-     */
-    private static class MemberDescriptor {
-        private final String declaringClass;
-        private final String name;
-        private final String args[];
-        private final boolean isMethod;
-        private final boolean isPrivate;
-        private final int hashCode;
-        
-        private SoftReference<Member> soft;
-        
-        private MemberDescriptor(Member member) {
-            if (member == null) {
-                declaringClass = null;
-                name = null;
-                args = null;
-                isMethod = true;
-                isPrivate = false;
-                hashCode = 0;
-                return;
-            }
-            
-            name = member.getName();
-            declaringClass = member.getDeclaringClass().getName();
-            isPrivate = isPrivate(member);
-            soft = new SoftReference<Member>(member);
-            
-            if (member instanceof Field) {
-                isMethod = false;
-                
-                args = null;
-                
-                hashCode = name.hashCode();
-            }
-            else if (member instanceof Method) {
-                isMethod = true;
-                
-                int calcHashCode = 1 ^ name.hashCode();
-                
-                Method method = (Method) member;
-                
-                Class<?> mArgs[] = method.getParameterTypes();
-                args = new String[mArgs.length];
-                for (int lcv = 0; lcv < mArgs.length; lcv++) {
-                    args[lcv] = mArgs[lcv].getName();
-                    calcHashCode ^= args[lcv].hashCode();
-                }
-                
-                hashCode = calcHashCode;
-            }
-            else {
-                throw new AssertionError("Unknown member type " + member);
-            }
-        }
-        
-        @Override
-        public int hashCode() {
-            return hashCode;
-        }
-        
-        public boolean equals(Object o) {
-            if (o == null) return false;
-            if (!(o instanceof MemberDescriptor)) return false;
-            
-            MemberDescriptor oMd = (MemberDescriptor) o;
-            if (hashCode != oMd.hashCode) return false; 
-            
-            if (isMethod != oMd.isMethod) {
-                // Fields are not equal to methods
-                return false;
-            }
-            
-            if (!isMethod) {
-                // Fields do not inherit
-                return false;
-            }
-            
-            // Null name check
-            if (name == null) {
-                if (oMd.name != null) return false;
-            }
-            else if (oMd.name == null) return false;
-            
-            if (!name.equals(oMd.name)) return false;
-            if (isPrivate || oMd.isPrivate) return false;
-            
-            if (args == null) return true; // This is a field
-            
-            if (args.length != oMd.args.length) return false;
-            
-            for (int lcv = 0; lcv < args.length; lcv++) {
-                if (!args[lcv].equals(oMd.args[lcv])) return false;
-            }
-            
-            return true;
-        }
-        
-        private Field getField(final Class<?> clazz) {
-            return AccessController.doPrivileged(new PrivilegedAction<Field>() {
-
-                @Override
-                public Field run() {
-                    return internalGetField(clazz);
-                }
-                
-            });
-        }
-        
-        private Field internalGetField(Class<?> clazz) {
-            if (name == null || isMethod) return null;
-            Field retVal = (Field) soft.get();
-            if (retVal == null) {
-                cleanCache();
-            }
-            
-            if (USE_SOFT_REFERENCE && (retVal != null) &&
-                retVal.getDeclaringClass().isAssignableFrom(clazz)) {
-                return retVal;
-            }
-            
-            while (clazz != null) {
-                if (clazz.getName().equals(declaringClass)) break;
-                
-                clazz = clazz.getSuperclass();
-            }
-            
-            if (clazz == null) {
-                return null;
-            }
-            
-            try {
-                retVal = clazz.getDeclaredField(name);
-                soft = new SoftReference<Member>(retVal);
-                
-                return retVal;
-            }
-            catch (Throwable e) {
-                return null;
-            }
-        }
-        
-        private Method getMethod(final Class<?> clazz) {
-            return AccessController.doPrivileged(new PrivilegedAction<Method>() {
-
-                @Override
-                public Method run() {
-                    return internalGetMethod(clazz);
-                }
-                
-            });
-        }
-        
-        private Method internalGetMethod(Class<?> clazz) {
-            if (name == null || !isMethod) return null;
-            Method retVal = (Method) soft.get();
-            if (retVal == null) {
-                cleanCache();
-            }
-            
-            if (USE_SOFT_REFERENCE && (retVal != null) &&
-                retVal.getDeclaringClass().isAssignableFrom(clazz)) {
-                return retVal;
-            }
-            
-            while (clazz != null) {
-                if (clazz.getName().equals(declaringClass)) break;
-                
-                clazz = clazz.getSuperclass();
-            }
-            
-            if (clazz == null) {
-                return null;
-            }
-            
-            ClassLoader loader = clazz.getClassLoader();
-            
-            Class<?> parameterTypes[] = new Class<?>[args.length];
-            
-            for (int lcv = 0; lcv < args.length; lcv++) {
-                parameterTypes[lcv] = scalarClasses.get(args[lcv]);
-                if (parameterTypes[lcv] != null) continue;
-                
-                if (args[lcv].startsWith("[")) {
-                    // Arrays must be handled with forName, not loadClass
-                    try {
-                        parameterTypes[lcv] = Class.forName(args[lcv], false, loader);
-                    }
-                    catch (Throwable e) {
-                        try {
-                            parameterTypes[lcv] = Class.forName(args[lcv], false, ClassLoader.getSystemClassLoader());
-                        }
-                        catch (Throwable e2) {
-                            return null;
-                        }
-                    }
-                }
-                else {
-                    try {
-                        parameterTypes[lcv] = loader.loadClass(args[lcv]);
-                    }
-                    catch (Throwable e) {
-                        try {
-                            parameterTypes[lcv] = ClassLoader.getSystemClassLoader().loadClass(args[lcv]);
-                        }
-                        catch (Throwable e2) {
-                            return null;
-                        }
-                    }
-                }
-            }
-            
-            try {
-                retVal = clazz.getDeclaredMethod(name, parameterTypes);
-                soft = new SoftReference<Member>(retVal);
-                
-                return retVal; 
-            }
-            catch (Throwable e) {
-                return null;
-            }
-            
-        }
-        
-        public String toString() {
-            StringBuffer sb = new StringBuffer("{");
-            if (args != null) {
-                boolean first = true;
-                for (String arg : args) {
-                    if (first) {
-                        sb.append(arg);
-                        first = false;
-                    }
-                    else {
-                        sb.append("," + arg);
-                    }
-                }
-            }
-            sb.append("}");
-            
-            return "MethodDescriptor(" + ((isMethod) ? "method," : "field,") +
-                    name + "," +
-                    declaringClass + "," +
-                    sb.toString() + ")";
-        }
     }
     
     /**
