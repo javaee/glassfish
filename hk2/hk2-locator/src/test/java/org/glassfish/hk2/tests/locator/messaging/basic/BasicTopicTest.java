@@ -51,6 +51,9 @@ import org.junit.Test;
  *
  */
 public class BasicTopicTest {
+    /**
+     * Tests the most basic form of topic/subscriber
+     */
     @Test
     public void testEventDistributedToAllSubscribers() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
@@ -84,6 +87,30 @@ public class BasicTopicTest {
         Foo perLookupFoo2 = immediateSubscriber.getAndClearDependentLastEvent();
         Assert.assertNotNull(perLookupFoo2);
         Assert.assertEquals(12, perLookupFoo2.getFooValue());
+        
+    }
+    
+    /**
+     * Tests a single subscriber with many different subscription methods
+     */
+    @Test @Ignore
+    public void testEventDistributedToAllSubscribersOnOneService() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
+                PerLookupService.class,
+                SingletonService.class,
+                SubscriberWithInjectionPoints.class);
+        
+        FooPublisher publisher = locator.getService(FooPublisher.class);
+        
+        SubscriberWithInjectionPoints subscriber = locator.getService(SubscriberWithInjectionPoints.class);
+        
+        publisher.publishFoo(0);
+        
+        subscriber.check();
         
     }
 

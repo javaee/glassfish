@@ -102,7 +102,7 @@ public class DefaultTopicDistributionService implements
     private final WriteLock wLock = readWriteLock.writeLock();
     private final ReadLock rLock = readWriteLock.readLock();
     
-    private void fire(Object message, Method subscription, SubscriberInfo subscriptionInfo, Object target) throws Throwable {
+    private static void fire(Object message, Method subscription, SubscriberInfo subscriptionInfo, Object target, ServiceLocator locator) throws Throwable {
         Object arguments[] = new Object[subscriptionInfo.otherInjectees.length];
         
         List<ServiceHandle<?>> destroyMe = new LinkedList<ServiceHandle<?>>();
@@ -139,10 +139,8 @@ public class DefaultTopicDistributionService implements
         }
     }
     
-    private List<SubscriberInfo> handleDescriptorToClass(ActiveDescriptor<?> descriptor, Class<?> clazz, Type eventType, Topic<?> topic, Object message) {
-        LinkedList<SubscriberInfo> retVal = new LinkedList<SubscriberInfo>();
-        
-        MultiException errors = null;
+    private List<FireResults> handleDescriptorToClass(ActiveDescriptor<?> descriptor, Class<?> clazz, Type eventType, Topic<?> topic) {
+        LinkedList<FireResults> retVal = new LinkedList<FireResults>();
         
         List<Method> subscribers = class2Methods.get(clazz);
         
@@ -165,24 +163,7 @@ public class DefaultTopicDistributionService implements
             
             for (WeakReference<Object> targetReference : subscriberInfo.targets) {
                 Object target = targetReference.get();
-                if (target == null) {
-                    // we are the only reference, remove
-                    retVal.add(subscriberInfo);
-                        
-                    continue;
-                }
-                    
-                try {
-                  fire(message, subscriberMethod, subscriberInfo, target);
-                }
-                catch (Throwable th) {
-                    if (errors == null) {
-                        errors = new MultiException(th);
-                    }
-                    else {
-                        errors.addError(th);
-                    }
-                }
+                retVal.add(new FireResults(subscriberMethod, subscriberInfo, target));
             }    
         }
         
@@ -198,12 +179,12 @@ public class DefaultTopicDistributionService implements
         
         Type eventType = topic.getTopicType();
         
-        LinkedList<SubscriberInfo> hasDeadReferences = new LinkedList<SubscriberInfo>();
+        LinkedList<FireResults> fireResults = new LinkedList<FireResults>();
         rLock.lock();
         try {
             for (Map.Entry<ActiveDescriptor<?>, Set<Class<?>>> d2cEntry : descriptor2Classes.entrySet()) {
                 for (Class<?> clazz : d2cEntry.getValue()) {
-                    hasDeadReferences.addAll(handleDescriptorToClass(d2cEntry.getKey(), clazz, eventType, topic, message));
+                    fireResults.addAll(handleDescriptorToClass(d2cEntry.getKey(), clazz, eventType, topic));
                 }
             }
         }
@@ -211,25 +192,54 @@ public class DefaultTopicDistributionService implements
             rLock.unlock();
         }
         
-        if (hasDeadReferences.isEmpty()) return null;
+        // Do everything else outside the lock
+        Set<SubscriberInfo> hasDeadReferences = new HashSet<SubscriberInfo>();
         
-        wLock.lock();
-        try {
-            for (SubscriberInfo sInfo : hasDeadReferences) {
-                Iterator<WeakReference<Object>> iterator = sInfo.targets.iterator();
-                
-                while (iterator.hasNext()) {
-                    WeakReference<Object> ref = iterator.next();
-                    if (ref.get() == null) {
-                        iterator.remove();
+        MultiException errors = null;
+        for (FireResults fireResult : fireResults) {
+            if (fireResult.target == null) {
+                hasDeadReferences.add(fireResult.subscriberInfo);
+            }
+            else {
+                try {
+                    fire(message,
+                           fireResult.subscriberMethod,
+                           fireResult.subscriberInfo,
+                           fireResult.target,
+                           locator);
+                }
+                catch (Throwable th) {
+                    if (errors == null) {
+                        errors = new MultiException(th);
+                    }
+                    else {
+                        errors.addError(th);
                     }
                 }
             }
+        }
+        
+        if (!hasDeadReferences.isEmpty()) {
+            wLock.lock();
+            try {
+                for (SubscriberInfo sInfo : hasDeadReferences) {
+                    Iterator<WeakReference<Object>> iterator = sInfo.targets.iterator();
+                
+                    while (iterator.hasNext()) {
+                        WeakReference<Object> ref = iterator.next();
+                        if (ref.get() == null) {
+                            iterator.remove();
+                        }
+                    }
+                }
             
+            }
+            finally {
+                wLock.unlock();
+            }
         }
-        finally {
-            wLock.unlock();
-        }
+        
+        // TODO:  What do we do if errors is non-null?
         
         return null;
     }
@@ -405,5 +415,18 @@ public class DefaultTopicDistributionService implements
             this.eventQualifiers = eventQualifiers;
             this.otherInjectees = otherInjectees;
         }
+    }
+    
+    private static class FireResults {
+        private final Method subscriberMethod;
+        private final SubscriberInfo subscriberInfo;
+        private final Object target;
+        
+        private FireResults(Method subscriberMethod, SubscriberInfo subscriberInfo, Object target) {
+            this.subscriberMethod = subscriberMethod;
+            this.subscriberInfo = subscriberInfo;
+            this.target = target;
+        }
+        
     }
 }
