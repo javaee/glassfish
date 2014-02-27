@@ -39,58 +39,52 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.AnnotationLiteral;
-import org.glassfish.hk2.api.messaging.Topic;
+import org.glassfish.hk2.api.Unqualified;
+import org.glassfish.hk2.api.messaging.SubscribeTo;
 
 /**
  * @author jwells
  *
  */
 @Singleton
-public class ColorPublisher {
-    @Inject
-    private Topic<Black> blackPublisher;
+public class ColorSubscriber {
+    private int gotBlack;
+    private int gotRed;
+    private int gotGreen;
+    private int notRed;
     
-    @Inject @Red
-    private Topic<Color> redPublisher;
-    
-    @Inject @Green
-    private Topic<Color> greenPublisher;
-    
-    @Inject
-    private Topic<Color> genericPublisher;
-    
-    public void publishBlackEvent() {
-        blackPublisher.publish(new Black());
+    /* package */ void subscribeToBlack(@SubscribeTo @Unqualified Color color) {
+        gotBlack++;
     }
     
-    public void publishRedEvent() {
-        redPublisher.publish(new GenericColor(Color.RED));
+    /* package */ void subscribeToRed(@SubscribeTo @Red Color color) {
+        gotRed++;
     }
     
-    public void publishGreenEvent() {
-        greenPublisher.publish(new GenericColor(Color.GREEN));
+    /* package */ void subscribeToGreen(@SubscribeTo @Green Color color) {
+        gotGreen++;
     }
     
-    public void publishGenericColor(String color) {
-        if (Color.BLACK.equals(color)) {
-            genericPublisher.publish(new GenericColor(Color.BLACK));
-        }
-        else if (Color.RED.equals(color)) {
-            genericPublisher.qualifiedWith(new RedImpl()).publish(new GenericColor(Color.RED));
-        }
-        else if (Color.GREEN.equals(color)) {
-            genericPublisher.qualifiedWith(new GreenImpl()).publish(new GenericColor(Color.GREEN));
-        }
+    /* package */ void subscribeToNotRed(@SubscribeTo @Unqualified(Red.class) Color color) {
+        notRed++;
     }
     
-    private static class RedImpl extends AnnotationLiteral<Red> implements Red  {
+    public int getBlackCount() {
+        return gotBlack;
     }
     
-    private static class GreenImpl extends AnnotationLiteral<Green> implements Green  {
+    public int getRedCount() {
+        return gotRed;
+    }
+    
+    public int getGreenCount() {
+        return gotGreen;
+    }
+    
+    public int getNotRedCount() {
+        return notRed;
     }
 
 }
