@@ -39,29 +39,41 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.messaging.Topic;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.messaging.SubscribeTo;
 
 /**
+ * Subscribes to events of different types
  * @author jwells
  *
  */
-@Service
-public class FooPublisher {
-    @Inject
-    private Topic<Foo> fooTopic;
+public class DifferentTypesSubscriber {
+    private int fooValue;
+    private int barValue;
+    private String lastColorEvent;
     
-    @Inject
-    private Topic<Bar> barTopic;
-    
-    public void publishFoo(int value) {
-        fooTopic.publish(new Foo(value));
+    /* package */ void aSubscriber(@SubscribeTo Foo foo) {
+        fooValue += foo.getFooValue();
     }
     
-    public void publishBar(int value) {
-        barTopic.publish(new Bar(value, value));
+    /* package */ void aSubscriber(@SubscribeTo Bar bar) {
+        fooValue += bar.getFooValue();
+        barValue += bar.getBarValue();
+    }
+    
+    /* package */ void aSubscriber(@SubscribeTo Color color) {
+        lastColorEvent = color.getColor();
+    }
+    
+    public int getFooValue() {
+        return fooValue;
+    }
+    
+    public int getBarValue() {
+        return barValue;
+    }
+    
+    public String getLastColorEvent() {
+        return lastColorEvent;
     }
 
 }

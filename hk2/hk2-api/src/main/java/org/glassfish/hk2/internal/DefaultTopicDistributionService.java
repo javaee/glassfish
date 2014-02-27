@@ -159,8 +159,8 @@ public class DefaultTopicDistributionService implements
             SubscriberInfo subscriberInfo = subscriberInfos.get(subscriberMethod);
                 
             Type subscriptionType = subscriberInfo.eventType;
-                
-            if (!TypeChecker.isRawTypeSafe(eventType, subscriptionType)) {
+            
+            if (!TypeChecker.isRawTypeSafe(subscriptionType, eventType)) {
                 // Not a type match
                 continue;
             }

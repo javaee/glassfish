@@ -113,5 +113,45 @@ public class BasicTopicTest {
         subscriber.check();
         
     }
+    
+    /**
+     * Tests a single subscriber subscribing to different Types
+     */
+    @Test
+    public void testEventDistributionByType() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
+                ColorPublisher.class,
+                DifferentTypesSubscriber.class);
+        
+        FooPublisher publisher = locator.getService(FooPublisher.class);
+        ColorPublisher colorPublisher = locator.getService(ColorPublisher.class);
+        
+        DifferentTypesSubscriber subscriber = locator.getService(DifferentTypesSubscriber.class);
+        
+        // Will only activate the Foo subscription, not the Bar subscription
+        publisher.publishFoo(1);
+        
+        Assert.assertEquals(1, subscriber.getFooValue());
+        Assert.assertEquals(0, subscriber.getBarValue());
+        Assert.assertNull(subscriber.getLastColorEvent());
+        
+        // Will activate both the Foo and Bar subscribers
+        publisher.publishBar(1);
+        
+        Assert.assertEquals(3, subscriber.getFooValue());  // One for Foo subscriber, One for Bar subscriber, One from previous publish
+        Assert.assertEquals(1, subscriber.getBarValue());  // One from the Bar subscriber
+        Assert.assertNull(subscriber.getLastColorEvent());
+        
+        colorPublisher.publishBlackEvent();
+        
+        Assert.assertEquals(3, subscriber.getFooValue());  // One for Foo subscriber, One for Bar subscriber, One from previous publish
+        Assert.assertEquals(1, subscriber.getBarValue());  // One from the Bar subscriber
+        Assert.assertEquals(Color.BLACK, subscriber.getLastColorEvent());
+        
+    }
 
 }
