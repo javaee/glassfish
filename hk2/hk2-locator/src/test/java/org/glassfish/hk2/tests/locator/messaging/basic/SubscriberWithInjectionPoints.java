@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -62,6 +63,9 @@ public class SubscriberWithInjectionPoints {
     private boolean optionalInjectionPointCalled = false;
     private boolean selfInjectionPointCalled = false;
     
+    @Inject @Self
+    private ActiveDescriptor<?> selfie;
+    
     @SuppressWarnings("unused")
     private void singletonSubscriber(@SubscribeTo Foo foo, SingletonService singletonService) {
         if (foo != null && singletonService != null) {
@@ -74,7 +78,7 @@ public class SubscriberWithInjectionPoints {
     
     protected void perLookupSubscriber(@SubscribeTo Foo foo, PerLookupService perLookupService) {
         if (foo != null && perLookupService != null) {
-            singletonInjectionPointCalled = true;
+            perLookupInjectionPointCalled = true;
             return;
         }
         
@@ -136,12 +140,12 @@ public class SubscriberWithInjectionPoints {
     
     @SuppressWarnings("unused")
     private void selfSubscriber(@SubscribeTo Foo foo, @Self ActiveDescriptor<?> selfie) {
-        if (foo != null && selfie != null) {
+        if (foo != null && selfie != null && this.selfie.equals(selfie)) {
             selfInjectionPointCalled = true;
             return;
         }
         
-        Assert.fail("foo=" + foo + " selfie=" + selfie + " in selfSubscriber");
+        Assert.fail("foo=" + foo + " selfie=" + selfie + " this.selfie=" + this.selfie + " in selfSubscriber");
     }
     
     public void check() {

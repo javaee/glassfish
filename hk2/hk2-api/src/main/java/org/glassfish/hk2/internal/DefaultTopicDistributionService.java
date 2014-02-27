@@ -113,10 +113,21 @@ public class DefaultTopicDistributionService implements
                     arguments[lcv] = message;
                 }
                 else {
+                    if (injectee.isSelf()) {
+                        arguments[lcv] = injectee.getInjecteeDescriptor();
+                        continue;
+                    }
+                    
                     ActiveDescriptor<?> injecteeDescriptor = locator.getInjecteeDescriptor(injectee);
                     if (injecteeDescriptor == null) {
-                        throw new IllegalStateException("Could not find injectee " + injectee + " for subscriber " +
-                          Pretty.method(subscription) + " on class " + target.getClass().getName());
+                        if (injectee.isOptional()) {
+                            arguments[lcv] = null;
+                            continue;
+                        }
+                        else {
+                            throw new IllegalStateException("Could not find injectee " + injectee + " for subscriber " +
+                                Pretty.method(subscription) + " on class " + target.getClass().getName());
+                        }
                     }
                 
                     ServiceHandle<?> handle = locator.getServiceHandle(injecteeDescriptor);
