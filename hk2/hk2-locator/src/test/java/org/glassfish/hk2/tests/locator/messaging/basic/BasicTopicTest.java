@@ -93,7 +93,7 @@ public class BasicTopicTest {
     /**
      * Tests a single subscriber with many different subscription methods
      */
-    @Test @Ignore
+    @Test
     public void testEventDistributedToAllSubscribersOnOneService() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         
