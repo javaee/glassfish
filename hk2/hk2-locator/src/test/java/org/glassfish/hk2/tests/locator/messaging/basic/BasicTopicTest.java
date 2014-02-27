@@ -51,7 +51,7 @@ import org.junit.Test;
  *
  */
 public class BasicTopicTest {
-    @Test @Ignore
+    @Test
     public void testEventDistributedToAllSubscribers() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         

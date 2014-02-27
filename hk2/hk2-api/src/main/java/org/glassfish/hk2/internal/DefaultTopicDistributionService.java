@@ -44,6 +44,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -60,16 +61,21 @@ import org.glassfish.hk2.api.InstanceLifecycleEvent;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Unqualified;
+import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.InjecteeImpl;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionModel;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.TypeChecker;
 import org.jvnet.hk2.annotations.ContractsProvided;
+import org.jvnet.hk2.annotations.Optional;
 
 /**
  * This is the default implementation of the TopicDistributionService.
@@ -84,7 +90,10 @@ public class DefaultTopicDistributionService implements
     @Inject
     private ServiceLocator locator;
     
-    private final HashMap<ActiveDescriptor<?>, List<Method>> subscribers = new HashMap<ActiveDescriptor<?>, List<Method>>();
+    private final ClassReflectionModel reflectionModel = new ClassReflectionModel();
+    
+    private final HashMap<ActiveDescriptor<?>, Set<Class<?>>> descriptor2Classes = new HashMap<ActiveDescriptor<?>, Set<Class<?>>>();
+    private final HashMap<Class<?>, List<Method>> class2Methods = new HashMap<Class<?>, List<Method>>();
     private final HashMap<Method, SubscriberInfo> subscriberInfos = new HashMap<Method, SubscriberInfo>();
     
     private void fire(Object message, Method subscription, SubscriberInfo subscriptionInfo, Object target) throws Throwable {
@@ -123,68 +132,73 @@ public class DefaultTopicDistributionService implements
             }
         }
     }
+    
+    private void handleDescriptorToClass(ActiveDescriptor<?> descriptor, Class<?> clazz, Type eventType, Topic<?> topic, Object message) {
+        MultiException errors = null;
+        
+        List<Method> subscribers = class2Methods.get(clazz);
+        
+        for (Method subscriberMethod : subscribers) {
+            SubscriberInfo subscriberInfo = subscriberInfos.get(subscriberMethod);
+                
+            Type subscriptionType = subscriberInfo.eventType;
+                
+            if (!TypeChecker.isRawTypeSafe(eventType, subscriptionType)) {
+                // Not a type match
+                continue;
+            }
+                
+            if (!subscriberInfo.eventQualifiers.isEmpty()) {
+                if (!ReflectionHelper.annotationContainsAll(topic.getTopicQualifiers(), subscriberInfo.eventQualifiers)) {
+                    // The qualifiers do not match
+                    continue;
+                }
+            }
+                
+            Iterator<WeakReference<Object>> targetIterator = subscriberInfo.targets.iterator();
+                
+            while (targetIterator.hasNext()) {
+                WeakReference<Object> targetReference = targetIterator.next();
+                    
+                Object target = targetReference.get();
+                if (target == null) {
+                    // we are the only reference, remove
+                    targetIterator.remove();
+                        
+                    continue;
+                }
+                    
+                try {
+                  fire(message, subscriberMethod, subscriberInfo, target);
+                }
+                catch (Throwable th) {
+                    if (errors == null) {
+                        errors = new MultiException(th);
+                    }
+                    else {
+                        errors.addError(th);
+                    }
+                }
+            }    
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.messaging.TopicDistributionService#distributeMessage(org.glassfish.hk2.api.messaging.Topic, java.lang.Object)
      */
     @Override
-    public void distributeMessage(Topic<?> topic, Object message)
+    public Object distributeMessage(Topic<?> topic, Object message)
             throws MultiException {
-        MultiException errors = null;
+        
         Type eventType = topic.getTopicType();
         
-        HashMap<ActiveDescriptor<?>, List<Method>> localSubscribers;
-        synchronized (this) {
-            localSubscribers = new HashMap<ActiveDescriptor<?>, List<Method>>(subscribers);
-        }
-        
-        for (Map.Entry<ActiveDescriptor<?>, List<Method>> entry : localSubscribers.entrySet()) {
-            for (Method subscriberMethod : entry.getValue()) {
-                SubscriberInfo subscriberInfo = subscriberInfos.get(subscriberMethod);
-                
-                Type subscriptionType = subscriberInfo.eventType;
-                
-                if (!TypeChecker.isRawTypeSafe(eventType, subscriptionType)) {
-                    // Not a type match
-                    continue;
-                }
-                
-                if (!subscriberInfo.eventQualifiers.isEmpty()) {
-                    if (!ReflectionHelper.annotationContainsAll(topic.getTopicQualifiers(), subscriberInfo.eventQualifiers)) {
-                        // The qualifiers do not match
-                        continue;
-                    }
-                }
-                
-                Iterator<WeakReference<Object>> targetIterator = subscriberInfo.targets.iterator();
-                
-                while (targetIterator.hasNext()) {
-                    WeakReference<Object> targetReference = targetIterator.next();
-                    
-                    Object target = targetReference.get();
-                    if (target == null) {
-                        // we are the only reference, remove
-                        targetIterator.remove();
-                        
-                        continue;
-                    }
-                    
-                    try {
-                      fire(message, subscriberMethod, subscriberInfo, target);
-                    }
-                    catch (Throwable th) {
-                        if (errors == null) {
-                            errors = new MultiException(th);
-                        }
-                        else {
-                            errors.addError(th);
-                        }
-                    }
-                }
-                
+        for (Map.Entry<ActiveDescriptor<?>, Set<Class<?>>> d2cEntry : descriptor2Classes.entrySet()) {
+            for (Class<?> clazz : d2cEntry.getValue()) {
+                handleDescriptorToClass(d2cEntry.getKey(), clazz, eventType, topic, message);
             }
         }
-
+        
+        return null;
     }
 
     @Override
@@ -195,6 +209,136 @@ public class DefaultTopicDistributionService implements
     private void postProduction(InstanceLifecycleEvent lifecycleEvent) {
         ActiveDescriptor<?> descriptor = lifecycleEvent.getActiveDescriptor();
         Object target = lifecycleEvent.getLifecycleObject();
+        if (target == null) return;
+        
+        Class<?> targetClass = target.getClass();
+        
+        Set<Class<?>> descriptorClazzes = descriptor2Classes.get(descriptor);
+        List<Method> existingMethods = null;
+        
+        if (descriptorClazzes != null) {
+            if (descriptorClazzes.contains(targetClass)) {
+                existingMethods = class2Methods.get(targetClass);
+            
+                if (existingMethods != null) {
+                    for (Method existingMethod : existingMethods) {
+                        SubscriberInfo info = subscriberInfos.get(existingMethod);
+                        info.targets.add(new WeakReference<Object>(target));
+                    }
+                
+                    return;
+                }
+            }
+            else {
+                descriptorClazzes.add(targetClass);
+            }
+        }
+        else {
+            descriptorClazzes = new HashSet<Class<?>>();
+            descriptorClazzes.add(targetClass);
+            
+            descriptor2Classes.put(descriptor, descriptorClazzes);
+        }
+        
+        existingMethods = new LinkedList<Method>();    
+        class2Methods.put(targetClass, existingMethods);
+        
+        // Have not yet seen this descriptor, must now get the information on it
+        Set<Method> allMethods = reflectionModel.getAllMethods(targetClass);
+        
+        for (Method method : allMethods) {
+            Annotation paramAnnotations[][] =method.getParameterAnnotations();
+            
+            int foundPosition = -1;
+            for (int position = 0; position < paramAnnotations.length; position++) {
+                for (Annotation paramAnnotation : paramAnnotations[position]) {
+                    if (SubscribeTo.class.equals(paramAnnotation.annotationType())) {
+                        if (foundPosition != -1) {
+                            throw new IllegalArgumentException("A method " + Pretty.method(method) + " on class " + method.getDeclaringClass().getName() +
+                                    " has more than one @SubscribeTo annotation on its parameters");
+                        }
+                        
+                        foundPosition = position;
+                    }
+                }
+            }
+                
+            if (foundPosition == -1) {
+                // Try next method
+                continue;
+            }
+                
+            // Found a method with exactly one SubscribeTo annotation!
+            SubscriberInfo si = generateSubscriberInfo(descriptor, method, foundPosition, paramAnnotations);
+            si.targets.add(new WeakReference<Object>(target));
+            
+            existingMethods.add(method);
+            subscriberInfos.put(method, si);
+        }
+        
+    }
+    
+    private static SubscriberInfo generateSubscriberInfo(ActiveDescriptor<?> injecteeDescriptor,
+            Method subscriber, int subscribeToPosition, Annotation paramAnnotations[][]) {
+        Type parameterTypes[] = subscriber.getGenericParameterTypes();
+        
+        // Get the event type
+        Type eventType = parameterTypes[subscribeToPosition];
+        
+        // Get the event qualifiers
+        Set<Annotation> eventQualifiers = new HashSet<Annotation>();
+        Annotation subscribeToAnnotations[] = paramAnnotations[subscribeToPosition];
+        for (Annotation possibleQualifier : subscribeToAnnotations) {
+            if (ReflectionHelper.isAnnotationAQualifier(possibleQualifier)) {
+                eventQualifiers.add(possibleQualifier);
+            }
+        }
+        
+        // Get the injectees for the other parameters
+        InjecteeImpl injectees[] = new InjecteeImpl[parameterTypes.length];
+        for (int lcv = 0; lcv < injectees.length; lcv++) {
+            if (lcv == subscribeToPosition) {
+                injectees[lcv] = null;
+            }
+            else {
+                InjecteeImpl ii = new InjecteeImpl();
+                
+                ii.setRequiredType(parameterTypes[lcv]);
+                
+                Set<Annotation> parameterQualifiers = new HashSet<Annotation>();
+                Annotation parameterAnnotations[] = paramAnnotations[lcv];
+                boolean isOptional = false;
+                boolean isSelf = false;
+                Unqualified unqualified = null;
+                for (Annotation possibleQualifier : parameterAnnotations) {
+                    if (ReflectionHelper.isAnnotationAQualifier(possibleQualifier)) {
+                        parameterQualifiers.add(possibleQualifier);
+                    }
+                    
+                    if (Optional.class.equals(possibleQualifier.annotationType())) {
+                        isOptional = true;
+                    }
+                    if (Self.class.equals(possibleQualifier.annotationType())) {
+                        isSelf = true;
+                    }
+                    if (Unqualified.class.equals(possibleQualifier.annotationType())) {
+                        unqualified = (Unqualified) possibleQualifier;
+                    }
+                }
+                
+                ii.setRequiredQualifiers(parameterQualifiers);
+                ii.setPosition(lcv);
+                ii.setParent(subscriber);
+                ii.setOptional(isOptional);
+                ii.setSelf(isSelf);
+                ii.setUnqualified(unqualified);
+                ii.setInjecteeDescriptor(injecteeDescriptor);
+                
+                injectees[lcv] = ii;
+            }
+        }
+        
+        return new SubscriberInfo(eventType, eventQualifiers, injectees);
         
     }
 
@@ -202,6 +346,7 @@ public class DefaultTopicDistributionService implements
     public void lifecycleEvent(InstanceLifecycleEvent lifecycleEvent) {
         switch (lifecycleEvent.getEventType()) {
         case  POST_PRODUCTION:
+            postProduction(lifecycleEvent);
             break;
         case PRE_DESTRUCTION:
             break;
@@ -211,9 +356,15 @@ public class DefaultTopicDistributionService implements
     }
     
     private static class SubscriberInfo {
-        private LinkedList<WeakReference<Object>> targets;
-        private Type eventType;
-        private Set<Annotation> eventQualifiers;
-        private InjecteeImpl otherInjectees[];  // There will be a null in the slot for the event
+        private final LinkedList<WeakReference<Object>> targets = new LinkedList<WeakReference<Object>>();
+        private final Type eventType;
+        private final Set<Annotation> eventQualifiers;
+        private final InjecteeImpl otherInjectees[];  // There will be a null in the slot for the event
+        
+        private SubscriberInfo(Type eventType, Set<Annotation> eventQualifiers, InjecteeImpl otherInjectees[]) {
+            this.eventType = eventType;
+            this.eventQualifiers = eventQualifiers;
+            this.otherInjectees = otherInjectees;
+        }
     }
 }

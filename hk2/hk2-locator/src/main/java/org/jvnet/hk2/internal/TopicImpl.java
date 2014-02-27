@@ -70,18 +70,19 @@ public class TopicImpl<T> implements Topic<T> {
      * @see org.glassfish.hk2.api.messaging.Topic#publish(java.lang.Object)
      */
     @Override
-    public void publish(T message) {
+    public Object publish(T message) {
         if (message == null) throw new IllegalArgumentException();
         
         try {
             TopicDistributionService distributor = locator.getService(TopicDistributionService.class);
             // TODO:  DeadLetterOffice
-            if (distributor == null) return;
+            if (distributor == null) return null;
             
-            distributor.distributeMessage(this, message);
+            return distributor.distributeMessage(this, message);
         }
         catch (Throwable th) {
             // TODO:  DeadLetterOffice
+            return null;
         }
 
     }
