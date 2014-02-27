@@ -39,29 +39,16 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.messaging.Topic;
-import org.jvnet.hk2.annotations.Service;
-
 /**
+ * A event type
+ * 
  * @author jwells
  *
  */
-@Service
-public class FooPublisher {
-    @Inject
-    private Topic<Foo> fooTopic;
+public interface Color {
+    public final static String BLACK = "black";
+    public final static String GREEN = "green";
+    public final static String RED = "red";
     
-    @Inject
-    private Topic<Bar> barTopic;
-    
-    public void publishFoo(int value) {
-        fooTopic.publish(new Foo(value));
-    }
-    
-    public void publishBar(int value) {
-        barTopic.publish(new Bar(value, value));
-    }
-
+    public String getColor();
 }

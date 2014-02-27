@@ -40,28 +40,21 @@
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.messaging.Topic;
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Service
-public class FooPublisher {
+@Singleton
+public class ColorPublisher {
     @Inject
-    private Topic<Foo> fooTopic;
+    private Topic<Black> blackPublisher;
     
-    @Inject
-    private Topic<Bar> barTopic;
-    
-    public void publishFoo(int value) {
-        fooTopic.publish(new Foo(value));
-    }
-    
-    public void publishBar(int value) {
-        barTopic.publish(new Bar(value, value));
+    public void publishBlackEvent() {
+        blackPublisher.publish(new Black());
     }
 
 }

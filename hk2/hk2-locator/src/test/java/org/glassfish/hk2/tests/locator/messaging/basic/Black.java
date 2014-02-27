@@ -39,29 +39,20 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.messaging.Topic;
-import org.jvnet.hk2.annotations.Service;
-
 /**
+ * This event is NOT annotated, since black is the absence of color
+ * 
  * @author jwells
  *
  */
-@Service
-public class FooPublisher {
-    @Inject
-    private Topic<Foo> fooTopic;
-    
-    @Inject
-    private Topic<Bar> barTopic;
-    
-    public void publishFoo(int value) {
-        fooTopic.publish(new Foo(value));
-    }
-    
-    public void publishBar(int value) {
-        barTopic.publish(new Bar(value, value));
+public class Black implements Color {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.tests.locator.messaging.basic.Color#getColor()
+     */
+    @Override
+    public String getColor() {
+        return BLACK;
     }
 
 }
