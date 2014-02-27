@@ -60,9 +60,10 @@ public interface TopicDistributionService {
      * 
      * @param topic The topic to which to distribute the message.  Must not be null
      * @param message The message to send to the topic.  Must not be null
+     * @return A vendor specific object to be returned to the {@link Topic#publish(Object)} method
      * @throws MultiException This method may collect the exceptions thrown by the
      * Topic subscribers and rethrow them in a MultiException
      */
-    public void distributeMessage(Topic<?> topic, Object message) throws MultiException;
+    public Object distributeMessage(Topic<?> topic, Object message) throws MultiException;
 
 }

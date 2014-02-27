@@ -53,7 +53,7 @@ public interface Topic<T> {
      * 
      * @param message The non-null message to send to all current subscribers
      */
-    public void publish(T message);
+    public Object publish(T message);
     
     /**
      * Returns an Topic that is further qualified
