@@ -55,8 +55,8 @@ public class BasicTopicTest {
     public void testEventDistributedToAllSubscribers() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         
-        ServiceLocatorUtilities.enableImmediateScope(locator);
         ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocatorUtilities.enableImmediateScope(locator);
         
         ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
                 ImmediateSubscriber.class,
