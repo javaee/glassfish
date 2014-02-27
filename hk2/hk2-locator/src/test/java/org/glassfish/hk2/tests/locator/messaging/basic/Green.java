@@ -39,58 +39,24 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.AnnotationLiteral;
-import org.glassfish.hk2.api.messaging.Topic;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class ColorPublisher {
-    @Inject
-    private Topic<Black> blackPublisher;
-    
-    @Inject @Red
-    private Topic<Color> redPublisher;
-    
-    @Inject @Green
-    private Topic<Color> greenPublisher;
-    
-    @Inject
-    private Topic<Color> genericPublisher;
-    
-    public void publishBlackEvent() {
-        blackPublisher.publish(new Black());
-    }
-    
-    public void publishRedEvent() {
-        redPublisher.publish(new GenericColor(Color.RED));
-    }
-    
-    public void publishGreenEvent() {
-        greenPublisher.publish(new GenericColor(Color.GREEN));
-    }
-    
-    public void publishGenericColor(String color) {
-        if (Color.BLACK.equals(color)) {
-            genericPublisher.publish(new GenericColor(Color.BLACK));
-        }
-        else if (Color.RED.equals(color)) {
-            genericPublisher.qualifiedWith(new RedImpl()).publish(new GenericColor(Color.RED));
-        }
-        else if (Color.GREEN.equals(color)) {
-            genericPublisher.qualifiedWith(new GreenImpl()).publish(new GenericColor(Color.GREEN));
-        }
-    }
-    
-    private static class RedImpl extends AnnotationLiteral<Red> implements Red  {
-    }
-    
-    private static class GreenImpl extends AnnotationLiteral<Green> implements Green  {
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface Green {
 
 }

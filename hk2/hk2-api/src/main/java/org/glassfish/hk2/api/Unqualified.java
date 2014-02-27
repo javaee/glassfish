@@ -42,6 +42,7 @@ package org.glassfish.hk2.api;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Annotation;
@@ -59,7 +60,7 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RUNTIME)
-@Target({METHOD, FIELD, CONSTRUCTOR})
+@Target({METHOD, FIELD, CONSTRUCTOR, PARAMETER})
 public @interface Unqualified {
     /**
      * The list of qualifiers that must NOT be present on the service.  If this list is empty

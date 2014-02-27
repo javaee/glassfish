@@ -153,5 +153,44 @@ public class BasicTopicTest {
         Assert.assertEquals(Color.BLACK, subscriber.getLastColorEvent());
         
     }
+    
+    /**
+     * Tests a single subscriber subscribing to different Types
+     */
+    @Test
+    public void testEventDistributionByQualifier() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                ColorPublisher.class,
+                ColorSubscriber.class);
+        
+        ColorPublisher colorPublisher = locator.getService(ColorPublisher.class);
+        
+        ColorSubscriber subscriber = locator.getService(ColorSubscriber.class);
+        
+        colorPublisher.publishGreenEvent();
+        
+        Assert.assertEquals(1, subscriber.getGreenCount());
+        Assert.assertEquals(0, subscriber.getRedCount());
+        Assert.assertEquals(0, subscriber.getBlackCount());
+        Assert.assertEquals(1, subscriber.getNotRedCount());
+        
+        colorPublisher.publishRedEvent();
+        
+        Assert.assertEquals(1, subscriber.getGreenCount());
+        Assert.assertEquals(1, subscriber.getRedCount());
+        Assert.assertEquals(0, subscriber.getBlackCount());
+        Assert.assertEquals(1, subscriber.getNotRedCount());
+        
+        colorPublisher.publishBlackEvent();
+        
+        Assert.assertEquals(1, subscriber.getGreenCount());
+        Assert.assertEquals(1, subscriber.getRedCount());
+        Assert.assertEquals(1, subscriber.getBlackCount());
+        Assert.assertEquals(2, subscriber.getNotRedCount());
+    }
 
 }

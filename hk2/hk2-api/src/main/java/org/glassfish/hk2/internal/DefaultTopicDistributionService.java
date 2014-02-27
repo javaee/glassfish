@@ -172,6 +172,33 @@ public class DefaultTopicDistributionService implements
                 }
             }
             
+            if ((subscriberInfo.unqualified != null) && !topic.getTopicQualifiers().isEmpty()) {
+                if (subscriberInfo.unqualified.value().length == 0) {
+                    // publisher must not have any qualifiers,
+                    // but it DOES have some, so forget it!
+                    continue;
+                }
+                else {
+                    Set<Class<? extends Annotation>> topicQualifierClasses = new HashSet<Class<? extends Annotation>>();
+                    for (Annotation topicQualifier : topic.getTopicQualifiers()) {
+                        topicQualifierClasses.add(topicQualifier.annotationType());
+                    }
+                    
+                    boolean found = false;
+                    for (Class<? extends Annotation> verbotenQualifier : subscriberInfo.unqualified.value()) {
+                        if (topicQualifierClasses.contains(verbotenQualifier)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    
+                    if (found) {
+                        // Found one of the qualifiers we are not allowed to have!
+                        continue;
+                    }
+                }
+            }
+            
             for (WeakReference<Object> targetReference : subscriberInfo.targets) {
                 Object target = targetReference.get();
                 retVal.add(new FireResults(subscriberMethod, subscriberInfo, target));
@@ -339,12 +366,18 @@ public class DefaultTopicDistributionService implements
         // Get the event type
         Type eventType = parameterTypes[subscribeToPosition];
         
-        // Get the event qualifiers
+        // Get the event qualifiers and the Unqualified
         Set<Annotation> eventQualifiers = new HashSet<Annotation>();
+        Unqualified eventUnqualified = null;
+        
         Annotation subscribeToAnnotations[] = paramAnnotations[subscribeToPosition];
         for (Annotation possibleQualifier : subscribeToAnnotations) {
             if (ReflectionHelper.isAnnotationAQualifier(possibleQualifier)) {
                 eventQualifiers.add(possibleQualifier);
+            }
+            
+            if (Unqualified.class.equals(possibleQualifier.annotationType())) {
+                eventUnqualified = (Unqualified) possibleQualifier;
             }
         }
         
@@ -392,8 +425,7 @@ public class DefaultTopicDistributionService implements
             }
         }
         
-        return new SubscriberInfo(eventType, eventQualifiers, injectees);
-        
+        return new SubscriberInfo(eventType, eventQualifiers, eventUnqualified, injectees);
     }
 
     @Override
@@ -419,11 +451,13 @@ public class DefaultTopicDistributionService implements
         private final LinkedList<WeakReference<Object>> targets = new LinkedList<WeakReference<Object>>();
         private final Type eventType;
         private final Set<Annotation> eventQualifiers;
+        private final Unqualified unqualified;
         private final InjecteeImpl otherInjectees[];  // There will be a null in the slot for the event
         
-        private SubscriberInfo(Type eventType, Set<Annotation> eventQualifiers, InjecteeImpl otherInjectees[]) {
+        private SubscriberInfo(Type eventType, Set<Annotation> eventQualifiers, Unqualified unqualified, InjecteeImpl otherInjectees[]) {
             this.eventType = eventType;
             this.eventQualifiers = eventQualifiers;
+            this.unqualified = unqualified;
             this.otherInjectees = otherInjectees;
         }
     }
