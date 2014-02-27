@@ -50,6 +50,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -91,10 +94,13 @@ public class DefaultTopicDistributionService implements
     private ServiceLocator locator;
     
     private final ClassReflectionModel reflectionModel = new ClassReflectionModel();
-    
     private final HashMap<ActiveDescriptor<?>, Set<Class<?>>> descriptor2Classes = new HashMap<ActiveDescriptor<?>, Set<Class<?>>>();
     private final HashMap<Class<?>, List<Method>> class2Methods = new HashMap<Class<?>, List<Method>>();
     private final HashMap<Method, SubscriberInfo> subscriberInfos = new HashMap<Method, SubscriberInfo>();
+    
+    private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private final WriteLock wLock = readWriteLock.writeLock();
+    private final ReadLock rLock = readWriteLock.readLock();
     
     private void fire(Object message, Method subscription, SubscriberInfo subscriptionInfo, Object target) throws Throwable {
         Object arguments[] = new Object[subscriptionInfo.otherInjectees.length];
@@ -133,7 +139,9 @@ public class DefaultTopicDistributionService implements
         }
     }
     
-    private void handleDescriptorToClass(ActiveDescriptor<?> descriptor, Class<?> clazz, Type eventType, Topic<?> topic, Object message) {
+    private List<SubscriberInfo> handleDescriptorToClass(ActiveDescriptor<?> descriptor, Class<?> clazz, Type eventType, Topic<?> topic, Object message) {
+        LinkedList<SubscriberInfo> retVal = new LinkedList<SubscriberInfo>();
+        
         MultiException errors = null;
         
         List<Method> subscribers = class2Methods.get(clazz);
@@ -154,16 +162,12 @@ public class DefaultTopicDistributionService implements
                     continue;
                 }
             }
-                
-            Iterator<WeakReference<Object>> targetIterator = subscriberInfo.targets.iterator();
-                
-            while (targetIterator.hasNext()) {
-                WeakReference<Object> targetReference = targetIterator.next();
-                    
+            
+            for (WeakReference<Object> targetReference : subscriberInfo.targets) {
                 Object target = targetReference.get();
                 if (target == null) {
                     // we are the only reference, remove
-                    targetIterator.remove();
+                    retVal.add(subscriberInfo);
                         
                     continue;
                 }
@@ -181,6 +185,8 @@ public class DefaultTopicDistributionService implements
                 }
             }    
         }
+        
+        return retVal;
     }
 
     /* (non-Javadoc)
@@ -192,10 +198,37 @@ public class DefaultTopicDistributionService implements
         
         Type eventType = topic.getTopicType();
         
-        for (Map.Entry<ActiveDescriptor<?>, Set<Class<?>>> d2cEntry : descriptor2Classes.entrySet()) {
-            for (Class<?> clazz : d2cEntry.getValue()) {
-                handleDescriptorToClass(d2cEntry.getKey(), clazz, eventType, topic, message);
+        LinkedList<SubscriberInfo> hasDeadReferences = new LinkedList<SubscriberInfo>();
+        rLock.lock();
+        try {
+            for (Map.Entry<ActiveDescriptor<?>, Set<Class<?>>> d2cEntry : descriptor2Classes.entrySet()) {
+                for (Class<?> clazz : d2cEntry.getValue()) {
+                    hasDeadReferences.addAll(handleDescriptorToClass(d2cEntry.getKey(), clazz, eventType, topic, message));
+                }
             }
+        }
+        finally {
+            rLock.unlock();
+        }
+        
+        if (hasDeadReferences.isEmpty()) return null;
+        
+        wLock.lock();
+        try {
+            for (SubscriberInfo sInfo : hasDeadReferences) {
+                Iterator<WeakReference<Object>> iterator = sInfo.targets.iterator();
+                
+                while (iterator.hasNext()) {
+                    WeakReference<Object> ref = iterator.next();
+                    if (ref.get() == null) {
+                        iterator.remove();
+                    }
+                }
+            }
+            
+        }
+        finally {
+            wLock.unlock();
         }
         
         return null;
@@ -346,7 +379,13 @@ public class DefaultTopicDistributionService implements
     public void lifecycleEvent(InstanceLifecycleEvent lifecycleEvent) {
         switch (lifecycleEvent.getEventType()) {
         case  POST_PRODUCTION:
-            postProduction(lifecycleEvent);
+            wLock.lock();
+            try {
+                postProduction(lifecycleEvent);
+            }
+            finally {
+                wLock.unlock();
+            }
             break;
         case PRE_DESTRUCTION:
             break;
