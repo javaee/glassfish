@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2014 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,80 +41,62 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	    <parent>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
         <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-public</artifactId>
+        <artifactId>hk2-parent</artifactId>
         <version>2.3.0-b02-SNAPSHOT</version>
-        <relativePath>../public</relativePath>
     </parent>
+    <artifactId>consolidatedbundle-maven-plugin</artifactId>
+    <packaging>maven-plugin</packaging>
 
-	<artifactId>consolidatedbundle-maven-plugin</artifactId>
-	<packaging>maven-plugin</packaging>
+    <name>consolidated bundle Maven plugin</name>
 
-	<name>consolidated bundle Maven plugin</name>
-	<!--
-		NOTE: This was called as uber bundle plugin in earlier
-		discussions.
-	-->
-
-	<developers>
-		<developer>
-			<id>sivakumart</id>
-			<name>Sivakumar Thyagarajan</name>
-			<url>http://blogs.sun.com/sivakumart</url>
-			<organization>Sun Microsystems, Inc.</organization>
-			<roles>
-				<role>developer</role>
-			</roles>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <id>sivakumart</id>
+            <name>Sivakumar Thyagarajan</name>
+            <url>http://blogs.sun.com/sivakumart</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
         
-        <properties>
-            <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
-        </properties>
+    <properties>
+        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
+    </properties>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assemble/distribution.xml</descriptor>
-					</descriptors>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.maven</groupId>
-			<artifactId>maven-plugin-api</artifactId>
-			<version>2.0.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.hk2</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<version>2.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.maven.shared</groupId>
-			<artifactId>maven-osgi</artifactId>
-			<version>0.2.0</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-osgi</artifactId>
+        </dependency>
+    </dependencies>
 </project>

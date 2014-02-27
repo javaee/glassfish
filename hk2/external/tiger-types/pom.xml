@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -49,13 +49,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>tiger-types-osgi</artifactId>
-    <packaging>jar</packaging>
+    
     <name>org.jvnet.tiger-types repackaged as module</name>
+    
     <build>
         <plugins>
             <plugin>
                 <!-- Configure maven-bundle-plugin which takes care of
-                     OSGi packaging -->
+                OSGi packaging -->
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <!-- We don't use extensions as this interfers with
@@ -80,9 +81,9 @@
                     <unpackBundle>true</unpackBundle>
                 </configuration>
                 <!-- We don't use extensions as this interfers with
-                     hk2-maven-plugin and that results in hk2 artifacts
-                     being copied as .hk2-jar. Instead, we configure the
-                     plugin to run as part of package phase -->
+                hk2-maven-plugin and that results in hk2 artifacts
+                being copied as .hk2-jar. Instead, we configure the
+                plugin to run as part of package phase -->
                 <executions>
                     <execution>
                         <id>osgi-bundle</id>
@@ -93,31 +94,29 @@
                     </execution>
                 </executions>
             </plugin>
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-jar-plugin</artifactId>
-              <executions>
-                  <execution>
-                      <id>create-empty-javadoc-jar</id>
-                      <goals>
-                          <goal>jar</goal>
-                      </goals>
-                      <configuration>
-                          <classesDirectory>${project.build.directory}/javadoc</classesDirectory>
-                          <classifier>javadoc</classifier>
-                      </configuration>
-                  </execution>
-              </executions>
-          </plugin>          
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-empty-javadoc-jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classesDirectory>${project.build.directory}/javadoc</classesDirectory>
+                            <classifier>javadoc</classifier>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>          
         </plugins>
     </build>
+    
     <dependencies>
         <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>tiger-types</artifactId>
-            <version>1.4</version>
-            <!-- By indicating the scope as provided, GF distribution mechanism 
-                 excludes this -->
             <scope>provided</scope>
         </dependency>
     </dependencies>

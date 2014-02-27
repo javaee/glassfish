@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2014 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -47,17 +47,24 @@
         <artifactId>osgi</artifactId>
         <version>2.3.0-b02-SNAPSHOT</version>
     </parent>
-
     <artifactId>osgi-adapter</artifactId>
+    
     <name>HK2 OSGi Adapter</name>
-    <!-- We don't use packaging type bundle as it requires us to 
-         set extension=true for bundle-plugin and that in turn interfers
-         with hk2-jar packaging type -->
-    <packaging>jar</packaging>
+
+    <developers>
+        <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <url>http://weblogs.java.net/blog/ss141213</url>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <properties>
         <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
-    <junit-version>4.4</junit-version>
     </properties>
 
     <build>
@@ -65,13 +72,6 @@
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <useDefaultManifestFile>true</useDefaultManifestFile>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -88,40 +88,25 @@
             </plugin>
         </plugins>
     </build>
+    
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>4.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>core</artifactId>
-            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
-            <version>1.6.6</version>
         </dependency>
-
     </dependencies>
-    <developers>
-        <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <url>http://weblogs.java.net/blog/ss141213</url>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 </project>

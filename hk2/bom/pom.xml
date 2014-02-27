@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013-2014 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -58,10 +58,7 @@
         <release.arguments />
         <javax.validation.version>1.1.0.Final</javax.validation.version>
         <hibernate-validator.version>5.0.0.Final</hibernate-validator.version>
-        <testng.version>6.8.7</testng.version>
-        <assertj.version>1.4.0</assertj.version>
         <javassist.version>3.18.1-GA</javassist.version>
-        <shade.version>2.2</shade.version>
     </properties>
     
     <name>HK2 Bom Pom</name>
@@ -275,12 +272,6 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-kernel-parent</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-adapter</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -338,12 +329,6 @@
                 <type>pom</type>
             </dependency>
             <dependency>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-public</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-            </dependency>            
-            <dependency>
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
                 <version>${javax.validation.version}</version>
@@ -366,15 +351,9 @@
         </dependencies>
     </dependencyManagement>
     
-    
     <build>
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>${shade.version}</version>                     
-                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
