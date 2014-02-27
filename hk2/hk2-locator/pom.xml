@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2014 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -45,9 +45,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-kernel-parent</artifactId>
+        <artifactId>hk2-parent</artifactId>
         <version>2.3.0-b02-SNAPSHOT</version>
-        <relativePath>../kernel</relativePath>
     </parent>
 
     <artifactId>hk2-locator</artifactId>
@@ -59,14 +58,7 @@
             <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <useDefaultManifestFile>true</useDefaultManifestFile>
-                </configuration>
-            </plugin>
+            </plugin>             
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -85,12 +77,12 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <!-- Turns on security manager and turns off the soft
-                         cache in order to increase code coverage
-                      -->
+                       cache in order to increase code coverage
+                    -->
                     <argLine>-Dlocal.repo=${settings.localRepository} -Dbuild.dir=${project.build.directory} -Djava.security.manager -Djava.security.policy=${project.build.directory}/test-classes/policy.txt -Dorg.jvnet.hk2.properties.useSoftReference=false</argLine>
                     <!-- -Djava.security.debug=access,failure,domain -->
                 </configuration>
-             </plugin>
+            </plugin>
 
         </plugins>
     </build>
@@ -104,36 +96,25 @@
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.3.1</version>
-            <optional>true</optional>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>aopalliance-repackaged</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-utils</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>${javassist.version}</version>
         </dependency>
     </dependencies>
+    
     <profiles>
         <profile>
             <id>jdk5</id>
@@ -145,7 +126,6 @@
                 <dependency>
                     <groupId>javax.xml.stream</groupId>
                     <artifactId>stax-api</artifactId>
-                    <version>1.0-2</version>
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
