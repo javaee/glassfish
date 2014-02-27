@@ -319,19 +319,19 @@
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_CLEAR"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE:digest-algorithm=NONE"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_CLEAR_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_BASE64:digest-algorithm=NONE:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_CLEAR_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_HEX:digest-algorithm=NONE:encoding=HEX"/>
       </antcall>
 
@@ -340,37 +340,37 @@
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_MD2_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_MD2_BASE64:digest-algorithm=MD2:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_MD5_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_MD5_BASE64:digest-algorithm=MD5:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_SHA_BASE64:digest-algorithm=SHA:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA256_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:user-table=USER_TABLE_SHA256_BASE64:digest-algorithm=SHA-256:encoding=BASE64"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA384_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=BASE64:user-table=USER_TABLE_SHA384_BASE64:digest-algorithm=SHA-384"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA512_BASE64"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=BASE64:user-table=USER_TABLE_SHA512_BASE64:digest-algorithm=SHA-512"/>
       </antcall>
 
@@ -379,37 +379,37 @@
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_MD2_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_MD2_HEX:digest-algorithm=MD2"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_MD5_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_MD5_HEX:digest-algorithm=MD5"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_SHA_HEX:digest-algorithm=SHA"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA256_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_SHA256_HEX:digest-algorithm=SHA-256"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA384_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_SHA384_HEX:digest-algorithm=SHA-384"/>
       </antcall>
 
 	  <antcall target="create-custom-auth-realm">
 	    <param name="realmname" value="JDBCRealm_SHA512_HEX"/> 
-		<param name="realmclass" value="com.sun.enterprise.security.ee.auth.realm.jdbc.JDBCRealm"/>
+		<param name="realmclass" value="com.sun.enterprise.security.auth.realm.jdbc.JDBCRealm"/>
 		<param name="realmproperties" value="datasource-jndi=${db.jndiname}:jaas-context=jdbcRealm:db-user=${db.user}:db-password=${db.pass}:user-name-column=USERNAME:password-column=PASSWORD:group-table=GROUP_TABLE:group-name-column=GROUPNAME:encoding=HEX:user-table=USER_TABLE_SHA512_HEX:digest-algorithm=SHA-512"/>
       </antcall>
 
