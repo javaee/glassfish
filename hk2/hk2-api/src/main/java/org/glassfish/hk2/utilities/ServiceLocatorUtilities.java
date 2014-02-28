@@ -42,6 +42,7 @@ package org.glassfish.hk2.utilities;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,6 +56,7 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Immediate;
@@ -281,6 +283,46 @@ public abstract class ServiceLocatorUtilities {
 
         config.commit();
 
+        return retVal;
+    }
+    
+    /**
+     * Adds the given factory descriptors to the service locator
+     * 
+     * @param locator The locator to add the factories to.  May not be null
+     * @param factories The list of factory descriptors to add to the system.  May not be null
+     * @return a list of the FactoryDescriptor descriptors that were added to the service locator
+     * @throws MultiException On a commit failure
+     */
+    public List<FactoryDescriptors> addFactoryDescriptors(ServiceLocator locator, FactoryDescriptors...factories) {
+        return addFactoryDescriptors(locator, true, factories);
+    }
+    
+    /**
+     * Adds the given factory descriptors to the service locator
+     * 
+     * @param locator The locator to add the factories to.  May not be null
+     * @param requiresDeepCopy This is false ONLY if every one of the factories given to this method can be used without a copy
+     * @param factories The list of factory descriptors to add to the system.  May not be null
+     * @return A list of the FactoryDescriptor descriptors that were added to the service locator
+     * @throws MultiException On a commit failure
+     */
+    public static List<FactoryDescriptors> addFactoryDescriptors(ServiceLocator locator, boolean requiresDeepCopy, FactoryDescriptors... factories) {
+        if (factories == null || locator == null) throw new IllegalArgumentException();
+        
+        List<FactoryDescriptors> retVal = new ArrayList<FactoryDescriptors>(factories.length);
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        for (FactoryDescriptors factory : factories) {
+            FactoryDescriptors addMe = config.bind(factory, requiresDeepCopy);
+            
+            retVal.add(addMe);
+        }
+        
+        config.commit();
+        
         return retVal;
     }
     
