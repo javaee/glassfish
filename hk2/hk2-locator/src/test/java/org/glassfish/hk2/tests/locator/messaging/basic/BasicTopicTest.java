@@ -39,8 +39,13 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.FactoryDescriptors;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -191,6 +196,43 @@ public class BasicTopicTest {
         Assert.assertEquals(1, subscriber.getRedCount());
         Assert.assertEquals(1, subscriber.getBlackCount());
         Assert.assertEquals(2, subscriber.getNotRedCount());
+    }
+    
+    /**
+     * Tests that a factory that returns different classes on subsequent
+     * calls gets events on all created objects
+     */
+    @Test
+    public void testDifferentClassFactory() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                FooPublisher.class);
+        
+        FactoryDescriptors factoryDescriptors = BuilderHelper.link(GreekFactory.class).
+            to(Greek.class.getName()).
+            in(PerLookup.class.getName()).
+            buildFactory(Singleton.class.getName());
+        
+        ServiceLocatorUtilities.addFactoryDescriptors(locator, false, factoryDescriptors);
+        
+        FooPublisher fooPublisher = locator.getService(FooPublisher.class);
+        
+        Greek greek1 = locator.getService(Greek.class);
+        Greek greek2 = locator.getService(Greek.class);
+        Greek greek3 = locator.getService(Greek.class);
+        
+        Assert.assertNotSame(greek1.getClass(), greek2.getClass());
+        Assert.assertNotSame(greek1.getClass(), greek3.getClass());
+        Assert.assertNotSame(greek2.getClass(), greek3.getClass());
+        
+        fooPublisher.publishFoo(3);
+        
+        Assert.assertEquals(3, greek1.getFooValue());
+        Assert.assertEquals(3, greek2.getFooValue());
+        Assert.assertEquals(3, greek3.getFooValue());
     }
 
 }
