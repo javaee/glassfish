@@ -1873,11 +1873,18 @@ public class Utilities {
     public static List<Injectee> getConstructorInjectees(Constructor<?> c, ActiveDescriptor<?> injecteeDescriptor) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
-        Unqualified unqualified = c.getAnnotation(Unqualified.class);
 
         List<Injectee> retVal = new LinkedList<Injectee>();
 
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
+            Unqualified unqualified = null;
+            for (int inner = 0; inner < paramAnnotations[lcv].length; inner++) {
+                if (paramAnnotations[lcv][inner].annotationType().equals(Unqualified.class)) {
+                    unqualified = (Unqualified) paramAnnotations[lcv][inner];
+                    break;
+                }
+            }
+            
             retVal.add(new InjecteeImpl(genericTypeParams[lcv],
                     getAllQualifiers(paramAnnotations[lcv]),
                     lcv,
@@ -1900,11 +1907,18 @@ public class Utilities {
     public static List<Injectee> getMethodInjectees(Method c, ActiveDescriptor<?> injecteeDescriptor) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
-        Unqualified unqualified = c.getAnnotation(Unqualified.class);
 
         List<Injectee> retVal = new LinkedList<Injectee>();
 
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
+            Unqualified unqualified = null;
+            for (int inner = 0; inner < paramAnnotations[lcv].length; inner++) {
+                if (paramAnnotations[lcv][inner].annotationType().equals(Unqualified.class)) {
+                    unqualified = (Unqualified) paramAnnotations[lcv][inner];
+                    break;
+                }
+            }
+            
             retVal.add(new InjecteeImpl(genericTypeParams[lcv],
                     getAllQualifiers(paramAnnotations[lcv]),
                     lcv,

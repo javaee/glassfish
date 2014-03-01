@@ -70,15 +70,14 @@ public class ListCommandCommand implements Command {
     
     private IterableProvider<Command> notRemoteCommands;
     
-    @Inject @Unqualified
-    private ListCommandCommand(Command firstUnqualifiedCommand) {
+    @Inject 
+    private ListCommandCommand(@Unqualified Command firstUnqualifiedCommand) {
         this.firstUnqualifiedCommand = firstUnqualifiedCommand;
         
     }
     
-    @SuppressWarnings("unused")
-    @Inject @Unqualified(Remote.class)
-    private void setNotRemoteCommands(IterableProvider<Command> notRemoteCommands) {
+    @Inject 
+    private void setNotRemoteCommands(@Unqualified(Remote.class) IterableProvider<Command> notRemoteCommands) {
         this.notRemoteCommands = notRemoteCommands;
     }
 

@@ -242,7 +242,7 @@ public class BasicTopicTest {
     /**
      * Tests that unbound services no longer get notified
      */
-    @Test @Ignore
+    @Test
     public void testUnboundServiceNoLongerGetsNotified() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         
