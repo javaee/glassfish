@@ -39,10 +39,14 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
+import java.util.List;
+
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -233,6 +237,103 @@ public class BasicTopicTest {
         Assert.assertEquals(3, greek1.getFooValue());
         Assert.assertEquals(3, greek2.getFooValue());
         Assert.assertEquals(3, greek3.getFooValue());
+    }
+    
+    /**
+     * Tests that unbound services no longer get notified
+     */
+    @Test @Ignore
+    public void testUnboundServiceNoLongerGetsNotified() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocatorUtilities.enableImmediateScope(locator);
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
+                ImmediateSubscriber.class,
+                PerLookupSubscriber.class,
+                SingletonSubscriber.class);
+        
+        FooPublisher publisher = locator.getService(FooPublisher.class);
+        SingletonSubscriber singletonSubscriber = locator.getService(SingletonSubscriber.class);
+        ImmediateSubscriber immediateSubscriber = locator.getService(ImmediateSubscriber.class);
+        
+        publisher.publishFoo(-12);
+        
+        // Now remove everything except the publisher
+        ServiceLocatorUtilities.removeOneDescriptor(locator, added.get(1));
+        ServiceLocatorUtilities.removeOneDescriptor(locator, added.get(2));
+        ServiceLocatorUtilities.removeOneDescriptor(locator, added.get(3));
+        
+        publisher.publishFoo(20);
+        
+        // These guys should still have -12 since they should NOT have received the
+        // event setting the value to 20
+        Foo singletonFoo = singletonSubscriber.getAndClearLastEvent();
+        Assert.assertNotNull(singletonFoo);
+        Assert.assertEquals(-12, singletonFoo.getFooValue());
+        
+        Foo perLookupFoo1 = singletonSubscriber.getAndClearDependentLastEvent();
+        Assert.assertNotNull(perLookupFoo1);
+        Assert.assertEquals(-12, perLookupFoo1.getFooValue());
+        
+        Foo immediateFoo = immediateSubscriber.getAndClearLastEvent();
+        Assert.assertNotNull(immediateFoo);
+        Assert.assertEquals(-12, immediateFoo.getFooValue());
+        
+        Foo perLookupFoo2 = immediateSubscriber.getAndClearDependentLastEvent();
+        Assert.assertNotNull(perLookupFoo2);
+        Assert.assertEquals(-12, perLookupFoo2.getFooValue());
+    }
+    
+    /**
+     * Tests that unbound services no longer get notified
+     */
+    @Test
+    public void testDestroyedServiceNoLongerGetsNotified() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocatorUtilities.enableImmediateScope(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
+                ImmediateSubscriber.class,
+                PerLookupSubscriber.class,
+                SingletonSubscriber.class);
+        
+        FooPublisher publisher = locator.getService(FooPublisher.class);
+        
+        ServiceHandle<SingletonSubscriber> singletonHandle = locator.getServiceHandle(SingletonSubscriber.class);
+        SingletonSubscriber singletonSubscriber = singletonHandle.getService();
+        
+        ServiceHandle<ImmediateSubscriber> immediateHandle = locator.getServiceHandle(ImmediateSubscriber.class);
+        ImmediateSubscriber immediateSubscriber = immediateHandle.getService();
+        
+        publisher.publishFoo(-13);
+        
+        // Now destroy these services
+        singletonHandle.destroy();
+        immediateHandle.destroy();
+        
+        publisher.publishFoo(21);
+        
+        // These guys should still have -13 since they should NOT have received the
+        // event setting the value to 21
+        Foo singletonFoo = singletonSubscriber.getAndClearLastEvent();
+        Assert.assertNotNull(singletonFoo);
+        Assert.assertEquals(-13, singletonFoo.getFooValue());
+        
+        Foo perLookupFoo1 = singletonSubscriber.getAndClearDependentLastEvent();
+        Assert.assertNotNull(perLookupFoo1);
+        Assert.assertEquals(-13, perLookupFoo1.getFooValue());
+        
+        Foo immediateFoo = immediateSubscriber.getAndClearLastEvent();
+        Assert.assertNotNull(immediateFoo);
+        Assert.assertEquals(-13, immediateFoo.getFooValue());
+        
+        Foo perLookupFoo2 = immediateSubscriber.getAndClearDependentLastEvent();
+        Assert.assertNotNull(perLookupFoo2);
+        Assert.assertEquals(-13, perLookupFoo2.getFooValue());
     }
 
 }
