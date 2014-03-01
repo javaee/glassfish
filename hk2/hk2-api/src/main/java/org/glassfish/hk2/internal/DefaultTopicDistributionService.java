@@ -96,8 +96,7 @@ public class DefaultTopicDistributionService implements
     
     private final ClassReflectionModel reflectionModel = new ClassReflectionModel();
     private final HashMap<ActiveDescriptor<?>, Set<Class<?>>> descriptor2Classes = new HashMap<ActiveDescriptor<?>, Set<Class<?>>>();
-    private final HashMap<Class<?>, List<Method>> class2Methods = new HashMap<Class<?>, List<Method>>();
-    private final HashMap<Method, SubscriberInfo> subscriberInfos = new HashMap<Method, SubscriberInfo>();
+    private final HashMap<ActivatorClassKey, List<SubscriberInfo>> class2Methods = new HashMap<ActivatorClassKey, List<SubscriberInfo>>();
     
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final WriteLock wLock = readWriteLock.writeLock();
@@ -154,11 +153,9 @@ public class DefaultTopicDistributionService implements
     private List<FireResults> handleDescriptorToClass(ActiveDescriptor<?> descriptor, Class<?> clazz, Type eventType, Topic<?> topic) {
         LinkedList<FireResults> retVal = new LinkedList<FireResults>();
         
-        List<Method> subscribers = class2Methods.get(clazz);
+        List<SubscriberInfo> subscribers = class2Methods.get(new ActivatorClassKey(descriptor, clazz));
         
-        for (Method subscriberMethod : subscribers) {
-            SubscriberInfo subscriberInfo = subscriberInfos.get(subscriberMethod);
-                
+        for (SubscriberInfo subscriberInfo : subscribers) {    
             Type subscriptionType = subscriberInfo.eventType;
             
             if (!TypeChecker.isRawTypeSafe(subscriptionType, eventType)) {
@@ -202,7 +199,7 @@ public class DefaultTopicDistributionService implements
             
             for (WeakReference<Object> targetReference : subscriberInfo.targets) {
                 Object target = targetReference.get();
-                retVal.add(new FireResults(subscriberMethod, subscriberInfo, target));
+                retVal.add(new FireResults(subscriberInfo.method, subscriberInfo, target));
             }    
         }
         
@@ -296,15 +293,14 @@ public class DefaultTopicDistributionService implements
         Class<?> targetClass = target.getClass();
         
         Set<Class<?>> descriptorClazzes = descriptor2Classes.get(descriptor);
-        List<Method> existingMethods = null;
+        List<SubscriberInfo> existingMethods = null;
         
         if (descriptorClazzes != null) {
             if (descriptorClazzes.contains(targetClass)) {
-                existingMethods = class2Methods.get(targetClass);
+                existingMethods = class2Methods.get(new ActivatorClassKey(descriptor, targetClass));
             
                 if (existingMethods != null) {
-                    for (Method existingMethod : existingMethods) {
-                        SubscriberInfo info = subscriberInfos.get(existingMethod);
+                    for (SubscriberInfo info : existingMethods) {
                         info.targets.add(new WeakReference<Object>(target));
                     }
                 
@@ -322,8 +318,8 @@ public class DefaultTopicDistributionService implements
             descriptor2Classes.put(descriptor, descriptorClazzes);
         }
         
-        existingMethods = new LinkedList<Method>();    
-        class2Methods.put(targetClass, existingMethods);
+        existingMethods = new LinkedList<SubscriberInfo>();    
+        class2Methods.put(new ActivatorClassKey(descriptor, targetClass), existingMethods);
         
         // Have not yet seen this descriptor, must now get the information on it
         Set<Method> allMethods = reflectionModel.getAllMethods(targetClass);
@@ -354,8 +350,7 @@ public class DefaultTopicDistributionService implements
             SubscriberInfo si = generateSubscriberInfo(descriptor, method, foundPosition, paramAnnotations);
             si.targets.add(new WeakReference<Object>(target));
             
-            existingMethods.add(method);
-            subscriberInfos.put(method, si);
+            existingMethods.add(si);
         }
         
     }
@@ -426,7 +421,7 @@ public class DefaultTopicDistributionService implements
             }
         }
         
-        return new SubscriberInfo(eventType, eventQualifiers, eventUnqualified, injectees);
+        return new SubscriberInfo(subscriber, eventType, eventQualifiers, eventUnqualified, injectees);
     }
     
     private void preDestruction(InstanceLifecycleEvent lifecycleEvent) {
@@ -437,11 +432,9 @@ public class DefaultTopicDistributionService implements
         Set<Class<?>> classes = descriptor2Classes.get(descriptor);
         
         for (Class<?> clazz : classes) {
-            List<Method> subscribers = class2Methods.get(clazz);
+            List<SubscriberInfo> subscribers = class2Methods.get(new ActivatorClassKey(descriptor, clazz));
             
-            for (Method subscriber : subscribers) {
-                SubscriberInfo subscriberInfo = subscriberInfos.get(subscriber);
-                
+            for (SubscriberInfo subscriberInfo : subscribers) {
                 Iterator<WeakReference<Object>> targetIterator = subscriberInfo.targets.iterator();
                 
                 while (targetIterator.hasNext()) {
@@ -504,13 +497,19 @@ public class DefaultTopicDistributionService implements
     }
     
     private static class SubscriberInfo {
+        private final Method method;
         private final LinkedList<WeakReference<Object>> targets = new LinkedList<WeakReference<Object>>();
         private final Type eventType;
         private final Set<Annotation> eventQualifiers;
         private final Unqualified unqualified;
         private final InjecteeImpl otherInjectees[];  // There will be a null in the slot for the event
         
-        private SubscriberInfo(Type eventType, Set<Annotation> eventQualifiers, Unqualified unqualified, InjecteeImpl otherInjectees[]) {
+        private SubscriberInfo(Method method,
+                Type eventType,
+                Set<Annotation> eventQualifiers,
+                Unqualified unqualified,
+                InjecteeImpl otherInjectees[]) {
+            this.method = method;
             this.eventType = eventType;
             this.eventQualifiers = eventQualifiers;
             this.unqualified = unqualified;
@@ -529,6 +528,31 @@ public class DefaultTopicDistributionService implements
             this.target = target;
         }
         
+    }
+    
+    private static class ActivatorClassKey {
+        private final ActiveDescriptor<?> descriptor;
+        private final Class<?> clazz;
+        private final int hashCode;
+        
+        private ActivatorClassKey(ActiveDescriptor<?> descriptor, Class<?> clazz) {
+            this.descriptor = descriptor;
+            this.clazz = clazz;
+            this.hashCode = descriptor.hashCode() ^ clazz.hashCode();
+        }
+        
+        public int hashCode() {
+            return hashCode;
+        }
+        
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof ActivatorClassKey)) return false;
+            
+            ActivatorClassKey other = (ActivatorClassKey) o;
+            
+            return descriptor.equals(other.descriptor) && clazz.equals(other.clazz) ; 
+        }
     }
 
     
