@@ -59,6 +59,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.InstanceLifecycleEvent;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
@@ -87,9 +88,9 @@ import org.jvnet.hk2.annotations.Optional;
  */
 @Singleton
 @Named(TopicDistributionService.HK2_DEFAULT_TOPIC_DISTRIBUTOR)
-@ContractsProvided({TopicDistributionService.class, InstanceLifecycleListener.class})
+@ContractsProvided({TopicDistributionService.class, InstanceLifecycleListener.class, DynamicConfigurationListener.class})
 public class DefaultTopicDistributionService implements
-        TopicDistributionService, InstanceLifecycleListener {
+        TopicDistributionService, InstanceLifecycleListener, DynamicConfigurationListener {
     @Inject
     private ServiceLocator locator;
     
@@ -427,6 +428,36 @@ public class DefaultTopicDistributionService implements
         
         return new SubscriberInfo(eventType, eventQualifiers, eventUnqualified, injectees);
     }
+    
+    private void preDestruction(InstanceLifecycleEvent lifecycleEvent) {
+        ActiveDescriptor<?> descriptor = lifecycleEvent.getActiveDescriptor();
+        Object target = lifecycleEvent.getLifecycleObject();
+        if (target == null) return;
+        
+        Set<Class<?>> classes = descriptor2Classes.get(descriptor);
+        
+        for (Class<?> clazz : classes) {
+            List<Method> subscribers = class2Methods.get(clazz);
+            
+            for (Method subscriber : subscribers) {
+                SubscriberInfo subscriberInfo = subscriberInfos.get(subscriber);
+                
+                Iterator<WeakReference<Object>> targetIterator = subscriberInfo.targets.iterator();
+                
+                while (targetIterator.hasNext()) {
+                    WeakReference<Object> ref = targetIterator.next();
+                    Object subscriberTarget = ref.get();
+                    if (subscriberTarget == null) {
+                        targetIterator.remove();
+                    }
+                    else if (subscriberTarget == target) {
+                        targetIterator.remove();
+                    }
+                }
+            }
+        }
+        
+    }
 
     @Override
     public void lifecycleEvent(InstanceLifecycleEvent lifecycleEvent) {
@@ -441,10 +472,35 @@ public class DefaultTopicDistributionService implements
             }
             break;
         case PRE_DESTRUCTION:
+            wLock.lock();
+            try {
+                preDestruction(lifecycleEvent);
+            }
+            finally {
+                wLock.unlock();
+            }
             break;
         default:
             return;
         }
+    }
+    
+    @Override
+    public void configurationChanged() {
+        List<ActiveDescriptor<?>> allDescriptors = locator.getDescriptors(BuilderHelper.allFilter());
+        
+        wLock.lock();
+        try {
+            HashSet<ActiveDescriptor<?>> removeMe = new HashSet<ActiveDescriptor<?>>(descriptor2Classes.keySet());
+            removeMe.removeAll(allDescriptors);
+            
+            // TODO:  Implement this
+        }
+        finally {
+            wLock.unlock();
+        }
+        
+        
     }
     
     private static class SubscriberInfo {
@@ -474,4 +530,6 @@ public class DefaultTopicDistributionService implements
         }
         
     }
+
+    
 }
