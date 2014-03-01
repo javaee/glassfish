@@ -487,7 +487,15 @@ public class DefaultTopicDistributionService implements
             HashSet<ActiveDescriptor<?>> removeMe = new HashSet<ActiveDescriptor<?>>(descriptor2Classes.keySet());
             removeMe.removeAll(allDescriptors);
             
-            // TODO:  Implement this
+            for (ActiveDescriptor<?> parent : removeMe) {
+                Set<Class<?>> clazzes = descriptor2Classes.remove(parent);
+                
+                if (clazzes == null) continue;
+                
+                for (Class<?> clazz : clazzes) {
+                    class2Methods.remove(new ActivatorClassKey(parent, clazz));
+                }
+            }
         }
         finally {
             wLock.unlock();

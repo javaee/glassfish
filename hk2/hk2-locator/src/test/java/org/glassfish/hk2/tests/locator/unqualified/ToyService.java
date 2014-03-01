@@ -62,9 +62,8 @@ public class ToyService {
         
     }
     
-    @SuppressWarnings("unused")
-    @Inject @Unqualified
-    private void setUnknownToy(Toy unknownToy) {
+    @Inject 
+    private void setUnknownToy(@Unqualified Toy unknownToy) {
         // The toy you get with no qualifiers or anything
         this.unknownToy = unknownToy;
         
