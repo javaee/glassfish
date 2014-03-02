@@ -335,5 +335,27 @@ public class BasicTopicTest {
         Assert.assertNotNull(perLookupFoo2);
         Assert.assertEquals(-13, perLookupFoo2.getFooValue());
     }
+    
+    /**
+     * Tests that a per lookup service is destroyed after being
+     * given to a subscription method
+     */
+    @Test
+    public void testPerLookupDestroyedAfterPassedToSubscriptionMethod() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
+                PerLookupService.class,
+                ServiceWithPerLookupSubscription.class);
+        
+        ServiceWithPerLookupSubscription subscriber = locator.getService(ServiceWithPerLookupSubscription.class);
+        FooPublisher publisher = locator.getService(FooPublisher.class);
+        
+        publisher.publishBar(10);
+        
+        Assert.assertTrue(subscriber.isSubscriptionServiceDead());
+    }
 
 }

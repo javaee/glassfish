@@ -39,38 +39,31 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
-import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.messaging.SubscribeTo;
 
 /**
- * The point of this service is to be PerLookup
+ * Here just to ensure that the PerLookupService passed to the subscribe method
+ * is in fact destroyed after the subscribe method has been called
  * 
  * @author jwells
  *
  */
-@PerLookup
-public class PerLookupService {
-    private final static Object lock = new Object();
-    private int numTimesDestroyed;
+@Singleton
+public class ServiceWithPerLookupSubscription {
+    private PerLookupService subscriptionService;
     
-    @PreDestroy
-    public void preDestroy() {
-        synchronized (lock) {
-            numTimesDestroyed++;
+    public void subscribe(@SubscribeTo Foo foo, PerLookupService perLookupService) {
+        if (perLookupService.getNumTimesDestroyed() != 0) {
+            return;
         }
+        
+        subscriptionService = perLookupService;
     }
     
-    public int getNumTimesDestroyed() {
-        synchronized (lock) {
-            return numTimesDestroyed;
-        }
-    }
-    
-    public void clear() {
-        synchronized (lock) {
-            numTimesDestroyed = 0;
-        }
+    public boolean isSubscriptionServiceDead() {
+        return subscriptionService.getNumTimesDestroyed() != 0;
     }
 
 }
