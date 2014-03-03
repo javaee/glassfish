@@ -294,10 +294,8 @@ public class BasicTopicTest {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         
         ServiceLocatorUtilities.enableTopicDistribution(locator);
-        ServiceLocatorUtilities.enableImmediateScope(locator);
         
         ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
-                ImmediateSubscriber.class,
                 PerLookupSubscriber.class,
                 SingletonSubscriber.class);
         
@@ -306,14 +304,10 @@ public class BasicTopicTest {
         ServiceHandle<SingletonSubscriber> singletonHandle = locator.getServiceHandle(SingletonSubscriber.class);
         SingletonSubscriber singletonSubscriber = singletonHandle.getService();
         
-        ServiceHandle<ImmediateSubscriber> immediateHandle = locator.getServiceHandle(ImmediateSubscriber.class);
-        ImmediateSubscriber immediateSubscriber = immediateHandle.getService();
-        
         publisher.publishFoo(-13);
         
         // Now destroy these services
         singletonHandle.destroy();
-        immediateHandle.destroy();
         
         publisher.publishFoo(21);
         
@@ -326,14 +320,6 @@ public class BasicTopicTest {
         Foo perLookupFoo1 = singletonSubscriber.getAndClearDependentLastEvent();
         Assert.assertNotNull(perLookupFoo1);
         Assert.assertEquals(-13, perLookupFoo1.getFooValue());
-        
-        Foo immediateFoo = immediateSubscriber.getAndClearLastEvent();
-        Assert.assertNotNull(immediateFoo);
-        Assert.assertEquals(-13, immediateFoo.getFooValue());
-        
-        Foo perLookupFoo2 = immediateSubscriber.getAndClearDependentLastEvent();
-        Assert.assertNotNull(perLookupFoo2);
-        Assert.assertEquals(-13, perLookupFoo2.getFooValue());
     }
     
     /**
