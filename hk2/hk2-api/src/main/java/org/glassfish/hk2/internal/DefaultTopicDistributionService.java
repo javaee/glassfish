@@ -73,6 +73,7 @@ import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DefaultTopicPublishResult;
 import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionModel;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -275,9 +276,22 @@ public class DefaultTopicDistributionService implements
             }
         }
         
-        // TODO:  What do we do if errors is non-null?
+        final int numSubscribers = fireResults.size();
+        final MultiException fErrors = errors;
         
-        return null;
+        return new DefaultTopicPublishResult() {
+
+            @Override
+            public int getNumSubscribersNotified() {
+                return numSubscribers;
+            }
+
+            @Override
+            public MultiException getExceptionsFromSubscribers() {
+                return fErrors;
+            }
+            
+        };
     }
 
     @Override

@@ -50,6 +50,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DefaultTopicPublishResult;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -79,7 +80,7 @@ public class BasicTopicTest {
         SingletonSubscriber singletonSubscriber = locator.getService(SingletonSubscriber.class);
         ImmediateSubscriber immediateSubscriber = locator.getService(ImmediateSubscriber.class);
         
-        publisher.publishFoo(12);
+        DefaultTopicPublishResult result = publisher.publishFoo(12);
         
         Foo singletonFoo = singletonSubscriber.getAndClearLastEvent();
         Assert.assertNotNull(singletonFoo);
@@ -97,6 +98,9 @@ public class BasicTopicTest {
         Assert.assertNotNull(perLookupFoo2);
         Assert.assertEquals(12, perLookupFoo2.getFooValue());
         
+        Assert.assertNotNull(result);
+        Assert.assertEquals(4, result.getNumSubscribersNotified());
+        Assert.assertNull(result.getExceptionsFromSubscribers());
     }
     
     /**

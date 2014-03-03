@@ -37,32 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.messaging.basic;
+package org.glassfish.hk2.utilities;
 
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.messaging.Topic;
-import org.glassfish.hk2.utilities.DefaultTopicPublishResult;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.MultiException;
 
 /**
+ * This is the value that will get returned from the HK2
+ * default implementation of {@link org.glassfish.hk2.api.messaging.Topic#publish(Object)}.
+ * It contains information about the number of subscribers that were
+ * notified and any errors that they threw
+ * 
  * @author jwells
  *
  */
-@Service
-public class FooPublisher {
-    @Inject
-    private Topic<Foo> fooTopic;
+public interface DefaultTopicPublishResult {
+    /**
+     * Returns the number of subscribers notified
+     * from this publish call
+     * 
+     * @return The number of subscribers notified
+     * from this publish call
+     */
+    public int getNumSubscribersNotified();
     
-    @Inject
-    private Topic<Bar> barTopic;
-    
-    public DefaultTopicPublishResult publishFoo(int value) {
-        return (DefaultTopicPublishResult) fooTopic.publish(new Foo(value));
-    }
-    
-    public DefaultTopicPublishResult  publishBar(int value) {
-        return (DefaultTopicPublishResult) barTopic.publish(new Bar(value, value));
-    }
+    /**
+     * If any subscribers threw an exception those exceptions
+     * will be found in the returned exception.  If no subscribers
+     * threw an exception this returns null
+     * 
+     * @return A multi-exception containing all of the exceptions
+     * thrown by the subscribers
+     */
+    public MultiException getExceptionsFromSubscribers();
 
 }
