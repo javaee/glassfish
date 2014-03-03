@@ -142,6 +142,12 @@ public class Utilities {
     private final static WeakHashMap<Class<?>, String> autoAnalyzerNameCache = new WeakHashMap<Class<?>, String>();
     private final static WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> annotationCache =
             new WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>();
+    
+    private final static AnnotationInformation DEFAULT_ANNOTATION_INFORMATION = new AnnotationInformation(
+            Collections.<Annotation>emptySet(),
+            false,
+            false,
+            null);
 
     /**
      * Returns the class analyzer with the given name
@@ -1825,43 +1831,44 @@ public class Utilities {
 
         return retVal;
     }
-
-
-    private static Set<Annotation> getAllQualifiers(
-            Annotation memberAnnotations[]) {
-
-        HashSet<Annotation> retVal = new HashSet<Annotation>();
-        for (Annotation annotation : memberAnnotations) {
-            if (ReflectionHelper.isAnnotationAQualifier(annotation)) {
-                retVal.add(annotation);
+    
+    private static AnnotationInformation getParamInformation(Annotation memberAnnotations[]) {
+        boolean useDefault = true;
+        
+        Set<Annotation> qualifiers = null;
+        boolean optional = false;
+        boolean self = false;
+        Unqualified unqualified = null;
+        
+        for (Annotation anno : memberAnnotations) {
+            if (ReflectionHelper.isAnnotationAQualifier(anno)) {
+                if (qualifiers == null) qualifiers = new HashSet<Annotation>();
+                qualifiers.add(anno);
+                useDefault = false;
+            }
+            else if (Optional.class.equals(anno.annotationType())) {
+                optional = true;
+                useDefault = false;
+            }
+            else if (Self.class.equals(anno.annotationType())) {
+                self = true;
+                useDefault = false;
+            }
+            else if (Unqualified.class.equals(anno.annotationType())) {
+                unqualified = (Unqualified) anno;
+                useDefault = false;
             }
         }
-
-        return retVal;
-    }
-
-    private static boolean isOptional(
-            Annotation memberAnnotations[]) {
-
-        for (Annotation annotation : memberAnnotations) {
-            if (annotation.annotationType().equals(Optional.class)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static boolean isSelf(
-            Annotation memberAnnotations[]) {
-
-        for (Annotation annotation : memberAnnotations) {
-            if (annotation.annotationType().equals(Self.class)) {
-                return true;
-            }
-        }
-
-        return false;
+        
+        if (useDefault) return DEFAULT_ANNOTATION_INFORMATION;
+        
+        if (qualifiers == null) qualifiers = DEFAULT_ANNOTATION_INFORMATION.qualifiers;
+        
+        return new AnnotationInformation(
+                qualifiers,
+                optional,
+                self,
+                unqualified);
     }
 
     /**
@@ -1877,21 +1884,15 @@ public class Utilities {
         List<Injectee> retVal = new LinkedList<Injectee>();
 
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
-            Unqualified unqualified = null;
-            for (int inner = 0; inner < paramAnnotations[lcv].length; inner++) {
-                if (paramAnnotations[lcv][inner].annotationType().equals(Unqualified.class)) {
-                    unqualified = (Unqualified) paramAnnotations[lcv][inner];
-                    break;
-                }
-            }
+            AnnotationInformation ai = getParamInformation(paramAnnotations[lcv]);
             
             retVal.add(new InjecteeImpl(genericTypeParams[lcv],
-                    getAllQualifiers(paramAnnotations[lcv]),
+                    ai.qualifiers,
                     lcv,
                     c,
-                    isOptional(paramAnnotations[lcv]),
-                    isSelf(paramAnnotations[lcv]),
-                    unqualified,
+                    ai.optional,
+                    ai.self,
+                    ai.unqualified,
                     injecteeDescriptor));
         }
 
@@ -1911,21 +1912,15 @@ public class Utilities {
         List<Injectee> retVal = new LinkedList<Injectee>();
 
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
-            Unqualified unqualified = null;
-            for (int inner = 0; inner < paramAnnotations[lcv].length; inner++) {
-                if (paramAnnotations[lcv][inner].annotationType().equals(Unqualified.class)) {
-                    unqualified = (Unqualified) paramAnnotations[lcv][inner];
-                    break;
-                }
-            }
+            AnnotationInformation ai = getParamInformation(paramAnnotations[lcv]);
             
             retVal.add(new InjecteeImpl(genericTypeParams[lcv],
-                    getAllQualifiers(paramAnnotations[lcv]),
+                    ai.qualifiers,
                     lcv,
                     c,
-                    isOptional(paramAnnotations[lcv]),
-                    isSelf(paramAnnotations[lcv]),
-                    unqualified,
+                    ai.optional,
+                    ai.self,
+                    ai.unqualified,
                     injecteeDescriptor));
         }
 
@@ -1956,15 +1951,15 @@ public class Utilities {
      */
     public static List<Injectee> getFieldInjectees(Field f, ActiveDescriptor<?> injecteeDescriptor) {
         List<Injectee> retVal = new LinkedList<Injectee>();
-        Unqualified unqualified = f.getAnnotation(Unqualified.class);
+        AnnotationInformation ai = getParamInformation(f.getAnnotations());
 
         retVal.add(new InjecteeImpl(f.getGenericType(),
                 getFieldAdjustedQualifierAnnotations(f),
                 -1,
                 f,
-                isOptional(f.getAnnotations()),
-                isSelf(f.getAnnotations()),
-                unqualified,
+                ai.optional,
+                ai.self,
+                ai.unqualified,
                 injecteeDescriptor));
 
         return retVal;
@@ -2436,5 +2431,22 @@ public class Utilities {
          * @return The possibly null set of constructor interceptors
          */
         public List<ConstructorInterceptor> getConstructorInterceptors();
+    }
+    
+    private static class AnnotationInformation {
+        private final Set<Annotation> qualifiers;
+        private final boolean optional;
+        private final boolean self;
+        private final Unqualified unqualified;
+        
+        private AnnotationInformation(Set<Annotation> qualifiers,
+                boolean optional,
+                boolean self,
+                Unqualified unqualified) {
+            this.qualifiers = qualifiers;
+            this.optional = optional;
+            this.self = self;
+            this.unqualified = unqualified;
+        }
     }
 }
