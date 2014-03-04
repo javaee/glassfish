@@ -63,6 +63,7 @@ import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.InstanceLifecycleEvent;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Self;
@@ -73,7 +74,7 @@ import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.DefaultTopicPublishResult;
+import org.glassfish.hk2.utilities.DefaultTopicDistributionErrorService;
 import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionModel;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -94,6 +95,9 @@ public class DefaultTopicDistributionService implements
         TopicDistributionService, InstanceLifecycleListener, DynamicConfigurationListener {
     @Inject
     private ServiceLocator locator;
+    
+    @Inject
+    private IterableProvider<DefaultTopicDistributionErrorService> errorHandlers;
     
     private final ClassReflectionModel reflectionModel = new ClassReflectionModel();
     private final HashMap<ActiveDescriptor<?>, Set<Class<?>>> descriptor2Classes = new HashMap<ActiveDescriptor<?>, Set<Class<?>>>();
@@ -251,6 +255,21 @@ public class DefaultTopicDistributionService implements
                     else {
                         errors.addError(th);
                     }
+                }
+            }
+        }
+        
+        if (errors != null) {
+            for (ServiceHandle<DefaultTopicDistributionErrorService> handle : errorHandlers.handleIterator()) {
+                try {
+                    handle.getService().subscribersFailed(topic, message, errors);
+                    
+                    if (handle.getActiveDescriptor().getScope().equals(PerLookup.class.getName())) {
+                        handle.destroy();
+                    }
+                }
+                catch (Throwable ignore) {
+                    // ignore it
                 }
             }
         }

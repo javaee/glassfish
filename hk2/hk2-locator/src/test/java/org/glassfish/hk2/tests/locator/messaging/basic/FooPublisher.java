@@ -42,7 +42,6 @@ package org.glassfish.hk2.tests.locator.messaging.basic;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.messaging.Topic;
-import org.glassfish.hk2.utilities.DefaultTopicPublishResult;
 import org.jvnet.hk2.annotations.Service;
 
 /**

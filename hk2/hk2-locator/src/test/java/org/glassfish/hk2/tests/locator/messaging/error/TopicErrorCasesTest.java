@@ -39,10 +39,13 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.error;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.glassfish.hk2.utilities.DefaultTopicPublishResult;
+import org.glassfish.hk2.utilities.DefaultTopicDistributionErrorService;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -60,7 +63,7 @@ public class TopicErrorCasesTest {
      * Tests that a subscribers exception does not stop another
      * subscriber from getting the message
      */
-    @Test @Ignore
+    @Test
     public void testSubscriberThrows() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         
@@ -68,22 +71,42 @@ public class TopicErrorCasesTest {
         
         ServiceLocatorUtilities.addClasses(locator, SubscriberThrowsException.class,
                 Subscriber.class,
-                Publisher.class);
+                Publisher.class,
+                ErrorHandler.class);
         
         locator.getService(SubscriberThrowsException.class);
         Subscriber subscriber = locator.getService(Subscriber.class);
         Publisher publisher = locator.getService(Publisher.class);
+        ErrorHandler errorHandler = locator.getService(ErrorHandler.class);
         
-        DefaultTopicPublishResult result = null;
-        publisher.publish();
+        MyEvent event = new MyEvent();
+        publisher.publish(event);
         
         // Ensures that other subscribers get the event
         Assert.assertEquals(1, subscriber.getNumEvents());
         
-        Assert.assertEquals(2, result.getNumSubscribersNotified());
+        MultiException me = errorHandler.lastError;
+        Assert.assertNotNull(me);
         
-        MultiException me = result.getExceptionsFromSubscribers();
         Assert.assertTrue(me.toString().contains(EXPECTED_MESSAGE));
+        
+        Assert.assertEquals(event, errorHandler.lastMessage);
+        Assert.assertEquals(publisher.getTopic(), errorHandler.lastTopic);
+    }
+    
+    @Singleton
+    private static class ErrorHandler implements DefaultTopicDistributionErrorService {
+        private Topic<?> lastTopic;
+        private Object lastMessage;
+        private MultiException lastError;
+
+        @Override
+        public void subscribersFailed(Topic<?> topic, Object message,
+                MultiException error) {
+            lastTopic = topic;
+            lastMessage = message;
+            lastError = error;
+        }
         
     }
 
