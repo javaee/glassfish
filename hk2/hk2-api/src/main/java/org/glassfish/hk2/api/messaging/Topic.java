@@ -52,8 +52,10 @@ public interface Topic<T> {
      * Publishes a message to all subscribers
      * 
      * @param message The non-null message to send to all current subscribers
+     * @throws IllegalStateException If there is no implementation of
+     * {@link TopicDistributionService} to do the distribution of the message
      */
-    public Object publish(T message);
+    public void publish(T message);
     
     /**
      * Returns an Topic that is further qualified

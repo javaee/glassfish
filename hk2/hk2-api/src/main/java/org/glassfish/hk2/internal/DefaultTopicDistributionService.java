@@ -211,8 +211,7 @@ public class DefaultTopicDistributionService implements
      * @see org.glassfish.hk2.api.messaging.TopicDistributionService#distributeMessage(org.glassfish.hk2.api.messaging.Topic, java.lang.Object)
      */
     @Override
-    public Object distributeMessage(Topic<?> topic, Object message)
-            throws MultiException {
+    public void distributeMessage(Topic<?> topic, Object message) {
         
         Type eventType = topic.getTopicType();
         
@@ -276,22 +275,6 @@ public class DefaultTopicDistributionService implements
             }
         }
         
-        final int numSubscribers = fireResults.size();
-        final MultiException fErrors = errors;
-        
-        return new DefaultTopicPublishResult() {
-
-            @Override
-            public int getNumSubscribersNotified() {
-                return numSubscribers;
-            }
-
-            @Override
-            public MultiException getExceptionsFromSubscribers() {
-                return fErrors;
-            }
-            
-        };
     }
 
     @Override

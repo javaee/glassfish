@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.api.messaging;
 
-import org.glassfish.hk2.api.MultiException;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -56,14 +55,14 @@ public interface TopicDistributionService {
     public final static String HK2_DEFAULT_TOPIC_DISTRIBUTOR = "HK2TopicDistributionService";
     
     /**
-     * Must distribute the message to all of the matching topic subscribers
+     * Must distribute the message to all of the matching topic subscribers.  Any exception
+     * thrown from this method will be ignored.  Instead error handling should
+     * be performed by the implementation of this message
      * 
      * @param topic The topic to which to distribute the message.  Must not be null
      * @param message The message to send to the topic.  Must not be null
      * @return A vendor specific object to be returned to the {@link Topic#publish(Object)} method
-     * @throws MultiException This method may collect the exceptions thrown by the
-     * Topic subscribers and rethrow them in a MultiException
      */
-    public Object distributeMessage(Topic<?> topic, Object message) throws MultiException;
+    public void distributeMessage(Topic<?> topic, Object message);
 
 }

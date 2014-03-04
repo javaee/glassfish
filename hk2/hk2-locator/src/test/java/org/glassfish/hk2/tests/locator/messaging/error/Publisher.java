@@ -57,8 +57,8 @@ public class Publisher {
         this.publisher = publisher;
     }
     
-    public Object publish() {
-        return publisher.publish(new MyEvent());
+    public void publish() {
+        publisher.publish(new MyEvent());
     }
 
 }
