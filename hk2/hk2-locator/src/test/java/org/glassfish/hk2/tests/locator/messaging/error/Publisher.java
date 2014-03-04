@@ -57,8 +57,12 @@ public class Publisher {
         this.publisher = publisher;
     }
     
-    public void publish() {
-        publisher.publish(new MyEvent());
+    public void publish(MyEvent event) {
+        publisher.publish(event);
+    }
+    
+    public Topic<MyEvent> getTopic() {
+        return publisher;
     }
 
 }

@@ -40,34 +40,30 @@
 package org.glassfish.hk2.utilities;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.messaging.Topic;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This is the value that will get returned from the HK2
- * default implementation of {@link org.glassfish.hk2.api.messaging.Topic#publish(Object)}.
- * It contains information about the number of subscribers that were
- * notified and any errors that they threw
+ * When using the TopicDistributionService added with
+ * {@link ServiceLocatorUtilities#enableTopicDistribution(org.glassfish.hk2.api.ServiceLocator)}
+ * if a subscriber throws an exception this service will be called.
+ * All implementation of this service will be called.
  * 
  * @author jwells
- *
  */
-public interface DefaultTopicPublishResult {
+@Contract
+public interface DefaultTopicDistributionErrorService {
     /**
-     * Returns the number of subscribers notified
-     * from this publish call
+     * This method will be called once per {@link Topic#publish(Object)}
+     * call after the message has been distributed to all subscribers.
+     * The {@link MultiException} will contain the errors from any
+     * subscribers that threw exceptions.  This method will
+     * not be called if no subscribers threw exceptions
      * 
-     * @return The number of subscribers notified
-     * from this publish call
+     * @param topic The topic that the message was sent to
+     * @param message The message that was sent to the topic
+     * @param error The exceptions thrown by the subscribers of this {@link Topic}
      */
-    public int getNumSubscribersNotified();
-    
-    /**
-     * If any subscribers threw an exception those exceptions
-     * will be found in the returned exception.  If no subscribers
-     * threw an exception this returns null
-     * 
-     * @return A multi-exception containing all of the exceptions
-     * thrown by the subscribers
-     */
-    public MultiException getExceptionsFromSubscribers();
+    public void subscribersFailed(Topic<?> topic, Object message, MultiException error);
 
 }
