@@ -57,12 +57,12 @@ public class FooPublisher {
     @Inject
     private Topic<Bar> barTopic;
     
-    public DefaultTopicPublishResult publishFoo(int value) {
-        return (DefaultTopicPublishResult) fooTopic.publish(new Foo(value));
+    public void publishFoo(int value) {
+        fooTopic.publish(new Foo(value));
     }
     
-    public DefaultTopicPublishResult  publishBar(int value) {
-        return (DefaultTopicPublishResult) barTopic.publish(new Bar(value, value));
+    public void  publishBar(int value) {
+        barTopic.publish(new Bar(value, value));
     }
 
 }

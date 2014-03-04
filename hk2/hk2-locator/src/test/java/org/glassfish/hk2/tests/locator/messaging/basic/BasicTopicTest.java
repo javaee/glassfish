@@ -80,7 +80,7 @@ public class BasicTopicTest {
         SingletonSubscriber singletonSubscriber = locator.getService(SingletonSubscriber.class);
         ImmediateSubscriber immediateSubscriber = locator.getService(ImmediateSubscriber.class);
         
-        DefaultTopicPublishResult result = publisher.publishFoo(12);
+        publisher.publishFoo(12);
         
         Foo singletonFoo = singletonSubscriber.getAndClearLastEvent();
         Assert.assertNotNull(singletonFoo);
@@ -97,10 +97,6 @@ public class BasicTopicTest {
         Foo perLookupFoo2 = immediateSubscriber.getAndClearDependentLastEvent();
         Assert.assertNotNull(perLookupFoo2);
         Assert.assertEquals(12, perLookupFoo2.getFooValue());
-        
-        Assert.assertNotNull(result);
-        Assert.assertEquals(4, result.getNumSubscribersNotified());
-        Assert.assertNull(result.getExceptionsFromSubscribers());
     }
     
     /**
