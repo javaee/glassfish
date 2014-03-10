@@ -84,7 +84,21 @@ public interface Topic<T> {
      */
     public Topic<T> qualifiedWith(Annotation... qualifiers);
     
+    /**
+     * Gets the type of the topic, in order to match the message
+     * to subscribers
+     * 
+     * @return the Type of this topic.  Will not return null
+     */
     public Type getTopicType();
     
+    /**
+     * The qualifiers associated with this Topic.  Messages
+     * should only be distributed to subscribers that have
+     * matching qualifiers
+     * 
+     * @return the non-null but possibly empty set of
+     * qualifiers associated with this Topic
+     */
     public Set<Annotation> getTopicQualifiers();
 }
