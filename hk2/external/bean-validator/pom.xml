@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2014 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -49,16 +49,19 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.glassfish.hk2.external</groupId>
     <artifactId>bean-validator</artifactId>
-    <!-- Don't use bundle packaging. There are issues in using
-         maven-bundle-plugin and hk2-maven-plugin together -->
-    <packaging>jar</packaging>
-    <properties>
-       <slf4j.version>1.6</slf4j.version>
-       <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
-       <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
-      <jtype.version>0.1.0</jtype.version>
-    </properties>
+
     <name>Validation API (JSR 349) version ${javax.validation.version}, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
+
+    <developers>
+        <developer>
+            <id>ss141213</id>
+            <name>Sahoo</name>
+            <organization>Sun Microsystems, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
     <build>
         <plugins>
@@ -69,15 +72,15 @@
                     <instructions>
                         <Embed-Dependency>
                             <!-- Only specify root artifacts that need to be embedded, everything else
-                                 will be pulled in automatically based on Private-Package settings. -->
+                            will be pulled in automatically based on Private-Package settings. -->
                             *; artifactId=hibernate-validator; inline=true
                         </Embed-Dependency>
                         <Export-Package>
                             javax.validation.*; version=${javax.validation.osgi.version},
                             org.hibernate.validator.*; version=${hibernate-validator.version},
                             org.hibernate.validator.internal.cdi; version=${hibernate-validator.version},
-			    org.hibernate.validator.internal.cdi.interceptor; version=${hibernate-validator.version},
-			    org.glassfish.validation; version=${hibernate-validator.version}
+                            org.hibernate.validator.internal.cdi.interceptor; version=${hibernate-validator.version},
+                            org.glassfish.validation; version=${hibernate-validator.version}
                         </Export-Package>
 
                         <Private-Package>
@@ -104,13 +107,13 @@
                             org.jsoup.*; resolution:=optional; version="[1.5.2,2.0.0)",
                             org.apache.log4j; resolution:=optional,
                             org.jboss.logmanager; resolution:=optional,
-			    javax.el;version="[2.2,3]",
+                            javax.el;version="[2.2,3]",
                             javax.enterprise.context.*; resolution:=optional,
                             javax.enterprise.event.*; resolution:=optional,
                             javax.enterprise.inject.*; resolution:=optional,
                             javax.enterprise.util.*; resolution:=optional,
-			    javax.interceptor.*; resolution:=optional,
-			    org.hibernate.validator.*; version=${hibernate-validator.version},
+                            javax.interceptor.*; resolution:=optional,
+                            org.hibernate.validator.*; version=${hibernate-validator.version},
                             *
                         </Import-Package>
                         <!--
@@ -149,39 +152,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-source</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>${project.build.directory}/alternateLocation</source>
-                            </sources>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>${project.build.directory}/hibernate-validator-javadoc.jar</file>
-                                    <classifier>javadoc</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>                        
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
@@ -192,7 +162,7 @@
                             <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/alternateLocation</outputDirectory>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
                             <stripVersion>true</stripVersion>
                             <artifactItems>
                                 <artifactItem>
@@ -205,48 +175,34 @@
                             </artifactItems>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>get-javadoc</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <stripVersion>true</stripVersion>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.hibernate</groupId>
-                                    <artifactId>hibernate-validator</artifactId>
-                                    <version>${hibernate-validator.version}</version>
-                                    <classifier>javadoc</classifier>
-                                    <overWrite>false</overWrite>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>            
         </plugins>
     </build>
     <dependencies>
-        <!-- Mark them as optional so that GF distribution mechanism
-             won't package them. It is sufficient to package the wrapped jar.
-        -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate-validator.version}</version>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <!-- 
                 Although hibernate validator uses maven-shade-plugin to repackage com.googlecode.jtype classes
@@ -258,25 +214,12 @@
             -->
             <groupId>com.googlecode.jtype</groupId>
             <artifactId>jtype</artifactId>
-            <version>${jtype.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
-            <version>${org.jboss.logging.version}</version>
             <optional>true</optional>
         </dependency>
-
     </dependencies>
-    <developers>
-        <developer>
-            <id>ss141213</id>
-            <name>Sahoo</name>
-            <organization>Sun Microsystems, Inc.</organization>
-            <roles>
-                <role>developer</role>
-            </roles>
-        </developer>
-    </developers>
 </project>

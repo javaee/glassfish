@@ -71,6 +71,4 @@ public class Kernel {
         System.out.println("Kernel shutting down. Proceeding to: " + StartupRunLevels.SHUTDOWN);
         controller.proceedTo(StartupRunLevels.SHUTDOWN);
     }
-
-
 }
