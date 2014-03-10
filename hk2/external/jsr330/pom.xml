@@ -50,7 +50,9 @@
     <groupId>org.glassfish.hk2.external</groupId>
     <artifactId>javax.inject</artifactId>
 
-    <name>Injection API (JSR 330) version ${javax.inject.version} repackaged as OSGi bundle</name>
+    <name>javax.inject:${javax-inject.version} as OSGi bundle</name>
+    <description>Injection API (JSR 330) version ${javax.inject.version} repackaged as OSGi bundle</description>
+
 
     <build>
         <plugins>

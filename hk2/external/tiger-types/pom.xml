@@ -50,7 +50,7 @@
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>tiger-types-osgi</artifactId>
     
-    <name>org.jvnet.tiger-types repackaged as module</name>
+    <name>Tiger Types as OSGi bundle</name>
     
     <build>
         <plugins>
@@ -126,7 +126,7 @@
                 <executions>
                     <execution>
                         <id>add-source</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>

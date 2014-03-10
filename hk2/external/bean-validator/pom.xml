@@ -50,7 +50,8 @@
     <groupId>org.glassfish.hk2.external</groupId>
     <artifactId>bean-validator</artifactId>
 
-    <name>Validation API (JSR 349) version ${javax.validation.version}, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
+    <name>javax.validation:${javax.validation.version} as OSGi bundle</name>
+    <description>JSR 349's RI, Hibernate Validator version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</description>
 
     <developers>
         <developer>
@@ -183,7 +184,7 @@
                 <executions>
                     <execution>
                         <id>add-source</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
