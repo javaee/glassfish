@@ -54,7 +54,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  */
 public class MethodWrapperImpl implements MethodWrapper {
     private final Method method;
-    private int hashCode;
+    private final int hashCode;
     
     public MethodWrapperImpl(Method method) {
         if (method == null) throw new IllegalArgumentException();
