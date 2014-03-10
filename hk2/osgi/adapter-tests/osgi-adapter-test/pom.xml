@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2014 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -51,130 +51,6 @@
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>osgi-adapter-test</artifactId>
     <name>HK2 OSGi Adapter Test</name>
-    <packaging>jar</packaging>
-
-  <properties>
-    <junit-version>4.4</junit-version>
-    <pax-exam-version>1.2.4</pax-exam-version>
-  </properties>
-
-    <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.12</version>
-            <configuration>
-                <systemPropertyVariables>
-                   <project.version>${project.version}</project.version>
-                </systemPropertyVariables>
-            </configuration>
-          </plugin>
-       </plugins>
-    </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>test-module-startup</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>contract-bundle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>no-hk2-bundle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>sdp-management-bundle</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-utils</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2.external</groupId>
-            <artifactId>aopalliance-repackaged</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-      <!-- Pax-Exam dependencies -->
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam</artifactId>
-        <version>${pax-exam-version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam-junit</artifactId>
-        <version>${pax-exam-version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam-container-default</artifactId>
-        <version>${pax-exam-version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.exam</groupId>
-        <artifactId>pax-exam-junit-extender-impl</artifactId>
-        <version>${pax-exam-version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>org.apache.felix.main</artifactId>
-        <version>3.0.6</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>1.5.8</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>com.springsource.org.junit</artifactId>
-        <version>4.4.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>org.apache.felix.configadmin</artifactId>
-        <version>1.2.8</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.logging</groupId>
-        <artifactId>pax-logging-api</artifactId>
-        <version>1.6.1</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.ops4j.pax.logging</groupId>
-        <artifactId>pax-logging-service</artifactId>
-        <version>1.6.1</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <!-- JUnit dependencies -->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit-version}</version>
-      </dependency>
-    </dependencies>
 
     <repositories>
         <repository>
@@ -182,11 +58,105 @@
             <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
             <url>http://repository.springsource.com/maven/bundles/release</url>
         </repository>
-
         <repository>
             <id>com.springsource.repository.bundles.external</id>
             <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
             <url>http://repository.springsource.com/maven/bundles/external</url>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <project.version>${project.version}</project.version>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>test-module-startup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>contract-bundle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>no-hk2-bundle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>sdp-management-bundle</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>aopalliance-repackaged</artifactId>
+        </dependency>
+        
+        <!-- Pax-Exam dependencies -->
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-container-default</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.exam</groupId>
+            <artifactId>pax-exam-junit-extender-impl</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit</groupId>
+            <artifactId>com.springsource.org.junit</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.configadmin</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-service</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
 </project>
