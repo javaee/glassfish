@@ -82,17 +82,12 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>osgiversion-maven-plugin</artifactId>
+            </plugin>             
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.1.0</version>
-                <configuration>
-                    <instructions>
-                        <!-- Read all the configuration from osgi.bundle file, if it exists.
-                             See Felix-699 to find out why we use ${basedir}.
-                        -->
-                        <_include>-${basedir}/osgi.bundle</_include>
-                    </instructions>
-                </configuration>
                 <executions>
                    <execution>
                       <id>bundle-manifest</id>
