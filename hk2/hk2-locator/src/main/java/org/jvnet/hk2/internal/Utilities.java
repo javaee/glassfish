@@ -114,7 +114,6 @@ import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.ClassReflectionModel;
 import org.glassfish.hk2.utilities.reflection.Constants;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -135,6 +134,19 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
+    private final static String USE_SOFT_REFERENCE_PROPERTY = "org.jvnet.hk2.properties.useSoftReference";
+    private final static boolean USE_SOFT_REFERENCE;
+    static {
+        USE_SOFT_REFERENCE = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+
+            @Override
+            public Boolean run() {
+                return Boolean.parseBoolean(System.getProperty(USE_SOFT_REFERENCE_PROPERTY, "true"));
+            }
+
+        });
+    }
+    
     private final static Object lock = new Object();
     
     private final static WeakHashMap<Class<?>, String> autoAnalyzerNameCache = new WeakHashMap<Class<?>, String>();
@@ -1391,7 +1403,7 @@ public class Utilities {
             Annotation[] hardenedElementAnnotations = elementAnnotationsReference.get();
             Annotation[][] hardenedParamAnnotations = paramAnnotationsReference.get();
             
-            if (!ClassReflectionModel.USE_SOFT_REFERENCE || (hardenedElementAnnotations == null) || (hardenedParamAnnotations == null)) {
+            if (!USE_SOFT_REFERENCE || (hardenedElementAnnotations == null) || (hardenedParamAnnotations == null)) {
                 return computeAEAI(ae);
             }
             
