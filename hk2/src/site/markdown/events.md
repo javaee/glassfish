@@ -14,7 +14,7 @@ subscribers.  A message can be any java object.
 
 A [Topic][topic] is a special HK2 service that can be injected into a service or can be looked up from
 a [ServiceLocator][servicelocator].  It normally is injected as a ParameterizedType, where the generic
-Type is the class of the event that will be published.  So if there is a class called ImportantEvent
+Type is the class of the event that will be published.  So if there is an event class called ImportantEvent
 that is to be distributed to subscribers, the injection point for the [Topic][topic] might look like this:
 
 ```java
@@ -75,10 +75,7 @@ and has a priority of 0.  It is possible to enhance the behavior of the default
 the default [TopicDistributionService][topicdistributionservice].  Then the default implementation
 can be delegated to by the custom enhanced [TopicDistributionService][topicdistributionservice].
 
-The default [TopicDistributionService][topicdistributionservice] will only distribute events
-to services whose instances were created after the [ServiceLocatorUtilities][servicelocatorutilities]
-method enableTopicDistribution has been called.  Any subscribers on a service that is disposed or
-has had its associated descriptor removed will not be invoked.
+
 
 ### Subscribers
 
@@ -107,7 +104,11 @@ an ImportantEvent.
 In the default implementation the subscribers will be called on the same thread as the caller of
 the [Topic][topic] publish method.  Any exceptions thrown by subscribers (or for other reasons such
 as an injection point not being available) will be given to all registered implementations of the 
-[DefaultTopicDistributionErrorService][defaulttopicdistributionerrorservice].
+[DefaultTopicDistributionErrorService][defaulttopicdistributionerrorservice].  The default
+[TopicDistributionService][topicdistributionservice] will only distribute events
+to services whose instances were created after the [ServiceLocatorUtilities][servicelocatorutilities]
+method enableTopicDistribution has been called.  Any subscribers on a service that is disposed or
+has had its associated descriptor removed will not be invoked.
 
 A method parameter with [@SubscribeTo][subscribeto] can also take qualifiers.  A qualifier will
 restrict the set of messages that will be given to the subscription method.  For example the
