@@ -214,6 +214,8 @@
         <fontawesome.version>3.2.1</fontawesome.version>
         <highlightjs.version>7.5</highlightjs.version>
         <jquery.version>1.9.1</jquery.version>
+        <jdk.version>1.7.0-09</jdk.version>
+        <mvn.version>3.0.3</mvn.version>
     </properties>
     
     <modules>
@@ -459,6 +461,30 @@
                     <useDefaultManifestFile>true</useDefaultManifestFile>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireJavaVersion>
+                                    <version>[${jdk.version},)</version>
+                                    <message>You need JDK ${jdk.version} and above!</message>
+                                </requireJavaVersion>
+                                <requireMavenVersion>
+                                    <version>[${mvn.version},)</version>
+                                    <message>You need Maven ${mvn.version} or above!</message>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>            
         </plugins>
         <pluginManagement>
             <plugins>
