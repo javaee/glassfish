@@ -76,10 +76,12 @@ import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DefaultTopicDistributionErrorService;
 import org.glassfish.hk2.utilities.InjecteeImpl;
-import org.glassfish.hk2.utilities.reflection.ClassReflectionModel;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.TypeChecker;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Optional;
 
@@ -99,7 +101,7 @@ public class DefaultTopicDistributionService implements
     @Inject
     private IterableProvider<DefaultTopicDistributionErrorService> errorHandlers;
     
-    private final ClassReflectionModel reflectionModel = new ClassReflectionModel();
+    private final ClassReflectionHelper reflectionHelper = new ClassReflectionHelperImpl();
     private final HashMap<ActiveDescriptor<?>, Set<Class<?>>> descriptor2Classes = new HashMap<ActiveDescriptor<?>, Set<Class<?>>>();
     private final HashMap<ActivatorClassKey, List<SubscriberInfo>> class2Methods = new HashMap<ActivatorClassKey, List<SubscriberInfo>>();
     
@@ -338,17 +340,18 @@ public class DefaultTopicDistributionService implements
         class2Methods.put(new ActivatorClassKey(descriptor, targetClass), existingMethods);
         
         // Have not yet seen this descriptor, must now get the information on it
-        Set<Method> allMethods = reflectionModel.getAllMethods(targetClass);
+        Set<MethodWrapper> allMethods = reflectionHelper.getAllMethods(targetClass);
         
-        for (Method method : allMethods) {
-            Annotation paramAnnotations[][] =method.getParameterAnnotations();
+        for (MethodWrapper methodWrapper : allMethods) {
+            Annotation paramAnnotations[][] =methodWrapper.getMethod().getParameterAnnotations();
             
             int foundPosition = -1;
             for (int position = 0; position < paramAnnotations.length; position++) {
                 for (Annotation paramAnnotation : paramAnnotations[position]) {
                     if (SubscribeTo.class.equals(paramAnnotation.annotationType())) {
                         if (foundPosition != -1) {
-                            throw new IllegalArgumentException("A method " + Pretty.method(method) + " on class " + method.getDeclaringClass().getName() +
+                            throw new IllegalArgumentException("A method " + Pretty.method(methodWrapper.getMethod()) + " on class " +
+                                methodWrapper.getMethod().getDeclaringClass().getName() +
                                     " has more than one @SubscribeTo annotation on its parameters");
                         }
                         
@@ -363,7 +366,7 @@ public class DefaultTopicDistributionService implements
             }
                 
             // Found a method with exactly one SubscribeTo annotation!
-            SubscriberInfo si = generateSubscriberInfo(descriptor, method, foundPosition, paramAnnotations);
+            SubscriberInfo si = generateSubscriberInfo(descriptor, methodWrapper.getMethod(), foundPosition, paramAnnotations);
             si.targets.add(new WeakReference<Object>(target));
             
             existingMethods.add(si);
