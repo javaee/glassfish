@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.utilities.reflection;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -56,6 +58,14 @@ public interface ClassReflectionHelper {
      * @return The set of all methods on this class (and all subclasses)
      */
     public Set<MethodWrapper> getAllMethods(Class<?> clazz);
+    
+    /**
+     * Gets all fields for a class (taking class heirarchy into account)
+     * 
+     * @param clazz The class to analyze for all fields
+     * @return The set of all fields on this class (and all subclasses)
+     */
+    public Set<Field> getAllFields(Class<?> clazz);
     
     /**
      * Finds the postConstruct method on this class

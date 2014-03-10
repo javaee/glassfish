@@ -135,11 +135,7 @@ import org.jvnet.hk2.annotations.Service;
  *
  */
 public class Utilities {
-    
-    
     private final static Object lock = new Object();
-    
-    private final static ClassReflectionModel classModelCreaky = new ClassReflectionModel();
     
     private final static WeakHashMap<Class<?>, String> autoAnalyzerNameCache = new WeakHashMap<Class<?>, String>();
     private final static WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> annotationCache =
@@ -1293,14 +1289,9 @@ public class Utilities {
                                                    ServiceLocatorImpl locator,
                                                    Collector errorCollector) {
         LinkedHashSet<Field> retVal = new LinkedHashSet<Field>();
+        ClassReflectionHelper crh = locator.getClassReflectionHelper();
         
-        LinkedList<Throwable> exceptions = new LinkedList<Throwable>();
-        Set<Field> fields = classModelCreaky.getAllFields(annotatedType, exceptions);
-        if (!exceptions.isEmpty()) {
-            for (Throwable th : exceptions) {
-                errorCollector.addThrowable(th);
-            }
-        }
+        Set<Field> fields = crh.getAllFields(annotatedType);
 
         for (Field field : fields) {
             if (!hasInjectAnnotation(locator, field, false)) {

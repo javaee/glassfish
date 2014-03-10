@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.utilities.reflection.internal;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -63,6 +64,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
     private final static String CONVENTION_PRE_DESTROY = "preDestroy";
     
     private final static Set<MethodWrapper> OBJECT_METHODS = getObjectMethods();
+    private final static Set<Field> OBJECT_FIELDS = getObjectFields();
     
     private final ConcurrentHashMap<Class<?>, MethodPresentValue> postConstructCache =
             new ConcurrentHashMap<Class<?>, MethodPresentValue>();
@@ -70,6 +72,8 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
             new ConcurrentHashMap<Class<?>, MethodPresentValue>();
     private final ConcurrentHashMap<Class<?>, Set<MethodWrapper>> methodCache =
             new ConcurrentHashMap<Class<?>, Set<MethodWrapper>>();
+    private final ConcurrentHashMap<Class<?>, Set<Field>> fieldCache =
+            new ConcurrentHashMap<Class<?>, Set<Field>>();
     
     private static Set<MethodWrapper> getObjectMethods() {
         return AccessController.doPrivileged(new PrivilegedAction<Set<MethodWrapper>>() {
@@ -80,6 +84,24 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
                 
                 for (Method method : Object.class.getDeclaredMethods()) {
                     retVal.add(new MethodWrapperImpl(method));                   
+                }
+                
+                return retVal;
+            }
+            
+        });
+        
+    }
+    
+    private static Set<Field> getObjectFields() {
+        return AccessController.doPrivileged(new PrivilegedAction<Set<Field>>() {
+
+            @Override
+            public Set<Field> run() {
+                Set<Field> retVal = new HashSet<Field>();
+                
+                for (Field field : Object.class.getDeclaredFields()) {
+                    retVal.add(field);                   
                 }
                 
                 return retVal;
@@ -115,6 +137,43 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
                 }
             }
         }
+        
+        return retVal;
+    }
+    
+    /**
+     * Gets the EXACT set of FieldWrappers on this class only.  No subclasses.  So
+     * this set should be considered RAW and has not taken into account any subclasses
+     * 
+     * @param clazz The class to examine
+     * @return
+     */
+    private static Set<Field> getDeclaredFieldWrappers(final Class<?> clazz) {
+        Field declaredFields[] = clazz.getDeclaredFields();
+        
+        Set<Field> retVal = new HashSet<Field>();
+        for (Field field : declaredFields) {
+            retVal.add(field);
+        }
+        
+        return retVal;
+    }
+    
+    public Set<Field> getAllFieldWrappers(Class<?> clazz) {
+        if (clazz == null) return Collections.emptySet();
+        if (Object.class.equals(clazz)) return OBJECT_FIELDS;
+        
+        Set<Field> retVal = fieldCache.get(clazz);
+        if (retVal != null) {
+            return retVal;
+        }
+        
+        retVal = new HashSet<Field>();
+        
+        retVal.addAll(getDeclaredFieldWrappers(clazz));
+        retVal.addAll(getAllFieldWrappers(clazz.getSuperclass()));
+        
+        fieldCache.putIfAbsent(clazz, retVal);
         
         return retVal;
     }
@@ -162,6 +221,18 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
             @Override
             public Set<MethodWrapper> run() {
                 return getAllMethodWrappers(clazz);
+            }
+            
+        });
+    }
+    
+    @Override
+    public Set<Field> getAllFields(final Class<?> clazz) {
+        return AccessController.doPrivileged(new PrivilegedAction<Set<Field>>() {
+
+            @Override
+            public Set<Field> run() {
+                return getAllFieldWrappers(clazz);
             }
             
         });
@@ -339,10 +410,11 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
     
     @Override
     public void clean(Class<?> clazz) {
-        while (clazz != null && !Object.class.equals(clazz)) {
+        while ((clazz != null) && !Object.class.equals(clazz)) {
             postConstructCache.remove(clazz);
             preDestroyCache.remove(clazz);
             methodCache.remove(clazz);
+            fieldCache.remove(clazz);
             
             clazz = clazz.getSuperclass();
         }
@@ -353,12 +425,15 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         postConstructCache.clear();
         preDestroyCache.clear();
         methodCache.clear();
+        fieldCache.clear();
     }
     
     @Override
     public String toString() {
         return "ClassReflectionHelperImpl(" + System.identityHashCode(this) + ")";
     }
+
+    
 
     
 
