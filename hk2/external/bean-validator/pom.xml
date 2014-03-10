@@ -183,7 +183,7 @@
                 <executions>
                     <execution>
                         <id>add-source</id>
-                        <phase>package</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
