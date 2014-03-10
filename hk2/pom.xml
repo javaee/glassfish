@@ -761,7 +761,7 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
-                <version>1.0.1</version>                
+                <version>${project.version}</version>                
             </dependency>
             <dependency>
                 <groupId>ant</groupId>
