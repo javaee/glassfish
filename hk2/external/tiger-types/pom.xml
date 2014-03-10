@@ -96,20 +96,48 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>create-empty-javadoc-jar</id>
+                        <id>get-sources</id>
+                        <phase>process-sources</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <classesDirectory>${project.build.directory}/javadoc</classesDirectory>
-                            <classifier>javadoc</classifier>
+                            <outputDirectory>${project.build.directory}/sources</outputDirectory>
+                            <stripVersion>true</stripVersion>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.jvnet</groupId>
+                                    <artifactId>tiger-types</artifactId>
+                                    <version>${tiger-types.version}</version>
+                                    <classifier>sources</classifier>
+                                    <overWrite>false</overWrite>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>          
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/sources</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>        
         </plugins>
     </build>
     
