@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,11 +37,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.utilities.reflection;
 
--exportcontents: \
-               org.glassfish.hk2.utilities.reflection; \
-               org.glassfish.hk2.utilities.reflection.internal; \
-               org.glassfish.hk2.utilities.cache; \
-               org.jvnet.hk2.component; \
-               org.jvnet.tiger_types; \
-               version=${project.osgi.version}
+import java.lang.reflect.Method;
+import java.util.Set;
+
+/**
+ * An interface representing useful reflection utilities
+ * 
+ * @author jwells
+ */
+public interface ClassReflectionHelper {
+    
+    /**
+     * Gets all methods for a class (taking class heirarchy into account)
+     * 
+     * @param clazz The class to analyze for all methods
+     * @return The set of all methods on this class (and all subclasses)
+     */
+    public Set<MethodWrapper> getAllMethods(Class<?> clazz);
+    
+    /**
+     * Finds the postConstruct method on this class
+     * 
+     * @param clazz The class to check for the postConstruct method
+     * @param matchingClass The PostConstruct interface, a small performance improvement
+     * @return A matching method, or null if none can be found
+     * @throws IllegalArgumentException If a method marked as postConstruct is invalid
+     */
+    public Method findPostConstruct(Class<?> clazz, Class<?> matchingClass) throws IllegalArgumentException;
+    
+    /**
+     * Finds the preDestroy method on this class
+     * 
+     * @param clazz The class to check for the postConstruct method
+     * @param matchingClass The PostConstruct interface, a small performance improvement
+     * @return A matching method, or null if none can be found
+     * @throws IllegalArgumentException If a method marked as postConstruct is invalid
+     */
+    public Method findPreDestroy(Class<?> clazz, Class<?> matchingClass) throws IllegalArgumentException;
+    
+    /**
+     * Removes this class (and all appropriate sub-classes) from the cache
+     * 
+     * @param clazz The class to remove.  If null this method does nothing
+     */
+    public void clean(Class<?> clazz);
+    
+    /**
+     * Releases the entire cache
+     */
+    public void dispose();
+
+}

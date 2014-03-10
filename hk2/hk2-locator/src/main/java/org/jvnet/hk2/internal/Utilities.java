@@ -113,8 +113,10 @@ import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionModel;
 import org.glassfish.hk2.utilities.reflection.Constants;
+import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -137,7 +139,7 @@ public class Utilities {
     
     private final static Object lock = new Object();
     
-    private final static ClassReflectionModel classModel = new ClassReflectionModel();
+    private final static ClassReflectionModel classModelCreaky = new ClassReflectionModel();
     
     private final static WeakHashMap<Class<?>, String> autoAnalyzerNameCache = new WeakHashMap<Class<?>, String>();
     private final static WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> annotationCache =
@@ -1224,8 +1226,11 @@ public class Utilities {
             ServiceLocatorImpl locator,
             Collector errorCollector) {
         LinkedHashSet<Method> retVal = new LinkedHashSet<Method>();
+        ClassReflectionHelper crh = locator.getClassReflectionHelper();
 
-        for (Method method : classModel.getAllMethods(annotatedType)) {
+        for (MethodWrapper methodWrapper : crh.getAllMethods(annotatedType)) {
+            Method method = methodWrapper.getMethod();
+            
             if (!hasInjectAnnotation(locator, method, true)) {
                 // Not an initializer method
                 continue;
@@ -1250,9 +1255,9 @@ public class Utilities {
      * @param collector An error collector
      * @return The post construct method or null
      */
-    public static Method findPostConstruct(Class<?> clazz, Collector collector) {
+    public static Method findPostConstruct(Class<?> clazz, ServiceLocatorImpl locator, Collector collector) {
         try {
-            return classModel.findPostConstruct(clazz, org.glassfish.hk2.api.PostConstruct.class);
+            return locator.getClassReflectionHelper().findPostConstruct(clazz, org.glassfish.hk2.api.PostConstruct.class);
         }
         catch (IllegalArgumentException iae) {
             collector.addThrowable(iae);
@@ -1266,9 +1271,9 @@ public class Utilities {
      * @param collector An error collector
      * @return The pre destroy method or null
      */
-    public static Method findPreDestroy(Class<?> clazz, Collector collector)  {
+    public static Method findPreDestroy(Class<?> clazz, ServiceLocatorImpl locator, Collector collector)  {
         try {
-            return classModel.findPreDestroy(clazz, org.glassfish.hk2.api.PreDestroy.class);
+            return locator.getClassReflectionHelper().findPreDestroy(clazz, org.glassfish.hk2.api.PreDestroy.class);
         }
         catch (IllegalArgumentException iae) {
             collector.addThrowable(iae);
@@ -1290,7 +1295,7 @@ public class Utilities {
         LinkedHashSet<Field> retVal = new LinkedHashSet<Field>();
         
         LinkedList<Throwable> exceptions = new LinkedList<Throwable>();
-        Set<Field> fields = classModel.getAllFields(annotatedType, exceptions);
+        Set<Field> fields = classModelCreaky.getAllFields(annotatedType, exceptions);
         if (!exceptions.isEmpty()) {
             for (Throwable th : exceptions) {
                 errorCollector.addThrowable(th);
@@ -2309,6 +2314,7 @@ public class Utilities {
             Class<?> clazz,
             Constructor<?> c) {
         if (descriptor == null || clazz == null || isFinal(clazz)) return EMTPY_INTERCEPTORS;
+        ClassReflectionHelper crh = impl.getClassReflectionHelper();
         
         List<InterceptionService> interceptionServices = impl.getInterceptionServices();
         if (interceptionServices == null || interceptionServices.isEmpty()) return EMTPY_INTERCEPTORS;
@@ -2339,7 +2345,9 @@ public class Utilities {
             }
             
             if (filter.matches(descriptor)) {
-                for (Method method : classModel.getAllMethods(clazz)) {
+                for (MethodWrapper methodWrapper : crh.getAllMethods(clazz)) {
+                    Method method = methodWrapper.getMethod();
+                    
                     if (isFinal(method)) continue;
                     
                     List<MethodInterceptor> interceptors = interceptionService.getMethodInterceptors(method);

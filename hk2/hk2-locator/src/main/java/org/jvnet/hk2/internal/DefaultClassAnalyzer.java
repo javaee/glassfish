@@ -122,7 +122,7 @@ public class DefaultClassAnalyzer implements ClassAnalyzer {
             throws MultiException {
         Collector collector = new Collector();
         
-        Method retVal = Utilities.findPostConstruct(clazz, collector);
+        Method retVal = Utilities.findPostConstruct(clazz, locator, collector);
         
         collector.throwIfErrors();
         
@@ -133,7 +133,7 @@ public class DefaultClassAnalyzer implements ClassAnalyzer {
     public <T> Method getPreDestroyMethod(Class<T> clazz) throws MultiException {
         Collector collector = new Collector();
         
-        Method retVal = Utilities.findPreDestroy(clazz, collector);
+        Method retVal = Utilities.findPreDestroy(clazz, locator, collector);
         
         collector.throwIfErrors();
         

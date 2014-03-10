@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,11 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.utilities.reflection;
 
--exportcontents: \
-               org.glassfish.hk2.utilities.reflection; \
-               org.glassfish.hk2.utilities.reflection.internal; \
-               org.glassfish.hk2.utilities.cache; \
-               org.jvnet.hk2.component; \
-               org.jvnet.tiger_types; \
-               version=${project.osgi.version}
+import java.lang.reflect.Method;
+
+/**
+ * Wraps a java.lang.reflect.Method but has an equals and hashCode
+ * that honors the class hierarchy
+ * 
+ * @author jwells
+ *
+ */
+public interface MethodWrapper {
+    /**
+     * Returns the method associated with this wrapper
+     * 
+     * @return The method associated with this wrapper.  Will never return null
+     */
+    public Method getMethod();
+
+}
