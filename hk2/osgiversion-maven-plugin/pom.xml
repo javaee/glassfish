@@ -51,7 +51,7 @@
     <artifactId>osgiversion-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
 
-    <name>Maven Plugin for computing OSGi versions from Maven versions</name>
+    <name>OSGiVersion Maven Plugin</name>
     <description>Maven Plugin for computing OSGi versions from Maven versions</description>
      
     <!--

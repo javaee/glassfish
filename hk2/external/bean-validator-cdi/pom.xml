@@ -50,7 +50,8 @@
     <groupId>org.glassfish.hk2.external</groupId>
     <artifactId>bean-validator-cdi</artifactId>
 
-    <name>Validation API (JSR 349) version ${javax.validation.version}, Hibernate Validator CDI portable extension version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</name>
+    <name>HV. CDI portable extension as OSGi bundle</name>
+    <description>Validation API (JSR 349) version ${javax.validation.version}, Hibernate Validator CDI portable extension version ${hibernate-validator.version} and its dependencies repackaged as OSGi bundle</description>
 
     <build>
         <plugins>

@@ -50,7 +50,8 @@
     <groupId>org.glassfish.hk2.external</groupId>
     <artifactId>asm-all-repackaged</artifactId>
 
-    <name>org.objectweb.asm.all version ${asm.version} repackaged as a module</name>
+    <name>ASM library repackaged as OSGi bundle</name>
+    <description>org.objectweb.asm.all version ${asm.version} repackaged as a module</description>
 
     <build>
         <plugins>
