@@ -54,9 +54,6 @@ import java.lang.annotation.Target;
  * annotation.  All of the other parameters of the method are normal
  * injection points
  * <p>
- * The method runs in the same thread as the caller of the {@link Topic#publish(Object)}
- * method.  If the method throws an exception the ErrorService will be called with
- * an error type of TBD
  * 
  * @author jwells
  */
