@@ -382,7 +382,7 @@ public class ClassReflectionModel {
     private class ClazzPhantomReference extends PhantomReference<Class<?>> {
         private final String clazzName;
         
-        private ClazzPhantomReference(Class<?> reference) {
+        private ClazzPhantomReference(Class<?> reference, double foo) {
             super(reference, deadClasses);
             clazzName = reference.getName();
         }

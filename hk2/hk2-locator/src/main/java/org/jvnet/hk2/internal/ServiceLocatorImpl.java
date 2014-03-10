@@ -106,9 +106,11 @@ import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUHybridCache;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 
 /**
  * @author jwells
@@ -159,6 +161,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final long id;
     private final ServiceLocatorImpl parent;
     private volatile boolean neutralContextClassLoader = true;
+    private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
 
     private final IndexedListData allDescriptors = new IndexedListData();
     private final HashMap<String, IndexedListData> descriptorsByAdvertisedContract =
@@ -816,6 +819,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             errorHandlers.clear();
             igdCache.clear();
             igashCache.clear();
+            classReflectionHelper.dispose();
 //            hybridIgdCacheEntries.clear();
 //            hybridIgashCacheEntries.clear();
             synchronized (children) {
@@ -1639,6 +1643,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 for (Injectee injectee : unbind.getInjectees()) {
                     injecteeToResolverCache.remove(injectee);
                 }
+                
+                classReflectionHelper.clean(unbind.getImplementationClass());
             }
         }
     }
@@ -2345,8 +2351,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     /* package */ InjectionResolver<?> getInjectionResolverForInjectee(Injectee injectee) {
-        return injecteeToResolverCache.compute(injectee);
-        
+        return injecteeToResolverCache.compute(injectee);  
+    }
+    
+    /* package */ ClassReflectionHelper getClassReflectionHelper() {
+        return classReflectionHelper;
     }
 
     public String toString() {
