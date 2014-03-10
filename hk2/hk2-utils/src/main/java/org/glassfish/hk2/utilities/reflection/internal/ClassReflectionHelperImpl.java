@@ -111,6 +111,28 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         
     }
     
+    private static Method[] secureGetDeclaredMethods(final Class<?> clazz) {
+        return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
+
+            @Override
+            public Method[] run() {
+                return clazz.getDeclaredMethods();
+            }
+            
+        });
+    }
+    
+    private static Field[] secureGetDeclaredFields(final Class<?> clazz) {
+        return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
+
+            @Override
+            public Field[] run() {
+                return clazz.getDeclaredFields();
+            }
+            
+        });
+    }
+    
     /**
      * Gets the EXACT set of MethodWrappers on this class only.  No subclasses.  So
      * this set should be considered RAW and has not taken into account any subclasses
@@ -119,7 +141,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
      * @return
      */
     private Set<MethodWrapper> getDeclaredMethodWrappers(final Class<?> clazz) {
-        Method declaredMethods[] = clazz.getDeclaredMethods();
+        Method declaredMethods[] = secureGetDeclaredMethods(clazz);
         
         Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
         for (Method method : declaredMethods) {
@@ -149,7 +171,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
      * @return
      */
     private static Set<Field> getDeclaredFieldWrappers(final Class<?> clazz) {
-        Field declaredFields[] = clazz.getDeclaredFields();
+        Field declaredFields[] = secureGetDeclaredFields(clazz);
         
         Set<Field> retVal = new HashSet<Field>();
         for (Field field : declaredFields) {
@@ -216,26 +238,12 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
      */
     @Override
     public Set<MethodWrapper> getAllMethods(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Set<MethodWrapper>>() {
-
-            @Override
-            public Set<MethodWrapper> run() {
-                return getAllMethodWrappers(clazz);
-            }
-            
-        });
+        return getAllMethodWrappers(clazz);
     }
     
     @Override
     public Set<Field> getAllFields(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Set<Field>>() {
-
-            @Override
-            public Set<Field> run() {
-                return getAllFieldWrappers(clazz);
-            }
-            
-        });
+        return getAllFieldWrappers(clazz);
     }
     
     private Method getPostConstructMethod(Class<?> clazz) {
@@ -254,7 +262,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         }
         
         Method retVal = null;
-        for (Method m : clazz.getDeclaredMethods()) {
+        for (Method m : secureGetDeclaredMethods(clazz)) {
             if (isPostConstruct(m)) {
                 retVal = m;
                 break;
@@ -292,7 +300,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         }
         
         Method retVal = null;
-        for (Method m : clazz.getDeclaredMethods()) {
+        for (Method m : secureGetDeclaredMethods(clazz)) {
             if (isPreDestroy(m)) {
                 retVal = m;
                 break;
@@ -343,14 +351,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
             postConstructCache.put(clazz, new MethodPresentValue(retVal));
         }
         
-        return AccessController.doPrivileged(new PrivilegedAction<Method>() {
-
-            @Override
-            public Method run() {
-                return getPostConstructMethod(clazz);
-            }
-            
-        });
+        return getPostConstructMethod(clazz);
     }
 
     @Override
@@ -382,14 +383,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
             preDestroyCache.put(clazz, new MethodPresentValue(retVal));
         }
         
-        return AccessController.doPrivileged(new PrivilegedAction<Method>() {
-
-            @Override
-            public Method run() {
-                return getPreDestroyMethod(clazz);
-            }
-            
-        });
+        return getPreDestroyMethod(clazz);
     }
     
     private static class MethodPresentValue {
