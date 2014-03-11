@@ -346,7 +346,7 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>org.javassist</groupId>
