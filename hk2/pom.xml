@@ -224,7 +224,7 @@
         <module>osgiversion-maven-plugin</module>
         <module>hk2-inhabitant-generator</module>
         <module>consolidatedbundle-maven-plugin</module>
-        <module>osgi-resource-locator</module>
+        <!--<module>osgi-resource-locator</module>-->
         <module>hk2-runlevel</module>
         <module>hk2-locator</module>
         <module>class-model</module>
@@ -761,7 +761,7 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
-                <version>${project.version}</version>                
+                <version>1.0.1</version>                
             </dependency>
             <dependency>
                 <groupId>ant</groupId>
