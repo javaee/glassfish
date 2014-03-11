@@ -51,7 +51,7 @@
     
     <artifactId>caching-aop-example</artifactId>
     <packaging>pom</packaging>
-    <name>Security Lockdown Example</name>
+    <name>AOP Caching Example</name>
     <modules>
             <module>system</module>
             <module>runner</module>

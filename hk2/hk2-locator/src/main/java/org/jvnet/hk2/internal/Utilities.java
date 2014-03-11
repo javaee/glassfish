@@ -103,6 +103,7 @@ import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ProxyForSameScope;
+import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -701,6 +702,12 @@ public class Utilities {
         if (vi != null) {
             visibility = vi.value();
         }
+        
+        int rank = 0;
+        Rank ranking = clazz.getAnnotation(Rank.class);
+        if (ranking != null) {
+            rank = ranking.value();
+        }
 
         AutoActiveDescriptor<T> retVal = new AutoActiveDescriptor<T>(
                 clazz,
@@ -710,7 +717,7 @@ public class Utilities {
                 name,
                 qualifiers,
                 visibility,
-                0,
+                rank,
                 proxy,
                 proxyForSameScope,
                 analyzerName,
