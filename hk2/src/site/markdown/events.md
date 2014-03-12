@@ -75,8 +75,6 @@ and has a priority of 0.  It is possible to enhance the behavior of the default
 the default [TopicDistributionService][topicdistributionservice].  Then the default implementation
 can be delegated to by the custom enhanced [TopicDistributionService][topicdistributionservice].
 
-
-
 ### Subscribers
 
 In the HK2 default system subscribers are found by finding methods on services that have a
@@ -109,6 +107,10 @@ as an injection point not being available) will be given to all registered imple
 to services whose instances were created after the [ServiceLocatorUtilities][servicelocatorutilities]
 method enableTopicDistribution has been called.  Any subscribers on a service that is disposed or
 has had its associated descriptor removed will not be invoked.
+
+Events will only be given to services that have already been created.  For example an event will
+not cause a Singleton service that has not already been instantiated to become instantiated, even if
+the Singleton service is a listener to the event.
 
 A method parameter with [@SubscribeTo][subscribeto] can also take qualifiers.  A qualifier will
 restrict the set of messages that will be given to the subscription method.  For example the

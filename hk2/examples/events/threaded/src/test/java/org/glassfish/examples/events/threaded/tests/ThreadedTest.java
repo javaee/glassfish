@@ -58,8 +58,15 @@ public class ThreadedTest {
     
     private final ServiceLocator locator = factory.create(null);
     
+    /**
+     * Ensures that the event is given to the subscriber on a different thread
+     * from the publisher
+     * 
+     * @throws InterruptedException
+     */
     @Test
     public void testEventDeliveredOnADifferentThread() throws InterruptedException {
+        // Adds in the default event implementation
         ServiceLocatorUtilities.enableTopicDistribution(locator);
         
         ServiceLocatorUtilities.addClasses(locator,
