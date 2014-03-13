@@ -13,6 +13,7 @@ More information can be found [here][apioverview].
 HK2 is extensible along many dimensions.  This page is intended to give an overview and example of each dimension along which
 users can customize thier HK2 environment.  Among the set of things which can be extended are these:
 
++ [Events](extensibility.html#Events)
 + [Adding a Scope and Context to the system](extensibility.html#Adding_a_Scope_and_Context_to_the_system)
 + [PerThread Scope](extensibility.html#PerThread_Scope)
 + [Proxies](extensibility.html#Proxies)
@@ -25,6 +26,16 @@ users can customize thier HK2 environment.  Among the set of things which can be
 + [Class Analysis](extensibility.html#Class_Analysis)
 + [Run Level Services](extensibility.html#Run_Level_Services)
 + [Self Descriptor Injection](extensibility.html#Self_Descriptor_Injection)
+
+### Events
+
+It is possible to send messages from one service to another using the HK2 event feature.  The event feature is allows for unrelated
+services to message each other without prior coordination (other than on the Type of event).  It is a pluggable event service,
+which allows for user defined qualities of service between the publishers and subscribers.
+
+The HK2 event service is described fully [here][events].
+
+An example of plugging in a different event distributor can be found [here][threaded-events-example].
 
 ### Adding a Scope and Context to the system
 
@@ -323,3 +334,5 @@ public abstract class GenericService {
 [aopalliance]: http://aopalliance.sourceforge.net/
 [interceptionservice]: apidocs/org/glassfish/hk2/api/InterceptionService.html
 [aopexample]: aop-example.html
+[events]: events.html
+[threaded-events-example]: threaded-events-example.html

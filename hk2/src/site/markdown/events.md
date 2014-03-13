@@ -74,6 +74,7 @@ and has a priority of 0.  It is possible to enhance the behavior of the default
 [TopicDistributionService][topicdistributionservice] with a higher priority and which injects
 the default [TopicDistributionService][topicdistributionservice].  Then the default implementation
 can be delegated to by the custom enhanced [TopicDistributionService][topicdistributionservice].
+An example of how to do this is given [here][threaded-events-example].
 
 ### Subscribers
 
@@ -139,4 +140,5 @@ of service are required by the application.
 [topicdistributionservice]: apidocs/org/glassfish/hk2/api/messaging/TopicDistributionService.html
 [servicelocatorutilities]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html
 [subscribeto]: apidocs/org/glassfish/hk2/api/messaging/SubscribeTo.html
-[defaulttopicdistributionerrorservice]: apidocs/org/glassfish/hk2/utilities/DefaultTopicDistributionErrorService.html 
+[defaulttopicdistributionerrorservice]: apidocs/org/glassfish/hk2/utilities/DefaultTopicDistributionErrorService.html
+[threaded-events-example]: threaded-events-example.html

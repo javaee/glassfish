@@ -1,6 +1,11 @@
 ## Threaded Events Example
 
-In this example we will enhance the existing default HK2 eventing mechanism to deliver events on a separate thread from the publisher.
+This example will enhance the existing default HK2 event mechanism to deliver events to subscribers on a different thread from
+the publisher.
+
++ [The Strategy](threaded-events-example.html#The_Strategy)
++ [Testing](threaded-events-example.html#Testing)
++ [Conclusion](threaded-events-example.html#Conclusion)
 
 ### The Strategy
 
