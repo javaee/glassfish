@@ -42,10 +42,13 @@ package org.glassfish.hk2.api.messaging;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This service is responsible for distributing messages to Topic subscribers.
- * The implementation of this service must be in the Singleton scope.
+ * This service is responsible for distributing messages to Topic subscribers
  * <p>
- * A default implementation of this service 
+ * A default implementation of this service is provided by HK2 and can
+ * be added to the system with the
+ * {@link org.glassfish.hk2.utilities.ServiceLocatorUtilities#enableTopicDistribution(org.glassfish.hk2.api.ServiceLocator)}
+ * method.  The default implementation will be named &quot;HK2TopicDistributionService&quot;
+ * 
  * @author jwells
  *
  */
