@@ -117,6 +117,37 @@ public abstract class ServiceLocatorFactory {
           ServiceLocatorGenerator generator);
   
   /**
+   * Creates a ServiceLocator.
+   * <p>
+   * If there is already a ServiceLocator with the given
+   * name then this method will honor the given CreatePolicy.
+   * return that ServiceLocator.  The policies are<UL>
+   * <LI>RETURN: Return the existing locator</LI>
+   * <LI>DESTOY: Destroy the existing locator</LI>
+   * <LI>ERROR: Throw an IllegalStateException exception</LI>
+   * </UL>
+   * 
+   * @param name The name of this service locator.  Passing a null
+   * name will result in a newly created service locator with a
+   * generated name and that will not be tracked by the system
+   * @param parent The parent of this ServiceLocator.  Services can
+   * be found in the parent (and all grand-parents).  May be null
+   * if the returned ServiceLocator should not be parented
+   * @param generator An implementation of the generator interface that
+   * can be used to provide an implementation of ServiceLocator.  If
+   * null then the generator used will be discovered from the OSGi
+   * service registry or from META-INF/services
+   * @param policy The policy that should be used if there is an
+   * existing locator with the non-null name.  If null the policy
+   * of RETURN will be used
+   * @return The created or found named ServiceLocator
+   */
+  public abstract ServiceLocator create(String name,
+          ServiceLocator parent,
+          ServiceLocatorGenerator generator,
+          CreatePolicy policy);
+  
+  /**
    * Finds the ServiceLocator with this name
    * 
    * @param name May not be null, is the name of the ServiceLocator to find
@@ -162,5 +193,23 @@ public abstract class ServiceLocatorFactory {
    * @param listener The non-null listener to remove from the system
    */
   public abstract void removeListener(ServiceLocatorListener listener);
+  
+  /**
+   * Tells the create method what to do if an existing ServiceLocator
+   * with the given name exists
+   * 
+   * @author jwells
+   *
+   */
+  public enum CreatePolicy {
+      /** Return the existing ServiceLocator */
+      RETURN,
+      
+      /** Destroy the existing ServiceLocator */
+      DESTROY,
+      
+      /** Throw an IllegalStateException */
+      ERROR
+  }
 
 }
