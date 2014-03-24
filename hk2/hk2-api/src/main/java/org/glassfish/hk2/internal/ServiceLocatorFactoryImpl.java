@@ -118,23 +118,24 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
           // there is no need to catch it and try next item in the iterator.
           final Iterator<? extends ServiceLocatorGenerator> iterator = generators.iterator();
           return iterator.hasNext() ? iterator.next() : null;
-      } else {
-          // We are in non-OSGi environment, let's use JDK ServiceLoader instead.
-          // Make sure we use our current loader to locate the service as opposed to some arbitrary TCL
-          final ClassLoader classLoader = ServiceLocatorFactoryImpl.class.getClassLoader();
-          Iterator<ServiceLocatorGenerator> providers = java.util.ServiceLoader.load(ServiceLocatorGenerator.class,
-                  classLoader).iterator();
-          while (providers.hasNext()) {
-              try {
-                  return providers.next();
-              } catch (ServiceConfigurationError sce) {
-                  // This can happen. See the exception javadoc for more details.
-                  logger.logp(Level.FINE, "ServiceLocatorFactoryImpl", "getGenerator",
-                          "Exception while looking up service locator generator", sce);
+      }
+      
+      // We are in non-OSGi environment, let's use JDK ServiceLoader instead.
+      // Make sure we use our current loader to locate the service as opposed to some arbitrary TCL
+      final ClassLoader classLoader = ServiceLocatorFactoryImpl.class.getClassLoader();
+      Iterator<ServiceLocatorGenerator> providers = java.util.ServiceLoader.load(ServiceLocatorGenerator.class,
+              classLoader).iterator();
+      while (providers.hasNext()) {
+          try {
+              return providers.next();
+          } catch (ServiceConfigurationError sce) {
+              // This can happen. See the exception javadoc for more details.
+              logger.logp(Level.FINE, "ServiceLocatorFactoryImpl", "getGenerator",
+                      "Exception while looking up service locator generator", sce);
                   // We will try the next one
-              }
           }
       }
+      
       logger.warning("Cannot find a default implementation of the HK2 ServiceLocatorGenerator");
       return null;
   }
@@ -144,7 +145,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
    */
   @Override
   public ServiceLocator create(String name) {
-      return create(name, null, null);
+      return create(name, null, null, CreatePolicy.RETURN);
   }
 
   /* (non-Javadoc)
@@ -198,7 +199,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
     @Override
     public ServiceLocator create(String name,
             ServiceLocator parent) {
-        return create(name, parent, null);
+        return create(name, parent, null, CreatePolicy.RETURN);
     }
     
     private static String getGeneratedName() {
@@ -215,6 +216,12 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
     public ServiceLocator create(String name, ServiceLocator parent,
             ServiceLocatorGenerator generator) {
  
+        return create(name, parent, generator, CreatePolicy.RETURN);
+    }
+    
+    @Override
+    public ServiceLocator create(String name, ServiceLocator parent,
+            ServiceLocatorGenerator generator, CreatePolicy policy) {
         synchronized (lock) {
             ServiceLocator retVal;
 
@@ -224,7 +231,19 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             }
 
             retVal = serviceLocators.get(name);
-            if (retVal != null) return retVal;
+            if (retVal != null) {
+                if (policy == null || CreatePolicy.RETURN.equals(policy)) {
+                    return retVal;
+                }
+                
+                if (policy.equals(CreatePolicy.DESTROY)) {
+                    destroy(retVal);
+                }
+                else {
+                    throw new IllegalStateException(
+                            "A ServiceLocator named " + name + " already exists");
+                }
+            }
             retVal = internalCreate(name, parent, generator);
             serviceLocators.put(name, retVal);
             
@@ -282,5 +301,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
         }
         
     }
+
+    
 
 }

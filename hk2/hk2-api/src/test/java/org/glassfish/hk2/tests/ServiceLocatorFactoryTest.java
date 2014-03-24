@@ -40,7 +40,6 @@
 package org.glassfish.hk2.tests;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -161,6 +160,52 @@ public class ServiceLocatorFactoryTest {
       slf.removeListener(listener2);
   }
   
+  private final static String AUTO_DESTROY_LOCATOR = "AutoDestroyLocator";
+  /**
+   * Tests that the create policy DESTROY works
+   * 
+   * @author jwells
+   */
+  @Test
+  public void testDestroyPolicyWorks() {
+      DestructionListener dListener = new DestructionListener();
+      
+      ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
+      
+      slf.addListener(dListener);
+      
+      slf.create(AUTO_DESTROY_LOCATOR);
+      
+      Assert.assertFalse(dListener.wasDestroyed(AUTO_DESTROY_LOCATOR));
+      
+      slf.create(AUTO_DESTROY_LOCATOR, null, null, ServiceLocatorFactory.CreatePolicy.DESTROY);
+      
+      Assert.assertTrue(dListener.wasDestroyed(AUTO_DESTROY_LOCATOR));
+      
+      slf.removeListener(dListener);
+      
+  }
+  
+  private final static String ERROR_LOCATOR = "ErrorLocator";
+  
+  /**
+   * Tests that the create policy ERROR works
+   * 
+   * @author jwells
+   */
+  @Test(expected=java.lang.IllegalStateException.class)
+  public void testErrorPolicyWorks() {
+      ServiceLocatorFactory slf = ServiceLocatorFactory.getInstance();
+      slf.create(ERROR_LOCATOR);
+      
+      try {
+          slf.create(ERROR_LOCATOR, null, null, ServiceLocatorFactory.CreatePolicy.ERROR);
+      }
+      finally {
+          slf.destroy(ERROR_LOCATOR);
+      }
+  }
+  
   private static class ServiceLocatorListenerImpl implements ServiceLocatorListener {
       private final HashSet<String> locators = new HashSet<String>();
 
@@ -186,6 +231,27 @@ public class ServiceLocatorFactoryTest {
       
       public Set<String> getLocatorNames() {
           return locators;
+      }
+  }
+  
+  private static class DestructionListener implements ServiceLocatorListener {
+      private final Set<String> destroyedLocators = new HashSet<String>();
+
+      @Override
+      public void initialize(Set<ServiceLocator> initialLocators) {
+      }
+
+      @Override
+      public void listenerAdded(ServiceLocator added) {
+      }
+
+      @Override
+      public void listenerDestroyed(ServiceLocator destroyed) {
+          destroyedLocators.add(destroyed.getName()); 
+      }
+      
+      private boolean wasDestroyed(String name) {
+          return destroyedLocators.contains(name);
       }
       
   }
