@@ -820,8 +820,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
             igdCache.clear();
             igashCache.clear();
             classReflectionHelper.dispose();
-//            hybridIgdCacheEntries.clear();
-//            hybridIgashCacheEntries.clear();
+            contextCache.clear();
+            injecteeToResolverCache.clear();
+            
             synchronized (children) {
                 children.clear();
             }
