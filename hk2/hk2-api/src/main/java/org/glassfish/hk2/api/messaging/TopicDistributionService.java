@@ -54,7 +54,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface TopicDistributionService {
-    /** The name of the default TopicDistributionService that is added by {@link ServiceLocatorUtilities} */
+    /** The name of the default TopicDistributionService that is added by {@link org.glassfish.hk2.utilities.ServiceLocatorUtilities} */
     public final static String HK2_DEFAULT_TOPIC_DISTRIBUTOR = "HK2TopicDistributionService";
     
     /**
@@ -64,7 +64,6 @@ public interface TopicDistributionService {
      * 
      * @param topic The topic to which to distribute the message.  Must not be null
      * @param message The message to send to the topic.  Must not be null
-     * @return A vendor specific object to be returned to the {@link Topic#publish(Object)} method
      */
     public void distributeMessage(Topic<?> topic, Object message);
 

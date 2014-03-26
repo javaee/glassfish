@@ -50,6 +50,10 @@ import org.glassfish.hk2.api.Filter;
 public class StarFilter implements Filter {
   private static StarFilter INSTANCE = new StarFilter();
   
+  /**
+   * Gets the static instance of this filter
+   * @return The static instance of the star filter
+   */
   public static StarFilter getDescriptorFilter() { return INSTANCE; }
 
   /* (non-Javadoc)

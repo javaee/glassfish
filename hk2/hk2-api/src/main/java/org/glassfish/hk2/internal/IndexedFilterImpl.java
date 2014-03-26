@@ -43,6 +43,8 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
 
 /**
+ * Implementation created by the builder
+ * 
  * @author jwells
  *
  */
@@ -50,6 +52,12 @@ public class IndexedFilterImpl implements IndexedFilter {
     private final String contract;
     private final String name;
     
+    /**
+     * Created by the builder
+     * 
+     * @param contract
+     * @param name
+     */
     public IndexedFilterImpl(String contract, String name) {
         this.contract = contract;
         this.name = name;

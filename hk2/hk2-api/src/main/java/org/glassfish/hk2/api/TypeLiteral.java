@@ -100,10 +100,9 @@ public abstract class TypeLiteral<T> {
         type = getType();
         if (type instanceof ParameterizedType) {
             return ((ParameterizedType) type).getActualTypeArguments();
-        } else {
-            return new Type[0];
         }
-
+        
+        return new Type[0];
     }
 
     /**

@@ -131,10 +131,9 @@ public class DefaultTopicDistributionService implements
                             arguments[lcv] = null;
                             continue;
                         }
-                        else {
-                            throw new IllegalStateException("Could not find injectee " + injectee + " for subscriber " +
+                        
+                        throw new IllegalStateException("Could not find injectee " + injectee + " for subscriber " +
                                 Pretty.method(subscription) + " on class " + target.getClass().getName());
-                        }
                     }
                 
                     ServiceHandle<?> handle = locator.getServiceHandle(injecteeDescriptor);
@@ -183,24 +182,23 @@ public class DefaultTopicDistributionService implements
                     // but it DOES have some, so forget it!
                     continue;
                 }
-                else {
-                    Set<Class<? extends Annotation>> topicQualifierClasses = new HashSet<Class<? extends Annotation>>();
-                    for (Annotation topicQualifier : topic.getTopicQualifiers()) {
-                        topicQualifierClasses.add(topicQualifier.annotationType());
-                    }
+                
+                Set<Class<? extends Annotation>> topicQualifierClasses = new HashSet<Class<? extends Annotation>>();
+                for (Annotation topicQualifier : topic.getTopicQualifiers()) {
+                    topicQualifierClasses.add(topicQualifier.annotationType());
+                }
                     
-                    boolean found = false;
-                    for (Class<? extends Annotation> verbotenQualifier : subscriberInfo.unqualified.value()) {
-                        if (topicQualifierClasses.contains(verbotenQualifier)) {
-                            found = true;
-                            break;
-                        }
+                boolean found = false;
+                for (Class<? extends Annotation> verbotenQualifier : subscriberInfo.unqualified.value()) {
+                    if (topicQualifierClasses.contains(verbotenQualifier)) {
+                        found = true;
+                        break;
                     }
+                }
                     
-                    if (found) {
-                        // Found one of the qualifiers we are not allowed to have!
-                        continue;
-                    }
+                if (found) {
+                    // Found one of the qualifiers we are not allowed to have!
+                    continue;
                 }
             }
             
