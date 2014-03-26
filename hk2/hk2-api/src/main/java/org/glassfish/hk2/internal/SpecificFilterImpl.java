@@ -53,6 +53,14 @@ public class SpecificFilterImpl implements IndexedFilter {
     private final long id;
     private final long locatorId;
     
+    /**
+     * For matching an exact descriptor
+     * 
+     * @param contract
+     * @param name
+     * @param id
+     * @param locatorId
+     */
     public SpecificFilterImpl(String contract,
             String name,
             long id,

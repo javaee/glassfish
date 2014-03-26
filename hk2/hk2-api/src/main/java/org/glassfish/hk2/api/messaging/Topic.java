@@ -44,7 +44,11 @@ import java.lang.reflect.Type;
 import java.util.Set;
 
 /**
+ * This service is used for publishing events to subscribers.  The type of the Topic is
+ * the type of event that will be distributed
+ * 
  * @author jwells
+ * @param <T> The type of event to be distributed to subscribers
  *
  */
 public interface Topic<T> {

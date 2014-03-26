@@ -79,6 +79,11 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      * @param scope
      * @param name
      * @param qualifiers
+     * @param descriptorVisibility 
+     * @param proxy 
+     * @param proxyForSameScope 
+     * @param classAnalysisName 
+     * @param metadata 
      */
     public ConstantActiveDescriptor(T theOne,
             Set<Type> advertisedContracts,
