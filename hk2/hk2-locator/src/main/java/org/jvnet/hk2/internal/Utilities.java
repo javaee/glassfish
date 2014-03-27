@@ -663,10 +663,28 @@ public class Utilities {
         Boolean proxy = null;
         Boolean proxyForSameScope = null;
         String analyzerName;
-
+        
         // Qualifiers naming dance
+        String serviceName = null;
+        Service serviceAnno = clazz.getAnnotation(Service.class);
+        if (serviceAnno != null && !"".equals(serviceAnno.name())) {
+            serviceName = serviceAnno.name();
+        }
+        
         qualifiers = ReflectionHelper.getQualifierAnnotations(clazz);
         name = ReflectionHelper.getNameFromAllQualifiers(qualifiers, clazz);
+        
+        if (serviceName != null && name != null) {
+            // They must match
+            if (!serviceName.equals(name)) {
+                throw new IllegalArgumentException("The class " + clazz.getName() + " has an @Service name of " + serviceName +
+                        " and has an @Named value of " + name +" which names do not match");
+            }
+        }
+        else if (name == null && serviceName != null) {
+            name = serviceName;
+        }
+        
         qualifiers = getAllQualifiers(clazz, name, collector);  // Fixes the @Named qualifier if it has no value
 
         contracts = getAutoAdvertisedTypes(clazz);
