@@ -67,6 +67,8 @@ import org.junit.Test;
  */
 public class ServiceLocatorUtilitiesTest {
     private final static String TEST_NAME = "ServiceLocatorUtilitiesTest";
+    /* package */ final static String ALICE_NAME = "Alice";
+    /* package */ final static String MALLORY_NAME = "Mallory";
 
     private SimpleService addSimpleService(ServiceLocator locator) {
         SimpleService ss1 = locator.getService(SimpleService.class);
@@ -631,5 +633,61 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertEquals(alphabet, d);
         Assert.assertEquals(alphabet, f);
         
+    }
+    
+    /**
+     * Tests that a service can be named with the @Service annotation
+     */
+    @Test
+    public void testServiceNamedWithService() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, ServiceNamedService.class);
+        
+        Assert.assertNotNull(locator.getService(ServiceNamedService.class, ALICE_NAME));
+    }
+    
+    /**
+     * Tests that a service with conflicting @Service and @Named names is rejected
+     */
+    @Test(expected=java.lang.IllegalArgumentException.class)
+    public void testServiceWithConflictingNames() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, ServiceWithConflictingNames.class);
+    }
+    
+    /**
+     * Tests that a service with matching @Service and @Named names is ok
+     */
+    @Test
+    public void testServiceWithMatchingNames() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, ServiceWithMatchingNames.class);
+        
+        Assert.assertNotNull(locator.getService(ServiceWithMatchingNames.class, ALICE_NAME));
+    }
+    
+    /**
+     * Tests that a service with matching @Service and default @Named is ok
+     */
+    @Test
+    public void testServiceWithMatchingDefaultNames() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, ServiceWithMatchingDefaultName.class);
+        
+        Assert.assertNotNull(locator.getService(ServiceWithMatchingDefaultName.class, "ServiceWithMatchingDefaultName"));
+    }
+    
+    /**
+     * Tests that a service with non matching default @Named and @Service name
+     */
+    @Test(expected=java.lang.IllegalArgumentException.class)
+    public void testServiceWithConflictingDefaultName() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, ServiceWithConflictingDefaultName.class);
     }
 }
