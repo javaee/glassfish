@@ -70,8 +70,10 @@ grant codeBase "file:${build.dir}/classes/-" {
 
 // This is the grant that should contain the minimal grants necessary
 // for hk2-locator to run under maven.
+// There are tests that need to create classloaders, hence the grant for doing so
 grant codeBase "file:${build.dir}/test-classes/-" {
   permission java.io.FilePermission "<<ALL FILES>>", "read";
   permission java.util.PropertyPermission "*", "read,write";
   permission java.lang.reflect.ReflectPermission "suppressAccessChecks";
+  permission java.lang.RuntimePermission "createClassLoader";
 };
