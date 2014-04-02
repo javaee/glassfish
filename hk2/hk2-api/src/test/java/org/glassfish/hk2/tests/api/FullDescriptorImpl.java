@@ -39,8 +39,8 @@
  */
 package org.glassfish.hk2.tests.api;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -60,11 +60,11 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  */
 @Blue @Green @NotQualifierAnnotation @Red
 public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterface, MarkerInterface2, MarkerInterface3 {
-    private final static Set<String> FULL_CONTRACTS = new HashSet<String>();
+    private final static Set<String> FULL_CONTRACTS = new LinkedHashSet<String>();
     /** Given name */
     public final static String FULL_NAME = "Full";
     private final static Map<String, List<String>> FULL_METADATA =
-            new HashMap<String, List<String>>();
+            new LinkedHashMap<String, List<String>>();
     /** Given key1 */
     public final static String FULL_KEY1 = "key1";
     /** Given key2 */
@@ -73,7 +73,7 @@ public class FullDescriptorImpl extends DescriptorImpl implements MarkerInterfac
     public final static String FULL_VALUE1 = "value1";
     /** Given value2 */
     public final static String FULL_VALUE2 = "value2";
-    private final static Set<String> FULL_ANNOTATIONS = new HashSet<String>();
+    private final static Set<String> FULL_ANNOTATIONS = new LinkedHashSet<String>();
     /** Given initial rank */
     public final static int FULL_INITIAL_RANK = -1;
     /** Given initial proxiable */

@@ -112,6 +112,11 @@ public class DescriptorImplTest {
         Assert.assertTrue(asString.contains("descriptorType=CLASS"));
     }
     
+    private static String prettyError(String lookingFor, String in) {
+    	return "Did not find string '" + lookingFor + "' in: " + in;
+    	
+    }
+    
     private static void testBasicFullDescriptor(DescriptorImpl full) {
         Assert.assertEquals(FullDescriptorImpl.class.getName(), full.getImplementation());
         
@@ -161,13 +166,19 @@ public class DescriptorImplTest {
         
         Assert.assertEquals(FullDescriptorImpl.FULL_INITIAL_LID, full.getLocatorId());
         
-        String asString = full.toString();
-        Assert.assertTrue(asString.contains("implementation=org.glassfish.hk2.tests.api.FullDescriptorImpl"));
-        Assert.assertTrue(asString.contains("contracts={org.glassfish.hk2.tests.api.FullDescriptorImpl,org.glassfish.hk2.tests.api.MarkerInterface}"));
-        Assert.assertTrue(asString.contains("scope=javax.inject.Singleton"));
-        Assert.assertTrue(asString.contains("name=Full"));
-        Assert.assertTrue(asString.contains("descriptorType=PROVIDE_METHOD"));
+        String lookingFors[] = {
+                "implementation=org.glassfish.hk2.tests.api.FullDescriptorImpl",
+                "contracts={org.glassfish.hk2.tests.api.FullDescriptorImpl,org.glassfish.hk2.tests.api.MarkerInterface}",
+                "scope=javax.inject.Singleton",
+                "name=Full",
+                "descriptorType=PROVIDE_METHOD"
+        };
         
+        String asString = full.toString();
+        for (String lookingFor : lookingFors) {
+            Assert.assertTrue(prettyError(lookingFor, asString), asString.contains(lookingFor));
+            
+        }
     }
     
     /**
