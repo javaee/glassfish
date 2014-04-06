@@ -1,14 +1,16 @@
 <p><var class="icon-ok-sign" style="color: #7F7F7F"></var>
-HK2 is JSR-330 compliant and  has useful utilities for marking classes as services and interfaces as contracts.
+HK2 is an implementation of JSR-330 in a JavaSE environment.
 <br/><a href="http://jcp.org/aboutJava/communityprocess/final/jsr330/">JSR-330</a> defines services and injection points that can be dynamically discovered at runtime and which allow for Inversion of Control (IoC) and dependency injection (DI).</p>
 <p><var class="icon-ok-sign" style="color: #7F7F7F"></var>
-HK2 provides an API for fine control over its operation and has the ability to automatically load services into the application.
+HK2 provides an API for control over its operation and has the ability to automatically load services into the container.
 <br/>It is the foundation for the GlassFish V3 and V4 application servers as well as other products.
 </p><p><var class="icon-ok-sign" style="color: #7F7F7F"></var>
-HK2 also has a powerful API that can be used to perform several tasks such as binding service descriptions into the system and looking up services, as well as several extensibility features allowing the users to customize or change the behavior of HK2.<br/>
+HK2 also has powerful features that can be used to perform tasks such as looking up services or customizing you injections, as well as several extensibility
+features allowing the users to connect with other container technologies<br/>
 <br/>The following list gives an overview of some of the things that can be customized or extended with HK2:
 <ul>
-<li>Custom scopes</li>
+<li>Custom lifecycles and scopes</li>
+<li>Events</li>
 <li>The use of proxies</li>
 <li>Custom injection resolution</li>
 <li>Assisted injection</li>
@@ -32,9 +34,9 @@ Read the [introduction](introduction.html) and [get started][gettingstarted] wit
 [Learn][api] more about the HK2 API, or [browse][javadoc] the javadoc.
 
 <h2><a class="headerlink" href="extensibility.html">
-    <var class="icon-cloud-download"></var> Extensibility
+    <var class="icon-cloud-download"></var> Features
 </a></h2>
-[Learn][extensibility] more about the extensibility features of HK2
+[Learn][extensibility] more about the features of HK2
 
 
 <h2><a class="headerlink" href="integration.html">
