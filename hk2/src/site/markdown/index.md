@@ -11,7 +11,7 @@ features allowing the users to connect with other container technologies<br/>
 <ul>
 <li>Custom lifecycles and scopes</li>
 <li>Events</li>
-<li>The use of proxies</li>
+<li>AOP and other proxies</li>
 <li>Custom injection resolution</li>
 <li>Assisted injection</li>
 <li>Just In Time injection resolution</li>
