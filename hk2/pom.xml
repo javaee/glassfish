@@ -645,6 +645,7 @@
                         ${basedir}/hk2-runlevel/src/main/java;
                         ${basedir}/guice-bridge/src/main/java;
                         ${basedir}/spring-bridge/src/main/java;
+                        ${basedir}/hk2-testing/hk2-junitrunner/src/main/java;
                         ${basedir}/hk2-inhabitant-generator/src/main
                     </sourcepath>
                     <doctitle>HK2 API Documentation</doctitle>
@@ -684,6 +685,7 @@
                         ${basedir}/config-types/src/main/java;
                         ${basedir}/guice-bridge/src/main/java;
                         ${basedir}/spring-bridge/src/main/java;
+                        ${basedir}/hk2-testing/hk2-junitrunner/src/main/java;
                         ${basedir}/hk2-inhabitant-generator/src/main/java
                     </sourcePath>
                 </configuration>
