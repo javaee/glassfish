@@ -49,6 +49,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,7 +103,9 @@ public class HK2Runner {
      */
     @Before
     public void before() {
-        initialize(this.getClass().getName(), null, null);
+        initialize(this.getClass().getName(), 
+                Collections.singletonList(this.getClass().getPackage().getName()),
+                null);
     }
 
     /**
@@ -223,7 +226,10 @@ public class HK2Runner {
     }
     
     private void internalAddServicesFromPackage(DynamicConfiguration config, List<String> packages) {
-        if (packages.isEmpty()) return;
+        if (packages.isEmpty()) {
+            System.out.println("JRW(10) HK2Runner leaving packages empty bro");
+            return;
+        }
         
         String classPath = System.getProperty(CLASS_PATH_PROP);
         StringTokenizer st = new StringTokenizer(classPath, File.pathSeparator);
