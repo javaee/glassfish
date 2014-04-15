@@ -175,29 +175,5 @@ public class ConstructorInterceptorHandler {
         }
         
     }
-    
-    /**
-     * This represents the action used in order to
-     * create an object.
-     * 
-     * It currently has two uses, one for raw creation
-     * and one for proxied creation (if there are method
-     * interceptors)
-     * 
-     * @author jwells
-     *
-     */
-    public interface ConstructorAction {
-        /**
-         * Creates the raw object
-         * @param c The constructor to call
-         * @param args The parameters to give to the argument
-         * @param neutralCCL Whether or not the CCL should remain neutral
-         * 
-         * @return The raw object return
-         * @throws Throwable 
-         */
-        public Object makeMe(Constructor<?> c, Object args[], boolean neutralCCL) throws Throwable;
-    }
 
 }

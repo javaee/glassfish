@@ -39,10 +39,6 @@
  */
 package org.jvnet.hk2.internal;
 
-import javassist.util.proxy.MethodHandler;
-import javassist.util.proxy.ProxyFactory;
-import javassist.util.proxy.ProxyObject;
-
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 
@@ -52,12 +48,10 @@ import java.lang.ref.SoftReference;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.security.AccessController;
@@ -330,7 +324,7 @@ public class Utilities {
      *
      * @return The real implementation class
      */
-    private static Class<?> getFactoryAwareImplementationClass(ActiveDescriptor<?> descriptor) {
+    public static Class<?> getFactoryAwareImplementationClass(ActiveDescriptor<?> descriptor) {
         if (descriptor.getDescriptorType().equals(DescriptorType.CLASS)) {
             return descriptor.getImplementationClass();
         }
@@ -2097,90 +2091,6 @@ public class Utilities {
         return (T) o;
     }
 
-    private final static Object proxyCreationLock = new Object();
-    
-    private static <T> T secureCreate(final Class<?> superclass,
-            final Class<?>[] interfaces,
-            final MethodHandler callback,
-            boolean useJDKProxy) {
-
-        /* construct the classloader where the generated proxy will be created --
-         * this classloader must have visibility into the javaassist classloader as well as
-         * the superclass' classloader
-         */
-        final ClassLoader delegatingLoader = (ClassLoader) AccessController
-                .doPrivileged(new PrivilegedAction<Object>() {
-
-                    @Override
-                    public Object run() {
-                        // create a delegating classloader that attempts to
-                        // load from the superclass' classloader first,
-                        // then hk2-locator's classloader second.
-                        return new DelegatingClassLoader<T>(
-                                superclass.getClassLoader(),
-                                ProxyFactory.class.getClassLoader(),
-                                ProxyCtl.class.getClassLoader());
-                    }
-                });
-
-        if (useJDKProxy) {
-            return AccessController.doPrivileged(new PrivilegedAction<T>() {
-
-                @SuppressWarnings("unchecked")
-                @Override
-                public T run() {
-                    return (T) Proxy.newProxyInstance(delegatingLoader, interfaces,
-                            new MethodInterceptorInvocationHandler(callback));
-                }
-
-            });
-
-        }
-
-
-        return AccessController.doPrivileged(new PrivilegedAction<T>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public T run() {
-                synchronized (proxyCreationLock) {
-                    ProxyFactory.ClassLoaderProvider originalProvider = ProxyFactory.classLoaderProvider;
-                    ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider() {
-                        
-                        @Override
-                        public ClassLoader get(ProxyFactory arg0) {
-                            return delegatingLoader;
-                        }
-                    };
-                    
-                    try {
-                        ProxyFactory proxyFactory = new ProxyFactory();
-                        proxyFactory.setInterfaces(interfaces);
-                        proxyFactory.setSuperclass(superclass);
-
-                        Class<?> proxyClass = proxyFactory.createClass();
-
-                        try {
-                            T proxy = (T) proxyClass.newInstance();
-
-                            ((ProxyObject) proxy).setHandler(callback);
-
-                            return proxy;
-                        } catch (Exception e1) {
-                            throw new RuntimeException(e1);
-                        }
-                    }
-                    finally {
-                        ProxyFactory.classLoaderProvider = originalProvider;
-                        
-                    }
-                }
-            }
-
-        });
-
-    }
-
     /**
      * Creates the service (without the need for an intermediate ServiceHandle
      * to be created)
@@ -2207,47 +2117,7 @@ public class Utilities {
         }
 
         if (isProxiable(root, injectee)) {
-            boolean isInterface = (requestedClass == null) ? false : requestedClass.isInterface() ;
-
-            final Class<?> proxyClass;
-            Class<?> iFaces[];
-            if (isInterface) {
-                proxyClass = requestedClass;
-                iFaces = new Class<?>[2];
-                iFaces[0] = proxyClass;
-                iFaces[1] = ProxyCtl.class;
-            }
-            else {
-                proxyClass = Utilities.getFactoryAwareImplementationClass(root);
-
-                iFaces = Utilities.getInterfacesForProxy(root.getContractTypes());
-            }
-
-            T proxy;
-            try {
-                proxy = (T) secureCreate(proxyClass,
-                    iFaces,
-                    new MethodInterceptorImpl(locator, root, handle),
-                    isInterface);
-            }
-            catch (Throwable th) {
-                Exception addMe = new IllegalArgumentException("While attempting to create a Proxy for " + proxyClass.getName() +
-                        " in proxiable scope " + root.getScope() + " an error occured while creating the proxy");
-
-                if (th instanceof MultiException) {
-                    MultiException me = (MultiException) th;
-
-                    me.addError(addMe);
-
-                    throw me;
-                }
-
-                MultiException me = new MultiException(th);
-                me.addError(addMe);
-                throw me;
-            }
-
-            return proxy;
+            return ProxyUtilities.generateProxy(requestedClass, locator, root, handle);
         }
 
         Context<?> context;
@@ -2292,21 +2162,6 @@ public class Utilities {
 
     
 
-    private static class MethodInterceptorInvocationHandler implements InvocationHandler {
-        private final MethodHandler interceptor;
-
-        private MethodInterceptorInvocationHandler(MethodHandler interceptor) {
-            this.interceptor = interceptor;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args)
-                throws Throwable {
-            return interceptor.invoke (proxy, method, null, args);
-        }
-
-    }
-    
     private static final HashSet<String> NOT_INTERCEPTED = new HashSet<String>();
     
     static {

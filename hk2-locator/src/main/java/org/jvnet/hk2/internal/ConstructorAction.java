@@ -37,54 +37,30 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.noproxy;
+package org.jvnet.hk2.internal;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import java.lang.reflect.Constructor;
 
 /**
+ * This represents the action used in order to
+ * create an object.
+ * 
+ * It currently has two uses, one for raw creation
+ * and one for proxied creation (if there are method
+ * interceptors)
  * 
  * @author jwells
+ *
  */
-public class NoProxyTest {
-    private ServiceLocator locator;
-    
+public interface ConstructorAction {
     /**
-     * Called prior to the tests
+     * Creates the raw object
+     * @param c The constructor to call
+     * @param args The parameters to give to the argument
+     * @param neutralCCL Whether or not the CCL should remain neutral
+     * 
+     * @return The raw object return
+     * @throws Throwable 
      */
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(null);
-        
-        ServiceLocatorUtilities.addClasses(locator,
-                SingletonService.class,
-                PerLookupService.class);
-        
-    }
-    
-    /**
-     * Tests that we can lookup and inject Singleton and PerLookup
-     * services even if all the proxy jars are not in the classpath
-     */
-    @Test
-    public void testGetServicesWithNoProxies() {
-        SingletonService ss1 = locator.getService(SingletonService.class);
-        Assert.assertNotNull(ss1);
-        
-        PerLookupService pls1 = ss1.getPerLookup();
-        Assert.assertNotNull(pls1);
-        
-        PerLookupService pls2 = locator.getService(PerLookupService.class);
-        Assert.assertNotSame(pls1, pls2);
-        
-        SingletonService ss2 = pls2.getSingleton();
-        Assert.assertNotNull(ss2);
-        
-        Assert.assertEquals(ss1, ss2);
-        
-    }
+    public Object makeMe(Constructor<?> c, Object args[], boolean neutralCCL) throws Throwable;
 }

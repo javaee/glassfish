@@ -1,0 +1,194 @@
+/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
+ */
+package org.jvnet.hk2.internal;
+
+import java.lang.reflect.Proxy;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ProxyCtl;
+import org.glassfish.hk2.api.ServiceHandle;
+
+import javassist.util.proxy.MethodHandler;
+import javassist.util.proxy.ProxyFactory;
+import javassist.util.proxy.ProxyObject;
+
+/**
+ * Utilities around proxying
+ * 
+ * @author jwells
+ *
+ */
+public class ProxyUtilities {
+    private final static Object proxyCreationLock = new Object();
+    
+    public static <T> T secureCreate(final Class<?> superclass,
+            final Class<?>[] interfaces,
+            final MethodHandler callback,
+            boolean useJDKProxy) {
+
+        /* construct the classloader where the generated proxy will be created --
+         * this classloader must have visibility into the javaassist classloader as well as
+         * the superclass' classloader
+         */
+        final ClassLoader delegatingLoader = (ClassLoader) AccessController
+                .doPrivileged(new PrivilegedAction<Object>() {
+
+                    @Override
+                    public Object run() {
+                        // create a delegating classloader that attempts to
+                        // load from the superclass' classloader first,
+                        // then hk2-locator's classloader second.
+                        return new DelegatingClassLoader<T>(
+                                superclass.getClassLoader(),
+                                ProxyFactory.class.getClassLoader(),
+                                ProxyCtl.class.getClassLoader());
+                    }
+                });
+
+        if (useJDKProxy) {
+            return AccessController.doPrivileged(new PrivilegedAction<T>() {
+
+                @SuppressWarnings("unchecked")
+                @Override
+                public T run() {
+                    return (T) Proxy.newProxyInstance(delegatingLoader, interfaces,
+                            new MethodInterceptorInvocationHandler(callback));
+                }
+
+            });
+
+        }
+
+
+        return AccessController.doPrivileged(new PrivilegedAction<T>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public T run() {
+                synchronized (proxyCreationLock) {
+                    ProxyFactory.ClassLoaderProvider originalProvider = ProxyFactory.classLoaderProvider;
+                    ProxyFactory.classLoaderProvider = new ProxyFactory.ClassLoaderProvider() {
+                        
+                        @Override
+                        public ClassLoader get(ProxyFactory arg0) {
+                            return delegatingLoader;
+                        }
+                    };
+                    
+                    try {
+                        ProxyFactory proxyFactory = new ProxyFactory();
+                        proxyFactory.setInterfaces(interfaces);
+                        proxyFactory.setSuperclass(superclass);
+
+                        Class<?> proxyClass = proxyFactory.createClass();
+
+                        try {
+                            T proxy = (T) proxyClass.newInstance();
+
+                            ((ProxyObject) proxy).setHandler(callback);
+
+                            return proxy;
+                        } catch (Exception e1) {
+                            throw new RuntimeException(e1);
+                        }
+                    }
+                    finally {
+                        ProxyFactory.classLoaderProvider = originalProvider;
+                        
+                    }
+                }
+            }
+
+        });
+
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> T generateProxy(Class<?> requestedClass,
+            ServiceLocatorImpl locator,
+            ActiveDescriptor<T> root,
+            ServiceHandle<T> handle) {
+        boolean isInterface = (requestedClass == null) ? false : requestedClass.isInterface() ;
+
+        final Class<?> proxyClass;
+        Class<?> iFaces[];
+        if (isInterface) {
+            proxyClass = requestedClass;
+            iFaces = new Class<?>[2];
+            iFaces[0] = proxyClass;
+            iFaces[1] = ProxyCtl.class;
+        }
+        else {
+            proxyClass = Utilities.getFactoryAwareImplementationClass(root);
+
+            iFaces = Utilities.getInterfacesForProxy(root.getContractTypes());
+        }
+
+        T proxy;
+        try {
+            proxy = (T) ProxyUtilities.secureCreate(proxyClass,
+                iFaces,
+                new MethodInterceptorImpl(locator, root, handle),
+                isInterface);
+        }
+        catch (Throwable th) {
+            Exception addMe = new IllegalArgumentException("While attempting to create a Proxy for " + proxyClass.getName() +
+                    " in proxiable scope " + root.getScope() + " an error occured while creating the proxy");
+
+            if (th instanceof MultiException) {
+                MultiException me = (MultiException) th;
+
+                me.addError(addMe);
+
+                throw me;
+            }
+
+            MultiException me = new MultiException(th);
+            me.addError(addMe);
+            throw me;
+        }
+
+        return proxy;
+    }
+
+}

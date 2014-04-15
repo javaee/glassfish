@@ -37,54 +37,29 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.noproxy;
+package org.jvnet.hk2.internal;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import javassist.util.proxy.MethodHandler;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * 
  * @author jwells
+ *
  */
-public class NoProxyTest {
-    private ServiceLocator locator;
-    
-    /**
-     * Called prior to the tests
-     */
-    @Before
-    public void before() {
-        locator = ServiceLocatorFactory.getInstance().create(null);
-        
-        ServiceLocatorUtilities.addClasses(locator,
-                SingletonService.class,
-                PerLookupService.class);
-        
+public class MethodInterceptorInvocationHandler implements InvocationHandler {
+    private final MethodHandler interceptor;
+
+    public MethodInterceptorInvocationHandler(MethodHandler interceptor) {
+        this.interceptor = interceptor;
     }
-    
-    /**
-     * Tests that we can lookup and inject Singleton and PerLookup
-     * services even if all the proxy jars are not in the classpath
-     */
-    @Test
-    public void testGetServicesWithNoProxies() {
-        SingletonService ss1 = locator.getService(SingletonService.class);
-        Assert.assertNotNull(ss1);
-        
-        PerLookupService pls1 = ss1.getPerLookup();
-        Assert.assertNotNull(pls1);
-        
-        PerLookupService pls2 = locator.getService(PerLookupService.class);
-        Assert.assertNotSame(pls1, pls2);
-        
-        SingletonService ss2 = pls2.getSingleton();
-        Assert.assertNotNull(ss2);
-        
-        Assert.assertEquals(ss1, ss2);
-        
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args)
+            throws Throwable {
+        return interceptor.invoke (proxy, method, null, args);
     }
+
 }
