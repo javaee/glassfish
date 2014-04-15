@@ -2117,6 +2117,10 @@ public class Utilities {
         }
 
         if (isProxiable(root, injectee)) {
+            if (!proxiesAvailable()) {
+                throw new IllegalStateException("A descriptor " + root + " requires a proxy, but the proxyable library is not on the classpath");
+            }
+            
             return ProxyUtilities.generateProxy(requestedClass, locator, root, handle);
         }
 
@@ -2302,6 +2306,29 @@ public class Utilities {
          }
          
          return false;
+    }
+    
+    private static Boolean proxiesAvailable = null;
+    
+    private synchronized static boolean proxiesAvailable() {
+        if (proxiesAvailable != null) {
+            return proxiesAvailable;
+        }
+        
+        ClassLoader loader = Utilities.class.getClassLoader();
+        if (loader == null) {
+            loader = ClassLoader.getSystemClassLoader();
+        }
+        
+        try {
+            loader.loadClass("javassist.util.proxy.MethodHandler");
+            proxiesAvailable = true;
+            return true;
+        }
+        catch (Throwable th) {
+            proxiesAvailable = false;
+            return false;
+        }
     }
     
     /**
