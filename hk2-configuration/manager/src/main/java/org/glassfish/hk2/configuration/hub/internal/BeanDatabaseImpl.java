@@ -37,29 +37,71 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.hub.internal;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.KeyedType;
+import org.glassfish.hk2.configuration.hub.api.SingletonType;
 
 /**
- * 
  * @author jwells
  *
  */
-@Contract
-public interface Hub {
-    public BeanDatabase getCurrentDatabase();
+public class BeanDatabaseImpl implements BeanDatabase {
+    private final HashMap<String, SingletonType> singletons = new HashMap<String, SingletonType>();
+    private final HashMap<String, KeyedType> keyed = new HashMap<String, KeyedType>();
     
-    public KeyedType createMultiValueType(String name);
+    /**
+     * Creates a new, fresh database
+     */
+    public BeanDatabaseImpl() {
+        
+    }
     
-    public KeyedType findOrCreateMultiValueType(String name);
-    
-    public KeyedType removeMultiValueType(String name);
-    
-    public SingletonType createType(String name);
-    
-    public SingletonType findOrCreateType(String name);
-    
-    public SingletonType removeType(String name);
-    
+    /**
+     * Does a deep copy
+     * @param copyMe
+     */
+    public BeanDatabaseImpl(BeanDatabaseImpl copyMe) {
+        throw new AssertionError("not yet implemented");
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getAllSingetonTypes()
+     */
+    @Override
+    public synchronized Set<SingletonType> getAllSingetonTypes() {
+        return Collections.unmodifiableSet(new HashSet<SingletonType>(singletons.values()));
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getSingletonType(java.lang.String)
+     */
+    @Override
+    public synchronized SingletonType getSingletonType(String typeName) {
+        return singletons.get(typeName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getAllKeyedTypes()
+     */
+    @Override
+    public synchronized Set<KeyedType> getAllKeyedTypes() {
+        return Collections.unmodifiableSet(new HashSet<KeyedType>(keyed.values()));
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getKeyedType(java.lang.String)
+     */
+    @Override
+    public synchronized KeyedType getKeyedType(String typeName) {
+        return keyed.get(typeName);
+    }
+
 }

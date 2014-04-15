@@ -37,43 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.dummy;
 
-/**
- * Tells a back-end service that the changes to a bean are starting, and whether or
- * not those changes have been accepted or rejected.
- * <p>
- * A bean can contain many values.  More than one of those values could be changing
- * at the same time.  However {@link java.beans.PropertyChangeListener} or
- * {@link java.beans.VetoablePropertyChangeListener} only take one property change
- * at a time.  This makes it difficult or impossible to solve the max/min problem,
- * where both the max and the min are changing at the same time and the code would like
- * to validate that the system is always in a consistent state
- * 
- * TODO:  It is possible this can be moved up into the hk2-integration module
- * 
- * @author jwells
- *
- */
-public interface PropertyChangeListenerLifecycle {
-    /**
-     * The bean with the given type and the given key is getting changed
-     * 
-     * @param beanType The non-null type of the bean getting changed
-     * @param beanKey The possibly null key of the bean getting changed.  Will
-     * be null if this is a Singleton type and therefor has no other key
-     */
-    public void propertyChangesStarted(String beanType, String beanKey);
-    
-    /**
-     * Will be called after all back-end services have accepted the change
-     * and agreed to allow it
-     */
-    public void changeAccepted();
-    
-    /**
-     * Will be called after all back-end services have been called and at
-     * least one of them has rejected it
-     */
-    public void changeRejected();
+public class Dummy {
 }

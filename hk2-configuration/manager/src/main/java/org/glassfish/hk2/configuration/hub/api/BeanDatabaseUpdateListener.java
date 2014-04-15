@@ -39,27 +39,24 @@
  */
 package org.glassfish.hk2.configuration.hub.api;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.beans.PropertyChangeEvent;
+import java.util.List;
 
 /**
- * 
  * @author jwells
  *
  */
-@Contract
-public interface Hub {
-    public BeanDatabase getCurrentDatabase();
+public interface BeanDatabaseUpdateListener {
+    public void initialize(BeanDatabase database);
     
-    public KeyedType createMultiValueType(String name);
+    public void singletonTypeAdded(BeanDatabase proposedDatabase, SingletonType type);
+    public void singletonTypeRemoved(BeanDatabase proposedDatabase, SingletonType type);
+    public void singletonTypeChanged(BeanDatabase proposedDatabase, SingletonType typeChanged, List<PropertyChangeEvent> changes);
     
-    public KeyedType findOrCreateMultiValueType(String name);
-    
-    public KeyedType removeMultiValueType(String name);
-    
-    public SingletonType createType(String name);
-    
-    public SingletonType findOrCreateType(String name);
-    
-    public SingletonType removeType(String name);
-    
+    public void keyedTypeAdded(BeanDatabase proposedDatabase, KeyedType type);
+    public void keyedTypeRemoved(BeanDatabase proposedDatabase, KeyedType type);
+    public void keyedTypeBeanAdded(BeanDatabase proposedDatabase, KeyedType type, String addedKey, Object addedBean);
+    public void keyedTypeBeanRemoved(BeanDatabase proposedDatabase, KeyedType type, String removedKey, Object removedBean);
+    public void keyedTypeBeanChanged(BeanDatabase proposedDatabase, KeyedType type, String removedKey, List<PropertyChangeEvent> changes);
+
 }

@@ -37,29 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.noproxy;
 
-import org.jvnet.hk2.annotations.Contract;
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+import org.glassfish.hk2.api.PerLookup;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * 
  * @author jwells
  *
  */
-@Contract
-public interface Hub {
-    public BeanDatabase getCurrentDatabase();
+@Service @PerLookup
+public class PerLookupService {
+    @Inject
+    private Provider<SingletonService> provider;
     
-    public KeyedType createMultiValueType(String name);
-    
-    public KeyedType findOrCreateMultiValueType(String name);
-    
-    public KeyedType removeMultiValueType(String name);
-    
-    public SingletonType createType(String name);
-    
-    public SingletonType findOrCreateType(String name);
-    
-    public SingletonType removeType(String name);
-    
+    public SingletonService getSingleton() {
+        return provider.get();
+    }
+
 }

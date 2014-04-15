@@ -39,27 +39,16 @@
  */
 package org.glassfish.hk2.configuration.hub.api;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.beans.PropertyChangeEvent;
 
 /**
- * 
  * @author jwells
  *
  */
-@Contract
-public interface Hub {
-    public BeanDatabase getCurrentDatabase();
+public interface SingletonType extends Type {
+    public Object getBean();
     
-    public KeyedType createMultiValueType(String name);
+    public void setBean(Object bean);
     
-    public KeyedType findOrCreateMultiValueType(String name);
-    
-    public KeyedType removeMultiValueType(String name);
-    
-    public SingletonType createType(String name);
-    
-    public SingletonType findOrCreateType(String name);
-    
-    public SingletonType removeType(String name);
-    
+    public void modifyBean(PropertyChangeEvent... changes);
 }

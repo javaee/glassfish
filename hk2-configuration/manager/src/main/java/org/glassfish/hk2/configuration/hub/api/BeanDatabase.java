@@ -39,16 +39,19 @@
  */
 package org.glassfish.hk2.configuration.hub.api;
 
-import java.beans.PropertyChangeEvent;
+import java.util.Set;
 
 /**
  * @author jwells
  *
  */
-public interface SingetonType extends Type {
-    public Object getBean();
+public interface BeanDatabase {
+    public Set<SingletonType> getAllSingetonTypes();
     
-    public void setBean(Object bean);
+    public SingletonType getSingletonType(String typeName);
     
-    public void modifyBean(PropertyChangeEvent... changes);
+    public Set<KeyedType> getAllKeyedTypes();
+    
+    public KeyedType getKeyedType(String typeName);
+
 }

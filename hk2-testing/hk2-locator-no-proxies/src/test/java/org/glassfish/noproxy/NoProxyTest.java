@@ -37,29 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.noproxy;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /**
  * 
  * @author jwells
- *
  */
-@Contract
-public interface Hub {
-    public BeanDatabase getCurrentDatabase();
+public class NoProxyTest {
+    private ServiceLocator locator;
     
-    public KeyedType createMultiValueType(String name);
-    
-    public KeyedType findOrCreateMultiValueType(String name);
-    
-    public KeyedType removeMultiValueType(String name);
-    
-    public SingletonType createType(String name);
-    
-    public SingletonType findOrCreateType(String name);
-    
-    public SingletonType removeType(String name);
-    
+    /**
+     * Called prior to the tests
+     */
+    // @Before
+    public void before() {
+        locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                SingletonService.class,
+                PerLookupService.class);
+        
+    }
+    /**
+     * Tests that we can lookup and inject Singleton and PerLookup
+     * services even if all the proxy jars are not in the classpath
+     */
+    @Test @Ignore
+    public void testGetServicesWithNoProxies() {
+        SingletonService ss1 = locator.getService(SingletonService.class);
+        Assert.assertNotNull(ss1);
+        
+        PerLookupService pls1 = ss1.getPerLookup();
+        Assert.assertNotNull(pls1);
+        
+        PerLookupService pls2 = locator.getService(PerLookupService.class);
+        Assert.assertNotSame(pls1, pls2);
+        
+        SingletonService ss2 = pls2.getSingleton();
+        Assert.assertNotNull(ss2);
+        
+        Assert.assertEquals(ss1, ss2);
+        
+    }
 }
