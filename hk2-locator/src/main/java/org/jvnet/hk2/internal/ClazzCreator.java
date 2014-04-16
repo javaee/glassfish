@@ -274,6 +274,10 @@ public class ClazzCreator<T> implements Creator<T> {
             return ReflectionHelper.makeMe(c, args, locator.getNeutralContextClassLoader()); 
         }
         
+        if (!Utilities.proxiesAvailable()) {
+            throw new IllegalStateException("A service " + selfDescriptor + " needs either method or constructor interception, but proxies are not available");
+        }
+        
         final boolean neutral = locator.getNeutralContextClassLoader();
         
         if (methodInterceptors == null || methodInterceptors.isEmpty()) {

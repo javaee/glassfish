@@ -2310,7 +2310,12 @@ public class Utilities {
     
     private static Boolean proxiesAvailable = null;
     
-    private synchronized static boolean proxiesAvailable() {
+    /**
+     * Returns true if the system can create proxies, false otherwise
+     * 
+     * @return true if the system can create proxies, false otherwise
+     */
+    public synchronized static boolean proxiesAvailable() {
         if (proxiesAvailable != null) {
             return proxiesAvailable;
         }
