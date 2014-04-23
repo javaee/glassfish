@@ -244,7 +244,6 @@
         <module>external</module>
         <module>hk2-utils</module>
         <module>hk2-api</module>
-        <module>apt</module>
         <module>hk2-configuration</module>
     </modules>                  
 
