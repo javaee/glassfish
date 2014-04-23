@@ -795,7 +795,24 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         // These things must be done OUTSIDE the lock
-        List<ServiceHandle<?>> handles = getAllServiceHandles(BuilderHelper.createContractFilter(Context.class.getName()));
+        List<ServiceHandle<?>> handles = getAllServiceHandles(new IndexedFilter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                return d.getLocatorId().equals(id);
+            }
+
+            @Override
+            public String getAdvertisedContract() {
+                return Context.class.getName();
+            }
+
+            @Override
+            public String getName() {
+                return null;
+            }
+            
+        });
 
         for (ServiceHandle<?> handle : handles) {
             if (handle.isActive()) {

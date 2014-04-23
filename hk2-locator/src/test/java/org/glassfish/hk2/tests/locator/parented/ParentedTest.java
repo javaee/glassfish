@@ -52,7 +52,6 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -282,7 +281,7 @@ public class ParentedTest {
     /**
      * Tests a context from the parent is not destroyed when the child is destroyed
      */
-    @Test @Ignore
+    @Test
     public void testParentContextNotDestroyedUponChildDestruction() {
         ServiceLocator parent = factory.create(PARENT8);
         ServiceLocator child = factory.create(CHILD8, parent);
