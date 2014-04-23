@@ -56,7 +56,10 @@ import org.glassfish.hk2.api.ServiceLocator;
 
 
 /**
- * A descriptor class that serves as an alias for another descriptor.
+ * An active descriptor class that serves as an alias for another descriptor.
+ * This alias can have only one contract that may or may not also be
+ * advertised by the host descriptor.  An AliasDescriptor
+ * can have a different name from the host descriptor as well
  *
  * @author tbeerbower
  * @param <T> The cache type
