@@ -52,6 +52,7 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -86,6 +87,9 @@ public class ParentedTest {
     
     private final static String PARENT7 = "Parent7";
     private final static String CHILD7 = "Child7";
+    
+    private final static String PARENT8 = "Parent8";
+    private final static String CHILD8 = "Child8";
     
     /**
      * Tests three generations of locators
@@ -273,5 +277,30 @@ public class ParentedTest {
         Assert.assertEquals(PARENT7, gottenParent7.getName());
         
         Assert.assertNull(gottenParent7.getParent());
+    }
+    
+    /**
+     * Tests a context from the parent is not destroyed when the child is destroyed
+     */
+    @Test @Ignore
+    public void testParentContextNotDestroyedUponChildDestruction() {
+        ServiceLocator parent = factory.create(PARENT8);
+        ServiceLocator child = factory.create(CHILD8, parent);
+        
+        ServiceLocatorUtilities.enablePerThreadScope(parent);
+        
+        ServiceLocatorUtilities.addClasses(parent, PerThreadServiceInParent.class);
+        ServiceLocatorUtilities.addClasses(child, PerThreadServiceInChild.class);
+        
+        PerThreadServiceInChild ptsic = child.getService(PerThreadServiceInChild.class);
+        
+        Assert.assertNotNull(ptsic);
+        
+        factory.destroy(child);
+        
+        // Make sure we can still use the PerThread context after the child was destroyed!
+        PerThreadServiceInParent ptsip = parent.getService(PerThreadServiceInParent.class);
+        
+        Assert.assertNotNull(ptsip);
     }
 }
