@@ -41,6 +41,8 @@ package org.jvnet.hk2.internal;
 
 import java.net.URL;
 
+import org.glassfish.hk2.utilities.reflection.Pretty;
+
 /**
  * A classloader that delegates first to an optional parent and then to a delegate loader
  */
@@ -94,5 +96,47 @@ class DelegatingClassLoader<T> extends ClassLoader {
 		}
 		
 		return null;
-	}		
+	}	
+	
+	@Override
+	public int hashCode() {
+	    int code = (getParent() == null) ? 0 : getParent().hashCode();
+	    
+	    for (ClassLoader delegate : delegates) {
+	        code ^= delegate.hashCode();
+	    }
+	    
+	    return code;
+	}
+	
+	private final static boolean safeEquals(Object a, Object b) {
+	    if (a == b) return true;
+	    if (a == null) return false;
+	    if (b == null) return false;
+	    
+	    return a.equals(b);
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+	    if (o == null) return false;
+	    if (!(o instanceof DelegatingClassLoader)) return false;
+	    
+	    DelegatingClassLoader<?> other = (DelegatingClassLoader<?>) o;
+	    
+	    if (!safeEquals(getParent(), other.getParent())) return false;
+	    
+	    if (delegates.length != other.delegates.length) return false;
+	    
+	    for (int lcv = 0; lcv < delegates.length; lcv++) {
+	        if (!safeEquals(delegates[lcv], other.delegates[lcv])) return false;
+	    }
+	    
+	    return true;
+	}
+	
+	@Override
+	public String toString() {
+	    return "DelegatingClassLoader(" + getParent() + "," + Pretty.array(delegates) + "," + System.identityHashCode(this) + ")";
+	}
 }
