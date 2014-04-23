@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -773,5 +774,30 @@ public abstract class ServiceLocatorUtilities {
         }
         
         addClasses(locator, DefaultTopicDistributionService.class);
+    }
+    
+    /**
+     * Dumps all descriptors in this ServiceLocator to stderr
+     * 
+     * @param locator The non-null locator to dump to stderr
+     */
+    public static void dumpAllDescriptors(ServiceLocator locator) {
+        dumpAllDescriptors(locator, System.err);
+    }
+    
+    /**
+     * Dumps all descriptors in this ServiceLocator to the given PrintStream
+     * 
+     * @param locator The non-null locator to dump
+     * @param output The non-null PrintStream to print the descriptors to
+     */
+    public static void dumpAllDescriptors(ServiceLocator locator, PrintStream output) {
+        if (locator == null || output == null) throw new IllegalArgumentException();
+        
+        List<ActiveDescriptor<?>> all = locator.getDescriptors(BuilderHelper.allFilter());
+        
+        for (ActiveDescriptor<?> d : all) {
+            output.println(d.toString());
+        }
     }
 }

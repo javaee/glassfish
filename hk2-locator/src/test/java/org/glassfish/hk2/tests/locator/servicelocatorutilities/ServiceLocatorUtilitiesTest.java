@@ -690,4 +690,15 @@ public class ServiceLocatorUtilitiesTest {
         
         ServiceLocatorUtilities.addClasses(locator, ServiceWithConflictingDefaultName.class);
     }
+    
+    /**
+     * Makes sure we can dump all services
+     */
+    @Test
+    public void testDumpAllServices() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.dumpAllDescriptors(locator);
+        ServiceLocatorUtilities.dumpAllDescriptors(locator, System.out);
+    }
 }
