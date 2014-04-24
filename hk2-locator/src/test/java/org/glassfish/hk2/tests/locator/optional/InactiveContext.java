@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,45 +39,77 @@
  */
 package org.glassfish.hk2.tests.locator.optional;
 
-import junit.framework.Assert;
+import java.lang.annotation.Annotation;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-public class OptionalTest {
-    private final static String TEST_NAME = "OptionalTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new OptionalModule());
+@Service
+public class InactiveContext implements Context<InactiveScope> {
 
-    /**
-     * All the true validation is done in the
-     * InjectedManyTimes service
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#getScope()
      */
-    @Test
-    public void testOptionalAndOptionalButThere() {
-        InjectedManyTimes many = locator.getService(InjectedManyTimes.class);
-        Assert.assertNotNull(many);
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return InactiveScope.class;
+    }
 
-        Assert.assertTrue(many.isValid());
-    }
-    
-    /**
-     * Tests that a service that is present but which is in an inactive
-     * context can be NOT injected into a service (assuming it is Optional)
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
-    @Test
-    public void testInjectPresentOptionalServiceFromInactiveContext() {
-        ServiceLocator testLocator = LocatorHelper.getServiceLocator(InactiveContext.class,
-                ServiceInInactiveContext.class,
-                ServiceInjectedWithOptionalServiceFromInactiveContext.class);
-        
-        ServiceInjectedWithOptionalServiceFromInactiveContext s = testLocator.getService(ServiceInjectedWithOptionalServiceFromInactiveContext.class);
-        Assert.assertNotNull(s);
-        Assert.assertNull(s.getServiceInInactiveContext());
+    @Override
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        throw new AssertionError("not called");
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        throw new AssertionError("not called");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        throw new AssertionError("not called");
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        throw new AssertionError("not called");
+
+    }
+
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,45 +39,22 @@
  */
 package org.glassfish.hk2.tests.locator.optional;
 
-import junit.framework.Assert;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Ignore;
-import org.junit.Test;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Scope;
 
 /**
  * @author jwells
  *
  */
-public class OptionalTest {
-    private final static String TEST_NAME = "OptionalTest";
-    private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new OptionalModule());
+@Retention(RUNTIME)
+@Scope
+@Target( { TYPE, METHOD })
+public @interface InactiveScope {
 
-    /**
-     * All the true validation is done in the
-     * InjectedManyTimes service
-     */
-    @Test
-    public void testOptionalAndOptionalButThere() {
-        InjectedManyTimes many = locator.getService(InjectedManyTimes.class);
-        Assert.assertNotNull(many);
-
-        Assert.assertTrue(many.isValid());
-    }
-    
-    /**
-     * Tests that a service that is present but which is in an inactive
-     * context can be NOT injected into a service (assuming it is Optional)
-     */
-    @Test
-    public void testInjectPresentOptionalServiceFromInactiveContext() {
-        ServiceLocator testLocator = LocatorHelper.getServiceLocator(InactiveContext.class,
-                ServiceInInactiveContext.class,
-                ServiceInjectedWithOptionalServiceFromInactiveContext.class);
-        
-        ServiceInjectedWithOptionalServiceFromInactiveContext s = testLocator.getService(ServiceInjectedWithOptionalServiceFromInactiveContext.class);
-        Assert.assertNotNull(s);
-        Assert.assertNull(s.getServiceInInactiveContext());
-    }
 }

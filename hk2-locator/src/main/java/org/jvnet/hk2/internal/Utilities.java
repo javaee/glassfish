@@ -2129,6 +2129,8 @@ public class Utilities {
             context = locator.resolveContext(root.getScopeAnnotation());
         }
         catch (Throwable th) {
+            if (injectee != null && injectee.isOptional()) return null;
+            
             Exception addMe = new IllegalStateException("While attempting to create a service for " + root +
                     " in scope " + root.getScope() + " an error occured while locating the context");
 
